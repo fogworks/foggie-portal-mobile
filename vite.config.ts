@@ -2,6 +2,7 @@ import { createVitePlugins } from './build/vite/plugins';
 import { resolve } from 'path';
 import { ConfigEnv, loadEnv, UserConfig } from 'vite';
 import { wrapperEnv } from './build/utils';
+import requireTransform from 'vite-plugin-require-transform';
 
 const pathResolve = (dir: string) => {
   return resolve(process.cwd(), '.', dir);
@@ -38,15 +39,21 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
       host: true,
       hmr: true,
       proxy: {
-        "^/api": {
-          target: "https://foggie.fogworks.io",
+        '^/api': {
+          target: 'https://foggie.fogworks.io/',
           changeOrigin: true,
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
       },
     },
-    plugins: createVitePlugins(viteEnv, isProduction),
+    plugins: [
+      createVitePlugins(viteEnv, isProduction),
+      requireTransform({
+        fileRegex: /.ts$|.tsx$|.vue$/,
+        //   fileRegex:/.js$|.jsx$|.vue$/
+      }),
+    ],
     build: {
       minify: 'terser',
       terserOptions: {
@@ -61,7 +68,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
       preprocessorOptions: {
         scss: {
           // 配置 nutui 全局 scss 变量
-          additionalData: `@import "@nutui/nutui/dist/styles/variables.scss";@import '@/styles/mixin.scss'; @import '@/styles/vant.scss';`,
+          additionalData: `@import "@/styles/custom_theme.scss";@import "@nutui/nutui/dist/styles/variables.scss";@import '@/styles/mixin.scss'; @import '@/styles/vant.scss';`,
         },
       },
     },

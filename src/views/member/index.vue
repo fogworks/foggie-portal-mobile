@@ -1,16 +1,30 @@
 <template>
   <div class="avatar-wrap">
     <nut-avatar class="avatar" size="large">
-      <img src="https://img12.360buyimg.com/imagetools/jfs/t1/143702/31/16654/116794/5fc6f541Edebf8a57/4138097748889987.png" />
+      <!-- <img src="https://img12.360buyimg.com/imagetools/jfs/t1/143702/31/16654/116794/5fc6f541Edebf8a57/4138097748889987.png" /> -->
     </nut-avatar>
     <div class="member-detail">
-      <p class="nickname"> 昵称<nut-button shape="square" size="small" type="default" @click="goLogin"> 去登录 </nut-button> </p>
-      <p class="info"> 个人其他信息，后续补充.... </p>
+      <p class="nickname"> <nut-button shape="square" size="small" type="default" @click="goLogin"> 登录 </nut-button> </p>
+      <p class="info"> xxxx.... </p>
     </div>
   </div>
-  <nut-grid direction="vertical">
-    <nut-grid-item v-for="item in 10" :key="item" text="文字"><Dongdong /></nut-grid-item>
-  </nut-grid>
+
+  <nut-divider :style="{ color: '#ccc', borderColor: '#ccc', padding: '0 16px' }"></nut-divider>
+
+  
+  <nut-cell title="DMC account xxx" is-link></nut-cell>
+  <nut-cell title="Privacy Policy" is-link @click="goToPrivacy()"></nut-cell>
+
+  <nut-cell title="Lanage" is-link></nut-cell>
+
+
+  <!-- <nut-grid direction="vertical" :column-num="2">
+    <nut-grid-item text="文字"><Dongdong /></nut-grid-item>
+    <nut-grid-item text="文字"><Dongdong /></nut-grid-item>
+    <nut-grid-item text="文字"><Dongdong /></nut-grid-item>
+    <nut-grid-item text="文字"><Dongdong /></nut-grid-item>
+    
+  </nut-grid> -->
 </template>
 
 <script lang="ts" setup name="MemberPage">
@@ -27,6 +41,9 @@
   const goLogin = () => {
     router.push('/login');
   };
+  const goToPrivacy = ()=> {
+    router.push({ path: '/privacyPolicy'});
+  }
 </script>
 
 <style lang="scss">
