@@ -1,7 +1,7 @@
 module.exports = {
   extends: ['stylelint-config-standard', 'stylelint-config-property-sort-order-smacss'],
   plugins: ['stylelint-order', 'stylelint-prettier'],
-  // customSyntax: 'postcss-html',
+  customSyntax: 'postcss-html',
   overrides: [
     {
       files: ['**/*.(css|html|vue)'],
