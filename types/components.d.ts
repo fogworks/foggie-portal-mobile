@@ -7,20 +7,32 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    BasicModal: typeof import('./../src/components/Modal/src/BasicModal.vue')['default']
-    NutButton: typeof import('@nutui/nutui')['Button']
-    NutDivider: typeof import('@nutui/nutui')['Divider']
-    NutForm: typeof import('@nutui/nutui')['Form']
-    NutFormItem: typeof import('@nutui/nutui')['FormItem']
-    NutTabbar: typeof import('@nutui/nutui')['Tabbar']
-    NutTabbarItem: typeof import('@nutui/nutui')['TabbarItem']
-    RouterLink: typeof import('vue-router')['RouterLink']
-    RouterView: typeof import('vue-router')['RouterView']
-    VanButton: typeof import('vant/es')['Button']
-    VanCellGroup: typeof import('vant/es')['CellGroup']
-    VanGrid: typeof import('vant/es')['Grid']
-    VanGridItem: typeof import('vant/es')['GridItem']
-    VanNavBar: typeof import('vant/es')['NavBar']
-    VanSpace: typeof import('vant/es')['Space']
+    BasicModal: typeof import('./../src/components/Modal/src/BasicModal.vue')['default'];
+    NutAvatar: typeof import('@nutui/nutui')['Avatar'];
+    NutButton: typeof import('@nutui/nutui')['Button'];
+    NutCell: typeof import('@nutui/nutui')['Cell'];
+    NutCircleProgress: typeof import('@nutui/nutui')['CircleProgress'];
+    NutCol: typeof import('@nutui/nutui')['Col'];
+    NutCollapse: typeof import('@nutui/nutui')['Collapse'];
+    NutCollapseItem: typeof import('@nutui/nutui')['CollapseItem'];
+    NutDivider: typeof import('@nutui/nutui')['Divider'];
+    NutForm: typeof import('@nutui/nutui')['Form'];
+    NutFormItem: typeof import('@nutui/nutui')['FormItem'];
+    NutRow: typeof import('@nutui/nutui')['Row'];
+    NutTabbar: typeof import('@nutui/nutui')['Tabbar'];
+    NutTabbarItem: typeof import('@nutui/nutui')['TabbarItem'];
+    RouterLink: typeof import('vue-router')['RouterLink'];
+    RouterView: typeof import('vue-router')['RouterView'];
+    VanButton: typeof import('vant/es')['Button'];
+    VanCellGroup: typeof import('vant/es')['CellGroup'];
+    VanField: typeof import('vant/es')['Field'];
+    VanForm: typeof import('vant/es')['Form'];
+    VanGrid: typeof import('vant/es')['Grid'];
+    VanGridItem: typeof import('vant/es')['GridItem'];
+    VanIcon: typeof import('vant/es')['Icon'];
+    VanNavBar: typeof import('vant/es')['NavBar'];
+    VanSpace: typeof import('vant/es')['Space'];
+    VarButton: typeof import('@varlet/ui')['_ButtonComponent'];
+    VarSpace: typeof import('@varlet/ui')['_SpaceComponent'];
   }
 }
