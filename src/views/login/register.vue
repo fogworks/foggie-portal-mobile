@@ -2,7 +2,6 @@
   <div class="login">
     <h2>Register</h2>
     <nut-divider />
-
     <nut-form ref="ruleForm" :model-value="loginForm" :rules="formRules">
       <nut-form-item required prop="email">
         <input v-model="loginForm.email" class="nut-input-text" placeholder="Enter your Email" type="text" />
@@ -10,25 +9,27 @@
       <nut-form-item required prop="password">
         <input v-model="loginForm.password" class="nut-input-text" placeholder="Please enter password" type="password" />
       </nut-form-item>
-      <div  style="margin:5px 0 10px 20px">
-          <p class='passwordTip'>
-          <div :class="[/[a-z]+/.test(loginForm.password) && /[A-Z]+/.test(loginForm.password) ? 'isOk' : 'isNo',]">
-            <van-icon name="success"  />
+      <div style="margin: 5px 0 10px 20px">
+        <div class="passwordTip">
+          <div :class="[/[a-z]+/.test(loginForm.password) && /[A-Z]+/.test(loginForm.password) ? 'isOk' : 'isNo']">
+            <van-icon name="success" />
           </div>
-          <span style="font-size:12px">Include both UPPER & lowercase letters</span>
-          </p>
-          <p class='passwordTip'>
+          <span style="font-size: 12px">Include both UPPER & lowercase letters</span>
+        </div>
+
+        <div class="passwordTip">
           <div :class="[/\d+/.test(loginForm.password) ? 'isOk' : 'isNo']">
-            <van-icon name="success"  />
+            <van-icon name="success" />
           </div>
-          <span style="font-size:12px">Use a minimum of 1 number</span>
-          </p>
-          <p class='passwordTip'>
+          <span style="font-size: 12px">Use a minimum of 1 number</span>
+        </div>
+
+        <div class="passwordTip">
           <div :class="[/[!@#$%^&*+]+/.test(loginForm.password) ? 'isOk' : 'isNo']">
-            <van-icon name="success"  />
+            <van-icon name="success" />
           </div>
-          <span style="font-size:12px">Use a minimum of symbol (e.g. !@#$%^&*+)</span>
-          </p>
+          <span style="font-size: 12px">Use a minimum of symbol (e.g. !@#$%^&*+)</span>
+        </div>
       </div>
       <nut-form-item required prop="confirmPassword">
         <input v-model="loginForm.confirmPassword" class="nut-input-text" placeholder="Please confirm password" type="password" />
@@ -54,6 +55,7 @@
   import { reactive, ref } from 'vue';
   // import { useUserStore } from '@/store/modules/user';
   import { showSuccessToast } from 'vant';
+
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
   // const userStore = useUserStore();
@@ -65,7 +67,7 @@
     promo_code: '',
     ambassador_promo_code: '',
   });
-  const validatePass2 = (value:string) => {
+  const validatePass2 = (value: string) => {
     if (value === '') {
       return Promise.reject('Please input the password again');
     } else if (value !== loginForm.password) {
@@ -74,7 +76,7 @@
       return Promise.resolve();
     }
   };
-  const validateEmail = (value:string) => {
+  const validateEmail = (value: string) => {
     if (value === '') {
       return Promise.reject('Please Enter email address');
     } else if (!/^[0-9a-zA-Z_.-]+[@][0-9a-zA-Z_.-]+([.][a-zA-Z]+){1,2}$/.test(value)) {
@@ -83,7 +85,7 @@
       return Promise.resolve();
     }
   };
-  const validatePassword = (value:string) => {
+  const validatePassword = (value: string) => {
     if (value === '') {
       return Promise.reject('Please enter password');
     } else if (/[a-z]+/.test(value) && /[A-Z]+/.test(value) && /\d+/.test(value) && /[!@#$%^&*+]+/.test(value)) {
@@ -92,7 +94,7 @@
       return Promise.reject('');
     }
   };
-  const formRules = ({
+  const formRules = {
     email: [
       {
         required: true,
@@ -118,7 +120,7 @@
         message: 'Please enter Email verification code!',
       },
     ],
-  });
+  };
 
   const numCount = ref(0);
   const loading = ref<boolean>(false);
@@ -191,11 +193,11 @@
   .isOk {
     width: 1rem;
     height: 1rem;
-    line-height: 1rem;
-    text-align: center;
-    background: #bbf1c8;
     border: 1px solid #bbf1c8;
     border-radius: 50%;
+    background: #bbf1c8;
+    line-height: 1rem;
+    text-align: center;
 
     i {
       color: #05c634;
@@ -207,9 +209,9 @@
   .isNo {
     width: 1rem;
     height: 1rem;
-    line-height: 1rem;
-    border-radius: 50%;
     border: 1px solid #848484;
+    border-radius: 50%;
+    line-height: 1rem;
 
     i {
       color: transparent;
@@ -220,13 +222,14 @@
 
   .passwordTip {
     display: flex;
-    justify-content: flex-start;
     align-items: center;
+    justify-content: flex-start;
 
     div:first-child {
       margin-right: 5px;
     }
   }
+
   .login {
     padding: 20px;
     background: #fff;
@@ -244,26 +247,29 @@
       input {
         background: transparent;
       }
+
       .get_code {
         position: absolute;
-        right: 0.5rem;
         top: 0.5rem;
+        right: 0.5rem;
         height: 2rem;
         border-radius: 10px;
       }
     }
+
     :deep {
       .nut-cell-group__wrap {
         box-shadow: none;
       }
     }
+
     .Register_btn {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       padding: 0 10px;
-      font-size: 1rem;
       color: #409eff;
+      font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
     }
