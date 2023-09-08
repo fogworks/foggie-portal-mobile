@@ -1,6 +1,8 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { showToast } from 'vant';
 import Qs from 'qs';
+  import { useUserStore } from '@/store/modules/user';
+const userStore  =useUserStore()
 
 const service: AxiosInstance = axios.create({
   withCredentials: false,
@@ -9,13 +11,11 @@ const service: AxiosInstance = axios.create({
 
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    console.log(config);
-
     if (config.url && config.url.indexOf('/api/accounts/login') > -1) {
       config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
       config.data = Qs.stringify(config.data);
     }
-    const refresh_token = window.localStorage.getItem('refresh_token');
+    const refresh_token = userStore.getToken
     config.headers['Authorization'] = refresh_token;
     return config;
   },
@@ -27,7 +27,7 @@ service.interceptors.response.use(
     const res = response.data;
     if (res.code !== 200) {
       showToast(res.msg);
-      return Promise.reject(res.msg || 'Error');
+      return Promise.reject(res || 'Error');
     } else {
       return res;
     }

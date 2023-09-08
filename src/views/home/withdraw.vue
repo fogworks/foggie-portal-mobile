@@ -1,5 +1,5 @@
 <template>
-  <van-form label-width="8rem" class="withdraw_form" @submit="onSubmit">
+  <van-form label-width="15vw" class="withdraw_form" @submit="onSubmit">
     <van-cell-group inset>
       <van-field
         @update:model-value="transferAmount"
@@ -8,7 +8,7 @@
         type="number"
         :rules="[{ required: true, message: 'Please Enter Withdraw Amount' }]"
         name="amount"
-        label="Withdraw Amount"
+        label="Amount"
       >
         <template #button>
           <van-button size="small" type="primary" @click="getAll">All Amount</van-button>
@@ -46,5 +46,10 @@
 <style lang="scss" scoped>
   .withdraw_form {
     margin-top: 10px;
+    :deep {
+      .van-field__label {
+        line-height: 8.5vw;
+      }
+    }
   }
 </style>

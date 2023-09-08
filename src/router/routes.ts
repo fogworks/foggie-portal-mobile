@@ -6,6 +6,7 @@ export const routes = [
     children: [
       {
         path: 'home',
+        name:'Home',
         component: () => import('@/views/home/index.vue'),
         meta: {
           title: 'tabbar.home',
@@ -20,7 +21,14 @@ export const routes = [
           title: 'tabbar.withdraw',
         },
       },
-      
+       {
+        path: 'shop',
+        name:'Shop',
+        component: () => import('@/views/shop/index.vue'),
+        meta: {
+          title: 'tabbar.shop',
+        },
+      },
       {
         path: 'list',
         component: () => import('@/views/list/index.vue'),
@@ -57,7 +65,7 @@ export const routes = [
     ],
   },
   {
-    name: 'login',
+    name: 'Login',
     path: '/login',
     component: () => import('@/views/login/index.vue'),
     meta: {
@@ -69,6 +77,15 @@ export const routes = [
     path: '/register',
     name: 'Register',
     component: () => import('@/views/login/register.vue'),
+    meta: {
+      title: '',
+      keepAlive: true,
+    },
+  },
+   {
+    path: '/forget',
+    name: 'Forget',
+    component: () => import('@/views/login/forget.vue'),
     meta: {
       title: '',
       keepAlive: true,

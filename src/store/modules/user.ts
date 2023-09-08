@@ -20,8 +20,14 @@ export const useUserStore = defineStore({
     getUserInfo(): any {
       return this.info || {};
     },
+    getToken(): any{
+      return this.token||''
+    }
   },
   actions: {
+    setToken(token: string) {
+      this.token=token
+    },
     setInfo(info: any) {
       this.info = info ? info : '';
     },

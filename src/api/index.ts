@@ -29,3 +29,11 @@ export const register = (data:object) => {
     data,
   });
 };
+export const modify_pw = (data) => {
+  let url = `/api/accounts/modify_pw`;
+  return request({
+    url: url,
+    method: "POST",
+    data,
+  });
+};

@@ -7,7 +7,8 @@ export const lang: langType = {
     list: '列表',
     member: '我的',
     demo: '示例',
-    withdraw:'提现'
+    withdraw: '提现',
+    shop:'商店'
   },
   language: {
     en: '英文',

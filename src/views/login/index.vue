@@ -9,6 +9,25 @@
       <nut-form-item required prop="password" :rules="[{ required: true, message: 'Please enter password' }]">
         <input v-model="loginForm.password" class="nut-input-text" placeholder="Please enter password" type="password" />
       </nut-form-item>
+      <nut-form-item
+        required
+        prop="captcha_text"
+        v-if="showCaptcha"
+        :rules="[{ required: true, message: 'Please enter the verification code' }]"
+      >
+        <input
+          ref="captcha_text"
+          v-model="loginForm.captcha_text"
+          :placeholder="'verification code!'"
+          name="captcha_text"
+          tabindex="5"
+          autocomplete="on"
+          style="width: 70%"
+          class="nut-input-text"
+        />
+        <img :src="codeSrc" class="code_src" @click="getCaptcha" />
+      </nut-form-item>
+
       <nut-button block type="info" @click="submit" :loading="loading"> Login </nut-button>
     </nut-form>
     <div class="Register_btn">
@@ -47,6 +66,8 @@
       timegetCaptcha();
     });
   }
+  showFailToast('The current email is not registered, please register');
+
   function timegetCaptcha() {
     if (timer.value) {
       clearInterval(timer.value);
@@ -89,6 +110,7 @@
             } else {
               login(postData)
                 .then((res) => {
+                  console.log(res);
                   if (res.next_step === 'captcha') {
                     getCaptcha();
                     showCaptcha.value = true;
@@ -98,7 +120,8 @@
                     let refresh_token = data.token_type + ' ' + data.refresh_token;
                     let user_id = data.user_id;
                     window.localStorage.setItem('user_id', user_id);
-                    window.localStorage.setItem('refresh_token', refresh_token);
+                    // window.localStorage.setItem('refresh_token', refresh_token);
+                    userStore.setToken(refresh_token);
                     let userInfo = {
                       email: loginForm.email,
                       token: token, //res.token
@@ -119,6 +142,8 @@
                 })
                 .catch((err) => {
                   loading.value = false;
+                  console.log(err);
+
                   if (err.next_step === 'captcha') {
                     getCaptcha();
                     showCaptcha.value = true;
@@ -171,6 +196,19 @@
       color: #409eff;
       font-weight: 700;
       cursor: pointer;
+    }
+    .code_src {
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      width: 120px;
+      height: 70px;
+      padding: 4px;
+
+      cursor: pointer;
+      &.is-disabled {
+        background: #d8d8d8;
+      }
     }
   }
 </style>

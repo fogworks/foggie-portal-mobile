@@ -7,14 +7,14 @@ import './assets/font/iconfont.css';
 import './assets/app.css';
 
 const app = createApp(App);
-
+// 状态管理
+app.use(store);
 // 路由
 app.use(router);
 
 // 国际化
 app.use(i18n);
 
-// 状态管理
-app.use(store);
+
 
 app.mount('#app');
