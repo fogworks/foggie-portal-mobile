@@ -12,6 +12,15 @@ export const routes = [
           keepAlive: true,
         },
       },
+       {
+        path: 'withdraw',
+        name:'Withdraw',
+        component: () => import('@/views/home/withdraw.vue'),
+        meta: {
+          title: 'tabbar.withdraw',
+        },
+      },
+      
       {
         path: 'list',
         component: () => import('@/views/list/index.vue'),
@@ -51,6 +60,15 @@ export const routes = [
     name: 'login',
     path: '/login',
     component: () => import('@/views/login/index.vue'),
+    meta: {
+      title: '',
+      keepAlive: true,
+    },
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('@/views/login/register.vue'),
     meta: {
       title: '',
       keepAlive: true,

@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { showToast } from 'vant';
+import Qs from "qs";
 
 const service: AxiosInstance = axios.create({
   withCredentials: false,
@@ -8,10 +9,19 @@ const service: AxiosInstance = axios.create({
 
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    console.log(config);
+
+    if (
+        config.url.indexOf("/api/accounts/login") > -1 
+      ) {
+        config.headers["Content-Type"] = "application/x-www-form-urlencoded";
+        config.data = Qs.stringify(config.data);
+    }
+     let refresh_token = window.localStorage.getItem("refresh_token");
+      config.headers["Authorization"] = refresh_token;
     return config;
   },
   (error: AxiosError) => {
-    return Promise.reject(error);
   },
 );
 

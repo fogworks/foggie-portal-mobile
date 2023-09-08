@@ -1,0 +1,271 @@
+<template>
+  <div class="login">
+    <h2>Register</h2>
+    <nut-divider />
+
+    <nut-form ref="ruleForm" :model-value="loginForm" :rules="formRules">
+      <nut-form-item required prop="email">
+        <input v-model="loginForm.email" class="nut-input-text" placeholder="Enter your Email" type="text" />
+      </nut-form-item>
+      <nut-form-item required prop="password">
+        <input v-model="loginForm.password" class="nut-input-text" placeholder="Please enter password" type="password" />
+      </nut-form-item>
+      <div  style="margin:5px 0 10px 20px">
+          <p class='passwordTip'>
+          <div :class="[/[a-z]+/.test(loginForm.password) && /[A-Z]+/.test(loginForm.password) ? 'isOk' : 'isNo',]">
+            <van-icon name="success"  />
+          </div>
+          <span style="font-size:12px">Include both UPPER & lowercase letters</span>
+          </p>
+          <p class='passwordTip'>
+          <div :class="[/\d+/.test(loginForm.password) ? 'isOk' : 'isNo']">
+            <van-icon name="success"  />
+          </div>
+          <span style="font-size:12px">Use a minimum of 1 number</span>
+          </p>
+          <p class='passwordTip'>
+          <div :class="[/[!@#$%^&*+]+/.test(loginForm.password) ? 'isOk' : 'isNo']">
+            <van-icon name="success"  />
+          </div>
+          <span style="font-size:12px">Use a minimum of symbol (e.g. !@#$%^&*+)</span>
+          </p>
+      </div>
+      <nut-form-item required prop="confirmPassword">
+        <input v-model="loginForm.confirmPassword" class="nut-input-text" placeholder="Please confirm password" type="password" />
+      </nut-form-item>
+
+      <nut-form-item required prop="verifyPw">
+        <input style="width: 70%" v-model="loginForm.verifyPw" class="nut-input-text" placeholder="Email verification code" />
+        <nut-button class="get_code" v-if="numCount > 0" disabled>{{ numCount }}s</nut-button>
+        <nut-button class="get_code" v-else type="info" @click="getVerifyPw">Get Code</nut-button>
+      </nut-form-item>
+
+      <nut-button block type="info" @click="submit" :loading="loading"> Register </nut-button>
+    </nut-form>
+    <div class="Register_btn">
+      <span class="password_login" @click="router.push('/login')">Login</span>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup name="LoginPage">
+  import { register, get_verify_pw } from '@/api';
+  import router from '@/router';
+  import { reactive, ref } from 'vue';
+  // import { useUserStore } from '@/store/modules/user';
+  import { showSuccessToast } from 'vant';
+  const bcryptjs = require('bcryptjs');
+  // import bcryptjs from 'bcryptjs';
+  // const userStore = useUserStore();
+  const loginForm = reactive({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    verifyPw: '',
+    promo_code: '',
+    ambassador_promo_code: '',
+  });
+  const validatePass2 = (value:string) => {
+    if (value === '') {
+      return Promise.reject('Please input the password again');
+    } else if (value !== loginForm.password) {
+      return Promise.reject("Two inputs don't match!");
+    } else {
+      return Promise.resolve();
+    }
+  };
+  const validateEmail = (value:string) => {
+    if (value === '') {
+      return Promise.reject('Please Enter email address');
+    } else if (!/^[0-9a-zA-Z_.-]+[@][0-9a-zA-Z_.-]+([.][a-zA-Z]+){1,2}$/.test(value)) {
+      return Promise.reject('Please enter the correct email format!');
+    } else {
+      return Promise.resolve();
+    }
+  };
+  const validatePassword = (value:string) => {
+    if (value === '') {
+      return Promise.reject('Please enter password');
+    } else if (/[a-z]+/.test(value) && /[A-Z]+/.test(value) && /\d+/.test(value) && /[!@#$%^&*+]+/.test(value)) {
+      return Promise.resolve();
+    } else {
+      return Promise.reject('');
+    }
+  };
+  const formRules = ({
+    email: [
+      {
+        required: true,
+        message: 'Please Enter email address',
+        validator: validateEmail,
+      },
+    ],
+    password: [
+      {
+        required: true,
+        validator: validatePassword,
+      },
+    ],
+    confirmPassword: [
+      {
+        required: true,
+        validator: validatePass2,
+      },
+    ],
+    verifyPw: [
+      {
+        required: true,
+        message: 'Please enter Email verification code!',
+      },
+    ],
+  });
+
+  const numCount = ref(0);
+  const loading = ref<boolean>(false);
+  const ruleForm = ref<any>('');
+
+  function getVerifyPw() {
+    ruleForm.value.validate('email').then(async ({ valid }: any) => {
+      if (valid) {
+        get_verify_pw({ email: loginForm.email }).then((res) => {
+          showSuccessToast('The verification code has been sent to your email, please check.');
+          console.log(res);
+
+          if (res) {
+            numCount.value = 30;
+            const countBackwards = setInterval(() => {
+              numCount.value--;
+              if (numCount.value <= 0) {
+                clearInterval(countBackwards);
+              }
+            }, 1000);
+          }
+        });
+      }
+    });
+  }
+  const submit = () => {
+    ruleForm.value.validate().then(async ({ valid, errors }: any) => {
+      if (valid) {
+        loading.value = true;
+        const password = loginForm.password;
+        let hashPwd = bcryptjs.hashSync(password, 10);
+        // let hashPwd = password;
+        let postData = {
+          email: loginForm.email,
+          password: hashPwd,
+          confirm: hashPwd,
+          verify_pw: loginForm.verifyPw,
+          promo_code: loginForm.promo_code,
+          ambassador_promo_code: loginForm.ambassador_promo_code,
+          // recaptcha_token: reCaptchaV3Token,
+        };
+
+        register(postData)
+          .then((res) => {
+            if (res && res.data && res.data.is_verified) {
+              router.push('/login');
+              showSuccessToast('Registration successful, please log in');
+            } else if (res && res.data) {
+              showSuccessToast(
+                'A verification link has been sent to your email address, please check your email to verify and Login your account.',
+              );
+            }
+          })
+          .catch(() => {
+            loading.value = false;
+          });
+
+        // const userInfo = await userStore.login(loginForm);
+        // if (userInfo) {
+        //   router.push({ path: '/home' });
+        // }
+      } else {
+        console.log('error submit!!', errors);
+      }
+    });
+  };
+</script>
+
+<style scoped lang="scss">
+  .isOk {
+    width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+    text-align: center;
+    background: #bbf1c8;
+    border: 1px solid #bbf1c8;
+    border-radius: 50%;
+
+    i {
+      color: #05c634;
+      font-size: 10px;
+      vertical-align: middle;
+    }
+  }
+
+  .isNo {
+    width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+    border-radius: 50%;
+    border: 1px solid #848484;
+
+    i {
+      color: transparent;
+      font-size: 18px;
+      vertical-align: middle;
+    }
+  }
+
+  .passwordTip {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    div:first-child {
+      margin-right: 5px;
+    }
+  }
+  .login {
+    padding: 20px;
+    background: #fff;
+
+    h2 {
+      letter-spacing: 10px;
+      text-align: center;
+    }
+
+    .nut-form-item {
+      margin-bottom: 20px;
+      border-radius: 20px;
+      background: #f2f3f5;
+
+      input {
+        background: transparent;
+      }
+      .get_code {
+        position: absolute;
+        right: 0.5rem;
+        top: 0.5rem;
+        height: 2rem;
+        border-radius: 10px;
+      }
+    }
+    :deep {
+      .nut-cell-group__wrap {
+        box-shadow: none;
+      }
+    }
+    .Register_btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 1rem;
+      color: #409eff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  }
+</style>

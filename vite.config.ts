@@ -40,7 +40,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
       hmr: true,
       proxy: {
         '^/api': {
-          target: 'https://foggie.fogworks.io/',
+          target: 'https://devlop.fogworks.io',
           changeOrigin: true,
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),

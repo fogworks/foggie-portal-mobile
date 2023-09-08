@@ -5,6 +5,7 @@ export type langType = {
     list: string;
     member: string;
     demo: string;
+    withdraw:string
   };
   language: {
     en: string;

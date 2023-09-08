@@ -1,4 +1,4 @@
-import { loginPassword } from '@/api';
+// import { loginPassword } from '@/api';
 import { useCookies } from '@vueuse/integrations/useCookies';
 import { defineStore } from 'pinia';
 
@@ -25,12 +25,12 @@ export const useUserStore = defineStore({
     setInfo(info: any) {
       this.info = info ? info : '';
     },
-    login() {
+    login(data) {
       return new Promise((resolve) => {
-        loginPassword().then((res) => {
-          this.setInfo(res);
-          resolve(res);
-        });
+        // loginPassword(data).then((res) => {
+        //   this.setInfo(res);
+        //   resolve(res);
+        // });
       });
     },
   },

@@ -7,6 +7,7 @@ export const lang: langType = {
     list: 'List',
     member: 'Member',
     demo: 'demo',
+    withdraw:'Withdraw'
   },
   language: {
     en: 'English',
