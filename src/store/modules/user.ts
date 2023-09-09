@@ -31,6 +31,10 @@ export const useUserStore = defineStore({
     setInfo(info: any) {
       this.info = info ? info : '';
     },
+    logout() {
+      this.token=''
+      this.info={}
+    },
     login(data) {
       return new Promise((resolve) => {
         // loginPassword(data).then((res) => {

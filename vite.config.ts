@@ -3,7 +3,6 @@ import { resolve } from 'path';
 import { ConfigEnv, loadEnv, UserConfig } from 'vite';
 import { wrapperEnv } from './build/utils';
 import requireTransform from 'vite-plugin-require-transform';
-
 const pathResolve = (dir: string) => {
   return resolve(process.cwd(), '.', dir);
 };
@@ -14,6 +13,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
   const root = process.cwd();
   const env = loadEnv(mode, root);
   const viteEnv = wrapperEnv(env);
+console.log(env.VITE_USE_HTTPENDPOINT);
 
   return {
     root,
@@ -41,6 +41,12 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
       proxy: {
         '^/api': {
           target: 'https://devlop.fogworks.io',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+         '^/v1': {
+          target: env.VITE_USE_HTTPENDPOINT,
           changeOrigin: true,
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),

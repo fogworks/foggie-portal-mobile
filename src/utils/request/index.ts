@@ -26,6 +26,10 @@ service.interceptors.response.use(
   (response: AxiosResponse) => {
     const res = response.data;
     if (res.code !== 200) {
+      if (response.config.url?.indexOf('/v1') == 0) {
+        // return Promise.resolve(res.rows[0].benchmark_price)
+      return res.rows[0].benchmark_price
+      }
       showToast(res.msg);
       return Promise.reject(res || 'Error');
     } else {

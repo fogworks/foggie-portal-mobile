@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup name="MemberPage">
-  // import { useUserStore } from '@/store/modules/user';
+  import { useUserStore } from '@/store/modules/user';
   import { useRouter } from 'vue-router';
   // import { Dongdong } from '@nutui/icons-vue';
   import { user } from '@/api';
@@ -36,6 +36,7 @@
   import '@nutui/nutui/dist/packages/dialog/style';
   import { createVNode } from 'vue';
   // import {onMounted, computed} from 'vue';
+  const userStore = useUserStore();
 
   const email = ref<string>('');
 
@@ -55,7 +56,8 @@
         // console.log('取消');
       },
       onOk: () => {
-        localStorage.removeItem('refresh_token');
+        userStore.logout();
+        // localStorage.removeItem('refresh_token');
         router.push('/login');
         // console.log('确定');
       },
