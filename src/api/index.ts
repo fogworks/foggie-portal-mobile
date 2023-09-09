@@ -1,4 +1,4 @@
-import request,{ http } from '@/utils/request';
+import request, { http } from '@/utils/request';
 
 export function login(data: object) {
   return http.post(`/api/accounts/login`, {
@@ -7,33 +7,36 @@ export function login(data: object) {
 }
 
 export function Captcha() {
-  return http.get(`/api/accounts/captcha`, {
-  });
+  return http.get(`/api/accounts/captcha`, {});
 }
 
 export function check_email_register(email: string) {
-  return http.get(`/api/accounts/check_email_register?email=${email}`, {
-  });
+  return http.get(`/api/accounts/check_email_register?email=${email}`, {});
 }
-export const get_verify_pw = (params:object) => {
+export const get_verify_pw = (params: object) => {
   return request({
     url: `/api/accounts/get_verify_pw`,
-    method: "get",
+    method: 'get',
     params,
   });
 };
-export const register = (data:object) => {
+export const register = (data: object) => {
   return request({
     url: `/api/accounts/user`,
-    method: "POST",
+    method: 'POST',
     data,
   });
 };
+
+export function user() {
+  return http.get(`/api/accounts/info`, {});
+}
+
 export const modify_pw = (data) => {
-  let url = `/api/accounts/modify_pw`;
+  const url = `/api/accounts/modify_pw`;
   return request({
     url: url,
-    method: "POST",
+    method: 'POST',
     data,
   });
 };

@@ -7,24 +7,24 @@
           <div class="list-col-space">
             {{ formatSize(Number(item.total_space)) }}
           </div>
-          
         </nut-col>
         <nut-col :span="8">
-          <!-- <img src="@/assets/storage.svg" alt="" width="100%" /> -->
-          <nut-circle-progress :progress="handleProgress(item)" radius="80%" />
+          <nut-circle-progress :progress="handleProgress(item)" radius="40" />
           <span class="col-span">Run cycle</span>
         </nut-col>
         <nut-col :span="8">
-          <nut-button type="info" size="mini" @click="toDetails(item.space_order_id)">查看详情</nut-button>
+          <nut-button type="info" size="small" @click="toDetails(item.space_order_id)">Detail</nut-button>
         </nut-col>
       </nut-row>
     </nut-collapse-item>
   </nut-collapse>
-
 </template>
 
 <script lang="ts" setup name="ListPage">
   import { listData } from './data';
+
+  import { ref } from 'vue';
+
   const router = useRouter();
 
   let list = ref(listData);
@@ -32,8 +32,6 @@
   const toDetails = (index: any) => {
     router.push({ path: '/details', query: { id: index } });
   };
-
-  import { ref } from 'vue';
   const activeNames = ref([]);
   const onChange = (modelValue: any, currName: any, status: any) => {
     // currName: 当前操作的 collapse-item 的 name
@@ -75,41 +73,46 @@
 
 <style lang="scss" scoped>
   .nut-row {
-    overflow: hidden;
     margin-bottom: 15px;
+    overflow: hidden;
 
     > .nut-col {
-      padding: 10px;
       margin-bottom: 15px;
-      text-align: center;
+      padding: 10px;
       line-height: 1;
+      text-align: center;
       // height: 120px;
       // background: $primary-color;
       // border: 1px solid blue;
       img {
-        margin: 20%;
         width: 40%;
         height: 40%;
-        background: $primary-color;
+        margin: 20%;
         border-radius: 20%;
+        background: $primary-color;
       }
+
       .list-col-space {
         // margin-top: 5vw;
         height: 16px;
-        line-height: 16px;
         font-size: 12px;
+        line-height: 16px;
       }
-      // .nut-circle-progress {
-      //   // width: 30vw;
-      // }
+
+      .nut-circle-progress {
+        margin: 0 auto;
+      }
+
       .col-span {
         display: block;
         height: 16px;
-        line-height: 16px;
+        margin-top: 10px;
         font-size: 12px;
+        line-height: 16px;
       }
+
       .nut-button {
-        margin-top: 10vw;
+        margin-top: 8vw;
       }
     }
   }

@@ -1,24 +1,118 @@
 <template>
-  <section class="info">
-    <div>
-      <span class="price">
-      </span>
-    </div>
-    <div>
-      <span>{{ details.data?.title }}</span>
-    </div>
+  <h2>storage-{{ storageId }}</h2>
+  <nut-divider :style="{ color: '#ccc', borderColor: '#ccc', padding: '0 16px' }" />
+  <section class="query-info" v-if="queryShow">
+    <h3>Query based on date</h3>
+    <nut-cell title="Begin Date" :desc="beginPopupDesc" @click="beginShow = true" />
+    <nut-popup position="bottom" v-model:visible="beginShow">
+      <nut-date-picker
+        v-model="beginDate"
+        :min-date="minDate"
+        :max-date="maxDate"
+        @confirm="beginPopupConfirm"
+        :is-show-chinese="false"
+        :threeDimensional="false"
+        ok-text="OK"
+        cancel-text="Cancel"
+      />
+    </nut-popup>
+    <nut-cell title="End Date" :desc="endPopupDesc" @click="endShow = true" />
+    <nut-popup position="bottom" v-model:visible="endShow">
+      <nut-date-picker
+        v-model="endDate"
+        :min-date="minDate"
+        :max-date="maxDate"
+        @confirm="endPopupConfirm"
+        :is-show-chinese="false"
+        :threeDimensional="false"
+        ok-text="OK"
+        cancel-text="Cancel"
+      />
+    </nut-popup>
+    <nut-button type="primary" @click="queryBtn">Query</nut-button>
+  </section>
+
+  <section>
+    <nut-cell title="Please select a range" :desc="desc" @click="rangeShow = true" />
+    <nut-popup position="bottom" v-model:visible="rangeShow">
+      <nut-picker
+        v-model="value"
+        :columns="columns"
+        title="Please select a range"
+        cancel-text="Cancel"
+        ok-text="OK"
+        @confirm="rangeConfirm"
+        @cancel="rangeShow = false"
+      >
+        <!-- <nut-button block type="primary">底部按钮</nut-button> -->
+      </nut-picker>
+    </nut-popup>
+  </section>
+  <section v-if="detailShow">
+    <nut-grid direction="vertica" :column-num="2">
+      <nut-grid-item text="amount"> 111111 </nut-grid-item>
+      <nut-grid-item text="Orders"> 2222 </nut-grid-item>
+    </nut-grid>
   </section>
 </template>
 
 <script setup lang="ts">
   import { detailsData } from '../data';
-  const router = useRouter();
 
+  const router = useRouter();
   let details = reactive<any>({ data: {} });
+  const queryShow = ref(false);
+  const beginShow = ref(false);
+  const endShow = ref(false);
+  const beginPopupDesc = ref();
+  const endPopupDesc = ref();
+  const minDate = new Date(2020, 0, 1);
+  const maxDate = new Date(2025, 10, 1);
+  const beginDate = ref(new Date());
+  const endDate = ref(new Date());
+  const storageId = ref('');
+  const beginPopupConfirm = ({ selectedValue, selectedOptions }) => {
+    console.log(selectedValue, selectedOptions);
+    beginDate.value = new Date(selectedValue);
+    beginPopupDesc.value = selectedOptions.map((val: any) => val.text).join('');
+    beginShow.value = false;
+  };
+  const endPopupConfirm = ({ selectedValue, selectedOptions }) => {
+    console.log(selectedValue, selectedOptions);
+    endDate.value = new Date(selectedValue);
+    endPopupDesc.value = selectedOptions.map((val: any) => val.text).join('');
+    endShow.value = false;
+  };
+
+  const queryBtn = () => {
+    if (beginDate.value.getTime() >= endDate.value.getTime()) {
+      console.log('beginDate must be less than endDate');
+    } else {
+      // TODO
+      queryShow.value = false;
+    }
+  };
+
+  const detailShow = ref(false);
+
+  const rangeShow = ref(false);
+  const desc = ref();
+  const value = ref();
+  const columns = ref([
+    { text: '7 days', value: 'aaa' },
+    { text: '1 month', value: 'bbb' },
+    { text: '3 months', value: 'ccc' },
+  ]);
+  const rangeConfirm = ({ selectedOptions }) => {
+    desc.value = selectedOptions.map((val: { text: any }) => val.text).join(',');
+    rangeShow.value = false;
+    detailShow.value = true;
+  };
 
   watch(
     () => router,
     (val) => {
+      storageId.value = val.currentRoute.value.query.id as string;
       details.data = detailsData.find((_item, index) => index == parseInt(val.currentRoute.value.query.id as string));
       // details.data = detailsData[0]
     },
@@ -27,24 +121,35 @@
 </script>
 
 <style lang="scss" scoped>
+  h2 span {
+    float: right;
+    font-size: 12px;
+  }
+
   .nut-swiper-item {
     line-height: 500px;
+
     img {
       width: 100%;
       height: 100%;
     }
   }
 
-  .info {
+  .query-info {
     padding: 20px;
-    .price {
-      color: #f2270c;
-      display: inline-block;
-      font-size: 32px;
-      em {
-        font-size: 56px;
-        font-style: normal;
-      }
+
+    h3 {
+      margin-bottom: 20px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .nut-cell {
+      margin-bottom: 20px;
+    }
+
+    .nut-button {
+      margin: 10px;
     }
   }
 </style>
