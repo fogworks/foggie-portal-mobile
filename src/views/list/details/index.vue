@@ -50,9 +50,24 @@
   </section>
   <section v-if="detailShow">
     <nut-grid direction="vertica" :column-num="2">
-      <nut-grid-item text="amount"> 111111 </nut-grid-item>
-      <nut-grid-item text="Orders"> 2222 </nut-grid-item>
+      <nut-grid-item text="Income"> 111111 </nut-grid-item>
+      <nut-grid-item text="Expenditure"> 2222 </nut-grid-item>
     </nut-grid>
+  </section>
+  <section>
+    <nut-tabs style="border-bottom: 1px solid #cccccc82" v-model="searchType" class="time_tabs">
+      <nut-tab-pane title="All" pane-key="0" />
+      <nut-tab-pane title="Income" pane-key="1" />
+      <nut-tab-pane title="Expenditure" pane-key="2" />
+    </nut-tabs>
+    <nut-tabs v-model="timeType" class="time_tabs">
+      <nut-tab-pane title="Last month" pane-key="0" />
+      <nut-tab-pane title="Three months" pane-key="1" />
+      <nut-tab-pane title="Six months" pane-key="2" />
+    </nut-tabs>
+    <nut-infinite-loading load-more-txt="No more content" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
+      <div class="test" v-for="(item, index) in listData" :key="index">{{ item }}</div>
+    </nut-infinite-loading>
   </section>
 </template>
 
@@ -109,6 +124,22 @@
     detailShow.value = true;
   };
 
+  const state = reactive({
+    infinityValue: false,
+    hasMore: false,
+    listData: [] as any[],
+    timeType: '0',
+    searchType: '0',
+  });
+  const { listData, hasMore, infinityValue, timeType, searchType } = toRefs(state);
+  const loadMore = () => {
+    setTimeout(() => {
+      listData.value = [1];
+
+      infinityValue.value = false;
+    }, 1000);
+  };
+
   watch(
     () => router,
     (val) => {
@@ -150,6 +181,25 @@
 
     .nut-button {
       margin: 10px;
+    }
+  }
+
+  .tab_top_title {
+    margin-top: 20px;
+    font-size: 35px;
+    font-style: italic;
+    font-weight: 600;
+  }
+
+  .time_tabs {
+    :deep {
+      .nut-tabs__titles {
+        // background: transparent;
+      }
+
+      .nut-tabs__content {
+        display: none;
+      }
     }
   }
 </style>

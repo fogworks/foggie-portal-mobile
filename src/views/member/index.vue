@@ -11,7 +11,7 @@
 
   <nut-divider :style="{ color: '#ccc', borderColor: '#ccc', padding: '0 16px' }" />
 
-  <nut-cell title="DMC account xxx" is-link />
+  <nut-cell :title="dmcAccount" is-link />
   <nut-cell title="Privacy Policy" is-link @click="goToPrivacy()" />
 
   <nut-cell title="Lanage" is-link />
@@ -39,19 +39,23 @@
   const userStore = useUserStore();
 
   const email = ref<string>('');
+  const dmcAccount = ref<string>('');
 
   const router = useRouter();
   const goLogin = () => {
     router.push('/login');
   };
   const goToPrivacy = () => {
-    router.push({ path: '/privacyPolicy' });
+    window.open('https://foggie.fogworks.io/#/privacyPolicy_EN');
+    // router.push({ path: '/privacyPolicy' });
   };
 
   const logout = (): void => {
     showDialog({
       title: 'info',
       content: createVNode('span', { style: {} }, 'Are you sure you want to Log out?'),
+      cancelText: 'Cancel',
+      okText: 'OK',
       onCancel: () => {
         // console.log('取消');
       },
@@ -69,8 +73,7 @@
       .then((res) => {
         if (res && res.data && res.data.email) {
           email.value = res.data.email;
-        } else {
-          email.value = '';
+          dmcAccount.value = `DMC Account ${res.data.dmc}`;
         }
       })
       .catch(() => {
