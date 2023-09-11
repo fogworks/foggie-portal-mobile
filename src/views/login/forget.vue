@@ -1,7 +1,6 @@
 <template>
   <div class="login">
-    <h2>Register</h2>
-    <nut-divider />
+    <h1 style="font-size: 25px">Forget Password</h1>
     <nut-form ref="ruleForm" :model-value="loginForm" :rules="formRules">
       <nut-form-item required prop="email">
         <input v-model="loginForm.email" class="nut-input-text" placeholder="Enter your Email" type="text" />
@@ -168,89 +167,6 @@
   };
 </script>
 
-<style scoped lang="scss">
-  .isOk {
-    width: 1rem;
-    height: 1rem;
-    border: 1px solid #bbf1c8;
-    border-radius: 50%;
-    background: #bbf1c8;
-    line-height: 1rem;
-    text-align: center;
-
-    i {
-      color: #05c634;
-      font-size: 10px;
-      vertical-align: middle;
-    }
-  }
-
-  .isNo {
-    width: 1rem;
-    height: 1rem;
-    border: 1px solid #848484;
-    border-radius: 50%;
-    line-height: 1rem;
-
-    i {
-      color: transparent;
-      font-size: 18px;
-      vertical-align: middle;
-    }
-  }
-
-  .passwordTip {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-
-    div:first-child {
-      margin-right: 5px;
-    }
-  }
-
-  .login {
-    padding: 20px;
-    background: #fff;
-
-    h2 {
-      letter-spacing: 10px;
-      text-align: center;
-    }
-
-    .nut-form-item {
-      margin-bottom: 20px;
-      border-radius: 20px;
-      background: #f2f3f5;
-
-      input {
-        background: transparent;
-      }
-
-      .get_code {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        height: 2rem;
-        border-radius: 10px;
-      }
-    }
-
-    :deep {
-      .nut-cell-group__wrap {
-        box-shadow: none;
-      }
-    }
-
-    .Register_btn {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 10px;
-      color: #409eff;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-  }
+<style lang="scss">
+  @import url('./login.scss');
 </style>

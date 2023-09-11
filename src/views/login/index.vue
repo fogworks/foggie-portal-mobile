@@ -1,7 +1,6 @@
 <template>
   <div class="login">
-    <h2>Login</h2>
-    <nut-divider />
+    <h1>Login</h1>
     <nut-form ref="ruleForm" :model-value="loginForm">
       <nut-form-item required prop="email" :rules="[{ required: true, message: 'Enter your Email' }]">
         <input v-model="loginForm.email" class="nut-input-text" placeholder="Enter your Email" type="text" />
@@ -32,7 +31,7 @@
     </nut-form>
     <div class="Register_btn">
       <span class="password_login" @click="router.push('/register')">Register</span>
-      <span class="password_login"> Forgot Password?</span>
+      <span class="password_login" @click="router.push('/forget')"> Forgot Password?</span>
     </div>
   </div>
 </template>
@@ -42,7 +41,8 @@
   import router from '@/router';
   import { reactive, ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
-  import { showFailToast } from 'vant';
+  import { showToast } from '@nutui/nutui';
+
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
   const userStore = useUserStore();
@@ -66,7 +66,7 @@
       timegetCaptcha();
     });
   }
-  showFailToast('The current email is not registered, please register');
+  showToast.fail('The current email is not registered, please register', { duration: 99999999 });
 
   function timegetCaptcha() {
     if (timer.value) {
@@ -102,10 +102,10 @@
         check_email_register(loginForm.email).then((rr) => {
           if (rr.data) {
             if (!rr.data.email) {
-              showFailToast('The current email is not registered, please register');
+              showToast.success('The current email is not registered, please register');
               loading.value = false;
             } else if (!rr.data.pw_valid) {
-              showFailToast('The current password is not secure. Please use "Forgot Password" to update your current password');
+              showToast.success('The current password is not secure. Please use "Forgot Password" to update your current password');
               loading.value = false;
             } else {
               login(postData)
@@ -163,52 +163,6 @@
   };
 </script>
 
-<style scoped lang="scss">
-  .login {
-    padding: 20px;
-    background: #fff;
-
-    h2 {
-      letter-spacing: 10px;
-      text-align: center;
-    }
-
-    .nut-form-item {
-      margin-bottom: 20px;
-      border-radius: 20px;
-      background: #f2f3f5;
-
-      input {
-        background: transparent;
-      }
-    }
-    :deep {
-      .nut-cell-group__wrap {
-        box-shadow: none;
-      }
-    }
-    .Register_btn {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 10px;
-      font-size: 1rem;
-      color: #409eff;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .code_src {
-      position: absolute;
-      right: 10px;
-      top: 8px;
-      width: 120px;
-      height: 70px;
-      padding: 4px;
-
-      cursor: pointer;
-      &.is-disabled {
-        background: #d8d8d8;
-      }
-    }
-  }
+<style lang="scss">
+  @import url('./login.scss');
 </style>

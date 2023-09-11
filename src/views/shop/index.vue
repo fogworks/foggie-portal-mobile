@@ -5,10 +5,10 @@
         <nut-input-number :min="1" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
       </nut-form-item>
       <nut-form-item label="Weeks">
-        <nut-range v-model="shopForm.week" :max="52" :min="25"></nut-range>
+        <nut-range v-model="shopForm.week" :max="52" :min="25" />
       </nut-form-item>
       <nut-form-item label="Markup">
-        <nut-range v-model="shopForm.markup" :max="100" :min="0"></nut-range>
+        <nut-range v-model="shopForm.markup" :max="100" :min="0" />
       </nut-form-item>
       <div style="text-align: center" class="order-tip">
         Purchase
@@ -30,6 +30,7 @@
 <script setup lang="ts" name="Shop">
   import { toRefs, reactive, onMounted } from 'vue';
   import { getCurReferenceRate } from '@/api';
+
   const state = reactive({
     shopForm: {
       quantity: 1 as number,
@@ -41,10 +42,15 @@
   });
   const { shopForm, curReferenceRate, loading } = toRefs(state);
   function loadCurReferenceRate() {
-    return getCurReferenceRate().then((res: any) => {
-      curReferenceRate.value = res;
-      // .getBody('utf-8')).rows[0].benchmark_price
-    });
+    return getCurReferenceRate()
+      .then((res: any) => {
+        curReferenceRate.value = res;
+      })
+      .catch(() => {
+        setTimeout(() => {
+          loadCurReferenceRate();
+        }, 2000);
+      });
   }
   const totalPrice = computed(() => {
     let total = +curReferenceRate.value * 10000 * state.shopForm.week * state.shopForm.quantity * (1 + state.shopForm.markup / 100);
