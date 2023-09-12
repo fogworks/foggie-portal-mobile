@@ -102,7 +102,6 @@
 
       .info {
         margin-top: 10px;
-        font-size: 16px;
       }
     }
   }
