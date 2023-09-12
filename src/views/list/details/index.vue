@@ -33,6 +33,25 @@
   </section>
 
   <section>
+    <nut-cell
+      :showIcon="true"
+      title="Select Single Date"
+      :desc="date && date[0] ? `${date[0]} to ${date[1]}` : 'Please Select Date'"
+      @click="openSwitch('isVisible')"
+    />
+    <nut-calendar
+      v-model:visible="isVisible"
+      :default-value="date"
+      type="range"
+      :start-date="date[0]"
+      :end-date="date[1]"
+      @close="closeSwitch('isVisible')"
+      @choose="setChooseValue"
+      @select="select"
+    />
+  </section>
+
+  <section>
     <nut-cell title="Please select a range" :desc="desc" @click="rangeShow = true" />
     <nut-popup position="bottom" v-model:visible="rangeShow">
       <nut-picker
@@ -130,14 +149,29 @@
     listData: [] as any[],
     timeType: '0',
     searchType: '0',
+    date: ['2023-07-01', '2023-09-30'],
+    isVisible: false,
   });
-  const { listData, hasMore, infinityValue, timeType, searchType } = toRefs(state);
+  const { listData, hasMore, infinityValue, timeType, searchType, date, isVisible } = toRefs(state);
   const loadMore = () => {
     setTimeout(() => {
       listData.value = [1];
 
       infinityValue.value = false;
     }, 1000);
+  };
+
+  const openSwitch = (param) => {
+    state[`${param}`] = true;
+  };
+  const closeSwitch = (param) => {
+    state[`${param}`] = false;
+  };
+  const setChooseValue = (param) => {
+    state.date = [...[param[0][3], param[1][3]]];
+  };
+  const select = (param: string) => {
+    console.log(param);
   };
 
   watch(
@@ -152,9 +186,13 @@
 </script>
 
 <style lang="scss" scoped>
-  h2 span {
-    float: right;
-    font-size: 12px;
+  h2 {
+    padding-left: 5vw;
+
+    span {
+      float: right;
+      font-size: 12px;
+    }
   }
 
   .nut-swiper-item {
