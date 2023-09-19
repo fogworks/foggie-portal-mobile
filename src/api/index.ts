@@ -1,7 +1,7 @@
 import request, { http } from '@/utils/request';
 
 export function login(data: object) {
-  return http.post(`/api/accounts/login`, {
+  return http.post(`/api_accounts/accounts/login`, {
     ...data,
   });
 }
@@ -15,21 +15,21 @@ export function check_email_register(email: string) {
 }
 export const get_verify_pw = (params: object) => {
   return request({
-    url: `/api/accounts/get_verify_pw`,
+    url: `/api_accounts/accounts/get_verify_pw`,
     method: 'get',
     params,
   });
 };
 export const register = (data: object) => {
   return request({
-    url: `/api/accounts/user`,
+    url: `/api_accounts/accounts/user`,
     method: 'POST',
     data,
   });
 };
 
 export function user() {
-  return http.get(`/api/accounts/info`, {});
+  return http.get(`/api_accounts/accounts/info`, {});
 }
 
 export const modify_pw = (data) => {

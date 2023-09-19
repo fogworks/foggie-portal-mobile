@@ -8,20 +8,21 @@
         <nut-range v-model="shopForm.week" :max="52" :min="25" />
       </nut-form-item>
       <nut-form-item label="Markup">
-        <nut-range v-model="shopForm.markup" :max="100" :min="0" />
+        <nut-range v-model="shopForm.floating_ratio" :max="100" :min="0" />
       </nut-form-item>
       <div style="text-align: center" class="order-tip">
         Purchase
         <strong>
           {{ shopForm.quantity > 0 ? shopForm.quantity : '--' }}
         </strong>
-        GB,lasts <strong> 25 </strong> weeks and allows a premium of <strong> {{ shopForm.markup }}% </strong> for orders totaling about
+        GB,lasts <strong> 25 </strong> weeks and allows a premium of <strong> {{ shopForm.floating_ratio }}% </strong> for orders totaling
+        about
         <br />
         <strong class="price"> {{ totalPrice || '--' }} DMC </strong>
         <!-- <nut-price :price="totalPrice" :decimal-digits="4" size="large" /> -->
       </div>
       <div style="margin: 0 20px">
-        <nut-button block type="info" @click="buyOrder" :loading="loading"> Buy </nut-button>
+        <nut-button block type="info" @click="submit" :loading="loading"> Buy </nut-button>
       </div>
     </nut-form>
   </nut-sticky>
@@ -30,12 +31,15 @@
 <script setup lang="ts" name="Shop">
   import { toRefs, reactive, onMounted } from 'vue';
   import { getCurReferenceRate } from '@/api';
-
+  import { buy_order, node_order_buy } from '@/api/amb';
+  import { Toast } from '@nutui/nutui';
+  import { useRouter } from 'vue-router';
+  const router = useRouter();
   const state = reactive({
     shopForm: {
       quantity: 1 as number,
       week: 25,
-      markup: 0,
+      floating_ratio: 0,
     },
     loading: false,
     curReferenceRate: 0,
@@ -53,11 +57,50 @@
       });
   }
   const totalPrice = computed(() => {
-    let total = +curReferenceRate.value * 10000 * state.shopForm.week * state.shopForm.quantity * (1 + state.shopForm.markup / 100);
+    let total = +curReferenceRate.value * 10000 * state.shopForm.week * state.shopForm.quantity * (1 + state.shopForm.floating_ratio / 100);
     total = Math.round(total) / 10000;
     return +total.toFixed(4) > 0 ? total.toFixed(4) : '--';
   });
-  const buyOrder = () => {};
+
+  async function submit() {
+    loading.value = true;
+    await loadCurReferenceRate();
+    let params = {
+      week: state.shopForm.week,
+      floating_ratio: state.shopForm.floating_ratio,
+      pst: state.shopForm.quantity.toFixed(0),
+    };
+    buy_order(params)
+      .then(async (res) => {
+        if (res.code == 200) {
+          // let nodeIp ='http://'+ res.result.node_address;
+          // let nodeIp = 'http://154.31.41.124:18080';
+          let nodeIp = '';
+          let buyOrderUuid = res.result.uuid;
+          let amb_user_uuid = res.result.amb_user_uuid;
+          node_order_buy(nodeIp, {
+            buyOrderUuid,
+            userUuid: amb_user_uuid,
+            period: state.shopForm.week.toString(),
+            pst: state.shopForm.quantity.toFixed(0),
+            totalPrice: totalPrice.value,
+            memo: `${buyOrderUuid}_Order_buy`,
+            deviceType: 3,
+          })
+            .then(() => {
+              loading.value = false;
+              Toast.success('Order request has been initiated, please check the order result in the order record later.');
+              router.push('/home');
+            })
+            .catch(() => {
+              loading.value = false;
+            });
+        }
+      })
+      .catch(() => {
+        loading.value = false;
+      });
+  }
   onMounted(() => {
     loadCurReferenceRate();
   });

@@ -39,6 +39,12 @@
         <nut-button class="get_code" v-if="numCount > 0" disabled>{{ numCount }}s</nut-button>
         <nut-button class="get_code" v-else type="info" @click="getVerifyPw">Get Code</nut-button>
       </nut-form-item>
+      <nut-form-item required prop="promo_code">
+        <input v-model="loginForm.promo_code" class="nut-input-text" placeholder="Enter your invitation code(optional)" type="text" />
+      </nut-form-item>
+      <nut-form-item required prop="amb_promo_code">
+        <input v-model="loginForm.amb_promo_code" class="nut-input-text" placeholder="Ambassador Invitation Code(optional)" type="text" />
+      </nut-form-item>
 
       <nut-button block type="info" @click="submit" :loading="loading"> Register </nut-button>
     </nut-form>
@@ -64,7 +70,7 @@
     confirmPassword: '',
     verifyPw: '',
     promo_code: '',
-    ambassador_promo_code: '',
+    amb_promo_code: '',
   });
   const validatePass2 = (value: string) => {
     if (value === '') {
@@ -158,7 +164,7 @@
           confirm: hashPwd,
           verify_pw: loginForm.verifyPw,
           promo_code: loginForm.promo_code,
-          ambassador_promo_code: loginForm.ambassador_promo_code,
+          amb_promo_code: loginForm.amb_promo_code,
           // recaptcha_token: reCaptchaV3Token,
         };
 

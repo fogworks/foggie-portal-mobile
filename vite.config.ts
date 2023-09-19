@@ -45,6 +45,24 @@ console.log(env.VITE_USE_HTTPENDPOINT);
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
+         '^/api_accounts': {
+          target: 'https://devlop.fogworks.io',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+          '^/order/buy': {
+          target: 'http://154.31.41.124:18080',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+        '^/ambmgr': {
+          target: 'https://devlop.fogworks.io',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
          '^/v1': {
           target: env.VITE_USE_HTTPENDPOINT,
           changeOrigin: true,

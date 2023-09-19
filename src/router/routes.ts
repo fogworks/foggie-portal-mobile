@@ -29,6 +29,14 @@ export const routes = [
           title: 'tabbar.shop',
         },
       },
+       {
+        path: 'bindDmc',
+        name:'BindDmc',
+        component: () => import('@/views/bindDmc/index.vue'),
+        meta: {
+          title: 'tabbar.bind',
+        },
+      },
       {
         path: 'list',
         component: () => import('@/views/list/index.vue'),

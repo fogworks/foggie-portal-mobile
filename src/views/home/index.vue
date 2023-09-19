@@ -1,7 +1,7 @@
 <template>
   <van-cell-group inset class="income-card">
     <template #default>
-      <div class="total_title"> Balance(DMC) </div>
+      <div class="total_title">Cloud Storage Balance(DMC) </div>
       <div class="total_income">100 </div>
       <van-grid :border="false" :column-num="3">
         <van-grid-item>
@@ -42,6 +42,9 @@
 <script lang="ts" setup name="HomePage">
   import { toRefs, reactive } from 'vue';
   import { useRouter } from 'vue-router';
+  import { useUserStore } from '@/store/modules/user';
+  const useStore = useUserStore();
+  const userInfo = computed(() => useStore.getUserInfo);
   const router = useRouter();
   const state = reactive({
     infinityValue: false,
@@ -62,7 +65,14 @@
     router.push({ name: 'Withdraw' });
   };
   const toBuyOrder = () => {
-    router.push({ name: 'Shop' });
+    console.log(userInfo.value, 'userInfo');
+    router.push({ name: 'BindDmc' });
+
+    // if (!userInfo.value.dmc || !userInfo.value.amb_promo_code) {
+    //   router.push({ name: 'BindDmc' });
+    // } else {
+    //   router.push({ name: 'Shop' });
+    // }
   };
 </script>
 

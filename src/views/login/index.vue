@@ -42,6 +42,7 @@
   import { reactive, ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/toast/style';
 
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
@@ -58,7 +59,6 @@
   const loading = ref<boolean>(false);
   const showCaptcha = ref<boolean>(false);
   const ruleForm = ref<any>(null);
-
   function getCaptcha() {
     Captcha().then((res) => {
       codeSrc.value = res.data.image;
@@ -66,8 +66,6 @@
       timegetCaptcha();
     });
   }
-  showToast.fail('The current email is not registered, please register', { duration: 99999999 });
-
   function timegetCaptcha() {
     if (timer.value) {
       clearInterval(timer.value);
@@ -95,7 +93,7 @@
           password: hashPwd,
           captcha_text: loginForm.captcha_text,
           captcha_id: loginForm.captcha_id,
-          is_client: false,
+          is_client: true,
           login_type: 'password',
           // recaptcha_token: reCaptchaV3Token,
         };
@@ -117,21 +115,22 @@
                   } else if (res && res.data) {
                     let data = res.data;
                     let token = data.token_type + ' ' + data.access_token;
-                    let refresh_token = data.token_type + ' ' + data.refresh_token;
+                    // let refresh_token = data.token_type + ' ' + data.refresh_token;
                     let user_id = data.user_id;
                     window.localStorage.setItem('user_id', user_id);
                     // window.localStorage.setItem('refresh_token', refresh_token);
-                    userStore.setToken(refresh_token);
-                    let userInfo = {
-                      email: loginForm.email,
-                      token: token, //res.token
-                      user_id: user_id,
-                    };
+                    // userStore.setToken(refresh_token);
+                    // let userInfo = {
+                    //   email: loginForm.email,
+                    //   token: token, //res.token
+                    //   user_id: user_id,
+                    // };
                     if (timer.value) {
                       clearInterval(timer.value);
                     }
                     // store.dispatch('token/login', userInfo);
-                    userStore.setInfo(userInfo);
+                    // userStore.setInfo(userInfo);
+                    userStore.setToken(token);
                     router.push({ path: '/home' });
 
                     // this.getUserInfo();

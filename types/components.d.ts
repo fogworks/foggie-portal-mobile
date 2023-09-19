@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BasicModal: typeof import('./../src/components/Modal/src/BasicModal.vue')['default']
+    BindDmc: typeof import('./../src/components/bindDmc/index.vue')['default']
     NutAvatar: typeof import('@nutui/nutui')['Avatar']
     NutButton: typeof import('@nutui/nutui')['Button']
     NutCell: typeof import('@nutui/nutui')['Cell']
@@ -23,6 +24,7 @@ declare module 'vue' {
     NutGrid: typeof import('@nutui/nutui')['Grid']
     NutGridItem: typeof import('@nutui/nutui')['GridItem']
     NutInfiniteLoading: typeof import('@nutui/nutui')['InfiniteLoading']
+    NutInput: typeof import('@nutui/nutui')['Input']
     NutInputNumber: typeof import('@nutui/nutui')['InputNumber']
     NutPicker: typeof import('@nutui/nutui')['Picker']
     NutPopup: typeof import('@nutui/nutui')['Popup']
