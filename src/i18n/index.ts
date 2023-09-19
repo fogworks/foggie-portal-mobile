@@ -1,5 +1,10 @@
 import { createI18n } from 'vue-i18n';
 
+import { Locale } from '@nutui/nutui';
+import enUS from '@nutui/nutui/dist/packages/locale/lang/en-US';
+
+Locale.use('en-US', enUS);
+
 export function loadLang() {
   const modules: Record<string, any> = import.meta.glob('./lang/*.ts', { eager: true });
   const langs: Record<string, any> = {};
@@ -16,7 +21,7 @@ export const i18n = createI18n({
   legacy: false,
   // locale: 'zh-cn',
   locale: localStorage.getItem('lang') || 'en-us',
-  fallbackLocale: 'zh-cn',
+  fallbackLocale: 'en-us',
   messages: loadLang(),
 });
 
