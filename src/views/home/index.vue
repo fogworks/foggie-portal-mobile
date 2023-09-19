@@ -65,14 +65,11 @@
     router.push({ name: 'Withdraw' });
   };
   const toBuyOrder = () => {
-    console.log(userInfo.value, 'userInfo');
-    router.push({ name: 'BindDmc' });
-
-    // if (!userInfo.value.dmc || !userInfo.value.amb_promo_code) {
-    //   router.push({ name: 'BindDmc' });
-    // } else {
-    //   router.push({ name: 'Shop' });
-    // }
+    if (!userInfo.value.dmc || !userInfo.value.amb_promo_code) {
+      router.push({ name: 'BindDmc' });
+    } else {
+      router.push({ name: 'Shop' });
+    }
   };
 </script>
 

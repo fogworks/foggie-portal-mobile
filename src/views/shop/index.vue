@@ -34,6 +34,8 @@
   import { buy_order, node_order_buy } from '@/api/amb';
   import { Toast } from '@nutui/nutui';
   import { useRouter } from 'vue-router';
+  // import useUpdateDMC from './useUpdateDMC';
+  // const { getAmbDmc, targetAccount } = useUpdateDMC();
   const router = useRouter();
   const state = reactive({
     shopForm: {

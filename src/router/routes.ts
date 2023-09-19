@@ -6,32 +6,32 @@ export const routes = [
     children: [
       {
         path: 'home',
-        name:'Home',
+        name: 'Home',
         component: () => import('@/views/home/index.vue'),
         meta: {
           title: 'tabbar.home',
           keepAlive: true,
         },
       },
-       {
+      {
         path: 'withdraw',
-        name:'Withdraw',
+        name: 'Withdraw',
         component: () => import('@/views/home/withdraw.vue'),
         meta: {
           title: 'tabbar.withdraw',
         },
       },
-       {
+      {
         path: 'shop',
-        name:'Shop',
+        name: 'Shop',
         component: () => import('@/views/shop/index.vue'),
         meta: {
           title: 'tabbar.shop',
         },
       },
-       {
+      {
         path: 'bindDmc',
-        name:'BindDmc',
+        name: 'BindDmc',
         component: () => import('@/views/bindDmc/index.vue'),
         meta: {
           title: 'tabbar.bind',
@@ -90,7 +90,7 @@ export const routes = [
       keepAlive: true,
     },
   },
-   {
+  {
     path: '/forget',
     name: 'Forget',
     component: () => import('@/views/login/forget.vue'),

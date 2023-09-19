@@ -7,6 +7,7 @@ export type langType = {
     demo: string;
     withdraw: string;
     shop: string;
+    bind: string;
   };
   language: {
     en: string;

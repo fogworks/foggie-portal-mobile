@@ -43,10 +43,16 @@ export const modify_pw = (data) => {
 
 export function getCurReferenceRate() {
   return request({
-    url:  "/v1/chain/get_table_rows",
-    method: "POST",
-    data:JSON.stringify(
-      { "json": true, "code": "dmc.token", "scope": "dmc.token", "table": "bcprice" }
-    )
+    url: '/v1/chain/get_table_rows',
+    method: 'POST',
+    data: JSON.stringify({ json: true, code: 'dmc.token', scope: 'dmc.token', table: 'bcprice' }),
   });
 }
+
+export const updateUser = (id, data) => {
+  return request({
+    url: `/api_accounts/accounts/user/${id}`,
+    method: 'PUT',
+    data: data,
+  });
+};
