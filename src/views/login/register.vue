@@ -1,9 +1,11 @@
 <template>
   <div class="login">
     <h1>Register</h1>
+    <!-- <img src="@/assets/logo-dog-black.svg" alt="" /> -->
+
     <nut-form ref="ruleForm" :model-value="loginForm" :rules="formRules">
       <nut-form-item required prop="email">
-        <input v-model="loginForm.email" class="nut-input-text" placeholder="Enter your Email" type="text" />
+        <input v-model="loginForm.email" name="email" class="nut-input-text" placeholder="Enter your Email" type="text" />
       </nut-form-item>
       <nut-form-item required prop="password">
         <input v-model="loginForm.password" class="nut-input-text" placeholder="Please enter password" type="password" />
@@ -39,16 +41,16 @@
         <nut-button class="get_code" v-if="numCount > 0" disabled>{{ numCount }}s</nut-button>
         <nut-button class="get_code" v-else type="info" @click="getVerifyPw">Get Code</nut-button>
       </nut-form-item>
-      <nut-form-item required prop="promo_code">
+      <!-- <nut-form-item required prop="promo_code">
         <input v-model="loginForm.promo_code" class="nut-input-text" placeholder="Enter your invitation code(optional)" type="text" />
-      </nut-form-item>
+      </nut-form-item> -->
       <nut-form-item required prop="amb_promo_code">
         <input v-model="loginForm.amb_promo_code" class="nut-input-text" placeholder="Ambassador Invitation Code(optional)" type="text" />
       </nut-form-item>
-
-      <nut-button block type="info" @click="submit" :loading="loading"> Register </nut-button>
     </nut-form>
-    <div class="Register_btn">
+    <nut-button block type="info" @click="submit" :loading="loading"> Register </nut-button>
+
+    <div class="Register_btn" style="justify-content: center">
       <span class="password_login" @click="router.push('/login')">Login</span>
     </div>
   </div>

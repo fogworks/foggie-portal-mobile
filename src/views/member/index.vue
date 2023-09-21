@@ -1,14 +1,11 @@
 <template>
   <div class="avatar-wrap">
-    <nut-avatar class="avatar" size="large">
-      <!-- <img src="https://img12.360buyimg.com/imagetools/jfs/t1/143702/31/16654/116794/5fc6f541Edebf8a57/4138097748889987.png" /> -->
-    </nut-avatar>
+    <nut-avatar class="avatar" size="large"> </nut-avatar>
     <div class="member-detail">
       <p class="info" v-if="email">{{ email }}</p>
       <p class="nickname" v-else> <nut-button shape="square" size="small" type="default" @click="goLogin"> Login </nut-button> </p>
     </div>
   </div>
-
   <nut-divider :style="{ color: '#ccc', borderColor: '#ccc', padding: '0 16px' }" />
 
   <nut-cell :title="dmcAccount" is-link />
@@ -17,14 +14,6 @@
   <nut-cell title="Lanage" is-link />
 
   <nut-cell title="Log out" is-link @click="logout" />
-
-  <!-- <nut-grid direction="vertical" :column-num="2">
-    <nut-grid-item text="文字"><Dongdong /></nut-grid-item>
-    <nut-grid-item text="文字"><Dongdong /></nut-grid-item>
-    <nut-grid-item text="文字"><Dongdong /></nut-grid-item>
-    <nut-grid-item text="文字"><Dongdong /></nut-grid-item>
-    
-  </nut-grid> -->
 </template>
 
 <script lang="ts" setup name="MemberPage">
@@ -86,8 +75,10 @@
   .avatar-wrap {
     display: flex;
     align-items: center;
-    margin: 10px 40px;
-
+    margin-top: 10px;
+    padding: 10px 40px;
+    background: #fff;
+    border-radius: 10px;
     .member-detail {
       margin-left: 20px;
 

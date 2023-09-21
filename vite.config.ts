@@ -13,8 +13,6 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
   const root = process.cwd();
   const env = loadEnv(mode, root);
   const viteEnv = wrapperEnv(env);
-console.log(env.VITE_USE_HTTPENDPOINT);
-
   return {
     root,
     resolve: {

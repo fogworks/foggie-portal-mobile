@@ -1,10 +1,10 @@
 <template>
   <nut-sticky>
     <nut-form class="query_form" :model-value="formLine">
-      <nut-form-item label-width="180px" label="DMC Account" v-if="!userInfo.dmc">
+      <nut-form-item label-width="180px" label="DMC Account" v-if="!userInfo.dmc || onlyDMC">
         <nut-input v-model="formLine.dmc" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
       </nut-form-item>
-      <nut-form-item label-width="180px" label="Ambassador Invitation Code" v-if="!userInfo.amb_promo_code">
+      <nut-form-item label-width="180px" label="Ambassador Invitation Code" v-if="!userInfo.amb_promo_code && !onlyDMC">
         <nut-input v-model="formLine.code" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
       </nut-form-item>
       <div style="margin: 0 20px">
@@ -17,14 +17,17 @@
 <script setup lang="ts" name="bindDmc">
   import { reactive, computed, ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
-  import { Toast } from '@nutui/nutui';
+  import { showToast } from '@nutui/nutui';
   import { user, updateUser } from '@/api';
+  import { useRoute } from 'vue-router';
   import { check_promo, bind_promo } from '@/api/amb';
-
+  import '@nutui/nutui/dist/packages/toast/style';
+  const route = useRoute();
   const useStore = useUserStore();
   const userInfo = computed(() => useStore.getUserInfo);
   const formLine = reactive({ dmc: '', code: '' });
   const loading = ref(false);
+  const onlyDMC = computed(() => route.query.onlyDMC);
   const initFoggieDate = async () => {
     let data = await user();
     if (data) {
@@ -36,11 +39,11 @@
   const submit = () => {
     const taskList = [];
     if (!userInfo.value.dmc && formLine.dmc.length !== 12) {
-      Toast.error('The DMC account length is 12, please enter the correct DMC account');
+      showToast.fail('The DMC account length is 12, please enter the correct DMC account');
       return false;
     }
     if (!userInfo.value.amb_promo_code && !formLine.code) {
-      Toast.error('Please enter the Ambassador Invitation Code');
+      showToast.fail('Please enter the Ambassador Invitation Code');
       return false;
     }
     loading.value = true;
@@ -73,20 +76,20 @@
         let promoRes = userInfo.value.dmc ? result[0] : result[1];
         if (!userInfo.value.dmc) {
           if (dmcRes && dmcRes.data && dmcRes.data.dmc) {
-            Toast.success('Successfully bound DMC account');
+            showToast.success('Successfully bound DMC account');
           } else {
-            Toast.error('Binding failed, please try again');
+            showToast.fail('Binding failed, please try again');
           }
         }
         if (promoRes.code == 200) {
-          Toast.success(promoRes.result);
+          showToast.success(promoRes.result);
         }
         loading.value = false;
         await initFoggieDate();
       })
       .catch((err) => {
         loading.value = false;
-        Toast.error('Operation failed, please try again');
+        showToast.fail('Operation failed, please try again');
       });
   };
 </script>

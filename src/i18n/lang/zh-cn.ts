@@ -10,6 +10,7 @@ export const lang: langType = {
     withdraw: '提现',
     shop: '商店',
     bind: '',
+    analysis: '收益分析',
   },
   language: {
     en: '英文',

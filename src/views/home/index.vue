@@ -1,8 +1,19 @@
 <template>
+  <nut-noticebar v-if="!userInfo.dmc">
+    <template #left-icon>
+      <Notice width="20px" left="20px"></Notice>
+    </template>
+    <span>Not yet bound to a DMC account </span>
+    <router-link to="/bindDmc?onlyDMC=true"> Go to Binding</router-link>
+  </nut-noticebar>
+  <div class="dmc_account" v-else>
+    Hello,
+    {{ userInfo.dmc }}
+  </div>
   <van-cell-group inset class="income-card">
     <template #default>
-      <div class="total_title">Cloud Storage Balance(DMC) </div>
-      <div class="total_income">100 </div>
+      <div class="total_title">Cloud Storage Balance </div>
+      <div class="total_income">100 DMC</div>
       <van-grid :border="false" :column-num="3">
         <van-grid-item>
           <div> 10000 </div>
@@ -18,11 +29,45 @@
         </van-grid-item>
       </van-grid>
       <van-space class="withdraw-btn" direction="horizontal" align="center">
-        <van-button type="default" @click="toBuyOrder" round>Buy Order</van-button>
         <van-button type="default" @click="showWithdraw" round>Withdraw</van-button>
       </van-space>
     </template>
   </van-cell-group>
+  <nut-row type="flex" justify="space-between" class="middle_btn_box">
+    <nut-col :span="5">
+      <div class="flex-content" @click="toBuyOrder">
+        <div class="svg-box">
+          <!-- <Shop></Shop> -->
+          <img src="@/assets/buy.svg" alt="" />
+        </div>
+        <span>Buy</span></div
+      >
+    </nut-col>
+    <nut-col :span="5">
+      <div class="flex-content" @click="router.push('/list')">
+        <div class="svg-box">
+          <Horizontal></Horizontal>
+        </div>
+        <span>List</span></div
+      >
+    </nut-col>
+    <nut-col :span="5">
+      <div class="flex-content" @click="router.push('/analysis')">
+        <div class="svg-box">
+          <img src="@/assets/charts.svg" alt="" />
+        </div>
+        <span>Earnings analysis</span></div
+      >
+    </nut-col>
+    <nut-col :span="5">
+      <div class="flex-content" @click="toBuyOrder">
+        <div class="svg-box">
+          <My></My>
+        </div>
+        <span>My</span></div
+      >
+    </nut-col>
+  </nut-row>
   <div class="tab_top_title"> Transaction Details </div>
   <nut-tabs style="border-bottom: 1px solid #cccccc82" v-model="searchType" class="time_tabs">
     <nut-tab-pane title="All" pane-key="0"> </nut-tab-pane>
@@ -40,6 +85,7 @@
 </template>
 
 <script lang="ts" setup name="HomePage">
+  import { Shop, Horizontal, Notice, My } from '@nutui/icons-vue';
   import { toRefs, reactive } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
@@ -74,6 +120,60 @@
 </script>
 
 <style lang="scss" scoped>
+  .dmc_account {
+    margin-top: 5px;
+    text-align: left;
+    font-size: 40px;
+    color: $primary-color;
+    // box-shadow: $main-shadow;
+    h2 {
+      font-size: 35px;
+    }
+  }
+  .middle_btn_box {
+    margin-top: 15px;
+    border-radius: 10px;
+    padding: 10px 0;
+    background: #fff;
+    :deep {
+      .nut-col {
+        color: #000;
+      }
+    }
+    .flex-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      // height: 120px;
+      text-align: center;
+      word-break: break-word;
+      .svg-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 20px;
+        width: 100px;
+        height: 100px;
+        margin-bottom: 10px;
+        background: linear-gradient(145deg, #ffffff, #e6e6e6);
+        box-shadow: 0px 1px 2px 2px #ccc;
+        svg,
+        img {
+          width: 60px;
+          height: 60px;
+          color: $primary_color;
+        }
+      }
+      &:active {
+        .svg-box {
+          box-shadow:
+            inset 20px 20px 60px #d9d9d9,
+            inset -20px -20px 60px #ffffff;
+        }
+      }
+    }
+  }
   .income-card {
     padding: 20px 0;
     margin: 0;
@@ -82,6 +182,7 @@
     background-color: var(--van-blue);
 
     color: #fff;
+
     .total_title {
       font-size: 35px;
     }

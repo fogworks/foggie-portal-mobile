@@ -70,19 +70,21 @@
     router.go(-1);
   };
   onMounted(async () => {
-    let res = await user();
-    if (res.data) {
-      userStore.setInfo(res.data);
-    }
-    if (res.data.amb_promo_code) {
-      check_user_bind(res.data.uuid).then((res2) => {
-        if (res2.code == 200 && !res2.result.bind) {
-          bind_promo({
-            user_uuid: res.data.uuid,
-            amb_promo_code: res.data.amb_promo_code,
-          });
-        }
-      });
+    if (userStore.getToken) {
+      let res = await user();
+      if (res.data) {
+        userStore.setInfo(res.data);
+      }
+      if (res.data.amb_promo_code) {
+        check_user_bind(res.data.uuid).then((res2) => {
+          if (res2.code == 200 && !res2.result.bind) {
+            bind_promo({
+              user_uuid: res.data.uuid,
+              amb_promo_code: res.data.amb_promo_code,
+            });
+          }
+        });
+      }
     }
   });
 </script>
@@ -97,6 +99,7 @@
     height: calc(100vh - 92px);
     overflow-y: scroll;
     overflow-x: hidden;
+    background: #f7f7f7;
   }
 
   .tabbar {

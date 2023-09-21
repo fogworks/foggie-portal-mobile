@@ -10,3 +10,6 @@ p {
   margin: 0;
   padding: 0;
 }
+.nut-tabs__titles-item {
+  background: #fff;
+}

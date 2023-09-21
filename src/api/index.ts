@@ -31,6 +31,12 @@ export const register = (data: object) => {
 export function user() {
   return http.get(`/api_accounts/accounts/info`, {});
 }
+export const refreshToken = () => {
+  return request({
+    url: `/api/accounts/refresh_token`,
+    method: "POST",
+  });
+};
 
 export const modify_pw = (data) => {
   const url = `/api/accounts/modify_pw`;

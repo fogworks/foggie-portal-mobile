@@ -54,6 +54,14 @@ export const routes = [
         },
       },
       {
+        path: 'analysis',
+        component: () => import('@/views/analysis/index.vue'),
+        meta: {
+          title: 'tabbar.analysis',
+          keepAlive: true,
+        },
+      },
+      {
         path: 'demo',
         component: () => import('@/views/demo/index.vue'),
         meta: {

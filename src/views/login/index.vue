@@ -1,9 +1,14 @@
 <template>
   <div class="login">
-    <h1>Login</h1>
+    <div class="top_div">
+      <h1>Login</h1>
+      <img src="@/assets/logo-dog-black.svg" alt="" />
+    </div>
+
+    <!-- <h1>Login</h1> -->
     <nut-form ref="ruleForm" :model-value="loginForm">
       <nut-form-item required prop="email" :rules="[{ required: true, message: 'Enter your Email' }]">
-        <input v-model="loginForm.email" class="nut-input-text" placeholder="Enter your Email" type="text" />
+        <input v-model="loginForm.email" name="email" class="nut-input-text" placeholder="Enter your Email" type="text" />
       </nut-form-item>
       <nut-form-item required prop="password" :rules="[{ required: true, message: 'Please enter password' }]">
         <input v-model="loginForm.password" class="nut-input-text" placeholder="Please enter password" type="password" />
@@ -26,9 +31,8 @@
         />
         <img :src="codeSrc" class="code_src" @click="getCaptcha" />
       </nut-form-item>
-
-      <nut-button block type="info" @click="submit" :loading="loading"> Login </nut-button>
     </nut-form>
+    <nut-button block type="info" @click="submit" :loading="loading"> Login </nut-button>
     <div class="Register_btn">
       <span class="password_login" @click="router.push('/register')">Register</span>
       <span class="password_login" @click="router.push('/forget')"> Forgot Password?</span>
@@ -37,7 +41,7 @@
 </template>
 
 <script lang="ts" setup name="LoginPage">
-  import { login, Captcha, check_email_register } from '@/api';
+  import { login, Captcha, check_email_register, user } from '@/api';
   import router from '@/router';
   import { reactive, ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
@@ -81,6 +85,13 @@
       8 * 60 * 1000,
     );
   }
+  async function getUserInfo() {
+    let res = await user();
+    if (res.data) {
+      userStore.setInfo(res.data);
+      router.push({ path: '/home' });
+    }
+  }
   const submit = () => {
     ruleForm.value.validate().then(async ({ valid, errors }: any) => {
       if (valid) {
@@ -100,10 +111,10 @@
         check_email_register(loginForm.email).then((rr) => {
           if (rr.data) {
             if (!rr.data.email) {
-              showToast.success('The current email is not registered, please register');
+              showToast.fail('The current email is not registered, please register');
               loading.value = false;
             } else if (!rr.data.pw_valid) {
-              showToast.success('The current password is not secure. Please use "Forgot Password" to update your current password');
+              showToast.fail('The current password is not secure. Please use "Forgot Password" to update your current password');
               loading.value = false;
             } else {
               login(postData)
@@ -131,8 +142,7 @@
                     // store.dispatch('token/login', userInfo);
                     // userStore.setInfo(userInfo);
                     userStore.setToken(token);
-                    router.push({ path: '/home' });
-
+                    getUserInfo();
                     // this.getUserInfo();
                     // this.$emit("login");
                     // store.dispatch("global/setDmcShow", true);
@@ -142,7 +152,7 @@
                 .catch((err) => {
                   loading.value = false;
                   console.log(err);
-
+                  showToast.fail(err.error);
                   if (err.next_step === 'captcha') {
                     getCaptcha();
                     showCaptcha.value = true;

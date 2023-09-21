@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BasicModal: typeof import('./../src/components/Modal/src/BasicModal.vue')['default']
+    MyEcharts: typeof import('./../src/components/echarts/myEcharts.vue')['default']
     NutAvatar: typeof import('@nutui/nutui')['Avatar']
     NutButton: typeof import('@nutui/nutui')['Button']
     NutCalendar: typeof import('@nutui/nutui')['Calendar']
@@ -23,7 +24,9 @@ declare module 'vue' {
     NutGrid: typeof import('@nutui/nutui')['Grid']
     NutGridItem: typeof import('@nutui/nutui')['GridItem']
     NutInfiniteLoading: typeof import('@nutui/nutui')['InfiniteLoading']
+    NutInput: typeof import('@nutui/nutui')['Input']
     NutInputNumber: typeof import('@nutui/nutui')['InputNumber']
+    NutNoticebar: typeof import('@nutui/nutui')['Noticebar']
     NutPicker: typeof import('@nutui/nutui')['Picker']
     NutPopup: typeof import('@nutui/nutui')['Popup']
     NutRange: typeof import('@nutui/nutui')['Range']

@@ -1,17 +1,23 @@
 .login {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  // justify-content: center;
+  justify-content: space-around;
   height: 100%;
-  padding: 20px 50px;
+  padding: 80px 50px;
   box-sizing: border-box;
-  background: linear-gradient(144deg, #af40ffb3, #5b42f3a6 50%, #00ddeba8);
-
+  .top_div {
+    text-align: center;
+  }
+  img {
+    width: 8rem;
+    margin: 0 auto;
+  }
   h1 {
     margin-bottom: 50px;
-    letter-spacing: 10px;
+    // letter-spacing: 10px;
     text-align: center;
-    color: #fff;
+    color: $primary-color;
   }
   .isOk {
     width: 1rem;
@@ -48,7 +54,7 @@
     align-items: center;
     justify-content: flex-start;
     margin: 5px 0;
-    color: #fff;
+    color: #000;
 
     div:first-child {
       margin-right: 5px;
@@ -58,8 +64,9 @@
   .nut-form-item {
     margin-bottom: 20px;
     border-radius: 99px;
-    background: #f2f3f5;
+    background: #fff;
     border: 1px solid #fff;
+    box-shadow: 1px 1px 20px 3px #cccccc59;
     &::after,
     &::before {
       content: unset;
@@ -80,6 +87,12 @@
   .nut-cell-group__wrap {
     box-shadow: none !important;
     background-color: transparent;
+    overflow: visible;
+  }
+  .nut-button--block {
+    margin-bottom: 10px;
+    height: 3rem;
+    font-size: 40px;
   }
   .Register_btn {
     display: flex;
@@ -87,7 +100,7 @@
     align-items: center;
     padding: 0 10px;
     font-size: 1rem;
-    color: #fff;
+    color: #000;
     font-weight: 500;
     cursor: pointer;
   }
@@ -101,7 +114,7 @@
 
     cursor: pointer;
     &.is-disabled {
-      background: #d8d8d8;
+      background: #878787;
     }
   }
   .nut-input-text {

@@ -1,8 +1,11 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { showToast } from 'vant';
 import Qs from 'qs';
-  import { useUserStore } from '@/store/modules/user';
-const userStore  =useUserStore()
+import { useUserStore } from '@/store/modules/user';
+import { useRouter } from 'vue-router';
+import { refreshToken, user } from '@/api';
+const userStore = useUserStore();
+const router = useRouter();
 
 const service: AxiosInstance = axios.create({
   withCredentials: false,
@@ -15,7 +18,7 @@ service.interceptors.request.use(
       config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
       config.data = Qs.stringify(config.data);
     }
-    const refresh_token = userStore.getToken
+    const refresh_token = userStore.getToken;
     config.headers['Authorization'] = refresh_token;
     return config;
   },
@@ -23,15 +26,53 @@ service.interceptors.request.use(
 );
 
 service.interceptors.response.use(
-  (response: AxiosResponse) => {
+  async (response: AxiosResponse) => {
     const res = response.data;
-    if (res.code !== 200) {
+    const code = res.code;
+    if (code !== 200) {
       if (response.config.url?.indexOf('/v1') == 0) {
         // return Promise.resolve(res.rows[0].benchmark_price)
-      return res.rows[0].benchmark_price
+        return res.rows[0].benchmark_price;
       }
-      showToast(res.msg);
-      return Promise.reject(res || 'Error');
+      if (code === 401 || code === 403) {
+        userStore.setToken('');
+        router.push('/login');
+        return;
+      } else if (code === 420) {
+        // store.dispatch("global/setUserInfo", {});
+        // store.dispatch("global/setHasReady", false);
+        // window.localStorage.removeItem("tokenMap");
+        // removeToken();
+        // router.push("/user");
+        let res = await refreshToken();
+
+        if (res && res.data && res.data.access_token) {
+          let token = res.data.access_token;
+          let type = res.data.token_type;
+          token = type + ' ' + token;
+          // let userInfo = {
+          //   username: "",
+          //   token: token, //res.token
+          //   user_id: "",
+          // };
+          userStore.setToken(token);
+          let res2 = await user();
+          if (res2.data) {
+            userStore.setInfo(res2.data);
+          }
+          window.localStorage.setItem('last_refresh_token', token);
+          // setToken(token);
+          return service(response.config);
+        } else {
+          router.push('/login');
+          return;
+        }
+      } else {
+        if (res.msg) {
+          showToast(res.msg);
+        }
+        return Promise.reject(res);
+      }
     } else {
       return res;
     }

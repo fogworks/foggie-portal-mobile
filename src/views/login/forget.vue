@@ -1,9 +1,11 @@
 <template>
   <div class="login">
-    <h1 style="font-size: 25px">Forget Password</h1>
+    <img src="@/assets/logo-dog-black.svg" alt="" />
+
+    <!-- <h1 style="font-size: 25px">Forget Password</h1> -->
     <nut-form ref="ruleForm" :model-value="loginForm" :rules="formRules">
       <nut-form-item required prop="email">
-        <input v-model="loginForm.email" class="nut-input-text" placeholder="Enter your Email" type="text" />
+        <input v-model="loginForm.email" name="email" class="nut-input-text" placeholder="Enter your Email" type="text" />
       </nut-form-item>
       <nut-form-item required prop="verifyPw">
         <input style="width: 70%" v-model="loginForm.verifyPw" class="nut-input-text" placeholder="Email verification code" />
@@ -38,10 +40,9 @@
       <nut-form-item required prop="confirmPassword">
         <input v-model="loginForm.confirmPassword" class="nut-input-text" placeholder="Please confirm password" type="password" />
       </nut-form-item>
-
-      <nut-button block type="info" @click="submit" :loading="loading"> Confirm </nut-button>
     </nut-form>
-    <div class="Register_btn">
+    <nut-button block type="info" @click="submit" :loading="loading"> Confirm </nut-button>
+    <div class="Register_btn" style="justify-content: center">
       <span class="password_login" @click="router.push('/login')">Login</span>
     </div>
   </div>
