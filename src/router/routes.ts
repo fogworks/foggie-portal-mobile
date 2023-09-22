@@ -60,6 +60,13 @@ export const routes = [
         },
       },
       {
+        path: 'analysisCate',
+        component: () => import('@/views/analysisCate/index.vue'),
+        meta: {
+          title: 'tabbar.bind',
+        },
+      },
+      {
         path: 'demo',
         component: () => import('@/views/demo/index.vue'),
         meta: {

@@ -7,29 +7,22 @@
     <router-link to="/bindDmc?onlyDMC=true"> Go to Binding</router-link>
   </nut-noticebar>
   <div class="dmc_account" v-else>
-    Hello,
+    <strong> Hello, </strong> <br />
     {{ userInfo.dmc }}
   </div>
   <van-cell-group inset class="income-card">
     <template #default>
-      <div class="total_title">Cloud Storage Balance </div>
-      <div class="total_income">100 DMC</div>
-      <van-grid :border="false" :column-num="3">
-        <van-grid-item>
-          <div> 10000 </div>
-          <div> Total Income</div>
-        </van-grid-item>
-        <van-grid-item>
-          <div> 10000 </div>
-          <div> Withdrawn </div>
-        </van-grid-item>
-        <van-grid-item>
-          <div> 10000 </div>
-          <div> Total </div>
-        </van-grid-item>
-      </van-grid>
+      <div class="total_title"> <img src="@/assets/DMC_token.png" alt="" /></div>
+      <div class="card_row_1">
+        <div class="total_income">
+          <div> 100.0000 DMC </div>
+          <div class="about_income"> ~ $10.000 </div>
+        </div>
+        <div class="total_income">100PST</div>
+      </div>
       <van-space class="withdraw-btn" direction="horizontal" align="center">
         <van-button type="default" @click="showWithdraw" round>Withdraw</van-button>
+        <van-button type="default" @click="showWithdraw" round>Recharge</van-button>
       </van-space>
     </template>
   </van-cell-group>
@@ -44,7 +37,7 @@
       >
     </nut-col>
     <nut-col :span="5">
-      <div class="flex-content" @click="router.push('/analysis?type=0')">
+      <div class="flex-content" @click="router.push('/analysisCate?type=0')">
         <div class="svg-box">
           <img src="@/assets/withdrawal_records.svg" alt="" />
         </div>
@@ -52,7 +45,7 @@
       >
     </nut-col>
     <nut-col :span="5">
-      <div class="flex-content" @click="router.push('/analysis?type=1')">
+      <div class="flex-content" @click="router.push('/analysisCate?type=1')">
         <div class="svg-box">
           <img src="@/assets/charts.svg" alt="" />
         </div>
@@ -60,7 +53,7 @@
       >
     </nut-col>
     <nut-col :span="5">
-      <div class="flex-content" @click="router.push('/analysis?type=2')">
+      <div class="flex-content" @click="router.push('/analysisCate?type=2')">
         <div class="svg-box">
           <img src="@/assets/recharge_records.svg" alt="" />
         </div>
@@ -81,13 +74,16 @@
   </nut-tabs> -->
   <nut-infinite-loading load-more-txt="No more content" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
     <div class="list_item" v-for="item in listData">
+      <img src="@/assets/order.svg" alt="" />
       <div>
-        <span>{{ item.createAt }}</span>
+        <span>Order:1234</span>
         <span :class="[item.type == 'Earnings' ? 'earnings' : 'expenditures']">
           {{ (item.type == 'Earnings' ? '+' : '-') + item.dmc }}
         </span>
       </div>
-      <div> Memo:buy order </div>
+      <div
+        ><span>100 PST</span> <span>{{ item.createAt }}</span>
+      </div>
     </div>
   </nut-infinite-loading>
 </template>
@@ -143,7 +139,7 @@
     margin-top: 5px;
     text-align: left;
     font-size: 40px;
-    color: $primary-color;
+    color: #000;
     // box-shadow: $main-shadow;
     h2 {
       font-size: 35px;
@@ -198,30 +194,42 @@
     }
   }
   .income-card {
-    padding: 20px 0;
+    padding: 20px 20px;
     margin: 0;
     margin-top: 20px;
     //   box-shadow: 0px 0px 4px 1px #ccc;
-    background-color: var(--van-blue);
+    // background-color: var(--van-blue);
+    background: #2893ff;
     color: #fff;
     border-radius: 40px;
 
     .total_title {
       font-size: 35px;
+      text-align: left;
+      img {
+        width: 60px;
+      }
     }
     > div {
       min-height: 60px;
       line-height: 60px;
       text-align: center;
     }
-
+    .card_row_1 {
+      display: flex;
+      justify-content: space-between;
+    }
     .total_income {
-      font-size: 50px;
+      font-size: 45px;
       font-weight: 700;
+      .about_income {
+        font-size: 35px;
+      }
     }
     .withdraw-btn {
       justify-content: center;
       width: 100%;
+      margin-top: 20px;
     }
     :deep {
       .van-grid-item {
@@ -280,14 +288,21 @@
     }
   }
   .list_item {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 12px 30px;
+    padding-left: 80px;
     min-height: 80px;
     background: #fff;
     border-radius: 5px;
     border-top: 1px solid #eee;
+    img {
+      position: absolute;
+      left: 10px;
+      width: 60px;
+    }
     > div {
       display: flex;
       justify-content: space-between;
@@ -302,9 +317,11 @@
     }
     .earnings {
       color: $main_green;
+      font-weight: 600;
     }
     .expenditures {
       color: $main_red;
+      font-weight: 600;
     }
   }
 </style>

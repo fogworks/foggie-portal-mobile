@@ -2,7 +2,7 @@
   <div class="login">
     <div class="top_div">
       <h1>Login</h1>
-      <img src="@/assets/logo-dog-black.svg" alt="" />
+      <img src="@/assets/logo.png" alt="" />
     </div>
 
     <!-- <h1>Login</h1> -->

@@ -21,11 +21,11 @@
         <strong class="price"> {{ totalPrice || '--' }} DMC </strong>
         <!-- <nut-price :price="totalPrice" :decimal-digits="4" size="large" /> -->
       </div>
-      <div style="margin: 0 20px">
-        <nut-button block type="info" @click="submit" :loading="loading"> Buy </nut-button>
-      </div>
     </nut-form>
   </nut-sticky>
+  <div style="margin: 0 20px">
+    <nut-button block type="info" @click="submit" :loading="loading"> Buy </nut-button>
+  </div>
 </template>
 
 <script setup lang="ts" name="Shop">

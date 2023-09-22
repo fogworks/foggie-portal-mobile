@@ -1,18 +1,6 @@
 <template>
   <div class="analysis_content">
-    <!-- type-popup -->
-    <!-- <nut-cell title="Select Query Type" :desc="queryType" @click="typeShow = true"></nut-cell>
-    <nut-popup position="bottom" v-model:visible="typeShow">
-      <nut-picker v-model="queryTypeValue" :columns="columns" title="Select Query Type" @confirm="confirm" @cancel="typeShow = false">
-      </nut-picker>
-    </nut-popup> -->
-    <nut-grid v-if="queryType == 'Balance'">
-      <nut-grid-item text="Balance">11.0000</nut-grid-item>
-      <nut-grid-item text="Earnings" @click="router.push('/analysisCate?type=1')">11.0000</nut-grid-item>
-      <nut-grid-item text="Expense" @click="router.push('/analysisCate?type=3')">11.0000</nut-grid-item>
-      <nut-grid-item text="Withdrawal" @click="router.push('/analysisCate?type=0')">11.0000</nut-grid-item>
-    </nut-grid>
-    <nut-tabs v-model="timeType" class="time_tabs">
+    <nut-tabs direction="horizontal" v-model="timeType" class="time_tabs">
       <nut-tab-pane title="All" pane-key="0"> </nut-tab-pane>
       <nut-tab-pane title="By 3 Months" pane-key="1"> </nut-tab-pane>
       <nut-tab-pane title="By Month" pane-key="2"> </nut-tab-pane>
@@ -71,6 +59,7 @@
   //   queryType.value = selectedOptions.map((val) => val.text).join(',');
   //   typeShow.value = false;
   // };
+
   const getLineOptions = () => {
     const dateList = [
       '2023-09-20',
@@ -98,6 +87,23 @@
   );
   onMounted(() => {
     loadMore();
+    switch (route.query.type) {
+      case '0':
+        queryType.value = 'Withdrawal';
+        break;
+      case '1':
+        queryType.value = 'Earnings';
+        break;
+      case '2':
+        queryType.value = 'Recharge';
+        break;
+      case '3':
+        queryType.value = 'Expense';
+        break;
+      default:
+        queryType.value = 'Balance';
+        break;
+    }
     getLineOptions();
   });
 </script>

@@ -8,7 +8,7 @@ export const lang: langType = {
     member: 'Member',
     demo: 'demo',
     withdraw: 'Withdraw',
-    shop: 'Shop',
+    shop: 'Buy Order',
     bind: '',
     empty: '',
     analysis: 'Earnings Records',
