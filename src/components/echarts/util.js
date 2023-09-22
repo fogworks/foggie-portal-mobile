@@ -1,4 +1,4 @@
-export const lineOption = (xAxis, data, title = 'Balance') => {
+export const lineOption = (xAxis, data, title = 'Earnings') => {
   const options = {
     textStyle: {
       color: '#000',

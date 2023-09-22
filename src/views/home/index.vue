@@ -85,7 +85,7 @@
 </template>
 
 <script lang="ts" setup name="HomePage">
-  import { Shop, Horizontal, Notice, My } from '@nutui/icons-vue';
+  import { Horizontal, Notice, My } from '@nutui/icons-vue';
   import { toRefs, reactive } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';

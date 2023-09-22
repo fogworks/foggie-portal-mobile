@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { showToast } from 'vant';
+import { showToast } from '@nutui/nutui';
+import '@nutui/nutui/dist/packages/toast/style';
 import Qs from 'qs';
 import { useUserStore } from '@/store/modules/user';
 import { useRouter } from 'vue-router';
@@ -28,6 +29,8 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   async (response: AxiosResponse) => {
     const res = response.data;
+    console.log(response, 'response');
+
     const code = res.code;
     if (code !== 200) {
       if (response.config.url?.indexOf('/v1') == 0) {
@@ -69,7 +72,7 @@ service.interceptors.response.use(
         }
       } else {
         if (res.msg) {
-          showToast(res.msg);
+          showToast.fail(res.msg);
         }
         return Promise.reject(res);
       }
@@ -79,7 +82,7 @@ service.interceptors.response.use(
   },
   (error: AxiosError) => {
     console.log('err' + error);
-    showToast(error.message);
+    showToast.fail(error.message);
     return Promise.reject(error.message);
   },
 );

@@ -32,7 +32,7 @@
   import { toRefs, reactive, onMounted } from 'vue';
   import { getCurReferenceRate } from '@/api';
   import { buy_order, node_order_buy } from '@/api/amb';
-  import { Toast } from '@nutui/nutui';
+  import { showToast } from '@nutui/nutui';
   import { useRouter } from 'vue-router';
   // import useUpdateDMC from './useUpdateDMC';
   // const { getAmbDmc, targetAccount } = useUpdateDMC();
@@ -91,7 +91,7 @@
           })
             .then(() => {
               loading.value = false;
-              Toast.success('Order request has been initiated, please check the order result in the order record later.');
+              showToast.success('Order request has been initiated, please check the order result in the order record later.');
               router.push('/home');
             })
             .catch(() => {
