@@ -10,7 +10,6 @@ export const routes = [
         component: () => import('@/views/home/index.vue'),
         meta: {
           title: 'tabbar.home',
-          keepAlive: true,
         },
       },
       {
@@ -57,8 +56,7 @@ export const routes = [
         path: 'analysis',
         component: () => import('@/views/analysis/index.vue'),
         meta: {
-          title: 'tabbar.analysis',
-          keepAlive: true,
+          title: 'tabbar.bind',
         },
       },
       {
@@ -86,7 +84,6 @@ export const routes = [
     component: () => import('@/views/login/index.vue'),
     meta: {
       title: '',
-      keepAlive: true,
     },
   },
   {
@@ -95,7 +92,6 @@ export const routes = [
     component: () => import('@/views/login/register.vue'),
     meta: {
       title: '',
-      keepAlive: true,
     },
   },
   {
@@ -104,12 +100,9 @@ export const routes = [
     component: () => import('@/views/login/forget.vue'),
     meta: {
       title: '',
-      keepAlive: true,
     },
   },
-  // 匹配不到重定向会主页
   {
-    // 找不到路由重定向到404页面
     path: '/:pathMatch(.*)',
     redirect: '/Home',
   },

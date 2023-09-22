@@ -99,7 +99,7 @@
     height: calc(100vh - 92px);
     overflow-y: scroll;
     overflow-x: hidden;
-    background: #f7f7f7;
+    background: #eff3ff;
   }
 
   .tabbar {

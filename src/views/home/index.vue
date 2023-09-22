@@ -40,36 +40,36 @@
           <!-- <Shop></Shop> -->
           <img src="@/assets/buy.svg" alt="" />
         </div>
-        <span>Buy</span></div
+        <span>Buy Order</span></div
       >
     </nut-col>
     <nut-col :span="5">
-      <div class="flex-content" @click="router.push('/list')">
+      <div class="flex-content" @click="router.push('/analysis?type=0')">
         <div class="svg-box">
-          <Horizontal></Horizontal>
+          <img src="@/assets/withdrawal_records.svg" alt="" />
         </div>
-        <span>List</span></div
+        <span>Withdrawal Records</span></div
       >
     </nut-col>
     <nut-col :span="5">
-      <div class="flex-content" @click="router.push('/analysis')">
+      <div class="flex-content" @click="router.push('/analysis?type=1')">
         <div class="svg-box">
           <img src="@/assets/charts.svg" alt="" />
         </div>
-        <span>Earnings analysis</span></div
+        <span>Earnings Records</span></div
       >
     </nut-col>
     <nut-col :span="5">
-      <div class="flex-content" @click="toBuyOrder">
+      <div class="flex-content" @click="router.push('/analysis?type=2')">
         <div class="svg-box">
-          <My></My>
+          <img src="@/assets/recharge_records.svg" alt="" />
         </div>
-        <span>My</span></div
+        <span>Recharge Records</span></div
       >
     </nut-col>
   </nut-row>
-  <div class="tab_top_title"> Transaction Details </div>
-  <nut-tabs style="border-bottom: 1px solid #cccccc82" v-model="searchType" class="time_tabs">
+  <div class="tab_top_title">Recent Transactions</div>
+  <!-- <nut-tabs style="border-bottom: 1px solid #cccccc82" v-model="searchType" class="time_tabs">
     <nut-tab-pane title="All" pane-key="0"> </nut-tab-pane>
     <nut-tab-pane title="Income" pane-key="1"> </nut-tab-pane>
     <nut-tab-pane title="Expenditure" pane-key="2"> </nut-tab-pane>
@@ -78,14 +78,22 @@
     <nut-tab-pane title="Last month" pane-key="0"> </nut-tab-pane>
     <nut-tab-pane title="Three months" pane-key="1"> </nut-tab-pane>
     <nut-tab-pane title="Six months" pane-key="2"> </nut-tab-pane>
-  </nut-tabs>
+  </nut-tabs> -->
   <nut-infinite-loading load-more-txt="No more content" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
-    <div class="test" v-for="item in listData">{{ item }}</div>
+    <div class="list_item" v-for="item in listData">
+      <div>
+        <span>{{ item.createAt }}</span>
+        <span :class="[item.type == 'Earnings' ? 'earnings' : 'expenditures']">
+          {{ (item.type == 'Earnings' ? '+' : '-') + item.dmc }}
+        </span>
+      </div>
+      <div> Memo:buy order </div>
+    </div>
   </nut-infinite-loading>
 </template>
 
 <script lang="ts" setup name="HomePage">
-  import { Horizontal, Notice, My } from '@nutui/icons-vue';
+  import { Notice } from '@nutui/icons-vue';
   import { toRefs, reactive } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
@@ -95,7 +103,18 @@
   const state = reactive({
     infinityValue: false,
     hasMore: false,
-    listData: [] as any[],
+    listData: [
+      {
+        createAt: '2023-09-20',
+        dmc: '1.0000 DMC',
+        type: 'Earnings',
+      },
+      {
+        createAt: '2023-09-21',
+        dmc: '2.0000 DMC',
+        type: 'Expenditures',
+      },
+    ] as any[],
     timeType: '0',
     searchType: '0',
   });
@@ -134,10 +153,10 @@
     margin-top: 15px;
     border-radius: 10px;
     padding: 10px 0;
-    background: #fff;
+    // background: #fff;
     :deep {
       .nut-col {
-        color: #000;
+        color: #2356b2;
       }
     }
     .flex-content {
@@ -148,6 +167,9 @@
       // height: 120px;
       text-align: center;
       word-break: break-word;
+      span {
+        font-size: 0.8rem;
+      }
       .svg-box {
         display: flex;
         justify-content: center;
@@ -156,8 +178,9 @@
         width: 100px;
         height: 100px;
         margin-bottom: 10px;
-        background: linear-gradient(145deg, #ffffff, #e6e6e6);
-        box-shadow: 0px 1px 2px 2px #ccc;
+        background: #fff;
+        // box-shadow: 0px 1px 2px 2px #ccc;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
         svg,
         img {
           width: 60px;
@@ -180,8 +203,8 @@
     margin-top: 20px;
     //   box-shadow: 0px 0px 4px 1px #ccc;
     background-color: var(--van-blue);
-
     color: #fff;
+    border-radius: 40px;
 
     .total_title {
       font-size: 35px;
@@ -241,9 +264,10 @@
   }
   .tab_top_title {
     margin-top: 20px;
-    font-style: italic;
+    margin-bottom: 20px;
+    // font-style: italic;
     font-size: 35px;
-    font-weight: 600;
+    // font-weight: 600;
   }
   .time_tabs {
     :deep {
@@ -253,6 +277,34 @@
       .nut-tabs__content {
         display: none;
       }
+    }
+  }
+  .list_item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 12px 30px;
+    min-height: 80px;
+    background: #fff;
+    border-radius: 5px;
+    border-top: 1px solid #eee;
+    > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5px 0;
+    }
+    &:first-child {
+      border-radius: 40px 40px 0 0;
+    }
+    &:last-child {
+      border-radius: 0 0 40px 40px;
+    }
+    .earnings {
+      color: $main_green;
+    }
+    .expenditures {
+      color: $main_red;
     }
   }
 </style>

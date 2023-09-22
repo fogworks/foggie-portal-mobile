@@ -8,6 +8,7 @@ export type langType = {
     withdraw: string;
     shop: string;
     bind: string;
+    empty: string;
     analysis: string;
   };
   language: {

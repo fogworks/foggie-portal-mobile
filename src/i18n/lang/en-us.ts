@@ -10,7 +10,8 @@ export const lang: langType = {
     withdraw: 'Withdraw',
     shop: 'Shop',
     bind: '',
-    analysis: 'Earnings analysis',
+    empty: '',
+    analysis: 'Earnings Records',
   },
   language: {
     en: 'English',
