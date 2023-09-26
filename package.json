@@ -40,6 +40,8 @@
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
+    "@iconify-json/ic": "^1.1.14",
+    "@iconify/json": "^2.2.120",
     "@types/bcryptjs": "^2.4.3",
     "@vitejs/plugin-legacy": "^4.1.0",
     "@vitejs/plugin-vue": "^4.2.3",
@@ -85,6 +87,7 @@
     "terser": "^5.19.0",
     "typescript": "^5.1.6",
     "unplugin-auto-import": "^0.16.6",
+    "unplugin-icons": "^0.17.0",
     "unplugin-vue-components": "^0.25.1",
     "vite": "^4.4.4",
     "vite-plugin-compression": "^0.5.1",

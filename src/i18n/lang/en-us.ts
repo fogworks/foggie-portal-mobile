@@ -4,8 +4,8 @@ export const lang: langType = {
   title: 'VUE H5 development template',
   tabbar: {
     home: 'Home',
-    list: 'List',
-    member: 'Member',
+    list: 'Order',
+    member: 'User',
     demo: 'demo',
     withdraw: 'Withdraw',
     shop: 'Buy Order',
