@@ -20,14 +20,7 @@ export const routes = [
           title: 'tabbar.withdraw',
         },
       },
-      {
-        path: 'shop',
-        name: 'Shop',
-        component: () => import('@/views/shop/index.vue'),
-        meta: {
-          title: 'tabbar.shop',
-        },
-      },
+
       {
         path: 'bindDmc',
         name: 'BindDmc',
@@ -52,20 +45,7 @@ export const routes = [
           keepAlive: true,
         },
       },
-      {
-        path: 'analysis',
-        component: () => import('@/views/analysis/index.vue'),
-        meta: {
-          title: 'tabbar.bind',
-        },
-      },
-      {
-        path: 'analysisCate',
-        component: () => import('@/views/analysisCate/index.vue'),
-        meta: {
-          title: 'tabbar.bind',
-        },
-      },
+
       {
         path: 'demo',
         component: () => import('@/views/demo/index.vue'),
@@ -84,6 +64,22 @@ export const routes = [
         },
       },
     ],
+  },
+  {
+    path: '/shop',
+    name: 'Shop',
+    component: () => import('@/views/shop/index.vue'),
+    meta: {},
+  },
+  {
+    path: '/analysis',
+    component: () => import('@/views/analysis/index.vue'),
+    meta: {},
+  },
+  {
+    path: '/analysisCate',
+    component: () => import('@/views/analysisCate/index.vue'),
+    meta: {},
   },
   {
     name: 'Login',

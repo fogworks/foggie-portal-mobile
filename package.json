@@ -23,6 +23,7 @@
     "@vueuse/integrations": "10.2.1",
     "axios": "1.4.0",
     "bcryptjs": "2.4.3",
+    "bignumber.js": "^9.1.2",
     "dayjs": "^1.11.9",
     "echarts": "^5.4.3",
     "mitt": "^3.0.1",

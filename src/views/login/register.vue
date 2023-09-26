@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <h1>Register</h1>
+    <h1>Create Account</h1>
     <!-- <img src="@/assets/logo-dog-black.svg" alt="" /> -->
 
     <nut-form ref="ruleForm" :model-value="loginForm" :rules="formRules">
@@ -48,10 +48,11 @@
         <input v-model="loginForm.amb_promo_code" class="nut-input-text" placeholder="Ambassador Invitation Code(optional)" type="text" />
       </nut-form-item>
     </nut-form>
-    <nut-button block type="info" @click="submit" :loading="loading"> Register </nut-button>
-
-    <div class="Register_btn" style="justify-content: center">
-      <span class="password_login" @click="router.push('/login')">Login</span>
+    <div>
+      <nut-button block type="info" @click="submit" :loading="loading"> Create Account </nut-button>
+      <div class="Register_btn">
+        <span class="password_login" @click="router.push('/login')">Login</span>
+      </div>
     </div>
   </div>
 </template>
@@ -198,4 +199,10 @@
 
 <style lang="scss">
   @import url('./login.scss');
+</style>
+
+<style lang="scss" scoped>
+  .Register_btn {
+    justify-content: flex-end;
+  }
 </style>

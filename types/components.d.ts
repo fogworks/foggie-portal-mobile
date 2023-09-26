@@ -19,6 +19,7 @@ declare module 'vue' {
     NutCollapseItem: typeof import('@nutui/nutui')['CollapseItem']
     NutDatePicker: typeof import('@nutui/nutui')['DatePicker']
     NutDivider: typeof import('@nutui/nutui')['Divider']
+    NutEllipsis: typeof import('@nutui/nutui')['Ellipsis']
     NutForm: typeof import('@nutui/nutui')['Form']
     NutFormItem: typeof import('@nutui/nutui')['FormItem']
     NutGrid: typeof import('@nutui/nutui')['Grid']

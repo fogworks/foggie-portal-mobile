@@ -1,25 +1,16 @@
-export const lineOption = (xAxis, data, title = 'Earnings') => {
+import * as echarts from 'echarts';
+export const lineOption = (xAxis, data, title = 'Earn Analysis') => {
   const options = {
     textStyle: {
       color: '#000',
     },
-    visualMap: [
-      {
-        show: false,
-        type: 'continuous',
-        min: 0,
-        max: 400,
-        // inRange: {
-        //   color: ["#121122", "rgba(3,4,5,0.4)", "red"],
-        //   symbolSize: [30, 100],
-        // },
-      },
-    ],
     title: {
-      left: 'center',
+      left: '10px',
       text: title,
       textStyle: {
-        color: '#000',
+        color: '#5F57FF',
+        fontSize: 25,
+        fontFamily: 'HelloFont WenYiHei',
       },
     },
     tooltip: {
@@ -29,18 +20,19 @@ export const lineOption = (xAxis, data, title = 'Earnings') => {
     xAxis: [
       {
         data: xAxis,
+        show: false,
       },
     ],
     yAxis: [
       {
-        type: 'value',
-        name: 'Unit: DMC',
+        show: false,
       },
     ],
     grid: [
       {
-        left: '50px',
-        bottom: '15%',
+        left: '10px',
+        right: '10px',
+        bottom: '15px',
       },
     ],
     series: [
@@ -48,6 +40,22 @@ export const lineOption = (xAxis, data, title = 'Earnings') => {
         type: 'line',
         showSymbol: false,
         data,
+        smooth: true,
+        lineStyle: {
+          width: 1,
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            {
+              offset: 0,
+              color: 'rgba(95,89,224,1)',
+            },
+            {
+              offset: 1.01,
+              color: 'rgba(95,89,224,0.00)',
+            },
+          ]),
+        },
       },
     ],
   };

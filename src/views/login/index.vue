@@ -1,17 +1,17 @@
 <template>
   <div class="login">
     <div class="top_div">
-      <h1>Login</h1>
-      <img src="@/assets/logo.png" alt="" />
+      <h1>SIGN IN</h1>
+      <!-- <img src="@/assets/logo.png" alt="" /> -->
     </div>
 
     <!-- <h1>Login</h1> -->
     <nut-form ref="ruleForm" :model-value="loginForm">
-      <nut-form-item required prop="email" :rules="[{ required: true, message: 'Enter your Email' }]">
+      <nut-form-item required prop="email" :rules="[{ required: true, message: 'E-mail' }]">
         <input v-model="loginForm.email" name="email" class="nut-input-text" placeholder="Enter your Email" type="text" />
       </nut-form-item>
       <nut-form-item required prop="password" :rules="[{ required: true, message: 'Please enter password' }]">
-        <input v-model="loginForm.password" class="nut-input-text" placeholder="Please enter password" type="password" />
+        <input v-model="loginForm.password" class="nut-input-text" placeholder="PASSWORD" type="password" />
       </nut-form-item>
       <nut-form-item
         required
@@ -31,12 +31,12 @@
         />
         <img :src="codeSrc" class="code_src" @click="getCaptcha" />
       </nut-form-item>
+      <nut-button block type="info" @click="submit" :loading="loading"> SIGN IN </nut-button>
+      <div class="Register_btn">
+        <span class="password_login" @click="router.push('/forget')"> Forgot Password?</span>
+        <span class="password_login" @click="router.push('/register')">create a new Account?</span>
+      </div>
     </nut-form>
-    <nut-button block type="info" @click="submit" :loading="loading"> Login </nut-button>
-    <div class="Register_btn">
-      <span class="password_login" @click="router.push('/register')">Register</span>
-      <span class="password_login" @click="router.push('/forget')"> Forgot Password?</span>
-    </div>
   </div>
 </template>
 
@@ -174,4 +174,9 @@
 
 <style lang="scss">
   @import url('./login.scss');
+</style>
+<style lang="scss" scoped>
+  .login {
+    justify-content: center;
+  }
 </style>

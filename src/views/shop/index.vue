@@ -1,5 +1,30 @@
 <template>
-  <nut-sticky>
+  <div class="out_blue">
+    <div class="inside_blue">
+      <img src="@/assets/arrow-left.svg" class="back_img" alt="" />
+      <p class="title">Buy</p>
+      <p class="total_balance">Total Balance</p>
+      <p class="total_balance_value">4949.0000 DMC</p>
+    </div>
+  </div>
+  <div class="middle_content">
+    <p class="middle_title">VIP orders will receive a higher amount of revenue</p>
+    <div class="product_box">
+      <div class="product_card">
+        <p>General Orders</p>
+        <p>20DMC/TB</p>
+      </div>
+      <img src="@/assets/arrow-right.svg" alt="" />
+      <div class="product_card">
+        <p>VIP Orders</p>
+        <p>20DMC/TB</p>
+      </div>
+    </div>
+  </div>
+  <div style="margin: 0 20px">
+    <nut-button block type="info" @click="submit" :loading="loading"> Buy </nut-button>
+  </div>
+  <nut-popup position="top" :style="{ height: '60%' }" v-model:visible="showTop">
     <nut-form class="query_form" :model-value="shopForm">
       <nut-form-item label="Space(GB)">
         <nut-input-number :min="1" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
@@ -11,21 +36,23 @@
         <nut-range v-model="shopForm.floating_ratio" :max="100" :min="0" />
       </nut-form-item>
       <div style="text-align: center" class="order-tip">
-        Purchase
+        <!-- Purchase
         <strong>
           {{ shopForm.quantity > 0 ? shopForm.quantity : '--' }}
         </strong>
         GB,lasts <strong> 25 </strong> weeks and allows a premium of <strong> {{ shopForm.floating_ratio }}% </strong> for orders totaling
         about
-        <br />
+        <br /> -->
+        <strong> Total </strong>
         <strong class="price"> {{ totalPrice || '--' }} DMC </strong>
         <!-- <nut-price :price="totalPrice" :decimal-digits="4" size="large" /> -->
       </div>
+      <div class="bottom_btn">
+        <nut-button type="warning" plain @click="showTop = false"> Cancel </nut-button>
+        <nut-button type="warning" @click="submit" :loading="loading"> Buy </nut-button>
+      </div>
     </nut-form>
-  </nut-sticky>
-  <div style="margin: 0 20px">
-    <nut-button block type="info" @click="submit" :loading="loading"> Buy </nut-button>
-  </div>
+  </nut-popup>
 </template>
 
 <script setup lang="ts" name="Shop">
@@ -45,8 +72,9 @@
     },
     loading: false,
     curReferenceRate: 0,
+    showTop: false,
   });
-  const { shopForm, curReferenceRate, loading } = toRefs(state);
+  const { showTop, shopForm, curReferenceRate, loading } = toRefs(state);
   function loadCurReferenceRate() {
     return getCurReferenceRate()
       .then((res: any) => {
@@ -109,12 +137,132 @@
 </script>
 
 <style lang="scss" scoped>
+  .out_blue {
+    position: relative;
+    height: 490px;
+    background: #43a3fd;
+    border-radius: 0 0 50px 50px;
+
+    .inside_blue {
+      z-index: 999;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 485px;
+      background: #5264f9;
+      border-radius: 0 0 50px 50px;
+      .back_img {
+        position: absolute;
+        left: 20px;
+        top: 40px;
+        width: 60px;
+      }
+      .title {
+        color: #fff;
+        font-size: 1.5rem;
+        text-align: center;
+        margin-top: 40px;
+      }
+      .total_balance {
+        color: #b9d4ff;
+        font-size: 1.5rem;
+        margin: 230px auto 20px;
+        text-align: center;
+      }
+      .total_balance_value {
+        font-weight: 250;
+        color: #fff;
+        font-size: 1.75rem;
+        text-align: center;
+      }
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        top: -10px;
+        right: -100px;
+        transform: rotate(45deg);
+        display: block;
+        width: 350px;
+        height: 350px;
+        border-radius: 60px;
+        border: 5px solid #c72ff8;
+      }
+      &::after {
+        transform: rotate(70deg);
+        border: 5px solid #3eb9ff;
+      }
+    }
+  }
+  .middle_content {
+    padding: 20px;
+    .middle_title {
+      text-align: center;
+      font-weight: 600;
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+    .product_box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 30px;
+      img {
+        width: 40px;
+        margin: 0 5px;
+      }
+    }
+    .product_card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 260px;
+      height: 160px;
+      padding: 20px;
+      border-radius: 35px;
+      color: #a27430;
+      background: #ffcf87;
+      overflow: hidden;
+      p {
+        z-index: 1;
+      }
+      &::after {
+        content: '';
+        position: absolute;
+        top: -80px;
+        left: -30px;
+        width: 250px;
+        height: 250px;
+        background: #f3dcb9;
+        border-radius: 50%;
+      }
+      &:nth-child(3) {
+        color: #a73131;
+        background: #fa8596;
+        &::after {
+          background: #ffc1c1;
+        }
+      }
+    }
+  }
   .query_form {
     padding-bottom: 20px;
 
     :deep {
+      .nut-form-item {
+        flex-direction: column;
+        height: 180px;
+        .nut-form-item__label {
+          margin-bottom: 20px;
+        }
+      }
       .nut-cell-group__wrap {
         padding-bottom: 20px;
+        box-shadow: none;
+      }
+      .nut-range-button .number {
+        transform: translate3d(0, 100%, 0);
       }
     }
 
@@ -128,6 +276,16 @@
 
       .price {
         font-size: 50px;
+      }
+    }
+    .bottom_btn {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      :deep {
+        .nut-button {
+          width: 40%;
+        }
       }
     }
   }
