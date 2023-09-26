@@ -3,6 +3,13 @@ import { resolve } from 'path';
 import { ConfigEnv, loadEnv, UserConfig } from 'vite';
 import { wrapperEnv } from './build/utils';
 import requireTransform from 'vite-plugin-require-transform';
+import AutoImport from 'unplugin-auto-import/vite';
+import Icons from 'unplugin-icons/vite';
+import IconsResolver from 'unplugin-icons/resolver';
+import Components from 'unplugin-vue-components/vite';
+
+const { FileSystemIconLoader } = require('unplugin-icons/loaders');
+
 const pathResolve = (dir: string) => {
   return resolve(process.cwd(), '.', dir);
 };
@@ -86,6 +93,39 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
       requireTransform({
         fileRegex: /.ts$|.tsx$|.vue$/,
         //   fileRegex:/.js$|.jsx$|.vue$/
+      }),
+      AutoImport({
+        resolvers: [
+          // 自动导入图标组件
+          IconsResolver({
+            prefix: 'Icon',
+          }),
+        ],
+      }),
+      Components({
+        // 配置解析器
+        resolvers: [
+          // Icon自动引入解析器
+          IconsResolver({
+            // 自动引入的Icon组件统一前缀，默认为 i，设置false为不需要前缀
+            prefix: 'icon',
+            // 当图标集名字过长时，可使用集合别名
+            alias: {
+              system: 'system-uicons',
+            },
+            customCollections: ['home'],
+            enabledCollections: ['ep', 'home'],
+          }),
+        ],
+      }),
+      Icons({
+        compiler: 'vue3',
+        autoInstall: true,
+        customCollections: {
+          // home图标集
+          // 给svg文件设置fill="currentColor"属性，使图标的颜色具有适应性
+          home: FileSystemIconLoader('src/assets/svg/home', (svg: string) => svg.replace(/^<svg /, '<svg fill="currentColor" ')),
+        },
       }),
     ],
     build: {
