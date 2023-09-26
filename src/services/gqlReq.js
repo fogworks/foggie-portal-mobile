@@ -1,15 +1,14 @@
-
 const gqlRequest = (data, axiosConfig) => {
   const { headers, ...otherAxiosConfig } = axiosConfig || {};
-  return fetch("https://explorer.dmctech.io/1.1", {
+  return fetch('/1.1', {
     method: 'post',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/graphql',
-      ...headers
+      ...headers,
     },
     body: data,
-    ...otherAxiosConfig
+    ...otherAxiosConfig,
   }).catch((e) => {
     return Promise.resolve(e.response);
   });
@@ -24,14 +23,15 @@ const obj2gqlString = (obj) => {
   Object.keys(obj).forEach((key, index) => {
     ret +=
       obj[key] !== undefined
-        ? `${key}:${isObject(obj[key])
-          ? `{${obj2gqlString(obj[key])}}`
-          : canConvertNumber(obj[key])
-            ? Number(obj[key])
-            : Array.isArray(obj[key]) && obj[key].some((item) => isObject(item))
+        ? `${key}:${
+            isObject(obj[key])
+              ? `{${obj2gqlString(obj[key])}}`
+              : canConvertNumber(obj[key])
+              ? Number(obj[key])
+              : Array.isArray(obj[key]) && obj[key].some((item) => isObject(item))
               ? `[${obj[key].map((i) => `{${obj2gqlString(i)}}`)}]`
               : JSON.stringify(obj[key])
-        }`
+          }`
         : '';
     if (index !== Object.keys(obj).length - 1) {
       ret += ',';
@@ -51,12 +51,11 @@ function fieldsArrToString(arr) {
     .join(',');
 }
 
-
 const gqlReq = (tableName) => {
-
   const find = (condition, fields = '{}', axiosConfig = {}) => {
     const getGqlData = (condition) =>
-      `{find_${tableName}(${condition ? obj2gqlString(condition) : 'where:{}'})${typeof fields === 'string' ? fields : `{${fieldsArrToString(fields)}}`
+      `{find_${tableName}(${condition ? obj2gqlString(condition) : 'where:{}'})${
+        typeof fields === 'string' ? fields : `{${fieldsArrToString(fields)}}`
       }}`;
     if (condition?.limit && condition.limit > 1000) {
       const oneRequestLimit = 500;
@@ -71,10 +70,10 @@ const gqlReq = (tableName) => {
             getGqlData({
               ...condition,
               limit,
-              skip: index * oneRequestLimit
-            })
-          )
-        })
+              skip: index * oneRequestLimit,
+            }),
+          );
+        }),
       )
         .then((res) => {
           const ret = res[0];
@@ -104,7 +103,6 @@ const gqlReq = (tableName) => {
     return find({ ...condition, limit: totalCount }, fields, axiosConfig);
   };
 
-
   const paging = (condition, fields, axiosConfig) => {
     const getGqlData = (condition) =>
       `{paging_${tableName}(${condition ? obj2gqlString(condition) : 'where:{}'}){
@@ -132,7 +130,7 @@ const gqlReq = (tableName) => {
     find,
     count,
     findAll,
-    paging
+    paging,
   };
 };
 

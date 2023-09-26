@@ -57,7 +57,7 @@ export default function useDMCTrade() {
         .catch((error) => {});
     };
     try {
-      fetch('https://www.dmcscan.xyz/data')
+      fetch('/dmcscan/data')
         .then((res) => res.json())
         .then((cacheData) => {
           if (cacheData && cacheData.CacheTimestamp) {
@@ -73,7 +73,7 @@ export default function useDMCTrade() {
       getOrderData(0, []);
     }
 
-    fetch(`https://www.dmcscan.xyz/innerUniswapTrade`, {
+    fetch(`/dmcscan/innerUniswapTrade`, {
       next: { revalidate: 10 },
       method: 'POST',
       headers: {
@@ -90,7 +90,7 @@ export default function useDMCTrade() {
           dmcProduction.value = data?.DMCTotal.split(' ')[0];
         }
       });
-    fetch(`https://www.dmcscan.xyz/checkAvgStakeRate`, {
+    fetch(`/dmcscan/checkAvgStakeRate`, {
       next: { revalidate: 10 },
       method: 'POST',
       headers: {
@@ -109,11 +109,12 @@ export default function useDMCTrade() {
       });
   };
   getDMCTrade();
-  const perGBIncome = computed(() => {
+  const perTBIncome = computed(() => {
     const allRate = new BigNumber(2).plus(avgStakeRate.value);
     const perTBIncome = new BigNumber(dmcProduction.value).div(allRate).div(orderLockedPstTotal.value).toFixed(4, 1);
-    const perGBIncome = perTBIncome / 1024;
-    return perGBIncome || '--';
+    const perGBIncome = perTBIncome;
+    console.log(perGBIncome || '--', '1111111');
+    return perGBIncome > 0 ? perGBIncome : '--';
   });
   const foggiePerGBIncome = computed(() => {
     const allRate = new BigNumber(2).plus(avgStakeRate.value);
@@ -127,7 +128,7 @@ export default function useDMCTrade() {
     dmcProduction,
     avgStakeRate,
     orderLockedPstTotal,
-    perGBIncome,
+    perTBIncome,
     foggiePerGBIncome,
   };
 }

@@ -12,12 +12,12 @@
     <div class="product_box">
       <div class="product_card">
         <p>General Orders</p>
-        <p>20DMC/TB</p>
+        <p>{{ perTBIncome }} DMC/TB</p>
       </div>
       <img src="@/assets/arrow-right.svg" alt="" />
       <div class="product_card">
         <p>VIP Orders</p>
-        <p>20DMC/TB</p>
+        <p>20 DMC/TB</p>
       </div>
     </div>
   </div>
@@ -61,8 +61,10 @@
   import { buy_order, node_order_buy } from '@/api/amb';
   import { showToast } from '@nutui/nutui';
   import { useRouter } from 'vue-router';
+  import useDmcTrade from './useDmcTrade.js';
   // import useUpdateDMC from './useUpdateDMC';
   // const { getAmbDmc, targetAccount } = useUpdateDMC();
+  const { perTBIncome } = useDmcTrade();
   const router = useRouter();
   const state = reactive({
     shopForm: {
@@ -226,6 +228,7 @@
       overflow: hidden;
       p {
         z-index: 1;
+        margin-bottom: 5px;
       }
       &::after {
         content: '';

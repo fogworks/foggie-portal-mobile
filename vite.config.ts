@@ -43,13 +43,13 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
-         '^/api_accounts': {
+        '^/api_accounts': {
           target: 'https://devlop.fogworks.io',
           changeOrigin: true,
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
-          '^/order/buy': {
+        '^/order/buy': {
           target: 'http://154.31.41.124:18080',
           changeOrigin: true,
           secure: false,
@@ -61,11 +61,23 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
-         '^/v1': {
+        '^/v1': {
           target: env.VITE_USE_HTTPENDPOINT,
           changeOrigin: true,
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+        '^/1.1': {
+          target: 'https://explorer.dmctech.io',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+        '^/dmcscan': {
+          target: 'https://www.dmcscan.xyz',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/dmcscan/, ''),
         },
       },
     },
