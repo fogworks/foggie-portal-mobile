@@ -1,7 +1,7 @@
 <template>
   <div class="out_blue">
     <div class="inside_blue">
-      <img src="@/assets/arrow-left.svg" class="back_img" alt="" />
+      <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
       <p class="title">Buy</p>
       <p class="total_balance">Total Balance</p>
       <p class="total_balance_value">4949.0000 DMC</p>
@@ -19,6 +19,13 @@
         <p>VIP Orders</p>
         <p>20 DMC/TB</p>
       </div>
+    </div>
+  </div>
+  <div class="out_price_box">
+    <p>VIP Order <IconSetting @click="showTop = true"></IconSetting></p>
+    <div class="price_box">
+      Current market price: <br />
+      100TB = 222.0000 DMC
     </div>
   </div>
   <div style="margin: 0 20px">
@@ -56,6 +63,8 @@
 </template>
 
 <script setup lang="ts" name="Shop">
+  import IconArrowLeft from '~icons/home/arrow-left';
+  import IconSetting from '~icons/home/setting';
   import { toRefs, reactive, onMounted } from 'vue';
   import { getCurReferenceRate } from '@/api';
   import { buy_order, node_order_buy } from '@/api/amb';
@@ -158,6 +167,8 @@
         left: 20px;
         top: 40px;
         width: 60px;
+        height: 60px;
+        color: #fff;
       }
       .title {
         color: #fff;
@@ -247,6 +258,59 @@
           background: #ffc1c1;
         }
       }
+    }
+  }
+  .out_price_box {
+    padding: 20px;
+
+    p {
+      padding: 0 20px;
+      color: #999999;
+      font-size: 1.1rem;
+      svg {
+        float: right;
+        width: 40px;
+        height: 40px;
+        color: #5264f9;
+      }
+    }
+  }
+  .price_box {
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+    padding: 40px;
+    color: #fff;
+    border-radius: 50px;
+    background: #5264f9;
+    font-size: 1.25rem;
+    overflow: hidden;
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: -100px;
+      right: -50px;
+      width: 185px;
+      height: 200px;
+      opacity: 0.75;
+      border-radius: 50%;
+      transform: rotate(-129.95deg);
+      background: linear-gradient(154deg, #c72ff8 -2%, #c72ff8 11%, rgba(198, 48, 248, 0) 91%);
+      z-index: 1;
+    }
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      transform: rotate(-152.43deg);
+      bottom: -80px;
+      right: -80px;
+      width: 185px;
+      height: 200px;
+      opacity: 0.75;
+      border-radius: 50%;
+      background: linear-gradient(149deg, #5264f9 0%, #3af9ef 98%);
     }
   }
   .query_form {
