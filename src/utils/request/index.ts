@@ -5,7 +5,6 @@ import Qs from 'qs';
 import { useUserStore } from '@/store/modules/user';
 import { useRouter } from 'vue-router';
 import { refreshToken, user } from '@/api';
-const userStore = useUserStore();
 const router = useRouter();
 
 const service: AxiosInstance = axios.create({
@@ -15,6 +14,8 @@ const service: AxiosInstance = axios.create({
 
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    const userStore = useUserStore();
+
     if (config.url && config.url.indexOf('/api/accounts/login') > -1) {
       config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
       config.data = Qs.stringify(config.data);
@@ -28,6 +29,8 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
   async (response: AxiosResponse) => {
+    const userStore = useUserStore();
+
     const res = response.data;
     console.log(response, 'response');
 

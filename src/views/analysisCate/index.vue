@@ -1,24 +1,40 @@
 <template>
-  <div class="analysis_content">
-    <nut-tabs direction="horizontal" v-model="timeType" class="time_tabs">
-      <nut-tab-pane title="All" pane-key="0"> </nut-tab-pane>
-      <nut-tab-pane title="By 3 Months" pane-key="1"> </nut-tab-pane>
-      <nut-tab-pane title="By Month" pane-key="2"> </nut-tab-pane>
-      <nut-tab-pane title="By Week" pane-key="3"> </nut-tab-pane>
-      <nut-tab-pane title="By Day" pane-key="4"> </nut-tab-pane>
-    </nut-tabs>
-    <div class="balance_chart">
-      <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
-    </div>
-    <!-- LIST -->
-    <nut-infinite-loading class="list_box" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
-      <div class="list_item" v-for="item in listData">
-        <span>{{ item.createAt }}</span>
-        <span :class="[item.type == 'Earnings' ? 'earnings' : 'expenditures']">
-          {{ (item.type == 'Earnings' ? '+' : '-') + item.dmc }}
-        </span>
+  <div class="analysis_box">
+    <div style="background: #fff; padding-bottom: 10px; margin-bottom: 10px">
+      <div class="top_box">
+        <div class="top_back" @click="router.go(-1)">My Assets </div>
+        <div class="top_assets">
+          <div class="assets_block">
+            <span>10.0000 DMC</span>
+            <span>≈</span>
+            <span>$10.00</span>
+          </div>
+          <div class="right_img"><img src="@/assets/Trading.png" alt="" /> </div>
+        </div>
       </div>
-    </nut-infinite-loading>
+    </div>
+
+    <div class="analysis_content">
+      <nut-radio-group v-model="timeType" class="time_radios" direction="horizontal">
+        <nut-radio label="0">All</nut-radio>
+        <nut-radio label="1">By 3 Months</nut-radio>
+        <nut-radio label="2">By Month</nut-radio>
+        <nut-radio label="3">By Week</nut-radio>
+        <nut-radio label="4">By Day</nut-radio>
+      </nut-radio-group>
+      <div class="balance_chart">
+        <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
+      </div>
+      <!-- LIST -->
+      <nut-infinite-loading class="list_box" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
+        <div class="list_item" v-for="item in listData">
+          <span>{{ item.createAt }}</span>
+          <span :class="[item.type == 'Earnings' ? 'earnings' : 'expenditures']">
+            {{ (item.type == 'Earnings' ? '+' : '-') + item.dmc }}
+          </span>
+        </div>
+      </nut-infinite-loading>
+    </div>
   </div>
 </template>
 
@@ -109,18 +125,51 @@
 </script>
 
 <style lang="scss" scoped>
-  .time_tabs {
+  .analysis_box {
+    min-height: 100%;
+    background: #f1f1f1;
+  }
+  .top_box {
+    margin: 20px;
+    padding: 50px 10px 30px;
+    border-radius: 20px;
+    background: $primary-color;
+    .top_assets {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      .left_title {
+        width: 150px;
+        align-self: flex-start;
+      }
+      .assets_block {
+        flex: 1;
+        display: flex;
+        justify-content: space-evenly;
+      }
+      .right_img {
+        img {
+          width: 200px;
+        }
+      }
+    }
+  }
+  .time_radios {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
     margin-bottom: 10px;
-    margin-top: 5px;
+    padding: 30px 0;
+    background: #fff;
     :deep {
-      .nut-tabs__titles {
-        // background: transparent;
-      }
-      .nut-tabs__content {
-        display: none;
-      }
-      .nut-tabs__titles-item__text {
-        white-space: pre-wrap;
+      .nut-radio {
+        margin-right: 0;
+        .nut-radio__label {
+          margin: 0 3px;
+          font-size: 0.75rem;
+        }
       }
     }
   }
@@ -145,12 +194,6 @@
     background: #fff;
     border-radius: 5px;
     border-top: 1px solid #eee;
-    &:first-child {
-      border-radius: 40px 40px 0 0;
-    }
-    &:last-child {
-      border-radius: 0 0 40px 40px;
-    }
     .earnings {
       color: $main_green;
     }

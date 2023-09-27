@@ -44,6 +44,12 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
       host: true,
       hmr: true,
       proxy: {
+        '^/assets': {
+          target: 'https://devlop.fogworks.io',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
         '^/api': {
           target: 'https://devlop.fogworks.io',
           changeOrigin: true,

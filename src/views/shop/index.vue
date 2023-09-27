@@ -28,19 +28,26 @@
       100TB = 222.0000 DMC
     </div>
   </div>
-  <div style="margin: 0 20px">
-    <nut-button block type="info" @click="submit" :loading="loading"> Buy </nut-button>
+  <div style="margin: 0 20px 40px">
+    <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading"> Buy </nut-button>
   </div>
-  <nut-popup position="top" :style="{ height: '60%' }" v-model:visible="showTop">
+  <nut-popup position="top" :style="{ height: '80%' }" v-model:visible="showTop">
     <nut-form class="query_form" :model-value="shopForm">
-      <nut-form-item label="Space(GB)">
-        <nut-input-number :min="1" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
+      <nut-form-item label="Service Period">
+        <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
+          <nut-radio shape="button" :label="52">52 weeks</nut-radio>
+          <nut-radio shape="button" :label="38">38 weeks</nut-radio>
+          <nut-radio shape="button" :label="25">25 weeks</nut-radio>
+        </nut-radio-group>
       </nut-form-item>
-      <nut-form-item label="Weeks">
-        <nut-range v-model="shopForm.week" :max="52" :min="25" />
+      <nut-form-item label="OR">
+        <nut-range hidden-range v-model="shopForm.week" :max="52" :min="25" />
       </nut-form-item>
       <nut-form-item label="Markup">
-        <nut-range v-model="shopForm.floating_ratio" :max="100" :min="0" />
+        <nut-range hidden-range v-model="shopForm.floating_ratio" :max="100" :min="0" />
+      </nut-form-item>
+      <nut-form-item label="Space(TB)">
+        <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
       </nut-form-item>
       <div style="text-align: center" class="order-tip">
         <!-- Purchase
@@ -63,8 +70,8 @@
 </template>
 
 <script setup lang="ts" name="Shop">
-  import IconArrowLeft from '~icons/home/arrow-left';
-  import IconSetting from '~icons/home/setting';
+  import IconArrowLeft from '~icons/home/arrow-left.svg';
+  import IconSetting from '~icons/home/setting.svg';
   import { toRefs, reactive, onMounted } from 'vue';
   import { getCurReferenceRate } from '@/api';
   import { buy_order, node_order_buy } from '@/api/amb';
@@ -162,6 +169,7 @@
       height: 485px;
       background: #5264f9;
       border-radius: 0 0 50px 50px;
+      overflow: hidden;
       .back_img {
         position: absolute;
         left: 20px;
@@ -275,6 +283,11 @@
       }
     }
   }
+  .buy_btn {
+    height: 120px;
+    font-size: 40px;
+    margin: 40px 0;
+  }
   .price_box {
     position: relative;
     width: 80%;
@@ -314,14 +327,16 @@
     }
   }
   .query_form {
-    padding-bottom: 20px;
+    padding: 0 20px 20px 20px;
 
     :deep {
       .nut-form-item {
         flex-direction: column;
         height: 180px;
         .nut-form-item__label {
+          width: 100%;
           margin-bottom: 20px;
+          font-weight: 800;
         }
       }
       .nut-cell-group__wrap {
@@ -329,7 +344,12 @@
         box-shadow: none;
       }
       .nut-range-button .number {
+        font-weight: 800;
         transform: translate3d(0, 100%, 0);
+      }
+      .nut-range-container {
+        padding: 0 20px;
+        box-sizing: border-box;
       }
     }
 

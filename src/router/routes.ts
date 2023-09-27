@@ -12,14 +12,6 @@ export const routes = [
           title: 'tabbar.home',
         },
       },
-      {
-        path: 'withdraw',
-        name: 'Withdraw',
-        component: () => import('@/views/home/withdraw.vue'),
-        meta: {
-          title: 'tabbar.withdraw',
-        },
-      },
 
       {
         path: 'bindDmc',
@@ -64,6 +56,14 @@ export const routes = [
         },
       },
     ],
+  },
+  {
+    path: '/withdraw',
+    name: 'Withdraw',
+    component: () => import('@/views/home/withdraw.vue'),
+    meta: {
+      title: 'tabbar.withdraw',
+    },
   },
   {
     path: '/shop',

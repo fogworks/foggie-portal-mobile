@@ -1,8 +1,8 @@
 <template>
   <div class="login">
-    <div class="top_div">
-      <h1>SIGN IN</h1>
-      <!-- <img src="@/assets/logo.png" alt="" /> -->
+    <div class="top_div" style="margin-bottom: 40px">
+      <!-- <h1>SIGN IN</h1> -->
+      <img src="@/assets/fog-works2.png" alt="" />
     </div>
 
     <!-- <h1>Login</h1> -->

@@ -1,5 +1,7 @@
 <template>
   <div class="login">
+    <img src="@/assets/fog-works2.png" alt="" />
+
     <h1>Create Account</h1>
     <!-- <img src="@/assets/logo-dog-black.svg" alt="" /> -->
 

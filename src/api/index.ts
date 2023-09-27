@@ -9,7 +9,13 @@ export function login(data: object) {
 export function Captcha() {
   return http.get(`/api/accounts/captcha`, {});
 }
-
+export function transfer_valid(data) {
+  return request({
+    url: '/assets/transfer_valid',
+    method: 'POST',
+    data,
+  });
+}
 export function check_email_register(email: string) {
   return http.get(`/api/accounts/check_email_register?email=${email}`, {});
 }
@@ -34,7 +40,7 @@ export function user() {
 export const refreshToken = () => {
   return request({
     url: `/api/accounts/refresh_token`,
-    method: "POST",
+    method: 'POST',
   });
 };
 

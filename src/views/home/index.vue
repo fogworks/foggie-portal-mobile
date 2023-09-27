@@ -109,7 +109,9 @@
 
       <div>
         <span>Order:1234</span>
-        <span :class="['earnings']"> +{{ item.dmc }} </span>
+        <span :class="['earnings']">
+          +{{ item.dmc }} <IconArrowRight style="vertical-align: text-top" width="1.2rem" height="1.2rem" color="#5F57FF"></IconArrowRight
+        ></span>
       </div>
       <div
         ><span>100 PST</span> <span class="time">{{ item.createAt }}</span>
@@ -119,6 +121,7 @@
 </template>
 
 <script lang="ts" setup name="HomePage">
+  import IconArrowRight from '~icons/home/arrow-right.svg';
   import { Notice, TriangleUp } from '@nutui/icons-vue';
   import { toRefs, reactive } from 'vue';
   import { useRouter } from 'vue-router';
@@ -285,7 +288,7 @@
       font-size: 28px;
       text-align: left;
       .column_value {
-        font-size: 22px;
+        font-size: 28px;
       }
       .today_income {
         color: #ff8b00;
@@ -430,7 +433,6 @@
       display: inline-block;
       color: #121212;
       font-size: 36px;
-      margin-right: 40px;
     }
     .time {
       color: #ff6e00;

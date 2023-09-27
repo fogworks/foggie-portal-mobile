@@ -1,23 +1,24 @@
 <template>
   <div class="top_box">
+    <div class="top_back" @click="searchType = ''" v-if="searchType">{{ searchType }} </div>
     <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search">
       <template #left> <Search></Search> </template>
     </nut-input>
     <p>You can search your order here.</p>
     <nut-row type="flex" justify="space-between" class="top_btn_box">
       <nut-col :span="10">
-        <div class="flex-content">
+        <div class="flex-content" @click="searchType = 'Open'">
           <div class="svg-box">
             <!-- <Shop></Shop> -->
-            <img src="@/assets/buy.svg" alt="" />
+            <IconSwitch style="vertical-align: text-top" color="#5F57FF"></IconSwitch>
           </div>
           <span>Open</span></div
         >
       </nut-col>
       <nut-col :span="10">
-        <div class="flex-content">
+        <div class="flex-content" @click="searchType = 'History'">
           <div class="svg-box">
-            <img src="@/assets/order.svg" alt="" />
+            <IconHistory style="vertical-align: text-top" color="#5F57FF"></IconHistory>
           </div>
           <span>History</span></div
         >
@@ -25,7 +26,7 @@
     </nut-row>
   </div>
   <nut-infinite-loading class="list_box" load-more-txt="No more content" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
-    <div class="list_item" v-for="(item, index) in listData">
+    <div class="list_item" v-for="(item, index) in list">
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
@@ -33,21 +34,27 @@
       </div>
 
       <div>
-        <span>Order:1234</span>
-        <span :class="['earnings']"> +{{ item.dmc }} </span>
+        <span>Order:{{ item.order_id }}</span>
+        <span :class="['earnings']">
+          +{{ item.dmc }} <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight>
+        </span>
       </div>
       <div
-        ><span>100 PST</span> <span class="time">{{ item.createAt }}</span>
+        ><span>{{ item.pst }} PST</span> <span class="time">{{ item.createAt }}</span>
       </div>
     </div>
   </nut-infinite-loading>
 </template>
 
 <script lang="ts" setup name="ListPage">
+  import IconArrowRight from '~icons/home/arrow-right.svg';
+  import IconSwitch from '~icons/home/switch.svg';
+  import IconHistory from '~icons/home/history.svg';
   import { Search } from '@nutui/icons-vue';
   import { listData } from './data';
 
   import { ref } from 'vue';
+  const searchType = ref('');
 
   const router = useRouter();
 
@@ -157,8 +164,8 @@
           box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
           svg,
           img {
-            width: 55px;
-            height: 55px;
+            width: 70px;
+            height: 70px;
           }
         }
       }
@@ -257,7 +264,6 @@
         display: inline-block;
         color: #121212;
         font-size: 36px;
-        margin-right: 40px;
       }
       .time {
         color: #ff6e00;

@@ -11,23 +11,46 @@
       <nut-grid class="top_grid">
         <nut-grid-item text="Balance"
           ><div>
-            <img src="" alt="" />
+            <IconCions class="top_icon"></IconCions>
             <p>11.0000</p>
           </div>
         </nut-grid-item>
-        <nut-grid-item text="Earnings" @click="router.push('/analysisCate?type=1')">11.0000</nut-grid-item>
-        <nut-grid-item text="Expense" @click="router.push('/analysisCate?type=3')">11.0000</nut-grid-item>
-        <nut-grid-item text="Withdrawal" @click="router.push('/analysisCate?type=0')">11.0000</nut-grid-item>
+        <nut-grid-item class="top_icon" text="Earnings" @click="router.push('/analysisCate?type=1')"
+          ><div>
+            <IconIncome class="top_icon"></IconIncome>
+            <p>11.0000</p>
+          </div></nut-grid-item
+        >
+        <nut-grid-item class="top_icon" text="Expense" @click="router.push('/analysisCate?type=3')"
+          ><div>
+            <IconOutCome class="top_icon"></IconOutCome>
+            <p>11.0000</p>
+          </div></nut-grid-item
+        >
+        <nut-grid-item class="top_icon" text="Withdrawal" @click="router.push('/analysisCate?type=0')"
+          ><div>
+            <IconWithdraw class="top_icon"></IconWithdraw>
+            <p>11.0000</p>
+          </div></nut-grid-item
+        >
       </nut-grid>
     </div>
+    <nut-radio-group v-model="timeType" class="time_radios" direction="horizontal">
+      <nut-radio label="0">All</nut-radio>
+      <nut-radio label="1">By 3 Months</nut-radio>
+      <nut-radio label="2">By Month</nut-radio>
+      <nut-radio label="3">By Week</nut-radio>
+      <nut-radio label="4">By Day</nut-radio>
+    </nut-radio-group>
 
-    <nut-tabs v-model="timeType" class="time_tabs">
+    <!-- <nut-tabs v-model="timeType" class="time_tabs">
+      
       <nut-tab-pane title="All" pane-key="0"> </nut-tab-pane>
       <nut-tab-pane title="By 3 Months" pane-key="1"> </nut-tab-pane>
       <nut-tab-pane title="By Month" pane-key="2"> </nut-tab-pane>
       <nut-tab-pane title="By Week" pane-key="3"> </nut-tab-pane>
       <nut-tab-pane title="By Day" pane-key="4"> </nut-tab-pane>
-    </nut-tabs>
+    </nut-tabs> -->
     <div class="balance_chart">
       <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
     </div>
@@ -60,6 +83,10 @@
 </template>
 
 <script setup lang="ts" name="analysis">
+  import IconCions from '~icons/home/cions.svg';
+  import IconIncome from '~icons/home/earn-income.svg';
+  import IconWithdraw from '~icons/home/earn-withdraw.svg';
+  import IconOutCome from '~icons/home/out-come.svg';
   import { reactive, toRefs, onMounted, watch } from 'vue';
   import { lineOption } from '@/components/echarts/util';
   import { useRoute, useRouter } from 'vue-router';
@@ -136,6 +163,10 @@
   }
   .top_grid {
     border: none;
+    .top_icon {
+      width: 80px;
+      height: 80px;
+    }
     :deep {
       .nut-grid-item {
         max-width: 25%;
@@ -175,6 +206,22 @@
       }
       .nut-tabs__titles-item__text {
         // white-space: pre-wrap;
+      }
+    }
+  }
+  .time_radios {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 95%;
+    margin: 30px auto;
+    :deep {
+      .nut-radio {
+        margin-right: 0;
+        .nut-radio__label {
+          margin: 0 3px;
+          font-size: 0.75rem;
+        }
       }
     }
   }
