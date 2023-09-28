@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     BasicModal: typeof import('./../src/components/Modal/src/BasicModal.vue')['default']
     MyEcharts: typeof import('./../src/components/echarts/myEcharts.vue')['default']
+    NutActionSheet: typeof import('@nutui/nutui')['ActionSheet']
     NutAvatar: typeof import('@nutui/nutui')['Avatar']
     NutButton: typeof import('@nutui/nutui')['Button']
     NutCell: typeof import('@nutui/nutui')['Cell']
@@ -27,6 +28,8 @@ declare module 'vue' {
     NutRadioGroup: typeof import('@nutui/nutui')['RadioGroup']
     NutRange: typeof import('@nutui/nutui')['Range']
     NutRow: typeof import('@nutui/nutui')['Row']
+    NutSearchbar: typeof import('@nutui/nutui')['Searchbar']
+    NutSticky: typeof import('@nutui/nutui')['Sticky']
     NutTabbar: typeof import('@nutui/nutui')['Tabbar']
     NutTabbarItem: typeof import('@nutui/nutui')['TabbarItem']
     NutTabPane: typeof import('@nutui/nutui')['TabPane']
