@@ -92,6 +92,13 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
           rewrite: (path) => path.replace(/^\/dmcscan/, ''),
         },
+        '^/fog': {
+          target: 'http://218.2.96.99:6008',
+          // target: 'http://192.168.1.119:6008',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
       },
     },
     plugins: [

@@ -37,7 +37,7 @@ export const detailsData = [
     bill_id: '1015',
     block_num: 27675440,
     device_type: 3,
-    expire: '2024-03-06T08:12:12.000Z',
+    expire: '2024-03-06 08:12:12',
     fault: '',
     floating_ratio: 0,
     foggie_id: 'baeqagmjshayq',
