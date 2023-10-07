@@ -26,13 +26,12 @@
     </nut-row>
   </div>
   <nut-infinite-loading class="list_box" load-more-txt="No more content" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
-    <div class="list_item" v-for="(item, index) in list" @click="$router.push('/fileList')">
+    <div class="list_item" v-for="(item, index) in list" @click="$router.push({ name: 'listDetails', query: { id: item.order_id } })">
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" />
       </div>
-
       <div>
         <span>Order:{{ item.order_id }}</span>
         <span :class="['earnings']">
@@ -40,7 +39,7 @@
         </span>
       </div>
       <div
-        ><span>{{ item.pst }} PST</span> <span class="time">{{ item.createAt }}</span>
+        ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ item.createAt }}</span>
       </div>
     </div>
   </nut-infinite-loading>
@@ -51,16 +50,28 @@
   import IconSwitch from '~icons/home/switch.svg';
   import IconHistory from '~icons/home/history.svg';
   import { Search } from '@nutui/icons-vue';
-  import { listData } from './data';
-
+  import { search_cloud } from '@/api';
+  // import { listData } from './data';
+  import useVariable from './details/useVariable.js';
+  import { useOrderStore } from '@/store/modules/order';
   import { ref } from 'vue';
+  const { uuid } = useVariable();
   const searchType = ref('');
-
+  const loading = ref(false);
   const router = useRouter();
-
-  let list = ref(listData);
   const keyWord = ref('');
+  const infinityValue = ref(false);
+  const hasMore = ref(false);
 
+  const cloudSpaceList = ref([]);
+  const orderStore = useOrderStore();
+
+  let list = computed(() => {
+    return orderStore.getOrderList.filter((el) => {
+      return el.order_id.indexOf(keyWord.value) > -1 || el.pst == keyWord.value;
+    });
+  });
+  const loadMore = () => {};
   const toDetails = (index: any) => {
     router.push({ path: '/details', query: { id: index } });
   };
@@ -90,7 +101,39 @@
       return (size / 1024.0 / 1024.0 / 1024.0).toFixed(1) + ' GB';
     }
   };
-
+  // const getCloudSpaceList = () => {
+  //   return getCloudOrderList({ uuid: uuid.value }).then((res) => {
+  //     if (res.code == 200) {
+  //       cloudSpaceList.value = res.data;
+  //     }
+  //   });
+  // };
+  const searchList = async () => {
+    loading.value = true;
+    // await getCloudSpaceList();
+    await search_cloud()
+      .then((res) => {
+        const cloudList = res.result.data.filter((el) => {
+          if (!el.result) {
+            // return false;
+          }
+          const target = cloudSpaceList.value.find((item) => item.order_id == el.order_id);
+          if (!target) {
+            el.notThisClient = true;
+          }
+          return true;
+        });
+        orderStore.setOrderList(cloudList);
+        // store.dispatch('global/setCloudList', cloudList);
+        loading.value = false;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  };
+  onMounted(() => {
+    searchList();
+  });
   // export default {
   //   setup() {
 

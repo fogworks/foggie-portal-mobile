@@ -35,7 +35,7 @@
       </nut-grid-item>
     </nut-grid> -->
     <nut-row class="order-icons">
-      <nut-col :span="6" class="order-icon-recycle">
+      <nut-col @click="router.push({ name: 'FileList', query: { id: route.query.order_id } })" :span="6" class="order-icon-recycle">
         <IconRecycleFill color="#fff" />
       </nut-col>
       <nut-col :span="6" class="order-icon-node-tree">
@@ -81,8 +81,10 @@
   import { detailsData } from '../data';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
+  import { useRouter, useRoute } from 'vue-router';
 
-  // const router = useRouter();
+  const route = useRoute();
+  const router = useRouter();
   // let details = reactive<any>({ data: {} });
 
   // import { get_order_node } from '@/api/amb';

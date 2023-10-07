@@ -1,5 +1,40 @@
 <template>
   <div class="fileList_content">
+    <nut-popup position="top" round pop-class="type_check_pop" v-model:visible="showTypeCheckPop">
+      <!-- <p class="cate_title">Classifications</p> -->
+      <div class="type_check_box">
+        <div class="type_item" @click="switchType(0)">
+          <div class="svg_box">
+            <IconAllCate></IconAllCate>
+          </div>
+          <p>All</p>
+        </div>
+        <div class="type_item" @click="switchType(3)">
+          <div class="svg_box">
+            <IconAudio></IconAudio>
+          </div>
+          <p>Audio</p>
+        </div>
+        <div class="type_item" @click="switchType(1)">
+          <div class="svg_box">
+            <IconImage></IconImage>
+          </div>
+          <p>Images</p>
+        </div>
+        <div class="type_item" @click="switchType(4)">
+          <div class="svg_box">
+            <IconDocument></IconDocument>
+          </div>
+          <p>Documents</p>
+        </div>
+        <div class="type_item" @click="switchType(2)">
+          <div class="svg_box">
+            <IconVideo></IconVideo>
+          </div>
+          <p>Video</p>
+        </div>
+      </div>
+    </nut-popup>
     <nut-sticky>
       <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
         <div style="display: flex">
@@ -9,7 +44,7 @@
           </span>
           <TriangleUp
             @click="showTypeCheckPop = !showTypeCheckPop"
-            :class="['triangle', showTypeCheckPop ? 'triangleDown' : '']"
+            :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
           ></TriangleUp>
         </div>
       </div>
@@ -24,7 +59,7 @@
         <span @click="cancelSelect">Cancel</span>
       </div>
     </nut-sticky>
-    <nut-infinite-loading class="file_list" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
+    <nut-infinite-loading v-if="fileType !== 'Image'" class="file_list" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
       <div
         :class="['list_item', item.checked ? 'row_is_checked' : '']"
         v-for="(item, index) in list"
@@ -44,6 +79,17 @@
         <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
       </div>
     </nut-infinite-loading>
+    <ImgList
+      :orderId="route.query.id"
+      v-model:isCheckMode="isCheckMode"
+      v-model:checkedData="imgCheckedData"
+      @cancelSelect="cancelSelect"
+      @selectAll="selectAll"
+      @touchRow="touchRow"
+      @touchmove="touchmove"
+      @touchend="touchend"
+      v-else
+    ></ImgList>
     <!-- checkbox action -->
     <nut-tabbar
       v-if="isCheckMode"
@@ -99,48 +145,31 @@
         <IconFolder></IconFolder>
         <p> {{ chooseItem.name }}</p>
         <nut-searchbar v-model="newName" placeholder="Please Input New Name"></nut-searchbar>
-        <nut-button type="info" block>Confirm</nut-button>
+        <nut-button type="info" block @click="confirmRename">Confirm</nut-button>
       </div>
     </nut-popup>
-    <nut-popup position="top" round pop-class="type_check_pop" v-model:visible="showTypeCheckPop">
-      <!-- <p class="cate_title">Classifications</p> -->
-      <div class="type_check_box">
-        <div class="type_item" @click="switchType(0)">
-          <div class="svg_box">
-            <IconAllCate></IconAllCate>
-          </div>
-          <p>All</p>
+
+    <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
+      <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+      <div class="middle_img">
+        <nut-image :src="detailImg" fit="contain" postion="center" />
+      </div>
+      <div class="bottom_action">
+        <div>
+          <IconShare></IconShare>
+          <p>Share</p>
         </div>
-        <div class="type_item" @click="switchType(3)">
-          <div class="svg_box">
-            <IconAudio></IconAudio>
-          </div>
-          <p>Audio</p>
-        </div>
-        <div class="type_item" @click="switchType(1)">
-          <div class="svg_box">
-            <IconImage></IconImage>
-          </div>
-          <p>Images</p>
-        </div>
-        <div class="type_item" @click="switchType(4)">
-          <div class="svg_box">
-            <IconDocument></IconDocument>
-          </div>
-          <p>Documents</p>
-        </div>
-        <div class="type_item" @click="switchType(2)">
-          <div class="svg_box">
-            <IconVideo></IconVideo>
-          </div>
-          <p>Video</p>
+        <div>
+          <IconDownload></IconDownload>
+          <p>Download</p>
         </div>
       </div>
-    </nut-popup>
+    </nut-overlay>
   </div>
 </template>
 
 <script setup lang="ts">
+  import detailImg from '@/assets/fog-works.png';
   import IconAllCate from '~icons/home/all-cate.svg';
   import IconAudio from '~icons/home/audio.svg';
   import IconImage from '~icons/home/image.svg';
@@ -155,11 +184,17 @@
   import IconDelete from '~icons/home/delete.svg';
   import IconSwitch from '~icons/home/switch.svg';
   import IconMore from '~icons/home/more.svg';
+  import IconArrowLeft from '~icons/home/arrow-left.svg';
   import { reactive, toRefs, watch } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { Search2, TriangleUp } from '@nutui/icons-vue';
-  import { showDialog } from '@nutui/nutui';
+  import { showDialog, showToast } from '@nutui/nutui';
+  import ImgList from './imgList.vue';
+  import { rename_objects } from '@/api';
+  import useDelete from './useDelete.js';
+  import useShare from './useShare.js';
   import '@nutui/nutui/dist/packages/dialog/style';
+  import '@nutui/nutui/dist/packages/toast/style';
   let timeOutEvent;
   const route = useRoute();
   const router = useRouter();
@@ -180,6 +215,9 @@
     renameShow: false,
     newName: '',
     showTypeCheckPop: false,
+    tableLoading: false,
+    detailShow: false,
+    imgCheckedData: [],
   });
   const menuItems = ref([
     {
@@ -200,10 +238,32 @@
       color: 'red',
     },
   ]);
-  const { showTypeCheckPop, newName, renameShow, isCheckMode, chooseItem, showActionPop, list, hasMore, infinityValue, keyWord, fileType } =
-    toRefs(state);
+
+  const {
+    tableLoading,
+    showTypeCheckPop,
+    newName,
+    renameShow,
+    isCheckMode,
+    chooseItem,
+    showActionPop,
+    list,
+    hasMore,
+    infinityValue,
+    keyWord,
+    fileType,
+    detailShow,
+    imgCheckedData,
+  } = toRefs(state);
+  const { doShare, ipfsPin, showShareDialog, shareRefContent, copyContent } = useShare();
+  const { deleteItem } = useDelete(tableLoading, refresh);
+  function refresh() {}
   const selectArr = computed(() => {
-    return list.value.filter((el) => el.checked);
+    if (fileType == 'Image') {
+      return imgCheckedData.value;
+    } else {
+      return list.value.filter((el) => el.checked);
+    }
   });
   const loadMore = () => {};
   const touchRow = (row, event) => {
@@ -224,8 +284,9 @@
         // select
         row.checked = !row.checked;
       }
-      // 点击事件
-      // location.href = '/a/live-rooms.html';
+
+      chooseItem.value = [row];
+      detailShow.value = true;
     }
     return false;
   };
@@ -251,14 +312,63 @@
     chooseItem.value = item;
   };
   const tabSwitch = (item, index) => {
-    console.log(item, index);
     handlerClick(item.tabTitle.toLowerCase());
+  };
+  const confirmRename = () => {
+    if (!newName.value) {
+      showToast.warn('Please enter a new name');
+
+      return false;
+    }
+    const folderNameRegex = /^[^\s\\\\/:*?"<>|]+(\.[^\s\\\\/:*?"<>|]+)?$/;
+    if (!folderNameRegex.test(newName.value)) {
+      showToast.warn("Incorrect name format. Please do not include special characters and do not end with the character '/'");
+
+      return false;
+    }
+    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
+
+    const targetObject = () => {
+      const arr = checkData[0]?.fullName.split('/');
+
+      if (checkData[0]?.type == 'application/x-directory') {
+        if (newName.value[newName.value.length - 1] == '/') {
+          const newData = newName.value.slice(0, newName.value.length - 1);
+          console.log(newData, 'newDatanewData');
+          arr.splice(arr.length - 2, 1, newData);
+        } else {
+          arr.splice(arr.length - 2, 1, newName.value);
+        }
+      } else {
+        arr.splice(arr.length - 1, 1, newName.value);
+      }
+      return arr.join('/');
+    };
+    if (targetObject().length > 1024) {
+      showToast.warn('The file path cannot exceed a maximum of 1024 characters, operation failed');
+      return false;
+    }
+    rename_objects({
+      sourceObject: checkData[0].fullName,
+      targetObject: targetObject(),
+      //   token: token.value,
+      fileType: checkData[0].fileType,
+    }).then((res) => {
+      if (res) {
+        proxy.$notify({
+          customClass: 'notify-success',
+          message: 'Rename successful',
+          position: 'bottom-left',
+        });
+        emits('refreshList');
+        emits('reset');
+        emits('update:renameVisible', false);
+      }
+    });
   };
   const handlerClick = async (type) => {
     showActionPop.value = false;
-    console.log(type);
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
-
     if (type === 'move') {
     } else if (type === 'download') {
       //   downLoad();
@@ -269,11 +379,15 @@
         cancelText: 'Cancel',
         okText: 'Confirm',
         // onOk,
+      }).then(() => {
+        deleteItem(checkData);
       });
     } else if (type === 'rename') {
       renameShow.value = true;
     } else if (type === 'newFolder') {
     } else if (type === 'share') {
+      await doShare(checkData[0]);
+      cancelSelect();
       // proxy.$notify({
       //   customClass: "notify-success",
       //   message: "Share succeeded",
@@ -305,6 +419,7 @@
         fileType.value = 'All File List';
         break;
     }
+    cancelSelect();
     showTypeCheckPop.value = false;
   };
   watch(
@@ -322,6 +437,35 @@
   }
 </style>
 <style lang="scss" scoped>
+  .detail_over {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px 10px;
+    background: #000;
+    box-sizing: border-box;
+
+    .middle_img {
+    }
+    .bottom_action {
+      display: flex;
+      justify-content: space-evenly;
+      height: 300px;
+      div {
+        text-align: center;
+        color: #fff;
+      }
+      svg {
+        color: #fff;
+        width: 80px;
+        height: 80px;
+      }
+    }
+  }
+  .detail_back {
+    width: 60px;
+    height: 60px;
+  }
   .top_back {
     margin: 0;
   }

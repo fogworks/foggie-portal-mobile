@@ -68,3 +68,88 @@ export const updateUser = (id, data) => {
     data: data,
   });
 };
+export const file_delete = (token, item, deviceData) => {
+  let objects: Array<any> = [];
+  let prefixes: Array<any> = [];
+  let cids: Array<any> = [];
+  for (let i = 0; i < item.length; i++) {
+    if (item[i].type == 'application/x-directory') {
+      prefixes.push(item[i].key);
+    } else {
+      objects.push({
+        pubkey: item[i].pubkey ? item[i].pubkey : encodeURIComponent(item[i].key),
+      });
+      cids.push(item[i].cid);
+    }
+  }
+  let object_type = 'normal';
+  let url = `/file_delete`;
+  let data = {
+    deviceData,
+    cids,
+    objects,
+    object_type,
+    token,
+    prefixes,
+  };
+  return request({
+    url: url,
+    method: 'DELETE',
+    data,
+  });
+};
+//ipns publish list
+export const file_pin = (data) => {
+  let url = `/file/pin`;
+  return request({
+    url: url,
+    method: 'POST',
+    data: data,
+  });
+};
+export const files_download = (params) => {
+  let url = `/files_download`;
+  return request({
+    url: url,
+    method: 'GET',
+    params,
+  });
+};
+export const rename_objects = (data) => {
+  let url = `/rename_objects`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+};
+export const get_timeline = (data) => {
+  let url = `/get_timeline`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+};
+export const touch_file = (data) => {
+  let url = `/touch_file`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+};
+export const file_download = (params) => {
+  let url = `/file_download`;
+  return request({
+    url: url,
+    method: 'get',
+    params,
+  });
+};
+export const search_cloud = () => {
+  return request({
+    url: `/ambmgr/order/get_order`,
+    method: 'GET',
+  });
+};
