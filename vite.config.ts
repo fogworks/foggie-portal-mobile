@@ -7,6 +7,7 @@ import AutoImport from 'unplugin-auto-import/vite';
 import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 import Components from 'unplugin-vue-components/vite';
+import commonjs from 'vite-plugin-commonjs';
 
 const { FileSystemIconLoader } = require('unplugin-icons/loaders');
 
@@ -102,9 +103,10 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
       },
     },
     plugins: [
+      commonjs(),
       createVitePlugins(viteEnv, isProduction),
       requireTransform({
-        fileRegex: /.ts$|.tsx$|.vue$/,
+        fileRegex: /.ts$|.tsx$|.vue$|.js$/,
         //   fileRegex:/.js$|.jsx$|.vue$/
       }),
       AutoImport({

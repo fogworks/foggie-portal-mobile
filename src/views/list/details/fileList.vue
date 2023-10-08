@@ -64,9 +64,9 @@
         :class="['list_item', item.checked ? 'row_is_checked' : '']"
         v-for="(item, index) in list"
         :key="index"
-        @touchstart="touchRow(item, $event)"
-        @touchmove="touchmoveRow(item, $event)"
-        @touchend="touchendRow(item, $event)"
+        @touchstart.prevent="touchRow(item, $event)"
+        @touchmove.prevent="touchmoveRow(item, $event)"
+        @touchend.prevent="touchendRow(item, $event)"
       >
         <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
           <IconOk class="ok_icon" v-if="item.checked"></IconOk>
@@ -80,14 +80,15 @@
       </div>
     </nut-infinite-loading>
     <ImgList
+      ref="imgListRef"
       :orderId="route.query.id"
       v-model:isCheckMode="isCheckMode"
       v-model:checkedData="imgCheckedData"
       @cancelSelect="cancelSelect"
       @selectAll="selectAll"
       @touchRow="touchRow"
-      @touchmove="touchmove"
-      @touchend="touchend"
+      @touchmoveRow="touchmoveRow"
+      @touchendRow="touchendRow"
       v-else
     ></ImgList>
     <!-- checkbox action -->
@@ -193,8 +194,11 @@
   import { rename_objects } from '@/api';
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
+  import { ProxHeader, ProxGetRequest, ProxGetRequests, ProxRangeRequest, ProxGetInfo } from '@/pb/prox_pb.js';
+  import grpcService from '@/pb/prox_grpc_web_pb.js';
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
+
   let timeOutEvent;
   const route = useRoute();
   const router = useRouter();
@@ -219,25 +223,7 @@
     detailShow: false,
     imgCheckedData: [],
   });
-  const menuItems = ref([
-    {
-      name: '分享',
-    },
-    {
-      name: '重命名',
-    },
-    {
-      name: '移动',
-    },
-    {
-      name: '下载',
-    },
-    {
-      name: '删除',
-      disable: false,
-      color: 'red',
-    },
-  ]);
+  const imgListRef = ref('');
 
   const {
     tableLoading,
@@ -274,24 +260,33 @@
   };
 
   const touchmoveRow = (row, event) => {
+    console.log('touchmoveRow');
+
     clearTimeout(timeOutEvent);
     timeOutEvent = 0;
   };
   const touchendRow = (row, event) => {
+    console.log('touchendRow');
+
     clearTimeout(timeOutEvent);
+    if (event?.target?.nodeName == 'svg' || event?.target?.nodeName == 'path') {
+      showAction(row);
+      return false;
+    }
     if (timeOutEvent != 0) {
       if (isCheckMode.value) {
         // select
         row.checked = !row.checked;
+      } else {
+        chooseItem.value = [row];
+        detailShow.value = true;
       }
-
-      chooseItem.value = [row];
-      detailShow.value = true;
     }
     return false;
   };
   const cancelSelect = () => {
     isCheckMode.value = false;
+
     list.value.forEach((el) => {
       el.checked = false;
     });
@@ -422,6 +417,26 @@
     cancelSelect();
     showTypeCheckPop.value = false;
   };
+  let server = null;
+
+  function getListData() {
+    let ip = '154.31.3.222';
+    server = new grpcService.ServiceClient(`http://${ip}:7007`);
+    let request = null;
+    // let header = new ProxHeader();
+    // let range = new ProxRangeRequest();
+  }
+  watch(
+    fileType,
+    (val, old) => {
+      if (old == 'Image') {
+        imgListRef.value.resetChecked();
+        imgCheckedData.value = [];
+      }
+      getListData();
+    },
+    { deep: true, immediate: true },
+  );
   watch(
     route,
     (val) => {

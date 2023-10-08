@@ -1,0 +1,506 @@
+syntax = "proto3";
+package proto;
+option go_package = "bct.com/proxma/net/proto";
+
+
+//message Header {
+//
+//	string request_id = 1;
+//	int64 timestamp = 2;
+//	string node_id = 3;
+//	string key =4;
+//	bytes signature =5;
+//	bytes addr = 6;
+//}
+
+message ProxHeader {
+	string peerId =1;
+	string Id = 2;
+	string token = 3;
+}
+
+message ProxStagePartRequest {
+	bytes chunk = 1;
+}
+
+message ProxStagePartResponse {
+	string cid = 1;
+}
+message ProxPinPay {
+	int32 copied = 1;
+	string trxId = 2;
+}
+message ProxStagePin{
+	ProxHeader header = 1;
+	ProxPinRequest request =2;
+}
+message ProxStageRequest {
+	oneof Option{
+		ProxStagePin pin =1;
+		bytes chunk = 2;
+	}
+}
+
+//message StageProxRequest {
+//	bytes chunk = 1;
+//}
+
+message StageProxResponse {
+	string cid = 1;
+}
+
+message GetProxRequest {
+	string cid = 1;
+}
+
+message GetProxResponse {
+	bytes chunk = 1;
+}
+
+
+message ProxMultipartCreateResp{
+	string uploadId=1;
+	string key=2;
+}
+message ProxStageResponse {
+	string cid = 1;
+}
+
+message ProxDeleteObjectRequest{
+	repeated string cids=1;
+	repeated ProxUpload objects =2;
+	string object_type = 3;
+	repeated string prefixes = 4;
+}
+message ProxDeleteResp {
+	repeated string objects=1;
+}
+
+message ProxDeleteObjectReq{
+	ProxHeader header = 1;
+	ProxDeleteObjectRequest request = 2;
+}
+message ProxPutObjectRequest {
+	string key = 1;
+	string md5 = 2;
+	int64 contentLength =3;
+	string contentType = 4;
+	bool stageOnly = 5;
+	int32 category = 6;
+	string tags = 7;
+}
+
+message ProxPutObjectReq {
+	ProxHeader header = 1;
+	ProxPutObjectRequest request = 2;
+}
+message ProxPutObjectOpt{
+	oneof Option{
+		ProxPutObjectReq req = 1;
+		bytes chunk = 2;
+	}
+}
+message ProxPutObjectResp {
+	string md5 = 1;
+	string cid = 2;
+	string lastModified = 3;
+	string etag = 4;
+}
+message ProxCompPart{
+	int64 partNumber = 1;
+	string etag = 2;
+}
+message ProxCompletePartUpload {
+	repeated ProxCompPart parts = 1;
+}
+message ProxCompleteMultipartRequest{
+	string key = 1;
+	string uploadId= 2;
+	ProxCompletePartUpload completeUpload=3;
+	bool stageOnly = 4;
+}
+message ProxCompleteMultipartReq{
+	ProxHeader header = 1;
+	ProxCompleteMultipartRequest request = 2;
+}
+message ProxCompleteMultipartResp {
+	string  key = 1;
+	string etag = 2;
+	string  cid = 3;
+	int64 size = 4;
+}
+message ProxRangeRequest {
+	int64 start = 1;
+	int64 length = 2;
+}
+//message ProxThumbnail {
+//	int64 width = 1;
+//	int64 height = 2;
+//}
+
+message ProxGetRequest {
+	ProxHeader header = 1;
+	string cid = 2;
+	string key = 3;
+	ProxRangeRequest range = 4;
+	bool thumb = 5;
+}
+
+message ProxGetInfo {
+	string cid = 1;
+	string key = 2;
+}
+message ProxGetRequests {
+	ProxHeader header = 1;
+	repeated ProxGetInfo objs= 2;
+	ProxRangeRequest range = 3;
+	repeated string prefixes = 4;
+}
+message ProxSearchRequest {
+	ProxHeader header = 1;
+	string cid = 2;
+	string key = 3;
+}
+
+message ProxObjectInfo {
+	ProxObject object = 1;
+	ProxRangeRequest range = 2;
+}
+
+message ProxGetResponse {
+	oneof Option{
+		ProxObjectInfo object = 1;
+		bytes chunk = 2;
+	}
+}
+
+message ProxLinks {
+	ProxLink meta = 1;
+	repeated ProxLink links = 2;
+}
+message ProxLink {
+	string name = 1;
+	string path = 2;
+	string hash = 3;
+	int32 type = 4;
+	uint64 size = 5;
+}
+message ProxSearchResponse {
+	oneof Option{
+		ProxLink object = 1;
+		ProxLinks links= 2;
+		bytes chunk = 3;
+	}
+
+}
+
+message ProxPutObjectResult{
+	string md5 = 1;
+	string cid = 2;
+	string lastModified = 3;
+}
+
+message ProxPutObjectPartRequest {
+	string md5 = 1;
+	string key = 2;
+	int64 contentLength =3;
+	int64 partId = 4;
+	string uploadId = 5;
+}
+message ProxPutObjectPartReq {
+	ProxHeader header = 1;
+	ProxPutObjectPartRequest  request =2 ;
+}
+message ProxPutObjectPartOpt{
+	oneof Option{
+		ProxPutObjectPartReq req = 1;
+		bytes chunk = 2;
+	}
+}
+message ProxPutObjectPartResult{
+	string etag = 1;
+	int64 size = 2;
+}
+message ProxListPartsRequest {
+	string key = 1;
+	string uploadId = 2;
+	int64 maxParts = 3;
+	int64 partNumberMarker =4;
+}
+message ProxListUploadRequest {
+	string delimiter = 1;
+	string encodingType = 2;
+	int64 maxUploads = 3;
+	string keyMarker =4;
+	string prefix = 5;
+	string uploadIdMarker = 6;
+}
+message ProxListUploadReq {
+	ProxHeader header = 1;
+	ProxListUploadRequest request = 2;
+}
+message ProxListPartsReq {
+	ProxHeader header = 1;
+	ProxListPartsRequest request = 2;
+}
+message ProxPart {
+	int64 partNumber = 1;
+	string etag = 2;
+	string lastModified = 3;
+	int64 size = 4;
+}
+message ProxListMultipartUploadResponse {
+	string prefix = 1;
+	string keyMarker = 2;
+	string UploadIdMarker = 3;
+	string NextKeyMarker = 4;
+	string NextUploadIdMarker = 5;
+	int64 MaxUploads = 6;
+	bool isTruncated  = 7;
+	repeated ProxUpload uploads = 8;
+	string delimiter = 9;
+	repeated string commonPrefixes = 10;
+}
+message ProxListPartsResponse {
+	string key = 1;
+	string uploadId = 2;
+	int64 partNumberMarker = 3;
+	int64 nextPartNumberMarker=4;
+	bool isTruncated =5;
+	repeated ProxPart parts = 6;
+}
+message ProxUpload {
+	string  key =1;
+	string  uploadId=2;
+}
+
+message ProxListObjectsRequest{
+		string prefix =1;
+		string delimiter = 2;
+		string encoding_type = 3;
+		int64  max_keys = 4;
+		string start_after = 5;
+		string continuation_token=6;
+		string version_id_marker = 7;
+		string key_marker = 8;
+		string orderby = 9;
+		string tags = 10;
+		int32  category = 11;
+		string date = 12;
+
+}
+message ProxListObjectsReq{
+	ProxHeader header = 1;
+	ProxListObjectsRequest request =2 ;
+}
+message ProxObject{
+	string key= 1;
+	string etag = 2;
+	string lastModified = 3;
+	int64  size=4;
+	string contentType = 5;
+	string cid = 6;
+	string fileId = 7;
+	bool isPin = 8;
+	bool isPinCyfs = 9;
+	string pinExp = 10;
+	string CyfsExp = 11;
+	string OOD = 12;
+	bool  isPersistent= 13;
+	int32 category = 14;
+	string tags = 15;
+}
+message ProxPrefixPin{
+	string prefix=1;
+	string cid = 2;
+}
+message ProxListObjectsResp{
+	repeated string commonPrefixes =1;
+	bool isTruncated = 2;
+	string prefix = 3;
+	int64 maxKeys = 4;
+	string nextMarker = 5;
+	string continuationToken=6;
+	repeated ProxObject content = 7;
+	repeated ProxPrefixPin prefixpins = 8;
+}
+
+message ProxPinRequest{
+		string cid = 1;
+		string stype = 2;
+		int64 exp=3;
+		bool pin = 4;
+		bool isDir = 5;
+		string key = 6;
+}
+message ProxPinResp{
+	string cid = 1;
+	string status = 2;
+}
+message ProxPinReq{
+	ProxHeader header = 1;
+	ProxPinRequest request = 2;
+	ProxPinPay pay = 3;
+}
+message GetPeerIdInfoReq{
+	ProxHeader header = 1;
+}
+message GetPeerIDReply{
+	string peerID = 1;
+}
+message ProxUnpinRequest{
+		string cid = 1;
+		string stype = 2;
+}
+message ProxUnPinReq{
+	ProxHeader header = 1;
+	ProxUnpinRequest request = 2;
+
+}
+message ProxPingRequest {
+	ProxHeader header = 1;
+}
+message ProxPingResponse {
+	string peerID = 1;
+}
+message ProxFindRequest{
+		ProxHeader header = 1;
+		string cid = 2;
+		string key = 3;
+		string fileId = 4;
+}
+message ProxObjects {
+	repeated ProxObject contents = 1;
+}
+message ProxRequestSummaryIds {
+	ProxHeader header = 1;
+	repeated string ids = 2;
+}
+message ProxSummaryInfo {
+	string id = 1;
+	int64 total = 2;
+	int64 count = 3;
+}
+message ProxSummaryInfos{
+	repeated ProxSummaryInfo contents = 1;
+}
+message ProxRenameObject {
+	ProxHeader header = 1;
+	string sourceObject = 2;
+	string targetObject = 3;
+	int32  fileType = 4;
+}
+message ProxRenameObjectResp {
+	int64 total = 1;
+}
+message ProxTimeLine{
+	ProxHeader header = 1;
+	string interval = 2;
+	string date = 3;
+	int32 category=4;
+}
+message ProxTimeLineResp {
+	repeated ProxTimeLineRes contents=1;
+}
+message ProxTimeLineRes {
+	string date = 1;
+	int64 count = 2;
+}
+message ProxPresignedURL {
+	ProxHeader header = 1;
+	string url = 2;
+	string method = 3;
+	int64 expires =4;
+}
+message ProxPresignedURLResp {
+	string url = 1;
+}
+message ProxFileInfo{
+	ProxHeader header = 1;
+	string key = 2;
+	string contentType= 3;
+	int64 size = 4;
+
+}
+message ProxTouchResp {
+	string status=1;
+}
+service Service {
+	rpc Ping(ProxPingRequest)returns(ProxPingResponse){}
+	rpc Pin(ProxPinReq)returns(ProxPinResp){}
+	rpc Stage(stream ProxStageRequest) returns (ProxStageResponse) {}
+//	rpc Get(GetProxRequest) returns (stream GetProxResponse) {}
+	rpc GetPeerIdInfo(GetPeerIdInfoReq) returns(GetPeerIDReply){}
+	rpc PutObject(stream ProxPutObjectOpt)returns(ProxPutObjectResp){}
+	rpc NewMultipartObject(ProxPutObjectReq)returns(ProxMultipartCreateResp){}
+	rpc PutObjectPart(stream ProxPutObjectPartOpt)returns(ProxPutObjectPartResult){}
+	rpc CompleteMultipart(ProxCompleteMultipartReq)returns(ProxCompleteMultipartResp){}
+	rpc ListMultipart(ProxListUploadReq)returns(ProxListMultipartUploadResponse){}
+	rpc ListObjectParts(ProxListPartsReq)returns(ProxListPartsResponse){}
+	rpc ListObjects(ProxListObjectsReq)returns(ProxListObjectsResp){}
+	rpc GetObject(ProxGetRequest) returns (stream ProxGetResponse) {}
+	rpc GetObjects(ProxGetRequests) returns (stream ProxGetResponse) {}
+	rpc SearchObject(ProxSearchRequest) returns (stream ProxSearchResponse) {}
+	rpc FindObjects(ProxFindRequest) returns (ProxObjects) {}
+	rpc GetObjectInfo(ProxGetRequest) returns (ProxObject) {}
+	rpc DeleteObject(ProxDeleteObjectReq)returns(ProxDeleteResp){}
+	rpc SummaryInfo(ProxRequestSummaryIds)returns(ProxSummaryInfos){}
+	rpc RenameObjects(ProxRenameObject)returns(ProxRenameObjectResp){}
+	rpc GetTimeLine(ProxTimeLine)returns(ProxTimeLineResp){}
+	rpc GetPreSigned(ProxPresignedURL)returns(ProxPresignedURLResp){}
+	rpc TouchFile(ProxFileInfo)returns(ProxTouchResp){}
+	rpc Chat(ProxChatReq) returns (ProxChatResponse) {}
+	rpc Knowledge(ProxKNReq) returns (ProxKNResponse) {}
+	rpc GenerateCred(ProxCredRequest)returns(ProxCredResp){}
+	rpc ListCreds(ProxGetCredRequest)returns(ProxCredsList){}
+	rpc DeleteCred(ProxCredRequest)returns(ProxCredResp){}
+}
+message ProxCred{
+	string accessKey = 1;
+	string secretKey = 2;
+}
+message  ProxCredRequest{
+	ProxHeader header = 1;
+	ProxCred cred = 2;
+}
+message ProxCredResp {
+	string status = 1;
+}
+message ProxGetCredRequest{
+	ProxHeader header = 1;
+}
+message ProxCredsList{
+	repeated ProxCred creds = 1;
+}
+message ProxChatReq {
+	ProxHeader header = 1;
+	ProxChatRequest request = 2;
+}
+message ProxChatRequest {
+	string vsName =1;
+	string query = 2;
+	bool en = 3;
+	string model = 4;
+	string chatType = 5;
+}
+
+message ProxChatResponse {
+	string value =1;
+	string status = 2;
+	string sourceDocuments = 3;
+}
+message ProxKNReq {
+	ProxHeader header = 1;
+	ProxKNRequest request = 2;
+}
+message ProxKNRequest {
+	string vsName = 1;
+	string title = 2;
+	string content = 3;
+	repeated string files = 4;
+	string method = 5;
+}
+message ProxKNResponse {
+	string status = 1;
+	string data = 2;
+}

@@ -26,7 +26,11 @@
     </nut-row>
   </div>
   <nut-infinite-loading class="list_box" load-more-txt="No more content" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
-    <div class="list_item" v-for="(item, index) in list" @click="$router.push({ name: 'listDetails', query: { id: item.order_id } })">
+    <div
+      class="list_item"
+      v-for="(item, index) in list"
+      @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
+    >
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />

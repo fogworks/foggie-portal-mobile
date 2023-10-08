@@ -17,18 +17,18 @@
             :class="['img-item']"
             v-for="(img, index2) in item.list"
             @touchstart="emits('touchRow', item)"
-            @touchmove="emits('touchmove', item)"
-            @touchend="emits('touchend', item)"
+            @touchmove="emits('touchmoveRow', item)"
+            @touchend="emits('touchendRow', item)"
           >
             <div :class="['mask', isCheckMode ? 'isChecking' : '']">
               <nut-checkbox
-                :class="['mask-checkbox', itemChecked(img.cid, item.dateId) ? 'itemChecked' : '']"
+                :class="['mask-checkbox', isCheckMode && itemChecked(img.cid, item.dateId) ? 'itemChecked' : '']"
                 :key="img.cid"
                 :label="img.cid"
               ></nut-checkbox>
             </div>
             <nut-image
-              :class="[itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
+              :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
               scroll-container=".img-content"
               :preview-teleported="true"
               :teleported="true"
@@ -66,7 +66,7 @@
   const imgCheckedData = reactive({
     value: {},
   });
-  const emits = defineEmits(['update:checkedData', 'touchRow', 'touchmove', 'touchend']);
+  const emits = defineEmits(['update:checkedData', 'touchRow', 'touchmoveRow', 'touchendRow']);
   const props = defineProps({
     orderId: [String, Number],
     isCheckMode: Boolean,

@@ -153,3 +153,10 @@ export const search_cloud = () => {
     method: 'GET',
   });
 };
+export const get_unique_order = (params) => {
+  return request({
+    url: `/ambmgr/order/get_unique_order`,
+    method: 'GET',
+    params,
+  });
+};
