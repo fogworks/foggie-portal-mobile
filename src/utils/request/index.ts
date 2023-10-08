@@ -32,8 +32,6 @@ service.interceptors.response.use(
     const userStore = useUserStore();
 
     const res = response.data;
-    console.log(response, 'response');
-
     const code = res.code;
     if (code !== 200) {
       if (response.config.url?.indexOf('/v1') == 0) {

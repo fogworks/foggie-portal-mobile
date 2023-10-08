@@ -79,7 +79,6 @@
   // import AESHelper from './AESHelper';
   // import { Image } from '@nutui/icons-vue';
   import { detailsData } from '../data';
-  import { get_unique_order } from '@/api/index.ts';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRouter, useRoute } from 'vue-router';
@@ -151,15 +150,7 @@
     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
     xhr.send(options.formData);
   };
-  const getOrderInfo = async () => {
-    await get_unique_order({ order_uuid: route?.query?.uuid }).then((res) => {
-      return res.result.data;
-    });
-  };
-  provide('getOrderInfo', getOrderInfo);
-  onMounted(() => {
-    getOrderInfo();
-  });
+
   // 218.2.96.99:6008
 
   //   bucketname: foggiebucket

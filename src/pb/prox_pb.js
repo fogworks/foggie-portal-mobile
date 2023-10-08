@@ -17631,8 +17631,8 @@ proto.proto.ProxKNResponse.prototype.setData = function (value) {
 };
 
 // goog.object.extend(exports, proto.proto);
-const exportedObject = {}; // 创建一个新对象，用于替代`exports`
+const exportedObject = {}; 
 
 goog.object.extend(exportedObject, proto.proto);
 
-module.exports = exportedObject; // 使用ES模块语法导出
+module.exports = exportedObject; 

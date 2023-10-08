@@ -38,20 +38,26 @@
     <nut-sticky>
       <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
         <div style="display: flex">
-          <div class="top_back" @click="router.go(-1)"> </div>
-          <span>
-            {{ fileType }}
-          </span>
-          <TriangleUp
-            @click="showTypeCheckPop = !showTypeCheckPop"
-            :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
-          ></TriangleUp>
+          <template v-if="!prefix.length">
+            <div class="top_back" @click="router.go(-1)"> </div>
+            <span>
+              {{ fileTypeText[category] }}
+            </span>
+            <TriangleUp
+              @click="showTypeCheckPop = !showTypeCheckPop"
+              :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
+            ></TriangleUp>
+          </template>
+          <template v-else>
+            <div class="top_back" @click="prefix.splice(-1)"> </div>
+            <span>
+              {{ prefix.slice(-1) }}
+            </span>
+          </template>
         </div>
       </div>
       <nut-searchbar v-if="!isCheckMode" placeholder="Search By Name" class="search_bar" v-model="keyWord">
-        <template #leftin>
-          <Search2 />
-        </template>
+        <template #rightin @click="getFileList"> <Search2 color="#0a7dd2" /> </template>
       </nut-searchbar>
       <div class="check_top" v-else>
         <span @click="selectAll">{{ selectArr.length == list.length ? 'UnSelect' : 'Select' }} All</span>
@@ -59,7 +65,7 @@
         <span @click="cancelSelect">Cancel</span>
       </div>
     </nut-sticky>
-    <nut-infinite-loading v-if="fileType !== 'Image'" class="file_list" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
+    <nut-infinite-loading v-if="category !== 1" class="file_list" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
       <div
         :class="['list_item', item.checked ? 'row_is_checked' : '']"
         v-for="(item, index) in list"
@@ -69,8 +75,8 @@
         @touchend.prevent="touchendRow(item, $event)"
       >
         <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
-          <IconOk class="ok_icon" v-if="item.checked"></IconOk>
-          <IconSwitch v-else class="type_icon"></IconSwitch>
+          <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
+          <img src="@/assets/svg/home/switch.svg" class="type_icon" v-else alt="" />
         </div>
         <div class="name_box">
           <p>{{ item.name }}</p>
@@ -149,6 +155,42 @@
         <nut-button type="info" block @click="confirmRename">Confirm</nut-button>
       </div>
     </nut-popup>
+    <nut-popup position="bottom" closeable round :style="{ height: '90%' }" v-model:visible="moveShow">
+      <div class="rename_box move_box">
+        <IconFolder></IconFolder>
+        <div v-if="movePrefix.length" class="top_back" @click="movePrefix.splice(-1)">
+          <p> {{ movePrefix.length ? movePrefix.slice(-1) : '1' }}</p>
+        </div>
+        <nut-infinite-loading v-if="category !== 1" class="file_list" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
+          <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in list" :key="index">
+            <div :class="['left_icon_box']">
+              <IconFolder></IconFolder>
+            </div>
+            <div class="name_box">
+              <p>{{ item.name }}</p>
+              <!-- <p>{{ item.date || '' }}</p> -->
+            </div>
+          </div>
+        </nut-infinite-loading>
+        <nut-button type="info" block @click="confirmMove">Move to this folder</nut-button>
+      </div>
+    </nut-popup>
+    <nut-popup position="bottom" closeable round :style="{ height: '50%' }" v-model:visible="shareShow">
+      <div class="rename_box move_box">
+        <nut-cell style="margin-top: 100px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
+        <nut-popup position="bottom" v-model:visible="periodShow">
+          <nut-picker
+            v-model="periodValue"
+            :columns="options"
+            title="Select expiration time"
+            @confirm="confirmPeriod"
+            @cancel="periodShow = false"
+          >
+          </nut-picker>
+        </nut-popup>
+        <nut-button type="info" block @click="confirmShare">Confirm</nut-button>
+      </div>
+    </nut-popup>
 
     <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
       <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
@@ -194,16 +236,22 @@
   import { rename_objects } from '@/api';
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
-  import { ProxHeader, ProxGetRequest, ProxGetRequests, ProxRangeRequest, ProxGetInfo } from '@/pb/prox_pb.js';
+  // import { ProxListObjectsRequest, ProxListObjectsReq, ProxHeader } from '@/pb/prox_pb.js';
+  import Prox from '@/pb/prox_pb.js';
   import grpcService from '@/pb/prox_grpc_web_pb.js';
+  import useOrderInfo from './useOrderInfo.js';
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
 
   let timeOutEvent;
+  let server = null;
+  const daySeconds = 86400;
+  const monthSeconds = 2592000;
+  const { orderInfo, getOrderInfo } = useOrderInfo();
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
-    fileType: '',
+    category: 0,
     keyWord: '',
     infinityValue: false,
     hasMore: false,
@@ -211,6 +259,7 @@
     list: [
       {
         name: 'XXXX',
+        isDir: true,
         date: '2023-09-20',
       },
     ],
@@ -222,10 +271,50 @@
     tableLoading: false,
     detailShow: false,
     imgCheckedData: [],
+    prefix: [],
+    movePrefix: [],
+    isSearch: false,
+    moveShow: false,
+    shareShow: false,
+    options: [
+      {
+        text: '1 hour',
+        value: 3600,
+      },
+      {
+        text: '1 day',
+        value: 3600 * 24,
+      },
+      {
+        text: '7 days',
+        value: daySeconds * 7,
+      },
+      {
+        text: '1 month',
+        value: monthSeconds,
+      },
+      {
+        text: '3 months',
+        value: monthSeconds * 3,
+      },
+      {
+        text: '6 months',
+        value: monthSeconds * 6,
+      },
+      {
+        text: '1 year',
+        value: monthSeconds * 12,
+      },
+    ],
+    desc: '',
+    periodShow: false,
+    periodValue: '',
   });
   const imgListRef = ref('');
 
   const {
+    periodValue,
+    periodShow,
     tableLoading,
     showTypeCheckPop,
     newName,
@@ -237,20 +326,37 @@
     hasMore,
     infinityValue,
     keyWord,
-    fileType,
+    category,
     detailShow,
     imgCheckedData,
+    prefix,
+    movePrefix,
+    isSearch,
+    moveShow,
+    shareShow,
+    options,
+    desc,
   } = toRefs(state);
   const { doShare, ipfsPin, showShareDialog, shareRefContent, copyContent } = useShare();
   const { deleteItem } = useDelete(tableLoading, refresh);
   function refresh() {}
   const selectArr = computed(() => {
-    if (fileType == 'Image') {
+    if (category == 1) {
       return imgCheckedData.value;
     } else {
       return list.value.filter((el) => el.checked);
     }
   });
+  const confirmPeriod = ({ selectedValue, selectedOptions }) => {
+    desc.value = selectedOptions.map((val) => val.text).join(',');
+    periodShow.value = false;
+  };
+  const confirmMove = () => {
+    moveShow.value = false;
+  };
+  const confirmShare = () => {
+    shareShow.value = false;
+  };
   const loadMore = () => {};
   const touchRow = (row, event) => {
     timeOutEvent = setTimeout(function () {
@@ -260,14 +366,10 @@
   };
 
   const touchmoveRow = (row, event) => {
-    console.log('touchmoveRow');
-
     clearTimeout(timeOutEvent);
     timeOutEvent = 0;
   };
   const touchendRow = (row, event) => {
-    console.log('touchendRow');
-
     clearTimeout(timeOutEvent);
     if (event?.target?.nodeName == 'svg' || event?.target?.nodeName == 'path') {
       showAction(row);
@@ -278,15 +380,19 @@
         // select
         row.checked = !row.checked;
       } else {
-        chooseItem.value = [row];
-        detailShow.value = true;
+        if (row.isDir) {
+          let long_name = prefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
+          prefix.value = long_name.split('/').slice(0, -1);
+        } else {
+          chooseItem.value = [row];
+          detailShow.value = true;
+        }
       }
     }
     return false;
   };
   const cancelSelect = () => {
     isCheckMode.value = false;
-
     list.value.forEach((el) => {
       el.checked = false;
     });
@@ -347,7 +453,7 @@
       sourceObject: checkData[0].fullName,
       targetObject: targetObject(),
       //   token: token.value,
-      fileType: checkData[0].fileType,
+      category: checkData[0].category,
     }).then((res) => {
       if (res) {
         proxy.$notify({
@@ -361,28 +467,35 @@
       }
     });
   };
+  const toNextLevel = (row) => {
+    let long_name = movePrefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
+    movePrefix.value = long_name.split('/').slice(0, -1);
+  };
   const handlerClick = async (type) => {
     showActionPop.value = false;
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
     if (type === 'move') {
+      moveShow.value = true;
     } else if (type === 'download') {
       //   downLoad();
     } else if (type === 'delete') {
+      const onOk = () => {
+        deleteItem(checkData);
+      };
       showDialog({
         title: 'Warning',
         content: 'Are you sure you want to delete?',
         cancelText: 'Cancel',
         okText: 'Confirm',
-        // onOk,
-      }).then(() => {
-        deleteItem(checkData);
+        onOk,
       });
     } else if (type === 'rename') {
       renameShow.value = true;
     } else if (type === 'newFolder') {
     } else if (type === 'share') {
       await doShare(checkData[0]);
-      cancelSelect();
+      shareShow.value = true;
+      // cancelSelect();
       // proxy.$notify({
       //   customClass: "notify-success",
       //   message: "Share succeeded",
@@ -393,56 +506,209 @@
       // ipfsPin(checkedData.value[0], "ipfs", "unpin");
     }
   };
+  const fileTypeText = {
+    0: 'All File List',
+    1: 'Image',
+    2: 'Video',
+    3: 'Audio',
+    4: 'Document',
+  };
   const switchType = (type) => {
-    switch (type + '') {
-      case '0':
-        fileType.value = 'All File List';
-        break;
-      case '1':
-        fileType.value = 'Image';
-        break;
-      case '2':
-        fileType.value = 'Video';
-        break;
-      case '3':
-        fileType.value = 'Audio';
-        break;
-      case '4':
-        fileType.value = 'Document';
-        break;
-      default:
-        fileType.value = 'All File List';
-        break;
-    }
+    category.value = type;
     cancelSelect();
     showTypeCheckPop.value = false;
   };
-  let server = null;
 
-  function getListData() {
-    let ip = '154.31.3.222';
+  function getFileList(scroll, prefix, reset = false) {
+    let list_prefix = '';
+    if (prefix?.length) {
+      list_prefix = prefix.join('/');
+      if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
+        list_prefix = list_prefix + '/';
+      }
+    }
+    console.log(orderInfo.value.rpc, 'orderInfo.value.rpc');
+
+    let ip = orderInfo.value.rpc.split(':')[0];
     server = new grpcService.ServiceClient(`http://${ip}:7007`);
-    let request = null;
-    // let header = new ProxHeader();
-    // let range = new ProxRangeRequest();
+    let header = new Prox.ProxHeader();
+    header.setPeerid(orderInfo.value.peer_id);
+    header.setId(orderInfo.value.foggie_id);
+    header.setToken(orderInfo.value.sign);
+    let listObject = new Prox.ProxListObjectsRequest();
+    listObject.setPrefix(prefix);
+    let delimiter = category.value != 0 ? '' : '/';
+    listObject.setDelimiter(delimiter);
+    listObject.setEncodingType('');
+    listObject.setMaxKeys('30');
+    listObject.setStartAfter('');
+    listObject.setContinuationToken(scroll || '');
+    listObject.setVersionIdMarker('');
+    listObject.setKeyMarker('');
+    listObject.setOrderby('');
+    listObject.setTags('');
+    listObject.setCategory(category.value);
+    listObject.setDate('');
+    let requestReq = new Prox.ProxListObjectsReq();
+    requestReq.setHeader(header);
+    requestReq.setRequest(listObject);
+    console.log(server, 'server');
+    // server.ListObjects(requestReq, (err, data) => {
+    //   if (data) {
+    //     console.log(data, 'dataaaaaaaaaaaaaa');
+    //   }
+    // });
   }
+  const initRemoteData = (data, reset = false, category) => {
+    if (!data) {
+      tableLoading.value = false;
+      return;
+    }
+    if (data.err) {
+      proxy.$notify({
+        customClass: 'notify-warning',
+        message: 'Failed to  retrieve data. Please try again later',
+        position: 'bottom-left',
+      });
+    }
+    let dir = breadcrumbList.prefix.join('/');
+    if (reset) tableData.value = [];
+    for (let i = 0; i < data.commonPrefixes?.length; i++) {
+      let name = decodeURIComponent(data.commonPrefixes[i]);
+      if (data.prefix) {
+        // name = name.split(data.prefix)[1];
+        name = name.split('/')[name.split('/').length - 2] + '/';
+      }
+
+      let cur_cid = '';
+      for (let i = 0; i < data.prefixpins?.length; i++) {
+        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
+          cur_cid = data.prefixpins[i].cid;
+        }
+      }
+
+      let item = {
+        isDir: true,
+        checked: false,
+        name,
+        category: 1,
+        fullName: decodeURIComponent(data.commonPrefixes[i]),
+        key: data.commonPrefixes[i],
+        idList: [
+          {
+            name: 'IPFS',
+            code: cur_cid,
+          },
+          {
+            name: 'CYFS',
+            code: '',
+          },
+        ],
+        date: '-',
+        size: '',
+        status: '-',
+        type: 'application/x-directory',
+        file_id: '',
+        pubkey: '',
+        cid: cur_cid,
+        imgUrl: '',
+        imgUrlLarge: '',
+        share: {},
+        isSystemImg: false,
+        canShare: false,
+      };
+      tableData.value.push(item);
+    }
+    for (let j = 0; j < data?.content?.length; j++) {
+      let date = transferUTCTime(data.content[j].lastModified);
+      let isDir = false;
+      const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
+      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+      let cid = data.content[j].cid;
+      let file_id = data.content[j].fileId;
+
+      let name = decodeURIComponent(data.content[j].key);
+      if (data.prefix) {
+        name = name.split(data.prefix)[1];
+      }
+      if (name.indexOf('/') > 0) {
+        name = name.split('/')[name.split('/').length - 1];
+      }
+      let isPersistent = data.content[j].isPersistent;
+
+      let item = {
+        isDir: isDir,
+        checked: false,
+        name,
+        category: data.content[j].category,
+        category: 2,
+        fullName: decodeURIComponent(data.content[j].key),
+        key: data.content[j].key,
+        idList: [
+          {
+            name: 'IPFS',
+            code: data.content[j].isPin ? cid : '',
+          },
+          {
+            name: 'CYFS',
+            code: data.content[j].isPinCyfs ? file_id : '',
+          },
+        ],
+        date,
+        size: getfilesize(data.content[j].size),
+        originalSize: data.content[j].size,
+        status: cid || file_id ? 'Published' : '-',
+        type: data.content[j].contentType,
+        file_id: file_id,
+        pubkey: cid,
+        cid,
+        imgUrl: url,
+        imgUrlLarge: url_large,
+        share: {},
+        isSystemImg,
+        canShare: cid ? true : false,
+        isPersistent,
+        isPin: data.content[j].isPin,
+        isPinCyfs: data.content[j].isPinCyfs,
+      };
+      tableData.value.push(item);
+    }
+    if (data.isTruncated) {
+      continuationToken.value = data.continuationToken;
+    } else {
+      continuationToken.value = '';
+    }
+
+    tableLoading.value = false;
+  };
   watch(
-    fileType,
-    (val, old) => {
-      if (old == 'Image') {
+    category,
+    async (val, old) => {
+      if (old == 1) {
         imgListRef.value.resetChecked();
         imgCheckedData.value = [];
       }
-      getListData();
+      await getOrderInfo();
+      getFileList('', prefix.value, true);
     },
     { deep: true, immediate: true },
   );
   watch(
-    route,
+    prefix,
     (val) => {
-      switchType(val.query?.fileType);
+      if (!isSearch.value) {
+        cancelSelect();
+        getFileList('', val, true);
+      }
     },
-    { deep: true, immediate: true },
+    { deep: true },
+  );
+  watch(
+    movePrefix,
+    (val) => {
+      getFileList('', val, true);
+    },
+    { deep: true },
   );
 </script>
 <style>
@@ -615,7 +881,7 @@
       height: 80px;
       background: #f1f1f1;
       border-radius: 50%;
-      svg {
+      img {
         width: 50px;
         height: 50px;
       }
@@ -685,6 +951,33 @@
       }
       .nut-button {
         margin-top: 40px;
+      }
+    }
+  }
+  .move_box {
+    .top_back {
+      margin-bottom: 10px;
+      p {
+        margin: 0 5px;
+        color: #000;
+      }
+    }
+    .file_list {
+      height: 800px;
+      .list_item {
+        width: 100%;
+      }
+      .left_icon_box {
+        svg {
+          width: 100px;
+          height: 100px;
+        }
+      }
+      .name_box {
+        p {
+          text-align: right;
+          margin: 0;
+        }
       }
     }
   }

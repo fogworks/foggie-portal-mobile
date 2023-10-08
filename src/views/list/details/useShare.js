@@ -51,16 +51,13 @@ export default function useShare() {
     //     await ipfsPin(item, 'ipfs');
     // }
     if (key) {
-      let ood_id_cyfs = deviceData.device_id_real ? deviceData.device_id_real : deviceData.device_id;
       let peer_id = deviceData.peer_id;
       let foggieStr = `foggie://${peer_id}/${deviceData.foggie_id}/${item.cid}`;
       let httpStr = `http://${deviceData.rpc.split(':')[0]}/fog/${deviceData.foggie_id}/${item.cid}`;
-      let cyfsStr = item.file_id ? `cyfs://o/${ood_id_cyfs}/${item.file_id}` : '';
       let ipfsStr = item.cid ? `ipfs://${item.cid}` : '';
 
       shareRefContent.ipfsStr = ipfsStr;
       shareRefContent.httpStr = httpStr;
-      shareRefContent.cyfsStr = cyfsStr;
       shareRefContent.foggieStr = foggieStr;
 
       showShareDialog.value = true;
