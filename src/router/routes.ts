@@ -55,6 +55,15 @@ export const routes = [
           border: false,
         },
       },
+      {
+        name: 'getKey',
+        path: '/getKey',
+        component: () => import('@/views/list/details/getKey.vue'),
+        meta: {
+          title: 'list.getKey',
+          border: false,
+        },
+      },
     ],
   },
   {

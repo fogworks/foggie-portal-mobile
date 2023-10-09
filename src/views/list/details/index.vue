@@ -63,6 +63,7 @@
 
     <!-- <recycleFill color="#9F9BEF"/> -->
     <icon10kOutline color="red" />
+    <keySolid color="red" @click="getKey" />
   </div>
 </template>
 
@@ -76,12 +77,14 @@
 
   import IconRecycleFill from '~icons/ri/recycle-fill';
   import icon10kOutline from '~icons/material-symbols/10k-outline';
+
+  import keySolid from '~icons/teenyicons/key-solid';
   // import AESHelper from './AESHelper';
   // import { Image } from '@nutui/icons-vue';
   import { detailsData } from '../data';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
-  import { useRouter, useRoute } from 'vue-router';
+  import { useRoute, useRouter } from 'vue-router';
 
   const route = useRoute();
   const router = useRouter();
@@ -149,6 +152,9 @@
     xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
     xhr.send(options.formData);
+  };
+  const getKey = () => {
+    router.push('/getKey');
   };
 
   // 218.2.96.99:6008
