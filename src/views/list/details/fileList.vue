@@ -60,7 +60,7 @@
         <template #rightin @click="getFileList"> <Search2 color="#0a7dd2" /> </template>
       </nut-searchbar>
       <div class="check_top" v-else>
-        <span @click="selectAll">{{ selectArr.length == list.length ? 'UnSelect' : 'Select' }} All</span>
+        <span @click="selectAll">{{ selectArr.length == tableData.length ? 'UnSelect' : 'Select' }} All</span>
         <span class="checked_num">{{ selectArr.length }} items selected</span>
         <span @click="cancelSelect">Cancel</span>
       </div>
@@ -68,7 +68,7 @@
     <nut-infinite-loading v-if="category !== 1" class="file_list" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
       <div
         :class="['list_item', item.checked ? 'row_is_checked' : '']"
-        v-for="(item, index) in list"
+        v-for="(item, index) in tableData"
         :key="index"
         @touchstart.prevent="touchRow(item, $event)"
         @touchmove.prevent="touchmoveRow(item, $event)"
@@ -162,7 +162,7 @@
           <p> {{ movePrefix.length ? movePrefix.slice(-1) : '1' }}</p>
         </div>
         <nut-infinite-loading v-if="category !== 1" class="file_list" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
-          <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in list" :key="index">
+          <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in tableData" :key="index">
             <div :class="['left_icon_box']">
               <IconFolder></IconFolder>
             </div>
@@ -175,7 +175,7 @@
         <nut-button type="info" block @click="confirmMove">Move to this folder</nut-button>
       </div>
     </nut-popup>
-    <nut-popup position="bottom" closeable round :style="{ height: '50%' }" v-model:visible="shareShow">
+    <nut-popup position="bottom" closeable round :style="{ height: '50%' }" v-model:visible="showShareDialog">
       <div class="rename_box move_box">
         <nut-cell style="margin-top: 100px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
         <nut-popup position="bottom" v-model:visible="periodShow">
@@ -232,22 +232,21 @@
   import { useRoute, useRouter } from 'vue-router';
   import { Search2, TriangleUp } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
+  import { transferUTCTime, getfilesize } from '@/utils/util';
   import ImgList from './imgList.vue';
   import { rename_objects } from '@/api';
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
   // import { ProxListObjectsRequest, ProxListObjectsReq, ProxHeader } from '@/pb/prox_pb.js';
-  import Prox from '@/pb/prox_pb.js';
-  import grpcService from '@/pb/prox_grpc_web_pb.js';
+  // import Prox from '@/pb/prox_pb.ts';
+  import * as Prox from '@/pb/prox_pb.js';
+  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   import useOrderInfo from './useOrderInfo.js';
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
 
   let timeOutEvent;
   let server = null;
-  const daySeconds = 86400;
-  const monthSeconds = 2592000;
-  const { orderInfo, getOrderInfo } = useOrderInfo();
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
@@ -256,11 +255,12 @@
     infinityValue: false,
     hasMore: false,
     showActionPop: false,
-    list: [
+    tableData: [
       {
         name: 'XXXX',
         isDir: true,
         date: '2023-09-20',
+        key: '11',
       },
     ],
     chooseItem: { name: '' },
@@ -275,46 +275,11 @@
     movePrefix: [],
     isSearch: false,
     moveShow: false,
-    shareShow: false,
-    options: [
-      {
-        text: '1 hour',
-        value: 3600,
-      },
-      {
-        text: '1 day',
-        value: 3600 * 24,
-      },
-      {
-        text: '7 days',
-        value: daySeconds * 7,
-      },
-      {
-        text: '1 month',
-        value: monthSeconds,
-      },
-      {
-        text: '3 months',
-        value: monthSeconds * 3,
-      },
-      {
-        text: '6 months',
-        value: monthSeconds * 6,
-      },
-      {
-        text: '1 year',
-        value: monthSeconds * 12,
-      },
-    ],
-    desc: '',
-    periodShow: false,
-    periodValue: '',
+    continuationToken: '',
   });
   const imgListRef = ref('');
 
   const {
-    periodValue,
-    periodShow,
     tableLoading,
     showTypeCheckPop,
     newName,
@@ -322,7 +287,7 @@
     isCheckMode,
     chooseItem,
     showActionPop,
-    list,
+    tableData,
     hasMore,
     infinityValue,
     keyWord,
@@ -333,30 +298,26 @@
     movePrefix,
     isSearch,
     moveShow,
-    shareShow,
-    options,
-    desc,
+    continuationToken,
   } = toRefs(state);
-  const { doShare, ipfsPin, showShareDialog, shareRefContent, copyContent } = useShare();
-  const { deleteItem } = useDelete(tableLoading, refresh);
+  const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  const { confirmShare, confirmPeriod, periodShow, desc, options, doShare, ipfsPin, showShareDialog, shareRefContent, copyContent } =
+    useShare(orderInfo, header);
+  const { deleteItem } = useDelete(tableLoading, refresh, orderInfo, header);
+
   function refresh() {}
   const selectArr = computed(() => {
-    if (category == 1) {
+    if (category.value == 1) {
       return imgCheckedData.value;
     } else {
-      return list.value.filter((el) => el.checked);
+      return tableData.value.filter((el) => el.checked);
     }
   });
-  const confirmPeriod = ({ selectedValue, selectedOptions }) => {
-    desc.value = selectedOptions.map((val) => val.text).join(',');
-    periodShow.value = false;
-  };
+
   const confirmMove = () => {
     moveShow.value = false;
   };
-  const confirmShare = () => {
-    shareShow.value = false;
-  };
+
   const loadMore = () => {};
   const touchRow = (row, event) => {
     timeOutEvent = setTimeout(function () {
@@ -393,13 +354,13 @@
   };
   const cancelSelect = () => {
     isCheckMode.value = false;
-    list.value.forEach((el) => {
+    tableData.value.forEach((el) => {
       el.checked = false;
     });
   };
   const selectAll = () => {
-    const isAll = selectArr.value.length == list.value.length;
-    list.value.forEach((el) => {
+    const isAll = selectArr.value.length == tableData.value.length;
+    tableData.value.forEach((el) => {
       el.checked = !isAll;
     });
   };
@@ -471,6 +432,7 @@
     let long_name = movePrefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
     movePrefix.value = long_name.split('/').slice(0, -1);
   };
+
   const handlerClick = async (type) => {
     showActionPop.value = false;
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
@@ -494,7 +456,6 @@
     } else if (type === 'newFolder') {
     } else if (type === 'share') {
       await doShare(checkData[0]);
-      shareShow.value = true;
       // cancelSelect();
       // proxy.$notify({
       //   customClass: "notify-success",
@@ -518,7 +479,59 @@
     cancelSelect();
     showTypeCheckPop.value = false;
   };
+  function downLoadFile() {
+    let fileStream = null;
+    let stream = null;
+    const { ip, token, peer_id, foggie_id, cid, key, savePath, fileName, prefixes, objsList } = file.value.params;
+    server = new grpcService.default.ServiceClient(`http://${ip}:7007`);
+    let request = null;
+    let range = new Prox.default.ProxRangeRequest();
+    let downloadType = 'monofile';
+    if (downloadType == 'monofile') {
+      request = new Prox.default.ProxGetRequest();
+      request.setHeader(header);
+      request.setCid(cid);
+      request.setRange(range);
+      request.setKey(key);
+      request.setThumb(false);
+      stream = server.getObject(request, {});
+    } else {
+      let infoList = [];
+      for (const item of objsList) {
+        let objs = new Prox.default.ProxGetInfo();
+        objs.setCid(item.cid);
+        objs.setKey(item.key);
+        infoList.push(objs);
+      }
+      request = new ProxGetRequests();
+      request.setHeader(header);
+      request.setObjsList(infoList);
 
+      request.setRange(range);
+      request.setPrefixesList(JSON.parse(JSON.stringify(prefixes)));
+      stream = server.getObjects(request, {});
+    }
+    fileStream = fs.createWriteStream(savePath);
+
+    stream.on('data', (data) => {
+      console.log(data);
+    });
+
+    stream.on('status', (status) => {
+      console.log('Stream status:', status);
+    });
+
+    stream.on('end', (end) => {
+      fileStream.end();
+      shell.showItemInFolder(savePath);
+      downloadDone('completed');
+    });
+
+    stream.on('error', (error) => {
+      if (fileStream) fileStream.close();
+      // if (stream) stream.removeListener('data', streamData);
+    });
+  }
   function getFileList(scroll, prefix, reset = false) {
     let list_prefix = '';
     if (prefix?.length) {
@@ -528,19 +541,18 @@
       }
     }
     console.log(orderInfo.value.rpc, 'orderInfo.value.rpc');
-
     let ip = orderInfo.value.rpc.split(':')[0];
-    server = new grpcService.ServiceClient(`http://${ip}:7007`);
-    let header = new Prox.ProxHeader();
-    header.setPeerid(orderInfo.value.peer_id);
-    header.setId(orderInfo.value.foggie_id);
-    header.setToken(orderInfo.value.sign);
-    let listObject = new Prox.ProxListObjectsRequest();
-    listObject.setPrefix(prefix);
+    server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+
+    // header.setToken(token.value.split('bearer ')[1]);
+    console.log(token.value, 'token.value.sign');
+
+    let listObject = new Prox.default.ProxListObjectsRequest();
+    listObject.setPrefix('');
     let delimiter = category.value != 0 ? '' : '/';
     listObject.setDelimiter(delimiter);
     listObject.setEncodingType('');
-    listObject.setMaxKeys('30');
+    listObject.setMaxKeys(30);
     listObject.setStartAfter('');
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
@@ -549,29 +561,140 @@
     listObject.setTags('');
     listObject.setCategory(category.value);
     listObject.setDate('');
-    let requestReq = new Prox.ProxListObjectsReq();
+    let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
     requestReq.setRequest(listObject);
-    console.log(server, 'server');
-    // server.ListObjects(requestReq, (err, data) => {
-    //   if (data) {
-    //     console.log(data, 'dataaaaaaaaaaaaaa');
-    //   }
-    // });
+    console.log(requestReq, 'requestReq');
+    server.listObjects(requestReq, {}, (err, res) => {
+      if (res) {
+        console.log('res:----', res);
+        // const transferData = {
+        //   commonPrefixes: res.array[0] || [],
+        //   isTruncated: res.array[1] || false,
+        //   prefix: res.array[2] || '',
+        //   maxKeys: res.array[3] || 30,
+        //   nextMarker: res.array[4] || '',
+        //   continuationToken: res.array[5] || '',
+        //   content: res.array[6].map((el) => {
+        //     return {
+        //       key: el[0] || '',
+        //       etag: el[1] || '',
+        //       lastModified: el[2] || '',
+        //       size: el[3] || 0,
+        //       contentType: el[4] || '',
+        //       cid: el[5] || '',
+        //       fileId: el[6] || '',
+        //       isPin: el[7] || false,
+        //       isPinCyfs: el[8] || false,
+        //       pinExp: el[9] || '',
+        //       CyfsExp: el[10] || '',
+        //       OOD: el[11] || '',
+        //       isPersistent: el[12] || false,
+        //       category: el[13] || 0,
+        //       tags: el[14] || '',
+        //     };
+        //   }),
+        //   prefixpins: res.array[7].map((el) => {
+        //     return {
+        //       prefix: el[0] || '',
+        //       cid: el[1] || '',
+        //     };
+        //   }),
+        // };
+        // const transferData=res.toObject()
+        const transferData = {
+          commonPrefixes: res.getCommonprefixesList(),
+          content: res.getContentList().map((el) => {
+            return {
+              key: el.getKey(),
+              etag: el.getEtag(),
+              lastModified: el.getLastmodified(),
+              size: el.getSize(),
+              contentType: el.getContenttype(),
+              cid: el.getCid(),
+              fileId: el.getFileid(),
+              isPin: el.getIspin(),
+              isPinCyfs: el.getIspincyfs(),
+              pinExp: el.getPinexp(),
+              CyfsExp: el.getCyfsexp(),
+              OOD: el.getOod(),
+              isPersistent: el.getIspersistent(),
+              category: el.getCategory(),
+              tags: el.getTags(),
+            };
+          }),
+          continuationToken: res.getContinuationtoken(),
+          isTruncated: res.getIstruncated(),
+          maxKeys: res.getMaxkeys(),
+          nextMarker: res.getNextmarker(),
+          prefix: res.getPrefix(),
+          prefixpins: res.getPrefixpinsList(),
+        };
+        initRemoteData(transferData, reset, category.value);
+      } else if (err) {
+        console.log('err----', err);
+      }
+    });
   }
+  const handleImg = (item, type, isDir) => {
+    let baseUrl = '127.0.0.1';
+    let imgHttpLink = '';
+    let imgHttpLarge = '';
+    type = type.toLowerCase();
+    let isSystemImg = false;
+    let cid = item.cid;
+    let key = item.key;
+
+    let ip = orderInfo.value.rpc.split(':')[0];
+    let port = orderInfo.value.rpc.split(':')[1];
+    let Id = orderInfo.value.foggie_id;
+    let peerId = orderInfo.value.peer_id;
+    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'ico' || type === 'jpg' || type === 'svg') {
+      type = 'img';
+      // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
+      // imgHttpLink = `${location}/object?pubkey=${pubkey}&new_w=${size}`;
+      // let token = store.getters.token;
+
+      imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+        deviceType.value == 'space' ? 'space' : 'foggie'
+      }&token=${token.value}&thumb=true`;
+      imgHttpLarge = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+        deviceType.value == 'space' ? 'space' : 'foggie'
+      }&token=${token.value}`;
+
+      // foggie://peerid/spaceid/cid
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
+      type = 'video';
+      // item.contentType = "video/mp4";
+
+      imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+        deviceType.value == 'space' ? 'space' : 'foggie'
+      }&token=${token.value}&thumb=true`;
+    } else {
+      isSystemImg = true;
+      // imgHttpLink =
+      //   theme === "light"
+      //     ? require(`@/assets/logo-dog.svg`)
+      //     : require(`@/assets/logo-dog-black.svg`);
+    }
+    if (isDir) {
+      isSystemImg = true;
+      // imgHttpLink =
+      //   theme === "light"
+      //     ? require(`@/assets/logo-dog.svg`)
+      //     : require(`@/assets/logo-dog-black.svg`);
+    }
+    return { imgHttpLink, isSystemImg, imgHttpLarge };
+  };
   const initRemoteData = (data, reset = false, category) => {
     if (!data) {
       tableLoading.value = false;
       return;
     }
     if (data.err) {
-      proxy.$notify({
-        customClass: 'notify-warning',
-        message: 'Failed to  retrieve data. Please try again later',
-        position: 'bottom-left',
-      });
+      showToast.fail('Failed to  retrieve data. Please try again later');
     }
-    let dir = breadcrumbList.prefix.join('/');
+    let dir = prefix.value.join('/');
     if (reset) tableData.value = [];
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = decodeURIComponent(data.commonPrefixes[i]);
@@ -681,6 +804,30 @@
 
     tableLoading.value = false;
   };
+  function doSearch() {
+    if (tableLoading.value) return false;
+    tableData.value = [];
+    if (keyWord.value === '') {
+      getFileList('', prefix.value, true);
+    } else {
+      tableLoading.value = true;
+      let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
+      if (type == 'space') {
+        let ip = orderInfo.value.rpc.split(':')[0];
+        server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+        let ProxFindRequest = new Prox.default.ProxFindRequest();
+        ProxFindRequest.setHeader(header.value);
+        ProxFindRequest.setCid('');
+        ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
+        ProxFindRequest.setFileId('');
+        server.findObjects(ProxFindRequest, {}, (err, res) => {
+          if (res) {
+          } else {
+          }
+        });
+      }
+    }
+  }
   watch(
     category,
     async (val, old) => {

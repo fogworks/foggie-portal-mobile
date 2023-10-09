@@ -2,49 +2,57 @@ import useVariable from './useVariable';
 import { ref, toRefs, inject, nextTick, computed } from 'vue';
 import { file_delete } from '@/api';
 import { showToast } from '@nutui/nutui';
+import * as Prox from '@/pb/prox_pb.js';
+import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import '@nutui/nutui/dist/packages/toast/style';
-export default function useDelete(tableLoading, refresh) {
+export default function useDelete(tableLoading, refresh, orderInfo, header) {
   const { store } = useVariable();
-  const deviceData = inject('deviceData');
   const deleteItem = (item) => {
     tableLoading.value = true;
-    const token = computed(() => {
-      if (deviceData.device_type == 3) {
-        return deviceData.sign;
+    let cids = [];
+    let prefixes = [];
+    let objects = [];
+    for (let i = 0; i < item.length; i++) {
+      if (item[i].type == 'application/x-directory') {
+        prefixes.push(item[i].key);
+      } else {
+        objects.push({
+          pubkey: item[i].pubkey ? item[i].pubkey : encodeURIComponent(item[i].key),
+        });
+        cids.push(item[i].cid);
       }
-      // else {
-      //     return tokenMap.value[deviceData.device_id];
-      // }
-    });
-    file_delete(token.value, item, deviceData).then((res) => {
-      if (res && res.data) {
+    }
+    let ProxDeleteObjectRequest = new Prox.default.ProxDeleteObjectRequest();
+    ProxDeleteObjectRequest.setCids(cids);
+    // let ProxUpload = new Prox.default.ProxUpload();
+    // ProxUpload.set
+    ProxDeleteObjectRequest.setObjects(objects);
+    ProxDeleteObjectRequest.setObjectType('normal');
+    ProxDeleteObjectRequest.setPrefixes(prefixes);
+    let ProxDeleteObjectReq = new Prox.default.ProxDeleteObjectReq();
+    ProxDeleteObjectReq.setHeader(header);
+    ProxDeleteObjectReq.setRequest(ProxDeleteObjectRequest);
+    let ip = orderInfo.value.rpc.split(':')[0];
+    let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+    server.deleteObject(ProxDeleteObjectReq, {}, (err, res) => {
+      if (res) {
         showToast.success('Delete succeeded');
-        // proxy.$notify({
-        //   customClass: 'notify-success',
-        //   message: 'Delete succeeded',
-        //   position: 'bottom-left',
-        // });
         tableLoading.value = false;
-        let arr = [];
-        if (store.getters.uploadFileList && deviceData.device_id) {
-          arr = store.getters.uploadFileList[deviceData.device_id];
-          if (arr && arr.length > 0) {
-            store.getters.uploadFileList[deviceData.device_id] = arr.filter((val) => {
-              return val.urlFileName !== item.key;
-            });
-          }
-        }
+        // let arr = [];
+        // if (store.getters.uploadFileList && deviceData.device_id) {
+        //   arr = store.getters.uploadFileList[deviceData.device_id];
+        //   if (arr && arr.length > 0) {
+        //     store.getters.uploadFileList[deviceData.device_id] = arr.filter((val) => {
+        //       return val.urlFileName !== item.key;
+        //     });
+        //   }
+        // }
         nextTick(() => {
           refresh();
         });
       } else {
         tableLoading.value = false;
-        // proxy.$notify({
-        //   customClass: 'notify-error',
-        //   message: 'Delete Failed',
-        //   position: 'bottom-left',
-        // });
-        showToast.fail('Delete succeeded');
+        showToast.fail('Delete Failed');
       }
     });
   };

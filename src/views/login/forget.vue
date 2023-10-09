@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <!-- <img src="@/assets/logo-dog-black.svg" alt="" /> -->
-    <img src="@/assets/logo.png" alt="" />
+    <img src="@/assets/fog-works.png" alt="" />
 
     <!-- <h1 style="font-size: 25px">Forget Password</h1> -->
     <nut-form ref="ruleForm" :model-value="loginForm" :rules="formRules">
