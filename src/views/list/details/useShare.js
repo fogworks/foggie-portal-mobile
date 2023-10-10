@@ -66,8 +66,8 @@ export default function useShare(orderInfo, header, deviceType) {
     if (deviceType.value != 3) {
       token = foggieToken;
     }
-    let poolType = orderInfo.pool_type;
-    let poolWalletAcc = orderInfo.pool_wallet_acc;
+    let poolType = orderInfo.value.pool_type;
+    let poolWalletAcc = orderInfo.value.pool_wallet_acc;
     if (device_type == 3) {
       if (!item.cid || !item.originalSize) {
         showToast.fail('The file data is abnormal, please refresh the page and try again.');
@@ -92,17 +92,20 @@ export default function useShare(orderInfo, header, deviceType) {
     request.setKey(encodeURIComponent(item.key));
     let pinPay = new Prox.default.ProxPinPay();
     pinPay.setCopied(0);
-    // pinPay.setTrxId(0);
+    pinPay.setTrxid('');
     let ProxPinReq = new Prox.default.ProxPinReq();
     ProxPinReq.setHeader(header);
     ProxPinReq.setRequest(request);
     ProxPinReq.setPay(pinPay);
     let ip = orderInfo.value.rpc.split(':')[0];
+    console.log(ProxPinReq, 'pinnnnnnnnnnnnnnn');
     let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-
+    showToast.text('IPFS link will available later.');
     server.pin(ProxPinReq, {}, (err, res) => {
       if (res) {
+        console.log(res);
       } else if (err) {
+        console.log(err);
       }
     });
   };
@@ -147,13 +150,11 @@ export default function useShare(orderInfo, header, deviceType) {
             } else {
               if (!pinData.item.isPin) {
                 ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
-                showToast.text('IPFS link will available later.');
               }
             }
           } else {
             if (!pinData.item.isPin) {
               ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
-              showToast.text('IPFS link will available later');
             }
           }
           loading.value = false;

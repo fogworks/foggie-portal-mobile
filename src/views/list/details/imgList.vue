@@ -7,7 +7,7 @@
         >
         <span v-else>{{ item.time }}</span>
       </p>
-      <div class="img-item-box">
+      <nut-infinite-loading v-model="infinityValue" :has-more="continuationToken" @load-more="getFileList" class="img-item-box">
         <nut-checkbox-group
           :validate-event="false"
           v-model="imgCheckedData.value[item.dateId]"
@@ -29,11 +29,6 @@
             </div>
             <nut-image
               :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
-              scroll-container=".img-content"
-              :preview-teleported="true"
-              :teleported="true"
-              :hide-on-click-modal="true"
-              :initial-index="index2"
               fit="cover"
               :key="img.cid"
               :src="img.imgUrl"
@@ -41,7 +36,7 @@
             </nut-image>
           </div>
         </nut-checkbox-group>
-      </div>
+      </nut-infinite-loading>
     </div>
   </div>
   <div class="img-content" v-else>
@@ -59,10 +54,13 @@
   import { get_timeline } from '@/api';
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
   import { oodFileList, GetFileListAll, GetCloudFileListAll } from '@/api/myFiles';
+  import * as Prox from '@/pb/prox_pb.js';
+  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+  import useOrderInfo from './useOrderInfo.js';
   import imgUrl from '@/assets/DMC_token.png';
   // import { isCloudCanUpload_Api } from '@/api/upload';
   let baseUrl = 'http://127.0.0.1';
-
+  const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const imgCheckedData = reactive({
     value: {},
   });
@@ -77,51 +75,15 @@
     imgCheckedData.value = {};
     refCheckAll();
   };
+  const infinityValue = ref(false);
   const state = reactive({
-    imgData: [
-      {
-        time: '2023-6-2',
-        dateId: 'xx',
-        list: [
-          {
-            name: 'xxxxxxxxxxxxxxxx',
-            cid: 111,
-            imgUrl,
-          },
-          {
-            name: 'xxxxxxxxxxxxxxxx',
-            cid: 112,
-            imgUrl,
-          },
-          {
-            name: 'xxxxxxxxxxxxxxxx',
-            cid: 113,
-            imgUrl,
-          },
-          {
-            name: 'xxxxxxxxxxxxxxxx',
-            cid: 114,
-            imgUrl,
-          },
-          {
-            name: 'xxxxxxxxxxxxxxxx',
-            cid: 115,
-            imgUrl,
-          },
-        ],
-      },
-    ],
+    imgData: [],
   });
   const tableLoading = ref(false);
   const isReady = ref(true);
   const imgIndex = ref(0);
   const store = useUserStore();
   const uuid = computed(() => store.getUserInfo?.uuid || '');
-  const deviceType = 3;
-  const token = computed(() => {
-    // return deviceData.sign;
-    return '111';
-  });
   const { imgData } = toRefs(state);
   const refCheckAll = () => {
     imgData.value.forEach((el) => {
@@ -139,11 +101,6 @@
   const dateTimeLine = ref([]);
   const continuationToken = ref('');
   const tableData = ref([]);
-  const isCloud = computed(() => store.getters.isCloud);
-
-  const getPreviewList = (data) => {
-    return data.list.map((el) => el.imgUrlLarge);
-  };
   const getTimeLine = (date = '') => {
     return new Promise((resolve, reject) => {
       const getMethod = (date) => {
@@ -157,68 +114,145 @@
           interval = 'day';
         }
         tableLoading.value = true;
-        get_timeline({
-          deviceData,
-          token: token.value,
-          interval,
-          date,
-          category: 1,
-        })
-          .then((res) => {
-            if (res.contents) {
-              const content = res.contents;
-              for (let k = content.length - 1; k >= 0; k--) {
-                if (content[k].count) {
-                  timeLine.value.push(content[k].date);
-                  if (content[k].date.length !== 10) {
-                    getMethod(content[k].date);
-                  } else {
-                    // dateTimeLine.value.push(content[k].date);
-                    dateTimeLine.value.push({
-                      date: content[k].date,
-                      count: content[k].count,
-                    });
-                    resolve();
-                  }
+        let ip = orderInfo.value.rpc.split(':')[0];
+        let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+        let ProxTimeLine = new Prox.default.ProxTimeLine();
+        ProxTimeLine.setHeader(header);
+        ProxTimeLine.setInterval(interval);
+        ProxTimeLine.setDate(date);
+        ProxTimeLine.setCategory(1);
+        server.getTimeLine(ProxTimeLine, {}, (err, data) => {
+          console.log(data);
+          if (data) {
+            const content = data.getContentsList();
+            for (let k = content.length - 1; k >= 0; k--) {
+              if (content[k].count) {
+                timeLine.value.push(content[k].date);
+                if (content[k].date.length !== 10) {
+                  getMethod(content[k].date);
+                } else {
+                  // dateTimeLine.value.push(content[k].date);
+                  dateTimeLine.value.push({
+                    date: content[k].date,
+                    count: content[k].count,
+                  });
+                  tableLoading.value = false;
+                  resolve();
                 }
               }
-              // content.forEach((el) => {
-              //   if (el.count) {
-              //     timeLine.value.push(el.date);
-              //     if (el.date.length !== 10) {
-              //       getMethod(el.date);
-              //     } else {
-              //       dateTimeLine.value.push(el.date);
-              //       resolve();
-              //     }
-              //   }
-              // });
             }
-          })
-          .catch(() => {
+          } else {
             reject();
-          })
-          .finally(() => {
-            tableLoading.value = false;
-          });
+          }
+        });
       };
       getMethod();
     });
   };
+  const getFileList = function (scroll, prefix, reset = false, date = '') {
+    let target = '';
+    let max_keys = '';
+    target = imgData.value.find((el) => el.time == date);
+    if (target) return false;
+    if (dateTimeLine.value[imgIndex.value]) {
+      date = dateTimeLine.value[imgIndex.value].date;
+      max_keys = dateTimeLine.value[imgIndex.value].count;
+      if (!target) {
+        imgData.value.push({
+          time: date,
+          dateId: date,
+          list: [],
+        });
+      }
+      imgIndex.value++;
+    } else {
+      return false;
+    }
+    let list_prefix = '';
+    tableLoading.value = true;
+    if (deviceType.value == 'space' || deviceType.value == 3) {
+      getReomteData(scroll, list_prefix, reset, date, max_keys);
+    } else {
+      // let type = 'foggie';
+      // oodFileList(email.value, type, token.value, deviceData, list_prefix, scroll, 1, date, max_keys)
+      //   .then((res) => {
+      //     if (res && res.content) {
+      //       initFileData(res, reset, date);
+      //     }
+      //   })
+      //   .finally(() => (tableLoading.value = false));
+    }
+  };
   const getReomteData = (scroll, prefix, reset = false, date = '', max_keys) => {
     tableLoading.value = true;
     let type = 'space';
-    oodFileList(type, token.value, deviceData, prefix, scroll, 1, date, max_keys)
-      .then((res) => {
-        if (res && res.content) {
-          initRemoteData(res, reset, date);
-        } else {
-          tableLoading.value = false;
-        }
-      })
-      .catch(() => {
+    let ip = orderInfo.value.rpc.split(':')[0];
+    server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+    let listObject = new Prox.default.ProxListObjectsRequest();
+    listObject.setPrefix('');
+    listObject.setDelimiter('');
+    listObject.setEncodingType('');
+    listObject.setMaxKeys(30);
+    listObject.setStartAfter('');
+    listObject.setContinuationToken(scroll || '');
+    listObject.setVersionIdMarker('');
+    listObject.setKeyMarker('');
+    listObject.setOrderby('');
+    listObject.setTags('');
+    listObject.setCategory(1);
+    listObject.setDate(date);
+    let requestReq = new Prox.default.ProxListObjectsReq();
+    requestReq.setHeader(header);
+    requestReq.setRequest(listObject);
+    server.listObjects(requestReq, {}, (err, res) => {
+      if (res) {
+        const transferData = {
+          commonPrefixes: res.getCommonprefixesList(),
+          content: res.getContentList().map((el) => {
+            return {
+              key: el.getKey(),
+              etag: el.getEtag(),
+              lastModified: el.getLastmodified(),
+              size: el.getSize(),
+              contentType: el.getContenttype(),
+              cid: el.getCid(),
+              fileId: el.getFileid(),
+              isPin: el.getIspin(),
+              isPinCyfs: el.getIspincyfs(),
+              pinExp: el.getPinexp(),
+              CyfsExp: el.getCyfsexp(),
+              OOD: el.getOod(),
+              isPersistent: el.getIspersistent(),
+              category: el.getCategory(),
+              tags: el.getTags(),
+            };
+          }),
+          continuationToken: res.getContinuationtoken(),
+          isTruncated: res.getIstruncated(),
+          maxKeys: res.getMaxkeys(),
+          nextMarker: res.getNextmarker(),
+          prefix: res.getPrefix(),
+          prefixpins: res.getPrefixpinsList(),
+        };
+        initRemoteData(transferData, reset, date);
+      } else if (err) {
         tableLoading.value = false;
-      });
+
+        console.log('err----', err);
+      }
+    });
+
+    // oodFileList(email.value, type, token.value, deviceData, prefix, scroll, 1, date, max_keys)
+    //   .then((res) => {
+    //     if (res && res.content) {
+    //       initRemoteData(res, reset, date);
+    //     } else {
+    //       tableLoading.value = false;
+    //     }
+    //   })
+    //   .catch(() => {
+    //     tableLoading.value = false;
+    //   });
   };
   const initRemoteData = (data, reset = false, dateKey = '') => {
     if (!data) {
@@ -226,14 +260,12 @@
       return;
     }
     if (data.err) {
-      proxy.$notify({
-        customClass: 'notify-warning',
-        message: 'Failed to  retrieve data. Please try again later',
-        position: 'bottom-left',
-      });
+      showToast.warn('Failed to  retrieve data. Please try again later');
     }
+    // let dir = breadcrumbList.prefix.join('/');
+    let dir = '';
     if (reset) imgData.value = [];
-    let content = data?.content?.map((el) => {
+    let content = data?.content?.map((el, index) => {
       let date = transferTime(el.lastModified);
       let isDir = false;
       const type = el.key.substring(el.key.lastIndexOf('.') + 1);
@@ -280,59 +312,6 @@
       return item;
     });
 
-    for (let j = 0; j < data?.content?.length; j++) {
-      let date = transferUTCTime(data.content[j].lastModified);
-      let isDir = false;
-      const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
-      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
-      let cid = data.content[j].cid;
-      let file_id = data.content[j].fileId;
-
-      let name = decodeURIComponent(data.content[j].key);
-
-      if (name.indexOf('/') > 0) {
-        name = name.split('/')[name.split('/').length - 1];
-      }
-      let isPersistent = data.content[j].isPersistent;
-
-      let item = {
-        isDir: isDir,
-        checked: false,
-        name,
-        category: data.content[j].category,
-        fileType: 2,
-        fullName: decodeURIComponent(data.content[j].key),
-        key: data.content[j].key,
-        idList: [
-          {
-            name: 'IPFS',
-            code: data.content[j].isPin ? cid : '',
-          },
-          {
-            name: 'CYFS',
-            code: data.content[j].isPinCyfs ? file_id : '',
-          },
-        ],
-        date,
-        size: getfilesize(data.content[j].size),
-        originalSize: data.content[j].size,
-        status: cid || file_id ? 'Published' : '-',
-        type: data.content[j].contentType,
-        file_id: file_id,
-        pubkey: cid,
-        cid,
-        imgUrl: url,
-        imgUrlLarge: url_large,
-        share: {},
-        isSystemImg,
-        canShare: cid ? true : false,
-        isPersistent,
-        isPin: data.content[j].isPin,
-        isPinCyfs: data.content[j].isPinCyfs,
-      };
-      tableData.value.push(item);
-    }
-
     const target = imgData.value.find((el) => el.time == dateKey);
     if (target) {
       target.list = [...target.list, ...content];
@@ -355,173 +334,6 @@
     // }
 
     // tableSort({ prop: "date", order: 1, key: 1 });
-  };
-  const getFileList = function (scroll, prefix, reset = false, date = '') {
-    let target = '';
-    let max_keys = '';
-    target = imgData.value.find((el) => el.time == date);
-    if (target) return false;
-    if (dateTimeLine.value[imgIndex.value]) {
-      date = dateTimeLine.value[imgIndex.value].date;
-      max_keys = dateTimeLine.value[imgIndex.value].count;
-      if (!target) {
-        imgData.value.push({
-          time: date,
-          dateId: date,
-          list: [],
-        });
-      }
-      imgIndex.value++;
-    } else {
-      return false;
-    }
-    let list_prefix = '';
-    if (prefix?.length) {
-      list_prefix = prefix.join('/');
-      if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
-        list_prefix = list_prefix + '/';
-      }
-    }
-    tableLoading.value = true;
-    if (deviceType.value == 'space') {
-      getReomteData(scroll, list_prefix, reset, date, max_keys);
-    } else {
-      let type = 'foggie';
-      oodFileList(type, token.value, deviceData, list_prefix, scroll, 1, date, max_keys)
-        .then((res) => {
-          if (res && res.content) {
-            initFileData(res, reset, date);
-          }
-        })
-        .finally(() => (tableLoading.value = false));
-    }
-  };
-
-  const initFileData = async (data, reset = false, date) => {
-    // tableData.value = [];
-    // let commonPrefixesItem = [];
-    let contentItem = [];
-    emits('update:checkedData', {});
-    // fileTable.value?.clearSelection();
-    contentItem = data?.content?.map((el) => {
-      let date = transferTime(el.lastModified);
-      let isDir = false;
-      const type = el.key.substring(el.key.lastIndexOf('.') + 1);
-      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(el, type, isDir);
-
-      let cid = el.cid;
-      let file_id = el.fileId;
-
-      let name = decodeURIComponent(el.key);
-      // if (data.prefix) {
-      //   name = name.split(data.prefix)[1];
-      // }
-      if (name.indexOf('/') > -1) {
-        name = name.split('/')[name.split('/').length - 1];
-      }
-
-      return {
-        fileType: 2,
-        checked: false,
-        isDir: isDir,
-        name,
-        fullName: decodeURIComponent(el.key),
-        key: el.key,
-        fileType: 2,
-        idList: [
-          {
-            name: 'IPFS',
-            code: cid,
-          },
-          {
-            name: 'CYFS',
-            code: file_id,
-          },
-        ],
-        date,
-        size: getfilesize(el.size),
-        // status: "Published",
-        status: cid || file_id ? 'Published' : '-',
-        type: el.contentType,
-        file_id: file_id,
-        pubkey: cid,
-        cid,
-        imgUrl: url,
-        imgUrlLarge: url_large,
-        // share: getShareOptions(),
-        share: {},
-        isSystemImg,
-        canShare: cid ? true : false,
-      };
-      // contentItem.push(item);
-    });
-    if (data.isTruncated) {
-      continuationToken.value = data.continuationToken;
-    } else {
-      continuationToken.value = '';
-    }
-    if (data?.content?.length) {
-      const target = imgData.value.find((el) => el.time == date);
-      if (target) {
-        target.list = contentItem;
-        tableData.value = [...tableData.value, ...contentItem];
-      }
-    }
-    // if (reset) {
-    //   tableData.value = [...contentItem];
-    // } else {
-    //   tableData.value = [...tableData.value, ...contentItem];
-    // }
-    tableLoading.value = false;
-  };
-
-  const handleImg = (item, type, isDir) => {
-    let imgHttpLink = '';
-    let imgHttpLarge = '';
-    type = type.toLowerCase();
-    let isSystemImg = false;
-    let cid = item.cid;
-    let key = item.key;
-
-    let ip = deviceData.rpc.split(':')[0];
-    let port = deviceData.rpc.split(':')[1];
-    let Id = deviceData.foggie_id;
-    let peerId = deviceData.peer_id;
-    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'ico' || type === 'jpg' || type === 'svg') {
-      type = 'img';
-      // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
-      // imgHttpLink = `${location}/object?pubkey=${pubkey}&new_w=${size}`;
-      // let token = store.getters.token;
-
-      imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-        deviceType.value == 'space' ? 'space' : 'foggie'
-      }&token=${token.value}&thumb=true`;
-      imgHttpLarge = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-        deviceType.value == 'space' ? 'space' : 'foggie'
-      }&token=${token.value}`;
-
-      // foggie://peerid/spaceid/cid
-    } else if (type === 'mp4') {
-      type = 'video';
-
-      imgHttpLink = `/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-        deviceType.value == 'space' ? 'space' : 'foggie'
-      }&token=${token.value}&thumb=true`;
-    } else {
-      isSystemImg = true;
-      // imgHttpLink =
-      //   theme === "light"
-      //     ? require(`@/assets/logo-dog.svg`)
-      //     : require(`@/assets/logo-dog-black.svg`);
-    }
-    if (isDir) {
-      isSystemImg = true;
-      // imgHttpLink =
-      //   theme === "light"
-      //     ? require(`@/assets/logo-dog.svg`)
-      //     : require(`@/assets/logo-dog-black.svg`);
-    }
-    return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   const init = async () => {
     await getTimeLine();
@@ -578,8 +390,9 @@
     },
     { deep: true },
   );
-  onMounted(() => {
-    // init();
+  onMounted(async () => {
+    await getOrderInfo();
+    init();
     // nextTick(() => {
     //   refCheckAll();
     // });

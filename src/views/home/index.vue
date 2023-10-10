@@ -103,18 +103,17 @@
     <div class="list_item" v-for="(item, index) in listData">
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
-        <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
+        <img v-else-if="(index + 1) % 3 == 2" class="cions" src="@/assets/list_item_2.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" />
       </div>
-
       <div>
-        <span>Order:1234</span>
+        <span>Order:{{ item.order_id }}</span>
         <span :class="['earnings']">
           +{{ item.dmc }} <IconArrowRight style="vertical-align: text-top" width="1.2rem" height="1.2rem" color="#5F57FF"></IconArrowRight
         ></span>
       </div>
       <div
-        ><span>100 PST</span> <span class="time">{{ item.createAt }}</span>
+        ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ item.createAt }}</span>
       </div>
     </div>
   </nut-infinite-loading>
@@ -126,34 +125,53 @@
   import { toRefs, reactive } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
+  import { useOrderStore } from '@/store/modules/order';
+  import { showToast } from '@nutui/nutui';
+  import { search_cloud } from '@/api';
+  import '@nutui/nutui/dist/packages/toast/style';
+
   const useStore = useUserStore();
+  const orderStore = useOrderStore();
   const userInfo = computed(() => useStore.getUserInfo);
+  const listData = computed(() => {
+    return orderStore.getOrderList;
+  });
   const router = useRouter();
   const state = reactive({
     infinityValue: false,
     hasMore: false,
-    listData: [
-      {
-        createAt: '2023-09-20',
-        dmc: '1.0000 DMC',
-        type: 'Earnings',
-      },
-      {
-        createAt: '2023-09-21',
-        dmc: '2.0000 DMC',
-        type: 'Expenditures',
-      },
-    ] as any[],
+
     timeType: '0',
     searchType: '0',
+    cloudSpaceList: [],
   });
-  const { listData, hasMore, infinityValue, timeType, searchType } = toRefs(state);
+  const { cloudSpaceList, hasMore, infinityValue, timeType, searchType } = toRefs(state);
   const loadMore = () => {
-    setTimeout(() => {
-      listData.value = [1];
-
-      infinityValue.value = false;
-    }, 1000);
+    searchList();
+  };
+  const searchList = async () => {
+    showToast.loading('Loading', {
+      cover: true,
+    });
+    // await getCloudSpaceList();
+    await search_cloud()
+      .then((res) => {
+        const cloudList = res.result.data.filter((el) => {
+          if (!el.result) {
+            // return false;
+          }
+          const target = cloudSpaceList.value.find((item) => item.order_id == el.order_id);
+          if (!target) {
+            el.notThisClient = true;
+          }
+          return true;
+        });
+        orderStore.setOrderList(cloudList);
+        // store.dispatch('global/setCloudList', cloudList);
+      })
+      .finally(() => {
+        showToast.hide();
+      });
   };
   const showWithdraw = () => {
     router.push({ name: 'Withdraw' });
@@ -165,6 +183,9 @@
       router.push({ name: 'Shop' });
     }
   };
+  onMounted(() => {
+    searchList();
+  });
 </script>
 
 <style lang="scss" scoped>

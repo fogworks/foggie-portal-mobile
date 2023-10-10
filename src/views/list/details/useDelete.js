@@ -6,7 +6,6 @@ import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import '@nutui/nutui/dist/packages/toast/style';
 export default function useDelete(tableLoading, refresh, orderInfo, header) {
-  const { store } = useVariable();
   const deleteItem = (item) => {
     tableLoading.value = true;
     let cids = [];
@@ -14,21 +13,21 @@ export default function useDelete(tableLoading, refresh, orderInfo, header) {
     let objects = [];
     for (let i = 0; i < item.length; i++) {
       if (item[i].type == 'application/x-directory') {
-        prefixes.push(item[i].key);
+        prefixes.push(item[i].key + '');
       } else {
         objects.push({
-          pubkey: item[i].pubkey ? item[i].pubkey : encodeURIComponent(item[i].key),
+          pubkey: item[i].pubkey ? item[i].pubkey + '' : encodeURIComponent(item[i].key + ''),
         });
-        cids.push(item[i].cid);
+        cids.push(item[i].cid + '');
       }
     }
     let ProxDeleteObjectRequest = new Prox.default.ProxDeleteObjectRequest();
-    ProxDeleteObjectRequest.setCids(cids);
-    // let ProxUpload = new Prox.default.ProxUpload();
-    // ProxUpload.set
-    ProxDeleteObjectRequest.setObjects(objects);
+    ProxDeleteObjectRequest.setCidsList(cids);
+    let ProxUpload = new Prox.default.ProxUpload();
+    ProxUpload.setKey(objects);
+    ProxDeleteObjectRequest.setObjectsList(ProxUpload);
     ProxDeleteObjectRequest.setObjectType('normal');
-    ProxDeleteObjectRequest.setPrefixes(prefixes);
+    ProxDeleteObjectRequest.setPrefixesList(prefixes);
     let ProxDeleteObjectReq = new Prox.default.ProxDeleteObjectReq();
     ProxDeleteObjectReq.setHeader(header);
     ProxDeleteObjectReq.setRequest(ProxDeleteObjectRequest);

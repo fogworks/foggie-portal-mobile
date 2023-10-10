@@ -65,7 +65,13 @@
         <span @click="cancelSelect">Cancel</span>
       </div>
     </nut-sticky>
-    <nut-infinite-loading v-if="category !== 1" class="file_list" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
+    <nut-infinite-loading
+      v-if="category !== 1"
+      class="file_list"
+      v-model="infinityValue"
+      :has-more="continuationToken"
+      @load-more="loadMore"
+    >
       <div
         :class="['list_item', item.checked ? 'row_is_checked' : '']"
         v-for="(item, index) in tableData"
@@ -76,10 +82,16 @@
       >
         <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
           <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
-          <img src="@/assets/svg/home/switch.svg" class="type_icon" v-else alt="" />
+          <template v-else>
+            <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+            <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+            <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" />
+            <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+            <img v-else src="@/assets/svg/home/file.svg" alt="" />
+          </template>
         </div>
         <div class="name_box">
-          <p>{{ item.name }}</p>
+          <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
           <p>{{ item.date || '' }}</p>
         </div>
         <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
@@ -106,15 +118,15 @@
       safe-area-inset-bottom
       placeholder
     >
-      <nut-tabbar-item tab-title="Share">
+      <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
         <template #icon>
-          <IconShare :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconShare>
+          <IconShare :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconShare>
           <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
         </template>
       </nut-tabbar-item>
-      <nut-tabbar-item tab-title="Rename">
+      <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 ? 'is-disable' : '']">
         <template #icon="props">
-          <IconRename :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconRename>
+          <IconRename :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconRename>
         </template>
       </nut-tabbar-item>
       <nut-tabbar-item tab-title="Move">
@@ -150,7 +162,7 @@
     <nut-popup position="bottom" closeable round :style="{ height: '90%' }" v-model:visible="renameShow">
       <div class="rename_box">
         <IconFolder></IconFolder>
-        <p> {{ chooseItem.name }}</p>
+        <p> {{ chooseItem.name ? chooseItem.name.split('/')[0] : '' }}</p>
         <nut-searchbar v-model="newName" placeholder="Please Input New Name"></nut-searchbar>
         <nut-button type="info" block @click="confirmRename">Confirm</nut-button>
       </div>
@@ -159,10 +171,16 @@
       <div class="rename_box move_box">
         <IconFolder></IconFolder>
         <div v-if="movePrefix.length" class="top_back" @click="movePrefix.splice(-1)">
-          <p> {{ movePrefix.length ? movePrefix.slice(-1) : '1' }}</p>
+          <p> {{ movePrefix.length ? movePrefix.slice(-1) : '' }}</p>
         </div>
-        <nut-infinite-loading v-if="category !== 1" class="file_list" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
-          <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in tableData" :key="index">
+        <nut-infinite-loading
+          v-if="category !== 1"
+          class="file_list"
+          v-model="infinityValue"
+          :has-more="continuationToken2"
+          @load-more="loadMore"
+        >
+          <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in dirData" :key="index">
             <div :class="['left_icon_box']">
               <IconFolder></IconFolder>
             </div>
@@ -175,6 +193,7 @@
         <nut-button type="info" block @click="confirmMove">Move to this folder</nut-button>
       </div>
     </nut-popup>
+    <!-- share -->
     <nut-popup @closed="isReady = false" position="bottom" closeable round :style="{ height: '200px' }" v-model:visible="showShareDialog">
       <div v-if="!isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
@@ -192,13 +211,18 @@
       </div>
       <div class="share_info_box" v-else>
         <div v-if="shareRefContent.ipfsStr">
-          <img src="@/assets/ipfs.png" alt="" />
+          <img @click="copyLink(shareRefContent.ipfsStr)" src="@/assets/ipfs.png" alt="" />
           IPFS Link
           <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
         </div>
         <div v-if="shareRefContent.httpStr">
-          <IconHttp></IconHttp>
+          <IconHttp @click="copyLink(shareRefContent.httpStr)"></IconHttp>
           HTTP Link
+          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+        </div>
+        <div v-if="shareRefContent.httpStr">
+          <IconTwitter @click="shareTwitter(shareRefContent.httpStr)"></IconTwitter>
+          Twitter
           <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
       </div>
@@ -225,6 +249,8 @@
 
 <script setup lang="ts">
   import detailImg from '@/assets/fog-works.png';
+  import IconTwitter from '~icons/home/twitter.svg';
+  import IconFile from '~icons/bxs/file.svg';
   import IconAllCate from '~icons/home/all-cate.svg';
   import IconAudio from '~icons/home/audio.svg';
   import IconImage from '~icons/home/image.svg';
@@ -283,6 +309,8 @@
     isSearch: false,
     moveShow: false,
     continuationToken: '',
+    continuationToken2: '',
+    dirData: [],
   });
   const imgListRef = ref('');
 
@@ -306,6 +334,8 @@
     isSearch,
     moveShow,
     continuationToken,
+    continuationToken2,
+    dirData,
   } = toRefs(state);
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
@@ -321,9 +351,8 @@
     shareRefContent,
     copyContent,
   } = useShare(orderInfo, header, deviceType);
-  const { deleteItem } = useDelete(tableLoading, refresh, orderInfo, header);
+  const { deleteItem } = useDelete(tableLoading, doSearch, orderInfo, header);
 
-  function refresh() {}
   const selectArr = computed(() => {
     if (category.value == 1) {
       return imgCheckedData.value;
@@ -331,10 +360,6 @@
       return tableData.value.filter((el) => el.checked);
     }
   });
-
-  const confirmMove = () => {
-    moveShow.value = false;
-  };
 
   const loadMore = () => {};
   const touchRow = (row, event) => {
@@ -394,10 +419,62 @@
   const tabSwitch = (item, index) => {
     handlerClick(item.tabTitle.toLowerCase());
   };
+  const confirmMove = () => {
+    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
+    const targetObject = (val) => {
+      if (movePrefix.value.length) {
+        return movePrefix.value.join('/') + '/' + val.name;
+      } else {
+        return val.name;
+      }
+    };
+    let index = 0;
+    const length = checkData.length - 1;
+    const rename = function (resolve, reject) {
+      if (targetObject(checkData[index]).length > 1024) {
+        showToast.warn('The file path cannot exceed a maximum of 1024 characters, operation failed');
+        if (index === length) {
+          resolve(true);
+        } else {
+          index++;
+          rename(resolve, reject);
+        }
+        return false;
+      }
+      let ip = orderInfo.value.rpc.split(':')[0];
+      server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+      let ProxRenameObject = new Prox.default.ProxRenameObject();
+      ProxRenameObject.setHeader(header);
+      ProxRenameObject.setSourceobject(checkData[index].fullName);
+      ProxRenameObject.setTargetobject(targetObject(checkData[index]));
+      ProxRenameObject.setFiletype(checkData[index].fileType);
+      server.renameObjects(ProxRenameObject, {}, (err, data) => {
+        if (data) {
+          if (index === length) {
+            showToast.success('Rename successful');
+            moveShow.value = false;
+            movePrefix.value = [];
+            resolve(true);
+          } else {
+            index++;
+            rename(resolve, reject);
+          }
+        } else {
+          movePrefix.value = [];
+          showToast.fail(err.message || 'Move failed');
+          doSearch();
+          reject(false);
+        }
+      });
+    };
+    return new Promise((resolve, reject) => {
+      rename(resolve, reject);
+    });
+    // moveShow.value = false;
+  };
   const confirmRename = () => {
     if (!newName.value) {
       showToast.warn('Please enter a new name');
-
       return false;
     }
     const folderNameRegex = /^[^\s\\\\/:*?"<>|]+(\.[^\s\\\\/:*?"<>|]+)?$/;
@@ -428,26 +505,26 @@
       showToast.warn('The file path cannot exceed a maximum of 1024 characters, operation failed');
       return false;
     }
-    rename_objects({
-      sourceObject: checkData[0].fullName,
-      targetObject: targetObject(),
-      //   token: token.value,
-      category: checkData[0].category,
-    }).then((res) => {
-      if (res) {
-        proxy.$notify({
-          customClass: 'notify-success',
-          message: 'Rename successful',
-          position: 'bottom-left',
-        });
-        emits('refreshList');
-        emits('reset');
-        emits('update:renameVisible', false);
+    let ip = orderInfo.value.rpc.split(':')[0];
+    server = new grpcService.default.ServiceClient(`http://${ip}:7007`);
+    let ProxRenameObject = new Prox.default.ProxRenameObject();
+    ProxRenameObject.setHeader(header);
+    ProxRenameObject.setSourceobject(checkData[0].fullName);
+    ProxRenameObject.setTargetobject(targetObject());
+    ProxRenameObject.setFiletype(checkData[0].fileType);
+    server.renameObjects(ProxRenameObject, {}, (err, data) => {
+      if (data) {
+        showToast.success('Rename successful');
+        renameShow.value = false;
+        newName.value = '';
+        doSearch();
+      } else {
+        showToast.fail(err.message || 'Rename failed');
       }
     });
   };
   const toNextLevel = (row) => {
-    let long_name = movePrefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
+    let long_name = movePrefix.value.length ? movePrefix.value?.join('/') + '/' + row.name : row.name;
     movePrefix.value = long_name.split('/').slice(0, -1);
   };
 
@@ -459,7 +536,7 @@
     } else if (type === 'download') {
       //   downLoad();
     } else if (type === 'delete') {
-      const onOk = () => {
+      const onOk = async () => {
         deleteItem(checkData);
       };
       showDialog({
@@ -470,9 +547,12 @@
         onOk,
       });
     } else if (type === 'rename') {
+      if (checkData.length > 1) return false;
+
       renameShow.value = true;
     } else if (type === 'newFolder') {
     } else if (type === 'share') {
+      if (checkData.length > 1) return false;
       await doShare(checkData[0]);
       // cancelSelect();
       // proxy.$notify({
@@ -585,41 +665,6 @@
     console.log(requestReq, 'requestReq');
     server.listObjects(requestReq, {}, (err, res) => {
       if (res) {
-        console.log('res:----', res);
-        // const transferData = {
-        //   commonPrefixes: res.array[0] || [],
-        //   isTruncated: res.array[1] || false,
-        //   prefix: res.array[2] || '',
-        //   maxKeys: res.array[3] || 30,
-        //   nextMarker: res.array[4] || '',
-        //   continuationToken: res.array[5] || '',
-        //   content: res.array[6].map((el) => {
-        //     return {
-        //       key: el[0] || '',
-        //       etag: el[1] || '',
-        //       lastModified: el[2] || '',
-        //       size: el[3] || 0,
-        //       contentType: el[4] || '',
-        //       cid: el[5] || '',
-        //       fileId: el[6] || '',
-        //       isPin: el[7] || false,
-        //       isPinCyfs: el[8] || false,
-        //       pinExp: el[9] || '',
-        //       CyfsExp: el[10] || '',
-        //       OOD: el[11] || '',
-        //       isPersistent: el[12] || false,
-        //       category: el[13] || 0,
-        //       tags: el[14] || '',
-        //     };
-        //   }),
-        //   prefixpins: res.array[7].map((el) => {
-        //     return {
-        //       prefix: el[0] || '',
-        //       cid: el[1] || '',
-        //     };
-        //   }),
-        // };
-        // const transferData=res.toObject()
         const transferData = {
           commonPrefixes: res.getCommonprefixesList(),
           content: res.getContentList().map((el) => {
@@ -707,6 +752,7 @@
   const initRemoteData = (data, reset = false, category) => {
     if (!data) {
       tableLoading.value = false;
+      showToast.hide(1);
       return;
     }
     if (data.err) {
@@ -758,7 +804,11 @@
         isSystemImg: false,
         canShare: false,
       };
-      tableData.value.push(item);
+      if (moveShow.value) {
+        dirData.value.push(item);
+      } else {
+        tableData.value.push(item);
+      }
     }
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
@@ -812,24 +862,44 @@
         isPin: data.content[j].isPin,
         isPinCyfs: data.content[j].isPinCyfs,
       };
-      tableData.value.push(item);
+      if (moveShow.value) {
+        dirData.value.push(item);
+      } else {
+        tableData.value.push(item);
+      }
     }
     if (data.isTruncated) {
-      continuationToken.value = data.continuationToken;
+      if (moveShow.value) {
+        continuationToken2.value = data.continuationToken;
+      } else {
+        continuationToken.value = data.continuationToken;
+      }
     } else {
       continuationToken.value = '';
     }
+    console.log(tableData.value);
 
     tableLoading.value = false;
+    showToast.hide(1);
   };
   function doSearch() {
-    console.log(111111);
-
     if (tableLoading.value) return false;
     tableData.value = [];
     if (keyWord.value === '') {
-      getFileList('', prefix.value, true);
+      showToast.loading('Loading', {
+        cover: true,
+        id: 1,
+      });
+      if (moveShow.value) {
+        getFileList('', movePrefix.value, true);
+      } else {
+        getFileList('', prefix.value, true);
+      }
     } else {
+      showToast.loading('Loading', {
+        cover: true,
+        id: 1,
+      });
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
       if (type == 'space') {
@@ -879,6 +949,12 @@
     // this.$message.success(str);
     showToast.success('Copy succeeded');
   };
+  const shareTwitter = (fileLink) => {
+    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
+    let tweetText = checkData[0].name;
+    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(fileLink);
+    window.open(twitterUrl, '_blank');
+  };
   watch(
     category,
     async (val, old) => {
@@ -886,8 +962,11 @@
         imgListRef.value.resetChecked();
         imgCheckedData.value = [];
       }
-      await getOrderInfo();
-      getFileList('', prefix.value, true);
+      if (val == 1) {
+      } else {
+        await getOrderInfo();
+        doSearch();
+      }
     },
     { deep: true, immediate: true },
   );
@@ -896,7 +975,8 @@
     (val) => {
       if (!isSearch.value) {
         cancelSelect();
-        getFileList('', val, true);
+        doSearch();
+        // getFileList('', val, true);
       }
     },
     { deep: true },
@@ -904,7 +984,7 @@
   watch(
     movePrefix,
     (val) => {
-      getFileList('', val, true);
+      getFileList('', val, true, moveShow.value);
     },
     { deep: true },
   );
@@ -1053,6 +1133,10 @@
     }
   }
   .search_bar {
+    padding: 0;
+    margin: 20px;
+    width: calc(100% - 40px);
+    box-sizing: border-box;
     // padding: 20px;
     // padding-top: 0;
 
@@ -1080,8 +1164,8 @@
       background: #f1f1f1;
       border-radius: 50%;
       img {
-        width: 50px;
-        height: 50px;
+        width: 50px !important;
+        height: 50px !important;
       }
       &.is_checked {
         width: 60px;
@@ -1096,6 +1180,12 @@
     .type_icon {
       width: 80px;
       height: 80px;
+    }
+    .left_icon_box {
+      img {
+        width: 80px;
+        height: 80px;
+      }
     }
     .name_box {
       width: calc(100% - 180px);
@@ -1125,6 +1215,14 @@
       :deep {
         .nut-tabbar-item_icon-box_nav-word {
           color: #fff;
+        }
+      }
+    }
+    .is-disable {
+      color: #ffffff5c;
+      :deep {
+        .nut-tabbar-item_icon-box_nav-word {
+          color: #ffffff5c;
         }
       }
     }
@@ -1188,6 +1286,13 @@
       margin-top: 20px;
       text-align: center;
       color: $main_blue;
+      img,
+      svg {
+        display: block;
+        margin: 0 auto;
+        width: 80px;
+        height: 80px;
+      }
     }
   }
   .custom-content {
@@ -1217,6 +1322,9 @@
         &:active {
           background: #cde3f5;
         }
+      }
+      .is-disable {
+        color: #ccc;
       }
     }
     .cancel_btn {
