@@ -56,8 +56,8 @@
           </template>
         </div>
       </div>
-      <nut-searchbar v-if="!isCheckMode" placeholder="Search By Name" class="search_bar" v-model="keyWord">
-        <template #rightin @click="getFileList"> <Search2 color="#0a7dd2" /> </template>
+      <nut-searchbar @clear="doSearch" v-if="!isCheckMode" placeholder="Search By Name" class="search_bar" v-model="keyWord">
+        <template #rightin> <Search2 @click="doSearch" color="#0a7dd2" /> </template>
       </nut-searchbar>
       <div class="check_top" v-else>
         <span @click="selectAll">{{ selectArr.length == tableData.length ? 'UnSelect' : 'Select' }} All</span>
@@ -175,9 +175,9 @@
         <nut-button type="info" block @click="confirmMove">Move to this folder</nut-button>
       </div>
     </nut-popup>
-    <nut-popup position="bottom" closeable round :style="{ height: '50%' }" v-model:visible="showShareDialog">
-      <div class="rename_box move_box">
-        <nut-cell style="margin-top: 100px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
+    <nut-popup @closed="isReady = false" position="bottom" closeable round :style="{ height: '200px' }" v-model:visible="showShareDialog">
+      <div v-if="!isReady" class="rename_box move_box">
+        <nut-cell style="margin-top: 50px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
         <nut-popup position="bottom" v-model:visible="periodShow">
           <nut-picker
             v-model="periodValue"
@@ -189,6 +189,18 @@
           </nut-picker>
         </nut-popup>
         <nut-button type="info" block @click="confirmShare">Confirm</nut-button>
+      </div>
+      <div class="share_info_box" v-else>
+        <div v-if="shareRefContent.ipfsStr">
+          <img src="@/assets/ipfs.png" alt="" />
+          IPFS Link
+          <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
+        </div>
+        <div v-if="shareRefContent.httpStr">
+          <IconHttp></IconHttp>
+          HTTP Link
+          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+        </div>
       </div>
     </nut-popup>
 
@@ -228,6 +240,8 @@
   import IconSwitch from '~icons/home/switch.svg';
   import IconMore from '~icons/home/more.svg';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
+  import IconCopy from '~icons/home/copy.svg';
+  import IconHttp from '~icons/home/http.svg';
   import { reactive, toRefs, watch } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { Search2, TriangleUp } from '@nutui/icons-vue';
@@ -255,14 +269,7 @@
     infinityValue: false,
     hasMore: false,
     showActionPop: false,
-    tableData: [
-      {
-        name: 'XXXX',
-        isDir: true,
-        date: '2023-09-20',
-        key: '11',
-      },
-    ],
+    tableData: [],
     chooseItem: { name: '' },
     isCheckMode: false,
     renameShow: false,
@@ -301,8 +308,19 @@
     continuationToken,
   } = toRefs(state);
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
-  const { confirmShare, confirmPeriod, periodShow, desc, options, doShare, ipfsPin, showShareDialog, shareRefContent, copyContent } =
-    useShare(orderInfo, header);
+  const {
+    isReady,
+    confirmShare,
+    confirmPeriod,
+    periodShow,
+    desc,
+    options,
+    doShare,
+    ipfsPin,
+    showShareDialog,
+    shareRefContent,
+    copyContent,
+  } = useShare(orderInfo, header, deviceType);
   const { deleteItem } = useDelete(tableLoading, refresh, orderInfo, header);
 
   function refresh() {}
@@ -805,6 +823,8 @@
     tableLoading.value = false;
   };
   function doSearch() {
+    console.log(111111);
+
     if (tableLoading.value) return false;
     tableData.value = [];
     if (keyWord.value === '') {
@@ -816,18 +836,49 @@
         let ip = orderInfo.value.rpc.split(':')[0];
         server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
         let ProxFindRequest = new Prox.default.ProxFindRequest();
-        ProxFindRequest.setHeader(header.value);
+        ProxFindRequest.setHeader(header);
         ProxFindRequest.setCid('');
         ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
-        ProxFindRequest.setFileId('');
+        ProxFindRequest.setFileid('');
         server.findObjects(ProxFindRequest, {}, (err, res) => {
           if (res) {
+            const transferData = res.getContentsList().map((el) => {
+              return {
+                key: el.getKey(),
+                etag: el.getEtag(),
+                lastModified: el.getLastmodified(),
+                size: el.getSize(),
+                contentType: el.getContenttype(),
+                cid: el.getCid(),
+                fileId: el.getFileid(),
+                isPin: el.getIspin(),
+                isPinCyfs: el.getIspincyfs(),
+                pinExp: el.getPinexp(),
+                CyfsExp: el.getCyfsexp(),
+                OOD: el.getOod(),
+                isPersistent: el.getIspersistent(),
+                category: el.getCategory(),
+                tags: el.getTags(),
+              };
+            });
+            initRemoteData({ content: transferData }, true, category.value);
           } else {
           }
         });
       }
     }
   }
+  const copyLink = (text) => {
+    var input = document.createElement('input');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('Copy');
+    document.body.removeChild(input);
+    // let str = `Copying  ${type} successful!`;
+    // this.$message.success(str);
+    showToast.success('Copy succeeded');
+  };
   watch(
     category,
     async (val, old) => {
@@ -1002,8 +1053,8 @@
     }
   }
   .search_bar {
-    padding: 20px;
-    padding-top: 0;
+    // padding: 20px;
+    // padding-top: 0;
 
     :deep {
       .nut-searchbar__search-input {
@@ -1126,6 +1177,17 @@
           margin: 0;
         }
       }
+    }
+  }
+  .share_info_box {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 150px;
+    div {
+      margin-top: 20px;
+      text-align: center;
+      color: $main_blue;
     }
   }
   .custom-content {

@@ -6,13 +6,14 @@ import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 
 import '@nutui/nutui/dist/packages/toast/style';
 // import { file_pin } from '@/api';
-export default function useShare(orderInfo, header) {
+export default function useShare(orderInfo, header, deviceType) {
   const daySeconds = 86400;
   const monthSeconds = 2592000;
   const { store, uuid, shareRefContent, copyContent, pinData, ipfsDialogShow } = useVariable();
   const showShareDialog = ref(false);
   const periodShow = ref(false);
   const loading = ref(false);
+  const isReady = ref(false);
   const desc = ref('1 hour');
   const periodValue = ref([3600]);
   const options = ref([
@@ -46,7 +47,7 @@ export default function useShare(orderInfo, header) {
     },
   ]);
   const ipfsPin = (item, stype, flag, exp, isShare = true) => {
-    // let foggieToken = tokenMap.value[deviceData.value.device_id];
+    let foggieToken;
     // if (foggieToken && foggieToken.indexOf('bearer ') > -1) {
     //   foggieToken = foggieToken.split('bearer ')[1];
     // }
@@ -62,7 +63,7 @@ export default function useShare(orderInfo, header) {
     }
 
     let token = orderInfo.value.upload_file_token;
-    if (deviceType != 3) {
+    if (deviceType.value != 3) {
       token = foggieToken;
     }
     let poolType = orderInfo.pool_type;
@@ -82,11 +83,12 @@ export default function useShare(orderInfo, header) {
     }
     console.log(item);
     let request = new Prox.default.ProxPinRequest();
+    console.log(request, 'request');
     request.setCid(item.cid);
     request.setStype(stype);
     request.setExp(exp);
     request.setPin(flag !== 'unpin');
-    request.setIsDir(item.isDir);
+    request.setIsdir(item.isDir);
     request.setKey(encodeURIComponent(item.key));
     let pinPay = new Prox.default.ProxPinPay();
     pinPay.setCopied(0);
@@ -100,9 +102,7 @@ export default function useShare(orderInfo, header) {
 
     server.pin(ProxPinReq, {}, (err, res) => {
       if (res) {
-        resolve(res);
       } else if (err) {
-        reject(err);
       }
     });
   };
@@ -110,14 +110,11 @@ export default function useShare(orderInfo, header) {
     pinData.item = item;
     let key = item.key;
     if (key) {
-      let peer_id = orderInfo.value.peer_id;
       let foggie_id = orderInfo.value.foggie_id;
-      let foggieStr = `foggie://${peer_id}/${foggie_id}/${item.cid}`;
       let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
       let ipfsStr = item.cid ? `ipfs://${item.cid}` : '';
       shareRefContent.ipfsStr = ipfsStr;
       shareRefContent.httpStr = httpStr;
-      shareRefContent.foggieStr = foggieStr;
       showShareDialog.value = true;
     }
   };
@@ -144,15 +141,20 @@ export default function useShare(orderInfo, header) {
           } else {
             shareRefContent.httpStr = res.url;
           }
-          ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+
           if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
             if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
             } else {
-              ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
-              showToast.text('IPFS link will available later.');
+              if (!pinData.item.isPin) {
+                ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+                showToast.text('IPFS link will available later.');
+              }
             }
           } else {
-            showToast.text('IPFS link will available later');
+            if (!pinData.item.isPin) {
+              ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+              showToast.text('IPFS link will available later');
+            }
           }
           loading.value = false;
           isReady.value = true;
@@ -167,6 +169,7 @@ export default function useShare(orderInfo, header) {
   return {
     ipfsPin,
     loading,
+    isReady,
     periodShow,
     periodValue,
     desc,
