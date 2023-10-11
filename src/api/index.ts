@@ -160,3 +160,51 @@ export const get_unique_order = (params) => {
     params,
   });
 };
+
+
+export const check_name = (bucketName: any) => {
+  return request({
+    url: `/api/vps/check_name?domain=${bucketName}`,
+    method: 'GET',
+  });
+};
+
+
+export const miner_name_set = (data: any, token: any) => {
+  let url = `/api/v1/minerConsumer/name_set`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+    headers: {
+      token
+    },
+  });
+};
+
+export const order_name_set = (data: any) => {
+  let url = `/ambmgr/order/name_set`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+};
+
+
+export const search_bill = (memo: any, order_id: any) => {
+  let url = `/bcmgr/bill/search_bill?memo=${memo}&order_id=${order_id}`;
+  return request({
+    url: url,
+    method: 'GET',
+  });
+};
+
+
+export const download_url = (url: any, headers: any) => {
+  return request({
+    url: url,
+    method: 'GET',
+    headers,
+  });
+};

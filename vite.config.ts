@@ -57,6 +57,12 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
+        '^/api/v1/minerConsumer': {
+          target: 'http://154.31.3.222',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
         '^/api_accounts': {
           target: 'https://devlop.fogworks.io',
           changeOrigin: true,
@@ -94,6 +100,27 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           rewrite: (path) => path.replace(/^\/dmcscan/, ''),
         },
         '^/fog': {
+          target: 'http://218.2.96.99:6008',
+          // target: 'http://192.168.1.119:6008',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+        '^/bcmgr/bill/search_bill': {
+          target: 'http://154.31.34.194:9098',
+          // target: 'http://192.168.1.119:6008',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+        // '^/foggiebucket': {
+        //   target: 'http://218.2.96.99:6008',
+        //   // target: 'http://192.168.1.119:6008',
+        //   changeOrigin: true,
+        //   secure: false,
+        //   // rewrite: (path) => path.replace(/^\/api/, ""),
+        // },
+        '^/o': {
           target: 'http://218.2.96.99:6008',
           // target: 'http://192.168.1.119:6008',
           changeOrigin: true,

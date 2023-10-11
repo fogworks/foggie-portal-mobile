@@ -1,15 +1,17 @@
 import useVariable from './useVariable';
-import { ref, toRefs } from 'vue';
+import { ref } from 'vue';
 import { showToast } from '@nutui/nutui';
 import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 
 import '@nutui/nutui/dist/packages/toast/style';
+import { HmacSHA1, enc } from 'crypto-js';
 // import { file_pin } from '@/api';
 export default function useShare(orderInfo, header, deviceType) {
+  
   const daySeconds = 86400;
   const monthSeconds = 2592000;
-  const { store, uuid, shareRefContent, copyContent, pinData, ipfsDialogShow } = useVariable();
+  const { shareRefContent, copyContent, pinData, ipfsDialogShow } = useVariable();
   const showShareDialog = ref(false);
   const periodShow = ref(false);
   const loading = ref(false);
@@ -46,7 +48,8 @@ export default function useShare(orderInfo, header, deviceType) {
       value: monthSeconds * 12,
     },
   ]);
-  const ipfsPin = (item, stype, flag, exp, isShare = true) => {
+  const ipfsPin = (item, stype, flag, exp = true) => {
+    
     let foggieToken;
     // if (foggieToken && foggieToken.indexOf('bearer ') > -1) {
     //   foggieToken = foggieToken.split('bearer ')[1];
@@ -66,9 +69,12 @@ export default function useShare(orderInfo, header, deviceType) {
     if (deviceType.value != 3) {
       token = foggieToken;
     }
+    
+    console.log(token, 'token');
     let poolType = orderInfo.value.pool_type;
     let poolWalletAcc = orderInfo.value.pool_wallet_acc;
     if (device_type == 3) {
+      
       if (!item.cid || !item.originalSize) {
         showToast.fail('The file data is abnormal, please refresh the page and try again.');
         return;
@@ -77,13 +83,13 @@ export default function useShare(orderInfo, header, deviceType) {
         // let totalPinSize = pinSize + parseInt(fileSize);
       }
     }
+    
     if (poolType == 0 && !poolWalletAcc) {
       showToast.fail('Mining pool wallet account cannot be empty.');
       return;
     }
-    console.log(item);
     let request = new Prox.default.ProxPinRequest();
-    console.log(request, 'request');
+    // console.log(request, 'request');
     request.setCid(item.cid);
     request.setStype(stype);
     request.setExp(exp);
@@ -103,9 +109,9 @@ export default function useShare(orderInfo, header, deviceType) {
     showToast.text('IPFS link will available later.');
     server.pin(ProxPinReq, {}, (err, res) => {
       if (res) {
-        console.log(res);
+        console.log(res, 'res');
       } else if (err) {
-        console.log(err);
+        console.log(err, 'err');
       }
     });
   };
@@ -122,50 +128,142 @@ export default function useShare(orderInfo, header, deviceType) {
     }
   };
   const confirmPeriod = ({ selectedValue, selectedOptions }) => {
+    cobsole.log(selectedValue, selectedOptions, 'selectedOptions');
     desc.value = selectedOptions.map((val) => val.text).join(',');
     periodShow.value = false;
   };
-  const confirmShare = () => {
-    loading.value = true;
-    let ProxPresignedURL = new Prox.default.ProxPresignedURL();
-    ProxPresignedURL.setHeader(header);
-    ProxPresignedURL.setUrl(shareRefContent.httpStr);
-    ProxPresignedURL.setMethod('GET');
-    ProxPresignedURL.setExpires(periodValue.value[0]);
-    let ip = orderInfo.value.rpc.split(':')[0];
-    let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-    server.getPreSigned(ProxPresignedURL, {}, (err, res) => {
-      if (res) {
-        res = res.toObject();
-        console.log(res, 'res');
-        if (res?.url) {
-          if (orderInfo.value.device_type !== 'space' && orderInfo.value.device_type != 3) {
-            shareRefContent.httpStr = res.url.replace(/\/fog/, ':6008/fog');
-          } else {
-            shareRefContent.httpStr = res.url;
-          }
+  // const confirmShare = () => {
+  //   loading.value = true;
+  //   let ProxPresignedURL = new Prox.default.ProxPresignedURL();
+  //   ProxPresignedURL.setHeader(header);
+  //   ProxPresignedURL.setUrl(shareRefContent.httpStr);
+  //   ProxPresignedURL.setMethod('GET');
+  //   ProxPresignedURL.setExpires(periodValue.value[0]);
+  //   let ip = orderInfo.value.rpc.split(':')[0];
+  //   let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+  //   server.getPreSigned(ProxPresignedURL, {}, (err, res) => {
+  //     if (res) {
+  //       res = res.toObject();
+  //       console.log(res, 'res');
+  //       if (res?.url) {
+  //         if (orderInfo.value.device_type !== 'space' && orderInfo.value.device_type != 3) {
+  //           shareRefContent.httpStr = res.url.replace(/\/fog/, ':6008/fog');
+  //         } else {
+  //           shareRefContent.httpStr = res.url;
+  //         }
 
-          if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
-            if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
-            } else {
-              if (!pinData.item.isPin) {
-                ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
-              }
-            }
-          } else {
-            if (!pinData.item.isPin) {
-              ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
-            }
-          }
-          loading.value = false;
-          isReady.value = true;
-        } else {
-          loading.value = false;
+  //         if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
+  //           if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
+  //           } else {
+  //             if (!pinData.item.isPin) {
+  //               ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+  //               showToast.text('IPFS link will available later.');
+  //             }
+  //           }
+  //         } else {
+  //           if (!pinData.item.isPin) {
+  //             ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+  //             showToast.text('IPFS link will available later');
+  //           }
+  //         }
+  //         loading.value = false;
+  //         isReady.value = true;
+  //       } else {
+  //         loading.value = false;
+  //       }
+  //     } else if (err) {
+  //       loading.value = false;
+  //     }
+  //   });
+  // };
+  const confirmShare = () => {
+    const awsAccessKeyId = 'FOG9C40y1MBG1x85DU3o';
+    const awsSecretAccessKey = 'IZIPDmHm1HXE4ZNCSRIJWuGsUXkp9f98bKHAifVG';
+    const bucketName = 'foggiebucket';
+    const objectKey = encodeURIComponent(pinData.item.fullName)
+    const expirationInSeconds = 3600;
+    const expirationTime = Math.floor(Date.now() / 1000) + expirationInSeconds;
+
+    const httpMethod = 'GET';
+    const contentType = '';
+    const contentMd5 = '';
+    const canonicalizedAmzHeaders = '';
+    const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
+    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n${expirationTime}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
+    console.log(signature, 'signature');
+
+    // const signature = `${awsAccessKeyId}\n${expirationTime}`;
+
+    let hmac = HmacSHA1(signature, awsSecretAccessKey);
+    const signatureBase64 = enc.Base64.stringify(hmac);
+    console.log(signatureBase64, 'signatureBase64');
+
+    let ip = 'http://218.2.96.99:6008'
+    const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
+    shareRefContent.httpStr = `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(signatureBase64)}`;
+    console.log(shareRefContent.httpStr, 'shareRefContent.httpStr');
+
+
+    if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
+      if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
+      } else {
+        if (!pinData.item.isPin) {
+          console.log('pinData.item.isPin', pinData.item.isPin);
+          ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+          showToast.text('IPFS link will available later.');
         }
-      } else if (err) {
-        loading.value = false;
       }
-    });
+    } else {
+      if (!pinData.item.isPin) {
+        ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+        showToast.text('IPFS link will available later');
+      }
+    }
+
+
+
+    // loading.value = true;
+    // let ProxPresignedURL = new Prox.default.ProxPresignedURL();
+    // ProxPresignedURL.setHeader(header);
+    // ProxPresignedURL.setUrl(shareRefContent.httpStr);
+    // ProxPresignedURL.setMethod('GET');
+    // ProxPresignedURL.setExpires(periodValue.value[0]);
+    // let ip = orderInfo.value.rpc.split(':')[0];
+    // let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+    // server.getPreSigned(ProxPresignedURL, {}, (err, res) => {
+    //   if (res) {
+    //     res = res.toObject();
+    //     console.log(res, 'res');
+    //     if (res?.url) {
+    //       if (orderInfo.value.device_type !== 'space' && orderInfo.value.device_type != 3) {
+    //         shareRefContent.httpStr = res.url.replace(/\/fog/, ':6008/fog');
+    //       } else {
+    //         shareRefContent.httpStr = res.url;
+    //       }
+
+    //       if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
+    //         if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
+    //         } else {
+    //           if (!pinData.item.isPin) {
+    //             ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+    //             showToast.text('IPFS link will available later.');
+    //           }
+    //         }
+    //       } else {
+    //         if (!pinData.item.isPin) {
+    //           ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+    //           showToast.text('IPFS link will available later');
+    //         }
+    //       }
+    //       loading.value = false;
+    //       isReady.value = true;
+    //     } else {
+    //       loading.value = false;
+    //     }
+    //   } else if (err) {
+    //     loading.value = false;
+    //   }
+    // });
   };
   return {
     ipfsPin,

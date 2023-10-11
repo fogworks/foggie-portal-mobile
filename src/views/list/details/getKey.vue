@@ -41,8 +41,32 @@
   foggie_id.value = 'baeqagmjshayq';
   token.value = 'SIG_K1_KksLjarjf3Pg9HTY6tmSazrpJZEakLFMCPX1SmwBKBWa6jm5NZk1EV6LdkjjofP6xKdEpNWYpYEizJBxz3Ri2G4JWD8wWB';
 
+
+  interface DynamicFormState {
+  tels: {
+    key: number;
+    accessKey: string;
+    secretKey: string;
+    eyeState: boolean;
+  }[];
+}
+
+// const dynamicForm: {
+//   state: DynamicFormState;
+// } = {
+//   state: {
+//     tels: [],
+//   },
+// };
+
+
   const dynamicRefForm = ref<any>(null);
-  const dynamicForm = {
+  const dynamicForm: {
+    state: DynamicFormState;
+    methods: {
+      add: () => void;
+    };
+  } = {
     state: reactive({
       name: '',
       tels: [],

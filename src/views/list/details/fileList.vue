@@ -285,7 +285,10 @@
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
 
-  let timeOutEvent;
+  import { HmacSHA1, enc } from 'crypto-js';
+  // import { download_url } from '@/api/index';
+
+  let timeOutEvent: string | number | NodeJS.Timeout | undefined;
   let server = null;
   const route = useRoute();
   const router = useRouter();
@@ -362,18 +365,18 @@
   });
 
   const loadMore = () => {};
-  const touchRow = (row, event) => {
+  const touchRow = (row: any, event: any) => {
     timeOutEvent = setTimeout(function () {
       timeOutEvent = 0;
       isCheckMode.value = true;
     }, 1000);
   };
 
-  const touchmoveRow = (row, event) => {
+  const touchmoveRow = (row: any, event: any) => {
     clearTimeout(timeOutEvent);
     timeOutEvent = 0;
   };
-  const touchendRow = (row, event) => {
+  const touchendRow = (row: { checked: boolean; isDir: any; name: string; }, event: { target: { nodeName: string; }; }) => {
     clearTimeout(timeOutEvent);
     if (event?.target?.nodeName == 'svg' || event?.target?.nodeName == 'path') {
       showAction(row);
@@ -407,16 +410,16 @@
       el.checked = !isAll;
     });
   };
-  const showAction = (item) => {
+  const showAction = (item: { name: string; }) => {
     if (timeOutEvent !== 0) {
       chooseItem.value = item;
       showActionPop.value = true;
     }
   };
-  const choose = (item) => {
+  const choose = (item: { name: string; }) => {
     chooseItem.value = item;
   };
-  const tabSwitch = (item, index) => {
+  const tabSwitch = (item: { tabTitle: string; }, index: any) => {
     handlerClick(item.tabTitle.toLowerCase());
   };
   const confirmMove = () => {
@@ -523,18 +526,82 @@
       }
     });
   };
-  const toNextLevel = (row) => {
-    let long_name = movePrefix.value.length ? movePrefix.value?.join('/') + '/' + row.name : row.name;
+  const toNextLevel = (row: { name: string; }) => {
+    let long_name = movePrefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
     movePrefix.value = long_name.split('/').slice(0, -1);
   };
 
-  const handlerClick = async (type) => {
+  const handlerClick = async (type: string) => {
     showActionPop.value = false;
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
     if (type === 'move') {
       moveShow.value = true;
     } else if (type === 'download') {
       //   downLoad();
+
+      const awsAccessKeyId = 'FOG9C40y1MBG1x85DU3o';
+      const awsSecretAccessKey = 'IZIPDmHm1HXE4ZNCSRIJWuGsUXkp9f98bKHAifVG';
+      const bucketName = 'foggiebucket';
+      const objectKey = encodeURIComponent(checkData[0].fullName);
+
+      console.log(awsAccessKeyId, awsSecretAccessKey, bucketName, objectKey);
+
+      const date = new Date().toUTCString();
+    
+      const httpMethod = 'GET';
+      const contentType = '';
+      const contentMd5 = '';
+      const canonicalizedAmzHeaders = '';
+      const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
+      
+
+      const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
+      console.log(signature, 'signature');
+
+      // const crypto = require('crypto');
+      // const hmac = crypto.createHmac('sha1', awsSecretAccessKey);
+      // hmac.update(signature);
+      // const signatureBase64 = hmac.digest('base64');
+
+      let hmac = HmacSHA1(signature, awsSecretAccessKey);
+      const signatureBase64 = enc.Base64.stringify(hmac);
+      console.log(signatureBase64, 'signatureBase64');
+
+
+      const headers = {
+        "x-amz-date": date,
+        Authorization: `AWS ${awsAccessKeyId}:${signatureBase64}`,
+      };
+
+
+      // 构建 S3 GET 请求
+      const url = `/o/${bucketName}/${objectKey}`;
+      console.log(url, 'url');
+      console.log(headers, 'headers');
+
+      // download_url(url, headers).then((err: any, res: any) => {
+      //   if (err) {
+      //     console.log('err-------------', err);
+      //   }
+      //   console.log('res-------------', res);
+      // });
+
+      fetch(url, { method: 'GET', headers })
+        .then((response) => {
+          if (response.ok) {
+            // 下载文件或处理响应
+            console.log('Success', response);
+          } else {
+            // 处理错误响应
+            console.error('Error:', response.status, response.statusText);
+          }
+        })
+        .catch((error) => {
+          // 处理网络错误
+          console.error('Network Error:', error);
+        });
+
+
     } else if (type === 'delete') {
       const onOk = async () => {
         deleteItem(checkData);
@@ -572,7 +639,7 @@
     3: 'Audio',
     4: 'Document',
   };
-  const switchType = (type) => {
+  const switchType = (type: number) => {
     category.value = type;
     cancelSelect();
     showTypeCheckPop.value = false;
@@ -611,26 +678,26 @@
     }
     fileStream = fs.createWriteStream(savePath);
 
-    stream.on('data', (data) => {
+    stream.on('data', (data: any) => {
       console.log(data);
     });
 
-    stream.on('status', (status) => {
+    stream.on('status', (status: any) => {
       console.log('Stream status:', status);
     });
 
-    stream.on('end', (end) => {
+    stream.on('end', (end: any) => {
       fileStream.end();
       shell.showItemInFolder(savePath);
       downloadDone('completed');
     });
 
-    stream.on('error', (error) => {
+    stream.on('error', (error: any) => {
       if (fileStream) fileStream.close();
       // if (stream) stream.removeListener('data', streamData);
     });
   }
-  function getFileList(scroll, prefix, reset = false) {
+  function getFileList(scroll: string, prefix: any[], reset = false) {
     let list_prefix = '';
     if (prefix?.length) {
       list_prefix = prefix.join('/');
@@ -663,11 +730,11 @@
     requestReq.setHeader(header);
     requestReq.setRequest(listObject);
     console.log(requestReq, 'requestReq');
-    server.listObjects(requestReq, {}, (err, res) => {
+    server.listObjects(requestReq, {}, (err: any, res: { getCommonprefixesList: () => any; getContentList: () => any[]; getContinuationtoken: () => any; getIstruncated: () => any; getMaxkeys: () => any; getNextmarker: () => any; getPrefix: () => any; getPrefixpinsList: () => any; }) => {
       if (res) {
         const transferData = {
           commonPrefixes: res.getCommonprefixesList(),
-          content: res.getContentList().map((el) => {
+          content: res.getContentList().map((el: { getKey: () => any; getEtag: () => any; getLastmodified: () => any; getSize: () => any; getContenttype: () => any; getCid: () => any; getFileid: () => any; getIspin: () => any; getIspincyfs: () => any; getPinexp: () => any; getCyfsexp: () => any; getOod: () => any; getIspersistent: () => any; getCategory: () => any; getTags: () => any; }) => {
             return {
               key: el.getKey(),
               etag: el.getEtag(),
@@ -699,7 +766,7 @@
       }
     });
   }
-  const handleImg = (item, type, isDir) => {
+  const handleImg = (item: { cid: any; key: any; }, type: string, isDir: boolean) => {
     let baseUrl = '127.0.0.1';
     let imgHttpLink = '';
     let imgHttpLarge = '';
@@ -749,7 +816,7 @@
     }
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
-  const initRemoteData = (data, reset = false, category) => {
+  const initRemoteData = (data: { commonPrefixes?: any; content: any; continuationToken?: any; isTruncated?: any; maxKeys?: any; nextMarker?: any; prefix?: any; prefixpins?: any; err?: any; }, reset = false, category: number) => {
     if (!data) {
       tableLoading.value = false;
       showToast.hide(1);
@@ -910,9 +977,9 @@
         ProxFindRequest.setCid('');
         ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
         ProxFindRequest.setFileid('');
-        server.findObjects(ProxFindRequest, {}, (err, res) => {
+        server.findObjects(ProxFindRequest, {}, (err: any, res: { getContentsList: () => any[]; }) => {
           if (res) {
-            const transferData = res.getContentsList().map((el) => {
+            const transferData = res.getContentsList().map((el: { getKey: () => any; getEtag: () => any; getLastmodified: () => any; getSize: () => any; getContenttype: () => any; getCid: () => any; getFileid: () => any; getIspin: () => any; getIspincyfs: () => any; getPinexp: () => any; getCyfsexp: () => any; getOod: () => any; getIspersistent: () => any; getCategory: () => any; getTags: () => any; }) => {
               return {
                 key: el.getKey(),
                 etag: el.getEtag(),
@@ -938,7 +1005,7 @@
       }
     }
   }
-  const copyLink = (text) => {
+  const copyLink = (text: string) => {
     var input = document.createElement('input');
     input.value = text;
     document.body.appendChild(input);

@@ -21,6 +21,9 @@
         </nut-cell>
       </nut-col>
     </nut-row>
+    <span v-if="bucketName">{{ bucketName }}</span>
+    <nut-input placeholder="Please enter name" v-model="newBucketName" v-if="showCreatName" />
+    <nut-button class="creat-name" type="primary" @click="creatName" v-if="!bucketName">Creat Name</nut-button>
   </div>
   <div class="detail_box">
     <!-- <nut-grid class="top_grid" column-num="3" direction="horizontal">
@@ -49,6 +52,12 @@
       </nut-col>
     </nut-row>
 
+    <nut-row class="order-icons">
+      <nut-col @click="getKey" :span="6" class="order-icon-recycle">
+        <keySolid color="#fff"  />
+      </nut-col>
+    </nut-row>
+
     <nut-uploader
       :url="uploadUri"
       multiple
@@ -62,8 +71,8 @@
     </nut-uploader>
 
     <!-- <recycleFill color="#9F9BEF"/> -->
-    <icon10kOutline color="red" />
-    <keySolid color="red" @click="getKey" />
+    <!-- <icon10kOutline color="red" /> -->
+    <!-- <keySolid color="red" @click="getKey" /> -->
   </div>
 </template>
 
@@ -85,6 +94,7 @@
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute, useRouter } from 'vue-router';
+  import { check_name, miner_name_set, order_name_set, search_bill } from '@/api/index';
 
   const route = useRoute();
   const router = useRouter();
@@ -97,27 +107,30 @@
   const secretAccessKey = ref<string>('');
   const uploadUri = ref<string>('');
   const prefix = ref<string>('');
+  const showCreatName = ref<boolean>(false);
+  const newBucketName = ref<string>('');
 
   const isDisabled = ref<boolean>(false);
   const formData = ref<any>({});
+
+  const memo = ref<string>('');
+  const order_id = ref<string>('');
+  const minerIp = ref<string>('');
+
+  memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
+  order_id.value = '1281';
+  search_bill(memo.value, order_id.value).then((res) => {
+    console.log('search_bill', res);
+    minerIp.value = res?.data?.mp_ipaddr;
+  });
+
+
   const beforeupload = async (file: any) => {
-    console.log('file++++', file[0]);
-    // get amb node
-    // get_order_node(detailsData[0].uuid)
-    //   .then((res) => {
-    //     console.log('res----', res);
-    //     // get status
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
     bucketName.value = 'foggiebucket';
-    // accessKeyId.value = 'FOGZ2QkDgu2jajTs7oAD';
     accessKeyId.value = 'FOG9C40y1MBG1x85DU3o';
-    // secretAccessKey.value = 'hK44W0c2lc6S58RsXFiqsUCF0PJZ080iFYALGwH7';
     secretAccessKey.value = 'IZIPDmHm1HXE4ZNCSRIJWuGsUXkp9f98bKHAifVG';
-    // uploadUri.value = 'http://218.2.96.99:6008';
-    uploadUri.value = '/fog/baeqacmjq/foggiebucket';
+    // uploadUri.value = '/fog/baeqacmjq/foggiebucket';
+    uploadUri.value = '/o/foggiebucket';
 
     const policy = {
       expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
@@ -155,6 +168,40 @@
   };
   const getKey = () => {
     router.push('/getKey');
+  };
+
+  const creatName = async () => {
+    if (!showCreatName.value) {
+      showCreatName.value = true;
+    } else if (newBucketName.value) {
+      // check name
+      const result = await check_name(newBucketName.value);
+      if (result?.data?.domain) {
+        console.log('name is exist');
+        return;
+      }
+      console.log('name is not exist');
+      let data = {
+        is_domain: true,
+        name: newBucketName.value,
+        order_id: '1281',
+      };
+      let token = '';
+      const miner_result = await miner_name_set(data, token);
+      console.log('miner_result', miner_result);
+      if (!miner_result?.data?.result) {
+        return;
+      }
+      let order_data = {
+        is_domain: true,
+        name: 'test12345',
+        order_uuid: '1e151b9c-507a-11ee-8369-f218985479b1',
+      };
+      const order_result = await order_name_set(order_data);
+      if (!order_result?.data?.result) {
+        return;
+      }
+    }
   };
 
   // 218.2.96.99:6008
@@ -276,6 +323,10 @@
       }
     }
   }
+  .creat-name {
+    background: #F5F8FD;
+    color: #0099FF;
+  }
 </style>
 <style lang="scss">
   .order-circle .nut-circle-progress {
@@ -289,4 +340,5 @@
       font-size: 12px !important;
     }
   }
+
 </style>
