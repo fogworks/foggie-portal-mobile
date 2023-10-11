@@ -4,7 +4,7 @@
       <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
       <p class="title">Buy</p>
       <p class="total_balance">Total Balance</p>
-      <p class="total_balance_value">4949.0000 DMC</p>
+      <p class="total_balance_value">{{ cloudBalance }} DMC</p>
     </div>
   </div>
   <div class="middle_content">
@@ -78,8 +78,11 @@
   import { showToast } from '@nutui/nutui';
   import { useRouter } from 'vue-router';
   import useDmcTrade from './useDmcTrade.js';
+  import useUserAssets from '../home/useUserAssets.ts';
+
   // import useUpdateDMC from './useUpdateDMC';
   // const { getAmbDmc, targetAccount } = useUpdateDMC();
+  const { getUserAssets, cloudBalance } = useUserAssets();
   const { perTBIncome } = useDmcTrade();
   const router = useRouter();
   const state = reactive({
@@ -113,6 +116,12 @@
   async function submit() {
     loading.value = true;
     await loadCurReferenceRate();
+    if (cloudBalance.value < totalPrice.value) {
+      let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);
+      showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
+      loading.value = false;
+      return false;
+    }
     let params = {
       week: state.shopForm.week,
       floating_ratio: state.shopForm.floating_ratio,
@@ -151,6 +160,7 @@
   }
   onMounted(() => {
     loadCurReferenceRate();
+    getUserAssets();
   });
 </script>
 

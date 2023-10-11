@@ -15,7 +15,7 @@
           class="amount_input"
           format-trigger="onBlur"
           :formatter="formatAmount"
-          placeholder="Please Enter Withdraw Amount"
+          placeholder="Amount"
           v-model="amount"
           type="number"
         >
@@ -34,7 +34,7 @@
       <van-number-keyboard v-model="code" :show="showKeyboard" @blur="showKeyboard = false" />
     </div>
     <div style="margin: 40px">
-      <nut-button round block type="info" class="withdraw_btn" native-type="submit"> Withdraw </nut-button>
+      <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmWithdraw"> Withdraw </nut-button>
     </div>
   </div>
   <div class="qrcode-step" v-else>
@@ -73,12 +73,12 @@
   import { check_account, transfer_valid, bind_valid } from '@/api';
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
+  import useUserAssets from './useUserAssets.ts';
   const userStore = useUserStore();
   const dmc = computed(() => userStore.getUserInfo.dmc);
   const email = computed(() => userStore.getUserInfo.email);
   const router = useRouter();
   const state = reactive({
-    amount: '0',
     code: '',
     showKeyboard: false,
     loading: false,
@@ -89,11 +89,10 @@
     showErrorTips: false,
     googleErrorTip: '',
   });
-  const { showErrorTips, googleErrorTip, scret_key, authQrcode, scret_keyOld, canWithDraw, loading, amount, code, showKeyboard } =
-    toRefs(state);
-
+  const { showErrorTips, googleErrorTip, scret_key, authQrcode, scret_keyOld, canWithDraw, loading, code, showKeyboard } = toRefs(state);
+  const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
   const getAll = () => {
-    amount.value = 1;
+    amount.value = cloudBalance.value;
   };
   const formatAmount = (val) => {
     if (val == 0) {
@@ -112,7 +111,6 @@
     showToast.success('Copy succeeded');
   }
   async function initGoogle() {
-    loading.value = true;
     // let res = await transfer_valid({ email: email.value });
     // if (res?.data?.imageUrl) {
     //   // let data = {
@@ -143,8 +141,24 @@
       showErrorTips.value = false;
     }
   }
+  function confirmWithdraw() {
+    showToast.loading('Withdrawing cash for you', {
+      cover: true,
+    });
+    if (!amount.value) return false;
+    user_withdraw({ quantity: amount.value })
+      .then((res) => {
+        showToast.hide();
+        showToast.success('Withdrawal successful');
+        router.go(-1);
+      })
+      .catch(() => {
+        showToast.hide();
+      });
+  }
   onMounted(() => {
     initGoogle();
+    getUserAssets();
   });
 </script>
 

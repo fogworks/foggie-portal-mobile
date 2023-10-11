@@ -19,25 +19,24 @@
       <div class="card_row_1"> Balance </div>
       <div class="card_row_1">
         <div class="total_income">
-          <div> 100.0000 </div>
+          <div> {{ cloudBalance }} </div>
         </div>
       </div>
       <div class="card_row_1 pst-row">
         <div>
           <p>PST</p>
-          <P class="column_value">123</P>
+          <p class="column_value">{{ cloudPst }}</p>
         </div>
         <div>
-          <p>Exchange</p>
-          <P class="column_value">$100.00</P>
+          <p>Withdrawn</p>
+          <p class="column_value">{{ cloudWithdraw }}</p>
         </div>
         <div>
           <p>New revenue today</p>
-          <P class="column_value today_income"
-            >+0.01 DMC
-
+          <p class="column_value today_income"
+            >+ {{ cloudIncome }} DMC
             <TriangleUp color="#FF8B00" width="20px"></TriangleUp>
-          </P>
+          </p>
         </div>
       </div>
     </template>
@@ -100,7 +99,11 @@
     <nut-tab-pane title="Six months" pane-key="2"> </nut-tab-pane>
   </nut-tabs> -->
   <nut-infinite-loading load-more-txt="No more content" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
-    <div class="list_item" v-for="(item, index) in listData">
+    <div
+      class="list_item"
+      v-for="(item, index) in listData"
+      @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
+    >
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 2" class="cions" src="@/assets/list_item_2.svg" alt="" />
@@ -109,11 +112,12 @@
       <div>
         <span>Order:{{ item.order_id }}</span>
         <span :class="['earnings']">
-          +{{ item.dmc }} <IconArrowRight style="vertical-align: text-top" width="1.2rem" height="1.2rem" color="#5F57FF"></IconArrowRight
+          +{{ item.income }}
+          <IconArrowRight style="vertical-align: text-top" width="1.2rem" height="1.2rem" color="#5F57FF"></IconArrowRight
         ></span>
       </div>
       <div
-        ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ item.createAt }}</span>
+        ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ transferUTCTime(item.order_created_at) }}</span>
       </div>
     </div>
   </nut-infinite-loading>
@@ -128,51 +132,25 @@
   import { useOrderStore } from '@/store/modules/order';
   import { showToast } from '@nutui/nutui';
   import { search_cloud } from '@/api';
+  import { get_user_dmc } from '@/api/amb';
+  import useUserAssets from './useUserAssets.ts';
+  import useOrderList from './useOrderList.ts';
+  import { transferUTCTime } from '@/utils/util';
+
   import '@nutui/nutui/dist/packages/toast/style';
 
   const useStore = useUserStore();
   const orderStore = useOrderStore();
   const userInfo = computed(() => useStore.getUserInfo);
-  const listData = computed(() => {
-    return orderStore.getOrderList;
-  });
+
   const router = useRouter();
   const state = reactive({
-    infinityValue: false,
-    hasMore: false,
-
     timeType: '0',
     searchType: '0',
-    cloudSpaceList: [],
   });
-  const { cloudSpaceList, hasMore, infinityValue, timeType, searchType } = toRefs(state);
-  const loadMore = () => {
-    searchList();
-  };
-  const searchList = async () => {
-    showToast.loading('Loading', {
-      cover: true,
-    });
-    // await getCloudSpaceList();
-    await search_cloud()
-      .then((res) => {
-        const cloudList = res.result.data.filter((el) => {
-          if (!el.result) {
-            // return false;
-          }
-          const target = cloudSpaceList.value.find((item) => item.order_id == el.order_id);
-          if (!target) {
-            el.notThisClient = true;
-          }
-          return true;
-        });
-        orderStore.setOrderList(cloudList);
-        // store.dispatch('global/setCloudList', cloudList);
-      })
-      .finally(() => {
-        showToast.hide();
-      });
-  };
+  const { timeType, searchType } = toRefs(state);
+  const { loadMore, listData, hasMore, infinityValue } = useOrderList();
+  const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
   const showWithdraw = () => {
     router.push({ name: 'Withdraw' });
   };
@@ -184,7 +162,8 @@
     }
   };
   onMounted(() => {
-    searchList();
+    loadMore();
+    getUserAssets();
   });
 </script>
 

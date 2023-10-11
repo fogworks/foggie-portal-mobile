@@ -7,8 +7,8 @@
     <p>You can search your order here.</p>
     <nut-row type="flex" justify="space-between" class="top_btn_box">
       <nut-col :span="10">
-        <div class="flex-content" @click="searchType = 'Open'">
-          <div class="svg-box">
+        <div class="flex-content">
+          <div class="svg-box" @click="searchType = 'Open'">
             <!-- <Shop></Shop> -->
             <IconSwitch style="vertical-align: text-top" color="#5F57FF"></IconSwitch>
           </div>
@@ -16,8 +16,8 @@
         >
       </nut-col>
       <nut-col :span="10">
-        <div class="flex-content" @click="searchType = 'History'">
-          <div class="svg-box">
+        <div class="flex-content">
+          <div class="svg-box" @click="searchType = 'History'">
             <IconHistory style="vertical-align: text-top" color="#5F57FF"></IconHistory>
           </div>
           <span>History</span></div
@@ -39,11 +39,12 @@
       <div>
         <span>Order:{{ item.order_id }}</span>
         <span :class="['earnings']">
-          +{{ item.dmc }} <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight>
+          +{{ item.income }}
+          <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight>
         </span>
       </div>
       <div
-        ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ item.createAt }}</span>
+        ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ transferUTCTime(item.order_created_at) }}</span>
       </div>
     </div>
   </nut-infinite-loading>
@@ -58,24 +59,26 @@
   // import { listData } from './data';
   import useVariable from './details/useVariable.js';
   import { useOrderStore } from '@/store/modules/order';
+  import useOrderList from '../home/useOrderList.ts';
+  import { transferUTCTime } from '@/utils/util';
+
   import { ref } from 'vue';
   const { uuid } = useVariable();
   const searchType = ref('');
   const loading = ref(false);
   const router = useRouter();
   const keyWord = ref('');
-  const infinityValue = ref(false);
-  const hasMore = ref(false);
 
   const cloudSpaceList = ref([]);
   const orderStore = useOrderStore();
 
+  const { resetData, loadMore, listData, hasMore, infinityValue } = useOrderList();
+
   let list = computed(() => {
-    return orderStore.getOrderList.filter((el) => {
+    return listData.value.filter((el) => {
       return el.order_id.indexOf(keyWord.value) > -1 || el.pst == keyWord.value;
     });
   });
-  const loadMore = () => {};
   const toDetails = (index: any) => {
     router.push({ path: '/details', query: { id: index } });
   };
@@ -105,49 +108,23 @@
       return (size / 1024.0 / 1024.0 / 1024.0).toFixed(1) + ' GB';
     }
   };
-  // const getCloudSpaceList = () => {
-  //   return getCloudOrderList({ uuid: uuid.value }).then((res) => {
-  //     if (res.code == 200) {
-  //       cloudSpaceList.value = res.data;
-  //     }
-  //   });
-  // };
-  const searchList = async () => {
-    loading.value = true;
-    // await getCloudSpaceList();
-    await search_cloud()
-      .then((res) => {
-        const cloudList = res.result.data.filter((el) => {
-          if (!el.result) {
-            // return false;
-          }
-          const target = cloudSpaceList.value.find((item) => item.order_id == el.order_id);
-          if (!target) {
-            el.notThisClient = true;
-          }
-          return true;
-        });
-        orderStore.setOrderList(cloudList);
-        // store.dispatch('global/setCloudList', cloudList);
-        loading.value = false;
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-  };
   onMounted(() => {
-    searchList();
+    loadMore();
   });
-  // export default {
-  //   setup() {
-
-  //     return {
-  //       onChange,
-  //       activeNames,
-  //       ...toRefs(title)
-  //     };
-  //   }
-  // };
+  watch(
+    searchType,
+    (val) => {
+      resetData();
+      if (val == 'Open') {
+        loadMore([0, 1, 2, 3, 6]);
+      } else if (val == 'History') {
+        loadMore([4, 5]);
+      } else {
+        loadMore();
+      }
+    },
+    { deep: true },
+  );
 </script>
 
 <style lang="scss" scoped>

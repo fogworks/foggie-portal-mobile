@@ -147,10 +147,11 @@ export const file_download = (params) => {
     params,
   });
 };
-export const search_cloud = () => {
+export const search_cloud = (data) => {
   return request({
     url: `/ambmgr/order/get_order`,
-    method: 'GET',
+    method: 'POST',
+    data,
   });
 };
 export const get_unique_order = (params) => {
@@ -161,14 +162,12 @@ export const get_unique_order = (params) => {
   });
 };
 
-
 export const check_name = (bucketName: any) => {
   return request({
     url: `/api/vps/check_name?domain=${bucketName}`,
     method: 'GET',
   });
 };
-
 
 export const miner_name_set = (data: any, token: any) => {
   let url = `/api/v1/minerConsumer/name_set`;
@@ -177,7 +176,7 @@ export const miner_name_set = (data: any, token: any) => {
     method: 'POST',
     data,
     headers: {
-      token
+      token,
     },
   });
 };
@@ -191,7 +190,6 @@ export const order_name_set = (data: any) => {
   });
 };
 
-
 export const search_bill = (memo: any, order_id: any) => {
   let url = `/bcmgr/bill/search_bill?memo=${memo}&order_id=${order_id}`;
   return request({
@@ -199,7 +197,6 @@ export const search_bill = (memo: any, order_id: any) => {
     method: 'GET',
   });
 };
-
 
 export const download_url = (url: any, headers: any) => {
   return request({

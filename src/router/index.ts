@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, Router } from 'vue-router';
 import routes from './routes';
 import { useUserStore } from '@/store/modules/user';
+import { useOrderStore } from '@/store/modules/order';
 
 const router: Router = createRouter({
   history: createWebHistory('/'),
@@ -12,6 +13,8 @@ router.beforeEach(async (_to, _from, next) => {
 });
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
+  const orderStore = useOrderStore();
+  orderStore.setOrderList([]);
   if (userStore.getToken) {
     if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget') {
       next({ name: 'Home' });

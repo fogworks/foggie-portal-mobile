@@ -47,7 +47,7 @@
         <input v-model="loginForm.promo_code" class="nut-input-text" placeholder="Enter your invitation code(optional)" type="text" />
       </nut-form-item> -->
       <nut-form-item required prop="amb_promo_code">
-        <input v-model="loginForm.amb_promo_code" class="nut-input-text" placeholder="Ambassador Invitation Code(optional)" type="text" />
+        <input v-model="loginForm.amb_promo_code" class="nut-input-text" placeholder="Invitation Code(optional)" type="text" />
       </nut-form-item>
     </nut-form>
     <div>

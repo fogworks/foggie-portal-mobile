@@ -2,10 +2,10 @@
   <div class="analysis_box">
     <div style="background: #fff; padding-bottom: 10px; margin-bottom: 10px">
       <div class="top_box">
-        <div class="top_back" @click="router.go(-1)">My Assets </div>
+        <div class="top_back" @click="router.go(-1)">{{ queryType }} </div>
         <div class="top_assets">
           <div class="assets_block">
-            <span>10.0000 DMC</span>
+            <span>{{ cloudBalance }} DMC</span>
             <span>≈</span>
             <span>$10.00</span>
           </div>
@@ -13,7 +13,6 @@
         </div>
       </div>
     </div>
-
     <div class="analysis_content">
       <nut-radio-group v-model="timeType" class="time_radios" direction="horizontal">
         <nut-radio label="0">All</nut-radio>
@@ -28,9 +27,10 @@
       <!-- LIST -->
       <nut-infinite-loading class="list_box" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
         <div class="list_item" v-for="item in listData">
-          <span>{{ item.createAt }}</span>
+          <span>{{ transferUTCTime(item.created_at) }}</span>
           <span :class="[item.type == 'Earnings' ? 'earnings' : 'expenditures']">
-            {{ (item.type == 'Earnings' ? '+' : '-') + item.dmc }}
+            {{ (item.type == 'Earnings' ? '+' : '-') + item.quantity }} DMC
+            <IconRunning v-if="item.state == 'running'"></IconRunning>
           </span>
         </div>
       </nut-infinite-loading>
@@ -42,70 +42,69 @@
   import { reactive, toRefs, onMounted, watch } from 'vue';
   import { lineOption } from '@/components/echarts/util';
   import { useRoute, useRouter } from 'vue-router';
+  import { transferUTCTime } from '@/utils/util';
+  import useUserAssets from '../home/useUserAssets.ts';
+  import useWithdrawList from './useWithdrawList.ts';
+  import IconRunning from '~icons/home/running.svg';
+
   const route = useRoute();
   const router = useRouter();
+  const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
+  var { shortcuts, resetWithdrawData, getWithdrawList, withdrawListData, hasMore, infinityValue } = useWithdrawList();
+
   const state = reactive({
     queryType: 'Earnings',
     queryTypeValue: [],
     typeShow: false,
-    infinityValue: false,
-    hasMore: false,
-    listData: [
-      {
-        createAt: '2023-09-20',
-        dmc: '1.0000 DMC',
-        type: 'Earnings',
-      },
-      {
-        createAt: '2023-09-21',
-        dmc: '2.0000 DMC',
-        type: 'Expenditures',
-      },
-    ],
     chartOptions: {},
     timeType: '0',
   });
-  // const columns = ref([
-  //   { text: 'Earnings', value: 0 },
-  //   { text: 'Expenditures', value: 1 },
-  // ]);
-  const { timeType, chartOptions, queryType, typeShow, listData, infinityValue, hasMore, queryTypeValue } = toRefs(state);
-  const loadMore = () => {};
-  // const confirm = ({ selectedValue, selectedOptions }) => {
-  //   queryType.value = selectedOptions.map((val) => val.text).join(',');
-  //   typeShow.value = false;
-  // };
-
+  const { timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
+  const listData = computed(() => {
+    if (route.query.type == 0) {
+      return withdrawListData.value;
+    }
+  });
+  const loadMore = (start, end) => {
+    if (route.query.type == 0) {
+      getWithdrawList(start, end);
+    }
+  };
+  const reset = (start, end) => {
+    if (route.query.type == 0) {
+      resetWithdrawData();
+    }
+  };
   const getLineOptions = () => {
-    const dateList = [
-      '2023-09-20',
-      '2023-09-21',
-      '2023-09-23',
-      '2023-09-24',
-      '2023-09-25',
-      '2023-09-26',
-      '2023-09-27',
-      '2023-09-28',
-      '2023-09-29',
-      '2023-09-30',
-      '2023-09-31',
-    ];
-    const valueList = [5, 100, 5, 100, 5, 100, 5, 100, 5, 100, 5];
-
+    const dateList = listData.value.map((el) => transferUTCTime(el.order_created_at));
+    let valueList;
+    if (route.query.type == 0) {
+      valueList = listData.value.map((el) => el.quantity);
+    }
     chartOptions.value = lineOption(dateList, valueList, queryType.value);
   };
   watch(
-    queryType,
+    listData,
     () => {
       getLineOptions();
     },
     { deep: true },
   );
+  watch(
+    timeType,
+    (val) => {
+      reset();
+      const [start, end] = shortcuts[val]();
+      loadMore(start, end);
+    },
+    { deep: true },
+  );
+
   onMounted(() => {
     loadMore();
     switch (route.query.type) {
       case '0':
-        queryType.value = 'Withdrawal';
+        queryType.value = 'Withdrawn';
         break;
       case '1':
         queryType.value = 'Earnings';
@@ -120,7 +119,6 @@
         queryType.value = 'Balance';
         break;
     }
-    getLineOptions();
   });
 </script>
 
@@ -158,7 +156,7 @@
   .time_radios {
     display: flex;
     justify-content: space-around;
-    align-items: center;
+    align-items: baseline;
     width: 100%;
     margin-bottom: 10px;
     padding: 30px 0;
@@ -194,11 +192,17 @@
     background: #fff;
     border-radius: 5px;
     border-top: 1px solid #eee;
+    font-size: 30px;
     .earnings {
       color: $main_green;
     }
     .expenditures {
       color: $main_red;
+    }
+    svg {
+      width: 40px;
+      height: 40px;
+      vertical-align: sub;
     }
   }
 </style>

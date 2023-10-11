@@ -56,10 +56,16 @@
           </template>
         </div>
       </div>
-      <nut-searchbar @clear="doSearch" v-if="!isCheckMode" placeholder="Search By Name" class="search_bar" v-model="keyWord">
+      <nut-searchbar
+        @clear="doSearch"
+        v-if="!isCheckMode && category !== 1"
+        placeholder="Search By Name"
+        class="search_bar"
+        v-model="keyWord"
+      >
         <template #rightin> <Search2 @click="doSearch" color="#0a7dd2" /> </template>
       </nut-searchbar>
-      <div class="check_top" v-else>
+      <div class="check_top" v-else-if="isCheckMode">
         <span @click="selectAll">{{ selectArr.length == tableData.length ? 'UnSelect' : 'Select' }} All</span>
         <span class="checked_num">{{ selectArr.length }} items selected</span>
         <span @click="cancelSelect">Cancel</span>
@@ -376,7 +382,7 @@
     clearTimeout(timeOutEvent);
     timeOutEvent = 0;
   };
-  const touchendRow = (row: { checked: boolean; isDir: any; name: string; }, event: { target: { nodeName: string; }; }) => {
+  const touchendRow = (row: { checked: boolean; isDir: any; name: string }, event: { target: { nodeName: string } }) => {
     clearTimeout(timeOutEvent);
     if (event?.target?.nodeName == 'svg' || event?.target?.nodeName == 'path') {
       showAction(row);
@@ -410,16 +416,16 @@
       el.checked = !isAll;
     });
   };
-  const showAction = (item: { name: string; }) => {
+  const showAction = (item: { name: string }) => {
     if (timeOutEvent !== 0) {
       chooseItem.value = item;
       showActionPop.value = true;
     }
   };
-  const choose = (item: { name: string; }) => {
+  const choose = (item: { name: string }) => {
     chooseItem.value = item;
   };
-  const tabSwitch = (item: { tabTitle: string; }, index: any) => {
+  const tabSwitch = (item: { tabTitle: string }, index: any) => {
     handlerClick(item.tabTitle.toLowerCase());
   };
   const confirmMove = () => {
@@ -526,7 +532,7 @@
       }
     });
   };
-  const toNextLevel = (row: { name: string; }) => {
+  const toNextLevel = (row: { name: string }) => {
     let long_name = movePrefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
     movePrefix.value = long_name.split('/').slice(0, -1);
   };
@@ -547,13 +553,12 @@
       console.log(awsAccessKeyId, awsSecretAccessKey, bucketName, objectKey);
 
       const date = new Date().toUTCString();
-    
+
       const httpMethod = 'GET';
       const contentType = '';
       const contentMd5 = '';
       const canonicalizedAmzHeaders = '';
       const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
-      
 
       const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
       console.log(signature, 'signature');
@@ -567,12 +572,10 @@
       const signatureBase64 = enc.Base64.stringify(hmac);
       console.log(signatureBase64, 'signatureBase64');
 
-
       const headers = {
-        "x-amz-date": date,
+        'x-amz-date': date,
         Authorization: `AWS ${awsAccessKeyId}:${signatureBase64}`,
       };
-
 
       // 构建 S3 GET 请求
       const url = `/o/${bucketName}/${objectKey}`;
@@ -600,8 +603,6 @@
           // 处理网络错误
           console.error('Network Error:', error);
         });
-
-
     } else if (type === 'delete') {
       const onOk = async () => {
         deleteItem(checkData);
@@ -730,43 +731,79 @@
     requestReq.setHeader(header);
     requestReq.setRequest(listObject);
     console.log(requestReq, 'requestReq');
-    server.listObjects(requestReq, {}, (err: any, res: { getCommonprefixesList: () => any; getContentList: () => any[]; getContinuationtoken: () => any; getIstruncated: () => any; getMaxkeys: () => any; getNextmarker: () => any; getPrefix: () => any; getPrefixpinsList: () => any; }) => {
-      if (res) {
-        const transferData = {
-          commonPrefixes: res.getCommonprefixesList(),
-          content: res.getContentList().map((el: { getKey: () => any; getEtag: () => any; getLastmodified: () => any; getSize: () => any; getContenttype: () => any; getCid: () => any; getFileid: () => any; getIspin: () => any; getIspincyfs: () => any; getPinexp: () => any; getCyfsexp: () => any; getOod: () => any; getIspersistent: () => any; getCategory: () => any; getTags: () => any; }) => {
-            return {
-              key: el.getKey(),
-              etag: el.getEtag(),
-              lastModified: el.getLastmodified(),
-              size: el.getSize(),
-              contentType: el.getContenttype(),
-              cid: el.getCid(),
-              fileId: el.getFileid(),
-              isPin: el.getIspin(),
-              isPinCyfs: el.getIspincyfs(),
-              pinExp: el.getPinexp(),
-              CyfsExp: el.getCyfsexp(),
-              OOD: el.getOod(),
-              isPersistent: el.getIspersistent(),
-              category: el.getCategory(),
-              tags: el.getTags(),
-            };
-          }),
-          continuationToken: res.getContinuationtoken(),
-          isTruncated: res.getIstruncated(),
-          maxKeys: res.getMaxkeys(),
-          nextMarker: res.getNextmarker(),
-          prefix: res.getPrefix(),
-          prefixpins: res.getPrefixpinsList(),
-        };
-        initRemoteData(transferData, reset, category.value);
-      } else if (err) {
-        console.log('err----', err);
-      }
-    });
+    server.listObjects(
+      requestReq,
+      {},
+      (
+        err: any,
+        res: {
+          getCommonprefixesList: () => any;
+          getContentList: () => any[];
+          getContinuationtoken: () => any;
+          getIstruncated: () => any;
+          getMaxkeys: () => any;
+          getNextmarker: () => any;
+          getPrefix: () => any;
+          getPrefixpinsList: () => any;
+        },
+      ) => {
+        if (res) {
+          const transferData = {
+            commonPrefixes: res.getCommonprefixesList(),
+            content: res
+              .getContentList()
+              .map(
+                (el: {
+                  getKey: () => any;
+                  getEtag: () => any;
+                  getLastmodified: () => any;
+                  getSize: () => any;
+                  getContenttype: () => any;
+                  getCid: () => any;
+                  getFileid: () => any;
+                  getIspin: () => any;
+                  getIspincyfs: () => any;
+                  getPinexp: () => any;
+                  getCyfsexp: () => any;
+                  getOod: () => any;
+                  getIspersistent: () => any;
+                  getCategory: () => any;
+                  getTags: () => any;
+                }) => {
+                  return {
+                    key: el.getKey(),
+                    etag: el.getEtag(),
+                    lastModified: el.getLastmodified(),
+                    size: el.getSize(),
+                    contentType: el.getContenttype(),
+                    cid: el.getCid(),
+                    fileId: el.getFileid(),
+                    isPin: el.getIspin(),
+                    isPinCyfs: el.getIspincyfs(),
+                    pinExp: el.getPinexp(),
+                    CyfsExp: el.getCyfsexp(),
+                    OOD: el.getOod(),
+                    isPersistent: el.getIspersistent(),
+                    category: el.getCategory(),
+                    tags: el.getTags(),
+                  };
+                },
+              ),
+            continuationToken: res.getContinuationtoken(),
+            isTruncated: res.getIstruncated(),
+            maxKeys: res.getMaxkeys(),
+            nextMarker: res.getNextmarker(),
+            prefix: res.getPrefix(),
+            prefixpins: res.getPrefixpinsList(),
+          };
+          initRemoteData(transferData, reset, category.value);
+        } else if (err) {
+          console.log('err----', err);
+        }
+      },
+    );
   }
-  const handleImg = (item: { cid: any; key: any; }, type: string, isDir: boolean) => {
+  const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
     let baseUrl = '127.0.0.1';
     let imgHttpLink = '';
     let imgHttpLarge = '';
@@ -816,7 +853,21 @@
     }
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
-  const initRemoteData = (data: { commonPrefixes?: any; content: any; continuationToken?: any; isTruncated?: any; maxKeys?: any; nextMarker?: any; prefix?: any; prefixpins?: any; err?: any; }, reset = false, category: number) => {
+  const initRemoteData = (
+    data: {
+      commonPrefixes?: any;
+      content: any;
+      continuationToken?: any;
+      isTruncated?: any;
+      maxKeys?: any;
+      nextMarker?: any;
+      prefix?: any;
+      prefixpins?: any;
+      err?: any;
+    },
+    reset = false,
+    category: number,
+  ) => {
     if (!data) {
       tableLoading.value = false;
       showToast.hide(1);
@@ -977,27 +1028,47 @@
         ProxFindRequest.setCid('');
         ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
         ProxFindRequest.setFileid('');
-        server.findObjects(ProxFindRequest, {}, (err: any, res: { getContentsList: () => any[]; }) => {
+        server.findObjects(ProxFindRequest, {}, (err: any, res: { getContentsList: () => any[] }) => {
           if (res) {
-            const transferData = res.getContentsList().map((el: { getKey: () => any; getEtag: () => any; getLastmodified: () => any; getSize: () => any; getContenttype: () => any; getCid: () => any; getFileid: () => any; getIspin: () => any; getIspincyfs: () => any; getPinexp: () => any; getCyfsexp: () => any; getOod: () => any; getIspersistent: () => any; getCategory: () => any; getTags: () => any; }) => {
-              return {
-                key: el.getKey(),
-                etag: el.getEtag(),
-                lastModified: el.getLastmodified(),
-                size: el.getSize(),
-                contentType: el.getContenttype(),
-                cid: el.getCid(),
-                fileId: el.getFileid(),
-                isPin: el.getIspin(),
-                isPinCyfs: el.getIspincyfs(),
-                pinExp: el.getPinexp(),
-                CyfsExp: el.getCyfsexp(),
-                OOD: el.getOod(),
-                isPersistent: el.getIspersistent(),
-                category: el.getCategory(),
-                tags: el.getTags(),
-              };
-            });
+            const transferData = res
+              .getContentsList()
+              .map(
+                (el: {
+                  getKey: () => any;
+                  getEtag: () => any;
+                  getLastmodified: () => any;
+                  getSize: () => any;
+                  getContenttype: () => any;
+                  getCid: () => any;
+                  getFileid: () => any;
+                  getIspin: () => any;
+                  getIspincyfs: () => any;
+                  getPinexp: () => any;
+                  getCyfsexp: () => any;
+                  getOod: () => any;
+                  getIspersistent: () => any;
+                  getCategory: () => any;
+                  getTags: () => any;
+                }) => {
+                  return {
+                    key: el.getKey(),
+                    etag: el.getEtag(),
+                    lastModified: el.getLastmodified(),
+                    size: el.getSize(),
+                    contentType: el.getContenttype(),
+                    cid: el.getCid(),
+                    fileId: el.getFileid(),
+                    isPin: el.getIspin(),
+                    isPinCyfs: el.getIspincyfs(),
+                    pinExp: el.getPinexp(),
+                    CyfsExp: el.getCyfsexp(),
+                    OOD: el.getOod(),
+                    isPersistent: el.getIspersistent(),
+                    category: el.getCategory(),
+                    tags: el.getTags(),
+                  };
+                },
+              );
             initRemoteData({ content: transferData }, true, category.value);
           } else {
           }

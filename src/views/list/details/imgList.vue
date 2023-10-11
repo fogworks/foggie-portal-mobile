@@ -101,9 +101,9 @@
   const dateTimeLine = ref([]);
   const continuationToken = ref('');
   const tableData = ref([]);
-  const getTimeLine = (date = '') => {
+  const getTimeLine = () => {
     return new Promise((resolve, reject) => {
-      const getMethod = (date) => {
+      const getMethod = (date = '') => {
         let interval = 'year';
         if (!date) {
           interval = 'year';
@@ -121,10 +121,12 @@
         ProxTimeLine.setInterval(interval);
         ProxTimeLine.setDate(date);
         ProxTimeLine.setCategory(1);
+        console.log(ProxTimeLine, 'ProxTimeLine');
         server.getTimeLine(ProxTimeLine, {}, (err, data) => {
-          console.log(data);
           if (data) {
+            console.log(data, 'data');
             const content = data.getContentsList();
+            console.log(content, 'content');
             for (let k = content.length - 1; k >= 0; k--) {
               if (content[k].count) {
                 timeLine.value.push(content[k].date);
@@ -374,7 +376,6 @@
           target && data.push(target);
         });
       });
-      console.log(data, 'data');
       emits('update:checkedData', data);
     },
     {

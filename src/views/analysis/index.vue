@@ -1,36 +1,30 @@
 <template>
   <div class="analysis_content">
-    <!-- type-popup -->
-    <!-- <nut-cell title="Select Query Type" :desc="queryType" @click="typeShow = true"></nut-cell>
-    <nut-popup position="bottom" v-model:visible="typeShow">
-      <nut-picker v-model="queryTypeValue" :columns="columns" title="Select Query Type" @confirm="confirm" @cancel="typeShow = false">
-      </nut-picker>
-    </nut-popup> -->
     <div class="top_box">
-      <div class="top_back" @click="router.go(-1)">Earn </div>
+      <div class="top_back" @click="router.go(-1)">Earnings </div>
       <nut-grid class="top_grid">
         <nut-grid-item text="Balance"
           ><div>
             <IconCions class="top_icon"></IconCions>
-            <p>11.0000</p>
+            <p>{{ cloudBalance }}</p>
           </div>
         </nut-grid-item>
         <nut-grid-item class="top_icon" text="Earnings" @click="router.push('/analysisCate?type=1')"
           ><div>
             <IconIncome class="top_icon"></IconIncome>
-            <p>11.0000</p>
+            <p>{{ cloudIncome }}</p>
           </div></nut-grid-item
         >
         <nut-grid-item class="top_icon" text="Expense" @click="router.push('/analysisCate?type=3')"
           ><div>
             <IconOutCome class="top_icon"></IconOutCome>
-            <p>11.0000</p>
+            <p>0</p>
           </div></nut-grid-item
         >
         <nut-grid-item class="top_icon" text="Withdrawal" @click="router.push('/analysisCate?type=0')"
           ><div>
             <IconWithdraw class="top_icon"></IconWithdraw>
-            <p>11.0000</p>
+            <p>{{ cloudWithdraw }}</p>
           </div></nut-grid-item
         >
       </nut-grid>
@@ -42,20 +36,10 @@
       <nut-radio label="3">By Week</nut-radio>
       <nut-radio label="4">By Day</nut-radio>
     </nut-radio-group>
-
-    <!-- <nut-tabs v-model="timeType" class="time_tabs">
-      
-      <nut-tab-pane title="All" pane-key="0"> </nut-tab-pane>
-      <nut-tab-pane title="By 3 Months" pane-key="1"> </nut-tab-pane>
-      <nut-tab-pane title="By Month" pane-key="2"> </nut-tab-pane>
-      <nut-tab-pane title="By Week" pane-key="3"> </nut-tab-pane>
-      <nut-tab-pane title="By Day" pane-key="4"> </nut-tab-pane>
-    </nut-tabs> -->
     <div class="balance_chart">
       <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
     </div>
     <!-- LIST -->
-
     <nut-infinite-loading
       class="list_box"
       load-more-txt="No more content"
@@ -63,7 +47,11 @@
       :has-more="hasMore"
       @load-more="loadMore"
     >
-      <div class="list_item" v-for="(item, index) in listData">
+      <div
+        class="list_item"
+        v-for="(item, index) in listData"
+        @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
+      >
         <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
           <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
           <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
@@ -71,11 +59,15 @@
         </div>
 
         <div>
-          <span>Order:1234</span>
-          <span :class="['earnings']"> +{{ item.dmc }} </span>
+          <span>Order:{{ item.order_id }}</span>
+
+          <span :class="['earnings']">
+            +{{ item.income }}
+            <IconArrowRight style="vertical-align: text-top" width="1.1rem" height="1.1rem" color="#5F57FF"></IconArrowRight
+          ></span>
         </div>
         <div
-          ><span>100 PST</span> <span class="time">{{ item.createAt }}</span>
+          ><span>{{ item.pst }} PST</span> <span class="time">{{ transferUTCTime(item.order_created_at) }}</span>
         </div>
       </div>
     </nut-infinite-loading>
@@ -83,6 +75,8 @@
 </template>
 
 <script setup lang="ts" name="analysis">
+  import IconArrowRight from '~icons/home/arrow-right.svg';
+
   import IconCions from '~icons/home/cions.svg';
   import IconIncome from '~icons/home/earn-income.svg';
   import IconWithdraw from '~icons/home/earn-withdraw.svg';
@@ -90,65 +84,47 @@
   import { reactive, toRefs, onMounted, watch } from 'vue';
   import { lineOption } from '@/components/echarts/util';
   import { useRoute, useRouter } from 'vue-router';
+  import useOrderList from '../home/useOrderList.ts';
+  import useUserAssets from '../home/useUserAssets.ts';
+  import { transferUTCTime } from '@/utils/util';
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
     queryType: 'Earnings',
     queryTypeValue: [],
     typeShow: false,
-    infinityValue: false,
-    hasMore: false,
-    listData: [
-      {
-        createAt: '2023-09-20',
-        dmc: '1.0000 DMC',
-        type: 'Earnings',
-      },
-      {
-        createAt: '2023-09-21',
-        dmc: '2.0000 DMC',
-        type: 'Expenditures',
-      },
-    ],
     chartOptions: {},
     timeType: '0',
   });
-  // const columns = ref([
-  //   { text: 'Earnings', value: 0 },
-  //   { text: 'Expenditures', value: 1 },
-  // ]);
-  const { timeType, chartOptions, queryType, typeShow, listData, infinityValue, hasMore, queryTypeValue } = toRefs(state);
-  const loadMore = () => {};
-  // const confirm = ({ selectedValue, selectedOptions }) => {
-  //   queryType.value = selectedOptions.map((val) => val.text).join(',');
-  //   typeShow.value = false;
-  // };
-  const getLineOptions = () => {
-    const dateList = [
-      '2023-09-20',
-      '2023-09-21',
-      '2023-09-23',
-      '2023-09-24',
-      '2023-09-25',
-      '2023-09-26',
-      '2023-09-27',
-      '2023-09-28',
-      '2023-09-29',
-      '2023-09-30',
-      '2023-09-31',
-    ];
-    const valueList = [5, 100, 5, 100, 5, 100, 5, 100, 5, 100, 5];
+  const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
 
+  const { shortcuts, resetData, loadMore, listData, hasMore, infinityValue } = useOrderList();
+
+  const { timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
+
+  const getLineOptions = () => {
+    const dateList = listData.value.map((el) => transferUTCTime(el.order_created_at));
+    const valueList = listData.value.map((el) => el.income);
     chartOptions.value = lineOption(dateList, valueList, 'Earn Analysis');
   };
   watch(
-    queryType,
-    () => {
+    listData,
+    (val) => {
       getLineOptions();
     },
     { deep: true },
   );
+  watch(
+    timeType,
+    (val) => {
+      resetData();
+      const [start, end] = shortcuts[val]();
+      loadMore(null, start, end);
+    },
+    { deep: true },
+  );
   onMounted(() => {
+    getUserAssets();
     loadMore();
     getLineOptions();
   });
@@ -212,7 +188,7 @@
   .time_radios {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
     width: 95%;
     margin: 30px auto;
     :deep {
@@ -238,6 +214,7 @@
   }
   .list_box {
     padding: 0 10px;
+    box-sizing: border-box;
     .list_item {
       position: relative;
       display: flex;
@@ -285,7 +262,6 @@
         display: inline-block;
         color: #121212;
         font-size: 36px;
-        margin-right: 40px;
       }
       .time {
         color: #ff6e00;
