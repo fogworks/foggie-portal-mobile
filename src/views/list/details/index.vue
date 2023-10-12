@@ -60,12 +60,19 @@
 
     <nut-uploader
       :url="uploadUri"
-      multiple
+      :timeout="1000 * 60 * 60"
       :before-upload="beforeupload"
       :disabled="isDisabled"
       :data="formData"
       :headers="formData"
       :before-xhr-upload="beforeXhrUpload"
+      @success="uploadSuccess"
+      @progress="onProgress"
+      @start="onStart"
+      @failure="onFailure"
+      @change="onChange"
+
+      ref="uploadRef"
     >
       <nut-button type="success" size="small">+ Upload</nut-button>
     </nut-uploader>
@@ -102,6 +109,7 @@
 
   // import { get_order_node } from '@/api/amb';
 
+  const uploadRef = ref<any>(null);
   const bucketName = ref<string>('');
   const accessKeyId = ref<string>('');
   const secretAccessKey = ref<string>('');
@@ -151,13 +159,35 @@
 
     console.log('signature', signature);
     formData.value = {};
-    formData.value.Key = prefix.value + file[0].name;
+    formData.value.Key = encodeURIComponent(prefix.value + file[0].name);
     formData.value.Policy = policyBase64;
     formData.value.Signature = signature;
     formData.value.Awsaccesskeyid = accessKeyId.value;
     formData.value.Success_action_status = 201;
     console.log('file', file.length, file, file[0]);
     return [file[0]];
+  };
+
+  const uploadSuccess = ({responseText,option,fileItem}: any) => {
+    console.log('uploadSuccess', responseText, option, fileItem);
+    uploadRef.value.clearUploadQueue();
+  };
+
+  const onProgress = ({ event, options, percentage }: any) => {
+    console.log('onProgress', event, options, percentage);
+  };
+
+  const onStart = ({ options }: any) => {
+    console.log('onStart', options);
+  };
+
+  const onFailure = ({ responseText,option,fileItem}: any) => {
+    console.log('onFailure', responseText, option, fileItem);
+    uploadRef.value.clearUploadQueue();
+  };
+
+  const onChange = ({fileList,event}: any) => {
+    console.log('onChange', fileList, event);
   };
 
   const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
