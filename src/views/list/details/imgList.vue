@@ -123,6 +123,7 @@
         ProxTimeLine.setCategory(1);
         console.log(ProxTimeLine, 'ProxTimeLine');
         server.getTimeLine(ProxTimeLine, {}, (err, data) => {
+          console.log('get time line', data);
           if (data) {
             console.log(data, 'data');
             const content = data.getContentsList();

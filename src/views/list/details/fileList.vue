@@ -237,7 +237,7 @@
     <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
       <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
       <div class="middle_img">
-        <nut-image :src="detailImg" fit="contain" postion="center" />
+        <nut-image :src="imgUrl || detailImg" fit="contain" postion="center" />
       </div>
       <div class="bottom_action">
         <div>
@@ -382,6 +382,8 @@
     clearTimeout(timeOutEvent);
     timeOutEvent = 0;
   };
+
+  const imgUrl = ref('');
   const touchendRow = (row: { checked: boolean; isDir: any; name: string }, event: { target: { nodeName: string } }) => {
     clearTimeout(timeOutEvent);
     if (event?.target?.nodeName == 'svg' || event?.target?.nodeName == 'path') {
@@ -399,6 +401,7 @@
         } else {
           chooseItem.value = [row];
           detailShow.value = true;
+          imgUrl.value = row.imgUrl;
         }
       }
     }
@@ -589,20 +592,51 @@
       //   console.log('res-------------', res);
       // });
 
-      fetch(url, { method: 'GET', headers })
-        .then((response) => {
-          if (response.ok) {
-            // 下载文件或处理响应
-            console.log('Success', response);
-          } else {
-            // 处理错误响应
-            console.error('Error:', response.status, response.statusText);
-          }
-        })
-        .catch((error) => {
-          // 处理网络错误
-          console.error('Network Error:', error);
-        });
+      // fetch(url, { method: 'GET', headers })
+      //   .then((response) => {
+      //     if (response.ok) {
+      //       // 下载文件或处理响应
+      //       console.log('Success', response);
+      //     } else {
+      //       // 处理错误响应
+      //       console.error('Error:', response.status, response.statusText);
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     // 处理网络错误
+      //     console.error('Network Error:', error);
+      //   });
+
+        fetch(url, { method: 'GET', headers })
+          .then((response) => {
+            if (response.ok) {
+              // 创建一个 Blob 对象，并将响应数据写入其中
+              console.log('Success', response);
+              return response.blob();
+            } else {
+              // 处理错误响应
+              console.error('Error:', response.status, response.statusText);
+            }
+          })
+          .then((blob) => {
+            console.log(blob, 'blob');
+            
+            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = checkData[0].fullName;
+
+            // 将 <a> 元素添加到文档中，并模拟点击
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          })
+          .catch((error) => {
+            // 处理网络错误
+            console.error('Network Error:', error);
+          });
+
+
     } else if (type === 'delete') {
       const onOk = async () => {
         deleteItem(checkData);
@@ -816,18 +850,21 @@
     let port = orderInfo.value.rpc.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
+    console.log(item, 'orderInfo.value');
     if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'ico' || type === 'jpg' || type === 'svg') {
       type = 'img';
       // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
       // imgHttpLink = `${location}/object?pubkey=${pubkey}&new_w=${size}`;
       // let token = store.getters.token;
-
-      imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-        deviceType.value == 'space' ? 'space' : 'foggie'
-      }&token=${token.value}&thumb=true`;
-      imgHttpLarge = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-        deviceType.value == 'space' ? 'space' : 'foggie'
-      }&token=${token.value}`;
+      // imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+      //   deviceType.value == 'space' ? 'space' : 'foggie'
+      // }&token=${token.value}&thumb=true`;
+      // imgHttpLarge = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+      //   deviceType.value == 'space' ? 'space' : 'foggie'
+      // }&token=${token.value}`;
+      let bucketName = 'foggiebucket';
+      imgHttpLink = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
+      imgHttpLarge = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
 
       // foggie://peerid/spaceid/cid
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
