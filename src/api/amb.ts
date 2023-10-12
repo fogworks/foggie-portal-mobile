@@ -89,3 +89,10 @@ export function get_user_withdraw(data) {
     data,
   });
 }
+export function get_user_recharge(data) {
+  return request({
+    url: '/ambmgr/asset/get_user_recharge',
+    method: 'POST',
+    data,
+  });
+}

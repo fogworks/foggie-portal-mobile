@@ -10,6 +10,7 @@ export type langType = {
     bind: string;
     empty: string;
     analysis: string;
+    transactionRecords: string;
   };
   language: {
     en: string;

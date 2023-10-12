@@ -52,8 +52,8 @@
     </div>
   </van-space>
 
-  <nut-row type="flex" justify="space-between" class="middle_btn_box">
-    <nut-col :span="5">
+  <div class="middle_btn_box">
+    <div>
       <div class="flex-content" @click="toBuyOrder">
         <div class="svg-box">
           <!-- <Shop></Shop> -->
@@ -61,32 +61,44 @@
         </div>
         <span>Buy</span></div
       >
-    </nut-col>
-    <nut-col :span="5">
+    </div>
+    <div>
       <div class="flex-content" @click="router.push('/list')">
         <div class="svg-box">
           <img src="@/assets/order.svg" alt="" />
         </div>
         <span>Order</span></div
       >
-    </nut-col>
-    <nut-col :span="5">
+    </div>
+    <div>
       <div class="flex-content" @click="router.push('/analysisCate?type=1')">
         <div class="svg-box">
           <img src="@/assets/earn.svg" alt="" />
         </div>
         <span>Earn</span></div
       >
-    </nut-col>
-    <nut-col :span="5">
+    </div>
+    <div>
       <div class="flex-content" @click="router.push('/analysis')">
         <div class="svg-box">
           <img src="@/assets/analysis.svg" alt="" />
         </div>
         <span>Analysis</span></div
       >
-    </nut-col>
-  </nut-row>
+    </div>
+    <div>
+      <div class="flex-content" @click="router.push('/transactionRecords')">
+        <div class="svg-box">
+          <!-- <img src="@/assets/IconTransaction.svg" alt="" /> -->
+          <IconTransaction></IconTransaction>
+        </div>
+        <span
+          >Transaction <br />
+          records</span
+        ></div
+      >
+    </div>
+  </div>
   <div class="tab_top_title">Recent earnings</div>
   <!-- <nut-tabs style="border-bottom: 1px solid #cccccc82" v-model="searchType" class="time_tabs">
     <nut-tab-pane title="All" pane-key="0"> </nut-tab-pane>
@@ -125,6 +137,7 @@
 
 <script lang="ts" setup name="HomePage">
   import IconArrowRight from '~icons/home/arrow-right.svg';
+  import IconTransaction from '~icons/home/transaction.svg';
   import { Notice, TriangleUp } from '@nutui/icons-vue';
   import { toRefs, reactive } from 'vue';
   import { useRouter } from 'vue-router';
@@ -199,30 +212,37 @@
     }
   }
   .middle_btn_box {
+    // display: flex;
+    // justify-content: flex-start;
+    // align-items: flex-start;
     margin-top: -60px;
     border-radius: 10px;
-    padding: 10px 30px;
+    padding: 10px 10px;
     box-sizing: border-box;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+
     // background: #fff;
-    :deep {
-      .nut-col {
-        color: #1e0a0a;
-        font-size: 28px;
-        font-weight: 600;
-        &:nth-child(2) {
-          .svg-box {
-            background: #34964f;
-          }
+    > div {
+      display: inline-block;
+      color: #1e0a0a;
+      font-size: 28px;
+      font-weight: 600;
+      width: 150px;
+      &:nth-child(2) {
+        .svg-box {
+          background: #34964f;
         }
-        &:nth-child(3) {
-          .svg-box {
-            background: #fcd116;
-          }
+      }
+      &:nth-child(3) {
+        .svg-box {
+          background: #fcd116;
         }
-        &:nth-child(4) {
-          .svg-box {
-            background: #5f57ff;
-          }
+      }
+      &:nth-child(4) {
+        .svg-box {
+          background: #5f57ff;
         }
       }
     }
@@ -252,6 +272,7 @@
         img {
           width: 55px;
           height: 55px;
+          color: #fff;
         }
       }
     }

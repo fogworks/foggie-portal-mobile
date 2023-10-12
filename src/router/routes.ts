@@ -12,6 +12,14 @@ export const routes = [
           title: 'tabbar.home',
         },
       },
+      {
+        path: 'transactionRecords',
+        name: 'TransactionRecords',
+        component: () => import('@/views/home/transactionRecords.vue'),
+        meta: {
+          title: 'tabbar.transactionRecords',
+        },
+      },
 
       {
         path: 'bindDmc',

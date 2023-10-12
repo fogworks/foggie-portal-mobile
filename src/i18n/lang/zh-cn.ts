@@ -12,6 +12,7 @@ export const lang: langType = {
     bind: '',
     empty: '',
     analysis: '收益记录',
+    transactionRecords: '交易记录',
   },
   language: {
     en: '英文',

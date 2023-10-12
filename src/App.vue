@@ -36,4 +36,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  ::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
 </style>

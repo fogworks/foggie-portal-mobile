@@ -12,6 +12,7 @@ export const lang: langType = {
     bind: '',
     empty: '',
     analysis: 'Earnings Records',
+    transactionRecords: 'Transaction Records',
   },
   language: {
     en: 'English',
