@@ -54,9 +54,35 @@
 
     <nut-row class="order-icons">
       <nut-col @click="getKey" :span="6" class="order-icon-recycle">
-        <keySolid color="#fff"  />
+        <keySolid color="#fff" />
       </nut-col>
     </nut-row>
+    <div class="type_check_box">
+      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
+        <div class="svg_box">
+          <IconAudio></IconAudio>
+        </div>
+        <p>Audio</p>
+      </div>
+      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1 } })">
+        <div class="svg_box">
+          <IconImage></IconImage>
+        </div>
+        <p>Images</p>
+      </div>
+      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4 } })">
+        <div class="svg_box">
+          <IconDocument></IconDocument>
+        </div>
+        <p>Documents</p>
+      </div>
+      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 2 } })">
+        <div class="svg_box">
+          <IconVideo></IconVideo>
+        </div>
+        <p>Video</p>
+      </div>
+    </div>
 
     <nut-uploader
       :url="uploadUri"
@@ -71,7 +97,6 @@
       @start="onStart"
       @failure="onFailure"
       @change="onChange"
-
       ref="uploadRef"
     >
       <nut-button type="success" size="small">+ Upload</nut-button>
@@ -132,7 +157,6 @@
     minerIp.value = res?.data?.mp_ipaddr;
   });
 
-
   const beforeupload = async (file: any) => {
     bucketName.value = 'foggiebucket';
     accessKeyId.value = 'FOG9C40y1MBG1x85DU3o';
@@ -168,7 +192,7 @@
     return [file[0]];
   };
 
-  const uploadSuccess = ({responseText,option,fileItem}: any) => {
+  const uploadSuccess = ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
     uploadRef.value.clearUploadQueue();
   };
@@ -181,12 +205,12 @@
     console.log('onStart', options);
   };
 
-  const onFailure = ({ responseText,option,fileItem}: any) => {
+  const onFailure = ({ responseText, option, fileItem }: any) => {
     console.log('onFailure', responseText, option, fileItem);
     uploadRef.value.clearUploadQueue();
   };
 
-  const onChange = ({fileList,event}: any) => {
+  const onChange = ({ fileList, event }: any) => {
     console.log('onChange', fileList, event);
   };
 
@@ -354,8 +378,8 @@
     }
   }
   .creat-name {
-    background: #F5F8FD;
-    color: #0099FF;
+    background: #f5f8fd;
+    color: #0099ff;
   }
 </style>
 <style lang="scss">
@@ -370,5 +394,4 @@
       font-size: 12px !important;
     }
   }
-
 </style>

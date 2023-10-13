@@ -51,20 +51,24 @@
           <template v-else>
             <div class="top_back" @click="prefix.splice(-1)"> </div>
             <span>
-              {{ prefix.slice(-1) }}
+              {{ prefix.at(-1) || '' }}
             </span>
           </template>
         </div>
       </div>
-      <nut-searchbar
-        @clear="doSearch"
-        v-if="!isCheckMode && category !== 1"
-        placeholder="Search By Name"
-        class="search_bar"
-        v-model="keyWord"
-      >
-        <template #rightin> <Search2 @click="doSearch" color="#0a7dd2" /> </template>
-      </nut-searchbar>
+      <div class="search_bar" v-if="!isCheckMode && category !== 1">
+        <IconNewFolder
+          @click="
+            isNewFolder = true;
+            renameShow = true;
+          "
+          v-show="category == 0"
+          class="new_folder"
+        ></IconNewFolder>
+        <nut-searchbar @clear="doSearch('', [], true)" placeholder="Search By Name" v-model="keyWord">
+          <template #rightin> <Search2 @click="doSearch('', [], true)" color="#0a7dd2" /> </template>
+        </nut-searchbar>
+      </div>
       <div class="check_top" v-else-if="isCheckMode">
         <span @click="selectAll">{{ selectArr.length == tableData.length ? 'UnSelect' : 'Select' }} All</span>
         <span class="checked_num">{{ selectArr.length }} items selected</span>
@@ -75,7 +79,7 @@
       v-if="category !== 1"
       class="file_list"
       v-model="infinityValue"
-      :has-more="continuationToken"
+      :has-more="!!continuationToken"
       @load-more="loadMore"
     >
       <div
@@ -156,7 +160,7 @@
       <div class="custom-content">
         <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
         <ul>
-          <li @click="handlerClick('share')"><IconShare></IconShare> Share</li>
+          <li v-if="!chooseItem.isDir && showActionBtn" @click="handlerClick('share')"><IconShare></IconShare> Share</li>
           <li @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
           <li @click="handlerClick('move')"><IconMove></IconMove> Move</li>
           <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
@@ -165,25 +169,44 @@
         <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
       </div>
     </nut-action-sheet>
-    <nut-popup position="bottom" closeable round :style="{ height: '90%' }" v-model:visible="renameShow">
+    <!-- rename / newFolder -->
+    <nut-popup
+      @closed="
+        isNewFolder = false;
+        newName = '';
+      "
+      position="bottom"
+      closeable
+      round
+      :style="{ height: '90%' }"
+      v-model:visible="renameShow"
+    >
       <div class="rename_box">
         <IconFolder></IconFolder>
-        <p> {{ chooseItem.name ? chooseItem.name.split('/')[0] : '' }}</p>
-        <nut-searchbar v-model="newName" placeholder="Please Input New Name"></nut-searchbar>
+        <p v-if="!isNewFolder"> {{ chooseItem.name ? chooseItem.name.split('/')[0] : '' }}</p>
+        <nut-searchbar v-model="newName" :placeholder="isNewFolder ? 'Please Input Folder Name' : 'Please Input New Name'"></nut-searchbar>
         <nut-button type="info" block @click="confirmRename">Confirm</nut-button>
       </div>
     </nut-popup>
+    <!-- move -->
     <nut-popup position="bottom" closeable round :style="{ height: '90%' }" v-model:visible="moveShow">
       <div class="rename_box move_box">
         <IconFolder></IconFolder>
-        <div v-if="movePrefix.length" class="top_back" @click="movePrefix.splice(-1)">
-          <p> {{ movePrefix.length ? movePrefix.slice(-1) : '' }}</p>
+        <div
+          v-if="movePrefix.length"
+          class="top_back"
+          @click="
+            movePrefix.splice(-1);
+            doSearch('', movePrefix, true);
+          "
+        >
+          <p> {{ movePrefix.length ? movePrefix.slice(-1)[0] : '' }}</p>
         </div>
         <nut-infinite-loading
           v-if="category !== 1"
           class="file_list"
           v-model="infinityValue"
-          :has-more="continuationToken2"
+          :has-more="!!continuationToken2"
           @load-more="loadMore"
         >
           <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in dirData" :key="index">
@@ -191,12 +214,12 @@
               <IconFolder></IconFolder>
             </div>
             <div class="name_box">
-              <p>{{ item.name }}</p>
+              <p>{{ item.name.split('/')[0] }}</p>
               <!-- <p>{{ item.date || '' }}</p> -->
             </div>
           </div>
         </nut-infinite-loading>
-        <nut-button type="info" block @click="confirmMove">Move to this folder</nut-button>
+        <nut-button type="info" block @click="confirmMove">Move to current folder</nut-button>
       </div>
     </nut-popup>
     <!-- share -->
@@ -246,11 +269,11 @@
       </div>
       <div class="bottom_action">
         <div>
-          <IconShare></IconShare>
+          <IconShare @click="handlerClick('share')"></IconShare>
           <p>Share</p>
         </div>
         <div>
-          <IconDownload></IconDownload>
+          <IconDownload @click="handlerClick('download')"></IconDownload>
           <p>Download</p>
         </div>
       </div>
@@ -263,6 +286,7 @@
   import IconTwitter from '~icons/home/twitter.svg';
   import IconFile from '~icons/bxs/file.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';
+  import IconNewFolder from '~icons/home/new_folder.svg';
   import IconAllCate from '~icons/home/all-cate.svg';
   import IconAudio from '~icons/home/audio.svg';
   import IconImage from '~icons/home/image.svg';
@@ -326,6 +350,7 @@
     continuationToken: '',
     continuationToken2: '',
     dirData: [],
+    isNewFolder: false,
   });
   const imgListRef = ref('');
 
@@ -351,6 +376,7 @@
     continuationToken,
     continuationToken2,
     dirData,
+    isNewFolder,
   } = toRefs(state);
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
@@ -366,7 +392,28 @@
     shareRefContent,
     copyContent,
   } = useShare(orderInfo, header, deviceType);
-  const { deleteItem } = useDelete(tableLoading, doSearch, orderInfo, header);
+  const showActionBtn = computed(() => {
+    if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type === 3) {
+      if (
+        [4, 5].includes(orderInfo.value.state)
+        // || !merkleState.value
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  });
+  const { deleteItem } = useDelete(
+    tableLoading,
+    () => {
+      doSearch('', prefix.value, true);
+    },
+    orderInfo,
+    header,
+  );
 
   const selectArr = computed(() => {
     if (category.value == 1) {
@@ -376,7 +423,13 @@
     }
   });
 
-  const loadMore = () => {};
+  const loadMore = () => {
+    if (moveShow.value) {
+      doSearch(continuationToken2.value, movePrefix.value, false);
+    } else {
+      doSearch(continuationToken.value, prefix.value, false);
+    }
+  };
   const touchRow = (row: any, event: any) => {
     timeOutEvent = setTimeout(function () {
       timeOutEvent = 0;
@@ -405,7 +458,9 @@
           let long_name = prefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
           prefix.value = long_name.split('/').slice(0, -1);
         } else {
-          chooseItem.value = [row];
+          console.log(row, 'row');
+
+          chooseItem.value = row;
           detailShow.value = true;
           imgUrl.value = row.imgUrl;
         }
@@ -437,6 +492,7 @@
   const tabSwitch = (item: { tabTitle: string }, index: any) => {
     handlerClick(item.tabTitle.toLowerCase());
   };
+  //move
   const confirmMove = () => {
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
     const targetObject = (val) => {
@@ -447,6 +503,8 @@
       }
     };
     let index = 0;
+    console.log(checkData, 'checkData');
+
     const length = checkData.length - 1;
     const rename = function (resolve, reject) {
       if (targetObject(checkData[index]).length > 1024) {
@@ -466,21 +524,27 @@
       ProxRenameObject.setSourceobject(checkData[index].fullName);
       ProxRenameObject.setTargetobject(targetObject(checkData[index]));
       ProxRenameObject.setFiletype(checkData[index].fileType);
+      console.log(ProxRenameObject, 'ProxRenameObject');
+
       server.renameObjects(ProxRenameObject, {}, (err, data) => {
         if (data) {
+          console.log(data, 'data');
+
           if (index === length) {
-            showToast.success('Rename successful');
+            showToast.success('Move successful');
             moveShow.value = false;
             movePrefix.value = [];
+            doSearch('', prefix.value, true);
             resolve(true);
           } else {
             index++;
             rename(resolve, reject);
           }
         } else {
+          console.log(err, 'err');
           movePrefix.value = [];
           showToast.fail(err.message || 'Move failed');
-          doSearch();
+          doSearch('', prefix.value, true);
           reject(false);
         }
       });
@@ -490,9 +554,10 @@
     });
     // moveShow.value = false;
   };
+  //rename
   const confirmRename = () => {
     if (!newName.value) {
-      showToast.warn('Please enter a new name');
+      showToast.warn('Please enter a name');
       return false;
     }
     const folderNameRegex = /^[^\s\\\\/:*?"<>|]+(\.[^\s\\\\/:*?"<>|]+)?$/;
@@ -504,20 +569,27 @@
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
 
     const targetObject = () => {
-      const arr = checkData[0]?.fullName.split('/');
-
-      if (checkData[0]?.type == 'application/x-directory') {
-        if (newName.value[newName.value.length - 1] == '/') {
-          const newData = newName.value.slice(0, newName.value.length - 1);
-          console.log(newData, 'newDatanewData');
-          arr.splice(arr.length - 2, 1, newData);
+      if (isNewFolder.value) {
+        if (prefix.value.length) {
+          return prefix.value.join('/') + '/' + newName.value + '/';
         } else {
-          arr.splice(arr.length - 2, 1, newName.value);
+          return newName.value + '/';
         }
       } else {
-        arr.splice(arr.length - 1, 1, newName.value);
+        const arr = checkData[0]?.fullName.split('/');
+        if (checkData[0]?.type == 'application/x-directory') {
+          if (newName.value[newName.value.length - 1] == '/') {
+            const newData = newName.value.slice(0, newName.value.length - 1);
+            console.log(newData, 'newDatanewData');
+            arr.splice(arr.length - 2, 1, newData);
+          } else {
+            arr.splice(arr.length - 2, 1, newName.value);
+          }
+        } else {
+          arr.splice(arr.length - 1, 1, newName.value);
+        }
+        return arr.join('/');
       }
-      return arr.join('/');
     };
     if (targetObject().length > 1024) {
       showToast.warn('The file path cannot exceed a maximum of 1024 characters, operation failed');
@@ -525,32 +597,58 @@
     }
     let ip = orderInfo.value.rpc.split(':')[0];
     server = new grpcService.default.ServiceClient(`http://${ip}:7007`);
-    let ProxRenameObject = new Prox.default.ProxRenameObject();
-    ProxRenameObject.setHeader(header);
-    ProxRenameObject.setSourceobject(checkData[0].fullName);
-    ProxRenameObject.setTargetobject(targetObject());
-    ProxRenameObject.setFiletype(checkData[0].fileType);
-    server.renameObjects(ProxRenameObject, {}, (err, data) => {
-      if (data) {
-        showToast.success('Rename successful');
-        renameShow.value = false;
-        newName.value = '';
-        doSearch();
-      } else {
-        showToast.fail(err.message || 'Rename failed');
-      }
-    });
+    if (isNewFolder.value) {
+      let ProxFileInfo = new Prox.default.ProxFileInfo();
+      ProxFileInfo.setHeader(header);
+      ProxFileInfo.setKey(targetObject());
+      ProxFileInfo.setContenttype('application/x-directory');
+      ProxFileInfo.setSize(0);
+      server.touchFile(ProxFileInfo, {}, (err, data) => {
+        if (data) {
+          showToast.success('Create successful');
+          renameShow.value = false;
+          isNewFolder.value = false;
+          newName.value = '';
+          doSearch('', prefix.value, true);
+        } else {
+          showToast.fail(err.message || 'Create failed');
+        }
+      });
+    } else {
+      let ProxRenameObject = new Prox.default.ProxRenameObject();
+      ProxRenameObject.setHeader(header);
+      ProxRenameObject.setSourceobject(checkData[0].fullName);
+      ProxRenameObject.setTargetobject(targetObject());
+      ProxRenameObject.setFiletype(checkData[0].fileType);
+      console.log(ProxRenameObject, 'ProxRenameObject');
+
+      server.renameObjects(ProxRenameObject, {}, (err, data) => {
+        if (data) {
+          showToast.success('Rename successful');
+          renameShow.value = false;
+          newName.value = '';
+          doSearch('', prefix.value, true);
+        } else {
+          console.log(err, 'err');
+
+          showToast.fail(err.message || 'Rename failed');
+        }
+      });
+    }
   };
   const toNextLevel = (row: { name: string }) => {
-    let long_name = movePrefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
+    let long_name = movePrefix.value.length ? movePrefix.value?.join('/') + '/' + row.name : row.name;
     movePrefix.value = long_name.split('/').slice(0, -1);
+    getFileList('', movePrefix.value, true);
   };
 
   const handlerClick = async (type: string) => {
     showActionPop.value = false;
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
     if (type === 'move') {
+      movePrefix.value = [];
       moveShow.value = true;
+      doSearch('', movePrefix.value, true);
     } else if (type === 'download') {
       //   downLoad();
 
@@ -658,6 +756,8 @@
       renameShow.value = true;
     } else if (type === 'newFolder') {
     } else if (type === 'share') {
+      console.log(checkData.length);
+
       if (checkData.length > 1) return false;
       await doShare(checkData[0]);
       // cancelSelect();
@@ -752,7 +852,7 @@
     console.log(token.value, 'token.value.sign');
 
     let listObject = new Prox.default.ProxListObjectsRequest();
-    listObject.setPrefix('');
+    listObject.setPrefix(list_prefix);
     let delimiter = category.value != 0 ? '' : '/';
     listObject.setDelimiter(delimiter);
     listObject.setEncodingType('');
@@ -785,6 +885,7 @@
           getPrefixpinsList: () => any;
         },
       ) => {
+        infinityValue.value = false;
         if (res) {
           const transferData = {
             commonPrefixes: res.getCommonprefixesList(),
@@ -854,7 +955,6 @@
     let port = orderInfo.value.rpc.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
-    console.log(item, 'orderInfo.value');
     if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'ico' || type === 'jpg' || type === 'svg') {
       type = 'img';
       // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
@@ -918,7 +1018,13 @@
       showToast.fail('Failed to  retrieve data. Please try again later');
     }
     let dir = prefix.value.join('/');
-    if (reset) tableData.value = [];
+    if (reset) {
+      if (moveShow.value) {
+        dirData.value = [];
+      } else {
+        tableData.value = [];
+      }
+    }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = decodeURIComponent(data.commonPrefixes[i]);
       if (data.prefix) {
@@ -938,6 +1044,8 @@
         checked: false,
         name,
         category: 1,
+        fileType: 1,
+
         fullName: decodeURIComponent(data.commonPrefixes[i]),
         key: data.commonPrefixes[i],
         idList: [
@@ -992,6 +1100,7 @@
         name,
         category: data.content[j].category,
         category: 2,
+        fileType: 2,
         fullName: decodeURIComponent(data.content[j].key),
         key: data.content[j].key,
         idList: [
@@ -1022,7 +1131,6 @@
         isPinCyfs: data.content[j].isPinCyfs,
       };
       if (moveShow.value) {
-        dirData.value.push(item);
       } else {
         tableData.value.push(item);
       }
@@ -1041,20 +1149,21 @@
     tableLoading.value = false;
     showToast.hide(1);
   };
-  function doSearch() {
+  function doSearch(scroll: string = '', prefixArg: any[] = [], reset = false) {
     if (tableLoading.value) return false;
-    tableData.value = [];
-    if (keyWord.value === '') {
+    // tableData.value = [];
+    if (keyWord.value == '') {
       showToast.loading('Loading', {
         cover: true,
         id: 1,
       });
-      if (moveShow.value) {
-        getFileList('', movePrefix.value, true);
-      } else {
-        getFileList('', prefix.value, true);
-      }
+      // if (moveShow.value) {
+      getFileList(scroll, prefixArg, reset);
+      // } else {
+      //   getFileList('', prefix.value, false);
+      // }
     } else {
+      prefix.value = [];
       showToast.loading('Loading', {
         cover: true,
         id: 1,
@@ -1070,6 +1179,7 @@
         ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
         ProxFindRequest.setFileid('');
         server.findObjects(ProxFindRequest, {}, (err: any, res: { getContentsList: () => any[] }) => {
+          infinityValue.value = false;
           if (res) {
             const transferData = res
               .getContentsList()
@@ -1148,7 +1258,7 @@
       if (val == 1) {
       } else {
         await getOrderInfo();
-        doSearch();
+        doSearch('', prefix.value, true);
       }
     },
     { deep: true, immediate: true },
@@ -1156,21 +1266,17 @@
   watch(
     prefix,
     (val) => {
-      if (!isSearch.value) {
+      if (!keyWord.value) {
         cancelSelect();
-        doSearch();
-        // getFileList('', val, true);
+        doSearch('', val, true);
       }
     },
     { deep: true },
   );
-  watch(
-    movePrefix,
-    (val) => {
-      getFileList('', val, true, moveShow.value);
-    },
-    { deep: true },
-  );
+  onMounted(() => {
+    category.value = route.query.category;
+    switchType(category.value);
+  });
 </script>
 <style>
   .type_check_pop {
@@ -1316,14 +1422,21 @@
     }
   }
   .search_bar {
-    padding: 0;
-    margin: 20px;
-    width: calc(100% - 40px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: #fff;
     box-sizing: border-box;
-    // padding: 20px;
-    // padding-top: 0;
-
+    padding: 20px;
+    .new_folder {
+      width: 50px;
+      height: 50px;
+    }
     :deep {
+      .nut-searchbar {
+        width: calc(100% - 60px);
+        padding: 0;
+      }
       .nut-searchbar__search-input {
         --nut-searchbar-input-background: #f5f8fd;
       }
@@ -1373,6 +1486,11 @@
     .name_box {
       width: calc(100% - 180px);
       margin-left: 30px;
+      p:first-child {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
     .right_more {
       width: 50px;
@@ -1442,7 +1560,8 @@
       }
     }
     .file_list {
-      height: 800px;
+      height: 950px;
+      overflow-y: auto;
       .list_item {
         width: 100%;
       }

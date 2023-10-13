@@ -114,7 +114,10 @@ export default function useShare(orderInfo, header, deviceType) {
   };
   const doShare = async (item) => {
     pinData.item = item;
+    console.log(item, 'item');
     let key = item.key;
+    console.log(key, 'key');
+
     if (key) {
       let foggie_id = orderInfo.value.foggie_id;
       let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
