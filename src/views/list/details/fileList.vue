@@ -231,6 +231,11 @@
           Twitter
           <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
+        <div v-if="shareRefContent.httpStr">
+          <IconFacebook @click="shareFacebook(shareRefContent.httpStr)"></IconFacebook>
+          Facebook
+          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+        </div>
       </div>
     </nut-popup>
 
@@ -257,6 +262,7 @@
   import detailImg from '@/assets/fog-works.png';
   import IconTwitter from '~icons/home/twitter.svg';
   import IconFile from '~icons/bxs/file.svg';
+  import IconFacebook from '~icons/devicon/facebook.svg';
   import IconAllCate from '~icons/home/all-cate.svg';
   import IconAudio from '~icons/home/audio.svg';
   import IconImage from '~icons/home/image.svg';
@@ -607,36 +613,34 @@
       //     console.error('Network Error:', error);
       //   });
 
-        fetch(url, { method: 'GET', headers })
-          .then((response) => {
-            if (response.ok) {
-              // 创建一个 Blob 对象，并将响应数据写入其中
-              console.log('Success', response);
-              return response.blob();
-            } else {
-              // 处理错误响应
-              console.error('Error:', response.status, response.statusText);
-            }
-          })
-          .then((blob) => {
-            console.log(blob, 'blob');
-            
-            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = checkData[0].fullName;
+      fetch(url, { method: 'GET', headers })
+        .then((response) => {
+          if (response.ok) {
+            // 创建一个 Blob 对象，并将响应数据写入其中
+            console.log('Success', response);
+            return response.blob();
+          } else {
+            // 处理错误响应
+            console.error('Error:', response.status, response.statusText);
+          }
+        })
+        .then((blob) => {
+          console.log(blob, 'blob');
 
-            // 将 <a> 元素添加到文档中，并模拟点击
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          })
-          .catch((error) => {
-            // 处理网络错误
-            console.error('Network Error:', error);
-          });
+          // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = checkData[0].fullName;
 
-
+          // 将 <a> 元素添加到文档中，并模拟点击
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        })
+        .catch((error) => {
+          // 处理网络错误
+          console.error('Network Error:', error);
+        });
     } else if (type === 'delete') {
       const onOk = async () => {
         deleteItem(checkData);
@@ -1128,6 +1132,10 @@
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
     let tweetText = checkData[0].name;
     var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(fileLink);
+    window.open(twitterUrl, '_blank');
+  };
+  const shareFacebook = (fileLink) => {
+    var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fileLink);
     window.open(twitterUrl, '_blank');
   };
   watch(

@@ -8,7 +8,6 @@ import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
 // import { file_pin } from '@/api';
 export default function useShare(orderInfo, header, deviceType) {
-  
   const daySeconds = 86400;
   const monthSeconds = 2592000;
   const { shareRefContent, copyContent, pinData, ipfsDialogShow } = useVariable();
@@ -49,7 +48,6 @@ export default function useShare(orderInfo, header, deviceType) {
     },
   ]);
   const ipfsPin = (item, stype, flag, exp = true) => {
-    
     let foggieToken;
     // if (foggieToken && foggieToken.indexOf('bearer ') > -1) {
     //   foggieToken = foggieToken.split('bearer ')[1];
@@ -69,12 +67,11 @@ export default function useShare(orderInfo, header, deviceType) {
     if (deviceType.value != 3) {
       token = foggieToken;
     }
-    
+
     console.log(token, 'token');
     let poolType = orderInfo.value.pool_type;
     let poolWalletAcc = orderInfo.value.pool_wallet_acc;
     if (device_type == 3) {
-      
       if (!item.cid || !item.originalSize) {
         showToast.fail('The file data is abnormal, please refresh the page and try again.');
         return;
@@ -83,7 +80,7 @@ export default function useShare(orderInfo, header, deviceType) {
         // let totalPinSize = pinSize + parseInt(fileSize);
       }
     }
-    
+
     if (poolType == 0 && !poolWalletAcc) {
       showToast.fail('Mining pool wallet account cannot be empty.');
       return;
@@ -180,7 +177,7 @@ export default function useShare(orderInfo, header, deviceType) {
     const awsAccessKeyId = 'FOG9C40y1MBG1x85DU3o';
     const awsSecretAccessKey = 'IZIPDmHm1HXE4ZNCSRIJWuGsUXkp9f98bKHAifVG';
     const bucketName = 'foggiebucket';
-    const objectKey = encodeURIComponent(pinData.item.fullName)
+    const objectKey = encodeURIComponent(pinData.item.fullName);
     const expirationInSeconds = 3600;
     const expirationTime = Math.floor(Date.now() / 1000) + expirationInSeconds;
 
@@ -198,29 +195,29 @@ export default function useShare(orderInfo, header, deviceType) {
     const signatureBase64 = enc.Base64.stringify(hmac);
     console.log(signatureBase64, 'signatureBase64');
 
-    let ip = 'http://218.2.96.99:6008'
+    let ip = 'http://218.2.96.99:6008';
     const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
-    shareRefContent.httpStr = `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(signatureBase64)}`;
+    shareRefContent.httpStr = `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
+      signatureBase64,
+    )}`;
     console.log(shareRefContent.httpStr, 'shareRefContent.httpStr');
-
 
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
       if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
+        shareRefContent.ipfsStr = '';
       } else {
         if (!pinData.item.isPin) {
           console.log('pinData.item.isPin', pinData.item.isPin);
           ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
-          showToast.text('IPFS link will available later.');
         }
       }
+      isReady.value = true;
     } else {
       if (!pinData.item.isPin) {
         ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
-        showToast.text('IPFS link will available later');
       }
+      isReady.value = true;
     }
-
-
 
     // loading.value = true;
     // let ProxPresignedURL = new Prox.default.ProxPresignedURL();
