@@ -133,7 +133,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
       commonjs(),
       createVitePlugins(viteEnv, isProduction),
       requireTransform({
-        fileRegex: /.ts$|.tsx$|.vue$|.js$/,
+        fileRegex: /.ts$|.tsx$|.vue$/,
         //   fileRegex:/.js$|.jsx$|.vue$/
       }),
       AutoImport({
