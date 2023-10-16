@@ -83,7 +83,36 @@
         <p>Video</p>
       </div>
     </div>
-
+    <div class="today_file">
+      <span>Today Files</span>
+      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0 } })">See All ></span>
+    </div>
+    <nut-infinite-loading :has-more="false" class="file_list">
+      <div
+        @click="
+          router.push({
+            name: 'FileList',
+            query: { ...route.query, category: 0, keyWord: item.isDir ? item.name.slice(0, item.name.length - 1) : item.name },
+          })
+        "
+        :class="['list_item']"
+        v-for="(item, index) in tableData"
+        :key="index"
+      >
+        <div :class="['left_icon_box']">
+          <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+          <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+          <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" />
+          <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+          <img v-else src="@/assets/svg/home/file.svg" alt="" />
+        </div>
+        <div class="name_box">
+          <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
+          <p>{{ item.date || '' }}</p>
+        </div>
+        <!-- <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore> -->
+      </div>
+    </nut-infinite-loading>
     <nut-uploader
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
@@ -110,6 +139,10 @@
 
 <script setup lang="ts">
   // import recycleFill from '~icons/home/recycle-fill';
+  import IconAudio from '~icons/home/audio.svg';
+  import IconImage from '~icons/home/image.svg';
+  import IconDocument from '~icons/home/document.svg';
+  import IconVideo from '~icons/home/video.svg';
   import IconMdiF from '~icons/mdi/file-cloud';
   import IconRiPie from '~icons/ri/pie-chart-fill';
   import IconRiNodeTree from '~icons/ri/node-tree';
@@ -120,14 +153,21 @@
   import icon10kOutline from '~icons/material-symbols/10k-outline';
 
   import keySolid from '~icons/teenyicons/key-solid';
+  import * as Prox from '@/pb/prox_pb.js';
+  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   // import AESHelper from './AESHelper';
   // import { Image } from '@nutui/icons-vue';
   import { detailsData } from '../data';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute, useRouter } from 'vue-router';
+  import useOrderInfo from './useOrderInfo.js';
+  import { showToast } from '@nutui/nutui';
+  import { transferUTCTime, getfilesize } from '@/utils/util';
   import { check_name, miner_name_set, order_name_set, search_bill } from '@/api/index';
-
+  import '@nutui/nutui/dist/packages/toast/style';
+  const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  let server;
   const route = useRoute();
   const router = useRouter();
   // let details = reactive<any>({ data: {} });
@@ -142,7 +182,8 @@
   const prefix = ref<string>('');
   const showCreatName = ref<boolean>(false);
   const newBucketName = ref<string>('');
-
+  const tableData = ref<array>([]);
+  const tableLoading = ref<boolean>(false);
   const isDisabled = ref<boolean>(false);
   const formData = ref<any>({});
 
@@ -257,7 +298,304 @@
       }
     }
   };
+  const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
+    let baseUrl = '127.0.0.1';
+    let imgHttpLink = '';
+    let imgHttpLarge = '';
+    type = type.toLowerCase();
+    let isSystemImg = false;
+    let cid = item.cid;
+    let key = item.key;
 
+    let ip = orderInfo.value.rpc.split(':')[0];
+    let port = orderInfo.value.rpc.split(':')[1];
+    let Id = orderInfo.value.foggie_id;
+    let peerId = orderInfo.value.peer_id;
+    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'ico' || type === 'jpg' || type === 'svg') {
+      type = 'img';
+      // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
+      // imgHttpLink = `${location}/object?pubkey=${pubkey}&new_w=${size}`;
+      // let token = store.getters.token;
+      // imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+      //   deviceType.value == 'space' ? 'space' : 'foggie'
+      // }&token=${token.value}&thumb=true`;
+      // imgHttpLarge = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+      //   deviceType.value == 'space' ? 'space' : 'foggie'
+      // }&token=${token.value}`;
+      let bucketName = 'foggiebucket';
+      imgHttpLink = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
+      imgHttpLarge = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
+
+      // foggie://peerid/spaceid/cid
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
+      type = 'video';
+      // item.contentType = "video/mp4";
+
+      imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+        deviceType.value == 'space' ? 'space' : 'foggie'
+      }&token=${token.value}&thumb=true`;
+    } else {
+      isSystemImg = true;
+      // imgHttpLink =
+      //   theme === "light"
+      //     ? require(`@/assets/logo-dog.svg`)
+      //     : require(`@/assets/logo-dog-black.svg`);
+    }
+    if (isDir) {
+      isSystemImg = true;
+      // imgHttpLink =
+      //   theme === "light"
+      //     ? require(`@/assets/logo-dog.svg`)
+      //     : require(`@/assets/logo-dog-black.svg`);
+    }
+    return { imgHttpLink, isSystemImg, imgHttpLarge };
+  };
+  function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
+    let list_prefix = '';
+    if (prefix?.length) {
+      list_prefix = prefix.join('/');
+      if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
+        list_prefix = list_prefix + '/';
+      }
+    }
+    let ip = orderInfo.value.rpc.split(':')[0];
+    server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+
+    // header.setToken(token.value.split('bearer ')[1]);
+    console.log(token.value, 'token.value.sign');
+    var myDate = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
+    var time = myDate.toJSON().split('T').join('').substr(0, 10);
+    console.log(time);
+
+    let listObject = new Prox.default.ProxListObjectsRequest();
+    listObject.setPrefix(list_prefix);
+    listObject.setDelimiter('/');
+    listObject.setEncodingType('');
+    listObject.setMaxKeys(30);
+    listObject.setStartAfter('');
+    listObject.setContinuationToken(scroll || '');
+    listObject.setVersionIdMarker('');
+    listObject.setKeyMarker('');
+    listObject.setOrderby('');
+    listObject.setTags('');
+    listObject.setCategory(0);
+    listObject.setDate(time);
+    let requestReq = new Prox.default.ProxListObjectsReq();
+    requestReq.setHeader(header);
+    requestReq.setRequest(listObject);
+    console.log(requestReq, 'requestReq');
+    server.listObjects(
+      requestReq,
+      {},
+      (
+        err: any,
+        res: {
+          getCommonprefixesList: () => any;
+          getContentList: () => any[];
+          getContinuationtoken: () => any;
+          getIstruncated: () => any;
+          getMaxkeys: () => any;
+          getNextmarker: () => any;
+          getPrefix: () => any;
+          getPrefixpinsList: () => any;
+        },
+      ) => {
+        if (res) {
+          const transferData = {
+            commonPrefixes: res.getCommonprefixesList(),
+            content: res
+              .getContentList()
+              .map(
+                (el: {
+                  getKey: () => any;
+                  getEtag: () => any;
+                  getLastmodified: () => any;
+                  getSize: () => any;
+                  getContenttype: () => any;
+                  getCid: () => any;
+                  getFileid: () => any;
+                  getIspin: () => any;
+                  getIspincyfs: () => any;
+                  getPinexp: () => any;
+                  getCyfsexp: () => any;
+                  getOod: () => any;
+                  getIspersistent: () => any;
+                  getCategory: () => any;
+                  getTags: () => any;
+                }) => {
+                  return {
+                    key: el.getKey(),
+                    etag: el.getEtag(),
+                    lastModified: el.getLastmodified(),
+                    size: el.getSize(),
+                    contentType: el.getContenttype(),
+                    cid: el.getCid(),
+                    fileId: el.getFileid(),
+                    isPin: el.getIspin(),
+                    isPinCyfs: el.getIspincyfs(),
+                    pinExp: el.getPinexp(),
+                    CyfsExp: el.getCyfsexp(),
+                    OOD: el.getOod(),
+                    isPersistent: el.getIspersistent(),
+                    category: el.getCategory(),
+                    tags: el.getTags(),
+                  };
+                },
+              ),
+            continuationToken: res.getContinuationtoken(),
+            isTruncated: res.getIstruncated(),
+            maxKeys: res.getMaxkeys(),
+            nextMarker: res.getNextmarker(),
+            prefix: res.getPrefix(),
+            prefixpins: res.getPrefixpinsList(),
+          };
+          initRemoteData(transferData, reset, 0);
+        } else if (err) {
+          console.log('err----', err);
+        }
+      },
+    );
+  }
+  const initRemoteData = (
+    data: {
+      commonPrefixes?: any;
+      content: any;
+      continuationToken?: any;
+      isTruncated?: any;
+      maxKeys?: any;
+      nextMarker?: any;
+      prefix?: any;
+      prefixpins?: any;
+      err?: any;
+    },
+    reset = false,
+    category: number,
+  ) => {
+    if (!data) {
+      tableLoading.value = false;
+      showToast.hide(1);
+      return;
+    }
+    if (data.err) {
+      showToast.fail('Failed to  retrieve data. Please try again later');
+    }
+    let dir = [].join('/');
+    if (reset) {
+      tableData.value = [];
+    }
+    for (let i = 0; i < data.commonPrefixes?.length; i++) {
+      let name = decodeURIComponent(data.commonPrefixes[i]);
+      if (data.prefix) {
+        // name = name.split(data.prefix)[1];
+        name = name.split('/')[name.split('/').length - 2] + '/';
+      }
+
+      let cur_cid = '';
+      for (let i = 0; i < data.prefixpins?.length; i++) {
+        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
+          cur_cid = data.prefixpins[i].cid;
+        }
+      }
+
+      let item = {
+        isDir: true,
+        checked: false,
+        name,
+        category: 1,
+        fileType: 1,
+
+        fullName: decodeURIComponent(data.commonPrefixes[i]),
+        key: data.commonPrefixes[i],
+        idList: [
+          {
+            name: 'IPFS',
+            code: cur_cid,
+          },
+          {
+            name: 'CYFS',
+            code: '',
+          },
+        ],
+        date: '-',
+        size: '',
+        status: '-',
+        type: 'application/x-directory',
+        file_id: '',
+        pubkey: '',
+        cid: cur_cid,
+        imgUrl: '',
+        imgUrlLarge: '',
+        share: {},
+        isSystemImg: false,
+        canShare: false,
+      };
+
+      tableData.value.push(item);
+    }
+    for (let j = 0; j < data?.content?.length; j++) {
+      let date = transferUTCTime(data.content[j].lastModified);
+      let isDir = false;
+      const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
+      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+      let cid = data.content[j].cid;
+      let file_id = data.content[j].fileId;
+
+      let name = decodeURIComponent(data.content[j].key);
+      if (data.prefix) {
+        name = name.split(data.prefix)[1];
+      }
+      if (name.indexOf('/') > 0) {
+        name = name.split('/')[name.split('/').length - 1];
+      }
+      let isPersistent = data.content[j].isPersistent;
+
+      let item = {
+        isDir: isDir,
+        checked: false,
+        name,
+        category: data.content[j].category,
+        category: 2,
+        fileType: 2,
+        fullName: decodeURIComponent(data.content[j].key),
+        key: data.content[j].key,
+        idList: [
+          {
+            name: 'IPFS',
+            code: data.content[j].isPin ? cid : '',
+          },
+          {
+            name: 'CYFS',
+            code: data.content[j].isPinCyfs ? file_id : '',
+          },
+        ],
+        date,
+        size: getfilesize(data.content[j].size),
+        originalSize: data.content[j].size,
+        status: cid || file_id ? 'Published' : '-',
+        type: data.content[j].contentType,
+        file_id: file_id,
+        pubkey: cid,
+        cid,
+        imgUrl: url,
+        imgUrlLarge: url_large,
+        share: {},
+        isSystemImg,
+        canShare: cid ? true : false,
+        isPersistent,
+        isPin: data.content[j].isPin,
+        isPinCyfs: data.content[j].isPinCyfs,
+      };
+
+      tableData.value.push(item);
+    }
+
+    tableLoading.value = false;
+    showToast.hide(1);
+  };
+  onMounted(async () => {
+    await getOrderInfo();
+    getFileList();
+  });
   // 218.2.96.99:6008
 
   //   bucketname: foggiebucket
@@ -330,6 +668,128 @@
     box-sizing: border-box;
     height: 100%;
     padding: 20px;
+    .type_check_box {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      flex-wrap: wrap;
+      .type_item {
+        width: 25%;
+        text-align: center;
+        height: 150px;
+        .svg_box {
+          width: 80px;
+          height: 80px;
+          line-height: 80px;
+          margin: 10px auto;
+          text-align: center;
+          border-radius: 20px;
+          svg {
+            width: 50px;
+            height: 50px;
+            vertical-align: middle;
+          }
+        }
+        p {
+          color: #051e56;
+        }
+        &:nth-child(1) {
+          .svg_box {
+            background: #f5ecff;
+          }
+        }
+        &:nth-child(2) {
+          .svg_box {
+            background: #e0f3ff;
+          }
+        }
+        &:nth-child(3) {
+          .svg_box {
+            background: #ffebef;
+          }
+        }
+        &:nth-child(4) {
+          .svg_box {
+            background: #e2e4ff;
+          }
+        }
+      }
+    }
+    .today_file {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 30px;
+      .see_all {
+        color: #5460fe;
+        font-size: 18px;
+      }
+    }
+    .file_list {
+      margin-top: 20px;
+    }
+    .list_item {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 20px;
+      border-top: 1px solid #eee;
+      &:active {
+        background: #cde3f5;
+      }
+      .left_checkMode {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        height: 80px;
+        background: #f1f1f1;
+        border-radius: 50%;
+        img {
+          width: 50px !important;
+          height: 50px !important;
+        }
+        &.is_checked {
+          width: 60px;
+          height: 60px;
+          margin: 10px;
+          background: #2e70ff;
+        }
+        .ok_icon {
+          color: #fff;
+        }
+      }
+      .type_icon {
+        width: 80px;
+        height: 80px;
+      }
+      .left_icon_box {
+        img {
+          width: 80px;
+          height: 80px;
+        }
+      }
+      .name_box {
+        width: calc(100% - 180px);
+        margin-left: 30px;
+        p:first-child {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        p:last-child {
+          margin-top: 5px;
+          color: #a7a7a7;
+          font-size: 20px;
+        }
+      }
+      .right_more {
+        width: 50px;
+        height: 50px;
+        color: #ccc;
+      }
+    }
 
     .top_grid {
       :deep {

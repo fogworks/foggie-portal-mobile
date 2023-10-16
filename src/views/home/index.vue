@@ -15,16 +15,19 @@
   </div>
   <van-cell-group inset class="income-card">
     <template #default>
-      <img src="@/assets/balance_right.svg" alt="" />
-      <div class="card_row_1"> Balance </div>
-      <div class="card_row_1">
+      <img src="@/assets/balance_right.svg" @click="router.push('/analysis')" alt="" />
+      <div class="card_row_1 card_header"><span>Balance</span> <span>Income</span> </div>
+      <div class="card_row_1 card_header">
         <div class="total_income">
           <div> {{ cloudBalance }} </div>
+        </div>
+        <div class="total_income">
+          <div> {{ cloudIncome }} </div>
         </div>
       </div>
       <div class="card_row_1 pst-row">
         <div>
-          <p>PST</p>
+          <p>Space(GB)</p>
           <p class="column_value">{{ cloudPst }}</p>
         </div>
         <div>
@@ -34,7 +37,7 @@
         <div>
           <p>New revenue today</p>
           <p class="column_value today_income"
-            >+ {{ cloudIncome }} DMC
+            >+ {{ cloudTodayIncome }} DMC
             <TriangleUp color="#FF8B00" width="20px"></TriangleUp>
           </p>
         </div>
@@ -60,14 +63,6 @@
           <img src="@/assets/buy.svg" alt="" />
         </div>
         <span>Buy</span></div
-      >
-    </div>
-    <div>
-      <div class="flex-content" @click="router.push('/list')">
-        <div class="svg-box">
-          <img src="@/assets/order.svg" alt="" />
-        </div>
-        <span>Order</span></div
       >
     </div>
     <div>
@@ -116,7 +111,7 @@
       v-for="(item, index) in listData"
       @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
     >
-      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+      <div :style="{ background: randomColor() }" :class="['item_img_box']">
         <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 2" class="cions" src="@/assets/list_item_2.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" />
@@ -125,8 +120,9 @@
         <span>Order:{{ item.order_id }}</span>
         <span :class="['earnings']">
           +{{ item.income }}
-          <IconArrowRight style="vertical-align: text-top" width="1.2rem" height="1.2rem" color="#5F57FF"></IconArrowRight
-        ></span>
+          <!-- <IconArrowRight style="vertical-align: text-top" width="1.2rem" height="1.2rem" color="#5F57FF"></IconArrowRight
+        > -->
+        </span>
       </div>
       <div
         ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ transferUTCTime(item.order_created_at) }}</span>
@@ -163,7 +159,7 @@
   });
   const { timeType, searchType } = toRefs(state);
   const { loadMore, listData, hasMore, infinityValue } = useOrderList();
-  const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
+  const { getUserAssets, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
   const showWithdraw = () => {
     router.push({ name: 'Withdraw' });
   };
@@ -173,6 +169,20 @@
     } else {
       router.push({ name: 'Shop' });
     }
+  };
+  const randomColor = () => {
+    const createNumber = (min, max) => {
+      let color = Math.floor(Math.random() * 255);
+      if (color <= max && color >= min) {
+        return color;
+      } else {
+        return createNumber(min, max);
+      }
+    };
+    let r = createNumber(0, 60);
+    let g = createNumber(40, 120);
+    let b = createNumber(150, 255);
+    return `rgb(${r} ${g} ${b})`;
   };
   onMounted(() => {
     loadMore();
@@ -230,6 +240,7 @@
       font-size: 28px;
       font-weight: 600;
       width: 150px;
+      width: 25%;
       &:nth-child(2) {
         .svg-box {
           background: #34964f;
@@ -303,6 +314,20 @@
     .card_row_1 {
       display: flex;
       justify-content: space-between;
+      &.card_header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        justify-content: space-between;
+        margin-right: 100px;
+        span {
+          text-align: left;
+        }
+        .total_income {
+          > div {
+            text-align: left;
+          }
+        }
+      }
     }
     .pst-row {
       margin-top: 40px;
@@ -428,7 +453,7 @@
       padding: 5px;
       box-sizing: border-box;
       border-radius: 50px;
-      background: #ff8b00;
+      // background: #ff8b00;
       img {
         width: 36px;
         margin: 0 auto;
@@ -437,12 +462,12 @@
         margin-right: 15px;
       }
     }
-    .item_2 {
-      background: #5f57ff;
-    }
-    .item_3 {
-      background: #1ba27a;
-    }
+    // .item_2 {
+    //   background: #5f57ff;
+    // }
+    // .item_3 {
+    //   background: #1ba27a;
+    // }
 
     > div {
       display: flex;
@@ -453,6 +478,8 @@
     .earnings {
       display: inline-block;
       color: #121212;
+      color: $main_green;
+
       font-size: 36px;
     }
     .time {

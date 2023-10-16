@@ -278,6 +278,8 @@
       .earnings {
         display: inline-block;
         color: #121212;
+        color: $main_green;
+
         font-size: 36px;
       }
       .time {

@@ -97,6 +97,7 @@
             <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
             <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" />
             <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+            <img v-else-if="item.imgUrl" :src="imgUrl" alt="" />
             <img v-else src="@/assets/svg/home/file.svg" alt="" />
           </template>
         </div>
@@ -783,59 +784,7 @@
     cancelSelect();
     showTypeCheckPop.value = false;
   };
-  function downLoadFile() {
-    let fileStream = null;
-    let stream = null;
-    const { ip, token, peer_id, foggie_id, cid, key, savePath, fileName, prefixes, objsList } = file.value.params;
-    server = new grpcService.default.ServiceClient(`http://${ip}:7007`);
-    let request = null;
-    let range = new Prox.default.ProxRangeRequest();
-    let downloadType = 'monofile';
-    if (downloadType == 'monofile') {
-      request = new Prox.default.ProxGetRequest();
-      request.setHeader(header);
-      request.setCid(cid);
-      request.setRange(range);
-      request.setKey(key);
-      request.setThumb(false);
-      stream = server.getObject(request, {});
-    } else {
-      let infoList = [];
-      for (const item of objsList) {
-        let objs = new Prox.default.ProxGetInfo();
-        objs.setCid(item.cid);
-        objs.setKey(item.key);
-        infoList.push(objs);
-      }
-      request = new ProxGetRequests();
-      request.setHeader(header);
-      request.setObjsList(infoList);
 
-      request.setRange(range);
-      request.setPrefixesList(JSON.parse(JSON.stringify(prefixes)));
-      stream = server.getObjects(request, {});
-    }
-    fileStream = fs.createWriteStream(savePath);
-
-    stream.on('data', (data: any) => {
-      console.log(data);
-    });
-
-    stream.on('status', (status: any) => {
-      console.log('Stream status:', status);
-    });
-
-    stream.on('end', (end: any) => {
-      fileStream.end();
-      shell.showItemInFolder(savePath);
-      downloadDone('completed');
-    });
-
-    stream.on('error', (error: any) => {
-      if (fileStream) fileStream.close();
-      // if (stream) stream.removeListener('data', streamData);
-    });
-  }
   function getFileList(scroll: string, prefix: any[], reset = false) {
     let list_prefix = '';
     if (prefix?.length) {
@@ -942,8 +891,8 @@
       },
     );
   }
-  const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
-    let baseUrl = '127.0.0.1';
+
+  const handleImg = async (item: { cid: any; key: any }, type: string, isDir: boolean) => {
     let imgHttpLink = '';
     let imgHttpLarge = '';
     type = type.toLowerCase();
@@ -967,7 +916,7 @@
       //   deviceType.value == 'space' ? 'space' : 'foggie'
       // }&token=${token.value}`;
       let bucketName = 'foggiebucket';
-      imgHttpLink = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
+      imgHttpLink = `/o/${bucketName}/${encodeURIComponent(item.key)}?thumb=true`;
       imgHttpLarge = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
 
       // foggie://peerid/spaceid/cid
@@ -975,9 +924,9 @@
       type = 'video';
       // item.contentType = "video/mp4";
 
-      imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-        deviceType.value == 'space' ? 'space' : 'foggie'
-      }&token=${token.value}&thumb=true`;
+      // imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+      //   deviceType.value == 'space' ? 'space' : 'foggie'
+      // }&token=${token.value}&thumb=true`;
     } else {
       isSystemImg = true;
       // imgHttpLink =
@@ -1274,6 +1223,7 @@
     { deep: true },
   );
   onMounted(() => {
+    keyWord.value = route.query?.keyWord || '';
     category.value = route.query.category;
     switchType(category.value);
   });
@@ -1490,6 +1440,11 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+      p:last-child {
+        margin-top: 5px;
+        color: #a7a7a7;
+        font-size: 20px;
       }
     }
     .right_more {

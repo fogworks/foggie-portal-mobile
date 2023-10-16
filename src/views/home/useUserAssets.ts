@@ -7,13 +7,15 @@ export default function useUserAssets() {
   const cloudPst = ref('--');
   const cloudIncome = ref('--');
   const cloudWithdraw = ref('--');
+  const cloudTodayIncome = ref('--');
   function getUserAssets() {
     get_user_dmc().then((res) => {
-      cloudBalance.value = res.result.data.balance[0].amount;
-      useStore.setBalance(res.result.data.balance[0].amount);
-      cloudPst.value = res.result.data.balance[1].amount;
+      cloudBalance.value = res.result.data.balance;
+      useStore.setBalance(res.result.data.balance);
+      cloudPst.value = res.result.data.pst || '--';
       cloudIncome.value = res.result.data.income;
       cloudWithdraw.value = res.result.data.withdraw;
+      cloudTodayIncome.value = res.result.data.today_income;
     });
   }
   return {
@@ -22,5 +24,6 @@ export default function useUserAssets() {
     cloudPst,
     cloudIncome,
     cloudWithdraw,
+    cloudTodayIncome,
   };
 }

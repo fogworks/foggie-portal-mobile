@@ -2,7 +2,7 @@
   <div class="analysis_content">
     <div class="top_box">
       <div class="top_back" @click="router.go(-1)">Earnings </div>
-      <nut-grid class="top_grid">
+      <nut-grid class="top_grid" :column-num="3">
         <nut-grid-item text="Balance"
           ><div>
             <IconCions class="top_icon"></IconCions>
@@ -18,15 +18,15 @@
         <nut-grid-item class="top_icon" text="Expense" @click="router.push('/analysisCate?type=3')"
           ><div>
             <IconOutCome class="top_icon"></IconOutCome>
-            <p>0</p>
+            <p>{{ cloudExpense }}</p>
           </div></nut-grid-item
         >
-        <nut-grid-item class="top_icon" text="Withdrawal" @click="router.push('/analysisCate?type=0')"
+        <!-- <nut-grid-item class="top_icon" text="Withdrawal" @click="router.push('/analysisCate?type=0')"
           ><div>
             <IconWithdraw class="top_icon"></IconWithdraw>
             <p>{{ cloudWithdraw }}</p>
           </div></nut-grid-item
-        >
+        > -->
       </nut-grid>
     </div>
     <nut-radio-group v-model="timeType" class="time_radios" direction="horizontal">
@@ -63,8 +63,9 @@
 
           <span :class="['earnings']">
             +{{ item.income }}
-            <IconArrowRight style="vertical-align: text-top" width="1.1rem" height="1.1rem" color="#5F57FF"></IconArrowRight
-          ></span>
+            <!-- <IconArrowRight style="vertical-align: text-top" width="1.1rem" height="1.1rem" color="#5F57FF"></IconArrowRight
+          > -->
+          </span>
         </div>
         <div
           ><span>{{ item.pst }} PST</span> <span class="time">{{ transferUTCTime(item.order_created_at) }}</span>
@@ -87,6 +88,7 @@
   import useOrderList from '../home/useOrderList.ts';
   import useUserAssets from '../home/useUserAssets.ts';
   import { transferUTCTime } from '@/utils/util';
+  import { search_user_asset } from '@/api/amb';
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
@@ -95,12 +97,28 @@
     typeShow: false,
     chartOptions: {},
     timeType: '0',
+    cloudBalance: '0',
+    cloudIncome: '0',
+    cloudExpense: '0',
   });
-  const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
 
   const { shortcuts, resetData, loadMore, listData, hasMore, infinityValue } = useOrderList();
 
-  const { timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
+  const { cloudBalance, cloudIncome, cloudExpense, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
+  const searchUserAsset = () => {
+    const [start, end] = shortcuts[timeType.value]();
+    search_user_asset({ query_time: [{ start_time: start, end_time: end }] }).then((res) => {
+      if (!start && !end) {
+        cloudBalance.value = res.result.counts.all.balance;
+        cloudIncome.value = res.result.counts.all.income;
+        cloudExpense.value = res.result.counts.all.payout;
+      } else {
+        cloudBalance.value = res.result.counts[`${start}~${end}`].balance;
+        cloudIncome.value = res.result.counts[`${start}~${end}`].income;
+        cloudExpense.value = res.result.counts[`${start}~${end}`].payout;
+      }
+    });
+  };
 
   const getLineOptions = () => {
     const dateList = listData.value.map((el) => transferUTCTime(el.order_created_at));
@@ -117,15 +135,17 @@
   watch(
     timeType,
     (val) => {
-      resetData();
-      const [start, end] = shortcuts[val]();
-      loadMore(null, start, end);
+      // resetData();
+      // const [start, end] = shortcuts[val]();
+      // loadMore(null, start, end);
+      searchUserAsset();
     },
     { deep: true },
   );
   onMounted(() => {
-    getUserAssets();
     loadMore();
+    searchUserAsset();
+
     getLineOptions();
   });
 </script>
@@ -144,9 +164,9 @@
       height: 80px;
     }
     :deep {
-      .nut-grid-item {
-        max-width: 25%;
-      }
+      // .nut-grid-item {
+      //   max-width: 25%;
+      // }
       .nut-grid-item__content {
         border-radius: 16px;
         margin: 5px;
@@ -261,6 +281,8 @@
       .earnings {
         display: inline-block;
         color: #121212;
+        color: $main_green;
+
         font-size: 36px;
       }
       .time {

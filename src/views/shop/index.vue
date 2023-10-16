@@ -17,7 +17,7 @@
       <img src="@/assets/arrow-right.svg" alt="" />
       <div class="product_card">
         <p>VIP Orders</p>
-        <p>20 DMC/TB</p>
+        <p>{{ perPSTIncome * 1024 }} DMC/TB</p>
       </div>
     </div>
   </div>
@@ -83,7 +83,7 @@
   // import useUpdateDMC from './useUpdateDMC';
   // const { getAmbDmc, targetAccount } = useUpdateDMC();
   const { getUserAssets, cloudBalance } = useUserAssets();
-  const { perTBIncome } = useDmcTrade();
+  const { perTBIncome, perPSTIncome } = useDmcTrade();
   const router = useRouter();
   const state = reactive({
     shopForm: {

@@ -96,3 +96,42 @@ export function get_user_recharge(data) {
     data,
   });
 }
+export function pst_profit() {
+  return request({
+    url: '/ambmgr/common/pst_profit',
+    method: 'GET',
+  });
+}
+export function search_user_asset(data) {
+  return request({
+    url: '/ambmgr/asset/search_user_asset',
+    method: 'POST',
+    data,
+  });
+}
+export function get_otp() {
+  return request({
+    url: '/ambmgr/asset/get_otp',
+    method: 'GET',
+  });
+}
+export function verify_otp_token(data) {
+  return request({
+    url: '/ambmgr/asset/verify_otp_token',
+    method: 'POST',
+    data,
+  });
+}
+export function withdraw_otp(data) {
+  return request({
+    url: '/ambmgr/asset/withdraw_otp',
+    method: 'POST',
+    data,
+  });
+}
+export function check_bind_otp() {
+  return request({
+    url: '/ambmgr/asset/check_bind_otp',
+    method: 'GET',
+  });
+}

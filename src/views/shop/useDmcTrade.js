@@ -1,10 +1,12 @@
 import { ref, computed } from 'vue';
 import BigNumber from 'bignumber.js';
 import { gqlReq } from '@/services';
+import { pst_profit } from '@/api/amb';
 export default function useDMCTrade() {
   const dmcProduction = ref(undefined);
   const avgStakeRate = ref(undefined);
   const orderLockedPstTotal = ref(undefined);
+  const perPSTIncome = ref(0);
   const getDMCTrade = () => {
     const getOrderData = (skip, lastData) => {
       const pageSize = 500;
@@ -109,6 +111,12 @@ export default function useDMCTrade() {
       });
   };
   getDMCTrade();
+  const pstProfit = () => {
+    pst_profit().then((res) => {
+      perPSTIncome.value = +res.result.profit;
+    });
+  };
+  pstProfit();
   const perTBIncome = computed(() => {
     const allRate = new BigNumber(2).plus(avgStakeRate.value);
     const perTBIncome = new BigNumber(dmcProduction.value).div(allRate).div(orderLockedPstTotal.value).toFixed(4, 1);
@@ -130,5 +138,6 @@ export default function useDMCTrade() {
     orderLockedPstTotal,
     perTBIncome,
     foggiePerGBIncome,
+    perPSTIncome,
   };
 }

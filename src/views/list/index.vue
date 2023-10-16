@@ -1,6 +1,6 @@
 <template>
   <div class="top_box">
-    <div class="top_back" @click="searchType = ''" v-if="searchType">{{ searchType }} </div>
+    <div class="top_type">{{ searchType }} </div>
     <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search">
       <template #left> <Search></Search> </template>
     </nut-input>
@@ -31,7 +31,10 @@
       v-for="(item, index) in list"
       @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
     >
-      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+      <div
+        :style="{ background: randomColor() }"
+        :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']"
+      >
         <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" />
@@ -40,7 +43,7 @@
         <span>Order:{{ item.order_id }}</span>
         <span :class="['earnings']">
           +{{ item.income }}
-          <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight>
+          <!-- <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight> -->
         </span>
       </div>
       <div
@@ -64,7 +67,7 @@
 
   import { ref } from 'vue';
   const { uuid } = useVariable();
-  const searchType = ref('');
+  const searchType = ref('Open');
   const loading = ref(false);
   const router = useRouter();
   const keyWord = ref('');
@@ -108,6 +111,20 @@
       return (size / 1024.0 / 1024.0 / 1024.0).toFixed(1) + ' GB';
     }
   };
+  const randomColor = () => {
+    const createNumber = (min, max) => {
+      let color = Math.floor(Math.random() * 255);
+      if (color <= max && color >= min) {
+        return color;
+      } else {
+        return createNumber(min, max);
+      }
+    };
+    let r = createNumber(0, 60);
+    let g = createNumber(40, 120);
+    let b = createNumber(150, 255);
+    return `rgb(${r} ${g} ${b})`;
+  };
   onMounted(() => {
     loadMore();
   });
@@ -129,7 +146,7 @@
 
 <style lang="scss" scoped>
   .top_box {
-    padding: 50px 10px 30px;
+    padding: 30px 10px;
     border-radius: 20px;
     background: $primary-color;
     .keyword-input-text {
@@ -142,6 +159,12 @@
           font-size: 40px;
         }
       }
+    }
+    .top_type {
+      margin-bottom: 10px;
+      margin-left: 60px;
+      font-size: 45px;
+      color: #fff;
     }
     p {
       width: 80%;
@@ -196,11 +219,9 @@
     }
   }
   .nut-row {
-    margin-bottom: 15px;
     overflow: hidden;
 
     > .nut-col {
-      margin-bottom: 15px;
       padding: 10px;
       line-height: 1;
       text-align: center;
@@ -287,6 +308,7 @@
       .earnings {
         display: inline-block;
         color: #121212;
+        color: $main_green;
         font-size: 36px;
       }
       .time {
