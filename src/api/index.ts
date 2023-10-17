@@ -17,7 +17,7 @@ export function transfer_valid(data) {
   });
 }
 export function check_email_register(email: string) {
-  return http.get(`/api/accounts/check_email_register?email=${email}`, {});
+  return http.get(`/api_accounts/accounts/check_email_register?email=${email}`, {});
 }
 export const get_verify_pw = (params: object) => {
   return request({
@@ -212,10 +212,10 @@ export const check_promo = (params) => {
     params,
   });
 };
-export const bind_user_promo = (params) => {
+export const bind_user_promo = (data) => {
   return request({
     url: `/api_accounts/accounts/bind_user_promo`,
-    method: 'GET',
-    params,
+    method: 'POST',
+    data,
   });
 };

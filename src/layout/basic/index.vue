@@ -17,6 +17,7 @@
   import { useRouter } from 'vue-router';
   import { Home, Horizontal, My } from '@nutui/icons-vue';
   import { user, check_promo, bind_user_promo } from '@/api';
+
   import { check_user_bind, bind_promo, check_promo as check_amb_promo } from '@/api/amb';
   import { onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
@@ -102,7 +103,16 @@
               email: userInfo.value.email,
               dmc_account: userInfo.value.dmc,
             }).then((res) => {
-              showToast.success('Binding successful, you can buy orders');
+              if (res.code == 200) {
+                bind_user_promo({
+                  amb_promo_code: userInfo.value.amb_promo_code,
+                }).then((res) => {
+                  if (res.code == 200) {
+                    showToast.success('Binding successful, you can buy orders');
+                    userStore.setCloudCodeIsBind(true);
+                  }
+                });
+              }
             });
           };
           showDialog({
@@ -132,12 +142,16 @@
       });
     }
   };
-  watch(uuid, async (val) => {
-    if (val) {
-      bindAmb();
-      bindUser();
-    }
-  });
+  watch(
+    uuid,
+    async (val) => {
+      if (val) {
+        bindAmb();
+        bindUser();
+      }
+    },
+    { deep: true },
+  );
   onMounted(async () => {
     if (userStore.getToken) {
       let res = await user();

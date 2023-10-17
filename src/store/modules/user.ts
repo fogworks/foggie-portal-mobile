@@ -9,6 +9,7 @@ interface StoreUser {
   token: string;
   info: Record<any, any>;
   balance: any;
+  cloudCodeIsBind: boolean;
 }
 
 export const useUserStore = defineStore({
@@ -17,6 +18,7 @@ export const useUserStore = defineStore({
     token: token,
     info: {},
     balance: 0,
+    cloudCodeIsBind: false,
   }),
   getters: {
     getUserInfo(): any {
@@ -28,8 +30,14 @@ export const useUserStore = defineStore({
     getBalance(): any {
       return this.balance || 0;
     },
+    getCloudCodeIsBind(): any {
+      return this.cloudCodeIsBind;
+    },
   },
   actions: {
+    setCloudCodeIsBind(bool: boolean) {
+      this.cloudCodeIsBind = bool;
+    },
     setToken(token: string) {
       this.token = token;
     },

@@ -38,7 +38,8 @@
       and officials take a cut second."
       wrapable
     ></nut-noticebar>
-    <div class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
+    <div v-if="realAmount != '--'" class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
+    <div v-else class="real_amount">Failed to get ambassador pumping rate, please retry </div>
     <div style="margin: 40px">
       <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmWithdraw"> Withdraw </nut-button>
     </div>
@@ -84,7 +85,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
   import useUserAssets from './useUserAssets.ts';
-  import { get_otp, verify_otp_token, withdraw_otp, check_bind_otp } from '@/api/amb';
+  import { get_otp, verify_otp_token, withdraw_otp, check_bind_otp, get_commission_rate } from '@/api/amb';
   const userStore = useUserStore();
   const dmc = computed(() => userStore.getUserInfo.dmc);
   const email = computed(() => userStore.getUserInfo.email);
@@ -100,13 +101,34 @@
     showErrorTips: false,
     googleErrorTip: '',
     amount: '',
+    commissionRate: '--',
   });
-  const { amount, showErrorTips, googleErrorTip, scret_key, authQrcode, scret_keyOld, canWithDraw, loading, code, showKeyboard } =
-    toRefs(state);
+  const {
+    commissionRate,
+    amount,
+    showErrorTips,
+    googleErrorTip,
+    scret_key,
+    authQrcode,
+    scret_keyOld,
+    canWithDraw,
+    loading,
+    code,
+    showKeyboard,
+  } = toRefs(state);
   const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
   const realAmount = computed(() => {
-    return (amount.value * 0.9 * 0.99).toFixed(4);
+    if (typeof commissionRate.value == 'number') {
+      return (amount.value * (1 - commissionRate.value) * 0.99).toFixed(4);
+    } else {
+      return false;
+    }
   });
+  const getCommissionRate = () => {
+    get_commission_rate().then((res) => {
+      commissionRate.value = +res.result.rate;
+    });
+  };
   const getAll = () => {
     amount.value = cloudBalance.value + '';
   };
@@ -205,6 +227,7 @@
   onMounted(() => {
     initGoogle();
     getUserAssets();
+    // getCommissionRate();
   });
 </script>
 

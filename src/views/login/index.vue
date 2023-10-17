@@ -42,12 +42,13 @@
 
 <script lang="ts" setup name="LoginPage">
   import { login, Captcha, check_email_register, user } from '@/api';
-  import router from '@/router';
+  // import router from '@/router';
+  import { useRouter } from 'vue-router';
   import { reactive, ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
-
+  const router = useRouter();
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
   const userStore = useUserStore();

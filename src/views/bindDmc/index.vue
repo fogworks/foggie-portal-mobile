@@ -18,7 +18,7 @@
   import { reactive, computed, ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
-  import { user, updateUser } from '@/api';
+  import { user, updateUser, bind_user_promo } from '@/api';
   import { useRoute } from 'vue-router';
   import { check_promo, bind_promo } from '@/api/amb';
   import '@nutui/nutui/dist/packages/toast/style';
@@ -36,8 +36,8 @@
       });
     }
   };
-  const submit = () => {
-    const taskList = [];
+  const submit = async () => {
+    // const taskList = [];
     if (!userInfo.value.dmc && formLine.dmc.length !== 12) {
       showToast.fail('The DMC account length is 12, please enter the correct DMC account');
       return false;
@@ -53,7 +53,46 @@
         wallet_type: 'wallet',
       };
 
-      taskList.push(updateUser(userInfo.value.id, postData));
+      let bindRes = await updateUser(userInfo.value.id, postData).then((dmcRes) => {
+        if (!userInfo.value.dmc) {
+          if (dmcRes.code == 200) {
+            showToast.success('Successfully bound DMC account');
+            return true;
+          } else {
+            showToast.fail('Binding failed, please try again');
+            return false;
+          }
+        }
+      });
+      // if (bindRes) await initFoggieDate();
+      if (userInfo.value.amb_promo_code) {
+        let postData = {
+          user_uuid: userInfo.value.uuid,
+          amb_promo_code: userInfo.value.amb_promo_code,
+          email: userInfo.value.email,
+          dmc_account: formLine.dmc,
+        };
+        const promoFunction = () => {
+          return check_promo(userInfo.value.amb_promo_code).then((res) => {
+            if (res.code == 200) {
+              return bind_promo(postData).then((res2) => {
+                if (res2.code == 200) {
+                  bind_user_promo({
+                    amb_promo_code: userInfo.value.amb_promo_code,
+                  }).then((res) => {
+                    if (res.code == 200) {
+                      showToast.success('Bind successfully');
+                      useStore.setCloudCodeIsBind(true);
+                      initFoggieDate();
+                    }
+                  });
+                }
+              });
+            }
+          });
+        };
+        await promoFunction();
+      }
     }
     if (!userInfo.value.amb_promo_code) {
       let postData = {
@@ -62,37 +101,48 @@
         email: userInfo.value.email,
         dmc_account: userInfo.value.dmc,
       };
-
       const promoFunction = () => {
         return check_promo(formLine.code).then((res) => {
           if (res.code == 200) {
-            return bind_promo(postData);
+            return bind_promo(postData).then((res2) => {
+              if (res2.code == 200) {
+                bind_user_promo({
+                  amb_promo_code: formLine.code,
+                }).then((res) => {
+                  if (res.code == 200) {
+                    showToast.success('Bind successfully');
+                    useStore.setCloudCodeIsBind(true);
+                  }
+                });
+              }
+            });
           }
         });
       };
-      taskList.push(promoFunction());
+      await promoFunction();
+      await initFoggieDate();
     }
-    Promise.all(taskList)
-      .then(async (result) => {
-        let dmcRes = result[0];
-        let promoRes = userInfo.value.dmc ? result[0] : result[1];
-        if (!userInfo.value.dmc) {
-          if (dmcRes && dmcRes.data && dmcRes.data.dmc) {
-            showToast.success('Successfully bound DMC account');
-          } else {
-            showToast.fail('Binding failed, please try again');
-          }
-        }
-        if (promoRes.code == 200) {
-          showToast.success(promoRes.result);
-        }
-        loading.value = false;
-        await initFoggieDate();
-      })
-      .catch((err) => {
-        loading.value = false;
-        showToast.fail('Operation failed, please try again');
-      });
+    // Promise.all(taskList)
+    //   .then(async (result) => {
+    //     let dmcRes = result[0];
+    //     let promoRes = userInfo.value.dmc ? result[0] : result[1];
+    //     if (!userInfo.value.dmc) {
+    //       if (dmcRes && dmcRes.data && dmcRes.data.dmc) {
+    //         showToast.success('Successfully bound DMC account');
+    //       } else {
+    //         showToast.fail('Binding failed, please try again');
+    //       }
+    //     }
+    //     if (promoRes.code == 200) {
+    //       showToast.success(promoRes.result);
+    //     }
+    //     loading.value = false;
+    //     await initFoggieDate();
+    //   })
+    //   .catch((err) => {
+    //     loading.value = false;
+    //     showToast.fail('Operation failed, please try again');
+    //   });
   };
 </script>
 

@@ -60,12 +60,15 @@
 </template>
 
 <script lang="ts" setup name="LoginPage">
-  import { register, get_verify_pw } from '@/api';
-  import router from '@/router';
+  import { register, get_verify_pw, check_promo } from '@/api';
+  import { useRouter } from 'vue-router';
   import { reactive, ref } from 'vue';
   // import { useUserStore } from '@/store/modules/user';
-  import { showSuccessToast } from 'vant';
 
+  import { showToast } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/toast/style';
+  import { check_promo as check_amb_promo } from '@/api/amb.ts';
+  const router = useRouter();
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
   // const userStore = useUserStore();
@@ -140,7 +143,7 @@
     ruleForm.value.validate('email').then(async ({ valid }: any) => {
       if (valid) {
         get_verify_pw({ email: loginForm.email }).then((res) => {
-          showSuccessToast('The verification code has been sent to your email, please check.');
+          showToast.text('The verification code has been sent to your email, please check.');
           console.log(res);
 
           if (res) {
@@ -161,25 +164,49 @@
       if (valid) {
         loading.value = true;
         const password = loginForm.password;
-        let hashPwd = bcryptjs.hashSync(password, 10);
-        // let hashPwd = password;
+        // let hashPwd = bcryptjs.hashSync(password, 10);
+        let hashPwd = password;
         let postData = {
           email: loginForm.email,
           password: hashPwd,
           confirm: hashPwd,
           verify_pw: loginForm.verifyPw,
-          promo_code: loginForm.promo_code,
-          amb_promo_code: loginForm.amb_promo_code,
           // recaptcha_token: reCaptchaV3Token,
         };
+        let isUserCode, isAmbCode;
+        if (loginForm.amb_promo_code) {
+          const userPromoRes = await check_promo({
+            promo_code: loginForm.amb_promo_code,
+          });
+          if (userPromoRes.code == 200) {
+            isUserCode = true;
+          } else {
+            isUserCode = false;
+          }
+          const ambPromoRes = await check_amb_promo(loginForm.amb_promo_code);
+          if (ambPromoRes.code == 200) {
+            isAmbCode = true;
+          } else {
+            isAmbCode = false;
+          }
+          if (!isAmbCode && !isUserCode) {
+            showToast.fail('Please enter a valid invitation code');
+            return false;
+          }
+          if (isUserCode) {
+            postData.promo_code = loginForm.amb_promo_code;
+          } else if (isAmbCode) {
+            postData.amb_promo_code = loginForm.amb_promo_code;
+          }
+        }
 
         register(postData)
           .then((res) => {
-            if (res && res.data && res.data.is_verified) {
+            if (res && res.data && res.data.uuid) {
               router.push('/login');
-              showSuccessToast('Registration successful, please log in');
+              showToast.success('Registration successful, please log in');
             } else if (res && res.data) {
-              showSuccessToast(
+              showToast.text(
                 'A verification link has been sent to your email address, please check your email to verify and Login your account.',
               );
             }

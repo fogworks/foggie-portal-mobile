@@ -57,14 +57,15 @@ export default function useOrderList() {
     });
     await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result })
       .then((res) => {
-        total.value = res.result.total;
-        const cloudList = res.result.data.filter((el) => {
-          const target = cloudSpaceList.value.find((item) => item.order_id == el.order_id);
-          if (!target) {
-            el.notThisClient = true;
-          }
-          return true;
-        });
+        total.value = res?.result?.total;
+        const cloudList =
+          res?.result?.data.filter((el) => {
+            const target = cloudSpaceList.value.find((item) => item.order_id == el.order_id);
+            if (!target) {
+              el.notThisClient = true;
+            }
+            return true;
+          }) || [];
         pn.value++;
         orderStore.setOrderList([...listData.value, ...cloudList]);
       })

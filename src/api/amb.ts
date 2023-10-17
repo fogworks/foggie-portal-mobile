@@ -135,3 +135,9 @@ export function check_bind_otp() {
     method: 'GET',
   });
 }
+export function get_commission_rate() {
+  return request({
+    url: '/ambmgr/ambuser/get_commission_rate',
+    method: 'GET',
+  });
+}
