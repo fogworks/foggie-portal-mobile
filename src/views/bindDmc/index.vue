@@ -59,6 +59,8 @@
       let postData = {
         user_uuid: userInfo.value.uuid,
         amb_promo_code: formLine.code,
+        email: userInfo.value.email,
+        dmc_account: userInfo.value.dmc,
       };
 
       const promoFunction = () => {

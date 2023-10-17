@@ -29,13 +29,13 @@
         > -->
       </nut-grid>
     </div>
-    <nut-radio-group v-model="timeType" class="time_radios" direction="horizontal">
-      <nut-radio label="0">All</nut-radio>
-      <nut-radio label="1">By 3 Months</nut-radio>
-      <nut-radio label="2">By Month</nut-radio>
-      <nut-radio label="3">By Week</nut-radio>
-      <nut-radio label="4">By Day</nut-radio>
-    </nut-radio-group>
+    <nut-tabs v-model="timeType" class="time_tabs" direction="horizontal">
+      <nut-tab-pane title="All" pane-key="0"></nut-tab-pane>
+      <nut-tab-pane title="By 3 Months" pane-key="1"></nut-tab-pane>
+      <nut-tab-pane title="By Month" pane-key="2"></nut-tab-pane>
+      <nut-tab-pane title="By Week" pane-key="3"></nut-tab-pane>
+      <nut-tab-pane title="By Day" pane-key="4"></nut-tab-pane>
+    </nut-tabs>
     <div class="balance_chart">
       <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
     </div>
@@ -107,7 +107,9 @@
   const { cloudBalance, cloudIncome, cloudExpense, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
   const searchUserAsset = () => {
     const [start, end] = shortcuts[timeType.value]();
-    search_user_asset({ query_time: [{ start_time: start, end_time: end }] }).then((res) => {
+    console.log(!start && !end, 'startstartstart');
+    const postData = !start && !end ? {} : { query_time: [{ start_time: start, end_time: end }] };
+    search_user_asset(postData).then((res) => {
       if (!start && !end) {
         cloudBalance.value = res.result.counts.all.balance;
         cloudIncome.value = res.result.counts.all.income;
@@ -194,14 +196,12 @@
     margin-bottom: 10px;
     margin-top: 5px;
     :deep {
-      .nut-tabs__titles {
-        // background: transparent;
-      }
       .nut-tabs__content {
         display: none;
       }
       .nut-tabs__titles-item__text {
         // white-space: pre-wrap;
+        font-size: 26px;
       }
     }
   }

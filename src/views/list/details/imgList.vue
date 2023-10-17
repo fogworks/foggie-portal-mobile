@@ -70,7 +70,6 @@
     isCheckMode: Boolean,
   });
   const { orderId } = toRefs(props);
-  const deviceData = inject('deviceData');
   const resetChecked = () => {
     imgCheckedData.value = {};
     refCheckAll();

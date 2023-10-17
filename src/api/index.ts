@@ -205,3 +205,17 @@ export const download_url = (url: any, headers: any) => {
     headers,
   });
 };
+export const check_promo = (params) => {
+  return request({
+    url: `/api_accounts/accounts/check_promo`,
+    method: 'GET',
+    params,
+  });
+};
+export const bind_user_promo = (params) => {
+  return request({
+    url: `/api_accounts/accounts/bind_user_promo`,
+    method: 'GET',
+    params,
+  });
+};

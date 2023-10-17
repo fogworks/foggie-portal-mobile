@@ -82,8 +82,22 @@
       :has-more="!!continuationToken"
       @load-more="loadMore"
     >
+      <nut-tour
+        class="nut-custom-tour nut-customword-tour nut-customstyle-tour"
+        v-model="isFirst"
+        :steps="longPress"
+        type="tile"
+        location="bottom-center"
+        :close-on-click-overlay="false"
+      >
+        <div class="tour-demo-custom-content">
+          <div>Long press on a list file to enable multi-select mode</div>
+          <nut-button class="tour_btn" @click="handleFirst" type="default">OK</nut-button>
+        </div>
+      </nut-tour>
       <div
         :class="['list_item', item.checked ? 'row_is_checked' : '']"
+        :id="[index == 0 ? 'list_item_1' : '']"
         v-for="(item, index) in tableData"
         :key="index"
         @touchstart.prevent="touchRow(item, $event)"
@@ -352,6 +366,13 @@
     continuationToken2: '',
     dirData: [],
     isNewFolder: false,
+    longPress: [
+      {
+        content: 'Long press on a list file to enable multi-select mode',
+        target: 'list_item_1',
+      },
+    ],
+    isFirst: false,
   });
   const imgListRef = ref('');
 
@@ -378,11 +399,14 @@
     continuationToken2,
     dirData,
     isNewFolder,
+    longPress,
+    isFirst,
   } = toRefs(state);
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
     isReady,
     confirmShare,
+    periodValue,
     confirmPeriod,
     periodShow,
     desc,
@@ -1097,6 +1121,13 @@
 
     tableLoading.value = false;
     showToast.hide(1);
+    nextTick(() => {
+      if (window.localStorage.notFirst) {
+        isFirst.value = false;
+      } else {
+        isFirst.value = true;
+      }
+    });
   };
   function doSearch(scroll: string = '', prefixArg: any[] = [], reset = false) {
     if (tableLoading.value) return false;
@@ -1197,6 +1228,10 @@
     var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fileLink);
     window.open(twitterUrl, '_blank');
   };
+  const handleFirst = () => {
+    isFirst.value = false;
+    window.localStorage.notFirst = true;
+  };
   watch(
     category,
     async (val, old) => {
@@ -1235,6 +1270,30 @@
   }
 </style>
 <style lang="scss" scoped>
+  :deep {
+    .nut-popover-content--bottom-center {
+      background: $main_blue;
+    }
+  }
+  .tour-demo-custom-content {
+    padding: 20px;
+    background: $main_blue;
+    color: #fff;
+    clear: both;
+    height: 100px;
+    .tour_btn {
+      float: right;
+      height: 50px;
+      margin-top: 10px;
+      padding: 5px 10px;
+      text-align: right;
+    }
+    &:after {
+      display: inline-block;
+      content: '';
+      clear: both;
+    }
+  }
   .detail_over {
     display: flex;
     flex-direction: column;
