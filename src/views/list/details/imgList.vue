@@ -1,6 +1,6 @@
 <template>
   <div class="img-content" v-if="isReady">
-    <div v-for="(item, index) in imgData" class="img-box">
+    <div v-if="imgData.length" v-for="(item, index) in imgData" class="img-box">
       <p v-if="item.list.length" class="top-title">
         <nut-checkbox v-if="isCheckMode" v-model="item.checkAll" @change="(val) => handleCheckAllChange(val, item)">
           {{ item.time }}</nut-checkbox
@@ -38,6 +38,7 @@
         </nut-checkbox-group>
       </nut-infinite-loading>
     </div>
+    <nut-empty v-else :image-size="200" description="No Data" />
   </div>
   <div class="img-content" v-else>
     <nut-empty :image-size="200" description="No Data" />
@@ -59,7 +60,6 @@
   import useOrderInfo from './useOrderInfo.js';
   import imgUrl from '@/assets/DMC_token.png';
   // import { isCloudCanUpload_Api } from '@/api/upload';
-  let baseUrl = 'http://127.0.0.1';
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const imgCheckedData = reactive({
     value: {},
@@ -243,18 +243,6 @@
         console.log('err----', err);
       }
     });
-
-    // oodFileList(email.value, type, token.value, deviceData, prefix, scroll, 1, date, max_keys)
-    //   .then((res) => {
-    //     if (res && res.content) {
-    //       initRemoteData(res, reset, date);
-    //     } else {
-    //       tableLoading.value = false;
-    //     }
-    //   })
-    //   .catch(() => {
-    //     tableLoading.value = false;
-    //   });
   };
   const initRemoteData = (data, reset = false, dateKey = '') => {
     if (!data) {
@@ -327,25 +315,10 @@
     }
 
     tableLoading.value = false;
-    // if (activeSort.value) {
-    //   const target = sortList.find((el) => el.key == activeSort.value);
-    //   const { prop, order, key } = target;
-    //   nextTick(() => {
-    //     tableSort({ prop, order, key });
-    //   });
-    // }
-
-    // tableSort({ prop: "date", order: 1, key: 1 });
   };
   const init = async () => {
     await getTimeLine();
     isReady.value = true;
-    // getFileList(
-    //   "",
-    //   breadcrumbList.prefix,
-    //   false,
-    //   dateTimeLine.value[imgIndex.value]
-    // );
   };
   const refresh = async () => {
     timeLine.value = [];

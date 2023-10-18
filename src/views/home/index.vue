@@ -108,7 +108,13 @@
     <nut-tab-pane title="Three months" pane-key="1"> </nut-tab-pane>
     <nut-tab-pane title="Six months" pane-key="2"> </nut-tab-pane>
   </nut-tabs> -->
-  <nut-infinite-loading load-more-txt="No more content" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
+  <nut-infinite-loading
+    v-if="listData.length"
+    load-more-txt="No more content"
+    v-model="infinityValue"
+    :has-more="hasMore"
+    @load-more="loadMore"
+  >
     <div
       class="list_item"
       v-for="(item, index) in listData"
@@ -133,6 +139,7 @@
       </div>
     </div>
   </nut-infinite-loading>
+  <nut-empty v-else description="No data"></nut-empty>
 </template>
 
 <script lang="ts" setup name="HomePage">

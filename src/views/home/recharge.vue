@@ -29,6 +29,7 @@
       </div>
     </div>
     <nut-noticebar
+      v-if="memo"
       :text="`Please open the DMC Wallet App, copy the receiving account and Memo information and use your payment account to top up (your payment account is: ${dmc})`"
       wrapable
     ></nut-noticebar>

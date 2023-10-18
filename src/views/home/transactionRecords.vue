@@ -40,42 +40,43 @@
       <nut-tab-pane title="By Week" pane-key="3"></nut-tab-pane>
       <nut-tab-pane title="By Day" pane-key="4"></nut-tab-pane>
     </nut-tabs>
-    <div class="balance_chart">
-      <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
-    </div>
-    <!-- LIST -->
-    <nut-infinite-loading
-      class="list_box"
-      load-more-txt="No more content"
-      v-model="infinityValue"
-      :has-more="hasMore"
-      @load-more="loadMore"
-    >
-      <div
-        class="list_item"
-        v-for="(item, index) in listData"
-        @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
+
+    <template v-if="listData.length">
+      <div class="balance_chart">
+        <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
+      </div>
+      <!-- LIST -->
+      <nut-infinite-loading
+        class="list_box"
+        load-more-txt="No more content"
+        v-model="infinityValue"
+        :has-more="hasMore"
+        @load-more="loadMore"
       >
-        <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-          <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
+        <div
+          class="list_item"
+          v-for="(item, index) in listData"
+          @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
+        >
+          <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+            <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
           <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
           <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
-          <img src="@/assets/list_item_2.svg" alt="" />
-        </div>
+            <img src="@/assets/list_item_2.svg" alt="" />
+          </div>
 
-        <div>
-          <span>Memo:{{ item.memo }}</span>
+          <div>
+            <span>Memo:{{ item.memo }}</span>
 
-          <span :class="['earnings']">
-            {{ item.quantity }}
-            ></span
-          >
+            <span :class="[searchType == 0 ? 'earnings' : 'expense']"> {{ searchType == 0 ? '+' : '-' }}{{ item.quantity }} </span>
+          </div>
+          <div
+            ><span>{{ item.state }} </span> <span class="time">{{ transferUTCTime(item.created_at) }}</span>
+          </div>
         </div>
-        <div
-          ><span>{{ item.state }} </span> <span class="time">{{ transferUTCTime(item.created_at) }}</span>
-        </div>
-      </div>
-    </nut-infinite-loading>
+      </nut-infinite-loading>
+    </template>
+    <nut-empty v-else description="No data"></nut-empty>
   </div>
 </template>
 
@@ -87,12 +88,13 @@
   import IconWithdraw from '~icons/home/earn-withdraw.svg';
   import IconOutCome from '~icons/home/out-come.svg';
   import { reactive, toRefs, onMounted, watch } from 'vue';
-  import { lineOption } from '@/components/echarts/util';
+  import { barOption } from '@/components/echarts/util';
   import { useRoute, useRouter } from 'vue-router';
   import useTransactionRecords from './useTransactionRecords.ts';
   import useUserAssets from './useUserAssets.ts';
   import { transferUTCTime } from '@/utils/util';
   import { get_user_recharge } from '@/api/amb';
+  import * as echarts from 'echarts';
 
   const route = useRoute();
   const router = useRouter();
@@ -110,15 +112,21 @@
 
   const { searchType, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
 
-  const getLineOptions = () => {
+  const getBarOptions = () => {
     const dateList = listData.value.map((el) => transferUTCTime(el.created_at));
     const valueList = listData.value.map((el) => el.quantity);
-    chartOptions.value = lineOption(dateList, valueList, searchType.value == '0' ? 'Recharge' : 'Withdraw');
+    chartOptions.value = barOption(dateList, valueList, searchType.value == '0' ? 'Recharge' : 'Withdraw');
+    (chartOptions.value.series[0].tooltip = {
+      valueFormatter: function (value) {
+        return value + ' DMC';
+      },
+    }),
+      console.log(chartOptions.value, ' chartOptions.value');
   };
   watch(
     listData,
     (val) => {
-      getLineOptions();
+      getBarOptions();
     },
     { deep: true },
   );
@@ -134,7 +142,7 @@
   onMounted(() => {
     getUserAssets();
     loadMore();
-    getLineOptions();
+    getBarOptions();
   });
 </script>
 

@@ -61,3 +61,49 @@ export const lineOption = (xAxis, data, title = 'Earn Analysis') => {
   };
   return options;
 };
+export const barOption = (xAxis, data, title = 'Earn Analysis') => {
+  const options = {
+    textStyle: {
+      color: '#000',
+    },
+    title: {
+      left: '10px',
+      text: title,
+      textStyle: {
+        color: '#5F57FF',
+        fontSize: 25,
+        fontFamily: 'HelloFont WenYiHei',
+      },
+    },
+    tooltip: {
+      trigger: 'axis',
+      // formatter: "{b}:{c}",
+    },
+    xAxis: [
+      {
+        data: xAxis,
+        show: false,
+      },
+    ],
+    yAxis: [
+      {
+        show: false,
+      },
+    ],
+    grid: [
+      {
+        left: '10px',
+        right: '10px',
+        bottom: '15px',
+      },
+    ],
+    series: [
+      {
+        type: 'bar',
+        barMaxWidth: 20,
+        data,
+      },
+    ],
+  };
+  return options;
+};

@@ -36,11 +36,12 @@
       <nut-tab-pane title="By Week" pane-key="3"></nut-tab-pane>
       <nut-tab-pane title="By Day" pane-key="4"></nut-tab-pane>
     </nut-tabs>
-    <div class="balance_chart">
+    <div v-if="listData.length" class="balance_chart">
       <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
     </div>
     <!-- LIST -->
     <nut-infinite-loading
+      v-if="listData.length"
       class="list_box"
       load-more-txt="No more content"
       v-model="infinityValue"
@@ -73,6 +74,7 @@
         </div>
       </div>
     </nut-infinite-loading>
+    <nut-empty v-else description="No data"></nut-empty>
   </div>
 </template>
 
@@ -159,6 +161,7 @@
     padding: 50px 10px 30px;
     border-radius: 20px;
     background: $primary-color;
+    margin-bottom: 10px;
   }
   .top_grid {
     border: none;
@@ -223,6 +226,8 @@
     }
   }
   .analysis_content {
+    min-height: 100%;
+    background: #f1f1f1;
     :deep {
       .nut-cell__value {
         color: #666;
@@ -234,7 +239,6 @@
     margin-bottom: 10px;
   }
   .list_box {
-    padding: 0 10px;
     box-sizing: border-box;
     .list_item {
       position: relative;

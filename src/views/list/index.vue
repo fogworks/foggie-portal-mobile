@@ -8,7 +8,7 @@
     <nut-row type="flex" justify="space-between" class="top_btn_box">
       <nut-col :span="10">
         <div class="flex-content">
-          <div class="svg-box" @click="searchType = 'Open'" :class="[(searchType = 'Open' ? 'active_svg-box' : '')]">
+          <div class="svg-box" @click="searchType = 'Open'" :class="[searchType == 'Open' ? 'active_svg-box' : '']">
             <!-- <Shop></Shop> -->
             <IconSwitch style="vertical-align: text-top" color="#5F57FF"></IconSwitch>
           </div>
@@ -17,7 +17,7 @@
       </nut-col>
       <nut-col :span="10">
         <div class="flex-content">
-          <div class="svg-box" @click="searchType = 'History'" :class="[(searchType = 'History' ? 'active_svg-box' : '')]">
+          <div class="svg-box" @click="searchType = 'History'" :class="[searchType == 'History' ? 'active_svg-box' : '']">
             <IconHistory style="vertical-align: text-top" color="#5F57FF"></IconHistory>
           </div>
           <span>History</span></div
@@ -25,7 +25,14 @@
       </nut-col>
     </nut-row>
   </div>
-  <nut-infinite-loading class="list_box" load-more-txt="No more content" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
+  <nut-infinite-loading
+    v-if="list.length"
+    class="list_box"
+    load-more-txt="No more content"
+    v-model="infinityValue"
+    :has-more="hasMore"
+    @load-more="loadMore"
+  >
     <div
       class="list_item"
       v-for="(item, index) in list"
@@ -50,6 +57,7 @@
       </div>
     </div>
   </nut-infinite-loading>
+  <nut-empty v-else description="No data"></nut-empty>
 </template>
 
 <script lang="ts" setup name="ListPage">
@@ -150,6 +158,7 @@
     background: $primary-color;
     margin-left: -4vw;
     margin-right: -4vw;
+    margin-bottom: 10px;
     .keyword-input-text {
       border-radius: 16px;
       width: 98%;
@@ -216,9 +225,15 @@
             height: 70px;
           }
         }
-        // .active_svg-box {
-        //   background: #fbc934;
-        // }
+        .active_svg-box {
+          background: #fbc934;
+          svg {
+            color: #fff;
+          }
+          & + span {
+            color: #fbc934;
+          }
+        }
       }
     }
   }

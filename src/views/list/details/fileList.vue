@@ -75,53 +75,58 @@
         <span @click="cancelSelect">Cancel</span>
       </div>
     </nut-sticky>
-    <nut-infinite-loading
-      v-if="category !== 1"
-      class="file_list"
-      v-model="infinityValue"
-      :has-more="!!continuationToken"
-      @load-more="loadMore"
-    >
-      <nut-tour
-        class="nut-custom-tour nut-customword-tour nut-customstyle-tour"
-        v-model="isFirst"
-        :steps="longPress"
-        type="tile"
-        location="bottom-center"
-        :close-on-click-overlay="false"
+    <template v-if="category !== 1">
+      <nut-infinite-loading
+        v-if="tableData.length"
+        class="file_list"
+        v-model="infinityValue"
+        :has-more="!!continuationToken"
+        @load-more="loadMore"
       >
-        <div class="tour-demo-custom-content">
-          <div>Long press on a list file to enable multi-select mode</div>
-          <nut-button class="tour_btn" @click="handleFirst" type="default">OK</nut-button>
+        <nut-tour
+          class="nut-custom-tour nut-customword-tour nut-customstyle-tour"
+          v-model="isFirst"
+          :steps="longPress"
+          type="tile"
+          location="bottom-center"
+          :close-on-click-overlay="false"
+        >
+          <div class="tour-demo-custom-content">
+            <div>Long press on a list file to enable multi-select mode</div>
+            <nut-button class="tour_btn" @click="handleFirst" type="default">OK</nut-button>
+          </div>
+        </nut-tour>
+        <div
+          :class="['list_item', item.checked ? 'row_is_checked' : '']"
+          :id="[index == 0 ? 'list_item_1' : '']"
+          v-for="(item, index) in tableData"
+          :key="index"
+          @touchstart.prevent="touchRow(item, $event)"
+          @touchmove.prevent="touchmoveRow(item, $event)"
+          @touchend.prevent="touchendRow(item, $event)"
+        >
+          <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
+            <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
+            <template v-else>
+              <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+              <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+              <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" />
+              <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+              <img v-else-if="item.imgUrl" :src="imgUrl" alt="" />
+              <img v-else src="@/assets/svg/home/file.svg" alt="" />
+            </template>
+          </div>
+          <div class="name_box">
+            <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
+            <p>{{ item.date || '' }}</p>
+          </div>
+          <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
         </div>
-      </nut-tour>
-      <div
-        :class="['list_item', item.checked ? 'row_is_checked' : '']"
-        :id="[index == 0 ? 'list_item_1' : '']"
-        v-for="(item, index) in tableData"
-        :key="index"
-        @touchstart.prevent="touchRow(item, $event)"
-        @touchmove.prevent="touchmoveRow(item, $event)"
-        @touchend.prevent="touchendRow(item, $event)"
-      >
-        <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
-          <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
-          <template v-else>
-            <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
-            <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-            <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" />
-            <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-            <img v-else-if="item.imgUrl" :src="imgUrl" alt="" />
-            <img v-else src="@/assets/svg/home/file.svg" alt="" />
-          </template>
-        </div>
-        <div class="name_box">
-          <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
-          <p>{{ item.date || '' }}</p>
-        </div>
-        <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
-      </div>
-    </nut-infinite-loading>
+      </nut-infinite-loading>
+      <nut-empty v-else description="No data">
+        <div style="margin-top: 10px"> </div>
+      </nut-empty>
+    </template>
     <ImgList
       ref="imgListRef"
       :orderId="route.query.id"
@@ -134,6 +139,7 @@
       @touchendRow="touchendRow"
       v-else
     ></ImgList>
+
     <!-- checkbox action -->
     <nut-tabbar
       v-if="isCheckMode"
@@ -480,6 +486,7 @@
         row.checked = !row.checked;
       } else {
         if (row.isDir) {
+          keyWord.value = '';
           let long_name = prefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
           prefix.value = long_name.split('/').slice(0, -1);
         } else {
@@ -662,6 +669,7 @@
     }
   };
   const toNextLevel = (row: { name: string }) => {
+    keyWord.value = '';
     let long_name = movePrefix.value.length ? movePrefix.value?.join('/') + '/' + row.name : row.name;
     movePrefix.value = long_name.split('/').slice(0, -1);
     getFileList('', movePrefix.value, true);
@@ -860,6 +868,8 @@
       ) => {
         infinityValue.value = false;
         if (res) {
+          console.log(res, 'data');
+
           const transferData = {
             commonPrefixes: res.getCommonprefixesList(),
             content: res
@@ -1052,7 +1062,7 @@
     }
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
-      let isDir = false;
+      let isDir = data?.content[j].contentType == 'application/x-directory' ? true : false;
       const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
       let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
       let cid = data.content[j].cid;
@@ -1063,7 +1073,11 @@
         name = name.split(data.prefix)[1];
       }
       if (name.indexOf('/') > 0) {
-        name = name.split('/')[name.split('/').length - 1];
+        if (isDir) {
+          name = name.split('/')[name.split('/').length - 2] + '/';
+        } else {
+          name = name.split('/')[name.split('/').length - 1];
+        }
       }
       let isPersistent = data.content[j].isPersistent;
 
@@ -1117,7 +1131,7 @@
     } else {
       continuationToken.value = '';
     }
-    console.log(tableData.value);
+    console.log(tableData.value, 'tableData');
 
     tableLoading.value = false;
     showToast.hide(1);
@@ -1158,9 +1172,13 @@
         ProxFindRequest.setCid('');
         ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
         ProxFindRequest.setFileid('');
+        console.log(ProxFindRequest, 'kerworddddddddddddddddddddddddddd');
+
         server.findObjects(ProxFindRequest, {}, (err: any, res: { getContentsList: () => any[] }) => {
           infinityValue.value = false;
           if (res) {
+            console.log(res, 'resresresresresresresresresresresresresresresres');
+
             const transferData = res
               .getContentsList()
               .map(

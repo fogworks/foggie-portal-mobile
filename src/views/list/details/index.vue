@@ -87,7 +87,7 @@
       <span>Recent Files</span>
       <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0 } })">See All ></span>
     </div>
-    <nut-infinite-loading :has-more="false" class="file_list">
+    <nut-infinite-loading v-if="tableData.length" :has-more="false" class="file_list">
       <div
         @click="
           router.push({
@@ -114,6 +114,14 @@
         <!-- <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore> -->
       </div>
     </nut-infinite-loading>
+    <nut-empty v-else description="No data,Go ahead and upload it.">
+      <div style="margin-top: 10px">
+        <nut-button icon="refresh" type="primary" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0 } })"
+          >Upload</nut-button
+        >
+      </div>
+    </nut-empty>
+
     <nut-uploader
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
@@ -377,7 +385,7 @@
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
     listObject.setKeyMarker('');
-    listObject.setOrderby('lastmodifiedtime');
+    listObject.setOrderby('lastmodifiedtime desc');
     listObject.setTags('');
     listObject.setCategory(0);
     listObject.setDate('');
@@ -608,7 +616,7 @@
 
 <style lang="scss" scoped>
   .top_box {
-    margin: 0 30px;
+    // margin: 0 30px;
     padding: 30px 10px;
     border-radius: 20px;
     background: $primary-color;

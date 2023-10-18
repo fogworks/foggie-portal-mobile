@@ -1,6 +1,6 @@
 <template>
   <div class="analysis_box">
-    <div style="background: #fff; padding-bottom: 10px; margin-bottom: 10px">
+    <div style="background: #fff; margin-bottom: 10px">
       <div class="top_box">
         <div class="top_back" @click="router.go(-1)">{{ queryType }} </div>
         <div class="top_assets">
@@ -14,26 +14,29 @@
       </div>
     </div>
     <div class="analysis_content">
-      <nut-radio-group v-model="timeType" class="time_radios" direction="horizontal">
-        <nut-radio label="0">All</nut-radio>
-        <nut-radio label="1">By 3 Months</nut-radio>
-        <nut-radio label="2">By Month</nut-radio>
-        <nut-radio label="3">By Week</nut-radio>
-        <nut-radio label="4">By Day</nut-radio>
-      </nut-radio-group>
-      <div class="balance_chart">
-        <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
-      </div>
-      <!-- LIST -->
-      <nut-infinite-loading class="list_box" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
-        <div class="list_item" v-for="item in listData">
-          <span>{{ transferUTCTime(item.created_at) }}</span>
-          <span :class="[item.type == 'Earnings' ? 'earnings' : 'expenditures']">
-            {{ (item.type == 'Earnings' ? '+' : '-') + item.quantity }} DMC
-            <IconRunning v-if="item.state == 'running'"></IconRunning>
-          </span>
+      <nut-tabs v-model="timeType" class="time_tabs" direction="horizontal">
+        <nut-tab-pane title="All" pane-key="0"></nut-tab-pane>
+        <nut-tab-pane title="By 3 Months" pane-key="1"></nut-tab-pane>
+        <nut-tab-pane title="By Month" pane-key="2"></nut-tab-pane>
+        <nut-tab-pane title="By Week" pane-key="3"></nut-tab-pane>
+        <nut-tab-pane title="By Day" pane-key="4"></nut-tab-pane>
+      </nut-tabs>
+      <template v-if="listData.length">
+        <div class="balance_chart">
+          <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
         </div>
-      </nut-infinite-loading>
+        <!-- LIST -->
+        <nut-infinite-loading class="list_box" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
+          <div class="list_item" v-for="item in listData">
+            <span>{{ transferUTCTime(item.created_at) }}</span>
+            <span :class="[item.type == 'Earnings' ? 'earnings' : 'expenditures']">
+              {{ (item.type == 'Earnings' ? '+' : '-') + item.quantity }} DMC
+              <IconRunning v-if="item.state == 'running'"></IconRunning>
+            </span>
+          </div>
+        </nut-infinite-loading>
+      </template>
+      <nut-empty v-else description="No data"></nut-empty>
     </div>
   </div>
 </template>
@@ -63,6 +66,8 @@
   const listData = computed(() => {
     if (route.query.type == 0) {
       return withdrawListData.value;
+    } else {
+      return [];
     }
   });
   const loadMore = (start, end) => {
@@ -150,6 +155,19 @@
         img {
           width: 200px;
         }
+      }
+    }
+  }
+  .time_tabs {
+    margin-bottom: 10px;
+    margin-top: 5px;
+    :deep {
+      .nut-tabs__content {
+        display: none;
+      }
+      .nut-tabs__titles-item__text {
+        // white-space: pre-wrap;
+        font-size: 26px;
       }
     }
   }
