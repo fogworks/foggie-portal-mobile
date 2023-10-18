@@ -197,9 +197,9 @@
         return createNumber(min, max);
       }
     };
-    let r = createNumber(200, 240);
-    let g = createNumber(90, 150);
-    let b = createNumber(0, 90);
+    let r = createNumber(0, 60);
+    let g = createNumber(40, 120);
+    let b = createNumber(150, 255);
     return `rgb(${r} ${g} ${b})`;
   };
   onMounted(() => {
@@ -215,7 +215,7 @@
     align-items: center;
     margin-top: 5px;
     font-size: 40px;
-    color: #5b5f97;
+    color: #5758a0;
     // box-shadow: $main-shadow;
     .img-box {
       display: flex;
@@ -226,7 +226,7 @@
       height: 58px;
       padding: 15px;
       margin-right: 10px;
-      background: #5b5f97;
+      //   background: #5758a0;
       box-sizing: border-box;
       border-radius: 10px;
       border-radius: 50%;

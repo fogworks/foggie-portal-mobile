@@ -127,9 +127,9 @@
         return createNumber(min, max);
       }
     };
-    let r = createNumber(200, 240);
-    let g = createNumber(90, 150);
-    let b = createNumber(0, 90);
+    let r = createNumber(0, 60);
+    let g = createNumber(40, 120);
+    let b = createNumber(150, 255);
     return `rgb(${r} ${g} ${b})`;
   };
   onMounted(() => {
