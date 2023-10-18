@@ -24,14 +24,14 @@
     color: #fff;
   }
   .isOk {
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.8rem;
+    height: 0.8rem;
     border: 1px solid #bbf1c8;
     border: 1px solid #ffb93b;
     border-radius: 50%;
     background: #bbf1c8;
     background: #ffb93b;
-    line-height: 1rem;
+    line-height: 0.8rem;
     text-align: center;
 
     i {
@@ -43,11 +43,11 @@
   }
 
   .isNo {
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.8rem;
+    height: 0.8rem;
     border: 1px solid #ddd;
     border-radius: 50%;
-    line-height: 1rem;
+    line-height: 0.8rem;
 
     i {
       color: transparent;
