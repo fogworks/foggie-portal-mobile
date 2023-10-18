@@ -1,18 +1,18 @@
 <template>
-  <div class="login">
-    <img src="@/assets/fog-works2.png" alt="" />
+  <div class="login register">
+    <!-- <img src="@/assets/logo-top-left-dark.png" alt="" /> -->
 
     <h1>Create Account</h1>
     <!-- <img src="@/assets/logo-dog-black.svg" alt="" /> -->
 
     <nut-form ref="ruleForm" :model-value="loginForm" :rules="formRules">
       <nut-form-item required prop="email">
-        <input v-model="loginForm.email" name="email" class="nut-input-text" placeholder="Enter your Email" type="text" />
+        <input v-model="loginForm.email" name="email" class="nut-input-text" placeholder="Email" type="text" />
       </nut-form-item>
       <nut-form-item required prop="password">
-        <input v-model="loginForm.password" class="nut-input-text" placeholder="Please enter password" type="password" />
+        <input v-model="loginForm.password" class="nut-input-text" placeholder="Password" type="password" />
       </nut-form-item>
-      <div style="margin: 5px 0 10px 20px">
+      <div style="margin: 5px 0 10px 10px" v-if="loginForm.password">
         <div class="passwordTip">
           <div :class="[/[a-z]+/.test(loginForm.password) && /[A-Z]+/.test(loginForm.password) ? 'isOk' : 'isNo']">
             <van-icon name="success" />
@@ -35,7 +35,7 @@
         </div>
       </div>
       <nut-form-item required prop="confirmPassword">
-        <input v-model="loginForm.confirmPassword" class="nut-input-text" placeholder="Please confirm password" type="password" />
+        <input v-model="loginForm.confirmPassword" class="nut-input-text" placeholder="Confirm password" type="password" />
       </nut-form-item>
 
       <nut-form-item required prop="verifyPw">
@@ -53,7 +53,7 @@
     <div>
       <nut-button block type="info" @click="submit" :loading="loading"> Create Account </nut-button>
       <div class="Register_btn">
-        <span class="password_login" @click="router.push('/login')">Login</span>
+        <span class="password_login" @click="router.push('/login')">Sign In</span>
       </div>
     </div>
   </div>
@@ -68,8 +68,9 @@
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
   import { check_promo as check_amb_promo } from '@/api/amb.ts';
+
   const router = useRouter();
-  const bcryptjs = require('bcryptjs');
+  //   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
   // const userStore = useUserStore();
   const loginForm = reactive({

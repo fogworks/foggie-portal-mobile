@@ -2,16 +2,16 @@
   <div class="login">
     <div class="top_div" style="margin-bottom: 40px">
       <!-- <h1>SIGN IN</h1> -->
-      <img src="@/assets/fog-works2.png" alt="" />
+      <img src="@/assets/logo-top-left-dark.png" alt="" />
     </div>
 
     <!-- <h1>Login</h1> -->
     <nut-form ref="ruleForm" :model-value="loginForm">
       <nut-form-item required prop="email" :rules="[{ required: true, message: 'E-mail' }]">
-        <input v-model="loginForm.email" name="email" class="nut-input-text" placeholder="Enter your Email" type="text" />
+        <input v-model="loginForm.email" name="email" class="nut-input-text" placeholder="Email" type="text" />
       </nut-form-item>
       <nut-form-item required prop="password" :rules="[{ required: true, message: 'Please enter password' }]">
-        <input v-model="loginForm.password" class="nut-input-text" placeholder="PASSWORD" type="password" />
+        <input v-model="loginForm.password" class="nut-input-text" placeholder="Password" type="password" />
       </nut-form-item>
       <nut-form-item
         required
@@ -31,10 +31,10 @@
         />
         <img :src="codeSrc" class="code_src" @click="getCaptcha" />
       </nut-form-item>
-      <nut-button block type="info" @click="submit" :loading="loading"> SIGN IN </nut-button>
+      <nut-button block type="info" @click="submit" :loading="loading"> Sign In </nut-button>
       <div class="Register_btn">
-        <span class="password_login" @click="router.push('/forget')"> Forgot Password?</span>
-        <span class="password_login" @click="router.push('/register')">create a new Account?</span>
+        <span class="password_login" @click="router.push('/forget')"> Forgot password?</span>
+        <span class="password_login" @click="router.push('/register')">create an account?</span>
       </div>
     </nut-form>
   </div>
@@ -48,6 +48,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
+
   const router = useRouter();
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
