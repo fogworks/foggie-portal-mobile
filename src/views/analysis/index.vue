@@ -1,7 +1,7 @@
 <template>
   <div class="analysis_content">
     <div class="top_box">
-      <div class="top_back" @click="router.go(-1)">Earnings </div>
+      <div class="top_back" @click="router.go(-1)">Analysis </div>
       <nut-grid class="top_grid" :column-num="3">
         <nut-grid-item text="Balance"
           ><div>
@@ -286,7 +286,7 @@
         font-size: 36px;
       }
       .time {
-        color: #ff6e00;
+        color: #aaa;
         font-size: 24px;
       }
       &:last-child {

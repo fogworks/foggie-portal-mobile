@@ -312,7 +312,7 @@
         font-size: 36px;
       }
       .time {
-        color: #ff6e00;
+        color: #aaa;
         font-size: 24px;
       }
       &:last-child {

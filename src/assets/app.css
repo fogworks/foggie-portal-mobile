@@ -20,7 +20,7 @@ p {
 .top_back{
 
   display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     margin-bottom: 20px;
     color: #fff;
@@ -28,8 +28,10 @@ p {
     font-family: Hellofont FangHuaTi;
 }
 .top_back::before{
+  position: absolute;
+  left:30px;
   content:'';
-width: 60px;
+  width: 60px;
   height: 60px;
   margin-right: 10px;
   display: flex;

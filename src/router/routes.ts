@@ -83,9 +83,11 @@ export const routes = [
     path: '/withdraw',
     name: 'Withdraw',
     component: () => import('@/views/home/withdraw.vue'),
-    meta: {
-      title: 'tabbar.withdraw',
-    },
+  },
+  {
+    path: '/recharge',
+    name: 'Recharge',
+    component: () => import('@/views/home/recharge.vue'),
   },
   {
     path: '/shop',

@@ -2,7 +2,7 @@
   <div class="top_box">
     <div class="top_back" @click="router.go(-1)">Withdraw </div>
   </div>
-  <div v-if="!canWithDraw" :class="['middle_box', showKeyboard ? 'full_height' : '']">
+  <div v-if="canWithDraw && !loading" :class="['middle_box', showKeyboard ? 'full_height' : '']">
     <img class="top_img" src="@/assets/withdraw-cion.png" alt="" />
     <div class="title_item">
       <p>Withdrawal account:</p>
@@ -29,22 +29,30 @@
       </div>
     </div>
     <div class="title_item">
-      <p>Please enter the withdrawal amount:</p>
-      <van-password-input class="google_input" :value="code" :gutter="10" :focused="showKeyboard" @focus="showKeyboard = true" />
+      <p>Please enter the Google captcha:</p>
+      <van-password-input
+        :mask="false"
+        class="google_input"
+        :value="code"
+        :gutter="10"
+        :focused="showKeyboard"
+        @focus="showKeyboard = true"
+      />
       <van-number-keyboard v-model="code" :show="showKeyboard" @blur="showKeyboard = false" />
     </div>
+    <div v-if="realAmount != '--'" class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
+    <div v-else class="real_amount">Failed to get ambassador pumping rate, please retry </div>
     <nut-noticebar
       text="Please note that withdrawals are subject to a handling fee of 10% for ambassadors and 1% for officials. Ambassadors take a cut first,
       and officials take a cut second."
       wrapable
     ></nut-noticebar>
-    <div v-if="realAmount != '--'" class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
-    <div v-else class="real_amount">Failed to get ambassador pumping rate, please retry </div>
+
     <div style="margin: 40px">
       <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmWithdraw"> Withdraw </nut-button>
     </div>
   </div>
-  <div :class="['middle_box', 'qrcode-step', showKeyboard ? 'full_height' : '']" class="qrcode-step" v-else>
+  <div v-else-if="!loading && !canWithDraw" :class="['middle_box', 'qrcode-step', showKeyboard ? 'full_height' : '']" class="qrcode-step">
     <div class="google-tips">
       Please use Google Authenticator or other compatible programs on your phone to scan the QR code below, or manually enter a 16 digit
       key.
@@ -66,7 +74,14 @@
     </div>
     <div style="margin-top: 50px" class="title_item" v-if="scret_key && !canWithDraw">
       <p>Please enter the Google verification</p>
-      <van-password-input class="google_input" :value="code" :gutter="10" :focused="showKeyboard" @focus="showKeyboard = true" />
+      <van-password-input
+        :mask="false"
+        class="google_input"
+        :value="code"
+        :gutter="10"
+        :focused="showKeyboard"
+        @focus="showKeyboard = true"
+      />
       <van-number-keyboard v-model="code" :show="showKeyboard" @blur="showKeyboard = false" />
     </div>
     <div v-if="showErrorTips" class="showErrorTips">
@@ -121,7 +136,7 @@
     if (typeof commissionRate.value == 'number') {
       return (amount.value * (1 - commissionRate.value) * 0.99).toFixed(4);
     } else {
-      return false;
+      return '--';
     }
   });
   const getCommissionRate = () => {
@@ -149,20 +164,35 @@
     showToast.success('Copy succeeded');
   }
   async function initGoogle() {
+    loading.value = true;
+    showToast.loading('Loading', {
+      cover: true,
+      'cover-color': 'rgba(0,0,0,0.8)',
+    });
     let res = await check_bind_otp();
     if (res.result.bind_secret) {
       canWithDraw.value = true;
+      loading.value = false;
+
+      showToast.hide();
     } else {
-      get_otp().then((res) => {
-        console.log(res, 'res');
-        if (res.code == 200) {
-          scret_key.value = res.result.data.secret;
-          authQrcode.value = 'data:image/jpg;base64,' + res.result.data.qrcode;
-          canWithDraw.value = false;
-        } else {
-          canWithDraw.value = true;
-        }
-      });
+      get_otp()
+        .then((res) => {
+          console.log(res, 'res');
+          if (res.code == 200) {
+            scret_key.value = res.result.data.secret;
+            authQrcode.value = 'data:image/jpg;base64,' + res.result.data.qrcode;
+            canWithDraw.value = false;
+            showToast.hide();
+          } else {
+            canWithDraw.value = true;
+            showToast.hide();
+          }
+        })
+        .finally(() => {
+          showToast.hide();
+          loading.value = false;
+        });
     }
   }
   function confirmBind() {
@@ -227,7 +257,7 @@
   onMounted(() => {
     initGoogle();
     getUserAssets();
-    // getCommissionRate();
+    getCommissionRate();
   });
 </script>
 
@@ -246,7 +276,7 @@
   .title_item {
     margin-bottom: 50px;
     p:first-child {
-      color: #c2c2c2;
+      color: #000;
       font-size: 1.2rem;
     }
     .dmc_account {
@@ -273,7 +303,7 @@
     background: linear-gradient(90deg, #1f30b7 0%, #9733ee 100%);
   }
   .real_amount {
-    margin-top: 20px;
+    margin-bottom: 20px;
     text-align: center;
   }
   .qrcode-step {

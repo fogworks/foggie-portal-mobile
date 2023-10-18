@@ -84,7 +84,7 @@
       </div>
     </div>
     <div class="today_file">
-      <span>Today Files</span>
+      <span>Recent Files</span>
       <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0 } })">See All ></span>
     </div>
     <nut-infinite-loading :has-more="false" class="file_list">
@@ -96,6 +96,7 @@
           })
         "
         :class="['list_item']"
+        v-show="index < 4"
         v-for="(item, index) in tableData"
         :key="index"
       >
@@ -362,10 +363,10 @@
     server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
     // header.setToken(token.value.split('bearer ')[1]);
-    console.log(token.value, 'token.value.sign');
-    var myDate = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
-    var time = myDate.toJSON().split('T').join('').substr(0, 10);
-    console.log(time);
+    // console.log(token.value, 'token.value.sign');
+    // var myDate = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
+    // var time = myDate.toJSON().split('T').join('').substr(0, 10);
+    // console.log(time);
 
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix(list_prefix);
@@ -376,10 +377,10 @@
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
     listObject.setKeyMarker('');
-    listObject.setOrderby('');
+    listObject.setOrderby('lastmodifiedtime');
     listObject.setTags('');
     listObject.setCategory(0);
-    listObject.setDate(time);
+    listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
     requestReq.setRequest(listObject);

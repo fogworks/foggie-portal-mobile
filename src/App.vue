@@ -3,65 +3,103 @@
 </template>
 <script setup lang="ts">
   import { user, check_promo, bind_user_promo } from '@/api';
+
   import { check_user_bind, bind_promo, check_promo as check_amb_promo } from '@/api/amb';
   import { onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
-  import { showToast } from '@nutui/nutui';
+  import { showToast, showDialog } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
 
   const userStore = useUserStore();
   const uuid = computed(() => userStore.getUserInfo?.uuid);
-  // watch(uuid, async (val) => {
-  //   console.log(val);
+  const userInfo = computed(() => userStore.getUserInfo);
 
-  //   if (val) {
-  //     let res = await user();
-  //     if (res.data) {
-  //       userStore.setInfo(res.data);
-  //     }
-  //     let isUserCode = false;
-  //     let isAmbCode = false;
-  //     if (res.data.amb_promo_code) {
-  //       check_promo({ promo_code: res.data.amb_promo_code }).then((res) => {
-  //         if (res.code == 200) isUserCode = true;
-  //       });
-  //       check_amb_promo(res.data.amb_promo_code).then((res) => {
-  //         if (res.code == 200) isAmbCode = true;
-  //       });
-  //     }
-  //     if (isAmbCode) {
-  //       check_user_bind(val).then((res2) => {
-  //         if (res2.code == 200 && !res2.result.bind) {
-  //           const ambOk = () => {
-  //             bind_promo({
-  //               user_uuid: val,
-  //               amb_promo_code: res.data.amb_promo_code,
-  //               email: res.data.email,
-  //               dmc_account: res.data.dmc,
-  //             }).then((res) => {
-  //               showToast.success('Binding successful, you can buy orders');
-  //             });
-  //           };
-  //           showDialog({
-  //             title: 'Notice',
-  //             content: `Your ambassador invitation code is ${res.data.amb_promo_code}, are you sure you want to bind it?`,
-  //             onOk: ambOk,
-  //           });
-  //         }
-  //       });
-  //     }
-  //     if (isUserCode && !res.data.promo_code) {
-  //       const userOk = () => {
-  //         bind_user_promo({ promo_code: res.data.amb_promo_code }).then((res) => {});
-  //       };
-  //       showDialog({
-  //         title: 'Notice',
-  //         content: `Your current invitation code ${res.data.amb_promo_code} is the user's invitation code, are you sure you want to bind it?`,
-  //         onOk: userOk,
-  //       });
-  //     }
-  //   }
-  // });
+  const bindAmb = async () => {
+    let isAmbCode = false;
+    if (userInfo.value.amb_promo_code) {
+      await check_amb_promo(userInfo.value.amb_promo_code).then((res) => {
+        if (res.code == 200) isAmbCode = true;
+      });
+    }
+    if (isAmbCode) {
+      if (!userInfo.value.dmc) {
+        const dmcOk = () => {
+          router.push({ path: '/bindDmc', query: { onlyDMC: true } });
+        };
+        showDialog({
+          title: 'Notice',
+          content: `No DMC account yet, please go to bind the account beforehand.`,
+          onOk: dmcOk,
+        });
+        return false;
+      }
+      check_user_bind(uuid.value).then((res2) => {
+        if (res2.code == 200 && !res2.result.bind) {
+          const ambOk = () => {
+            bind_promo({
+              user_uuid: uuid.value,
+              amb_promo_code: userInfo.value.amb_promo_code,
+              email: userInfo.value.email,
+              dmc_account: userInfo.value.dmc,
+            }).then((res) => {
+              if (res.code == 200) {
+                bind_user_promo({
+                  amb_promo_code: userInfo.value.amb_promo_code,
+                }).then((res) => {
+                  if (res.code == 200) {
+                    showToast.success('Binding successful, you can buy orders');
+                    userStore.setCloudCodeIsBind(true);
+                  }
+                });
+              }
+            });
+          };
+          showDialog({
+            title: 'Notice',
+            content: `Your ambassador invitation code is ${userInfo.value.amb_promo_code}, are you sure you want to bind it?`,
+            onOk: ambOk,
+          });
+        }
+      });
+    }
+  };
+  const bindUser = async () => {
+    let isUserCode = false;
+    if (userInfo.value.amb_promo_code) {
+      await check_promo({ promo_code: userInfo.value.amb_promo_code }).then((res) => {
+        if (res.code == 200) isUserCode = true;
+      });
+    }
+    if (isUserCode && !userInfo.value.promo_code) {
+      const userOk = () => {
+        bind_user_promo({ promo_code: userInfo.value.amb_promo_code }).then((res) => {});
+      };
+      showDialog({
+        title: 'Notice',
+        content: `Your current invitation code ${userInfo.value.amb_promo_code} is the user's invitation code, are you sure you want to bind it?`,
+        onOk: userOk,
+      });
+    }
+  };
+  watch(
+    uuid,
+    async (val) => {
+      if (val) {
+        bindAmb();
+        bindUser();
+      }
+    },
+    { deep: true },
+  );
+  onMounted(async () => {
+    if (userStore.getToken) {
+      let res = await user();
+      if (res.data) {
+        userStore.setInfo(res.data);
+      }
+    }
+  });
 </script>
 
 <style>

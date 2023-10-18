@@ -1,5 +1,4 @@
 import { computed, ref } from 'vue';
-import { useStore } from 'vuex';
 import { useUserStore } from '@/store/modules/user';
 import { get_amb_dmc } from '@/api/amb';
 
@@ -20,6 +19,5 @@ export default function useUpdateDMC() {
     dmc,
     amb_promo_code,
     targetAccount,
-    bindDMC,
   };
 }

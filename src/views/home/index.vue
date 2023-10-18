@@ -45,7 +45,7 @@
     </template>
   </van-cell-group>
   <van-space class="withdraw-btn" direction="horizontal" align="center">
-    <div class="action_item" @click="showWithdraw">
+    <div class="action_item" @click="toRecharge">
       <img src="@/assets/recharge.svg" alt="" />
       Recharge
     </div>
@@ -168,6 +168,13 @@
       router.push({ name: 'BindDmc' });
     } else {
       router.push({ name: 'Shop' });
+    }
+  };
+  const toRecharge = () => {
+    if (!userInfo.value.dmc || !userInfo.value.amb_promo_code) {
+      router.push({ name: 'BindDmc' });
+    } else {
+      router.push({ name: 'Recharge' });
     }
   };
   const randomColor = () => {
@@ -324,6 +331,7 @@
         }
         .total_income {
           > div {
+            font-size: 30px;
             text-align: left;
           }
         }
@@ -483,7 +491,7 @@
       font-size: 36px;
     }
     .time {
-      color: #ff6e00;
+      color: #aaa;
       font-size: 24px;
     }
     &:last-child {

@@ -40,7 +40,7 @@
         <div style="display: flex">
           <template v-if="!prefix.length">
             <div class="top_back" @click="router.go(-1)"> </div>
-            <span>
+            <span class="top_title">
               {{ fileTypeText[category] }}
             </span>
             <TriangleUp
@@ -50,7 +50,7 @@
           </template>
           <template v-else>
             <div class="top_back" @click="prefix.splice(-1)"> </div>
-            <span>
+            <span class="top_title">
               {{ prefix.at(-1) || '' }}
             </span>
           </template>
@@ -1325,6 +1325,10 @@
   }
   .top_back {
     margin: 0;
+    color: $main_blue;
+  }
+  .top_title {
+    margin-left: 80px;
   }
   .check_top {
     display: flex;

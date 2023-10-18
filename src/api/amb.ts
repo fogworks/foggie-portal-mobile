@@ -48,13 +48,7 @@ export function get_order_node(uuid) {
     },
   });
 }
-export function user_recharge(data) {
-  return request({
-    url: '/ambmgr/asset/user_recharge',
-    method: 'POST',
-    data,
-  });
-}
+
 export function get_user_dmc() {
   return request({
     url: '/ambmgr/asset/get_user_dmc',
@@ -81,7 +75,13 @@ export function node_order_search(ip, data) {
     data,
   });
 }
-
+export function user_recharge(data) {
+  return request({
+    url: '/ambmgr/asset/user_recharge',
+    method: 'POST',
+    data,
+  });
+}
 export function node_order_buy_assign_bill(ip, data) {
   return request({
     url: ip + '/order/buy_assign_bill',
@@ -120,6 +120,9 @@ export function get_otp() {
   return request({
     url: '/ambmgr/asset/get_otp',
     method: 'GET',
+    // headers: {
+    //   UserType: 'amb',
+    // },
   });
 }
 export function verify_otp_token(data) {
