@@ -17,7 +17,7 @@
 
   <nut-cell title="Log out" is-link @click="logout" />
   <div class="bg_animation">
-    <img src="@/assets/user.gif" />
+    <img src="@/assets/user1.gif" />
   </div>
 </template>
 
@@ -103,9 +103,13 @@
   }
   .bg_animation {
     position: fixed;
-    bottom: 20px;
-    width: 100%;
-    height: 80%;
-    // right: 0px;
+    bottom: 10px;
+    right: 10px;
+    height: 30%;
+    img {
+      //   width: 100%;
+      height: 300px;
+      object-fit: scale-down;
+    }
   }
 </style>
