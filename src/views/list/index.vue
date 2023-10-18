@@ -1,14 +1,14 @@
 <template>
   <div class="top_box">
-    <div class="top_type">{{ searchType }} </div>
+    <!-- <div class="top_type">{{ searchType }} </div> -->
     <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search">
       <template #left> <Search></Search> </template>
     </nut-input>
-    <p>You can search your order here.</p>
+    <!-- <p>You can search your order here.</p> -->
     <nut-row type="flex" justify="space-between" class="top_btn_box">
       <nut-col :span="10">
         <div class="flex-content">
-          <div class="svg-box" @click="searchType = 'Open'">
+          <div class="svg-box" @click="searchType = 'Open'" :class="[(searchType = 'Open' ? 'active_svg-box' : '')]">
             <!-- <Shop></Shop> -->
             <IconSwitch style="vertical-align: text-top" color="#5F57FF"></IconSwitch>
           </div>
@@ -17,7 +17,7 @@
       </nut-col>
       <nut-col :span="10">
         <div class="flex-content">
-          <div class="svg-box" @click="searchType = 'History'">
+          <div class="svg-box" @click="searchType = 'History'" :class="[(searchType = 'History' ? 'active_svg-box' : '')]">
             <IconHistory style="vertical-align: text-top" color="#5F57FF"></IconHistory>
           </div>
           <span>History</span></div
@@ -31,13 +31,12 @@
       v-for="(item, index) in list"
       @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
     >
-      <div
-        :style="{ background: randomColor() }"
-        :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']"
-      >
-        <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
+      <!-- :style="{ background: randomColor() }" -->
+      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+        <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
-        <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" />
+        <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
+        <img src="@/assets/list_item_2.svg" alt="" />
       </div>
       <div>
         <span>Order:{{ item.order_id }}</span>
@@ -147,11 +146,13 @@
 <style lang="scss" scoped>
   .top_box {
     padding: 30px 10px;
-    border-radius: 20px;
+    border-radius: 0px !important;
     background: $primary-color;
+    margin-left: -4vw;
+    margin-right: -4vw;
     .keyword-input-text {
       border-radius: 16px;
-      width: 80%;
+      width: 98%;
       margin: 0 auto;
       color: #5264f9;
       :deep {
@@ -215,6 +216,9 @@
             height: 70px;
           }
         }
+        // .active_svg-box {
+        //   background: #fbc934;
+        // }
       }
     }
   }
@@ -294,6 +298,7 @@
       }
       .item_2 {
         background: #5f57ff;
+        background: #ffc933;
       }
       .item_3 {
         background: #1ba27a;
