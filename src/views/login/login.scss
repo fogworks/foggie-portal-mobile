@@ -2,17 +2,18 @@
   display: flex;
   flex-direction: column;
   // justify-content: center;
-  justify-content: space-around;
+  justify-content: center;
   height: 100%;
   padding: 80px 50px;
   box-sizing: border-box;
-  background: #dfe0ef;
+  //   background: #dfe0ef;
+  background: #5855a7f0;
 
   .top_div {
     text-align: center;
   }
   img {
-    width: 15rem;
+    width: 20rem;
     margin: 0 auto;
   }
   h1 {
@@ -20,26 +21,30 @@
     // letter-spacing: 10px;
     text-align: center;
     color: $primary-color;
+    color: #fff;
   }
   .isOk {
-    width: 1rem;
-    height: 1rem;
+    width: 0.5rem;
+    height: 0.5rem;
     border: 1px solid #bbf1c8;
+    border: 1px solid #ffb93b;
     border-radius: 50%;
     background: #bbf1c8;
+    background: #ffb93b;
     line-height: 1rem;
     text-align: center;
 
     i {
       color: #05c634;
-      font-size: 10px;
+      color: #fff;
+      font-size: 8px;
       vertical-align: middle;
     }
   }
 
   .isNo {
-    width: 1rem;
-    height: 1rem;
+    width: 0.5rem;
+    height: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 50%;
     line-height: 1rem;
@@ -57,16 +62,17 @@
     justify-content: flex-start;
     margin: 5px 0;
     color: #000;
+    color: #fccf7e;
 
     div:first-child {
-      margin-right: 5px;
+      margin-right: 15px;
     }
   }
 
   .nut-form-item {
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     border-radius: 20px;
-    background: #f6f6f67d;
+    // background: #f6f6f67d;
     &::after,
     &::before {
       content: unset;
@@ -82,6 +88,7 @@
       right: 0.5rem;
       height: 2rem;
       border-radius: 99px;
+      background-image: linear-gradient(178deg, #ffe233 0%, #ffb62e 100%);
     }
   }
   .nut-cell-group__wrap {
@@ -94,6 +101,8 @@
     height: 3rem;
     font-size: 40px;
     font-weight: 600;
+    background-color: #ffc42f;
+    background-image: linear-gradient(178deg, #ffe233 0%, #ffb62e 100%);
   }
   .Register_btn {
     display: flex;
@@ -106,6 +115,8 @@
     color: #9898d4;
     font-weight: 500;
     cursor: pointer;
+    color: #fff;
+    // text-decoration: underline;
   }
   .code_src {
     position: absolute;
@@ -123,5 +134,13 @@
   .nut-input-text {
     // color: #fff;
     outline: none;
+  }
+}
+.register {
+  .nut-form-item {
+    margin-bottom: 40px;
+  }
+  .Register_btn {
+    justify-content: center !important;
   }
 }
