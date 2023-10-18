@@ -53,9 +53,10 @@
         @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
       >
         <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-          <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
+          <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
           <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
-          <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" />
+          <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
+          <img src="@/assets/list_item_2.svg" alt="" />
         </div>
 
         <div>
@@ -154,7 +155,7 @@
 
 <style lang="scss" scoped>
   .top_box {
-    margin: 20px;
+    // margin: 20px;
     padding: 50px 10px 30px;
     border-radius: 20px;
     background: $primary-color;
@@ -267,6 +268,7 @@
       }
       .item_2 {
         background: #5f57ff;
+        background: #ffc933;
       }
       .item_3 {
         background: #1ba27a;

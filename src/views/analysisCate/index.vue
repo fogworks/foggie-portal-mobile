@@ -128,7 +128,7 @@
     background: #f1f1f1;
   }
   .top_box {
-    margin: 20px;
+    // margin: 20px;
     padding: 50px 10px 30px;
     border-radius: 20px;
     background: $primary-color;

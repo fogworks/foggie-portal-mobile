@@ -8,7 +8,7 @@
   </nut-noticebar>
   <div class="dmc_account" v-else>
     <div class="img-box">
-      <img src="@/assets/member.svg" alt="" />
+      <img src="@/assets/user.svg" alt="" />
     </div>
     Hello,
     {{ userInfo.dmc }}
@@ -16,7 +16,10 @@
   <van-cell-group inset class="income-card">
     <template #default>
       <img src="@/assets/balance_right.svg" @click="router.push('/analysis')" alt="" />
-      <div class="card_row_1 card_header"><span>Balance</span> <span>Income</span> </div>
+      <div class="card_row_1 card_header card_row_top"
+        ><span>Balance</span>
+        <span>Income</span>
+      </div>
       <div class="card_row_1 card_header">
         <div class="total_income">
           <div> {{ cloudBalance }} </div>
@@ -38,7 +41,7 @@
           <p>New revenue today</p>
           <p class="column_value today_income"
             >+ {{ cloudTodayIncome }} DMC
-            <TriangleUp color="#FF8B00" width="20px"></TriangleUp>
+            <TriangleUp color="#fbd116" width="20px"></TriangleUp>
           </p>
         </div>
       </div>
@@ -111,10 +114,11 @@
       v-for="(item, index) in listData"
       @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
     >
-      <div :style="{ background: randomColor() }" :class="['item_img_box']">
-        <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
+      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+        <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 2" class="cions" src="@/assets/list_item_2.svg" alt="" />
-        <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" />
+        <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
+        <img src="@/assets/list_item_2.svg" alt="" />
       </div>
       <div>
         <span>Order:{{ item.order_id }}</span>
@@ -213,11 +217,12 @@
 
       width: 58px;
       height: 58px;
-      padding: 5px;
+      padding: 15px;
       margin-right: 10px;
       background: #5b5f97;
       box-sizing: border-box;
       border-radius: 10px;
+      border-radius: 50%;
       img {
         width: 45px;
         margin: 0 auto;
@@ -302,6 +307,8 @@
     box-sizing: border-box;
     margin: 0;
     margin-top: 20px;
+    margin-left: -4vw;
+    margin-right: -4vw;
     //   box-shadow: 0px 0px 4px 1px #ccc;
     // background-color: var(--van-blue);
     background: $primary-color;
@@ -337,6 +344,9 @@
         }
       }
     }
+    .card_row_top {
+      font-weight: bold;
+    }
     .pst-row {
       margin-top: 40px;
       font-size: 28px;
@@ -346,6 +356,7 @@
       }
       .today_income {
         color: #ff8b00;
+        color: #fbd116;
         svg {
           vertical-align: sub;
         }
@@ -461,7 +472,7 @@
       padding: 5px;
       box-sizing: border-box;
       border-radius: 50px;
-      // background: #ff8b00;
+      background: #ff8b00;
       img {
         width: 36px;
         margin: 0 auto;
@@ -470,12 +481,13 @@
         margin-right: 15px;
       }
     }
-    // .item_2 {
-    //   background: #5f57ff;
-    // }
-    // .item_3 {
-    //   background: #1ba27a;
-    // }
+    .item_2 {
+      background: #5f57ff;
+      background: #ffc933;
+    }
+    .item_3 {
+      background: #1ba27a;
+    }
 
     > div {
       display: flex;
