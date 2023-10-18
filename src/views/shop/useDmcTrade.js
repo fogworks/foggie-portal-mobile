@@ -6,7 +6,8 @@ export default function useDMCTrade() {
   const dmcProduction = ref(undefined);
   const avgStakeRate = ref(undefined);
   const orderLockedPstTotal = ref(undefined);
-  const perPSTIncome = ref(0);
+  const perGoldenPSTIncome = ref(0);
+  const perMpPSTIncome = ref(0);
   const getDMCTrade = () => {
     const getOrderData = (skip, lastData) => {
       const pageSize = 500;
@@ -113,7 +114,8 @@ export default function useDMCTrade() {
   getDMCTrade();
   const pstProfit = () => {
     pst_profit().then((res) => {
-      perPSTIncome.value = +res.result.profit;
+      perGoldenPSTIncome.value = res.result.gold_mp_profit;
+      perMpPSTIncome.value = res.result.mp_profit;
     });
   };
   pstProfit();
@@ -138,6 +140,7 @@ export default function useDMCTrade() {
     orderLockedPstTotal,
     perTBIncome,
     foggiePerGBIncome,
-    perPSTIncome,
+    perGoldenPSTIncome,
+    perMpPSTIncome,
   };
 }

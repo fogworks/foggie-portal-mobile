@@ -74,6 +74,13 @@ export function node_order_buy(ip, data) {
     data,
   });
 }
+export function node_order_search(ip, data) {
+  return request({
+    url: ip + '/order/search',
+    method: 'POST',
+    data,
+  });
+}
 
 export function node_order_buy_assign_bill(ip, data) {
   return request({

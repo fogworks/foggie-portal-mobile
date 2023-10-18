@@ -75,6 +75,12 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
+        '^/order/search': {
+          target: 'http://154.31.41.124:18080',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
         '^/ambmgr': {
           target: 'https://devlop.fogworks.io',
           changeOrigin: true,

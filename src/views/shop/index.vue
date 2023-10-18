@@ -12,12 +12,12 @@
     <div class="product_box">
       <div class="product_card">
         <p>General Orders</p>
-        <p>{{ perTBIncome }} DMC/TB</p>
+        <p>{{ perMpPSTIncome * 1024 }} DMC/TB</p>
       </div>
       <img src="@/assets/arrow-right.svg" alt="" />
       <div class="product_card">
         <p>VIP Orders</p>
-        <p>{{ perPSTIncome * 1024 }} DMC/TB</p>
+        <p>{{ perGoldenPSTIncome * 1024 }} DMC/TB</p>
       </div>
     </div>
   </div>
@@ -25,11 +25,11 @@
     <p>VIP Order <IconSetting @click="showTop = true"></IconSetting></p>
     <div class="price_box">
       Current market price: <br />
-      100TB = 222.0000 DMC
+      100TB = {{ totalPrice }} DMC
     </div>
   </div>
   <div style="margin: 0 20px 40px">
-    <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading"> Buy </nut-button>
+    <nut-button block class="buy_btn" type="info" @click="submit" :disabled="!curReferenceRate" :loading="loading"> Buy </nut-button>
   </div>
   <nut-popup position="top" :style="{ height: '80%' }" v-model:visible="showTop">
     <nut-form class="query_form" :model-value="shopForm">
@@ -50,20 +50,12 @@
         <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
       </nut-form-item>
       <div style="text-align: center" class="order-tip">
-        <!-- Purchase
-        <strong>
-          {{ shopForm.quantity > 0 ? shopForm.quantity : '--' }}
-        </strong>
-        GB,lasts <strong> 25 </strong> weeks and allows a premium of <strong> {{ shopForm.floating_ratio }}% </strong> for orders totaling
-        about
-        <br /> -->
         <strong> Total </strong>
         <strong class="price"> {{ totalPrice || '--' }} DMC </strong>
-        <!-- <nut-price :price="totalPrice" :decimal-digits="4" size="large" /> -->
       </div>
       <div class="bottom_btn">
         <nut-button type="warning" plain @click="showTop = false"> Cancel </nut-button>
-        <nut-button type="warning" @click="submit" :loading="loading"> Buy </nut-button>
+        <nut-button type="warning" @click="submit" :disabled="!curReferenceRate" :loading="loading"> Buy </nut-button>
       </div>
     </nut-form>
   </nut-popup>
@@ -74,16 +66,17 @@
   import IconSetting from '~icons/home/setting.svg';
   import { toRefs, reactive, onMounted } from 'vue';
   import { getCurReferenceRate } from '@/api';
-  import { buy_order, node_order_buy } from '@/api/amb';
+  import { buy_order, node_order_buy, node_order_search } from '@/api/amb';
   import { showToast } from '@nutui/nutui';
   import { useRouter } from 'vue-router';
   import useDmcTrade from './useDmcTrade.js';
   import useUserAssets from '../home/useUserAssets.ts';
+  import { debounce } from 'lodash';
 
   // import useUpdateDMC from './useUpdateDMC';
   // const { getAmbDmc, targetAccount } = useUpdateDMC();
   const { getUserAssets, cloudBalance } = useUserAssets();
-  const { perTBIncome, perPSTIncome } = useDmcTrade();
+  const { perMpPSTIncome, perGoldenPSTIncome } = useDmcTrade();
   const router = useRouter();
   const state = reactive({
     shopForm: {
@@ -94,28 +87,48 @@
     loading: false,
     curReferenceRate: 0,
     showTop: false,
+    deposit_ratio: 0,
   });
-  const { showTop, shopForm, curReferenceRate, loading } = toRefs(state);
-  function loadCurReferenceRate() {
-    return getCurReferenceRate()
-      .then((res: any) => {
-        curReferenceRate.value = res;
+  const { deposit_ratio, showTop, shopForm, curReferenceRate, loading } = toRefs(state);
+  const loadCurReferenceRate = debounce(async () => {
+    loading.value = true;
+    let params = {
+      week: state.shopForm.week,
+      floating_ratio: state.shopForm.floating_ratio,
+      pst: state.shopForm.quantity.toFixed(0),
+    };
+    const nodeRes = await buy_order(params);
+    // let nodeIp = "http://" + nodeRes.result.node_address;
+
+    // let nodeIp = 'http://154.31.41.124:18080';
+    let nodeIp = '';
+    await node_order_search(nodeIp, {
+      week: state.shopForm.week,
+      storage: state.shopForm.quantity,
+      poolType: 'vofo.*', //vofo.*  / golden
+      size: 5,
+    })
+      .then((res) => {
+        loading.value = false;
+        if (res.code == 200 && res.data.length) {
+          curReferenceRate.value = res.data[0].data[0]._source.act.data.bill_info.price;
+          deposit_ratio.value = res.data[0].data[0]._source.act.data.bill_info.deposit_ratio;
+        }
       })
-      .catch(() => {
-        setTimeout(() => {
-          loadCurReferenceRate();
-        }, 2000);
+      .finally(() => {
+        loading.value = false;
       });
-  }
+  }, 1000);
   const totalPrice = computed(() => {
-    let total = +curReferenceRate.value * 10000 * state.shopForm.week * state.shopForm.quantity * (1 + state.shopForm.floating_ratio / 100);
-    total = Math.round(total) / 10000;
-    return +total.toFixed(4) > 0 ? total.toFixed(4) : '--';
+    let total =
+      ((curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity +
+        (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity) *
+      (1 + state.shopForm.floating_ratio / 100);
+    return total.toFixed(4);
   });
 
   async function submit() {
     loading.value = true;
-    await loadCurReferenceRate();
     if (cloudBalance.value < totalPrice.value) {
       let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);
       showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
@@ -129,6 +142,7 @@
     };
     buy_order(params)
       .then(async (res) => {
+        await loadCurReferenceRate();
         if (res.code == 200) {
           // let nodeIp ='http://'+ res.result.node_address;
           // let nodeIp = 'http://154.31.41.124:18080';
@@ -158,6 +172,26 @@
         loading.value = false;
       });
   }
+  watch(
+    showTop,
+    (val) => {
+      state.shopForm.quantity = 100;
+      state.shopForm.week = 24;
+      state.shopForm.floating_ratio = 0;
+    },
+    { deep: true },
+  );
+  watch(
+    () => [state.shopForm.week, state.shopForm.quantity],
+    (val) => {
+      curReferenceRate.value = 0;
+      loadCurReferenceRate();
+    },
+    {
+      immediate: true,
+      deep: true,
+    },
+  );
   onMounted(() => {
     loadCurReferenceRate();
     getUserAssets();
@@ -297,6 +331,11 @@
     height: 120px;
     font-size: 40px;
     margin: 40px 0;
+    :deep {
+      &.nut-button--disabled {
+        background: #aaa !important;
+      }
+    }
   }
   .price_box {
     position: relative;
@@ -382,6 +421,9 @@
       :deep {
         .nut-button {
           width: 40%;
+          &.nut-button--disabled {
+            background: #aaa !important;
+          }
         }
       }
     }
