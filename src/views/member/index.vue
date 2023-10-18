@@ -1,6 +1,8 @@
 <template>
   <div class="avatar-wrap">
-    <nut-avatar class="avatar" size="large"> </nut-avatar>
+    <nut-avatar class="avatar" size="large">
+      <img src="@/assets/user.svg" alt="" />
+    </nut-avatar>
     <div class="member-detail">
       <p class="info" v-if="email">{{ email }}</p>
       <p class="nickname" v-else> <nut-button shape="square" size="small" type="default" @click="goLogin"> Login </nut-button> </p>
@@ -14,6 +16,9 @@
   <nut-cell title="Lanage" is-link />
 
   <nut-cell title="Log out" is-link @click="logout" />
+  <div class="bg_animation">
+    <img src="@/assets/user.gif" />
+  </div>
 </template>
 
 <script lang="ts" setup name="MemberPage">
@@ -95,5 +100,12 @@
         margin-top: 10px;
       }
     }
+  }
+  .bg_animation {
+    position: fixed;
+    bottom: 20px;
+    width: 100%;
+    height: 80%;
+    // right: 0px;
   }
 </style>

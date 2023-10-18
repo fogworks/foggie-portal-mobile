@@ -14,7 +14,7 @@ p {
   background: #fff;
 }
 .nut-button--info {
-  background: #5b5f97;
+  background: #5758a0;
   border-radius: 20px;
 }
 .top_back {
@@ -56,11 +56,11 @@ p {
   /* margin: 20px; */
   padding: 50px 10px 30px;
   border-radius: 20px;
-  background: #5b5f97;
+  background: #5758a0;
 }
 
 :root {
-  --nut-button-info-background-color: #5b5f97;
+  --nut-button-info-background-color: #5758a0;
   --nut-button-border-radius: 20px;
 }
 .top_box {

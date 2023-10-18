@@ -28,9 +28,11 @@
     height: 0.5rem;
     border: 1px solid #bbf1c8;
     border: 1px solid #ffb93b;
+    border: 1px solid #be8ee6;
     border-radius: 50%;
     background: #bbf1c8;
     background: #ffb93b;
+    background: #be8ee6;
     line-height: 1rem;
     text-align: center;
 
@@ -63,6 +65,7 @@
     margin: 5px 0;
     color: #000;
     color: #fccf7e;
+    color: #fff;
 
     div:first-child {
       margin-right: 15px;
@@ -89,6 +92,7 @@
       height: 2rem;
       border-radius: 99px;
       background-image: linear-gradient(178deg, #ffe233 0%, #ffb62e 100%);
+      background-image: linear-gradient(72deg, #8682f2 0%, #be8ee6 100%);
     }
   }
   .nut-cell-group__wrap {
@@ -101,8 +105,9 @@
     height: 3rem;
     font-size: 40px;
     font-weight: 600;
-    background-color: #ffc42f;
-    background-image: linear-gradient(178deg, #ffe233 0%, #ffb62e 100%);
+    // background-color: #ffc42f;
+    // background-image: linear-gradient(178deg, #ffe233 0%, #ffb62e 100%);
+    background-image: linear-gradient(72deg, #8682f2 0%, #be8ee6 100%);
   }
   .Register_btn {
     display: flex;

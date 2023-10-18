@@ -208,7 +208,7 @@
     align-items: center;
     margin-top: 5px;
     font-size: 40px;
-    color: #5b5f97;
+    color: #5758a0;
     // box-shadow: $main-shadow;
     .img-box {
       display: flex;
@@ -219,7 +219,7 @@
       height: 58px;
       padding: 15px;
       margin-right: 10px;
-      background: #5b5f97;
+      //   background: #5758a0;
       box-sizing: border-box;
       border-radius: 10px;
       border-radius: 50%;

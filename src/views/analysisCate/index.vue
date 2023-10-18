@@ -21,6 +21,10 @@
         <nut-radio label="3">By Week</nut-radio>
         <nut-radio label="4">By Day</nut-radio>
       </nut-radio-group>
+      <div class="empty_box">
+        <img src="@/assets/empty.svg" />
+        <div>Oops,Data is empty......</div>
+      </div>
       <div class="balance_chart">
         <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
       </div>
@@ -203,6 +207,25 @@
       width: 40px;
       height: 40px;
       vertical-align: sub;
+    }
+  }
+  .empty_box {
+    width: 100%;
+    text-align: center;
+    font-size: 26px;
+    color: #666;
+    height: 300px;
+    margin: 20px 0;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 180px;
+      margin-bottom: 10px;
     }
   }
 </style>
