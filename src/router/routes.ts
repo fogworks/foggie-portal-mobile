@@ -34,7 +34,7 @@ export const routes = [
         component: () => import('@/views/list/index.vue'),
         meta: {
           title: 'tabbar.list',
-          keepAlive: true,
+          // keepAlive: true,
         },
       },
       {

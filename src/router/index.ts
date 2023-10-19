@@ -8,9 +8,6 @@ const router: Router = createRouter({
   routes: routes,
 });
 
-router.beforeEach(async (_to, _from, next) => {
-  next();
-});
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
   const orderStore = useOrderStore();

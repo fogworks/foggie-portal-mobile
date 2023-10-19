@@ -20,14 +20,14 @@ export const lang: langType = {
   },
   introduction: 'A rapid development vue3 of mobile terminal template',
   home: {
-    support: 'support',
+    support: 'Support',
     cssMultiLanguage: 'CSS picture multi-language',
   },
   list: {
-    details: 'list details',
+    details: 'List Details',
   },
   btn: {
-    confirm: 'confirm',
-    cancel: 'cancel',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
   },
 };

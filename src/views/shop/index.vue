@@ -11,13 +11,19 @@
     <p class="middle_title">VIP orders will receive a higher amount of revenue</p>
     <div class="product_box">
       <div class="product_card">
-        <p>General Orders</p>
-        <p>{{ perMpPSTIncome * 1024 }} DMC/TB</p>
+        <p
+          >General Orders <br />
+          (48 Weeks)</p
+        >
+        <p>{{ perMpPSTIncome * 100 }} DMC/100GB</p>
       </div>
       <img src="@/assets/arrow-right.svg" alt="" />
       <div class="product_card">
-        <p>VIP Orders</p>
-        <p>{{ perGoldenPSTIncome * 1024 }} DMC/TB</p>
+        <p
+          >VIP Orders <br />
+          (48 Weeks)</p
+        >
+        <p>{{ perGoldenPSTIncome * 100 }} DMC/100GB</p>
       </div>
     </div>
   </div>
@@ -25,7 +31,7 @@
     <p>VIP Order <IconSetting @click="showTop = true"></IconSetting></p>
     <div class="price_box">
       Current market price: <br />
-      100TB = {{ totalPrice }} DMC
+      100GB = {{ totalPrice }} DMC
     </div>
   </div>
   <div style="margin: 0 20px 40px">
@@ -37,16 +43,16 @@
         <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
           <nut-radio shape="button" :label="52">52 weeks</nut-radio>
           <nut-radio shape="button" :label="38">38 weeks</nut-radio>
-          <nut-radio shape="button" :label="25">25 weeks</nut-radio>
+          <nut-radio shape="button" :label="24">24 weeks</nut-radio>
         </nut-radio-group>
       </nut-form-item>
       <nut-form-item label="OR">
-        <nut-range hidden-range v-model="shopForm.week" :max="52" :min="25" />
+        <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
       </nut-form-item>
       <nut-form-item label="Markup">
         <nut-range hidden-range v-model="shopForm.floating_ratio" :max="100" :min="0" />
       </nut-form-item>
-      <nut-form-item label="Space(TB)">
+      <nut-form-item label="Space(GB)">
         <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
       </nut-form-item>
       <div style="text-align: center" class="order-tip">
@@ -80,7 +86,7 @@
   const router = useRouter();
   const state = reactive({
     shopForm: {
-      quantity: 1 as number,
+      quantity: 100 as number,
       week: 25,
       floating_ratio: 0,
     },
@@ -111,6 +117,9 @@
       .then((res) => {
         loading.value = false;
         if (res.code == 200 && res.data.length) {
+          res.data.sort((a, b) => {
+            return a.data[0]._source.act.data.bill_info.price - b.data[0]._source.act.data.bill_info.price;
+          });
           curReferenceRate.value = res.data[0].data[0]._source.act.data.bill_info.price;
           deposit_ratio.value = res.data[0].data[0]._source.act.data.bill_info.deposit_ratio;
         }
@@ -292,6 +301,10 @@
       p {
         z-index: 1;
         margin-bottom: 5px;
+        font-size: 30px;
+        &:first-child {
+          font-size: 26px;
+        }
       }
       &::after {
         content: '';

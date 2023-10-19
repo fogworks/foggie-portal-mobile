@@ -79,12 +79,13 @@
   import IconWithdraw from '~icons/home/earn-withdraw.svg';
   import IconOutCome from '~icons/home/out-come.svg';
   import { reactive, toRefs, onMounted, watch } from 'vue';
-  import { lineOption } from '@/components/echarts/util';
+  import { barOption } from '@/components/echarts/util';
   import { useRoute, useRouter } from 'vue-router';
   import useOrderList from '../home/useOrderList.ts';
   import useUserAssets from '../home/useUserAssets.ts';
   import { transferUTCTime } from '@/utils/util';
   import { search_user_asset, search_order_profit } from '@/api/amb';
+  import { showToast } from '@nutui/nutui';
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
@@ -119,17 +120,27 @@
     });
   };
   const searchOrderProfit = () => {
+    showToast.loading('Loading', {
+      cover: true,
+    });
     const [start, end] = shortcuts[timeType.value]();
     const postData = !start && !end ? {} : { start_time: start, end_time: end };
     console.log(postData, 'postData');
     search_order_profit(postData).then((res) => {
       listData.value = res.result;
+      showToast.hide();
     });
   };
   const getLineOptions = () => {
-    const dateList = listData.value.map((el) => transferUTCTime(el.order_created_at));
-    const valueList = listData.value.map((el) => el.income);
-    chartOptions.value = lineOption(dateList, valueList, 'Earn Analysis');
+    const dateList = listData.value.map((el) => 'Order: ' + el.order_id);
+    const valueList = listData.value.map((el) => el.profit);
+    chartOptions.value = barOption(dateList, valueList, 'Earn Analysis');
+    chartOptions.value.xAxis[0].show = true;
+    chartOptions.value.grid[0] = {
+      left: '10px',
+      right: '10px',
+      bottom: '30px',
+    };
   };
   watch(
     listData,

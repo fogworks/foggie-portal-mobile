@@ -5,7 +5,7 @@
         <div class="top_back" @click="router.go(-1)">{{ queryType }} </div>
         <div class="top_assets">
           <div class="assets_block">
-            <span>{{ cloudBalance }} DMC</span>
+            <span>{{ titleDMC }} DMC</span>
             <span>≈</span>
             <span>$10.00</span>
           </div>
@@ -28,7 +28,8 @@
         <!-- LIST -->
         <nut-infinite-loading class="list_box" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
           <div class="list_item" v-for="item in listData">
-            <span>{{ transferUTCTime(item.created_at) }}</span>
+            <span v-if="item.created_at">{{ transferUTCTime(item.created_at) }}</span>
+            <span v-else>Order:{{ item.order_id }}</span>
             <span :class="[item.type == 'Earnings' ? 'earnings' : 'expenditures']">
               {{ (item.type == 'Earnings' ? '+' : '-') + item.quantity }} DMC
               <IconRunning v-if="item.state == 'running'"></IconRunning>
@@ -43,17 +44,28 @@
 
 <script setup lang="ts" name="analysis">
   import { reactive, toRefs, onMounted, watch } from 'vue';
-  import { lineOption } from '@/components/echarts/util';
+  import { barOption } from '@/components/echarts/util';
   import { useRoute, useRouter } from 'vue-router';
   import { transferUTCTime } from '@/utils/util';
   import useUserAssets from '../home/useUserAssets.ts';
   import useWithdrawList from './useWithdrawList.ts';
   import IconRunning from '~icons/home/running.svg';
+  import useOrderList from '@/views/home/useOrderList.ts';
+  import { search_user_asset, search_order_profit } from '@/api/amb';
+  import { showToast } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/toast/style';
 
   const route = useRoute();
   const router = useRouter();
-  const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
-  var { shortcuts, resetWithdrawData, getWithdrawList, withdrawListData, hasMore, infinityValue } = useWithdrawList();
+  // const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
+  const {
+    shortcuts,
+    loadMore: expenseLoadMore,
+    listData: expenseListData,
+    resetData,
+    hasMore: expenseHasMore,
+    infinityValue: expenseInfinityValue,
+  } = useOrderList();
 
   const state = reactive({
     queryType: 'Earnings',
@@ -61,32 +73,105 @@
     typeShow: false,
     chartOptions: {},
     timeType: '0',
+    cloudBalance: 0,
+    cloudIncome: 0,
+    cloudExpense: 0,
+    earnListData: [],
   });
-  const { timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
+  const { earnListData, cloudBalance, cloudIncome, cloudExpense, timeType, chartOptions, queryType, typeShow, queryTypeValue } =
+    toRefs(state);
   const listData = computed(() => {
-    if (route.query.type == 0) {
-      return withdrawListData.value;
+    if (route.query.type == 3) {
+      return expenseListData.value.map((el) => {
+        return {
+          created_at: el.order_created_at,
+          quantity: el.total_price,
+          state: el.state,
+          order_id: el.order_id,
+        };
+      });
     } else {
-      return [];
+      return earnListData.value;
     }
   });
+  const hasMore = computed(() => {
+    if (route.query.type == 3) {
+      return expenseHasMore.value;
+    } else if (route.query.type == 1) {
+      return false;
+    }
+  });
+  const infinityValue = computed(() => {
+    if (route.query.type == 3) {
+      return expenseInfinityValue.value;
+    } else if (route.query.type == 1) {
+      return false;
+    }
+  });
+  const titleDMC = computed(() => {
+    if (route.query.type == 3) {
+      return cloudExpense.value;
+    } else if (route.query.type == 1) {
+      return cloudIncome.value;
+    }
+  });
+  const searchUserAsset = () => {
+    const [start, end] = shortcuts[timeType.value]();
+    console.log(!start && !end, 'startstartstart');
+    const postData = !start && !end ? {} : { query_time: [{ start_time: start, end_time: end }] };
+    search_user_asset(postData).then((res) => {
+      if (!start && !end) {
+        cloudBalance.value = res.result.counts.all.balance;
+        cloudIncome.value = res.result.counts.all.income;
+        cloudExpense.value = res.result.counts.all.payout;
+      } else {
+        cloudBalance.value = res.result.counts[`${start}~${end}`].balance;
+        cloudIncome.value = res.result.counts[`${start}~${end}`].income;
+        cloudExpense.value = res.result.counts[`${start}~${end}`].payout;
+      }
+    });
+  };
+  const searchOrderProfit = () => {
+    showToast.loading('Loading', {
+      cover: true,
+    });
+    const [start, end] = shortcuts[timeType.value]();
+    const postData = !start && !end ? {} : { start_time: start, end_time: end };
+    search_order_profit(postData).then((res) => {
+      earnListData.value = res.result.map((el) => {
+        return {
+          quantity: el.profit,
+          order_id: el.order_id,
+        };
+      });
+      showToast.hide();
+    });
+  };
   const loadMore = (start, end) => {
-    if (route.query.type == 0) {
-      getWithdrawList(start, end);
+    if (route.query.type == 3) {
+      expenseLoadMore(null, start, end);
+    } else if (route.query.type == 1) {
+      searchOrderProfit();
     }
   };
   const reset = (start, end) => {
-    if (route.query.type == 0) {
-      resetWithdrawData();
+    if (route.query.type == 3) {
+      resetData();
     }
   };
   const getLineOptions = () => {
-    const dateList = listData.value.map((el) => transferUTCTime(el.order_created_at));
-    let valueList;
-    if (route.query.type == 0) {
-      valueList = listData.value.map((el) => el.quantity);
-    }
-    chartOptions.value = lineOption(dateList, valueList, queryType.value);
+    let valueList, dateList;
+    // if (route.query.type == 3) {
+    dateList = listData.value.map((el) => 'Order: ' + el.order_id);
+    valueList = listData.value.map((el) => el.quantity);
+    chartOptions.value = barOption(dateList, valueList, queryType.value);
+    chartOptions.value.xAxis[0].show = true;
+    chartOptions.value.grid[0] = {
+      left: '10px',
+      right: '10px',
+      bottom: '30px',
+    };
+    // }
   };
   watch(
     listData,
@@ -101,12 +186,15 @@
       reset();
       const [start, end] = shortcuts[val]();
       loadMore(start, end);
+      searchUserAsset();
     },
     { deep: true },
   );
 
   onMounted(() => {
     loadMore();
+    searchUserAsset();
+
     switch (route.query.type) {
       case '0':
         queryType.value = 'Withdrawn';

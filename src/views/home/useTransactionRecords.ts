@@ -1,6 +1,5 @@
-import { get_user_recharge } from '@/api/amb';
+import { get_user_recharge, get_user_withdraw } from '@/api/amb';
 import { showToast } from '@nutui/nutui';
-import '@nutui/nutui/dist/packages/toast/style';
 import { transferUTCTime } from '@/utils/util';
 
 export default function useOrderList() {
@@ -46,20 +45,33 @@ export default function useOrderList() {
     total.value = 0;
     listData.value = [];
   };
-  const loadMore = async (start_time = '', end_time = '') => {
+  const loadMore = async (start_time = '', end_time = '', type = 0) => {
     showToast.loading('Loading', {
       cover: true,
     });
-    await get_user_recharge({ ps: ps.value, pn: pn.value, start_time, end_time })
-      .then((res) => {
-        total.value = res.result.total;
-        const cloudList = res.result.data;
-        pn.value++;
-        listData.value = [...listData.value, ...cloudList];
-      })
-      .finally(() => {
-        showToast.hide();
-      });
+    if (type == 0) {
+      await get_user_recharge({ ps: ps.value, pn: pn.value, start_time, end_time })
+        .then((res) => {
+          total.value = res.result.total;
+          const cloudList = res.result.data;
+          pn.value++;
+          listData.value = [...listData.value, ...cloudList];
+        })
+        .finally(() => {
+          showToast.hide();
+        });
+    } else {
+      await get_user_withdraw({ ps: ps.value, pn: pn.value, start_time, end_time })
+        .then((res) => {
+          total.value = res.result.total;
+          const cloudList = res.result.data;
+          pn.value++;
+          listData.value = [...listData.value, ...cloudList];
+        })
+        .finally(() => {
+          showToast.hide();
+        });
+    }
   };
   return {
     loadMore,

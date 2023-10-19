@@ -59,15 +59,10 @@
           @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
         >
           <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-            <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
-          <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
-          <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
             <img src="@/assets/list_item_2.svg" alt="" />
           </div>
-
           <div>
             <span>Memo:{{ item.memo }}</span>
-
             <span :class="[searchType == 0 ? 'earnings' : 'expense']"> {{ searchType == 0 ? '+' : '-' }}{{ item.quantity }} </span>
           </div>
           <div
@@ -135,10 +130,15 @@
     (val) => {
       resetData();
       const [start, end] = shortcuts[val]();
-      loadMore(start, end);
+      loadMore(start, end, searchType.value);
     },
     { deep: true },
   );
+  watch(searchType, (val) => {
+    resetData();
+    const [start, end] = shortcuts[timeType.value]();
+    loadMore(start, end, val);
+  });
   onMounted(() => {
     getUserAssets();
     loadMore();
@@ -288,6 +288,11 @@
         color: #121212;
         color: $main_green;
 
+        font-size: 36px;
+      }
+      .expense {
+        display: inline-block;
+        color: $main_red;
         font-size: 36px;
       }
       .time {
