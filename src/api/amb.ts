@@ -151,3 +151,11 @@ export function get_commission_rate() {
     method: 'GET',
   });
 }
+
+export function search_order_profit(data) {
+  return request({
+    url: '/ambmgr/order/search_order_profit',
+    method: 'POST',
+    data,
+  });
+}

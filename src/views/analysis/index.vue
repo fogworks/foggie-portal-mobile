@@ -40,14 +40,7 @@
       <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
     </div>
     <!-- LIST -->
-    <nut-infinite-loading
-      v-if="listData.length"
-      class="list_box"
-      load-more-txt="No more content"
-      v-model="infinityValue"
-      :has-more="hasMore"
-      @load-more="loadMore"
-    >
+    <nut-infinite-loading v-if="listData.length" class="list_box" load-more-txt="No more content" :has-more="false">
       <div
         class="list_item"
         v-for="(item, index) in listData"
@@ -64,14 +57,14 @@
           <span>Order:{{ item.order_id }}</span>
 
           <span :class="['earnings']">
-            +{{ item.income }}
+            +{{ item.profit }}
             <!-- <IconArrowRight style="vertical-align: text-top" width="1.1rem" height="1.1rem" color="#5F57FF"></IconArrowRight
           > -->
           </span>
         </div>
-        <div
+        <!-- <div
           ><span>{{ item.pst }} PST</span> <span class="time">{{ transferUTCTime(item.order_created_at) }}</span>
-        </div>
+        </div> -->
       </div>
     </nut-infinite-loading>
     <nut-empty v-else description="No data"></nut-empty>
@@ -91,7 +84,7 @@
   import useOrderList from '../home/useOrderList.ts';
   import useUserAssets from '../home/useUserAssets.ts';
   import { transferUTCTime } from '@/utils/util';
-  import { search_user_asset } from '@/api/amb';
+  import { search_user_asset, search_order_profit } from '@/api/amb';
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
@@ -103,11 +96,12 @@
     cloudBalance: '0',
     cloudIncome: '0',
     cloudExpense: '0',
+    listData: [],
   });
 
-  const { shortcuts, resetData, loadMore, listData, hasMore, infinityValue } = useOrderList();
+  const { shortcuts } = useOrderList();
 
-  const { cloudBalance, cloudIncome, cloudExpense, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
+  const { listData, cloudBalance, cloudIncome, cloudExpense, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
   const searchUserAsset = () => {
     const [start, end] = shortcuts[timeType.value]();
     console.log(!start && !end, 'startstartstart');
@@ -124,7 +118,14 @@
       }
     });
   };
-
+  const searchOrderProfit = () => {
+    const [start, end] = shortcuts[timeType.value]();
+    const postData = !start && !end ? {} : { start_time: start, end_time: end };
+    console.log(postData, 'postData');
+    search_order_profit(postData).then((res) => {
+      listData.value = res.result;
+    });
+  };
   const getLineOptions = () => {
     const dateList = listData.value.map((el) => transferUTCTime(el.order_created_at));
     const valueList = listData.value.map((el) => el.income);
@@ -144,11 +145,13 @@
       // const [start, end] = shortcuts[val]();
       // loadMore(null, start, end);
       searchUserAsset();
+      searchOrderProfit();
     },
     { deep: true },
   );
   onMounted(() => {
-    loadMore();
+    // loadMore();
+    searchOrderProfit();
     searchUserAsset();
 
     getLineOptions();

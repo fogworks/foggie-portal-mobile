@@ -38,7 +38,7 @@
       </nut-grid-item>
     </nut-grid> -->
     <nut-row class="order-icons">
-      <nut-col @click="router.push({ name: 'FileList', query: { ...route.query } })" :span="6" class="order-icon-recycle">
+      <nut-col :span="6" class="order-icon-recycle">
         <IconRecycleFill color="#fff" />
       </nut-col>
       <nut-col :span="6" class="order-icon-node-tree">
@@ -628,13 +628,13 @@
       .span1 {
         margin-left: 5vw;
         float: left;
-        font-size: 18px;
+        font-size: 24px;
       }
 
       .span2 {
         margin-right: 5vw;
         float: right;
-        font-size: 12px;
+        font-size: 20px;
       }
     }
 
@@ -732,7 +732,7 @@
       font-size: 30px;
       .see_all {
         color: #5460fe;
-        font-size: 18px;
+        font-size: 24px;
       }
     }
     .file_list {
