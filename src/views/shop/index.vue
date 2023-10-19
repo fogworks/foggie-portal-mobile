@@ -35,7 +35,10 @@
     </div>
   </div>
   <div style="margin: 0 20px 40px">
-    <nut-button block class="buy_btn" type="info" @click="submit" :disabled="!curReferenceRate" :loading="loading"> Buy </nut-button>
+    <nut-button block class="buy_btn" v-if="curReferenceRate" type="info" @click="submit" :disabled="!curReferenceRate" :loading="loading">
+      Buy
+    </nut-button>
+    <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button>
   </div>
   <nut-popup position="top" :style="{ height: '80%' }" v-model:visible="showTop">
     <nut-form class="query_form" :model-value="shopForm">
@@ -61,7 +64,10 @@
       </div>
       <div class="bottom_btn">
         <nut-button type="warning" plain @click="showTop = false"> Cancel </nut-button>
-        <nut-button type="warning" @click="submit" :disabled="!curReferenceRate" :loading="loading"> Buy </nut-button>
+        <nut-button type="warning" v-if="curReferenceRate" @click="submit" :disabled="!curReferenceRate" :loading="loading">
+          Buy
+        </nut-button>
+        <nut-button type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button>
       </div>
     </nut-form>
   </nut-popup>
@@ -120,14 +126,14 @@
           res.data.sort((a, b) => {
             return a.data[0]._source.act.data.bill_info.price - b.data[0]._source.act.data.bill_info.price;
           });
-          curReferenceRate.value = res.data[0].data[0]._source.act.data.bill_info.price;
+          curReferenceRate.value = res.data[0].data[0]._source.act.data.bill_info.price || 0;
           deposit_ratio.value = res.data[0].data[0]._source.act.data.bill_info.deposit_ratio;
         }
       })
       .finally(() => {
         loading.value = false;
       });
-  }, 1000);
+  }, 500);
   const totalPrice = computed(() => {
     let total =
       ((curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity +

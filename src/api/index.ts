@@ -39,7 +39,7 @@ export function user() {
 }
 export const refreshToken = () => {
   return request({
-    url: `/api/accounts/refresh_token`,
+    url: `/api_accounts/accounts/refresh_token`,
     method: 'POST',
   });
 };

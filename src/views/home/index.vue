@@ -246,7 +246,7 @@
     // align-items: flex-start;
     margin-top: -60px;
     border-radius: 10px;
-    padding: 10px 10px;
+    padding: 10px 0px;
     box-sizing: border-box;
     overflow-x: auto;
     white-space: nowrap;
@@ -320,7 +320,7 @@
     // background-color: var(--van-blue);
     background: $primary-color;
     color: #fff;
-    border-radius: 16px;
+    border-radius: 0;
 
     img {
       position: absolute;
