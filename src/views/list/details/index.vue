@@ -38,26 +38,56 @@
         <img src="@/assets/setting.svg" alt="" />
       </nut-grid-item>
     </nut-grid> -->
-    <nut-row class="order-icons">
+    <!-- <nut-row class="order-icons">
       <nut-col :span="6" class="order-icon-recycle">
         <IconRecycleFill color="#fff" />
       </nut-col>
       <nut-col :span="6" class="order-icon-node-tree">
         <IconRiNodeTree color="#fff" />
+        <p>Merkle</p>
       </nut-col>
       <nut-col :span="6" class="order-icon-send-to-back">
         <IconRiSendToBack color="#fff" />
+        <p>Changelle</p>
       </nut-col>
       <nut-col :span="6" class="order-icon-input-cursor-move">
         <IconRiInputCursorMove color="#fff" />
+        <p>Arbitrate</p>
       </nut-col>
-    </nut-row>
-
-    <nut-row class="order-icons">
       <nut-col @click="getKey" :span="6" class="order-icon-recycle">
         <keySolid color="#fff" />
+        <p>Secret Key</p>
       </nut-col>
-    </nut-row>
+    </nut-row> -->
+
+    <div class="type_check_box">
+      <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
+        <div class="svg_box svg_box2 order-icon-node-tree">
+          <IconRiNodeTree color="#fff" />
+        </div>
+        <p>Merkle</p>
+      </div>
+      <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 2 } })">
+        <div class="svg_box svg_box2 order-icon-send-to-back">
+          <IconRiSendToBack color="#fff" />
+        </div>
+        <p>Challenge</p>
+      </div>
+      <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 3 } })">
+        <div class="svg_box svg_box2 order-icon-input-cursor-move">
+          <IconRiInputCursorMove color="#fff" />
+        </div>
+        <p>Arbitrate</p>
+      </div>
+      <div class="type_item" @click="getKey">
+        <div class="svg_box svg_box2 order-icon-recycle">
+          <keySolid color="#fff" />
+        </div>
+        <p>Secret Key</p>
+      </div>
+    </div>
+
+    <!-- <nut-row class="order-icons"> </nut-row> -->
     <div class="type_check_box">
       <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
         <div class="svg_box">
@@ -701,6 +731,49 @@
           svg {
             width: 100%;
             height: 100%;
+            vertical-align: middle;
+          }
+        }
+
+        .order-icon-recycle {
+          background-color: #ff8b00;
+          border-radius: 50%;
+          svg {
+            width: 60%;
+            height: 60%;
+            vertical-align: middle;
+          }
+        }
+
+        .order-icon-node-tree {
+          background-color: #34964f;
+          border-radius: 50%;
+
+          svg {
+            width: 60%;
+            height: 60%;
+            vertical-align: middle;
+          }
+        }
+
+        .order-icon-send-to-back {
+          background-color: #fcd116;
+          border-radius: 50%;
+
+          svg {
+            width: 60%;
+            height: 60%;
+            vertical-align: middle;
+          }
+        }
+
+        .order-icon-input-cursor-move {
+          background-color: #5f57ff;
+          border-radius: 50%;
+
+          svg {
+            width: 60%;
+            height: 60%;
             vertical-align: middle;
           }
         }

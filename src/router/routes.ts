@@ -78,6 +78,11 @@ export const routes = [
         component: () => import('@/views/list/details/fileList.vue'),
       },
       {
+        path: 'recordsList',
+        name: 'RecordsList',
+        component: () => import('@/views/list/details/recordsList.vue'),
+      },
+      {
         path: 'withdraw',
         name: 'Withdraw',
         component: () => import('@/views/home/withdraw.vue'),
