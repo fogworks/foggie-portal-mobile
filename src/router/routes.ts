@@ -72,39 +72,40 @@ export const routes = [
           border: false,
         },
       },
+      {
+        path: 'fileList',
+        name: 'FileList',
+        component: () => import('@/views/list/details/fileList.vue'),
+      },
+      {
+        path: 'withdraw',
+        name: 'Withdraw',
+        component: () => import('@/views/home/withdraw.vue'),
+      },
+      {
+        path: 'recharge',
+        name: 'Recharge',
+        component: () => import('@/views/home/recharge.vue'),
+      },
+      {
+        path: 'shop',
+        name: 'Shop',
+        component: () => import('@/views/shop/index.vue'),
+        meta: {},
+      },
+      {
+        path: 'analysis',
+        component: () => import('@/views/analysis/index.vue'),
+        meta: {},
+      },
+      {
+        path: 'analysisCate',
+        component: () => import('@/views/analysisCate/index.vue'),
+        meta: {},
+      },
     ],
   },
-  {
-    path: '/fileList',
-    name: 'FileList',
-    component: () => import('@/views/list/details/fileList.vue'),
-  },
-  {
-    path: '/withdraw',
-    name: 'Withdraw',
-    component: () => import('@/views/home/withdraw.vue'),
-  },
-  {
-    path: '/recharge',
-    name: 'Recharge',
-    component: () => import('@/views/home/recharge.vue'),
-  },
-  {
-    path: '/shop',
-    name: 'Shop',
-    component: () => import('@/views/shop/index.vue'),
-    meta: {},
-  },
-  {
-    path: '/analysis',
-    component: () => import('@/views/analysis/index.vue'),
-    meta: {},
-  },
-  {
-    path: '/analysisCate',
-    component: () => import('@/views/analysisCate/index.vue'),
-    meta: {},
-  },
+
   {
     name: 'Login',
     path: '/login',

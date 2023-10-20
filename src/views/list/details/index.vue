@@ -4,7 +4,7 @@
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
         <span class="span1">Order-{{ detailsData[0].order_id }} </span>
-        <span class="span2">Expriration time: {{ detailsData[0].expire }}</span>
+        <span class="span2">Expiration time: {{ detailsData[0].expire }}</span>
       </nut-col>
       <nut-col :span="8" class="order-circle">
         <nut-circle-progress progress="20" radius="40" color="#5460FE">100M of 1G</nut-circle-progress>
@@ -612,7 +612,7 @@
 <style lang="scss" scoped>
   .upload_btn {
     position: fixed;
-    bottom: 80px;
+    bottom: 150px;
     right: 50px;
     font-size: 80px;
     border-radius: 50%;

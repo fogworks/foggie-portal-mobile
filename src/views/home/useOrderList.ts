@@ -36,9 +36,7 @@ export default function useOrderList() {
   };
   const cloudSpaceList = ref([]);
   const orderStore = useOrderStore();
-  const listData = computed(() => {
-    return orderStore.getOrderList;
-  });
+  const listData = ref([] as any);
   const total = ref(0);
   const hasMore = computed(() => {
     return total.value > pn.value * ps.value;
@@ -49,7 +47,7 @@ export default function useOrderList() {
   const resetData = () => {
     pn.value = 1;
     total.value = 0;
-    orderStore.setOrderList([]);
+    listData.value = [];
   };
   const loadMore = async (order_state = null, start_time = '', end_time = '', buy_result = 'success') => {
     showToast.loading('Loading', {
@@ -67,7 +65,7 @@ export default function useOrderList() {
             return true;
           }) || [];
         pn.value++;
-        orderStore.setOrderList([...listData.value, ...cloudList]);
+        listData.value = [...listData.value, ...cloudList];
       })
       .finally(() => {
         showToast.hide();

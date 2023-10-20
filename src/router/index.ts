@@ -11,7 +11,7 @@ const router: Router = createRouter({
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
   const orderStore = useOrderStore();
-  orderStore.setOrderList([]);
+  // orderStore.setOrderList([]);
   if (userStore.getToken) {
     if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget') {
       next({ name: 'Home' });
