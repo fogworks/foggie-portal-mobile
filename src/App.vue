@@ -114,4 +114,28 @@
     width: 0px;
     height: 0px;
   }
+  :root {
+    --nut-toast-font-color: #000;
+    --nut-toast-inner-bg-color: #fff;
+    --nut-toast-cover-bg-color: rgba(0, 0, 0, 0.5);
+  }
+  .nut-icon-failure {
+    color: #d81414 !important;
+  }
+  .nut-toast-loading {
+    --nut-toast-font-color: #000;
+    --nut-toast-inner-bg-color: #fff;
+    --nut-toast-cover-bg-color: rgba(0, 0, 0, 0.5);
+
+    .nut-toast-icon-wrapper {
+      --nut-toast-font-color: #000;
+
+      .nut-icon-loading {
+        color: #000 !important;
+      }
+    }
+  }
+  .nut-toast-inner {
+    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.6);
+  }
 </style>

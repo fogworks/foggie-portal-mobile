@@ -11,7 +11,7 @@
         </div>
         <div class="type_item" @click="switchType(3)">
           <div class="svg_box">
-            <IconAudio></IconAudio>
+            <IconAudio2></IconAudio2>
           </div>
           <p>Audio</p>
         </div>
@@ -309,7 +309,7 @@
   import IconFacebook from '~icons/devicon/facebook.svg';
   import IconNewFolder from '~icons/home/new_folder.svg';
   import IconAllCate from '~icons/home/all-cate.svg';
-  import IconAudio from '~icons/home/audio.svg';
+  import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
   import IconVideo from '~icons/home/video.svg';
@@ -1417,39 +1417,39 @@
         text-align: center;
         border-radius: 20px;
         svg {
-          width: 50px;
-          height: 50px;
+          width: 100%;
+          height: 100%;
           vertical-align: middle;
         }
       }
       p {
         color: #051e56;
       }
-      &:nth-child(1) {
-        .svg_box {
-          background: #e6e9ff;
-        }
-      }
-      &:nth-child(2) {
-        .svg_box {
-          background: #f5ecff;
-        }
-      }
-      &:nth-child(3) {
-        .svg_box {
-          background: #e0f3ff;
-        }
-      }
-      &:nth-child(4) {
-        .svg_box {
-          background: #ffebef;
-        }
-      }
-      &:nth-child(5) {
-        .svg_box {
-          background: #e2e4ff;
-        }
-      }
+      // &:nth-child(1) {
+      //   .svg_box {
+      //     background: #e6e9ff;
+      //   }
+      // }
+      // &:nth-child(2) {
+      //   .svg_box {
+      //     background: #f5ecff;
+      //   }
+      // }
+      // &:nth-child(3) {
+      //   .svg_box {
+      //     background: #e0f3ff;
+      //   }
+      // }
+      // &:nth-child(4) {
+      //   .svg_box {
+      //     background: #ffebef;
+      //   }
+      // }
+      // &:nth-child(5) {
+      //   .svg_box {
+      //     background: #e2e4ff;
+      //   }
+      // }
     }
   }
   .search_bar {

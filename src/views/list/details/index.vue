@@ -1,5 +1,6 @@
 <template>
   <div class="top_box">
+    <div class="top_back" @click="router.go(-1)"></div>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
         <span class="span1">Order-{{ detailsData[0].order_id }} </span>
@@ -60,7 +61,7 @@
     <div class="type_check_box">
       <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
         <div class="svg_box">
-          <IconAudio></IconAudio>
+          <IconAudio2></IconAudio2>
         </div>
         <p>Audio</p>
       </div>
@@ -114,14 +115,7 @@
         <!-- <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore> -->
       </div>
     </nut-infinite-loading>
-    <nut-empty v-else description="No data,Go ahead and upload it.">
-      <div style="margin-top: 10px">
-        <nut-button icon="refresh" type="primary" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0 } })"
-          >Upload</nut-button
-        >
-      </div>
-    </nut-empty>
-
+    <nut-empty v-else description="No data,Go ahead and upload it."> </nut-empty>
     <nut-uploader
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
@@ -137,7 +131,7 @@
       @change="onChange"
       ref="uploadRef"
     >
-      <nut-button type="success" size="small">+ Upload</nut-button>
+      <nut-button type="success" class="upload_btn" size="small">+</nut-button>
     </nut-uploader>
 
     <!-- <recycleFill color="#9F9BEF"/> -->
@@ -148,7 +142,8 @@
 
 <script setup lang="ts">
   // import recycleFill from '~icons/home/recycle-fill';
-  import IconAudio from '~icons/home/audio.svg';
+  // import IconAudio from '~icons/home/audio.svg';
+  import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
   import IconVideo from '~icons/home/video.svg';
@@ -615,6 +610,16 @@
 </script>
 
 <style lang="scss" scoped>
+  .upload_btn {
+    position: fixed;
+    bottom: 80px;
+    right: 50px;
+    font-size: 80px;
+    border-radius: 50%;
+    padding: 10px;
+    width: 80px;
+    height: 80px;
+  }
   .top_box {
     // margin: 0 30px;
     padding: 30px 10px;
@@ -652,7 +657,7 @@
     .order-count {
       .nut-cell {
         width: 70%;
-        height: 8vw;
+        height: vw;
         margin-left: 10%;
         padding-left: 8vw;
         border-bottom: 1px solid #fff;
@@ -660,7 +665,7 @@
         background: $primary-color;
         box-shadow: none;
         color: #fff;
-        font-size: 12px;
+        font-size: 24px;
         line-height: 4vw;
       }
 
@@ -675,7 +680,7 @@
 
   .detail_box {
     box-sizing: border-box;
-    height: 100%;
+    // height: 100%;
     padding: 20px;
     .type_check_box {
       display: flex;
@@ -694,34 +699,36 @@
           text-align: center;
           border-radius: 20px;
           svg {
-            width: 50px;
-            height: 50px;
+            width: 100%;
+            height: 100%;
             vertical-align: middle;
           }
         }
         p {
           color: #051e56;
         }
-        &:nth-child(1) {
-          .svg_box {
-            background: #f5ecff;
-          }
-        }
-        &:nth-child(2) {
-          .svg_box {
-            background: #e0f3ff;
-          }
-        }
-        &:nth-child(3) {
-          .svg_box {
-            background: #ffebef;
-          }
-        }
-        &:nth-child(4) {
-          .svg_box {
-            background: #e2e4ff;
-          }
-        }
+        // &:nth-child(1) {
+        //   .svg_box {
+        //     svg {
+        //       color: #aa5eff;
+        //     }
+        //   }
+        // }
+        // &:nth-child(2) {
+        //   .svg_box {
+        //     background: #e0f3ff;
+        //   }
+        // }
+        // &:nth-child(3) {
+        //   .svg_box {
+        //     background: #ffebef;
+        //   }
+        // }
+        // &:nth-child(4) {
+        //   .svg_box {
+        //     background: #e2e4ff;
+        //   }
+        // }
       }
     }
     .today_file {

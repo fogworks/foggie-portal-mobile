@@ -18,9 +18,11 @@ p {
   border-radius: 20px;
 }
 .top_back {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  height:50px;
   margin-bottom: 20px;
   color: #fff;
   font-size: 50px;
@@ -28,7 +30,7 @@ p {
 }
 .top_back::before {
   position: absolute;
-  left: 30px;
+  left: 10px;
   content: '';
   justify-content: flex-start;
   align-items: center;

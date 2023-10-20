@@ -15,7 +15,7 @@
           >General Orders <br />
           (48 Weeks)</p
         >
-        <p>{{ perMpPSTIncome * 100 }} DMC/100GB</p>
+        <p>{{ (perMpPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
       </div>
       <img src="@/assets/arrow-right.svg" alt="" />
       <div class="product_card">
@@ -23,7 +23,7 @@
           >VIP Orders <br />
           (48 Weeks)</p
         >
-        <p>{{ perGoldenPSTIncome * 100 }} DMC/100GB</p>
+        <p>{{ (perGoldenPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
       </div>
     </div>
   </div>
@@ -307,7 +307,7 @@
       p {
         z-index: 1;
         margin-bottom: 5px;
-        font-size: 30px;
+        font-size: 26px;
         &:first-child {
           font-size: 26px;
         }

@@ -110,59 +110,65 @@
           login_type: 'password',
           // recaptcha_token: reCaptchaV3Token,
         };
-        check_email_register(loginForm.email).then((rr) => {
-          if (rr.data) {
-            if (!rr.data.email) {
-              showToast.fail('The current email is not registered, please register');
-              loading.value = false;
-            } else if (!rr.data.pw_valid) {
-              showToast.fail('The current password is not secure. Please use "Forgot Password" to update your current password');
-              loading.value = false;
-            } else {
-              login(postData)
-                .then((res) => {
-                  console.log(res);
-                  if (res.next_step === 'captcha') {
-                    getCaptcha();
-                    showCaptcha.value = true;
-                  } else if (res && res.data) {
-                    let data = res.data;
-                    let token = data.token_type + ' ' + data.access_token;
-                    // let refresh_token = data.token_type + ' ' + data.refresh_token;
-                    let user_id = data.user_id;
-                    window.localStorage.setItem('user_id', user_id);
-                    // window.localStorage.setItem('refresh_token', refresh_token);
-                    // userStore.setToken(refresh_token);
-                    // let userInfo = {
-                    //   email: loginForm.email,
-                    //   token: token, //res.token
-                    //   user_id: user_id,
-                    // };
-                    if (timer.value) {
-                      clearInterval(timer.value);
+        check_email_register(loginForm.email)
+          .then((rr) => {
+            if (rr.data) {
+              if (!rr.data.email) {
+                showToast.fail('The current email is not registered, please register');
+                loading.value = false;
+              } else if (!rr.data.pw_valid) {
+                showToast.fail('The current password is not secure. Please use "Forgot Password" to update your current password');
+                loading.value = false;
+              } else {
+                login(postData)
+                  .then((res) => {
+                    console.log(res);
+                    if (res.next_step === 'captcha') {
+                      getCaptcha();
+                      showCaptcha.value = true;
+                    } else if (res && res.data) {
+                      let data = res.data;
+                      let token = data.token_type + ' ' + data.access_token;
+                      // let refresh_token = data.token_type + ' ' + data.refresh_token;
+                      let user_id = data.user_id;
+                      window.localStorage.setItem('user_id', user_id);
+                      // window.localStorage.setItem('refresh_token', refresh_token);
+                      // userStore.setToken(refresh_token);
+                      // let userInfo = {
+                      //   email: loginForm.email,
+                      //   token: token, //res.token
+                      //   user_id: user_id,
+                      // };
+                      if (timer.value) {
+                        clearInterval(timer.value);
+                      }
+                      // store.dispatch('token/login', userInfo);
+                      // userStore.setInfo(userInfo);
+                      userStore.setToken(token);
+                      getUserInfo();
+                      // this.getUserInfo();
+                      // this.$emit("login");
+                      // store.dispatch("global/setDmcShow", true);
+                      //  this.loadUserLoginStatus()
                     }
-                    // store.dispatch('token/login', userInfo);
-                    // userStore.setInfo(userInfo);
-                    userStore.setToken(token);
-                    getUserInfo();
-                    // this.getUserInfo();
-                    // this.$emit("login");
-                    // store.dispatch("global/setDmcShow", true);
-                    //  this.loadUserLoginStatus()
-                  }
-                })
-                .catch((err) => {
-                  loading.value = false;
-                  console.log(err);
-                  showToast.fail(err.error);
-                  if (err.next_step === 'captcha') {
-                    getCaptcha();
-                    showCaptcha.value = true;
-                  }
-                });
+                  })
+                  .catch((err) => {
+                    loading.value = false;
+                    console.log(err);
+                    showToast.fail(err.error);
+                    if (err.next_step === 'captcha') {
+                      getCaptcha();
+                      showCaptcha.value = true;
+                    }
+                  });
+              }
+            } else {
+              loading.value = false;
             }
-          }
-        });
+          })
+          .catch(() => {
+            loading.value = false;
+          });
         // const userInfo = await userStore.login(loginForm);
         // if (userInfo) {
         //   router.push({ path: '/home' });
