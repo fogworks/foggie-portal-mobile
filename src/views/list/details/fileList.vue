@@ -112,7 +112,7 @@
               <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
               <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" />
               <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-              <img v-else-if="item.imgUrl" :src="imgUrl" alt="" />
+              <img v-else-if="item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else src="@/assets/svg/home/file.svg" alt="" />
             </template>
           </div>
@@ -345,6 +345,12 @@
   import { HmacSHA1, enc } from 'crypto-js';
   // import { download_url } from '@/api/index';
 
+
+  const accessKeyId = ref<string>('');
+  const secretAccessKey = ref<string>('');
+  const bucketName = ref<string>('');
+
+
   let timeOutEvent: string | number | NodeJS.Timeout | undefined;
   let server = null;
   const route = useRoute();
@@ -474,7 +480,7 @@
   };
 
   const imgUrl = ref('');
-  const touchendRow = (row: { checked: boolean; isDir: any; name: string }, event: { target: { nodeName: string } }) => {
+  const touchendRow = (row: { checked: boolean; isDir: any; name: string; imgUrl: string }, event: { target: { nodeName: string } }) => {
     clearTimeout(timeOutEvent);
     if (event?.target?.nodeName == 'svg' || event?.target?.nodeName == 'path') {
       showAction(row);
@@ -685,12 +691,10 @@
     } else if (type === 'download') {
       //   downLoad();
 
-      const awsAccessKeyId = 'FOG9C40y1MBG1x85DU3o';
-      const awsSecretAccessKey = 'IZIPDmHm1HXE4ZNCSRIJWuGsUXkp9f98bKHAifVG';
-      const bucketName = 'foggiebucket';
+      const bucketName = 'test11111';
       const objectKey = encodeURIComponent(checkData[0].fullName);
 
-      console.log(awsAccessKeyId, awsSecretAccessKey, bucketName, objectKey);
+      console.log('==================', accessKeyId.value, secretAccessKey.value, bucketName, objectKey);
 
       const date = new Date().toUTCString();
 
@@ -698,27 +702,26 @@
       const contentType = '';
       const contentMd5 = '';
       const canonicalizedAmzHeaders = '';
-      const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
+      // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
+      const canonicalizedResource = `/${bucketName}/o/${objectKey}`;
 
       const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
       console.log(signature, 'signature');
 
-      // const crypto = require('crypto');
-      // const hmac = crypto.createHmac('sha1', awsSecretAccessKey);
-      // hmac.update(signature);
-      // const signatureBase64 = hmac.digest('base64');
 
-      let hmac = HmacSHA1(signature, awsSecretAccessKey);
+      let hmac = HmacSHA1(signature, secretAccessKey.value);
       const signatureBase64 = enc.Base64.stringify(hmac);
       console.log(signatureBase64, 'signatureBase64');
 
       const headers = {
         'x-amz-date': date,
-        Authorization: `AWS ${awsAccessKeyId}:${signatureBase64}`,
+        Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
       };
 
       // 构建 S3 GET 请求
-      const url = `/o/${bucketName}/${objectKey}`;
+      // const url = `/o/${bucketName}/${objectKey}`;
+      // const url = `/o/${objectKey}`
+      const url = `/o/${objectKey}?thumb=true`
       console.log(url, 'url');
       console.log(headers, 'headers');
 
@@ -949,9 +952,10 @@
       // imgHttpLarge = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
       //   deviceType.value == 'space' ? 'space' : 'foggie'
       // }&token=${token.value}`;
-      let bucketName = 'foggiebucket';
-      imgHttpLink = `/o/${bucketName}/${encodeURIComponent(item.key)}?thumb=true`;
-      imgHttpLarge = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
+      // let bucketName = 'foggiebucket';
+      // imgHttpLink = `/o/${bucketName.value}/${encodeURIComponent(item.key)}?thumb=true`;
+      imgHttpLink = `/o/${encodeURIComponent(item.key)}?thumb=true`;
+      imgHttpLarge = `/o/${encodeURIComponent(item.key)}`;
 
       // foggie://peerid/spaceid/cid
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
@@ -977,7 +981,7 @@
     }
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
-  const initRemoteData = (
+  const initRemoteData = async (
     data: {
       commonPrefixes?: any;
       content: any;
@@ -1060,11 +1064,20 @@
         tableData.value.push(item);
       }
     }
+    console.log(data.content, 'data.content+++++++++');
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
       let isDir = data?.content[j].contentType == 'application/x-directory' ? true : false;
       const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
-      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+
+      // imgHttpLink, isSystemImg, imgHttpLarge
+
+      // let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+      const imgData = await handleImg(data.content[j], type, isDir);
+      const url = imgData.imgHttpLink;
+      const isSystemImg = imgData.isSystemImg;
+      const url_large = imgData.imgHttpLarge;
+      console.log('===========url', url)
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
@@ -1250,6 +1263,70 @@
     isFirst.value = false;
     window.localStorage.notFirst = true;
   };
+
+
+
+  
+
+  // const getKeys = () => {
+  //   let server = new pb.default.ServiceClient(ip.value, null, null);
+  //   let header = new grpc.default.ProxHeader();
+  //   header.setPeerid(peer_id.value);
+  //   header.setId(foggie_id.value);
+  //   header.setToken(token.value);
+  //   let request = new grpc.default.ProxGetCredRequest();
+  //   request.setHeader(header);
+  //   server.listCreds(request, {}, (err: any, res: { array: any }) => {
+  //     if (err) {
+  //       console.log('err------:', err);
+  //     } else {
+        
+  //       for (let i = 0; i < res.array[0].length; i++) {
+  //         const ak = res.array[0][i][0];
+  //         const sk = res.array[0][i][1];
+  //         console.log('res------ak  sk:', ak, sk);
+  //         if (ak.indexOf('FOG') !== 0 ) {
+  //           dynamicForm.state.tels.push({
+  //             key: Date.now(),
+  //             accessKey: ak,
+  //             secretKey: sk,
+  //             eyeState: false,
+  //           });
+  //         }
+  //       }
+  //     }
+      
+  //   });
+  // };
+
+
+  
+  const getKeys = () => {
+    console.log('getKeys--------------');
+    let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
+    let request = new Prox.default.ProxGetCredRequest();
+
+    let header = new grpcService.default.ProxHeader();
+
+    header.setPeerid('12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp');
+    header.setId('baeqagmrygu');
+    header.setToken('SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b');
+
+
+    console.log(header, 'header---ak');
+    request.setHeader(header);
+    server.listCreds(request, {}, (err: any, res: { array: any }) => {
+      if (err) {
+        console.log('err------:ak sk', err);
+      } else if (res.array.length > 0) {
+        console.log('----------ak, sk', res.array)
+        accessKeyId.value = res.array[0][0][0];
+        secretAccessKey.value = res.array[0][0][1];
+      }
+    });
+  };
+
+
   watch(
     category,
     async (val, old) => {
@@ -1275,10 +1352,16 @@
     },
     { deep: true },
   );
+
   onMounted(() => {
+    console.log('onMounted--------------');
     keyWord.value = route.query?.keyWord || '';
     category.value = route.query.category;
-    switchType(category.value);
+
+    bucketName.value = route.query?.bucketName;
+    getKeys();
+    // switchType(category.value);
+    
   });
 </script>
 <style>

@@ -219,3 +219,21 @@ export const bind_user_promo = (data) => {
     data,
   });
 };
+
+
+
+export const calc_merkle = (data: any) => {
+  return request({
+    url: `/order/calc_merkle`,
+    method: 'POST',
+    data,
+  });
+};
+
+export const get_merkle = (data: any) => {
+  return request({
+    url: `/order/get_merkle`,
+    method: 'POST',
+    data,
+  });
+};

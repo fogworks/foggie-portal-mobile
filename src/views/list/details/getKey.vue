@@ -36,20 +36,20 @@
   const peer_id = ref<any>('');
   const foggie_id = ref<any>('');
   const token = ref<any>('');
-  ip.value = 'http://218.2.96.99:7007';
-  peer_id.value = '12D3KooWAZRHMckB9ikH9u1YdaUhkgfcZ5aVaQg6JdBB2WoqXHhh';
-  foggie_id.value = 'baeqagmjshayq';
-  token.value = 'SIG_K1_KksLjarjf3Pg9HTY6tmSazrpJZEakLFMCPX1SmwBKBWa6jm5NZk1EV6LdkjjofP6xKdEpNWYpYEizJBxz3Ri2G4JWD8wWB';
+  ip.value = 'http://45.201.245.223:7007';
+  peer_id.value = '12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp';
+  foggie_id.value = 'baeqagmrygu';
+  token.value = 'SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b';
 
 
   interface DynamicFormState {
-  tels: {
-    key: number;
-    accessKey: string;
-    secretKey: string;
-    eyeState: boolean;
-  }[];
-}
+    tels: {
+      key: number;
+      accessKey: string;
+      secretKey: string;
+      eyeState: boolean;
+    }[];
+  }
 
 // const dynamicForm: {
 //   state: DynamicFormState;
@@ -157,18 +157,22 @@
       if (err) {
         console.log('err------:', err);
       } else {
+        
         for (let i = 0; i < res.array[0].length; i++) {
           const ak = res.array[0][i][0];
           const sk = res.array[0][i][1];
-          dynamicForm.state.tels.push({
-            key: Date.now(),
-            accessKey: ak,
-            secretKey: sk,
-            eyeState: false,
-          });
+          console.log('res------ak  sk:', ak, sk);
+          if (ak.indexOf('FOG') !== 0 ) {
+            dynamicForm.state.tels.push({
+              key: Date.now(),
+              accessKey: ak,
+              secretKey: sk,
+              eyeState: false,
+            });
+          }
         }
       }
-      console.log('res------:', res.array);
+      
     });
   };
 

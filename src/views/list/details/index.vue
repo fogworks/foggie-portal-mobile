@@ -116,7 +116,7 @@
     </div>
     <div class="today_file">
       <span>Recent Files</span>
-      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0 } })">See All ></span>
+      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
     </div>
     <nut-infinite-loading v-if="tableData.length" :has-more="false" class="file_list">
       <div
@@ -198,7 +198,7 @@
   import useOrderInfo from './useOrderInfo.js';
   import { showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize } from '@/utils/util';
-  import { check_name, miner_name_set, order_name_set, search_bill } from '@/api/index';
+  import { check_name, order_name_set, search_bill, get_merkle, calc_merkle } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   let server;
@@ -221,23 +221,29 @@
   const isDisabled = ref<boolean>(false);
   const formData = ref<any>({});
 
-  const memo = ref<string>('');
-  const order_id = ref<string>('');
+  const memo = ref<any>('');
+  const order_id = ref<any>('');
   const minerIp = ref<string>('');
 
-  memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
-  order_id.value = '1281';
+  // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
+  // order_id.value = '1281';
+  memo.value = route.query.uuid;
+  order_id.value = route.query.id;
   search_bill(memo.value, order_id.value).then((res) => {
     console.log('search_bill', res);
     minerIp.value = res?.data?.mp_ipaddr;
   });
 
   const beforeupload = async (file: any) => {
-    bucketName.value = 'foggiebucket';
-    accessKeyId.value = 'FOG9C40y1MBG1x85DU3o';
-    secretAccessKey.value = 'IZIPDmHm1HXE4ZNCSRIJWuGsUXkp9f98bKHAifVG';
+    // bucketName.value = 'test11111';
+    // accessKeyId.value = 'FOGaCTsgpOoeXsrtjmk5';
+    // secretAccessKey.value = '8zztbNHf6CVYdadg3AXmairRZ8mTXoowzMU2sUOq';
+
+
     // uploadUri.value = '/fog/baeqacmjq/foggiebucket';
-    uploadUri.value = '/o/foggiebucket';
+    // uploadUri.value = '/o/foggiebucket';
+    // uploadUri.value = `http://${bucketName.value}.devus.u2i.net:6008/o/`;
+    uploadUri.value = '/o'
 
     const policy = {
       expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
@@ -256,16 +262,71 @@
     let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
     const signature = enc.Base64.stringify(hmac);
 
+
     console.log('signature', signature);
     formData.value = {};
     formData.value.Key = encodeURIComponent(prefix.value + file[0].name);
     formData.value.Policy = policyBase64;
     formData.value.Signature = signature;
     formData.value.Awsaccesskeyid = accessKeyId.value;
-    formData.value.Success_action_status = 201;
+
+    
+
+    formData.value.category = getType(file[0].name);
+    // formData.value.Success_action_status = 201;
     console.log('file', file.length, file, file[0]);
     return [file[0]];
   };
+
+  const getType = (fileName: string) => {
+    if (
+      fileName.endsWith(".jpeg") ||
+      fileName.endsWith(".jpg") ||
+      fileName.endsWith(".png") ||
+      fileName.endsWith(".svg")
+    ) {
+      return 1;
+    } else if (
+      fileName.endsWith(".mp4") ||
+      fileName.endsWith(".avi") ||
+      fileName.endsWith(".mp4")
+    ) {
+      return 2;
+    } else if (fileName.endsWith(".doc") || fileName.endsWith(".docx")) {
+      return 4;
+    } else if (
+      fileName.endsWith(".zip") ||
+      fileName.endsWith(".rar") ||
+      fileName.endsWith(".gz") ||
+      fileName.endsWith(".tar")
+    ) {
+      return 5;
+    } else if (fileName.endsWith(".cmd")) {
+      return 5;
+    } else if (fileName.endsWith(".css")) {
+      return 5;
+    } else if (fileName.endsWith(".mp3")) {
+      return 3;
+    } else if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+      return 4;
+    } else if (fileName.endsWith(".pdf")) {
+      return 4;
+    } else if (fileName.endsWith(".ppt")) {
+      return 4;
+    } else if (
+      fileName.endsWith(".text") ||
+      fileName.endsWith(".txt") ||
+      fileName.endsWith(".md")
+    ) {
+      return 4;
+    } else if (fileName.endsWith(".html")) {
+      return 5;
+    } else if (fileName.endsWith("/")) {
+      return 5;
+    } else {
+      return 5;
+    }
+  }
 
   const uploadSuccess = ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
@@ -282,6 +343,14 @@
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
     console.log('onFailure', responseText, option, fileItem);
+    // const d = {
+    //   orderId: '1281',
+    //   uuid: '1e151b9c-507a-11ee-8369-f218985479b1',
+    //   orderUuid: '1e151b9c-507a-11ee-8369-f218985479b1',
+    // }
+    // calc_merkle(d).then((res) => {
+    //   console.log('calc_merkle', res);
+    // })
     uploadRef.value.clearUploadQueue();
   };
 
@@ -290,13 +359,29 @@
   };
 
   const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
+    // const d = {
+    //   orderId: '1281',
+    // }
+    // get_merkle(d).then((res) => {
+    //   if(res.data[0].merkle_status === 0) {
+    //     isDisabled.value = true;
+    //     return;
+    //   } else {
+    //     isDisabled.value = false;
+    //     console.log('xhr', xhr, options);
+    //     xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
+    //     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
+    //     xhr.send(options.formData);
+    //   }
+    // })
     console.log('xhr', xhr, options);
-    xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
-    xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
-    xhr.send(options.formData);
+        xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
+        xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
+        xhr.send(options.formData);
+  
   };
   const getKey = () => {
-    router.push('/getKey');
+    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid} })
   };
 
   const creatName = async () => {
@@ -309,25 +394,14 @@
         console.log('name is exist');
         return;
       }
-      console.log('name is not exist');
-      let data = {
-        is_domain: true,
-        name: newBucketName.value,
-        order_id: '1281',
-      };
-      let token = '';
-      const miner_result = await miner_name_set(data, token);
-      console.log('miner_result', miner_result);
-      if (!miner_result?.data?.result) {
-        return;
-      }
       let order_data = {
         is_domain: true,
-        name: 'test12345',
-        order_uuid: '1e151b9c-507a-11ee-8369-f218985479b1',
+        name: newBucketName.value,
+        order_uuid: orderInfo.value.uuid,
       };
       const order_result = await order_name_set(order_data);
       if (!order_result?.data?.result) {
+        bucketName.value = newBucketName.value;
         return;
       }
     }
@@ -392,15 +466,16 @@
         list_prefix = list_prefix + '/';
       }
     }
-    let ip = orderInfo.value.rpc.split(':')[0];
-    server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+    // let ip = orderInfo.value.rpc.split(':')[0];
+    let ip = `http://${bucketName.value}.devus.u2i.net:7007`
+    server = new grpcService.default.ServiceClient(ip, null, null);
 
     // header.setToken(token.value.split('bearer ')[1]);
     // console.log(token.value, 'token.value.sign');
     // var myDate = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
     // var time = myDate.toJSON().split('T').join('').substr(0, 10);
     // console.log(time);
-
+console.log('header--------------', header);
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix(list_prefix);
     listObject.setDelimiter('/');
@@ -485,7 +560,7 @@
           };
           initRemoteData(transferData, reset, 0);
         } else if (err) {
-          console.log('err----', err);
+          console.log('err----list', err);
         }
       },
     );
@@ -626,9 +701,31 @@
     tableLoading.value = false;
     showToast.hide(1);
   };
+
+  const getKeys = () => {
+    let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
+    let request = new Prox.default.ProxGetCredRequest();
+    request.setHeader(header);
+    server.listCreds(request, {}, (err: any, res: { array: any }) => {
+      if (err) {
+        console.log('err------:', err);
+      } else if (res.array.length > 0) {
+        accessKeyId.value = res.array[0][0][0];
+        secretAccessKey.value = res.array[0][0][1];
+      }
+    });
+  };
+
   onMounted(async () => {
     await getOrderInfo();
-    getFileList();
+    bucketName.value = orderInfo.value.domain;
+    if (bucketName.value) {
+      getKeys();
+      getFileList();
+    } else {
+
+    }
+    
   });
   // 218.2.96.99:6008
 

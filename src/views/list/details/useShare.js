@@ -177,9 +177,9 @@ export default function useShare(orderInfo, header, deviceType) {
   //   });
   // };
   const confirmShare = () => {
-    const awsAccessKeyId = 'FOG9C40y1MBG1x85DU3o';
-    const awsSecretAccessKey = 'IZIPDmHm1HXE4ZNCSRIJWuGsUXkp9f98bKHAifVG';
-    const bucketName = 'foggiebucket';
+    const awsAccessKeyId = 'FOGaCTsgpOoeXsrtjmk5';
+    const awsSecretAccessKey = "8zztbNHf6CVYdadg3AXmairRZ8mTXoowzMU2sUOq";
+    const bucketName = 'test11111';
     const objectKey = encodeURIComponent(pinData.item.fullName);
     const expirationInSeconds = 3600;
     const expirationTime = Math.floor(Date.now() / 1000) + expirationInSeconds;
@@ -188,8 +188,10 @@ export default function useShare(orderInfo, header, deviceType) {
     const contentType = '';
     const contentMd5 = '';
     const canonicalizedAmzHeaders = '';
-    const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
-    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n${expirationTime}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
+    // const canonicalizedResource = `${bucketName}/o/${objectKey}`;
+    
+    const canonicalizedResource = `o/${bucketName}/${objectKey}`;
+    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n${expirationTime}\n${canonicalizedAmzHeaders}/${canonicalizedResource}`;
     console.log(signature, 'signature');
 
     // const signature = `${awsAccessKeyId}\n${expirationTime}`;
@@ -198,8 +200,10 @@ export default function useShare(orderInfo, header, deviceType) {
     const signatureBase64 = enc.Base64.stringify(hmac);
     console.log(signatureBase64, 'signatureBase64');
 
-    let ip = 'http://218.2.96.99:6008';
+    let ip = 'http://45.201.245.223:6008';
     const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
+    // let ip = 'http://test11111.devus.u2i.net:6008'
+    // const baseUrl = `${ip}/o/${objectKey}`;
     shareRefContent.httpStr = `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
       signatureBase64,
     )}`;
