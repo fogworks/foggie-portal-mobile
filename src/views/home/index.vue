@@ -212,12 +212,18 @@
 
 <style lang="scss" scoped>
   .dmc_account {
+    background: #5758a0;
+    margin: 0 -4vw;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    margin-top: 5px;
+    // margin-top: 5px;
     font-size: 40px;
     color: #5758a0;
+    height: 60px;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 0 0 10px;
     // box-shadow: $main-shadow;
     .img-box {
       display: flex;
@@ -315,7 +321,7 @@
     height: 410px;
     box-sizing: border-box;
     margin: 0;
-    margin-top: 20px;
+    // margin-top: 20px;
     margin-left: -4vw;
     margin-right: -4vw;
     //   box-shadow: 0px 0px 4px 1px #ccc;

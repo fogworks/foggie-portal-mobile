@@ -12,13 +12,13 @@
       <nut-col :span="16" class="order-count">
         <nut-cell>
           <IconMdiF color="#9F9BEF" />
-          File 1000
+          File:1000
 
           <!-- File 1000 -->
         </nut-cell>
         <nut-cell>
           <IconRiPie color="#7F7AE9" />
-          Space 1GB
+          Space:1GB
         </nut-cell>
       </nut-col>
     </nut-row>
@@ -177,8 +177,10 @@
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
   import IconVideo from '~icons/home/video.svg';
-  import IconMdiF from '~icons/mdi/file-cloud';
-  import IconRiPie from '~icons/ri/pie-chart-fill';
+  //   import IconMdiF from '~icons/mdi/file-cloud';
+  //   import IconRiPie from '~icons/ri/pie-chart-fill';
+  import IconMdiF from '~icons/home/png.svg';
+  import IconRiPie from '~icons/home/pie.svg';
   import IconRiNodeTree from '~icons/ri/node-tree';
   import IconRiSendToBack from '~icons/ri/send-to-back';
   import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
@@ -239,11 +241,10 @@
     // accessKeyId.value = 'FOGaCTsgpOoeXsrtjmk5';
     // secretAccessKey.value = '8zztbNHf6CVYdadg3AXmairRZ8mTXoowzMU2sUOq';
 
-
     // uploadUri.value = '/fog/baeqacmjq/foggiebucket';
     // uploadUri.value = '/o/foggiebucket';
     // uploadUri.value = `http://${bucketName.value}.devus.u2i.net:6008/o/`;
-    uploadUri.value = '/o'
+    uploadUri.value = '/o';
 
     const policy = {
       expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
@@ -262,15 +263,12 @@
     let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
     const signature = enc.Base64.stringify(hmac);
 
-
     console.log('signature', signature);
     formData.value = {};
     formData.value.Key = encodeURIComponent(prefix.value + file[0].name);
     formData.value.Policy = policyBase64;
     formData.value.Signature = signature;
     formData.value.Awsaccesskeyid = accessKeyId.value;
-
-    
 
     formData.value.category = getType(file[0].name);
     // formData.value.Success_action_status = 201;
@@ -279,54 +277,36 @@
   };
 
   const getType = (fileName: string) => {
-    if (
-      fileName.endsWith(".jpeg") ||
-      fileName.endsWith(".jpg") ||
-      fileName.endsWith(".png") ||
-      fileName.endsWith(".svg")
-    ) {
+    if (fileName.endsWith('.jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.svg')) {
       return 1;
-    } else if (
-      fileName.endsWith(".mp4") ||
-      fileName.endsWith(".avi") ||
-      fileName.endsWith(".mp4")
-    ) {
+    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mp4')) {
       return 2;
-    } else if (fileName.endsWith(".doc") || fileName.endsWith(".docx")) {
+    } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
       return 4;
-    } else if (
-      fileName.endsWith(".zip") ||
-      fileName.endsWith(".rar") ||
-      fileName.endsWith(".gz") ||
-      fileName.endsWith(".tar")
-    ) {
+    } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar') || fileName.endsWith('.gz') || fileName.endsWith('.tar')) {
       return 5;
-    } else if (fileName.endsWith(".cmd")) {
+    } else if (fileName.endsWith('.cmd')) {
       return 5;
-    } else if (fileName.endsWith(".css")) {
+    } else if (fileName.endsWith('.css')) {
       return 5;
-    } else if (fileName.endsWith(".mp3")) {
+    } else if (fileName.endsWith('.mp3')) {
       return 3;
-    } else if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
       return 4;
-    } else if (fileName.endsWith(".pdf")) {
+    } else if (fileName.endsWith('.pdf')) {
       return 4;
-    } else if (fileName.endsWith(".ppt")) {
+    } else if (fileName.endsWith('.ppt')) {
       return 4;
-    } else if (
-      fileName.endsWith(".text") ||
-      fileName.endsWith(".txt") ||
-      fileName.endsWith(".md")
-    ) {
+    } else if (fileName.endsWith('.text') || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
       return 4;
-    } else if (fileName.endsWith(".html")) {
+    } else if (fileName.endsWith('.html')) {
       return 5;
-    } else if (fileName.endsWith("/")) {
+    } else if (fileName.endsWith('/')) {
       return 5;
     } else {
       return 5;
     }
-  }
+  };
 
   const uploadSuccess = ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
@@ -375,13 +355,12 @@
     //   }
     // })
     console.log('xhr', xhr, options);
-        xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
-        xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
-        xhr.send(options.formData);
-  
+    xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
+    xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
+    xhr.send(options.formData);
   };
   const getKey = () => {
-    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid} })
+    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid } });
   };
 
   const creatName = async () => {
@@ -467,7 +446,7 @@
       }
     }
     // let ip = orderInfo.value.rpc.split(':')[0];
-    let ip = `http://${bucketName.value}.devus.u2i.net:7007`
+    let ip = `http://${bucketName.value}.devus.u2i.net:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     // header.setToken(token.value.split('bearer ')[1]);
@@ -475,7 +454,7 @@
     // var myDate = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
     // var time = myDate.toJSON().split('T').join('').substr(0, 10);
     // console.log(time);
-console.log('header--------------', header);
+    console.log('header--------------', header);
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix(list_prefix);
     listObject.setDelimiter('/');
@@ -723,9 +702,7 @@ console.log('header--------------', header);
       getKeys();
       getFileList();
     } else {
-
     }
-    
   });
   // 218.2.96.99:6008
 
@@ -754,19 +731,22 @@ console.log('header--------------', header);
     background: $primary-color;
 
     .order-des {
-      margin-bottom: 20px;
+      //   margin-bottom: 20px;
       color: #fff;
+      border-bottom: 1px dashed #fff;
 
       .span1 {
         margin-left: 5vw;
         float: left;
         font-size: 24px;
+        font-weight: bold;
       }
 
       .span2 {
         margin-right: 5vw;
         float: right;
         font-size: 20px;
+        font-weight: bold;
       }
     }
 
@@ -784,7 +764,7 @@ console.log('header--------------', header);
     .order-count {
       .nut-cell {
         width: 70%;
-        height: vw;
+        // height: vw;
         margin-left: 10%;
         padding-left: 8vw;
         border-bottom: 1px solid #fff;
@@ -794,6 +774,7 @@ console.log('header--------------', header);
         color: #fff;
         font-size: 24px;
         line-height: 4vw;
+        font-weight: bold;
       }
 
       svg {
@@ -1037,7 +1018,7 @@ console.log('header--------------', header);
 
     .nut-circle-progress__text {
       color: #5460fe;
-      font-size: 12px !important;
+      font-size: 18px !important;
     }
   }
 </style>
