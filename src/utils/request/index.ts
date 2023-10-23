@@ -43,23 +43,23 @@ service.interceptors.response.use(
         router.push('/login');
         return;
       } else if (code === 420) {
-        let res = await refreshToken();
-        if (res && res.data && res.data.access_token) {
-          let token = res.data.access_token;
-          let type = res.data.token_type;
-          token = type + ' ' + token;
-          userStore.setToken(token);
-          let res2 = await user();
-          if (res2.data) {
-            userStore.setInfo(res2.data);
-          }
-          window.localStorage.setItem('last_refresh_token', token);
-          // setToken(token);
-          return service(response.config);
-        } else {
-          router.push('/login');
-          return;
-        }
+        // let res = await refreshToken();
+        // if (res && res.data && res.data.access_token) {
+        //   let token = res.data.access_token;
+        //   let type = res.data.token_type;
+        //   token = type + ' ' + token;
+        //   userStore.setToken(token);
+        //   let res2 = await user();
+        //   if (res2.data) {
+        //     userStore.setInfo(res2.data);
+        //   }
+        //   window.localStorage.setItem('last_refresh_token', token);
+        //   // setToken(token);
+        //   return service(response.config);
+        // } else {
+        //   router.push('/login');
+        //   return;
+        // }
       } else {
         if (
           response.config.url.indexOf('/ambmgr/user/check_promo') > -1 ||

@@ -48,7 +48,7 @@
       wrapable
     ></nut-noticebar>
 
-    <div style="margin: 40px">
+    <div style="margin: 40px; margin-bottom: 150px">
       <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmWithdraw"> Withdraw </nut-button>
     </div>
   </div>
@@ -87,7 +87,7 @@
     <div v-if="showErrorTips" class="showErrorTips">
       {{ googleErrorTip }}
     </div>
-    <div style="margin: 40px; width: 80%">
+    <div style="margin: 40px; width: 80%; margin-bottom: 150px">
       <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmBind"> Confirm </nut-button>
     </div>
   </div>
@@ -335,6 +335,12 @@
       .warning-icon {
         color: #ff9200;
       }
+    }
+  }
+  :deep {
+    .van-number-keyboard {
+      padding-bottom: 0;
+      z-index: 999;
     }
   }
 </style>

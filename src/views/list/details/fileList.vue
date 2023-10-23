@@ -35,7 +35,7 @@
         </div>
       </div>
     </nut-popup>
-    <nut-sticky>
+    <nut-sticky class="file_Top">
       <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
         <div style="display: flex">
           <template v-if="!prefix.length">
@@ -1364,6 +1364,9 @@
   }
 </style>
 <style lang="scss" scoped>
+.file_Top{
+  z-index:9999;
+}
   :deep {
     .nut-popover-content--bottom-center {
       background: $main_blue;

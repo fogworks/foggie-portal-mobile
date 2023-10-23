@@ -169,14 +169,17 @@
 
   .main-page {
     box-sizing: border-box;
-    height: calc(100vh - 92px);
-    overflow-y: scroll;
+    // height: calc(100vh - 92px);
+    // overflow-y: scroll;
+    height: unset;
+
     overflow-x: hidden;
     background: #fff;
   }
 
   .tabbar {
-    height: calc(100vh - 92px);
+    // height: calc(100vh - 92px);
+    height: unset;
     // padding-bottom: 100px;
   }
 
