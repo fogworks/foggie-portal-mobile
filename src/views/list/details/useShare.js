@@ -124,13 +124,76 @@ export default function useShare(orderInfo, header, deviceType) {
       let ipfsStr = item.cid ? `ipfs://${item.cid}` : '';
       shareRefContent.ipfsStr = ipfsStr;
       shareRefContent.httpStr = httpStr;
+      if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
+        shareRefContent.ipfsStr = '';
+        // showToast.fail('File size exceeds 1% of the order space size, sharing is not supported');
+      }
       showShareDialog.value = true;
     }
   };
+  const copyLink = (text) => {
+    var input = document.createElement('input');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('Copy');
+    document.body.removeChild(input);
+    // let str = `Copying  ${type} successful!`;
+    // this.$message.success(str);
+    showToast.success('Copy succeeded');
+  };
   const confirmPeriod = ({ selectedValue, selectedOptions }) => {
-    cobsole.log(selectedValue, selectedOptions, 'selectedOptions');
     desc.value = selectedOptions.map((val) => val.text).join(',');
     periodShow.value = false;
+  };
+  const shareTwitter = (fileLink, checkData) => {
+    let tweetText = checkData?.name || '';
+    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(fileLink);
+    window.open(twitterUrl, '_blank');
+  };
+  const shareFacebook = (fileLink) => {
+    var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fileLink);
+    window.open(twitterUrl, '_blank');
+  };
+  const confirmHttpShare = (type, shareOption) => {
+    const awsAccessKeyId = 'FOGaCTsgpOoeXsrtjmk5';
+    const awsSecretAccessKey = '8zztbNHf6CVYdadg3AXmairRZ8mTXoowzMU2sUOq';
+    const bucketName = 'test11111';
+    const objectKey = encodeURIComponent(pinData.item.fullName);
+    const expirationInSeconds = 3600;
+    const expirationTime = Math.floor(Date.now() / 1000) + expirationInSeconds;
+
+    const httpMethod = 'GET';
+    const contentType = '';
+    const contentMd5 = '';
+    const canonicalizedAmzHeaders = '';
+    // const canonicalizedResource = `${bucketName}/o/${objectKey}`;
+
+    const canonicalizedResource = `o/${bucketName}/${objectKey}`;
+    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n${expirationTime}\n${canonicalizedAmzHeaders}/${canonicalizedResource}`;
+    console.log(signature, 'signature');
+
+    // const signature = `${awsAccessKeyId}\n${expirationTime}`;
+
+    let hmac = HmacSHA1(signature, awsSecretAccessKey);
+    const signatureBase64 = enc.Base64.stringify(hmac);
+    console.log(signatureBase64, 'signatureBase64');
+
+    let ip = 'http://45.201.245.223:6008';
+    const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
+    // let ip = 'http://test11111.devus.u2i.net:6008'
+    // const baseUrl = `${ip}/o/${objectKey}`;
+    shareRefContent.httpStr = `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
+      signatureBase64,
+    )}`;
+    if (!type) {
+      copyLink(shareRefContent.httpStr);
+    } else if (type == 'twitter') {
+      shareTwitter(shareRefContent.httpStr, shareOption);
+    } else if (type == 'slack') {
+      shareFacebook(shareRefContent.httpStr);
+    }
+    isReady.value = false;
   };
   // const confirmShare = () => {
   //   loading.value = true;
@@ -177,53 +240,22 @@ export default function useShare(orderInfo, header, deviceType) {
   //   });
   // };
   const confirmShare = () => {
-    const awsAccessKeyId = 'FOGaCTsgpOoeXsrtjmk5';
-    const awsSecretAccessKey = "8zztbNHf6CVYdadg3AXmairRZ8mTXoowzMU2sUOq";
-    const bucketName = 'test11111';
-    const objectKey = encodeURIComponent(pinData.item.fullName);
-    const expirationInSeconds = 3600;
-    const expirationTime = Math.floor(Date.now() / 1000) + expirationInSeconds;
-
-    const httpMethod = 'GET';
-    const contentType = '';
-    const contentMd5 = '';
-    const canonicalizedAmzHeaders = '';
-    // const canonicalizedResource = `${bucketName}/o/${objectKey}`;
-    
-    const canonicalizedResource = `o/${bucketName}/${objectKey}`;
-    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n${expirationTime}\n${canonicalizedAmzHeaders}/${canonicalizedResource}`;
-    console.log(signature, 'signature');
-
-    // const signature = `${awsAccessKeyId}\n${expirationTime}`;
-
-    let hmac = HmacSHA1(signature, awsSecretAccessKey);
-    const signatureBase64 = enc.Base64.stringify(hmac);
-    console.log(signatureBase64, 'signatureBase64');
-
-    let ip = 'http://45.201.245.223:6008';
-    const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
-    // let ip = 'http://test11111.devus.u2i.net:6008'
-    // const baseUrl = `${ip}/o/${objectKey}`;
-    shareRefContent.httpStr = `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
-      signatureBase64,
-    )}`;
-    console.log(shareRefContent.httpStr, 'shareRefContent.httpStr');
-
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
       if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
         shareRefContent.ipfsStr = '';
+        showToast.fail('File size exceeds 1% of the order space size, sharing is not supported');
       } else {
         if (!pinData.item.isPin) {
           console.log('pinData.item.isPin', pinData.item.isPin);
           ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+          copyLink(shareRefContent.ipfsStr);
         }
       }
-      isReady.value = true;
     } else {
       if (!pinData.item.isPin) {
         ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+        copyLink(shareRefContent.ipfsStr);
       }
-      isReady.value = true;
     }
 
     // loading.value = true;
@@ -284,5 +316,6 @@ export default function useShare(orderInfo, header, deviceType) {
     showShareDialog,
     ipfsDialogShow,
     confirmShare,
+    confirmHttpShare,
   };
 }

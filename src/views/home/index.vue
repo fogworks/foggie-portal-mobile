@@ -202,8 +202,10 @@
     let b = createNumber(150, 255);
     return `rgb(${r} ${g} ${b})`;
   };
-  onMounted(() => {
+  onBeforeMount(() => {
     loadMore();
+  });
+  onMounted(() => {
     getUserAssets();
   });
 </script>

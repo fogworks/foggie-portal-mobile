@@ -245,7 +245,7 @@
     </nut-popup>
     <!-- share -->
     <nut-popup @closed="isReady = false" position="bottom" closeable round :style="{ height: '200px' }" v-model:visible="showShareDialog">
-      <div v-if="!isReady" class="rename_box move_box">
+      <div v-if="isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
         <nut-popup position="bottom" v-model:visible="periodShow">
           <nut-picker
@@ -257,26 +257,26 @@
           >
           </nut-picker>
         </nut-popup>
-        <nut-button type="info" block @click="confirmShare">Confirm</nut-button>
+        <nut-button type="info" block @click="() => confirmHttpShare(shareType, shareCheckData)">Confirm</nut-button>
       </div>
       <div class="share_info_box" v-else>
-        <div v-if="shareRefContent.ipfsStr">
-          <img @click="copyLink(shareRefContent.ipfsStr)" src="@/assets/ipfs.png" alt="" />
+        <div v-if="shareRefContent.ipfsStr && +shareCheckData.originalSize <= orderInfo.total_space * 0.01">
+          <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
           IPFS Link
           <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
         </div>
         <div v-if="shareRefContent.httpStr">
-          <IconHttp @click="copyLink(shareRefContent.httpStr)"></IconHttp>
+          <IconHttp @click="isReady = true"></IconHttp>
           HTTP Link
           <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
         <div v-if="shareRefContent.httpStr">
-          <IconTwitter @click="shareTwitter(shareRefContent.httpStr)"></IconTwitter>
+          <IconTwitter @click="isReady = true"></IconTwitter>
           Twitter
           <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
         <div v-if="shareRefContent.httpStr">
-          <IconFacebook @click="shareFacebook(shareRefContent.httpStr)"></IconFacebook>
+          <IconFacebook @click="isReady = true"></IconFacebook>
           Facebook
           <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
@@ -345,11 +345,9 @@
   import { HmacSHA1, enc } from 'crypto-js';
   // import { download_url } from '@/api/index';
 
-
   const accessKeyId = ref<string>('');
   const secretAccessKey = ref<string>('');
   const bucketName = ref<string>('');
-
 
   let timeOutEvent: string | number | NodeJS.Timeout | undefined;
   let server = null;
@@ -385,6 +383,7 @@
       },
     ],
     isFirst: false,
+    shareType: '',
   });
   const imgListRef = ref('');
 
@@ -428,7 +427,11 @@
     showShareDialog,
     shareRefContent,
     copyContent,
+    confirmHttpShare,
   } = useShare(orderInfo, header, deviceType);
+  const shareCheckData = computed(() => {
+    return isCheckMode.value ? selectArr.value[0] : chooseItem.value;
+  });
   const showActionBtn = computed(() => {
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type === 3) {
       if (
@@ -708,7 +711,6 @@
       const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
       console.log(signature, 'signature');
 
-
       let hmac = HmacSHA1(signature, secretAccessKey.value);
       const signatureBase64 = enc.Base64.stringify(hmac);
       console.log(signatureBase64, 'signatureBase64');
@@ -721,7 +723,7 @@
       // 构建 S3 GET 请求
       // const url = `/o/${bucketName}/${objectKey}`;
       // const url = `/o/${objectKey}`
-      const url = `/o/${objectKey}?thumb=true`
+      const url = `/o/${objectKey}?thumb=true`;
       console.log(url, 'url');
       console.log(headers, 'headers');
 
@@ -1077,7 +1079,7 @@
       const url = imgData.imgHttpLink;
       const isSystemImg = imgData.isSystemImg;
       const url_large = imgData.imgHttpLarge;
-      console.log('===========url', url)
+      console.log('===========url', url);
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
@@ -1264,10 +1266,6 @@
     window.localStorage.notFirst = true;
   };
 
-
-
-  
-
   // const getKeys = () => {
   //   let server = new pb.default.ServiceClient(ip.value, null, null);
   //   let header = new grpc.default.ProxHeader();
@@ -1280,7 +1278,7 @@
   //     if (err) {
   //       console.log('err------:', err);
   //     } else {
-        
+
   //       for (let i = 0; i < res.array[0].length; i++) {
   //         const ak = res.array[0][i][0];
   //         const sk = res.array[0][i][1];
@@ -1295,12 +1293,10 @@
   //         }
   //       }
   //     }
-      
+
   //   });
   // };
 
-
-  
   const getKeys = () => {
     console.log('getKeys--------------');
     let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
@@ -1312,20 +1308,18 @@
     header.setId('baeqagmrygu');
     header.setToken('SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b');
 
-
     console.log(header, 'header---ak');
     request.setHeader(header);
     server.listCreds(request, {}, (err: any, res: { array: any }) => {
       if (err) {
         console.log('err------:ak sk', err);
       } else if (res.array.length > 0) {
-        console.log('----------ak, sk', res.array)
+        console.log('----------ak, sk', res.array);
         accessKeyId.value = res.array[0][0][0];
         secretAccessKey.value = res.array[0][0][1];
       }
     });
   };
-
 
   watch(
     category,
@@ -1361,7 +1355,6 @@
     bucketName.value = route.query?.bucketName;
     getKeys();
     // switchType(category.value);
-    
   });
 </script>
 <style>

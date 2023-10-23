@@ -22,7 +22,7 @@ export default function useOrderInfo() {
       orderInfo.value = res.result.data;
       // orderInfo.value.rpc = '218.2.96.99:6007';
       header.setPeerid(orderInfo.value.peer_id);
-        header.setId(orderInfo.value.foggie_id);
+      header.setId(orderInfo.value.foggie_id);
       // header.setId('baeqacmjq');
       header.setToken(orderInfo.value.sign);
     });

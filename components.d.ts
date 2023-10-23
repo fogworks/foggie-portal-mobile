@@ -7,9 +7,10 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    BasicModal: typeof import('./src/components/Modal/src/BasicModal.vue')['default'];
-    MyEcharts: typeof import('./src/components/echarts/myEcharts.vue')['default'];
-    RouterLink: typeof import('vue-router')['RouterLink'];
-    RouterView: typeof import('vue-router')['RouterView'];
+    BasicModal: typeof import('./src/components/Modal/src/BasicModal.vue')['default']
+    LoadingImg: typeof import('./src/components/loadingImg/index.vue')['default']
+    MyEcharts: typeof import('./src/components/echarts/myEcharts.vue')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
   }
 }

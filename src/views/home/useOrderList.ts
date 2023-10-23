@@ -3,6 +3,7 @@ import { useOrderStore } from '@/store/modules/order';
 import { showToast } from '@nutui/nutui';
 import '@nutui/nutui/dist/packages/toast/style';
 import { transferUTCTime } from '@/utils/util';
+import loadingImg from '@/components/loadingImg/index.vue';
 
 export default function useOrderList() {
   const shortcuts = {
@@ -52,6 +53,9 @@ export default function useOrderList() {
   const loadMore = async (order_state = null, start_time = '', end_time = '', buy_result = 'success') => {
     showToast.loading('Loading', {
       cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
     });
     await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result })
       .then((res) => {

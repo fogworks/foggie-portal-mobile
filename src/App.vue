@@ -102,7 +102,7 @@
   });
 </script>
 
-<style>
+<style lang="scss">
   #app {
     height: 100vh;
     color: #2c3e50;
@@ -137,5 +137,11 @@
   }
   .nut-toast-inner {
     box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.6);
+  }
+  .app_loading {
+    background: #fff;
+    .nut-toast-inner {
+      box-shadow: none;
+    }
   }
 </style>
