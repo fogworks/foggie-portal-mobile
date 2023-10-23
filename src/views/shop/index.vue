@@ -17,7 +17,9 @@
         >
         <p>{{ (perMpPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
       </div>
-      <img src="@/assets/arrow-right.svg" alt="" />
+      <!-- <img src="@/assets/arrow-right.svg" alt="" /> -->
+      <span style="font-weight: bold"> VS</span>
+
       <div class="product_card">
         <p
           >VIP Orders <br />
@@ -31,7 +33,7 @@
     <p>VIP Order <IconSetting @click="showTop = true"></IconSetting></p>
     <div class="price_box">
       Current market price: <br />
-      100GB = {{ totalPrice }} DMC
+      <span style="text-align: center" class="price_box_text"> 100GB = {{ totalPrice }} DMC</span>
     </div>
   </div>
   <p class="middle_title" v-if="!loading && !curReferenceRate">Order not searched, please click Retry</p>
@@ -50,10 +52,10 @@
           <nut-radio shape="button" :label="24">24 weeks</nut-radio>
         </nut-radio-group>
       </nut-form-item>
-      <nut-form-item label="OR">
+      <nut-form-item label="Custom Cycle">
         <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
       </nut-form-item>
-      <nut-form-item label="Markup">
+      <nut-form-item label="Floating Ratio">
         <nut-range hidden-range v-model="shopForm.floating_ratio" :max="100" :min="0" />
       </nut-form-item>
       <nut-form-item label="Space(GB)">
@@ -216,6 +218,11 @@
 </script>
 
 <style lang="scss" scoped>
+  .price_box_text {
+    width: 100%;
+    display: inline-block;
+    font-weight: bold;
+  }
   .middle_title {
     text-align: center;
     font-weight: 600;
@@ -314,10 +321,12 @@
       color: #a27430;
       background: #ffcf87;
       overflow: hidden;
+      text-align: center;
       p {
         z-index: 1;
         margin-bottom: 5px;
         font-size: 26px;
+        white-space: nowrap;
         &:first-child {
           font-size: 26px;
         }
@@ -348,6 +357,7 @@
       padding: 0 20px;
       color: #999999;
       font-size: 1.1rem;
+      font-weight: bold;
       svg {
         float: right;
         width: 40px;

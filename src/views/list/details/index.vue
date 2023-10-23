@@ -1,9 +1,14 @@
 <template>
   <div class="top_box">
-    <div class="top_back" @click="router.go(-1)"></div>
+    <div class="top_back" @click="router.go(-1)">
+      <div v-if="bucketName">{{ bucketName }} </div>
+      <div v-else> Order-{{ detailsData[0].order_id }} </div>
+      <!-- <nut-button class="creat-name" type="primary" @click="creatName" v-if="!bucketName">Creat Name</nut-button>
+      <nut-input placeholder="Please enter name" v-model="newBucketName" v-if="showCreatName" /> -->
+    </div>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
-        <span class="span1">Order-{{ detailsData[0].order_id }} </span>
+        <!-- <span class="span1">Order-{{ detailsData[0].order_id }} </span> -->
         <span class="span2">Expiration time: {{ detailsData[0].expire }}</span>
       </nut-col>
       <nut-col :span="8" class="order-circle">
@@ -88,6 +93,10 @@
     </div>
 
     <!-- <nut-row class="order-icons"> </nut-row> -->
+    <div class="today_file">
+      <span>Recent Files</span>
+      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
+    </div>
     <div class="type_check_box">
       <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
         <div class="svg_box">
@@ -114,10 +123,7 @@
         <p>Video</p>
       </div>
     </div>
-    <div class="today_file">
-      <span>Recent Files</span>
-      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
-    </div>
+
     <nut-infinite-loading v-if="tableData.length" :has-more="false" class="file_list">
       <div
         @click="
@@ -714,6 +720,9 @@
 </script>
 
 <style lang="scss" scoped>
+  .order-detail {
+    margin-top: 30px;
+  }
   .upload_btn {
     position: fixed;
     bottom: 150px;
@@ -743,7 +752,7 @@
       }
 
       .span2 {
-        margin-right: 5vw;
+        // margin-right: 5vw;
         float: right;
         font-size: 20px;
         font-weight: bold;
@@ -895,7 +904,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 10px;
+      margin: 20px 0;
       font-size: 30px;
       .see_all {
         color: #5460fe;

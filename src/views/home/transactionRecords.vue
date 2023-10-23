@@ -1,8 +1,8 @@
 <template>
   <div class="analysis_content">
-    <!-- <div class="top_box">
-      <div class="top_back" @click="router.go(-1)">Earnings </div>
-      <nut-grid class="top_grid">
+    <div class="top_box">
+      <div class="top_back" @click="router.go(-1)">Transaction Records </div>
+      <!-- <nut-grid class="top_grid">
         <nut-grid-item text="Balance"
           ><div>
             <IconCions class="top_icon"></IconCions>
@@ -27,8 +27,8 @@
             <p>{{ cloudWithdraw }}</p>
           </div></nut-grid-item
         >
-      </nut-grid>
-    </div> -->
+      </nut-grid> -->
+    </div>
     <nut-tabs class="type_tabs" v-model="searchType">
       <nut-tab-pane title="Recharge " pane-key="0"> </nut-tab-pane>
       <nut-tab-pane title="Withdraw" pane-key="1"> </nut-tab-pane>
@@ -152,6 +152,11 @@
       .nut-tabs__titles-item__text {
         color: $main_blue;
       }
+      .nut-tabs__titles {
+        border-bottom: 1px solid #ccc;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+      }
       .nut-tab-pane {
         display: none;
       }
@@ -203,6 +208,7 @@
       .nut-tabs__content {
         display: none;
       }
+
       .nut-tabs__titles-item__text {
         // white-space: pre-wrap;
         font-size: 26px;
