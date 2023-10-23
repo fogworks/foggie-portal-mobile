@@ -1,6 +1,13 @@
 <template>
   <div class="fileList_content">
-    <nut-popup position="top" :style="{ height: '100px' }" round pop-class="type_check_pop" v-model:visible="showTypeCheckPop">
+    <nut-popup
+      class="file_top"
+      position="top"
+      :style="{ height: '100px' }"
+      round
+      pop-class="type_check_pop"
+      v-model:visible="showTypeCheckPop"
+    >
       <!-- <p class="cate_title">Classifications</p> -->
       <div class="type_check_box">
         <div class="type_item" @click="switchType(1)">
@@ -306,6 +313,9 @@
   }
 </style>
 <style lang="scss" scoped>
+  .file_Top {
+    z-index: 9999;
+  }
   :deep {
     .nut-popover-content--bottom-center {
       background: $main_blue;

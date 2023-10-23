@@ -34,6 +34,7 @@
       100GB = {{ totalPrice }} DMC
     </div>
   </div>
+  <p class="middle_title" v-if="!loading && !curReferenceRate">Order not searched, please click Retry</p>
   <div style="margin: 0 20px 40px">
     <nut-button block class="buy_btn" v-if="curReferenceRate" type="info" @click="submit" :disabled="!curReferenceRate" :loading="loading">
       Buy
@@ -62,6 +63,7 @@
         <strong> Total </strong>
         <strong class="price"> {{ totalPrice || '--' }} DMC </strong>
       </div>
+      <p class="middle_title" v-if="!loading && !curReferenceRate">Order not searched, please click Retry</p>
       <div class="bottom_btn">
         <nut-button type="warning" plain @click="showTop = false"> Cancel </nut-button>
         <nut-button type="warning" v-if="curReferenceRate" @click="submit" :disabled="!curReferenceRate" :loading="loading">
@@ -214,6 +216,13 @@
 </script>
 
 <style lang="scss" scoped>
+  .middle_title {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: $main_red;
+  }
   .out_blue {
     position: relative;
     height: 490px;
@@ -281,6 +290,7 @@
       font-weight: 600;
       margin-top: 40px;
       margin-bottom: 20px;
+      color: #000;
     }
     .product_box {
       display: flex;

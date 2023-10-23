@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { showToast } from '@nutui/nutui';
-import '@nutui/nutui/dist/packages/toast/style';
+// import { showToast } from '@nutui/nutui';
+// import '@nutui/nutui/dist/packages/toast/style';
 import Qs from 'qs';
 import { useUserStore } from '@/store/modules/user';
 import { useRouter } from 'vue-router';
@@ -67,9 +67,9 @@ service.interceptors.response.use(
         ) {
           return res;
         }
-        if (res.msg) {
-          showToast.fail(res.msg);
-        }
+        // if (res.msg) {
+        //   showToast.fail(res.msg);
+        // }
         return Promise.reject(res);
       }
     } else {
@@ -78,7 +78,7 @@ service.interceptors.response.use(
   },
   (error: AxiosError) => {
     console.log('err' + error);
-    showToast.fail(error.message);
+    // showToast.fail(error.message);
     return Promise.reject(error.message);
   },
 );

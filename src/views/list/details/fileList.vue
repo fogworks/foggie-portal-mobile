@@ -1364,9 +1364,9 @@
   }
 </style>
 <style lang="scss" scoped>
-.file_Top{
-  z-index:9999;
-}
+  .file_Top {
+    z-index: 9999;
+  }
   :deep {
     .nut-popover-content--bottom-center {
       background: $main_blue;
