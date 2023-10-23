@@ -37,7 +37,7 @@
           </div>
         </nut-infinite-loading>
       </template>
-      <nut-empty v-else description="No data"></nut-empty>
+      <nut-empty v-else description="No data" image="error"></nut-empty>
     </div>
   </div>
 </template>

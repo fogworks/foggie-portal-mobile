@@ -145,7 +145,7 @@
         <!-- <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore> -->
       </div>
     </nut-infinite-loading>
-    <nut-empty v-else description="No data,Go ahead and upload it."> </nut-empty>
+    <nut-empty v-else description="No data,Go ahead and upload it." image="error"> </nut-empty>
     <nut-uploader
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
