@@ -812,13 +812,22 @@
             vertical-align: middle;
           }
         }
+        &:nth-child(3),
+        &:nth-child(4) {
+          .svg_box {
+            svg {
+              width: 60px;
+              height: 60px;
+            }
+          }
+        }
 
         .order-icon-recycle {
           background-color: #ff8b00;
           border-radius: 50%;
           svg {
-            width: 60%;
-            height: 60%;
+            width: 60% !important;
+            height: 60% !important;
             vertical-align: middle;
           }
         }

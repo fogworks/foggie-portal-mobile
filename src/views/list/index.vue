@@ -10,7 +10,7 @@
         <div class="flex-content">
           <div class="svg-box" @click="searchType = 'Open'" :class="[searchType == 'Open' ? 'active_svg-box' : '']">
             <!-- <Shop></Shop> -->
-            <IconSwitch style="vertical-align: text-top" color="#5F57FF"></IconSwitch>
+            <IconSwitch style="vertical-align: text-top"></IconSwitch>
           </div>
           <span>Open</span></div
         >
@@ -223,6 +223,7 @@
           box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
           svg,
           img {
+            color: #ffe879;
             width: 70px;
             height: 70px;
           }

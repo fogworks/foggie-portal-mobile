@@ -4,7 +4,7 @@
       <Notice width="20px" left="20px"></Notice>
     </template>
     <span>Not yet bound to a DMC account </span>
-    <router-link to="/bindDmc?onlyDMC=true"> Go to Binding</router-link>
+    <router-link to="/bindDmc"> Go to Binding</router-link>
   </nut-noticebar>
   <div class="dmc_account" v-else>
     <div class="img-box">
@@ -176,6 +176,15 @@
   };
   const toBuyOrder = () => {
     if (!userInfo.value.dmc || !userInfo.value.amb_promo_code) {
+      if (!userInfo.value.dmc && userInfo.value.amb_promo_code) {
+        showToast.text('Not yet bound to a DMC account, please bind your DMC account.');
+      } else if (userInfo.value.dmc && !userInfo.value.amb_promo_code) {
+        showToast.text("Please bind the Ambassador Invitation Code first if you haven't already done so.");
+      } else if (!userInfo.value.dmc && !userInfo.value.amb_promo_code) {
+        showToast.text(
+          'Have not yet bound the DMC account and the ambassador invitation code, please bind them first before doing this operation',
+        );
+      }
       router.push({ name: 'BindDmc' });
     } else {
       router.push({ name: 'Shop' });
@@ -183,6 +192,15 @@
   };
   const toRecharge = () => {
     if (!userInfo.value.dmc || !userInfo.value.amb_promo_code) {
+      if (!userInfo.value.dmc && userInfo.value.amb_promo_code) {
+        showToast.text('Not yet bound to a DMC account, please bind your DMC account.');
+      } else if (userInfo.value.dmc && !userInfo.value.amb_promo_code) {
+        showToast.text("Please bind the Ambassador Invitation Code first if you haven't already done so.");
+      } else if (!userInfo.value.dmc && !userInfo.value.amb_promo_code) {
+        showToast.text(
+          'Have not yet bound the DMC account and the ambassador invitation code, please bind them first before doing this operation',
+        );
+      }
       router.push({ name: 'BindDmc' });
     } else {
       router.push({ name: 'Recharge' });
