@@ -5,7 +5,7 @@
   <div class="generateKey">
     <p class="key_tips"> You can generate access keys here </p>
     <p class="key_tips"> You can access S3 clients through a private key. Access address: </p>
-    <a href="https://bucketName.pool1.devus.u2i.net:9900" target="_blank">bucketName.pool1.devus.u2i.net:9900</a>
+    <a :href="bucketUrl" target="_blank">{{ bucketUrl }}</a>
     <nut-form class="key_form" :model-value="dynamicForm.state" ref="dynamicRefForm">
       <!-- <nut-form-item label="Access Key">
         <span>Secret Key</span>
@@ -45,23 +45,29 @@
   import { ref, reactive, onMounted } from 'vue';
   import eyeOffIon from '~icons/ion/eye-off';
   import keySolid from '~icons/teenyicons/key-solid';
-  import { useRouter } from 'vue-router';
+  import { useRoute, useRouter } from 'vue-router';
   import eyeIon from '~icons/ion/eye';
   import IconDelete from '~icons/material-symbols/delete';
   import AESHelper from './AESHelper';
   import { Base64 } from 'js-base64';
+  import { get_unique_order } from '@/api/index';
 
   import * as pb from '@/pb/prox_grpc_web_pb';
   import * as grpc from '@/pb/prox_pb';
   const router = useRouter();
+  const route = useRoute();
   const ip = ref<any>('');
   const peer_id = ref<any>('');
   const foggie_id = ref<any>('');
   const token = ref<any>('');
-  ip.value = 'http://45.201.245.223:7007';
-  peer_id.value = '12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp';
-  foggie_id.value = 'baeqagmrygu';
-  token.value = 'SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b';
+  const bucketName = ref<any>('');
+  bucketName.value = route.query.bucketName;
+  const bucketUrl = ref<any>('');
+  bucketUrl.value = `http://${bucketName.value}.devus.u2i.net:9900`;
+  ip.value = `http://${bucketName.value}.devus.u2i.net:7007`;
+  // peer_id.value = '12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp';
+  // foggie_id.value = 'baeqagmrygu';
+  // token.value = 'SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b';
 
   interface DynamicFormState {
     tels: {
@@ -134,6 +140,7 @@
           secretKey: sk,
           eyeState: false,
         });
+        
       },
     },
   };
@@ -165,33 +172,39 @@
     return cleaned;
   };
 
-  const getKeys = () => {
-    let server = new pb.default.ServiceClient(ip.value, null, null);
-    let header = new grpc.default.ProxHeader();
-    header.setPeerid(peer_id.value);
-    header.setId(foggie_id.value);
-    header.setToken(token.value);
-    let request = new grpc.default.ProxGetCredRequest();
-    request.setHeader(header);
-    server.listCreds(request, {}, (err: any, res: { array: any }) => {
-      if (err) {
-        console.log('err------:', err);
-      } else {
-        for (let i = 0; i < res.array[0].length; i++) {
-          const ak = res.array[0][i][0];
-          const sk = res.array[0][i][1];
-          console.log('res------ak  sk:', ak, sk);
-          if (ak.indexOf('FOG') !== 0) {
-            dynamicForm.state.tels.push({
-              key: Date.now(),
-              accessKey: ak,
-              secretKey: sk,
-              eyeState: false,
-            });
+
+  const getKeys = async () => {
+    await get_unique_order({ order_uuid: route?.query?.uuid }).then((res: any) => {
+      peer_id.value = res.result.data.peer_id;
+      foggie_id.value = res.result.data.foggie_id;
+      token.value = res.result.data.sign;
+      let server = new pb.default.ServiceClient(ip.value, null, null);
+      let header = new grpc.default.ProxHeader();
+      header.setPeerid(peer_id.value);
+      header.setId(foggie_id.value);
+      header.setToken(token.value);
+      let request = new grpc.default.ProxGetCredRequest();
+      request.setHeader(header);
+      server.listCreds(request, {}, (err: any, res: { array: any }) => {
+        if (err) {
+          console.log('err------:', err);
+        } else {
+          for (let i = 0; i < res.array[0].length; i++) {
+            const ak = res.array[0][i][0];
+            const sk = res.array[0][i][1];
+            if (ak.indexOf('FOG') !== 0) {
+              dynamicForm.state.tels.push({
+                key: Date.now(),
+                accessKey: ak,
+                secretKey: sk,
+                eyeState: false,
+              });
+            }
           }
         }
-      }
+      });
     });
+    
   };
 
   const deleteKey = (index: number) => {
