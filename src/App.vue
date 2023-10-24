@@ -21,7 +21,7 @@
         router.push({ path: '/bindDmc?type=dmc' });
       };
       let src = require('@/assets/DMC_token.png');
-      let str = `< img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
+      let str = `<img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
       showDialog({
         title: 'Bind DMC Account',
         content: str,
@@ -109,7 +109,8 @@
 
 <style lang="scss">
   #app {
-    height: 100vh;
+    min-height: 100vh;
+    height: 100%;
     color: #2c3e50;
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;

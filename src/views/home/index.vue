@@ -1,10 +1,10 @@
 <template>
-  <nut-noticebar v-if="!userInfo.dmc">
+  <nut-noticebar v-if="!userInfo.dmc" class="my_noticebar">
     <template #left-icon>
       <Notice width="20px" left="20px"></Notice>
     </template>
-    <span>Not yet bound to a DMC account </span>
-    <router-link to="/bindDmc"> Go to Binding</router-link>
+    <span>You have not yet bound a DMC account </span>
+    <router-link to="/bindDmc"> Go to Binding.</router-link>
   </nut-noticebar>
   <div class="dmc_account" v-else>
     <div class="img-box">
@@ -97,7 +97,7 @@
       >
     </div>
   </div>
-  <div class="tab_top_title">Recent Earnings</div>
+  <div class="tab_top_title" v-if="listData.length">Recent Earnings</div>
   <!-- <nut-tabs style="border-bottom: 1px solid #cccccc82" v-model="searchType" class="time_tabs">
     <nut-tab-pane title="All" pane-key="0"> </nut-tab-pane>
     <nut-tab-pane title="Income" pane-key="1"> </nut-tab-pane>
@@ -139,7 +139,34 @@
       </div>
     </div>
   </nut-infinite-loading>
-  <nut-empty v-else description="No data" image="error"></nut-empty>
+  <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
+  <div v-else class="my_swipe">
+    <nut-swiper :init-page="1" :pagination-visible="true" pagination-color="#426543" auto-play="3000">
+      <nut-swiper-item>
+        <img src="@/assets/banner1.svg" alt="" />
+      </nut-swiper-item>
+      <nut-swiper-item>
+        <img src="@/assets/banner2.svg" alt="" />
+      </nut-swiper-item>
+      <nut-swiper-item>
+        <img src="@/assets/banner3.svg" alt="" />
+      </nut-swiper-item>
+      <nut-swiper-item>
+        <img src="@/assets/banner4.svg" alt="" />
+      </nut-swiper-item>
+    </nut-swiper>
+  </div>
+  <div class="my_steps" v-if="!listData.length">
+    <nut-steps direction="vertical" current="2">
+      <nut-step title="Bind invitation code" content="Please confirm that you have filled out the invitation code before placing your order"
+        >1</nut-step
+      >
+      <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
+        >2</nut-step
+      >
+      <nut-step title="File storage" content="After successful purchase, you can enjoy file storage and order revenue">3</nut-step>
+    </nut-steps>
+  </div>
 </template>
 
 <script lang="ts" setup name="HomePage">
@@ -177,7 +204,7 @@
         router.push({ path: '/bindDmc' });
       };
       let src = require('@/assets/DMC_token.png');
-      let str = `< img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
+      let str = `<img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
       showDialog({
         title: 'Bind DMC Account',
         content: str,
@@ -242,6 +269,35 @@
 </script>
 
 <style lang="scss" scoped>
+  .my_swipe {
+    margin-top: 30px;
+
+    .nut-swiper {
+      height: 300px;
+    }
+    .nut-swiper-item {
+      line-height: 150px;
+      height: 300px;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+  .my_steps {
+    margin: 40px auto;
+    width: calc(100% - 80px);
+    background: #fff;
+    height: 620px;
+    border-radius: 20px;
+    padding: 20px;
+  }
+
+  .my_noticebar {
+    margin: 0 -4vw;
+    display: inline-block;
+    width: 120%;
+  }
   .dmc_account {
     // background: #5758a0;
     margin: 0 -4vw;

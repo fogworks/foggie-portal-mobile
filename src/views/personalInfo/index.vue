@@ -3,10 +3,10 @@
     <div class="top_box">
       <div class="top_back" @click="router.go(-1)">Personal Information</div>
     </div>
-    <nut-cell-group title="My Account">
+    <nut-cell-group title="My Account" class="info_title">
       <nut-cell title="Account Name" :desc="userInfo.email"></nut-cell>
     </nut-cell-group>
-    <nut-cell-group title="Binding information">
+    <nut-cell-group title="Binding Information" class="info_title">
       <nut-cell v-if="!userInfo.dmc" title="DMC Account" desc="Unbound" to="/bindDmc?type=dmc"></nut-cell>
       <nut-cell v-else title="DMC Account" :desc="userInfo.dmc"></nut-cell>
       <nut-cell
@@ -31,6 +31,14 @@
 </script>
 
 <style lang="scss" scoped>
+  .info_title {
+    :deep {
+      .nut-cell-group__title {
+        color: #000;
+        font-size: 30px;
+      }
+    }
+  }
   .not_amb {
     :deep {
       .nut-cell__value {
@@ -46,5 +54,14 @@
   }
   .info_box {
     background: #f5f7fb;
+    :deep {
+      .nut-cell__title {
+        color: #000;
+      }
+      .nut-cell__value {
+        color: #4d5093;
+        font-weight: bold;
+      }
+    }
   }
 </style>
