@@ -4,7 +4,7 @@
       <Notice width="20px" left="20px"></Notice>
     </template>
     <span>Not yet bound to a DMC account </span>
-    <router-link to="/bindDmc?onlyDMC=true"> Go to Binding</router-link>
+    <router-link to="/bindDmc"> Go to Binding</router-link>
   </nut-noticebar>
   <div class="dmc_account" v-else>
     <div class="img-box">
@@ -97,7 +97,7 @@
       >
     </div>
   </div>
-  <div class="tab_top_title">Recent earnings</div>
+  <div class="tab_top_title">Recent Earnings</div>
   <!-- <nut-tabs style="border-bottom: 1px solid #cccccc82" v-model="searchType" class="time_tabs">
     <nut-tab-pane title="All" pane-key="0"> </nut-tab-pane>
     <nut-tab-pane title="Income" pane-key="1"> </nut-tab-pane>
@@ -139,7 +139,7 @@
       </div>
     </div>
   </nut-infinite-loading>
-  <nut-empty v-else description="No data"></nut-empty>
+  <nut-empty v-else description="No data" image="error"></nut-empty>
 </template>
 
 <script lang="ts" setup name="HomePage">
@@ -176,6 +176,15 @@
   };
   const toBuyOrder = () => {
     if (!userInfo.value.dmc || !userInfo.value.amb_promo_code) {
+      if (!userInfo.value.dmc && userInfo.value.amb_promo_code) {
+        showToast.text('Not yet bound to a DMC account, please bind your DMC account.');
+      } else if (userInfo.value.dmc && !userInfo.value.amb_promo_code) {
+        showToast.text("Please bind the Ambassador Invitation Code first if you haven't already done so.");
+      } else if (!userInfo.value.dmc && !userInfo.value.amb_promo_code) {
+        showToast.text(
+          'Have not yet bound the DMC account and the ambassador invitation code, please bind them first before doing this operation',
+        );
+      }
       router.push({ name: 'BindDmc' });
     } else {
       router.push({ name: 'Shop' });
@@ -183,6 +192,15 @@
   };
   const toRecharge = () => {
     if (!userInfo.value.dmc || !userInfo.value.amb_promo_code) {
+      if (!userInfo.value.dmc && userInfo.value.amb_promo_code) {
+        showToast.text('Not yet bound to a DMC account, please bind your DMC account.');
+      } else if (userInfo.value.dmc && !userInfo.value.amb_promo_code) {
+        showToast.text("Please bind the Ambassador Invitation Code first if you haven't already done so.");
+      } else if (!userInfo.value.dmc && !userInfo.value.amb_promo_code) {
+        showToast.text(
+          'Have not yet bound the DMC account and the ambassador invitation code, please bind them first before doing this operation',
+        );
+      }
       router.push({ name: 'BindDmc' });
     } else {
       router.push({ name: 'Recharge' });
@@ -212,7 +230,7 @@
 
 <style lang="scss" scoped>
   .dmc_account {
-    background: #5758a0;
+    // background: #5758a0;
     margin: 0 -4vw;
     display: flex;
     justify-content: flex-start;
@@ -220,8 +238,8 @@
     // margin-top: 5px;
     font-size: 40px;
     color: #5758a0;
-    height: 60px;
-    color: #fff;
+    height: 100px;
+    // color: #fff;
     font-weight: bold;
     padding: 10px 0 0 10px;
     // box-shadow: $main-shadow;
@@ -454,7 +472,7 @@
     margin-bottom: 20px;
     // font-style: italic;
     font-size: 35px;
-    // font-weight: 600;
+    font-weight: 600;
   }
   .time_tabs {
     :deep {
@@ -472,16 +490,16 @@
     flex-direction: column;
     justify-content: center;
     padding: 12px 30px;
-    padding-left: 80px;
+    padding-left: 100px;
     min-height: 80px;
-    color: #838080;
-    font-size: 28px;
+    color: #171414;
+    font-size: 24px;
     background: #fff;
     border-radius: 5px;
     border-bottom: 1px solid #eee;
     .item_img_box {
       position: absolute;
-      left: 5px;
+      left: 16px;
       width: 70px;
       height: 70px;
       padding: 5px;
@@ -491,6 +509,21 @@
       img {
         width: 36px;
         margin: 0 auto;
+        transform-style: preserve-3d;
+        -webkit-transform-origin: 50%;
+        -webkit-animation: spin 5s infinite;
+        -webkit-animation-timing-function: linear;
+        -webkit-perspective: 1000;
+        -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+        -webkit-filter: saturate(1.45) hue-rotate(2deg);
+      }
+      @keyframes spin {
+        from {
+          -webkit-transform: rotateY(0deg);
+        }
+        to {
+          -webkit-transform: rotateY(360deg);
+        }
       }
       .cions {
         margin-right: 15px;
@@ -520,6 +553,7 @@
     .time {
       color: #aaa;
       font-size: 24px;
+      color: #635858;
     }
     &:last-child {
       border-bottom: none;

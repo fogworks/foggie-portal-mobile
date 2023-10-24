@@ -1,6 +1,13 @@
 <template>
   <div class="fileList_content">
-    <nut-popup position="top" :style="{ height: '100px' }" round pop-class="type_check_pop" v-model:visible="showTypeCheckPop">
+    <nut-popup
+      class="file_top"
+      position="top"
+      :style="{ height: '100px' }"
+      round
+      pop-class="type_check_pop"
+      v-model:visible="showTypeCheckPop"
+    >
       <!-- <p class="cate_title">Classifications</p> -->
       <div class="type_check_box">
         <div class="type_item" @click="switchType(1)">
@@ -100,7 +107,7 @@
           <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
         </div>
       </nut-infinite-loading>
-      <nut-empty v-else description="No data">
+      <nut-empty v-else description="No data" image="error">
         <div style="margin-top: 10px"> </div>
       </nut-empty>
     </template>
@@ -306,6 +313,9 @@
   }
 </style>
 <style lang="scss" scoped>
+  .file_Top {
+    z-index: 9999;
+  }
   :deep {
     .nut-popover-content--bottom-center {
       background: $main_blue;

@@ -237,3 +237,11 @@ export const get_merkle = (data: any) => {
     data,
   });
 };
+
+export const get_merkle_record = (data: any) => {
+  return request({
+    url: `/order/get_merkle_record`,
+    method: 'POST',
+    data,
+  });
+};

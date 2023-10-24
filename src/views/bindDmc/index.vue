@@ -1,14 +1,19 @@
 <template>
+  <div class="top_box">
+    <div class="top_back" @click="router.go(-1)">Bind</div>
+  </div>
+  <p class="key_tips"> Please bind your DMC account and ambassador invitation code first </p>
   <nut-sticky>
     <nut-form class="query_form" :model-value="formLine">
-      <nut-form-item label-width="180px" label="DMC Account" v-if="!userInfo.dmc || onlyDMC">
+      <nut-form-item v-if="!userInfo.dmc || onlyDMC" label-width="180px" label="DMC Account:">
         <nut-input v-model="formLine.dmc" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
       </nut-form-item>
-      <nut-form-item label-width="180px" label="Ambassador Invitation Code" v-if="!userInfo.amb_promo_code && !onlyDMC">
+
+      <nut-form-item v-if="!userInfo.amb_promo_code && !onlyDMC" label-width="180px" label="Ambassador Invitation Code:">
         <nut-input v-model="formLine.code" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
       </nut-form-item>
-      <div style="margin: 0 20px">
-        <nut-button block type="info" @click="submit" :loading="loading"> Confirm </nut-button>
+      <div class="bind_btn">
+        <nut-button block type="info" @click="submit" :loading="loading"> Bind </nut-button>
       </div>
     </nut-form>
   </nut-sticky>
@@ -19,10 +24,11 @@
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
   import { user, updateUser, bind_user_promo } from '@/api';
-  import { useRoute } from 'vue-router';
+  import { useRoute, useRouter } from 'vue-router';
   import { check_promo, bind_promo } from '@/api/amb';
   import '@nutui/nutui/dist/packages/toast/style';
   const route = useRoute();
+  const router = useRouter();
   const useStore = useUserStore();
   const userInfo = computed(() => useStore.getUserInfo);
   const formLine = reactive({ dmc: '', code: '' });
@@ -64,6 +70,11 @@
           }
         }
       });
+      if (bindRes) {
+        // await initFoggieDate();
+      } else {
+        return false;
+      }
       // if (bindRes) await initFoggieDate();
       if (userInfo.value.amb_promo_code) {
         let postData = {
@@ -92,6 +103,8 @@
           });
         };
         await promoFunction();
+      } else {
+        await initFoggieDate();
       }
     }
     if (!userInfo.value.amb_promo_code) {
@@ -146,4 +159,25 @@
   };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+  .key_tips {
+    margin-top: 30px;
+    padding: 0 20px;
+    font-size: 30px;
+    font-weight: 300;
+    line-height: 40px;
+  }
+  .nut-form-item {
+    border-bottom: 1px solid #ebebeb;
+  }
+  :deep {
+    .nut-cell-group__wrap {
+      box-shadow: none;
+    }
+  }
+
+  .bind_btn {
+    margin: 200px auto 0;
+    width: 50%;
+  }
+</style>

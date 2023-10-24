@@ -9,7 +9,7 @@
             <span>≈</span>
             <span>$10.00</span>
           </div>
-          <div class="right_img"><img src="@/assets/Trading.png" alt="" /> </div>
+          <div class="right_img"><img src="@/assets/Trading.svg" alt="" /> </div>
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@
           </div>
         </nut-infinite-loading>
       </template>
-      <nut-empty v-else description="No data"></nut-empty>
+      <nut-empty v-else description="No data" image="error"></nut-empty>
     </div>
   </div>
 </template>

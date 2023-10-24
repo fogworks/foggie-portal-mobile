@@ -1,10 +1,14 @@
 <template>
   <div class="top_box">
-    <div class="top_back" @click="router.go(-1)"></div>
+    <div class="top_back" @click="router.go(-1)">
+      <div v-if="bucketName">{{ bucketName }} </div>
+      <div v-else> Order-{{ order_id }} </div>
+      <!-- <nut-button class="creat-name" type="primary" @click="creatName" v-if="!bucketName">Creat Name</nut-button>
+      <nut-input placeholder="Please enter name" v-model="newBucketName" v-if="showCreatName" /> -->
+    </div>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
-        <span class="span1">Order-{{ detailsData[0].order_id }} </span>
-        <span class="span2">Expiration time: {{ detailsData[0].expire }}</span>
+        <span class="span2">Expiration time: {{ orderInfo.value.expire }}</span>
       </nut-col>
       <nut-col :span="8" class="order-circle">
         <nut-circle-progress progress="20" radius="40" color="#5460FE">100M of 1G</nut-circle-progress>
@@ -88,6 +92,10 @@
     </div>
 
     <!-- <nut-row class="order-icons"> </nut-row> -->
+    <div class="today_file">
+      <span>Recent Files</span>
+      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
+    </div>
     <div class="type_check_box">
       <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
         <div class="svg_box">
@@ -114,10 +122,7 @@
         <p>Video</p>
       </div>
     </div>
-    <div class="today_file">
-      <span>Recent Files</span>
-      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
-    </div>
+
     <nut-infinite-loading v-if="tableData.length" :has-more="false" class="file_list">
       <div
         @click="
@@ -145,7 +150,7 @@
         <!-- <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore> -->
       </div>
     </nut-infinite-loading>
-    <nut-empty v-else description="No data,Go ahead and upload it."> </nut-empty>
+    <nut-empty v-else description="No data,Go ahead and upload it." image="error"> </nut-empty>
     <nut-uploader
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
@@ -154,6 +159,7 @@
       :data="formData"
       :headers="formData"
       :before-xhr-upload="beforeXhrUpload"
+      :xhr-state="successStatus"
       @success="uploadSuccess"
       @progress="onProgress"
       @start="onStart"
@@ -163,7 +169,6 @@
     >
       <nut-button type="success" class="upload_btn" size="small">+</nut-button>
     </nut-uploader>
-
     <!-- <recycleFill color="#9F9BEF"/> -->
     <!-- <icon10kOutline color="red" /> -->
     <!-- <keySolid color="red" @click="getKey" /> -->
@@ -171,6 +176,11 @@
 </template>
 
 <script setup lang="ts">
+  import {
+    ref,
+    onMounted,
+    watch,
+  } from "vue";
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
   import IconAudio2 from '~icons/home/audio2.svg';
@@ -185,27 +195,31 @@
   import IconRiSendToBack from '~icons/ri/send-to-back';
   import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
 
-  import IconRecycleFill from '~icons/ri/recycle-fill';
-  import icon10kOutline from '~icons/material-symbols/10k-outline';
 
   import keySolid from '~icons/teenyicons/key-solid';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   // import AESHelper from './AESHelper';
   // import { Image } from '@nutui/icons-vue';
-  import { detailsData } from '../data';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute, useRouter } from 'vue-router';
   import useOrderInfo from './useOrderInfo.js';
   import { showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize } from '@/utils/util';
-  import { check_name, order_name_set, search_bill, get_merkle, calc_merkle } from '@/api/index';
+  import { check_name, order_name_set, get_merkle, calc_merkle, get_merkle_record } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   let server;
   const route = useRoute();
   const router = useRouter();
+
+  const successStatus = ref<number>(204);
+
+  import { useUserStore } from '@/store/modules/user';
+  const userStore = useUserStore();
+  const uuid = computed(() => userStore.getUserInfo.uuid);
+
   // let details = reactive<any>({ data: {} });
 
   // import { get_order_node } from '@/api/amb';
@@ -231,12 +245,31 @@
   // order_id.value = '1281';
   memo.value = route.query.uuid;
   order_id.value = route.query.id;
-  search_bill(memo.value, order_id.value).then((res) => {
-    console.log('search_bill', res);
-    minerIp.value = res?.data?.mp_ipaddr;
-  });
+  // search_bill(memo.value, order_id.value).then((res) => {
+  //   console.log('search_bill', res);
+  //   minerIp.value = res?.data?.mp_ipaddr;
+  // });
 
   const beforeupload = async (file: any) => {
+
+
+
+    console.log('upload-----------', bucketName.value)
+
+    const d = {
+      orderId: order_id.value,
+    }
+    get_merkle(d).then((res) => {
+      if(res.data[0].merkle_status === 0) {
+        // TODO
+        isDisabled.value = true;
+        return;
+      } else {
+        isDisabled.value = false;
+      }
+    })
+
+
     // bucketName.value = 'test11111';
     // accessKeyId.value = 'FOGaCTsgpOoeXsrtjmk5';
     // secretAccessKey.value = '8zztbNHf6CVYdadg3AXmairRZ8mTXoowzMU2sUOq';
@@ -310,6 +343,15 @@
 
   const uploadSuccess = ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
+    const d = {
+      orderId: order_id.value,
+      uuid: uuid.value,
+      orderUuid: memo.value,
+      mpAddress: orderInfo.value.mp_address,
+    }
+    calc_merkle(d).then((res) => {
+      console.log('calc_merkle-----', res);
+    })
     uploadRef.value.clearUploadQueue();
   };
 
@@ -322,45 +364,26 @@
   };
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
-    console.log('onFailure', responseText, option, fileItem);
-    // const d = {
-    //   orderId: '1281',
-    //   uuid: '1e151b9c-507a-11ee-8369-f218985479b1',
-    //   orderUuid: '1e151b9c-507a-11ee-8369-f218985479b1',
-    // }
-    // calc_merkle(d).then((res) => {
-    //   console.log('calc_merkle', res);
-    // })
+    console.log('onFailure','-----', responseText, '-----' , option,'-----' ,  fileItem);
+
+    
     uploadRef.value.clearUploadQueue();
   };
 
   const onChange = ({ fileList, event }: any) => {
+    console.log('--------------2')
     console.log('onChange', fileList, event);
   };
 
   const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
-    // const d = {
-    //   orderId: '1281',
-    // }
-    // get_merkle(d).then((res) => {
-    //   if(res.data[0].merkle_status === 0) {
-    //     isDisabled.value = true;
-    //     return;
-    //   } else {
-    //     isDisabled.value = false;
-    //     console.log('xhr', xhr, options);
-    //     xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
-    //     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
-    //     xhr.send(options.formData);
-    //   }
-    // })
+   
     console.log('xhr', xhr, options);
     xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
     xhr.send(options.formData);
   };
   const getKey = () => {
-    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid } });
+    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value } });
   };
 
   const creatName = async () => {
@@ -681,16 +704,20 @@
     showToast.hide(1);
   };
 
+  
+
   const getKeys = () => {
     let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
     let request = new Prox.default.ProxGetCredRequest();
     request.setHeader(header);
+    console.log('request-----------------getkeys', request)
     server.listCreds(request, {}, (err: any, res: { array: any }) => {
       if (err) {
         console.log('err------:', err);
       } else if (res.array.length > 0) {
         accessKeyId.value = res.array[0][0][0];
         secretAccessKey.value = res.array[0][0][1];
+        console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
       }
     });
   };
@@ -703,21 +730,37 @@
       getFileList();
     } else {
     }
+
+    get_merkle_record({orderId: order_id.value}).then((res) => {
+      console.log('get_merkle_record-------', res);
+    })
+    
   });
-  // 218.2.96.99:6008
+  watch(
+  () => route.query,
+  async () => {
+    await getOrderInfo();
+    bucketName.value = orderInfo.value.domain;
+    if (bucketName.value) {
+      getKeys();
+      getFileList();
+    } else {
 
-  //   bucketname: foggiebucket
-
-  // AK: FOG9C40y1MBG1x85DU3o
-
-  //  SK IZIPDmHm1HXE4ZNCSRIJWuGsUXkp9f98bKHAifVG
+    }
+  },
+  { deep: true }
+);
 </script>
 
 <style lang="scss" scoped>
+  .order-detail {
+    margin-top: 30px;
+  }
   .upload_btn {
-    position: fixed;
-    bottom: 150px;
-    right: 50px;
+    // position: fixed;
+    position: relative;
+    // bottom: 150px;
+    // right: 50px;
     font-size: 80px;
     border-radius: 50%;
     padding: 10px;
@@ -743,7 +786,7 @@
       }
 
       .span2 {
-        margin-right: 5vw;
+        // margin-right: 5vw;
         float: right;
         font-size: 20px;
         font-weight: bold;
@@ -812,13 +855,22 @@
             vertical-align: middle;
           }
         }
+        &:nth-child(3),
+        &:nth-child(4) {
+          .svg_box {
+            svg {
+              width: 60px;
+              height: 60px;
+            }
+          }
+        }
 
         .order-icon-recycle {
           background-color: #ff8b00;
           border-radius: 50%;
           svg {
-            width: 60%;
-            height: 60%;
+            width: 60% !important;
+            height: 60% !important;
             vertical-align: middle;
           }
         }
@@ -886,7 +938,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 10px;
+      margin: 20px 0;
       font-size: 30px;
       .see_all {
         color: #5460fe;

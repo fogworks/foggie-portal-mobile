@@ -25,11 +25,13 @@
     if (isAmbCode) {
       if (!userInfo.value.dmc) {
         const dmcOk = () => {
-          router.push({ path: '/bindDmc', query: { onlyDMC: true } });
+          router.push({ path: '/bindDmc' });
         };
+        let src = require('@/assets/DMC_token.png');
+        let str = `< img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
         showDialog({
-          title: 'Notice',
-          content: `No DMC account yet, please go to bind the account beforehand.`,
+          title: 'Bind DMC Account',
+          content: str,
           onOk: dmcOk,
         });
         return false;
@@ -109,6 +111,7 @@
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background: #f5f7fb;
   }
   ::-webkit-scrollbar {
     width: 0px;
@@ -119,9 +122,7 @@
     --nut-toast-inner-bg-color: #fff;
     --nut-toast-cover-bg-color: rgba(0, 0, 0, 0.5);
   }
-  .nut-icon-failure {
-    color: #d81414 !important;
-  }
+
   .nut-toast-loading {
     --nut-toast-font-color: #000;
     --nut-toast-inner-bg-color: #fff;
@@ -137,6 +138,12 @@
   }
   .nut-toast-inner {
     box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.6);
+  }
+  .nut-icon-success {
+    color: #0bde00 !important;
+  }
+  .nut-icon-failure {
+    color: #d81414 !important;
   }
   .app_loading {
     background: #fff;

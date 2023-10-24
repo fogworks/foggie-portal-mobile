@@ -38,10 +38,10 @@
         </nut-checkbox-group>
       </nut-infinite-loading>
     </div>
-    <nut-empty v-else :image-size="200" description="No Data" />
+    <nut-empty v-else :image-size="200" description="No Data" image="error" />
   </div>
   <div class="img-content" v-else>
-    <nut-empty :image-size="200" description="No Data" />
+    <nut-empty :image-size="200" description="No Data" image="error" />
   </div>
 </template>
 <script>
