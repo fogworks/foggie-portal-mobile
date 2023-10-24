@@ -46,7 +46,7 @@
       </div>
 
     </div>
-    <div class="logOutBtn">
+    <div class="logOutBtn" @click="logout">
       <span style="margin-left: 45px;">退出登录</span>
       <div class="outBnt">
        <ArrowRight2 color="#5771F9" style="margin-right: 10px;"/>
