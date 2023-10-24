@@ -221,6 +221,18 @@
     >
       <nut-button type="success" class="upload_btn" size="small">+</nut-button>
     </nut-uploader>
+    <nut-dialog
+      v-model:visible="dialogVisible"
+      title="Create Bucket"
+      :close-on-click-overlay="false"
+      :show-cancel="false"
+      :show-confirm="false"
+    >
+      <nut-input v-model="newBucketName" placeholder="Please enter bucket Name"></nut-input>
+      <template #footer>
+        <nut-button type="primary" @click="creatName">Confirm</nut-button>
+      </template>
+    </nut-dialog>
   </div>
 </template>
 
@@ -262,6 +274,9 @@
   import { transferUTCTime, getfilesize } from '@/utils/util';
   import { check_name, order_name_set, get_merkle, calc_merkle, get_merkle_record } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
+  import loadingImg from '@/components/loadingImg/index.vue';
+
+
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
     isReady,
@@ -287,6 +302,9 @@
   import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
   const uuid = computed(() => userStore.getUserInfo.uuid);
+
+  const dialogVisible = ref<boolean>(false);
+  
 
   // let details = reactive<any>({ data: {} });
 
@@ -555,6 +573,7 @@
       const order_result = await order_name_set(order_data);
       if (!order_result?.data?.result) {
         bucketName.value = newBucketName.value;
+        dialogVisible.value = false;
         return;
       }
     }
@@ -867,12 +886,20 @@
   };
 
   onMounted(async () => {
+    showToast.loading('Loading', {
+      cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+    });
     await getOrderInfo();
+    showToast.hide();
     bucketName.value = orderInfo.value.domain;
     if (bucketName.value) {
       getKeys();
       getFileList();
     } else {
+      dialogVisible.value = true;
     }
 
     get_merkle_record({ orderId: order_id.value }).then((res) => {
@@ -882,12 +909,24 @@
   watch(
     () => route.query,
     async () => {
+      showToast.loading('Loading', {
+        cover: true,
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
+      });
+      dialogVisible.value = false;
       await getOrderInfo();
+      showToast.hide();
       bucketName.value = orderInfo.value.domain;
       if (bucketName.value) {
+        console.log('bucketName------');
+       
         getKeys();
         getFileList();
       } else {
+        console.log('no bucketName------');
+        dialogVisible.value = true;
       }
     },
     { deep: true },

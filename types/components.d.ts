@@ -17,6 +17,7 @@ declare module 'vue' {
     NutCheckboxGroup: typeof import('@nutui/nutui')['CheckboxGroup']
     NutCircleProgress: typeof import('@nutui/nutui')['CircleProgress']
     NutCol: typeof import('@nutui/nutui')['Col']
+    NutDialog: typeof import('@nutui/nutui')['Dialog']
     NutEmpty: typeof import('@nutui/nutui')['Empty']
     NutForm: typeof import('@nutui/nutui')['Form']
     NutFormItem: typeof import('@nutui/nutui')['FormItem']

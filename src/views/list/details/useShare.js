@@ -167,9 +167,10 @@ export default function useShare(orderInfo, header, deviceType) {
     isReady.value = false;
   };
 
-  const getHttpShare = ( awsAccessKeyId, awsSecretAccessKey, bucketName, keyName) => {
-    awsAccessKeyId = 'FOGpmEBp2rE4dvkP2W1r'
-    awsAccessKeyId = 'TgKOPvlv3MSQhYjuyNN0MKVBw9mZChtT7E0GVh2h'
+  const getHttpShare = ( awsAccessKeyId, awsSecretAccessKey, bucketName, keyName, thumb) => {
+    // awsAccessKeyId = 'FOGpmEBp2rE4dvkP2W1r'
+    // awsSecretAccessKey = 'TgKOPvlv3MSQhYjuyNN0MKVBw9mZChtT7E0GVh2h'
+    console.log('awsAccessKeyId-----', awsAccessKeyId, awsSecretAccessKey);
     const objectKey = encodeURIComponent(keyName);
     const expirationInSeconds = 3600;
     const expirationTime = Math.floor(Date.now() / 1000) + expirationInSeconds;
@@ -190,6 +191,11 @@ export default function useShare(orderInfo, header, deviceType) {
 
     let ip = `http://${orderInfo.value.rpc.split(':')[0]}:6008`;
     const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
+    if (thumb) {
+      return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
+        signatureBase64,
+      )}&thumb=true`;
+    }
     return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
       signatureBase64,
     )}`;

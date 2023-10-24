@@ -400,8 +400,8 @@
   import { HmacSHA1, enc } from 'crypto-js';
   // import { download_url } from '@/api/index';
 
-  const accessKeyId = ref<string>('');
-  const secretAccessKey = ref<string>('');
+  // const accessKeyId = ref<string>('');
+  // const secretAccessKey = ref<string>('');
   const bucketName = ref<string>('');
 
   let timeOutEvent: string | number | NodeJS.Timeout | undefined;
@@ -468,7 +468,7 @@
     longPress,
     isFirst,
   } = toRefs(state);
-  const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  const { header, token, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
   const {
     isReady,
     confirmShare,
@@ -671,7 +671,6 @@
         if (checkData[0]?.type == 'application/x-directory') {
           if (newName.value[newName.value.length - 1] == '/') {
             const newData = newName.value.slice(0, newName.value.length - 1);
-            console.log(newData, 'newDatanewData');
             arr.splice(arr.length - 2, 1, newData);
           } else {
             arr.splice(arr.length - 2, 1, newName.value);
@@ -711,7 +710,6 @@
       ProxRenameObject.setSourceobject(checkData[0].fullName);
       ProxRenameObject.setTargetobject(targetObject());
       ProxRenameObject.setFiletype(checkData[0].fileType);
-      console.log(ProxRenameObject, 'ProxRenameObject');
 
       server.renameObjects(ProxRenameObject, {}, (err, data) => {
         if (data) {
@@ -778,14 +776,11 @@
       const url = `/o/${objectKey}`;
       // const url = `/o/${objectKey}?thumb=true`;
       // const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`
-      console.log(url, 'url');
-      console.log(headers, 'headers');
 
       fetch(url, { method: 'GET', headers })
         .then((response) => {
           if (response.ok) {
             // 创建一个 Blob 对象，并将响应数据写入其中
-            console.log('Success', response);
             return response.blob();
           } else {
             // 处理错误响应
@@ -793,7 +788,6 @@
           }
         })
         .then((blob) => {
-          console.log(blob, 'blob');
 
           // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
           const a = document.createElement('a');
@@ -827,7 +821,6 @@
       renameShow.value = true;
     } else if (type === 'newFolder') {
     } else if (type === 'share') {
-      console.log(checkData.length);
 
       if (checkData.length > 1) return false;
       await doShare(checkData[0]);
@@ -996,6 +989,7 @@
       // imgHttpLink = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
       console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       console.log('--------imgHttpLarge', imgHttpLarge);
 
       // await fetch(url, { method: 'GET', headers })
@@ -1096,6 +1090,11 @@
         tableData.value = [];
       }
     }
+    console.log('----------ak---1', accessKeyId.value, bucketName.value)
+    if (!accessKeyId.value) {
+      await getOrderInfo(bucketName.value);
+      console.log('----------ak---2', accessKeyId.value)
+    }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = decodeURIComponent(data.commonPrefixes[i]);
       if (data.prefix) {
@@ -1156,7 +1155,9 @@
       // imgHttpLink, isSystemImg, imgHttpLarge
 
       // let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+      console.log('----------ak---3', accessKeyId.value, bucketName.value)
       const imgData = await handleImg(data.content[j], type, isDir);
+      console.log('----------ak---4', imgData)
       const url = imgData.imgHttpLink;
       const isSystemImg = imgData.isSystemImg;
       const url_large = imgData.imgHttpLarge;
@@ -1375,26 +1376,26 @@
     };
     return headers;
   };
-  const getKeys = () => {
-    if (orderInfo.value && orderInfo.value.peer_id) {
-      let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
-      let request = new Prox.default.ProxGetCredRequest();
-      request.setHeader(header);
-      server.listCreds(request, {}, (err: any, res: { array: any }) => {
-        if (err) {
-          console.log('err------111:', err);
-        } else if (res.array.length > 0) {
-          accessKeyId.value = res.array[0][0][0];
-          secretAccessKey.value = res.array[0][0][1];
-          console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
-        }
-      });
-    } else {
-      setTimeout(() => {
-        getKeys();
-      }, 600);
-    }
-  };
+  // const getKeys = () => {
+  //   if (orderInfo.value && orderInfo.value.peer_id) {
+  //     let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
+  //     let request = new Prox.default.ProxGetCredRequest();
+  //     request.setHeader(header);
+  //     server.listCreds(request, {}, (err: any, res: { array: any }) => {
+  //       if (err) {
+  //         console.log('err------111:', err);
+  //       } else if (res.array.length > 0) {
+  //         accessKeyId.value = res.array[0][0][0];
+  //         secretAccessKey.value = res.array[0][0][1];
+  //         console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
+  //       }
+  //     });
+  //   } else {
+  //     setTimeout(() => {
+  //       getKeys();
+  //     }, 600);
+  //   }
+  // };
 
   // const getKeys = () => {
   //   console.log('getKeys--------------');
