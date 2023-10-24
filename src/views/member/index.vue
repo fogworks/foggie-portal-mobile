@@ -10,46 +10,46 @@
     </div>
     <div class="infoContent">
       <img src="@/assets/1698057212519.jpg" alt="" srcset="">
-      <div>Domhnall Gleeson</div>
-      <div>Invitation {{ referral_code }}</div>
+      <div>{{ dmcAccount }}</div>
+      <div>Invitation: {{ referral_code }}</div>
     </div>
     <div class="buttonContent">
       <div>
         <div class="customBtn">
           <Retweet color="#505056" />
         </div>
-        <div>支付安全设置</div>
+        <div>Payment Security</div>
       </div>
       <div>
         <div class="customBtn">
           <My2 color="#505056" />
         </div>
-        <div>更新资料</div>
+        <div>Updated information</div>
       </div>
       <div>
         <div class="customBtn">
           <Link color="#505056" />
         </div>
-        <div>关于</div>
+        <div>with respect to</div>
       </div>
       <div>
         <div class="customBtn">
           <Location color="#505056" />
         </div>
-        <div>快捷链接</div>
+        <div>Quick Setup</div>
       </div>
       <div>
         <div class="customBtn">
           <Service color="#505056" />
         </div>
-        <div>联系我们</div>
+        <div>Contact Us</div>
       </div>
 
     </div>
     <div class="logOutBtn" @click="logout">
-      <span style="margin-left: 45px;">退出登录</span>
+      <span style="margin-left: 45px;">Log out</span>
       <div class="outBnt">
-       <ArrowRight2 color="#5771F9" style="margin-right: 10px;"/>
+        <ArrowRight2 color="#5771F9" style="margin-right: 10px;" />
       </div>
     </div>
 
@@ -61,7 +61,7 @@ import { useUserStore } from '@/store/modules/user';
 import { useRouter } from 'vue-router';
 // import { Dongdong } from '@nutui/icons-vue';
 import { user } from '@/api';
-import { Category, MoreX, Retweet, My2, Service, Location, Link,ArrowRight2 } from '@nutui/icons-vue';
+import { Category, MoreX, Retweet, My2, Service, Location, Link, ArrowRight2 } from '@nutui/icons-vue';
 import { showDialog } from '@nutui/nutui';
 import '@nutui/nutui/dist/packages/dialog/style';
 import { createVNode } from 'vue';
@@ -105,7 +105,9 @@ onMounted(() => {
         console.log(res);
         referral_code.value = res.data.referral_code
         email.value = res.data.email;
-        dmcAccount.value = `DMC Account ${res.data.dmc}`;
+        // dmcAccount.value = `DMC Account ${res.data.dmc}`;
+        dmcAccount.value = res.data.dmc;
+
       }
     })
     .catch(() => {
@@ -117,6 +119,8 @@ onMounted(() => {
 <style lang="scss" scoped>
 .userInfo {
   padding: 20px 25px;
+  background-color: #FFFFFF;
+  height: calc(100vh - 52px);
 
   .infoList {
     display: flex;
@@ -183,24 +187,29 @@ onMounted(() => {
   }
 
   .buttonContent {
-    margin-top: 100px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    align-content: center;
 
     &>div {
-      flex: 0 1 20%;
+      flex: 1 0 auto;
+      width: 33.33333%;
       height: 140px;
       display: flex;
       flex-direction: column;
       justify-content: space-evenly;
+      margin-top: 60px;
       align-items: center;
 
       &>div:nth-of-type(2) {
         font-family: Inter;
-        font-size: 16px;
+        font-size: 20px;
         font-weight: 500;
         line-height: 17px;
+        margin-top: 10px;
         text-align: center;
         letter-spacing: 0px;
         color: #151940;
@@ -226,7 +235,9 @@ onMounted(() => {
   }
 
   .logOutBtn {
-    width: 90%;
+    position: fixed;
+    bottom: 160px;
+    width: 80%;
     margin: 150px auto 0px;
     height: 140px;
     background: #4C5093;
@@ -234,7 +245,7 @@ onMounted(() => {
     text-align: center;
     line-height: 140px;
     font-family: Inter;
-    font-size: 28px;
+    font-size: 34px;
     font-weight: 500;
     text-align: center;
     letter-spacing: -0.45px;
@@ -243,21 +254,22 @@ onMounted(() => {
     align-items: center;
     justify-content: space-between;
     transition: transform 0.3s ease-in-out;
+
     .outBnt {
-      width: 100px;
-      height: 100px;
+      width: 120px;
+      height: 120px;
       border-radius: 18px;
       background-color: #FFFFFF;
       display: flex;
       justify-content: flex-end;
       align-items: center;
       margin-right: 20px;
-    
+
     }
-  
+
   }
-  .logOutBtn:active{
-      transform: translate(5px, 5px);
-    }
-}
-</style>
+
+  .logOutBtn:active {
+    transform: translate(5px, 5px);
+  }
+}</style>
