@@ -186,5 +186,6 @@
 <style lang="scss" scoped>
   .login {
     justify-content: center;
+    height: 100vh;
   }
 </style>
