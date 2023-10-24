@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="infoContent">
-      <img src="@/assets/1698057212519.jpg" alt="" srcset="" />
+      <img src="@/assets/user.svg" alt="" srcset="" />
       <div>{{ dmcAccount }}</div>
       <div>Invitation: {{ referral_code }}</div>
     </div>
@@ -32,7 +32,7 @@
         <div class="customBtn">
           <Link color="#505056" />
         </div>
-        <div>with respect to</div>
+        <div>About</div>
       </nut-col>
     </nut-row>
 
@@ -63,7 +63,21 @@
       </div>
     </div>
 
-    <nut-action-sheet v-model:visible="visible" :menu-items="iconItemList" />
+    <nut-action-sheet v-model:visible="visible" title="Our Products">
+      <div class="custom-action_sheet">
+        <div @click="choose('pool')">
+          <People></People>
+          <div>cloud mining pool</div>
+        </div>
+        <div @click="choose('client')">
+          <Shop></Shop>
+          <div>Cloud Mining Pool Client</div>
+        </div>
+        <div @click="visible = false">
+          Cancel
+        </div>
+      </div>
+    </nut-action-sheet>
   </div>
 </template>
 
@@ -72,7 +86,7 @@ import { useUserStore } from '@/store/modules/user';
 import { useRouter } from 'vue-router';
 // import { Dongdong } from '@nutui/icons-vue';
 import { user } from '@/api';
-import { Category, MoreX, Retweet, My2, Service, Location, Link, ArrowRight2 } from '@nutui/icons-vue';
+import { Category, MoreX, Retweet, My2, Service, Location, Link, ArrowRight2, People, Shop } from '@nutui/icons-vue';
 import { showDialog } from '@nutui/nutui';
 import { showToast } from '@nutui/nutui';
 
@@ -90,11 +104,9 @@ const gotoDetail = (path): void => {
 };
 
 const visible = ref<boolean>(false)
-const iconItemList = ref([{ name: 'cloud mining pool' }, { name: 'Cloud Mining Pool Client' }]);
-
 const adminEmail = ref<string>('123456789@234.com')
 const goToPrivacy = () => {
-  window.open('https://foggie.fogworks.io/#/privacyPolicy_EN');
+  window.open('https://foggie.fogworks.io/#/');
 };
 const logout = (): void => {
   showDialog({
@@ -173,6 +185,12 @@ function fallbackCopyTextToClipboard(text) {
   document.body.removeChild(textArea);
 }
 
+function choose(type: string) {
+  console.log(type);
+
+  visible.value = false
+
+}
 
 onMounted(() => {
   user()
@@ -223,7 +241,7 @@ onMounted(() => {
 
   .infoContent {
     margin-top: 70px;
-    background: #f5f6fa;
+    background: #4c5093;
     border-radius: 20px;
     min-height: 235px;
     position: relative;
@@ -250,7 +268,7 @@ onMounted(() => {
       line-height: 54px;
       text-align: center;
       letter-spacing: 0px;
-      color: #020000;
+      color: #ffff;
       margin-top: 20px;
     }
 
@@ -262,7 +280,7 @@ onMounted(() => {
       text-align: center;
       letter-spacing: -0.45px;
       margin-top: 10px;
-      color: #151940;
+      color: #fff;
     }
   }
 
@@ -311,11 +329,12 @@ onMounted(() => {
   .logOutBtn {
     position: fixed;
     bottom: 160px;
-    width: 80%;
-    margin: 150px auto 0px;
-    height: 140px;
+    width: 70%;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 120px;
     background: #4c5093;
-    border-radius: 18px;
+    border-radius: 50px;
     text-align: center;
     line-height: 140px;
     font-family: Inter;
@@ -330,8 +349,8 @@ onMounted(() => {
     transition: transform 0.3s ease-in-out;
 
     .outBnt {
-      width: 90px;
-      height: 90px;
+      width: 70px;
+      height: 70px;
       border-radius: 18px;
       background-color: #ffffff;
       display: flex;
@@ -344,5 +363,30 @@ onMounted(() => {
   .logOutBtn:active {
     transform: translate(5px, 5px);
   }
-}
-</style>
+
+  .custom-action_sheet {
+    display: flex;
+    flex-direction: column;
+
+    &>div:not(:last-child) {
+      padding: 10px 20px;
+      width: 100%;
+      height: 90px;
+      line-height: 90px;
+      display: grid;
+      grid-template-columns: 50px auto;
+      align-items: center;
+    }
+
+    &>div:last-child {
+      height: 100px;
+      background-color: #F7F7F7;
+      font-size: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      
+    }
+  }
+}</style>
