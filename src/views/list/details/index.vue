@@ -90,12 +90,6 @@
         <p>Secret Key</p>
       </div>
     </div>
-
-    <!-- <nut-row class="order-icons"> </nut-row> -->
-    <div class="today_file">
-      <span>Recent Files</span>
-      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
-    </div>
     <div class="type_check_box">
       <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
         <div class="svg_box">
@@ -123,19 +117,13 @@
       </div>
     </div>
 
+    <div class="today_file">
+      <span>Recent Files</span>
+      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
+    </div>
+
     <nut-infinite-loading v-if="tableData.length" :has-more="false" class="file_list">
-      <div
-        @click="
-          router.push({
-            name: 'FileList',
-            query: { ...route.query, category: 0, keyWord: item.isDir ? item.name.slice(0, item.name.length - 1) : item.name },
-          })
-        "
-        :class="['list_item']"
-        v-show="index < 4"
-        v-for="(item, index) in tableData"
-        :key="index"
-      >
+      <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
         <div :class="['left_icon_box']">
           <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
           <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
@@ -147,10 +135,64 @@
           <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
           <p>{{ item.date || '' }}</p>
         </div>
-        <!-- <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore> -->
       </div>
     </nut-infinite-loading>
     <nut-empty v-else description="No data,Go ahead and upload it." image="error"> </nut-empty>
+    <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
+      <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+      <div class="middle_img">
+        <nut-image :src="imgUrl" fit="contain" position="center" />
+      </div>
+      <div class="bottom_action">
+        <div>
+          <IconShare @click="handlerClick('share')"></IconShare>
+          <p>Share</p>
+        </div>
+        <div>
+          <IconDownload @click="handlerClick('download')"></IconDownload>
+          <p>Download</p>
+        </div>
+      </div>
+    </nut-overlay>
+    <!-- share -->
+    <nut-popup @closed="isReady = false" position="bottom" closeable round :style="{ height: '200px' }" v-model:visible="showShareDialog">
+      <div v-if="isReady" class="rename_box move_box">
+        <nut-cell style="margin-top: 50px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
+        <nut-popup position="bottom" v-model:visible="periodShow">
+          <nut-picker
+            v-model="periodValue"
+            :columns="options"
+            title="Select expiration time"
+            @confirm="confirmPeriod"
+            @cancel="periodShow = false"
+          >
+          </nut-picker>
+        </nut-popup>
+        <nut-button type="info" block @click="() => confirmHttpShare(shareType, detailRow)">Confirm</nut-button>
+      </div>
+      <div class="share_info_box" v-else>
+        <div v-if="shareRefContent.ipfsStr && +detailRow.originalSize <= orderInfo.total_space * 0.01">
+          <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
+          IPFS Link
+          <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
+        </div>
+        <div v-if="shareRefContent.httpStr">
+          <IconHttp @click="isReady = true"></IconHttp>
+          HTTP Link
+          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+        </div>
+        <div v-if="shareRefContent.httpStr">
+          <IconTwitter @click="isReady = true"></IconTwitter>
+          Twitter
+          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+        </div>
+        <div v-if="shareRefContent.httpStr">
+          <IconFacebook @click="isReady = true"></IconFacebook>
+          Facebook
+          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+        </div>
+      </div>
+    </nut-popup>
     <nut-uploader
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
@@ -166,24 +208,26 @@
       @failure="onFailure"
       @change="onChange"
       ref="uploadRef"
+      class="upload_class"
     >
       <nut-button type="success" class="upload_btn" size="small">+</nut-button>
     </nut-uploader>
-    <!-- <recycleFill color="#9F9BEF"/> -->
-    <!-- <icon10kOutline color="red" /> -->
-    <!-- <keySolid color="red" @click="getKey" /> -->
   </div>
 </template>
 
 <script setup lang="ts">
-  import {
-    ref,
-    onMounted,
-    watch,
-  } from "vue";
+  import { ref, onMounted, watch } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
+  import IconShare from '~icons/home/share.svg';
+  import IconArrowLeft from '~icons/home/arrow-left.svg';
+  import IconDownload from '~icons/home/download.svg';
+  import IconTwitter from '~icons/home/twitter.svg';
+  import IconHttp from '~icons/home/http.svg';
+  import IconFacebook from '~icons/devicon/facebook.svg';
+
   import IconAudio2 from '~icons/home/audio2.svg';
+  import IconMore from '~icons/home/more.svg';
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
   import IconVideo from '~icons/home/video.svg';
@@ -195,7 +239,6 @@
   import IconRiSendToBack from '~icons/ri/send-to-back';
   import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
 
-
   import keySolid from '~icons/teenyicons/key-solid';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
@@ -205,11 +248,27 @@
   import { Buffer } from 'buffer';
   import { useRoute, useRouter } from 'vue-router';
   import useOrderInfo from './useOrderInfo.js';
+  import useShare from './useShare.js';
   import { showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize } from '@/utils/util';
   import { check_name, order_name_set, get_merkle, calc_merkle, get_merkle_record } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  const {
+    isReady,
+    confirmShare,
+    periodValue,
+    confirmPeriod,
+    periodShow,
+    desc,
+    options,
+    doShare,
+    ipfsPin,
+    showShareDialog,
+    shareRefContent,
+    copyContent,
+    confirmHttpShare,
+  } = useShare(orderInfo, header, deviceType);
   let server;
   const route = useRoute();
   const router = useRouter();
@@ -223,7 +282,6 @@
   // let details = reactive<any>({ data: {} });
 
   // import { get_order_node } from '@/api/amb';
-
   const uploadRef = ref<any>(null);
   const bucketName = ref<string>('');
   const accessKeyId = ref<string>('');
@@ -249,26 +307,43 @@
   //   console.log('search_bill', res);
   //   minerIp.value = res?.data?.mp_ipaddr;
   // });
+  // let timeOutEvent;
+  // const touchRow = () => {
+  //   timeOutEvent = setTimeout(function () {
+  //     timeOutEvent = 0;
+  //   }, 1000);
+  // };
 
+  // const touchmoveRow = () => {
+  //   clearTimeout(timeOutEvent);
+  //   timeOutEvent = 0;
+  // };
+
+  // const touchendRow = () => {
+  //   clearTimeout(timeOutEvent);
+  //   console.log(timeOutEvent);
+
+  //   if (timeOutEvent != 0) {
+  //     console.log(uploadRef.value.submit, 'uploadRef');
+
+  //     uploadRef.value.submit();
+  //   }
+  // };
   const beforeupload = async (file: any) => {
-
-
-
-    console.log('upload-----------', bucketName.value)
+    console.log('upload-----------', bucketName.value);
 
     const d = {
       orderId: order_id.value,
-    }
+    };
     get_merkle(d).then((res) => {
-      if(res.data[0].merkle_status === 0) {
+      if (res.data[0].merkle_status === 0) {
         // TODO
         isDisabled.value = true;
         return;
       } else {
         isDisabled.value = false;
       }
-    })
-
+    });
 
     // bucketName.value = 'test11111';
     // accessKeyId.value = 'FOGaCTsgpOoeXsrtjmk5';
@@ -340,6 +415,93 @@
       return 5;
     }
   };
+  const detailShow = ref(false);
+  const imgUrl = ref('');
+  let detailRow = {};
+  const handleRow = (row) => {
+    detailRow = row;
+    if (row.imgUrl) {
+      detailShow.value = true;
+    } else {
+      let prefix;
+      if (row.isDir) {
+        prefix = detailRow.fullName.split('/').slice(0, -2);
+      } else {
+        prefix = detailRow.fullName.split('/').slice(0, -1);
+      }
+      console.log(detailRow.fullName, prefix);
+
+      router.push({
+        name: 'FileList',
+        query: { ...route.query, category: 0, prefix: prefix.join('/') },
+      });
+    }
+  };
+  const handlerClick = async (type: string) => {
+    const checkData = JSON.parse(JSON.stringify(detailRow));
+    if (type === 'download') {
+      const objectKey = encodeURIComponent(checkData.fullName);
+      const headers = getSignHeaders(objectKey);
+      const url = `/o/${objectKey}`;
+      fetch(url, { method: 'GET', headers })
+        .then((response) => {
+          if (response.ok) {
+            // 创建一个 Blob 对象，并将响应数据写入其中
+            console.log('Success', response);
+            return response.blob();
+          } else {
+            // 处理错误响应
+            console.error('Error:', response.status, response.statusText);
+          }
+        })
+        .then((blob) => {
+          console.log(blob, 'blob');
+
+          // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = checkData.fullName;
+
+          // 将 <a> 元素添加到文档中，并模拟点击
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        })
+        .catch((error) => {
+          // 处理网络错误
+          console.error('Network Error:', error);
+        });
+    } else if (type === 'share') {
+      await doShare(checkData);
+    }
+  };
+  const getSignHeaders = (objectKey) => {
+    // const objectKey = encodeURIComponent(checkData[0].fullName);
+
+    console.log('==================', accessKeyId.value, secretAccessKey.value, bucketName.value, objectKey);
+
+    const date = new Date().toUTCString();
+
+    const httpMethod = 'GET';
+    const contentType = '';
+    const contentMd5 = '';
+    const canonicalizedAmzHeaders = '';
+    // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
+    const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
+
+    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
+    console.log(signature, 'signature');
+
+    let hmac = HmacSHA1(signature, secretAccessKey.value);
+    const signatureBase64 = enc.Base64.stringify(hmac);
+    console.log(signatureBase64, 'signatureBase64');
+
+    const headers = {
+      'x-amz-date': date,
+      Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
+    };
+    return headers;
+  };
 
   const uploadSuccess = ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
@@ -348,10 +510,10 @@
       uuid: uuid.value,
       orderUuid: memo.value,
       mpAddress: orderInfo.value.mp_address,
-    }
+    };
     calc_merkle(d).then((res) => {
       console.log('calc_merkle-----', res);
-    })
+    });
     uploadRef.value.clearUploadQueue();
   };
 
@@ -364,19 +526,17 @@
   };
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
-    console.log('onFailure','-----', responseText, '-----' , option,'-----' ,  fileItem);
+    console.log('onFailure', '-----', responseText, '-----', option, '-----', fileItem);
 
-    
     uploadRef.value.clearUploadQueue();
   };
 
   const onChange = ({ fileList, event }: any) => {
-    console.log('--------------2')
+    console.log('--------------2');
     console.log('onChange', fileList, event);
   };
 
   const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
-   
     console.log('xhr', xhr, options);
     xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
@@ -461,13 +621,6 @@
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
-    let list_prefix = '';
-    if (prefix?.length) {
-      list_prefix = prefix.join('/');
-      if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
-        list_prefix = list_prefix + '/';
-      }
-    }
     // let ip = orderInfo.value.rpc.split(':')[0];
     let ip = `http://${bucketName.value}.devus.u2i.net:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
@@ -479,8 +632,8 @@
     // console.log(time);
     console.log('header--------------', header);
     let listObject = new Prox.default.ProxListObjectsRequest();
-    listObject.setPrefix(list_prefix);
-    listObject.setDelimiter('/');
+    listObject.setPrefix('');
+    listObject.setDelimiter('');
     listObject.setEncodingType('');
     listObject.setMaxKeys(30);
     listObject.setStartAfter('');
@@ -560,6 +713,8 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
+          console.log(transferData, 'transferData');
+
           initRemoteData(transferData, reset, 0);
         } else if (err) {
           console.log('err----list', err);
@@ -645,7 +800,7 @@
     }
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
-      let isDir = false;
+      let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
       const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
       let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
       let cid = data.content[j].cid;
@@ -656,7 +811,7 @@
         name = name.split(data.prefix)[1];
       }
       if (name.indexOf('/') > 0) {
-        name = name.split('/')[name.split('/').length - 1];
+        name = name.split('/')[name.split('/').length - 2];
       }
       let isPersistent = data.content[j].isPersistent;
 
@@ -704,13 +859,11 @@
     showToast.hide(1);
   };
 
-  
-
   const getKeys = () => {
     let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
     let request = new Prox.default.ProxGetCredRequest();
     request.setHeader(header);
-    console.log('request-----------------getkeys', request)
+    console.log('request-----------------getkeys', request);
     server.listCreds(request, {}, (err: any, res: { array: any }) => {
       if (err) {
         console.log('err------:', err);
@@ -731,41 +884,81 @@
     } else {
     }
 
-    get_merkle_record({orderId: order_id.value}).then((res) => {
+    get_merkle_record({ orderId: order_id.value }).then((res) => {
       console.log('get_merkle_record-------', res);
-    })
-    
+    });
   });
   watch(
-  () => route.query,
-  async () => {
-    await getOrderInfo();
-    bucketName.value = orderInfo.value.domain;
-    if (bucketName.value) {
-      getKeys();
-      getFileList();
-    } else {
-
-    }
-  },
-  { deep: true }
-);
+    () => route.query,
+    async () => {
+      await getOrderInfo();
+      bucketName.value = orderInfo.value.domain;
+      if (bucketName.value) {
+        getKeys();
+        getFileList();
+      } else {
+      }
+    },
+    { deep: true },
+  );
 </script>
 
 <style lang="scss" scoped>
+  .detail_over {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px 10px;
+    background: #000;
+    box-sizing: border-box;
+
+    .middle_img {
+    }
+    .bottom_action {
+      display: flex;
+      justify-content: space-evenly;
+      height: 300px;
+      div {
+        text-align: center;
+        color: #fff;
+      }
+      svg {
+        color: #fff;
+        width: 80px;
+        height: 80px;
+      }
+    }
+  }
+  .detail_back {
+    width: 60px;
+    height: 60px;
+  }
   .order-detail {
     margin-top: 30px;
   }
   .upload_btn {
-    // position: fixed;
-    position: relative;
-    // bottom: 150px;
-    // right: 50px;
+    position: fixed;
+    bottom: 150px;
+    right: 50px;
     font-size: 80px;
     border-radius: 50%;
     padding: 10px;
     width: 80px;
     height: 80px;
+    cursor: pointer;
+  }
+  .upload_class {
+    :deep {
+      .nut-uploader__input {
+        position: fixed !important;
+        top: unset !important;
+        left: unset !important;
+        bottom: 150px !important;
+        right: 50px !important;
+        width: 80px !important;
+        height: 80px !important;
+      }
+    }
   }
   .top_box {
     // margin: 0 30px;
@@ -1059,6 +1252,112 @@
   .creat-name {
     background: #f5f8fd;
     color: #0099ff;
+  }
+  .rename_box {
+    margin-top: 40px;
+    padding: 0 40px;
+    p {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    svg {
+      display: block;
+      margin: 0 auto;
+    }
+    :deep {
+      .nut-searchbar {
+        padding: 20px 0;
+      }
+      .nut-button {
+        margin-top: 40px;
+      }
+    }
+  }
+  .move_box {
+    .top_back {
+      margin-bottom: 10px;
+      p {
+        margin: 0 5px;
+        color: #000;
+      }
+    }
+    .file_list {
+      height: 950px;
+      overflow-y: auto;
+      .list_item {
+        width: 100%;
+      }
+      .left_icon_box {
+        svg {
+          width: 100px;
+          height: 100px;
+        }
+      }
+      .name_box {
+        p {
+          text-align: right;
+          margin: 0;
+        }
+      }
+    }
+  }
+  .share_info_box {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 150px;
+    div {
+      margin-top: 20px;
+      text-align: center;
+      color: $main_blue;
+      img,
+      svg {
+        display: block;
+        margin: 0 auto;
+        width: 80px;
+        height: 80px;
+      }
+    }
+  }
+  .custom-content {
+    p {
+      padding: 30px 20px;
+      color: #909090;
+      border-bottom: 1px solid #eee;
+      svg {
+        width: 60px;
+        height: 60px;
+        margin-right: 20px;
+        vertical-align: middle;
+      }
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      li {
+        padding: 30px 20px;
+        svg {
+          width: 40px;
+          height: 40px;
+          margin-right: 15px;
+          vertical-align: text-bottom;
+        }
+        &:active {
+          background: #cde3f5;
+        }
+      }
+      .is-disable {
+        color: #ccc;
+      }
+    }
+    .cancel_btn {
+      padding: 20px;
+      background-color: #f7f7f7;
+      color: #000;
+      text-align: center;
+      font-size: 35px;
+    }
   }
 </style>
 <style lang="scss">

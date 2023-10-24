@@ -30,8 +30,8 @@
           <div class="list_item" v-for="item in listData">
             <span v-if="item.created_at">{{ transferUTCTime(item.created_at) }}</span>
             <span v-else>Order:{{ item.order_id }}</span>
-            <span :class="[item.type == 'Earnings' ? 'earnings' : 'expenditures']">
-              {{ (item.type == 'Earnings' ? '+' : '-') + item.quantity }} DMC
+            <span :class="[item.type == 'earnings' ? 'earnings' : 'expenditures']">
+              {{ (item.type == 'earnings' ? '+' : '-') + item.quantity }} DMC
               <IconRunning v-if="item.state == 'running'"></IconRunning>
             </span>
           </div>
@@ -88,6 +88,7 @@
           quantity: el.total_price,
           state: el.state,
           order_id: el.order_id,
+          type: 'expense',
         };
       });
     } else {
@@ -142,6 +143,7 @@
         return {
           quantity: el.profit,
           order_id: el.order_id,
+          type: 'earnings',
         };
       });
       showToast.hide();
@@ -191,10 +193,9 @@
     { deep: true },
   );
 
-  onMounted(() => {
+  onMounted(async () => {
     loadMore();
     searchUserAsset();
-
     switch (route.query.type) {
       case '0':
         queryType.value = 'Withdrawn';
@@ -212,6 +213,28 @@
         queryType.value = 'Balance';
         break;
     }
+  });
+  onActivated(async () => {
+    loadMore();
+    searchUserAsset();
+    switch (route.query.type) {
+      case '0':
+        queryType.value = 'Withdrawn';
+        break;
+      case '1':
+        queryType.value = 'Earnings';
+        break;
+      case '2':
+        queryType.value = 'Recharge';
+        break;
+      case '3':
+        queryType.value = 'Expense';
+        break;
+      default:
+        queryType.value = 'Balance';
+        break;
+    }
+    console.log(queryType.value, 'queryType.valuequeryType.valuequeryType.value');
   });
 </script>
 

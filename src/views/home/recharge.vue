@@ -4,41 +4,29 @@
   </div>
   <div :class="['middle_box']">
     <img class="top_img" src="@/assets/withdraw-cion.png" alt="" />
+    <nut-noticebar
+      v-if="memo"
+      :text="`Please open the DMC Wallet APP, copy the receiving account and Memo information to recharge, please be sure to fill in this Memo information!!!`"
+      wrapable
+    ></nut-noticebar>
+    <div class="title_item" style="margin-top: 10px" v-if="memo">
+      <p>Memo: </p>
+      <p class="dmc_account" @click="copySecret(memo)">{{ memo }} <IconCopy color="#246bf7"></IconCopy></p>
+    </div>
     <div class="title_item">
       <p>Target account:</p>
       <p style="color: #246bf7" @click="copySecret(targetAccount)" class="dmc_account"
         >{{ targetAccount }} <IconCopy color="#246bf7"></IconCopy
       ></p>
     </div>
-    <div class="title_item">
+    <div class="title_item" v-if="dmc">
       <p>Your Payment Account:</p>
       <p class="dmc_account">{{ dmc }}</p>
     </div>
-    <div class="title_item">
-      <p>Please enter the Recharge amount:</p>
-      <div class="amount_input_box">
-        <nut-input
-          class="amount_input"
-          format-trigger="onBlur"
-          :formatter="formatAmount"
-          placeholder="Amount"
-          v-model="amount"
-          type="number"
-        >
-        </nut-input>
-      </div>
-    </div>
-    <nut-noticebar
-      v-if="memo"
-      :text="`Please open the DMC Wallet App, copy the receiving account and Memo information and use your payment account to top up (your payment account is: ${dmc})`"
-      wrapable
-    ></nut-noticebar>
-    <div class="title_item" style="margin-top: 10px" v-if="memo">
-      <p class="dmc_account" @click="copySecret(memo)">Memo: {{ memo }} <IconCopy color="#246bf7"></IconCopy></p>
-    </div>
-    <div style="margin: 40px">
+
+    <!-- <div style="margin: 40px">
       <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmRecharge"> Confirm </nut-button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -55,7 +43,7 @@
   const email = computed(() => userStore.getUserInfo.email);
   const router = useRouter();
   const state = reactive({
-    amount: '',
+    amount: '1.0000',
     memo: '',
   });
   const { memo, amount } = toRefs(state);
@@ -90,6 +78,7 @@
   }
   onMounted(() => {
     getAmbDmc();
+    confirmRecharge();
     // getCommissionRate();
   });
 </script>

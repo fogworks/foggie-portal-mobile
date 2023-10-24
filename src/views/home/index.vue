@@ -4,7 +4,7 @@
       <Notice width="20px" left="20px"></Notice>
     </template>
     <span>Not yet bound to a DMC account </span>
-    <router-link to="/bindDmc"> Go to Binding</router-link>
+    <router-link to="/bindDmc?type=dmc"> Go to Binding</router-link>
   </nut-noticebar>
   <div class="dmc_account" v-else>
     <div class="img-box">
@@ -174,10 +174,10 @@
   const showWithdraw = () => {
     if (!userInfo.value.dmc) {
       const dmcOk = () => {
-        router.push({ path: '/bindDmc' });
+        router.push({ path: '/bindDmc?type=dmc' });
       };
       let src = require('@/assets/DMC_token.png');
-      let str = `< img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
+      let str = `<img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
       showDialog({
         title: 'Bind DMC Account',
         content: str,
@@ -204,17 +204,10 @@
     }
   };
   const toRecharge = () => {
-    if (!userInfo.value.dmc || !userInfo.value.amb_promo_code) {
-      if (!userInfo.value.dmc && userInfo.value.amb_promo_code) {
-        showToast.text('Not yet bound to a DMC account, please bind your DMC account.');
-      } else if (userInfo.value.dmc && !userInfo.value.amb_promo_code) {
-        showToast.text("Please bind the Ambassador Invitation Code first if you haven't already done so.");
-      } else if (!userInfo.value.dmc && !userInfo.value.amb_promo_code) {
-        showToast.text(
-          'Have not yet bound the DMC account and the ambassador invitation code, please bind them first before doing this operation',
-        );
-      }
-      router.push({ name: 'BindDmc' });
+    if (!userInfo.value.amb_promo_code) {
+      showToast.text("Please bind the Ambassador Invitation Code first if you haven't already done so.");
+      router.push({ name: 'BindDmc', query: { type: 'amb' } });
+      return false;
     } else {
       router.push({ name: 'Recharge' });
     }

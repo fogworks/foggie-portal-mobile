@@ -8,25 +8,31 @@
   import { onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast, showDialog } from '@nutui/nutui';
+  import { useRouter, useRoute } from 'vue-router';
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
 
   const userStore = useUserStore();
+  const router = useRouter();
+  const route = useRoute();
   const uuid = computed(() => userStore.getUserInfo?.uuid);
   const userInfo = computed(() => userStore.getUserInfo);
 
   const bindAmb = async () => {
-    if (!userInfo.value.dmc) {
-      const dmcOk = () => {
-        router.push({ path: '/bindDmc?type=dmc' });
-      };
-      let src = require('@/assets/DMC_token.png');
-      let str = `< img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
-      showDialog({
-        title: 'Bind DMC Account',
-        content: str,
-        onOk: dmcOk,
-      });
+    // if (!userInfo.value.dmc) {
+    //   const dmcOk = () => {
+    //     router.push({ path: '/bindDmc?type=dmc' });
+    //   };
+    //   let src = require('@/assets/DMC_token.png');
+    //   let str = `<img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
+    //   showDialog({
+    //     title: 'Bind DMC Account',
+    //     content: str,
+    //     onOk: dmcOk,
+    //   });
+    //   return false;
+    // }
+    if (route.path == '/bindDmc' && route.query?.type == 'amb') {
       return false;
     }
     let isAmbCode = false;
@@ -97,6 +103,8 @@
     },
     { deep: true },
   );
+  let vh = window.innerHeight * 0.01;
+
   onMounted(async () => {
     if (userStore.getToken) {
       let res = await user();
@@ -104,17 +112,21 @@
         userStore.setInfo(res.data);
       }
     }
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
   });
 </script>
 
 <style lang="scss">
   #app {
-    height: 100vh;
+    // height: 100vh;
     color: #2c3e50;
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background: #f5f7fb;
+    -webkit-overflow-scrolling: touch;
+    height: calc(var(--vh, 1vh) * 100);
+    // overflow: auto;
   }
   ::-webkit-scrollbar {
     width: 0px;

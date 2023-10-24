@@ -8,9 +8,6 @@ export const routes = [
         path: 'home',
         name: 'Home',
         component: () => import('@/views/home/index.vue'),
-        meta: {
-          title: 'tabbar.home',
-        },
       },
       {
         path: 'transactionRecords',
@@ -43,7 +40,7 @@ export const routes = [
         component: () => import('@/views/demo/index.vue'),
         meta: {
           title: 'tabbar.demo',
-          keepAlive: true,
+          notKeepAlive: true,
         },
       },
       {
@@ -68,6 +65,9 @@ export const routes = [
         path: 'fileList',
         name: 'FileList',
         component: () => import('@/views/list/details/fileList.vue'),
+        meta: {
+          notKeepAlive: true,
+        },
       },
       {
         path: 'recordsList',
@@ -118,7 +118,7 @@ export const routes = [
     path: '/login',
     component: () => import('@/views/login/index.vue'),
     meta: {
-      title: '',
+      notKeepAlive: true,
     },
   },
   {
@@ -126,7 +126,7 @@ export const routes = [
     name: 'Register',
     component: () => import('@/views/login/register.vue'),
     meta: {
-      title: '',
+      notKeepAlive: true,
     },
   },
   {
@@ -134,7 +134,7 @@ export const routes = [
     name: 'Forget',
     component: () => import('@/views/login/forget.vue'),
     meta: {
-      title: '',
+      notKeepAlive: true,
     },
   },
   {

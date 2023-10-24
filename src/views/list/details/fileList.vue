@@ -35,7 +35,7 @@
         </div>
       </div>
     </nut-popup>
-    <nut-sticky class="file_Top">
+    <nut-sticky class="file_Top" top="0">
       <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
         <div style="display: flex">
           <template v-if="!prefix.length">
@@ -49,7 +49,14 @@
             ></TriangleUp>
           </template>
           <template v-else>
-            <div class="top_back" @click="prefix.splice(-1)"> </div>
+            <div
+              class="top_back"
+              @click="
+                prefix.splice(-1);
+                prefixChange();
+              "
+            >
+            </div>
             <span class="top_title">
               {{ prefix.at(-1) || '' }}
             </span>
@@ -286,7 +293,7 @@
     <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
       <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
       <div class="middle_img">
-        <nut-image :src="imgUrl || detailImg" fit="contain" postion="center" />
+        <nut-image :src="imgUrl" fit="contain" position="center" />
       </div>
       <div class="bottom_action">
         <div>
@@ -303,7 +310,6 @@
 </template>
 
 <script setup lang="ts">
-  import detailImg from '@/assets/fog-works.png';
   import IconTwitter from '~icons/home/twitter.svg';
   import IconFile from '~icons/bxs/file.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';
@@ -498,6 +504,7 @@
           keyWord.value = '';
           let long_name = prefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
           prefix.value = long_name.split('/').slice(0, -1);
+          prefixChange();
         } else {
           chooseItem.value = row;
           detailShow.value = true;
@@ -714,11 +721,11 @@
       //   Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
       // };
 
-      const headers = getSignHeaders(objectKey)
+      const headers = getSignHeaders(objectKey);
 
       // 构建 S3 GET 请求
       // const url = `/o/${bucketName}/${objectKey}`;
-      const url = `/o/${objectKey}`
+      const url = `/o/${objectKey}`;
       // const url = `/o/${objectKey}?thumb=true`;
       console.log(url, 'url');
       console.log(headers, 'headers');
@@ -952,7 +959,7 @@
       // imgHttpLarge = `/o/${encodeURIComponent(item.key)}?${params.toString()}`;
       // console.log('imgHttpLink------------', imgHttpLink);
 
-      const url = `/o/${encodeURIComponent(item.key)}?`
+      const url = `/o/${encodeURIComponent(item.key)}?`;
 
       await fetch(url, { method: 'GET', headers })
         .then((response) => {
@@ -974,30 +981,28 @@
           // 处理网络错误
           console.error('Network Error:', error);
         });
-        const url_thumb = `/o/${encodeURIComponent(item.key)}?thumb=true`
+      const url_thumb = `/o/${encodeURIComponent(item.key)}?thumb=true`;
 
       await fetch(url_thumb, { method: 'GET', headers })
-          .then((response) => {
-            if (response.ok) {
-              // 创建一个 Blob 对象，并将响应数据写入其中
-              console.log('Success', response);
-              return response.blob();
-            } else {
-              // 处理错误响应
-              console.error('Error:', response.status, response.statusText);
-            }
-          })
-          .then((blob) => {
-            if (blob) {
-              imgHttpLink = URL.createObjectURL(blob);
-            }
-          })
-          .catch((error) => {
-            // 处理网络错误
-            console.error('Network Error:', error);
-          });
-      
-
+        .then((response) => {
+          if (response.ok) {
+            // 创建一个 Blob 对象，并将响应数据写入其中
+            console.log('Success', response);
+            return response.blob();
+          } else {
+            // 处理错误响应
+            console.error('Error:', response.status, response.statusText);
+          }
+        })
+        .then((blob) => {
+          if (blob) {
+            imgHttpLink = URL.createObjectURL(blob);
+          }
+        })
+        .catch((error) => {
+          // 处理网络错误
+          console.error('Network Error:', error);
+        });
 
       // foggie://peerid/spaceid/cid
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
@@ -1188,8 +1193,10 @@
     showToast.hide(1);
     nextTick(() => {
       if (window.localStorage.notFirst) {
+        // document.body.style.overflow = '';
         isFirst.value = false;
       } else {
+        // document.body.style.overflow = 'hidden';
         isFirst.value = true;
       }
     });
@@ -1295,11 +1302,12 @@
     window.open(twitterUrl, '_blank');
   };
   const handleFirst = () => {
+    // document.body.style.overflow = '';
     isFirst.value = false;
     window.localStorage.notFirst = true;
   };
 
-  const getSignHeaders = (objectKey)=> {
+  const getSignHeaders = (objectKey) => {
     // const objectKey = encodeURIComponent(checkData[0].fullName);
 
     console.log('==================', accessKeyId.value, secretAccessKey.value, bucketName.value, objectKey);
@@ -1325,7 +1333,7 @@
       Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
     };
     return headers;
-  }
+  };
   const getKeys = () => {
     if (orderInfo.value && orderInfo.value.peer_id) {
       let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
@@ -1341,14 +1349,11 @@
         }
       });
     } else {
-      setTimeout(()=> {
-        getKeys()
-      }, 600)
+      setTimeout(() => {
+        getKeys();
+      }, 600);
     }
-    
   };
-
-
 
   // const getKeys = () => {
   //   console.log('getKeys--------------');
@@ -1373,12 +1378,15 @@
   //     }
   //   });
   // };
-
+  const prefixChange = () => {
+    cancelSelect();
+    doSearch('', prefix.value, true);
+  };
   watch(
     category,
     async (val, old) => {
       if (old == 1) {
-        imgListRef.value.resetChecked();
+        imgListRef?.value?.resetChecked();
         imgCheckedData.value = [];
       }
       if (val == 1) {
@@ -1389,25 +1397,17 @@
     },
     { deep: true, immediate: true },
   );
-  watch(
-    prefix,
-    (val) => {
-      if (!keyWord.value) {
-        cancelSelect();
-        doSearch('', val, true);
-      }
-    },
-    { deep: true },
-  );
+  onMounted(async () => {
+    console.log(orderInfo.value, 'orderinfo');
 
-  onMounted(() => {
-    keyWord.value = route.query?.keyWord || '';
-    category.value = route.query.category;
+    prefix.value = route?.query?.prefix.split('/');
+    // keyWord.value = route.query?.keyWord || '';
+    category.value = route.query.category || '0';
 
     bucketName.value = route.query?.bucketName;
     getKeys();
-    
     switchType(category.value);
+    // prefix.value = route?.query?.prefix.split('/');
   });
 </script>
 <style>

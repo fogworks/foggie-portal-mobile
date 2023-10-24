@@ -18,14 +18,13 @@ export default function useOrderInfo() {
   });
   const route = useRoute();
   const getOrderInfo = async () => {
-    await get_unique_order({ order_uuid: route?.query?.uuid }).then((res) => {
-      orderInfo.value = res.result.data;
-      // orderInfo.value.rpc = '218.2.96.99:6007';
-      header.setPeerid(orderInfo.value.peer_id);
-      header.setId(orderInfo.value.foggie_id);
-      // header.setId('baeqacmjq');
-      header.setToken(orderInfo.value.sign);
-    });
+    let res = await get_unique_order({ order_uuid: route?.query?.uuid });
+    orderInfo.value = res.result.data;
+    // orderInfo.value.rpc = '218.2.96.99:6007';
+    header.setPeerid(orderInfo.value.peer_id);
+    header.setId(orderInfo.value.foggie_id);
+    // header.setId('baeqacmjq');
+    header.setToken(orderInfo.value.sign);
   };
   return {
     orderInfo,
