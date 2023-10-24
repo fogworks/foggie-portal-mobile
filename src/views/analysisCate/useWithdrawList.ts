@@ -2,6 +2,8 @@ import { get_user_withdraw } from '@/api/amb';
 import { useOrderStore } from '@/store/modules/order';
 import { showToast } from '@nutui/nutui';
 import '@nutui/nutui/dist/packages/toast/style';
+import loadingImg from '@/components/loadingImg/index.vue';
+
 import { transferUTCTime } from '@/utils/util';
 
 export default function useOrderList() {
@@ -52,6 +54,9 @@ export default function useOrderList() {
   const getWithdrawList = async (start_time = '', end_time = '') => {
     showToast.loading('Loading', {
       cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
     });
     await get_user_withdraw({ ps: ps.value, pn: pn.value, start_time, end_time })
       .then((res) => {

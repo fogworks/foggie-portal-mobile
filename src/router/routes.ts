@@ -67,6 +67,7 @@ export const routes = [
         component: () => import('@/views/list/details/fileList.vue'),
         meta: {
           notKeepAlive: true,
+          notBar: true,
         },
       },
       {

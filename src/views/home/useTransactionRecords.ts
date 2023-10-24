@@ -1,6 +1,7 @@
 import { get_user_recharge, get_user_withdraw } from '@/api/amb';
 import { showToast } from '@nutui/nutui';
 import { transferUTCTime } from '@/utils/util';
+import loadingImg from '@/components/loadingImg/index.vue';
 
 export default function useOrderList() {
   const shortcuts = {
@@ -48,6 +49,9 @@ export default function useOrderList() {
   const loadMore = async (start_time = '', end_time = '', type = 0) => {
     showToast.loading('Loading', {
       cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
     });
     if (type == 0) {
       await get_user_recharge({ ps: ps.value, pn: pn.value, start_time, end_time })

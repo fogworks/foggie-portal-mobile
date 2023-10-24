@@ -1,7 +1,7 @@
 <template>
   <!-- <van-nav-bar :title="$t($route.meta.title as string)" :left-arrow="!tabbarVisible" @click-left="goBack" /> -->
   <div class="main-page" :class="{ tabbar: tabbarVisible, border: showBorder }">
-    <RouterView v-if="!$route.meta.notKeepAlive" :key="$route.path" />
+    <RouterView v-if="$route.meta.notKeepAlive" :key="$route.path" />
     <RouterView v-else v-slot="{ Component }">
       <keep-alive>
         <component :is="Component" :key="$route.path" />

@@ -55,6 +55,7 @@
             title: 'Notice',
             content: `Your ambassador invitation code is ${userInfo.value.amb_promo_code}, Whether or not to go to binding?`,
             onOk: ambOk,
+            popClass: 'dialog_class',
           });
         } else if (res2.result.bind) {
           userStore.setCloudCodeIsBind(true);
@@ -77,6 +78,7 @@
         title: 'Notice',
         content: `Your current invitation code ${userInfo.value.amb_promo_code} is the user's invitation code, are you sure you want to bind it?`,
         onOk: userOk,
+        popClass: 'dialog_class',
       });
     }
   };
@@ -104,6 +106,9 @@
 </script>
 
 <style lang="scss">
+  // body {
+  //   padding-bottom: 90px !important;
+  // }
   #app {
     // height: 100vh;
     color: #2c3e50;
@@ -113,7 +118,7 @@
     background: #f5f7fb;
     -webkit-overflow-scrolling: touch;
     height: calc(var(--vh, 1vh) * 100);
-    // overflow: auto;
+    overflow: auto;
   }
   ::-webkit-scrollbar {
     width: 0px;
@@ -151,6 +156,16 @@
     background: #fff;
     .nut-toast-inner {
       box-shadow: none;
+    }
+  }
+  .dialog_class {
+    font-size: 30px;
+    .nut-dialog__header {
+      height: unset;
+      font-size: 35px;
+    }
+    .nut-dialog__content {
+      font-size: 30px;
     }
   }
 </style>

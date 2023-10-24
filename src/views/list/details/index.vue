@@ -157,7 +157,14 @@
       </div>
     </nut-overlay>
     <!-- share -->
-    <nut-popup @closed="isReady = false" position="bottom" closeable round :style="{ height: '200px' }" v-model:visible="showShareDialog">
+    <nut-popup
+      @closed="isReady = false"
+      position="bottom"
+      closeable
+      round
+      :style="{ height: '200px', 'z-index': 999 }"
+      v-model:visible="showShareDialog"
+    >
       <div v-if="isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
         <nut-popup position="bottom" v-model:visible="periodShow">
@@ -218,84 +225,84 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, onMounted, watch } from 'vue';
-    // import recycleFill from '~icons/home/recycle-fill';
-    // import IconAudio from '~icons/home/audio.svg';
-    import IconShare from '~icons/home/share.svg';
-    import IconArrowLeft from '~icons/home/arrow-left.svg';
-    import IconDownload from '~icons/home/download.svg';
-    import IconTwitter from '~icons/home/twitter.svg';
-    import IconHttp from '~icons/home/http.svg';
-    import IconFacebook from '~icons/devicon/facebook.svg';
+  import { ref, onMounted, watch } from 'vue';
+  // import recycleFill from '~icons/home/recycle-fill';
+  // import IconAudio from '~icons/home/audio.svg';
+  import IconShare from '~icons/home/share.svg';
+  import IconArrowLeft from '~icons/home/arrow-left.svg';
+  import IconDownload from '~icons/home/download.svg';
+  import IconTwitter from '~icons/home/twitter.svg';
+  import IconHttp from '~icons/home/http.svg';
+  import IconFacebook from '~icons/devicon/facebook.svg';
 
-    import IconAudio2 from '~icons/home/audio2.svg';
-    import IconMore from '~icons/home/more.svg';
-    import IconImage from '~icons/home/image.svg';
-    import IconDocument from '~icons/home/document.svg';
-    import IconVideo from '~icons/home/video.svg';
-    //   import IconMdiF from '~icons/mdi/file-cloud';
-    //   import IconRiPie from '~icons/ri/pie-chart-fill';
-    import IconMdiF from '~icons/home/png.svg';
-    import IconRiPie from '~icons/home/pie.svg';
-    import IconSpace from '~icons/home/space.svg';
-    import IconRiNodeTree from '~icons/ri/node-tree';
-    import IconRiSendToBack from '~icons/ri/send-to-back';
-    import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
-    import keySolid from '~icons/teenyicons/key-solid';
-    import * as Prox from '@/pb/prox_pb.js';
-    import * as grpcService from '@/pb/prox_grpc_web_pb.js';
-    // import AESHelper from './AESHelper';
-    // import { Image } from '@nutui/icons-vue';
-    import { HmacSHA1, enc } from 'crypto-js';
-    import { Buffer } from 'buffer';
-    import { useRoute, useRouter } from 'vue-router';
-    import useOrderInfo from './useOrderInfo.js';
-    import useShare from './useShare.js';
-    import { showToast } from '@nutui/nutui';
-    import { transferUTCTime, getfilesize } from '@/utils/util';
-    import { check_name, order_name_set, get_merkle, calc_merkle, get_merkle_record } from '@/api/index';
-    import '@nutui/nutui/dist/packages/toast/style';
-    const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
-    const {
-      isReady,
-      confirmShare,
-      periodValue,
-      confirmPeriod,
-      periodShow,
-      desc,
-      options,
-      doShare,
-      ipfsPin,
-      showShareDialog,
-      shareRefContent,
-      copyContent,
-      confirmHttpShare,
-    } = useShare(orderInfo, header, deviceType);
-    let server;
-    const route = useRoute();
-    const router = useRouter();
+  import IconAudio2 from '~icons/home/audio2.svg';
+  import IconMore from '~icons/home/more.svg';
+  import IconImage from '~icons/home/image.svg';
+  import IconDocument from '~icons/home/document.svg';
+  import IconVideo from '~icons/home/video.svg';
+  //   import IconMdiF from '~icons/mdi/file-cloud';
+  //   import IconRiPie from '~icons/ri/pie-chart-fill';
+  import IconMdiF from '~icons/home/png.svg';
+  import IconRiPie from '~icons/home/pie.svg';
+  import IconSpace from '~icons/home/space.svg';
+  import IconRiNodeTree from '~icons/ri/node-tree';
+  import IconRiSendToBack from '~icons/ri/send-to-back';
+  import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
+  import keySolid from '~icons/teenyicons/key-solid';
+  import * as Prox from '@/pb/prox_pb.js';
+  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+  // import AESHelper from './AESHelper';
+  // import { Image } from '@nutui/icons-vue';
+  import { HmacSHA1, enc } from 'crypto-js';
+  import { Buffer } from 'buffer';
+  import { useRoute, useRouter } from 'vue-router';
+  import useOrderInfo from './useOrderInfo.js';
+  import useShare from './useShare.js';
+  import { showToast } from '@nutui/nutui';
+  import { transferUTCTime, getfilesize } from '@/utils/util';
+  import { check_name, order_name_set, get_merkle, calc_merkle, get_merkle_record } from '@/api/index';
+  import '@nutui/nutui/dist/packages/toast/style';
+  const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  const {
+    isReady,
+    confirmShare,
+    periodValue,
+    confirmPeriod,
+    periodShow,
+    desc,
+    options,
+    doShare,
+    ipfsPin,
+    showShareDialog,
+    shareRefContent,
+    copyContent,
+    confirmHttpShare,
+  } = useShare(orderInfo, header, deviceType);
+  let server;
+  const route = useRoute();
+  const router = useRouter();
 
-    const successStatus = ref<number>(204);
+  const successStatus = ref<number>(204);
 
-    import { useUserStore } from '@/store/modules/user';
-    const userStore = useUserStore();
-    const uuid = computed(() => userStore.getUserInfo.uuid);
+  import { useUserStore } from '@/store/modules/user';
+  const userStore = useUserStore();
+  const uuid = computed(() => userStore.getUserInfo.uuid);
 
-    // let details = reactive<any>({ data: {} });
+  // let details = reactive<any>({ data: {} });
 
-    // import { get_order_node } from '@/api/amb';
-    const uploadRef = ref<any>(null);
-    const bucketName = ref<string>('');
-    const accessKeyId = ref<string>('');
-    const secretAccessKey = ref<string>('');
-    const uploadUri = ref<string>('');
-    const prefix = ref<string>('');
-    const showCreatName = ref<boolean>(false);
-    const newBucketName = ref<string>('');
-    const tableData = ref<array>([]);
-    const tableLoading = ref<boolean>(false);
-    const isDisabled = ref<boolean>(false);
-    const formData = ref<any>({});
+  // import { get_order_node } from '@/api/amb';
+  const uploadRef = ref<any>(null);
+  const bucketName = ref<string>('');
+  const accessKeyId = ref<string>('');
+  const secretAccessKey = ref<string>('');
+  const uploadUri = ref<string>('');
+  const prefix = ref<string>('');
+  const showCreatName = ref<boolean>(false);
+  const newBucketName = ref<string>('');
+  const tableData = ref<array>([]);
+  const tableLoading = ref<boolean>(false);
+  const isDisabled = ref<boolean>(false);
+  const formData = ref<any>({});
 
   const memo = ref<any>('');
   const order_id = ref<any>('');
@@ -313,181 +320,178 @@
   // });
 
   const beforeupload = async (file: any) => {
+    console.log('upload-----------', bucketName.value);
 
+    const d = {
+      orderId: order_id.value,
+    };
+    get_merkle(d).then((res) => {
+      if (res.data[0].merkle_status === 0) {
+        // TODO
+        isDisabled.value = true;
+        return;
+      } else {
+        isDisabled.value = false;
+      }
+    });
 
+    // bucketName.value = 'test11111';
+    // accessKeyId.value = 'FOGaCTsgpOoeXsrtjmk5';
+    // secretAccessKey.value = '8zztbNHf6CVYdadg3AXmairRZ8mTXoowzMU2sUOq';
 
-    console.log('upload-----------', bucketName.value)
+    // uploadUri.value = '/fog/baeqacmjq/foggiebucket';
+    // uploadUri.value = '/o/foggiebucket';
+    // uploadUri.value = `http://${bucketName.value}.devus.u2i.net:6008/o/`;
+    uploadUri.value = '/o';
 
-      const d = {
-        orderId: order_id.value,
-      };
-      get_merkle(d).then((res) => {
-        if (res.data[0].merkle_status === 0) {
-          // TODO
-          isDisabled.value = true;
-          return;
-        } else {
-          isDisabled.value = false;
-        }
+    const policy = {
+      expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
+      conditions: [
+        { bucket: bucketName.value },
+        { acl: 'public-read' }, // 设置 ACL（可根据需求更改）
+        ['starts-with', file[0], prefix.value], // Key 以 "uploads/" 开头
+        ['starts-with', '$Content-Type', ''], // Content-Type 为空
+      ],
+    };
+    console.log('policy', policy);
+    // 将 POST Policy 转换为 JSON 字符串
+    const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
+    console.log('policyBase64', policyBase64);
+
+    let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
+    const signature = enc.Base64.stringify(hmac);
+
+    console.log('signature', signature);
+    formData.value = {};
+    formData.value.Key = encodeURIComponent(prefix.value + file[0].name);
+    formData.value.Policy = policyBase64;
+    formData.value.Signature = signature;
+    formData.value.Awsaccesskeyid = accessKeyId.value;
+
+    formData.value.category = getType(file[0].name);
+    // formData.value.Success_action_status = 201;
+    console.log('file', file.length, file, file[0]);
+    return [file[0]];
+  };
+
+  const getType = (fileName: string) => {
+    if (fileName.endsWith('.jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.svg')) {
+      return 1;
+    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mp4')) {
+      return 2;
+    } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
+      return 4;
+    } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar') || fileName.endsWith('.gz') || fileName.endsWith('.tar')) {
+      return 5;
+    } else if (fileName.endsWith('.cmd')) {
+      return 5;
+    } else if (fileName.endsWith('.css')) {
+      return 5;
+    } else if (fileName.endsWith('.mp3')) {
+      return 3;
+    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+      return 4;
+    } else if (fileName.endsWith('.pdf')) {
+      return 4;
+    } else if (fileName.endsWith('.ppt')) {
+      return 4;
+    } else if (fileName.endsWith('.text') || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
+      return 4;
+    } else if (fileName.endsWith('.html')) {
+      return 5;
+    } else if (fileName.endsWith('/')) {
+      return 5;
+    } else {
+      return 5;
+    }
+  };
+  const detailShow = ref(false);
+  const imgUrl = ref('');
+  let detailRow = {};
+  const handleRow = (row) => {
+    detailRow = row;
+    if (row.imgUrl) {
+      detailShow.value = true;
+    } else {
+      let prefix;
+      if (row.isDir) {
+        prefix = detailRow.fullName.split('/').slice(0, -2);
+      } else {
+        prefix = detailRow.fullName.split('/').slice(0, -1);
+      }
+      console.log(detailRow.fullName, prefix);
+
+      router.push({
+        name: 'FileList',
+        query: { ...route.query, category: 0, prefix: prefix.join('/') },
       });
+    }
+  };
+  const handlerClick = async (type: string) => {
+    const checkData = JSON.parse(JSON.stringify(detailRow));
+    if (type === 'download') {
+      const objectKey = encodeURIComponent(checkData.fullName);
+      const headers = getSignHeaders(objectKey);
+      const url = `/o/${objectKey}`;
+      fetch(url, { method: 'GET', headers })
+        .then((response) => {
+          if (response.ok) {
+            // 创建一个 Blob 对象，并将响应数据写入其中
+            console.log('Success', response);
+            return response.blob();
+          } else {
+            // 处理错误响应
+            console.error('Error:', response.status, response.statusText);
+          }
+        })
+        .then((blob) => {
+          console.log(blob, 'blob');
 
-      // bucketName.value = 'test11111';
-      // accessKeyId.value = 'FOGaCTsgpOoeXsrtjmk5';
-      // secretAccessKey.value = '8zztbNHf6CVYdadg3AXmairRZ8mTXoowzMU2sUOq';
+          // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = checkData.fullName;
 
-      // uploadUri.value = '/fog/baeqacmjq/foggiebucket';
-      // uploadUri.value = '/o/foggiebucket';
-      // uploadUri.value = `http://${bucketName.value}.devus.u2i.net:6008/o/`;
-      uploadUri.value = '/o';
-
-      const policy = {
-        expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
-        conditions: [
-          { bucket: bucketName.value },
-          { acl: 'public-read' }, // 设置 ACL（可根据需求更改）
-          ['starts-with', file[0], prefix.value], // Key 以 "uploads/" 开头
-          ['starts-with', '$Content-Type', ''], // Content-Type 为空
-        ],
-      };
-      console.log('policy', policy);
-      // 将 POST Policy 转换为 JSON 字符串
-      const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
-      console.log('policyBase64', policyBase64);
-
-      let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
-      const signature = enc.Base64.stringify(hmac);
-
-      console.log('signature', signature);
-      formData.value = {};
-      formData.value.Key = encodeURIComponent(prefix.value + file[0].name);
-      formData.value.Policy = policyBase64;
-      formData.value.Signature = signature;
-      formData.value.Awsaccesskeyid = accessKeyId.value;
-
-      formData.value.category = getType(file[0].name);
-      // formData.value.Success_action_status = 201;
-      console.log('file', file.length, file, file[0]);
-      return [file[0]];
-    };
-
-    const getType = (fileName: string) => {
-      if (fileName.endsWith('.jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.svg')) {
-        return 1;
-      } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mp4')) {
-        return 2;
-      } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
-        return 4;
-      } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar') || fileName.endsWith('.gz') || fileName.endsWith('.tar')) {
-        return 5;
-      } else if (fileName.endsWith('.cmd')) {
-        return 5;
-      } else if (fileName.endsWith('.css')) {
-        return 5;
-      } else if (fileName.endsWith('.mp3')) {
-        return 3;
-      } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-        return 4;
-      } else if (fileName.endsWith('.pdf')) {
-        return 4;
-      } else if (fileName.endsWith('.ppt')) {
-        return 4;
-      } else if (fileName.endsWith('.text') || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
-        return 4;
-      } else if (fileName.endsWith('.html')) {
-        return 5;
-      } else if (fileName.endsWith('/')) {
-        return 5;
-      } else {
-        return 5;
-      }
-    };
-    const detailShow = ref(false);
-    const imgUrl = ref('');
-    let detailRow = {};
-    const handleRow = (row) => {
-      detailRow = row;
-      if (row.imgUrl) {
-        detailShow.value = true;
-      } else {
-        let prefix;
-        if (row.isDir) {
-          prefix = detailRow.fullName.split('/').slice(0, -2);
-        } else {
-          prefix = detailRow.fullName.split('/').slice(0, -1);
-        }
-        console.log(detailRow.fullName, prefix);
-
-        router.push({
-          name: 'FileList',
-          query: { ...route.query, category: 0, prefix: prefix.join('/') },
+          // 将 <a> 元素添加到文档中，并模拟点击
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        })
+        .catch((error) => {
+          // 处理网络错误
+          console.error('Network Error:', error);
         });
-      }
+    } else if (type === 'share') {
+      await doShare(checkData);
+    }
+  };
+  const getSignHeaders = (objectKey) => {
+    // const objectKey = encodeURIComponent(checkData[0].fullName);
+
+    console.log('==================', accessKeyId.value, secretAccessKey.value, bucketName.value, objectKey);
+
+    const date = new Date().toUTCString();
+
+    const httpMethod = 'GET';
+    const contentType = '';
+    const contentMd5 = '';
+    const canonicalizedAmzHeaders = '';
+    // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
+    const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
+
+    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
+    console.log(signature, 'signature');
+
+    let hmac = HmacSHA1(signature, secretAccessKey.value);
+    const signatureBase64 = enc.Base64.stringify(hmac);
+    console.log(signatureBase64, 'signatureBase64');
+
+    const headers = {
+      'x-amz-date': date,
+      Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
     };
-    const handlerClick = async (type: string) => {
-      const checkData = JSON.parse(JSON.stringify(detailRow));
-      if (type === 'download') {
-        const objectKey = encodeURIComponent(checkData.fullName);
-        const headers = getSignHeaders(objectKey);
-        const url = `/o/${objectKey}`;
-        fetch(url, { method: 'GET', headers })
-          .then((response) => {
-            if (response.ok) {
-              // 创建一个 Blob 对象，并将响应数据写入其中
-              console.log('Success', response);
-              return response.blob();
-            } else {
-              // 处理错误响应
-              console.error('Error:', response.status, response.statusText);
-            }
-          })
-          .then((blob) => {
-            console.log(blob, 'blob');
-
-            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = checkData.fullName;
-
-            // 将 <a> 元素添加到文档中，并模拟点击
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          })
-          .catch((error) => {
-            // 处理网络错误
-            console.error('Network Error:', error);
-          });
-      } else if (type === 'share') {
-        await doShare(checkData);
-      }
-    };
-    const getSignHeaders = (objectKey) => {
-      // const objectKey = encodeURIComponent(checkData[0].fullName);
-
-      console.log('==================', accessKeyId.value, secretAccessKey.value, bucketName.value, objectKey);
-
-      const date = new Date().toUTCString();
-
-      const httpMethod = 'GET';
-      const contentType = '';
-      const contentMd5 = '';
-      const canonicalizedAmzHeaders = '';
-      // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
-      const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
-
-      const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
-      console.log(signature, 'signature');
-
-      let hmac = HmacSHA1(signature, secretAccessKey.value);
-      const signatureBase64 = enc.Base64.stringify(hmac);
-      console.log(signatureBase64, 'signatureBase64');
-
-      const headers = {
-        'x-amz-date': date,
-        Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
-      };
-      return headers;
-    };
+    return headers;
+  };
 
   const uploadSuccess = ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
@@ -497,372 +501,387 @@
       // uuid: 'fb08ae12-c5fb-4b24-88d9-746339b72fd0',
       orderUuid: memo.value,
       rpc: orderInfo.value.rpc,
-    }
+    };
     calc_merkle(d).then((res) => {
       console.log('calc_merkle-----', res);
-    })
+    });
     uploadRef.value.clearUploadQueue();
   };
 
-    const onProgress = ({ event, options, percentage }: any) => {
-      console.log('onProgress', event, options, percentage);
-    };
+  const onProgress = ({ event, options, percentage }: any) => {
+    console.log('onProgress', event, options, percentage);
+  };
 
-    const onStart = ({ options }: any) => {
-      console.log('onStart', options);
-    };
+  const onStart = ({ options }: any) => {
+    console.log('onStart', options);
+  };
 
-    const onFailure = ({ responseText, option, fileItem }: any) => {
-      console.log('onFailure', '-----', responseText, '-----', option, '-----', fileItem);
+  const onFailure = ({ responseText, option, fileItem }: any) => {
+    console.log('onFailure', '-----', responseText, '-----', option, '-----', fileItem);
 
-      uploadRef.value.clearUploadQueue();
-    };
+    uploadRef.value.clearUploadQueue();
+  };
 
-    const onChange = ({ fileList, event }: any) => {
-      console.log('--------------2');
-      console.log('onChange', fileList, event);
-    };
+  const onChange = ({ fileList, event }: any) => {
+    console.log('--------------2');
+    console.log('onChange', fileList, event);
+  };
 
-    const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
-      console.log('xhr', xhr, options);
-      xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
-      xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
-      xhr.send(options.formData);
-    };
-    const getKey = () => {
-      router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value } });
-    };
+  const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
+    console.log('xhr', xhr, options);
+    xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
+    xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
+    xhr.send(options.formData);
+  };
+  const getKey = () => {
+    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value } });
+  };
 
-    const creatName = async () => {
-      if (!showCreatName.value) {
-        showCreatName.value = true;
-      } else if (newBucketName.value) {
-        // check name
-        const result = await check_name(newBucketName.value);
-        if (result?.data?.domain) {
-          console.log('name is exist');
-          return;
-        }
-        let order_data = {
-          is_domain: true,
-          name: newBucketName.value,
-          order_uuid: orderInfo.value.uuid,
-        };
-        const order_result = await order_name_set(order_data);
-        if (!order_result?.data?.result) {
-          bucketName.value = newBucketName.value;
-          return;
-        }
-      }
-    };
-    const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
-      let baseUrl = '127.0.0.1';
-      let imgHttpLink = '';
-      let imgHttpLarge = '';
-      type = type.toLowerCase();
-      let isSystemImg = false;
-      let cid = item.cid;
-      let key = item.key;
-
-      let ip = orderInfo.value.rpc.split(':')[0];
-      let port = orderInfo.value.rpc.split(':')[1];
-      let Id = orderInfo.value.foggie_id;
-      let peerId = orderInfo.value.peer_id;
-      if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'ico' || type === 'jpg' || type === 'svg') {
-        type = 'img';
-        // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
-        // imgHttpLink = `${location}/object?pubkey=${pubkey}&new_w=${size}`;
-        // let token = store.getters.token;
-        // imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-        //   deviceType.value == 'space' ? 'space' : 'foggie'
-        // }&token=${token.value}&thumb=true`;
-        // imgHttpLarge = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-        //   deviceType.value == 'space' ? 'space' : 'foggie'
-        // }&token=${token.value}`;
-        let bucketName = 'foggiebucket';
-        imgHttpLink = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
-        imgHttpLarge = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
-
-        // foggie://peerid/spaceid/cid
-      } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
-        type = 'video';
-        // item.contentType = "video/mp4";
-
-        imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-          deviceType.value == 'space' ? 'space' : 'foggie'
-        }&token=${token.value}&thumb=true`;
-      } else {
-        isSystemImg = true;
-        // imgHttpLink =
-        //   theme === "light"
-        //     ? require(`@/assets/logo-dog.svg`)
-        //     : require(`@/assets/logo-dog-black.svg`);
-      }
-      if (isDir) {
-        isSystemImg = true;
-        // imgHttpLink =
-        //   theme === "light"
-        //     ? require(`@/assets/logo-dog.svg`)
-        //     : require(`@/assets/logo-dog-black.svg`);
-      }
-      return { imgHttpLink, isSystemImg, imgHttpLarge };
-    };
-    function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
-      // let ip = orderInfo.value.rpc.split(':')[0];
-      let ip = `http://${bucketName.value}.devus.u2i.net:7007`;
-      server = new grpcService.default.ServiceClient(ip, null, null);
-
-      // header.setToken(token.value.split('bearer ')[1]);
-      // console.log(token.value, 'token.value.sign');
-      // var myDate = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
-      // var time = myDate.toJSON().split('T').join('').substr(0, 10);
-      // console.log(time);
-      console.log('header--------------', header);
-      let listObject = new Prox.default.ProxListObjectsRequest();
-      listObject.setPrefix('');
-      listObject.setDelimiter('');
-      listObject.setEncodingType('');
-      listObject.setMaxKeys(30);
-      listObject.setStartAfter('');
-      listObject.setContinuationToken(scroll || '');
-      listObject.setVersionIdMarker('');
-      listObject.setKeyMarker('');
-      listObject.setOrderby('lastmodifiedtime desc');
-      listObject.setTags('');
-      listObject.setCategory(0);
-      listObject.setDate('');
-      let requestReq = new Prox.default.ProxListObjectsReq();
-      requestReq.setHeader(header);
-      requestReq.setRequest(listObject);
-      console.log(requestReq, 'requestReq');
-      server.listObjects(
-        requestReq,
-        {},
-        (
-          err: any,
-          res: {
-            getCommonprefixesList: () => any;
-            getContentList: () => any[];
-            getContinuationtoken: () => any;
-            getIstruncated: () => any;
-            getMaxkeys: () => any;
-            getNextmarker: () => any;
-            getPrefix: () => any;
-            getPrefixpinsList: () => any;
-          },
-        ) => {
-          if (res) {
-            const transferData = {
-              commonPrefixes: res.getCommonprefixesList(),
-              content: res
-                .getContentList()
-                .map(
-                  (el: {
-                    getKey: () => any;
-                    getEtag: () => any;
-                    getLastmodified: () => any;
-                    getSize: () => any;
-                    getContenttype: () => any;
-                    getCid: () => any;
-                    getFileid: () => any;
-                    getIspin: () => any;
-                    getIspincyfs: () => any;
-                    getPinexp: () => any;
-                    getCyfsexp: () => any;
-                    getOod: () => any;
-                    getIspersistent: () => any;
-                    getCategory: () => any;
-                    getTags: () => any;
-                  }) => {
-                    return {
-                      key: el.getKey(),
-                      etag: el.getEtag(),
-                      lastModified: el.getLastmodified(),
-                      size: el.getSize(),
-                      contentType: el.getContenttype(),
-                      cid: el.getCid(),
-                      fileId: el.getFileid(),
-                      isPin: el.getIspin(),
-                      isPinCyfs: el.getIspincyfs(),
-                      pinExp: el.getPinexp(),
-                      CyfsExp: el.getCyfsexp(),
-                      OOD: el.getOod(),
-                      isPersistent: el.getIspersistent(),
-                      category: el.getCategory(),
-                      tags: el.getTags(),
-                    };
-                  },
-                ),
-              continuationToken: res.getContinuationtoken(),
-              isTruncated: res.getIstruncated(),
-              maxKeys: res.getMaxkeys(),
-              nextMarker: res.getNextmarker(),
-              prefix: res.getPrefix(),
-              prefixpins: res.getPrefixpinsList(),
-            };
-            console.log(transferData, 'transferData');
-
-            initRemoteData(transferData, reset, 0);
-          } else if (err) {
-            console.log('err----list', err);
-          }
-        },
-      );
-    }
-    const initRemoteData = (
-      data: {
-        commonPrefixes?: any;
-        content: any;
-        continuationToken?: any;
-        isTruncated?: any;
-        maxKeys?: any;
-        nextMarker?: any;
-        prefix?: any;
-        prefixpins?: any;
-        err?: any;
-      },
-      reset = false,
-      category: number,
-    ) => {
-      if (!data) {
-        tableLoading.value = false;
-        showToast.hide(1);
+  const creatName = async () => {
+    if (!showCreatName.value) {
+      showCreatName.value = true;
+    } else if (newBucketName.value) {
+      // check name
+      const result = await check_name(newBucketName.value);
+      if (result?.data?.domain) {
+        console.log('name is exist');
         return;
       }
-      if (data.err) {
-        showToast.fail('Failed to  retrieve data. Please try again later');
+      let order_data = {
+        is_domain: true,
+        name: newBucketName.value,
+        order_uuid: orderInfo.value.uuid,
+      };
+      const order_result = await order_name_set(order_data);
+      if (!order_result?.data?.result) {
+        bucketName.value = newBucketName.value;
+        return;
       }
-      let dir = [].join('/');
-      if (reset) {
-        tableData.value = [];
-      }
-      for (let i = 0; i < data.commonPrefixes?.length; i++) {
-        let name = decodeURIComponent(data.commonPrefixes[i]);
-        if (data.prefix) {
-          // name = name.split(data.prefix)[1];
-          name = name.split('/')[name.split('/').length - 2] + '/';
+    }
+  };
+  const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
+    let baseUrl = '127.0.0.1';
+    let imgHttpLink = '';
+    let imgHttpLarge = '';
+    type = type.toLowerCase();
+    let isSystemImg = false;
+    let cid = item.cid;
+    let key = item.key;
+
+    let ip = orderInfo.value.rpc.split(':')[0];
+    let port = orderInfo.value.rpc.split(':')[1];
+    let Id = orderInfo.value.foggie_id;
+    let peerId = orderInfo.value.peer_id;
+    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'ico' || type === 'jpg' || type === 'svg') {
+      type = 'img';
+      // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
+      // imgHttpLink = `${location}/object?pubkey=${pubkey}&new_w=${size}`;
+      // let token = store.getters.token;
+      // imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+      //   deviceType.value == 'space' ? 'space' : 'foggie'
+      // }&token=${token.value}&thumb=true`;
+      // imgHttpLarge = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+      //   deviceType.value == 'space' ? 'space' : 'foggie'
+      // }&token=${token.value}`;
+      let bucketName = 'foggiebucket';
+      imgHttpLink = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
+      imgHttpLarge = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
+
+      // foggie://peerid/spaceid/cid
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
+      type = 'video';
+      // item.contentType = "video/mp4";
+
+      imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+        deviceType.value == 'space' ? 'space' : 'foggie'
+      }&token=${token.value}&thumb=true`;
+    } else {
+      isSystemImg = true;
+      // imgHttpLink =
+      //   theme === "light"
+      //     ? require(`@/assets/logo-dog.svg`)
+      //     : require(`@/assets/logo-dog-black.svg`);
+    }
+    if (isDir) {
+      isSystemImg = true;
+      // imgHttpLink =
+      //   theme === "light"
+      //     ? require(`@/assets/logo-dog.svg`)
+      //     : require(`@/assets/logo-dog-black.svg`);
+    }
+    return { imgHttpLink, isSystemImg, imgHttpLarge };
+  };
+  function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
+    // let ip = orderInfo.value.rpc.split(':')[0];
+    let ip = `http://${bucketName.value}.devus.u2i.net:7007`;
+    server = new grpcService.default.ServiceClient(ip, null, null);
+
+    // header.setToken(token.value.split('bearer ')[1]);
+    // console.log(token.value, 'token.value.sign');
+    // var myDate = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
+    // var time = myDate.toJSON().split('T').join('').substr(0, 10);
+    // console.log(time);
+    console.log('header--------------', header);
+    let listObject = new Prox.default.ProxListObjectsRequest();
+    listObject.setPrefix('');
+    listObject.setDelimiter('');
+    listObject.setEncodingType('');
+    listObject.setMaxKeys(30);
+    listObject.setStartAfter('');
+    listObject.setContinuationToken(scroll || '');
+    listObject.setVersionIdMarker('');
+    listObject.setKeyMarker('');
+    listObject.setOrderby('lastmodifiedtime desc');
+    listObject.setTags('');
+    listObject.setCategory(0);
+    listObject.setDate('');
+    let requestReq = new Prox.default.ProxListObjectsReq();
+    requestReq.setHeader(header);
+    requestReq.setRequest(listObject);
+    console.log(requestReq, 'requestReq');
+    server.listObjects(
+      requestReq,
+      {},
+      (
+        err: any,
+        res: {
+          getCommonprefixesList: () => any;
+          getContentList: () => any[];
+          getContinuationtoken: () => any;
+          getIstruncated: () => any;
+          getMaxkeys: () => any;
+          getNextmarker: () => any;
+          getPrefix: () => any;
+          getPrefixpinsList: () => any;
+        },
+      ) => {
+        if (res) {
+          const transferData = {
+            commonPrefixes: res.getCommonprefixesList(),
+            content: res
+              .getContentList()
+              .map(
+                (el: {
+                  getKey: () => any;
+                  getEtag: () => any;
+                  getLastmodified: () => any;
+                  getSize: () => any;
+                  getContenttype: () => any;
+                  getCid: () => any;
+                  getFileid: () => any;
+                  getIspin: () => any;
+                  getIspincyfs: () => any;
+                  getPinexp: () => any;
+                  getCyfsexp: () => any;
+                  getOod: () => any;
+                  getIspersistent: () => any;
+                  getCategory: () => any;
+                  getTags: () => any;
+                }) => {
+                  return {
+                    key: el.getKey(),
+                    etag: el.getEtag(),
+                    lastModified: el.getLastmodified(),
+                    size: el.getSize(),
+                    contentType: el.getContenttype(),
+                    cid: el.getCid(),
+                    fileId: el.getFileid(),
+                    isPin: el.getIspin(),
+                    isPinCyfs: el.getIspincyfs(),
+                    pinExp: el.getPinexp(),
+                    CyfsExp: el.getCyfsexp(),
+                    OOD: el.getOod(),
+                    isPersistent: el.getIspersistent(),
+                    category: el.getCategory(),
+                    tags: el.getTags(),
+                  };
+                },
+              ),
+            continuationToken: res.getContinuationtoken(),
+            isTruncated: res.getIstruncated(),
+            maxKeys: res.getMaxkeys(),
+            nextMarker: res.getNextmarker(),
+            prefix: res.getPrefix(),
+            prefixpins: res.getPrefixpinsList(),
+          };
+          console.log(transferData, 'transferData');
+
+          initRemoteData(transferData, reset, 0);
+        } else if (err) {
+          console.log('err----list', err);
         }
-
-        let cur_cid = '';
-        for (let i = 0; i < data.prefixpins?.length; i++) {
-          if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
-            cur_cid = data.prefixpins[i].cid;
-          }
-        }
-
-        let item = {
-          isDir: true,
-          checked: false,
-          name,
-          category: 1,
-          fileType: 1,
-
-          fullName: decodeURIComponent(data.commonPrefixes[i]),
-          key: data.commonPrefixes[i],
-          idList: [
-            {
-              name: 'IPFS',
-              code: cur_cid,
-            },
-            {
-              name: 'CYFS',
-              code: '',
-            },
-          ],
-          date: '-',
-          size: '',
-          status: '-',
-          type: 'application/x-directory',
-          file_id: '',
-          pubkey: '',
-          cid: cur_cid,
-          imgUrl: '',
-          imgUrlLarge: '',
-          share: {},
-          isSystemImg: false,
-          canShare: false,
-        };
-
-        tableData.value.push(item);
-      }
-      for (let j = 0; j < data?.content?.length; j++) {
-        let date = transferUTCTime(data.content[j].lastModified);
-        let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
-        const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
-        let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
-        let cid = data.content[j].cid;
-        let file_id = data.content[j].fileId;
-
-        let name = decodeURIComponent(data.content[j].key);
-        if (data.prefix) {
-          name = name.split(data.prefix)[1];
-        }
-        if (name.indexOf('/') > 0) {
-          name = name.split('/')[name.split('/').length - 2];
-        }
-        let isPersistent = data.content[j].isPersistent;
-
-        let item = {
-          isDir: isDir,
-          checked: false,
-          name,
-          category: data.content[j].category,
-          category: 2,
-          fileType: 2,
-          fullName: decodeURIComponent(data.content[j].key),
-          key: data.content[j].key,
-          idList: [
-            {
-              name: 'IPFS',
-              code: data.content[j].isPin ? cid : '',
-            },
-            {
-              name: 'CYFS',
-              code: data.content[j].isPinCyfs ? file_id : '',
-            },
-          ],
-          date,
-          size: getfilesize(data.content[j].size),
-          originalSize: data.content[j].size,
-          status: cid || file_id ? 'Published' : '-',
-          type: data.content[j].contentType,
-          file_id: file_id,
-          pubkey: cid,
-          cid,
-          imgUrl: url,
-          imgUrlLarge: url_large,
-          share: {},
-          isSystemImg,
-          canShare: cid ? true : false,
-          isPersistent,
-          isPin: data.content[j].isPin,
-          isPinCyfs: data.content[j].isPinCyfs,
-        };
-
-        tableData.value.push(item);
-      }
-
+      },
+    );
+  }
+  const initRemoteData = (
+    data: {
+      commonPrefixes?: any;
+      content: any;
+      continuationToken?: any;
+      isTruncated?: any;
+      maxKeys?: any;
+      nextMarker?: any;
+      prefix?: any;
+      prefixpins?: any;
+      err?: any;
+    },
+    reset = false,
+    category: number,
+  ) => {
+    if (!data) {
       tableLoading.value = false;
       showToast.hide(1);
-    };
+      return;
+    }
+    if (data.err) {
+      showToast.fail('Failed to  retrieve data. Please try again later');
+    }
+    let dir = [].join('/');
+    if (reset) {
+      tableData.value = [];
+    }
+    for (let i = 0; i < data.commonPrefixes?.length; i++) {
+      let name = decodeURIComponent(data.commonPrefixes[i]);
+      if (data.prefix) {
+        // name = name.split(data.prefix)[1];
+        name = name.split('/')[name.split('/').length - 2] + '/';
+      }
 
-    const getKeys = () => {
-      let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
-      let request = new Prox.default.ProxGetCredRequest();
-      request.setHeader(header);
-      console.log('request-----------------getkeys', request);
-      server.listCreds(request, {}, (err: any, res: { array: any }) => {
-        if (err) {
-          console.log('err------:', err);
-        } else if (res.array.length > 0) {
-          accessKeyId.value = res.array[0][0][0];
-          secretAccessKey.value = res.array[0][0][1];
-          console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
+      let cur_cid = '';
+      for (let i = 0; i < data.prefixpins?.length; i++) {
+        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
+          cur_cid = data.prefixpins[i].cid;
         }
-      });
-    };
+      }
 
-    onMounted(async () => {
+      let item = {
+        isDir: true,
+        checked: false,
+        name,
+        category: 1,
+        fileType: 1,
+
+        fullName: decodeURIComponent(data.commonPrefixes[i]),
+        key: data.commonPrefixes[i],
+        idList: [
+          {
+            name: 'IPFS',
+            code: cur_cid,
+          },
+          {
+            name: 'CYFS',
+            code: '',
+          },
+        ],
+        date: '-',
+        size: '',
+        status: '-',
+        type: 'application/x-directory',
+        file_id: '',
+        pubkey: '',
+        cid: cur_cid,
+        imgUrl: '',
+        imgUrlLarge: '',
+        share: {},
+        isSystemImg: false,
+        canShare: false,
+      };
+
+      tableData.value.push(item);
+    }
+    for (let j = 0; j < data?.content?.length; j++) {
+      let date = transferUTCTime(data.content[j].lastModified);
+      let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
+      const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
+      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+      let cid = data.content[j].cid;
+      let file_id = data.content[j].fileId;
+
+      let name = decodeURIComponent(data.content[j].key);
+      if (data.prefix) {
+        name = name.split(data.prefix)[1];
+      }
+      if (name.indexOf('/') > 0) {
+        name = name.split('/')[name.split('/').length - 2];
+      }
+      let isPersistent = data.content[j].isPersistent;
+
+      let item = {
+        isDir: isDir,
+        checked: false,
+        name,
+        category: data.content[j].category,
+        category: 2,
+        fileType: 2,
+        fullName: decodeURIComponent(data.content[j].key),
+        key: data.content[j].key,
+        idList: [
+          {
+            name: 'IPFS',
+            code: data.content[j].isPin ? cid : '',
+          },
+          {
+            name: 'CYFS',
+            code: data.content[j].isPinCyfs ? file_id : '',
+          },
+        ],
+        date,
+        size: getfilesize(data.content[j].size),
+        originalSize: data.content[j].size,
+        status: cid || file_id ? 'Published' : '-',
+        type: data.content[j].contentType,
+        file_id: file_id,
+        pubkey: cid,
+        cid,
+        imgUrl: url,
+        imgUrlLarge: url_large,
+        share: {},
+        isSystemImg,
+        canShare: cid ? true : false,
+        isPersistent,
+        isPin: data.content[j].isPin,
+        isPinCyfs: data.content[j].isPinCyfs,
+      };
+
+      tableData.value.push(item);
+    }
+
+    tableLoading.value = false;
+    showToast.hide(1);
+  };
+
+  const getKeys = () => {
+    let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
+    let request = new Prox.default.ProxGetCredRequest();
+    request.setHeader(header);
+    console.log('request-----------------getkeys', request);
+    server.listCreds(request, {}, (err: any, res: { array: any }) => {
+      if (err) {
+        console.log('err------:', err);
+      } else if (res.array.length > 0) {
+        accessKeyId.value = res.array[0][0][0];
+        secretAccessKey.value = res.array[0][0][1];
+        console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
+      }
+    });
+  };
+
+  onMounted(async () => {
+    await getOrderInfo();
+    bucketName.value = orderInfo.value.domain;
+    if (bucketName.value) {
+      getKeys();
+      getFileList();
+    } else {
+    }
+
+    get_merkle_record({ orderId: order_id.value }).then((res) => {
+      console.log('get_merkle_record-------', res);
+    });
+  });
+  watch(
+    () => route.query,
+    async () => {
       await getOrderInfo();
       bucketName.value = orderInfo.value.domain;
       if (bucketName.value) {
@@ -870,24 +889,9 @@
         getFileList();
       } else {
       }
-
-      get_merkle_record({ orderId: order_id.value }).then((res) => {
-        console.log('get_merkle_record-------', res);
-      });
-    });
-    watch(
-      () => route.query,
-      async () => {
-        await getOrderInfo();
-        bucketName.value = orderInfo.value.domain;
-        if (bucketName.value) {
-          getKeys();
-          getFileList();
-        } else {
-        }
-      },
-      { deep: true },
-    );
+    },
+    { deep: true },
+  );
 </script>
 
 <style lang="scss" scoped>

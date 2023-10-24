@@ -120,6 +120,7 @@
       content: createVNode('span', { style: {} }, 'Are you sure you want to Log out?'),
       cancelText: 'Cancel',
       okText: 'OK',
+      popClass: 'dialog_class',
       onCancel: () => {
         // console.log('取消');
       },
@@ -143,6 +144,7 @@
         ),
         createVNode('div', { style: { color: '#606060', marginTop: '15px', fontSize: '16px' } }, adminEmail.value),
       ]),
+      popClass: 'dialog_class',
       noCancelBtn: true,
       okText: 'Copy',
       onOk: () => {

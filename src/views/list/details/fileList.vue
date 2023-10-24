@@ -1,7 +1,34 @@
 <template>
   <div class="fileList_content">
-    <nut-popup position="top" round pop-class="type_check_pop" v-model:visible="showTypeCheckPop">
+    <nut-popup position="top" round pop-class="type_check_pop" v-if="showTypeCheckPop" v-model:visible="showTypeCheckPop">
       <!-- <p class="cate_title">Classifications</p> -->
+      <div :class="['list_header']">
+        <div style="display: flex">
+          <template v-if="!prefix.length">
+            <div class="top_back" @click="router.go(-1)"> </div>
+            <span class="top_title">
+              {{ fileTypeText[category] }}
+            </span>
+            <TriangleUp
+              @click="showTypeCheckPop = !showTypeCheckPop"
+              :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
+            ></TriangleUp>
+          </template>
+          <template v-else>
+            <div
+              class="top_back"
+              @click="
+                prefix.splice(-1);
+                prefixChange();
+              "
+            >
+            </div>
+            <span class="top_title">
+              {{ prefix.at(-1) || '' }}
+            </span>
+          </template>
+        </div>
+      </div>
       <div class="type_check_box">
         <div class="type_item" @click="switchType(0)">
           <div class="svg_box">
@@ -108,9 +135,9 @@
           :id="[index == 0 ? 'list_item_1' : '']"
           v-for="(item, index) in tableData"
           :key="index"
-          @touchstart.prevent="touchRow(item, $event)"
-          @touchmove.prevent="touchmoveRow(item, $event)"
-          @touchend.prevent="touchendRow(item, $event)"
+          @touchstart="touchRow(item, $event)"
+          @touchmove="touchmoveRow(item, $event)"
+          @touchend="touchendRow(item, $event)"
         >
           <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
             <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
@@ -148,57 +175,65 @@
     ></ImgList>
 
     <!-- checkbox action -->
-    <nut-tabbar
-      v-if="isCheckMode"
-      @tab-switch="tabSwitch"
-      :class="['bottom_action', selectArr.length ? 'canAction' : '']"
-      bottom
-      safe-area-inset-bottom
-      placeholder
-    >
-      <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
-        <template #icon>
-          <IconShare :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconShare>
-          <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
-        </template>
-      </nut-tabbar-item>
-      <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 ? 'is-disable' : '']">
-        <template #icon="props">
-          <IconRename :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconRename>
-        </template>
-      </nut-tabbar-item>
-      <nut-tabbar-item tab-title="Move">
-        <template #icon="props">
-          <IconMove :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconMove>
-        </template>
-      </nut-tabbar-item>
-      <nut-tabbar-item tab-title="Download">
-        <template #icon="props">
-          <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
-        </template>
-      </nut-tabbar-item>
-      <nut-tabbar-item tab-title="Delete">
-        <template #icon="props">
-          <IconDelete :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDelete>
-        </template>
-      </nut-tabbar-item>
-    </nut-tabbar>
+    <Teleport to="body">
+      <nut-tabbar
+        v-if="isCheckMode"
+        @tab-switch="tabSwitch"
+        :class="['bottom_action', selectArr.length ? 'canAction' : '']"
+        bottom
+        safe-area-inset-bottom
+        placeholder
+      >
+        <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
+          <template #icon>
+            <IconShare :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconShare>
+            <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
+          </template>
+        </nut-tabbar-item>
+        <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 ? 'is-disable' : '']">
+          <template #icon="props">
+            <IconRename :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconRename>
+          </template>
+        </nut-tabbar-item>
+        <nut-tabbar-item tab-title="Move">
+          <template #icon="props">
+            <IconMove :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconMove>
+          </template>
+        </nut-tabbar-item>
+        <nut-tabbar-item tab-title="Download">
+          <template #icon="props">
+            <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
+          </template>
+        </nut-tabbar-item>
+        <nut-tabbar-item tab-title="Delete">
+          <template #icon="props">
+            <IconDelete :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDelete>
+          </template>
+        </nut-tabbar-item>
+      </nut-tabbar>
+    </Teleport>
+
     <!-- single action -->
-    <nut-action-sheet class="action_pop" v-model:visible="showActionPop">
-      <div class="custom-content">
-        <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
-        <ul>
-          <li v-if="!chooseItem.isDir && showActionBtn" @click="handlerClick('share')"><IconShare></IconShare> Share</li>
-          <li @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
-          <li @click="handlerClick('move')"><IconMove></IconMove> Move</li>
-          <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
-          <li @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li>
-        </ul>
-        <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
-      </div>
-    </nut-action-sheet>
+    <Teleport to="body">
+      <nut-action-sheet class="action_pop" v-if="showActionPop" v-model:visible="showActionPop">
+        <div class="custom-content">
+          <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
+          <ul>
+            <li v-if="!chooseItem.isDir && showActionBtn" @click="handlerClick('share')"><IconShare></IconShare> Share</li>
+            <li @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
+            <li @click="handlerClick('move')"><IconMove></IconMove> Move</li>
+            <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
+            <li @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li>
+          </ul>
+          <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
+        </div>
+      </nut-action-sheet>
+    </Teleport>
+
     <!-- rename / newFolder -->
     <nut-popup
+      teleport-disable
+      v-if="renameShow"
       @closed="
         isNewFolder = false;
         newName = '';
@@ -217,7 +252,8 @@
       </div>
     </nut-popup>
     <!-- move -->
-    <nut-popup position="bottom" closeable round :style="{ height: '90%' }" v-model:visible="moveShow">
+
+    <nut-popup teleport-disable v-if="moveShow" position="bottom" closeable round :style="{ height: '90%' }" v-model:visible="moveShow">
       <div class="rename_box move_box">
         <IconFolder></IconFolder>
         <div
@@ -251,7 +287,16 @@
       </div>
     </nut-popup>
     <!-- share -->
-    <nut-popup @closed="isReady = false" position="bottom" closeable round :style="{ height: '200px' }" v-model:visible="showShareDialog">
+    <nut-popup
+      teleport-disable
+      v-if="showShareDialog"
+      @closed="isReady = false"
+      position="bottom"
+      closeable
+      round
+      :style="{ height: '200px' }"
+      v-model:visible="showShareDialog"
+    >
       <div v-if="isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
         <nut-popup position="bottom" v-model:visible="periodShow">
@@ -291,23 +336,24 @@
         </div>
       </div>
     </nut-popup>
-
-    <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
-      <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-      <div class="middle_img">
-        <nut-image :src="imgUrl" fit="contain" position="center" />
-      </div>
-      <div class="bottom_action">
-        <div>
-          <IconShare @click="handlerClick('share')"></IconShare>
-          <p>Share</p>
+    <Teleport to="body">
+      <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
+        <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+        <div class="middle_img">
+          <nut-image :src="imgUrl" fit="contain" position="center" />
         </div>
-        <div>
-          <IconDownload @click="handlerClick('download')"></IconDownload>
-          <p>Download</p>
+        <div class="bottom_action">
+          <div>
+            <IconShare @click="handlerClick('share')"></IconShare>
+            <p>Share</p>
+          </div>
+          <div>
+            <IconDownload @click="handlerClick('download')"></IconDownload>
+            <p>Download</p>
+          </div>
         </div>
-      </div>
-    </nut-overlay>
+      </nut-overlay>
+    </Teleport>
   </div>
 </template>
 
@@ -349,6 +395,7 @@
   import useOrderInfo from './useOrderInfo.js';
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
+  import loadingImg from '@/components/loadingImg/index.vue';
 
   import { HmacSHA1, enc } from 'crypto-js';
   // import { download_url } from '@/api/index';
@@ -771,6 +818,7 @@
         content: 'Are you sure you want to delete?',
         cancelText: 'Cancel',
         okText: 'Confirm',
+        popClass: 'dialog_class',
         onOk,
       });
     } else if (type === 'rename') {
@@ -1034,7 +1082,7 @@
   ) => {
     if (!data) {
       tableLoading.value = false;
-      showToast.hide(1);
+      showToast.hide();
       return;
     }
     if (data.err) {
@@ -1179,13 +1227,13 @@
       continuationToken.value = '';
     }
     tableLoading.value = false;
-    showToast.hide(1);
+    showToast.hide();
     nextTick(() => {
       if (window.localStorage.notFirst) {
-        // document.body.style.overflow = '';
+        document.getElementsByClassName('main-page')[0].style.overflow = '';
         isFirst.value = false;
       } else {
-        // document.body.style.overflow = 'hidden';
+        document.getElementsByClassName('main-page')[0].style.overflow = 'hidden';
         isFirst.value = true;
       }
     });
@@ -1196,7 +1244,9 @@
     if (keyWord.value == '') {
       showToast.loading('Loading', {
         cover: true,
-        id: 1,
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
       });
       // if (moveShow.value) {
       getFileList(scroll, prefixArg, reset);
@@ -1207,7 +1257,9 @@
       prefix.value = [];
       showToast.loading('Loading', {
         cover: true,
-        id: 1,
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
       });
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
@@ -1291,7 +1343,7 @@
     window.open(twitterUrl, '_blank');
   };
   const handleFirst = () => {
-    // document.body.style.overflow = '';
+    document.getElementsByClassName('main-page')[0].style.overflow = '';
     isFirst.value = false;
     window.localStorage.notFirst = true;
   };
@@ -1381,30 +1433,38 @@
       if (val == 1) {
       } else {
         console.log('category--------------', val, orderInfo.value);
-        await getOrderInfo();
+        if (!orderInfo?.value?.id) {
+          await getOrderInfo();
+        }
         doSearch('', prefix.value, true);
       }
     },
-    { deep: true, immediate: true },
+    { deep: true },
   );
   onMounted(async () => {
     if (route?.query?.prefix) {
       prefix.value = route?.query?.prefix.split('/');
     }
-    // keyWord.value = route.query?.keyWord || '';
-    category.value = route.query.category || '0';
-
     bucketName.value = route.query?.bucketName;
-    await getOrderInfo();
+    let category1 = route.query.category || '0';
+    switchType(category1);
     getKeys();
-    switchType(category.value);
-    // prefix.value = route?.query?.prefix.split('/');
   });
 </script>
 <style>
   .type_check_pop {
-    padding-top: 120px;
-    height: 350px;
+    /* padding-top: 120px; */
+    height: 450px;
+  }
+  .dialog_class {
+    font-size: 30px;
+    .nut-dialog__header {
+      height: unset;
+      font-size: 35px;
+    }
+    .nut-dialog__content {
+      font-size: 30px;
+    }
   }
 </style>
 <style lang="scss" scoped>
@@ -1412,6 +1472,7 @@
     z-index: 9999;
   }
   .file_list {
+    // height: calc(100% - 300px);
     background: #fff;
   }
   :deep {
@@ -1490,7 +1551,6 @@
   .fileList_content {
     box-sizing: border-box;
     height: 100%;
-    padding: 0 0 40px 0;
   }
   .list_header {
     display: flex;
@@ -1517,10 +1577,11 @@
       transform: rotate(180deg);
     }
   }
-  .header_fixed {
-    position: fixed;
-    z-index: 9999;
-  }
+  // .header_fixed {
+  //   position: fixed;
+  //   top: 0 !important;
+  //   z-index: 9999;
+  // }
 
   .cate_title {
     padding: 20px;
@@ -1605,6 +1666,10 @@
     align-items: center;
     padding: 20px;
     border-top: 1px solid #eee;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     &:active {
       background: #cde3f5;
     }
@@ -1737,6 +1802,7 @@
         p {
           text-align: right;
           margin: 0;
+          font-size: 30px;
         }
       }
     }
