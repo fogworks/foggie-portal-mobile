@@ -217,8 +217,8 @@ onMounted(() => {
       }
 
       .customBtn {
-        width: 90px;
-        height: 90px;
+        width: 100px;
+        height: 100px;
         background: #F4F5F9;
         border-radius: 50%;
         display: flex;
@@ -256,8 +256,8 @@ onMounted(() => {
     transition: transform 0.3s ease-in-out;
 
     .outBnt {
-      width: 120px;
-      height: 120px;
+      width: 90px;
+      height: 90px;
       border-radius: 18px;
       background-color: #FFFFFF;
       display: flex;
