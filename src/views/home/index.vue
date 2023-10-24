@@ -97,7 +97,7 @@
       >
     </div>
   </div>
-  <div class="tab_top_title">Recent earnings</div>
+  <div class="tab_top_title">Recent Earnings</div>
   <!-- <nut-tabs style="border-bottom: 1px solid #cccccc82" v-model="searchType" class="time_tabs">
     <nut-tab-pane title="All" pane-key="0"> </nut-tab-pane>
     <nut-tab-pane title="Income" pane-key="1"> </nut-tab-pane>
@@ -485,7 +485,7 @@
     margin-bottom: 20px;
     // font-style: italic;
     font-size: 35px;
-    // font-weight: 600;
+    font-weight: 600;
   }
   .time_tabs {
     :deep {

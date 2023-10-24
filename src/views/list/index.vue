@@ -10,7 +10,8 @@
         <div class="flex-content">
           <div class="svg-box" @click="searchType = 'Open'" :class="[searchType == 'Open' ? 'active_svg-box' : '']">
             <!-- <Shop></Shop> -->
-            <IconSwitch style="vertical-align: text-top"></IconSwitch>
+            <IconSwitch style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'Open'"></IconSwitch>
+            <IconSwitch style="vertical-align: text-top" color="#ffffff" v-else></IconSwitch>
           </div>
           <span>Open</span></div
         >
@@ -18,8 +19,8 @@
       <nut-col :span="10">
         <div class="flex-content">
           <div class="svg-box" @click="searchType = 'History'" :class="[searchType == 'History' ? 'active_svg-box' : '']">
-            <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistoryActivate>
-            <IconHistory style="vertical-align: text-top" color="#5F57FF" v-else></IconHistory>
+            <IconHistory style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistory>
+            <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-else></IconHistoryActivate>
           </div>
           <span>History</span></div
         >
@@ -218,7 +219,7 @@
           width: 100px;
           height: 100px;
           margin-bottom: 15px;
-          background: #fff;
+          background: #171414;
           // box-shadow: 0px 1px 2px 2px #ccc;
           box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
           svg,
@@ -226,14 +227,16 @@
             color: #ffe879;
             width: 70px;
             height: 70px;
+            color: #fff;
           }
         }
         .active_svg-box {
           background: #fbc934;
           background: #fbc935;
-          background: #171414;
+          background: #fff;
           svg {
             color: #fff;
+            color: #fbc934;
           }
           & + span {
             color: #fbc934;
