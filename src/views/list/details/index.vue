@@ -8,12 +8,12 @@
     </div>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
-        <span class="span2">Expiration time: {{ orderInfo.value.expire }}</span>
+        <span class="span2">Expiration: {{ transferUTCTime(orderInfo.value.expire) }}</span>
       </nut-col>
-      <nut-col :span="8" class="order-circle">
-        <nut-circle-progress progress="20" radius="40" color="#5460FE">100M of 1G</nut-circle-progress>
+      <nut-col :span="24" class="order-circle">
+        <nut-circle-progress progress="20" radius="60" color="#5460FE"> Used:20% </nut-circle-progress>
       </nut-col>
-      <nut-col :span="16" class="order-count">
+      <nut-col :span="24" class="order-count">
         <nut-cell>
           <IconMdiF color="#9F9BEF" />
           File:1000
@@ -21,14 +21,18 @@
           <!-- File 1000 -->
         </nut-cell>
         <nut-cell>
-          <IconRiPie color="#7F7AE9" />
+          <IconSpace color="#7F7AE9" />
           Space:1GB
+        </nut-cell>
+        <nut-cell>
+          <IconRiPie color="#7F7AE9" />
+          Used:100M/1GB
         </nut-cell>
       </nut-col>
     </nut-row>
-    <span v-if="bucketName">{{ bucketName }}</span>
+    <!-- <span v-if="bucketName">{{ bucketName }}</span>
     <nut-input placeholder="Please enter name" v-model="newBucketName" v-if="showCreatName" />
-    <nut-button class="creat-name" type="primary" @click="creatName" v-if="!bucketName">Creat Name</nut-button>
+    <nut-button class="creat-name" type="primary" @click="creatName" v-if="!bucketName">Creat Name</nut-button> -->
   </div>
   <div class="detail_box">
     <!-- <nut-grid class="top_grid" column-num="3" direction="horizontal">
@@ -92,10 +96,7 @@
     </div>
 
     <!-- <nut-row class="order-icons"> </nut-row> -->
-    <div class="today_file">
-      <span>Recent Files</span>
-      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
-    </div>
+
     <div class="type_check_box">
       <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
         <div class="svg_box">
@@ -122,7 +123,10 @@
         <p>Video</p>
       </div>
     </div>
-
+    <div class="today_file">
+      <span class="title">Recent Files</span>
+      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
+    </div>
     <nut-infinite-loading v-if="tableData.length" :has-more="false" class="file_list">
       <div
         @click="
@@ -176,11 +180,7 @@
 </template>
 
 <script setup lang="ts">
-  import {
-    ref,
-    onMounted,
-    watch,
-  } from "vue";
+  import { ref, onMounted, watch } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
   import IconAudio2 from '~icons/home/audio2.svg';
@@ -191,11 +191,10 @@
   //   import IconRiPie from '~icons/ri/pie-chart-fill';
   import IconMdiF from '~icons/home/png.svg';
   import IconRiPie from '~icons/home/pie.svg';
+  import IconSpace from '~icons/home/space.svg';
   import IconRiNodeTree from '~icons/ri/node-tree';
   import IconRiSendToBack from '~icons/ri/send-to-back';
   import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
-
-
   import keySolid from '~icons/teenyicons/key-solid';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
@@ -251,24 +250,20 @@
   // });
 
   const beforeupload = async (file: any) => {
-
-
-
-    console.log('upload-----------', bucketName.value)
+    console.log('upload-----------', bucketName.value);
 
     const d = {
       orderId: order_id.value,
-    }
+    };
     get_merkle(d).then((res) => {
-      if(res.data[0].merkle_status === 0) {
+      if (res.data[0].merkle_status === 0) {
         // TODO
         isDisabled.value = true;
         return;
       } else {
         isDisabled.value = false;
       }
-    })
-
+    });
 
     // bucketName.value = 'test11111';
     // accessKeyId.value = 'FOGaCTsgpOoeXsrtjmk5';
@@ -348,10 +343,10 @@
       uuid: uuid.value,
       orderUuid: memo.value,
       mpAddress: orderInfo.value.mp_address,
-    }
+    };
     calc_merkle(d).then((res) => {
       console.log('calc_merkle-----', res);
-    })
+    });
     uploadRef.value.clearUploadQueue();
   };
 
@@ -364,19 +359,17 @@
   };
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
-    console.log('onFailure','-----', responseText, '-----' , option,'-----' ,  fileItem);
+    console.log('onFailure', '-----', responseText, '-----', option, '-----', fileItem);
 
-    
     uploadRef.value.clearUploadQueue();
   };
 
   const onChange = ({ fileList, event }: any) => {
-    console.log('--------------2')
+    console.log('--------------2');
     console.log('onChange', fileList, event);
   };
 
   const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
-   
     console.log('xhr', xhr, options);
     xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
@@ -704,13 +697,11 @@
     showToast.hide(1);
   };
 
-  
-
   const getKeys = () => {
     let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
     let request = new Prox.default.ProxGetCredRequest();
     request.setHeader(header);
-    console.log('request-----------------getkeys', request)
+    console.log('request-----------------getkeys', request);
     server.listCreds(request, {}, (err: any, res: { array: any }) => {
       if (err) {
         console.log('err------:', err);
@@ -731,25 +722,23 @@
     } else {
     }
 
-    get_merkle_record({orderId: order_id.value}).then((res) => {
+    get_merkle_record({ orderId: order_id.value }).then((res) => {
       console.log('get_merkle_record-------', res);
-    })
-    
+    });
   });
   watch(
-  () => route.query,
-  async () => {
-    await getOrderInfo();
-    bucketName.value = orderInfo.value.domain;
-    if (bucketName.value) {
-      getKeys();
-      getFileList();
-    } else {
-
-    }
-  },
-  { deep: true }
-);
+    () => route.query,
+    async () => {
+      await getOrderInfo();
+      bucketName.value = orderInfo.value.domain;
+      if (bucketName.value) {
+        getKeys();
+        getFileList();
+      } else {
+      }
+    },
+    { deep: true },
+  );
 </script>
 
 <style lang="scss" scoped>
@@ -776,7 +765,7 @@
     .order-des {
       //   margin-bottom: 20px;
       color: #fff;
-      border-bottom: 1px dashed #fff;
+      //   border-bottom: 1px dashed #fff;
 
       .span1 {
         margin-left: 5vw;
@@ -794,23 +783,34 @@
     }
 
     .order-circle {
-      padding: 2vw;
+      //   padding: 2vw;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       .nut-circle-progress {
         margin-left: 3vw;
-        border: 15px solid #7f7ae9;
+        border: 30px solid #7f7ae9;
         border-radius: 50%;
         font-size: 12px;
+        box-shadow:
+          rgba(0, 0, 0, 0.3) 0px 19px 38px,
+          rgba(0, 0, 0, 0.22) 0px 15px 12px;
       }
     }
 
     .order-count {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       .nut-cell {
-        width: 70%;
+        width: auto;
+        white-space: nowrap;
         // height: vw;
-        margin-left: 10%;
+        // margin-left: 10%;
         padding-left: 8vw;
-        border-bottom: 1px solid #fff;
+        // border-bottom: 1px solid #fff;
         border-radius: 0;
         background: $primary-color;
         box-shadow: none;
@@ -818,6 +818,7 @@
         font-size: 24px;
         line-height: 4vw;
         font-weight: bold;
+        margin: 10px 0;
       }
 
       svg {
@@ -838,6 +839,8 @@
       justify-content: flex-start;
       align-items: center;
       flex-wrap: wrap;
+      background: #fff;
+      padding: 10px;
       .type_item {
         width: 25%;
         text-align: center;
@@ -938,15 +941,22 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 20px 0;
-      font-size: 30px;
+      margin: 30px 0;
+      font-size: 32px;
+      font-weight: bold;
+      .title {
+        font-weight: bold;
+      }
       .see_all {
         color: #5460fe;
-        font-size: 24px;
+        font-size: 30px;
+        // text-decoration: underline;
       }
     }
     .file_list {
       margin-top: 20px;
+      background: #fff;
+      border-radius: 16px;
     }
     .list_item {
       display: flex;
@@ -1070,7 +1080,8 @@
 
     .nut-circle-progress__text {
       color: #5460fe;
-      font-size: 18px !important;
+      font-size: 36px !important;
+      white-space: pre-wrap;
     }
   }
 </style>
