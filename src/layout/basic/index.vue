@@ -174,7 +174,7 @@
     height: unset;
 
     overflow-x: hidden;
-    background: #fff;
+    // background: #fff;
   }
 
   .tabbar {
@@ -186,6 +186,7 @@
   .border {
     padding-left: 30px;
     padding-right: 30px;
+    padding-bottom: 100px;
     // background: #f5f7fb;
   }
 </style>

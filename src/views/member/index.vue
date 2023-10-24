@@ -9,50 +9,75 @@
       </div>
     </div>
     <div class="infoContent">
-      <img src="@/assets/1698057212519.jpg" alt="" srcset="">
-      <div>Domhnall Gleeson</div>
-      <div>Invitation {{ referral_code }}</div>
+      <img src="@/assets/user.svg" alt="" srcset="" />
+      <div>{{ dmcAccount }}</div>
+      <div>Invitation: {{ referral_code }}</div>
     </div>
-    <div class="buttonContent">
-      <div>
+
+    <nut-row class="buttonContent">
+      <nut-col :span="8" @click="gotoDetail('/withdraw')">
         <div class="customBtn">
           <Retweet color="#505056" />
         </div>
-        <div>支付安全设置</div>
-      </div>
-      <div>
+        <div>Payment Security</div>
+      </nut-col>
+
+      <nut-col :span="8" @click="gotoDetail('/personalInfo')">
         <div class="customBtn">
           <My2 color="#505056" />
         </div>
-        <div>更新资料</div>
-      </div>
-      <div>
+        <div>Updated information</div>
+      </nut-col>
+      <nut-col :span="8" @click="goToPrivacy">
         <div class="customBtn">
           <Link color="#505056" />
         </div>
-        <div>关于</div>
-      </div>
-      <div>
-        <div class="customBtn">
+        <div>About</div>
+      </nut-col>
+    </nut-row>
+
+    <nut-row class="buttonContent">
+      <nut-col :span="12">
+        <div class="customBtn" @click="visible = true">
           <Location color="#505056" />
         </div>
-        <div>快捷链接</div>
-      </div>
-      <div>
-        <div class="customBtn">
+        <div>Quick Setup</div>
+      </nut-col>
+      <nut-col :span="12">
+        <div class="customBtn" @click="contactUs">
           <Service color="#505056" />
         </div>
-        <div>联系我们</div>
-      </div>
+        <div>Contact Us</div>
+      </nut-col>
 
-    </div>
+    </nut-row>
+
+
+
+
+
     <div class="logOutBtn" @click="logout">
-      <span style="margin-left: 45px;">退出登录</span>
+      <span style="margin-left: 45px">Log out</span>
       <div class="outBnt">
-       <ArrowRight2 color="#5771F9" style="margin-right: 10px;"/>
+        <ArrowRight2 color="#5771F9" style="margin-right: 10px" />
       </div>
     </div>
 
+    <nut-action-sheet v-model:visible="visible" title="Our Products">
+      <div class="custom-action_sheet">
+        <div @click="choose('pool')">
+          <People></People>
+          <div>cloud mining pool</div>
+        </div>
+        <div @click="choose('client')">
+          <Shop></Shop>
+          <div>Cloud Mining Pool Client</div>
+        </div>
+        <div @click="visible = false">
+          Cancel
+        </div>
+      </div>
+    </nut-action-sheet>
   </div>
 </template>
 
@@ -61,25 +86,28 @@ import { useUserStore } from '@/store/modules/user';
 import { useRouter } from 'vue-router';
 // import { Dongdong } from '@nutui/icons-vue';
 import { user } from '@/api';
-import { Category, MoreX, Retweet, My2, Service, Location, Link,ArrowRight2 } from '@nutui/icons-vue';
+import { Category, MoreX, Retweet, My2, Service, Location, Link, ArrowRight2, People, Shop } from '@nutui/icons-vue';
 import { showDialog } from '@nutui/nutui';
+import { showToast } from '@nutui/nutui';
+
 import '@nutui/nutui/dist/packages/dialog/style';
+import '@nutui/nutui/dist/packages/toast/style';
 import { createVNode } from 'vue';
-// import {onMounted, computed} from 'vue';
 const userStore = useUserStore();
 
 const email = ref<string>('');
 const dmcAccount = ref<string>('');
 const referral_code = ref<string>('');
 const router = useRouter();
-const goLogin = () => {
-  router.push('/login');
-};
-const goToPrivacy = () => {
-  window.open('https://foggie.fogworks.io/#/privacyPolicy_EN');
-  // router.push({ path: '/privacyPolicy' });
+const gotoDetail = (path): void => {
+  router.push(path);
 };
 
+const visible = ref<boolean>(false)
+const adminEmail = ref<string>('123456789@234.com')
+const goToPrivacy = () => {
+  window.open('https://foggie.fogworks.io/#/');
+};
 const logout = (): void => {
   showDialog({
     title: 'info',
@@ -98,14 +126,81 @@ const logout = (): void => {
   });
 };
 
+const contactUs = (): void => {
+  showDialog({
+    title: 'Our e-mail',
+    content: createVNode('div', null, [
+      createVNode(
+        'span',
+        { style: { color: '#303030', fontSize: '12px' } },
+        'Additional information, complaints and suggestions, change of account information. Dispute handling and other issues handling',
+      ),
+      createVNode(
+        'div',
+        { style: { color: '#606060', marginTop: '15px', fontSize: '18px' } },
+        adminEmail.value,
+      ),
+    ]),
+    noCancelBtn: true,
+    okText: 'Copy',
+    onOk: () => {
+      if (!navigator.clipboard) {
+        fallbackCopyTextToClipboard(adminEmail.value);
+        return;
+      }
+      navigator.clipboard.writeText(adminEmail.value).then(
+        function () {
+          showToast.success('Copying  successful!');
+        },
+        function () {
+          showToast.fail('Copying  unsuccessful!');
+        }
+      )
+    },
+  });
+};
+
+
+
+function fallbackCopyTextToClipboard(text) {
+  // 1.Create a selectable element
+  let textArea = document.createElement("textarea");
+  textArea.value = text;
+
+  // 2.Use positioning to prevent page scrolling
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.position = "fixed";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    let successful = document.execCommand("copy");
+    let msg = successful ? "successful" : "unsuccessful";
+    showToast.success(msg);
+  } catch (err) {
+    showToast.fail('unsuccessful');
+  }
+  // 3.Remove element
+  document.body.removeChild(textArea);
+}
+
+function choose(type: string) {
+  console.log(type);
+
+  visible.value = false
+
+}
+
 onMounted(() => {
   user()
     .then((res) => {
       if (res && res.data && res.data.email) {
         console.log(res);
-        referral_code.value = res.data.referral_code
+        referral_code.value = res.data.referral_code;
         email.value = res.data.email;
-        dmcAccount.value = `DMC Account ${res.data.dmc}`;
+        // dmcAccount.value = `DMC Account ${res.data.dmc}`;
+        dmcAccount.value = res.data.dmc;
       }
     })
     .catch(() => {
@@ -114,9 +209,18 @@ onMounted(() => {
 });
 </script>
 
+
 <style lang="scss" scoped>
+::v-deep {
+  .nut-popover-menu-item {
+    min-width: 400px;
+  }
+}
+
 .userInfo {
   padding: 20px 25px;
+  background-color: #ffffff;
+  height: calc(100vh - 52px);
 
   .infoList {
     display: flex;
@@ -127,7 +231,7 @@ onMounted(() => {
       width: 87px;
       height: 87px;
       border-radius: 25px;
-      background: #FFFFFF;
+      background: #ffffff;
       box-shadow: 0px 30px 65px 0px rgba(111, 136, 157, 0.25);
       display: flex;
       justify-content: center;
@@ -137,7 +241,7 @@ onMounted(() => {
 
   .infoContent {
     margin-top: 70px;
-    background: #F5F6FA;
+    background: #4c5093;
     border-radius: 20px;
     min-height: 235px;
     position: relative;
@@ -148,7 +252,6 @@ onMounted(() => {
     box-sizing: border-box;
 
     img {
-
       width: 130px;
       height: 130px;
       border-radius: 15px;
@@ -159,13 +262,13 @@ onMounted(() => {
     }
 
     &>div:nth-of-type(1) {
-      font-family: Alibaba PuHuiTi 2.0;
+      font-family: Alibaba PuHuiTi 2;
       font-size: 40px;
       font-weight: 250;
       line-height: 54px;
       text-align: center;
       letter-spacing: 0px;
-      color: #020000;
+      color: #ffff;
       margin-top: 20px;
     }
 
@@ -177,87 +280,113 @@ onMounted(() => {
       text-align: center;
       letter-spacing: -0.45px;
       margin-top: 10px;
-      color: #151940;
-
+      color: #fff;
     }
   }
 
   .buttonContent {
-    margin-top: 100px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    .customBtn {
+      margin-top: 100px;
+      width: 100px;
+      height: 100px;
+      background: #f4f5f9;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.3s ease-in-out;
+    }
 
-    &>div {
-      flex: 0 1 20%;
-      height: 140px;
+    .customBtn:active {
+      transform: scale(1.4);
+    }
+
+    .nut-col,
+    .customPopover {
       display: flex;
       flex-direction: column;
-      justify-content: space-evenly;
       align-items: center;
 
       &>div:nth-of-type(2) {
         font-family: Inter;
-        font-size: 16px;
+        font-size: 28px;
         font-weight: 500;
-        line-height: 17px;
+        line-height: 40px;
+        margin-top: 30px;
         text-align: center;
         letter-spacing: 0px;
         color: #151940;
         user-select: none;
-      }
-
-      .customBtn {
-        width: 90px;
-        height: 90px;
-        background: #F4F5F9;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: transform 0.3s ease-in-out;
-      }
-
-      .customBtn:active {
-        transform: scale(1.4);
-
+        word-wrap: break-word !important;
+        word-break: normal;
+        text-align: center;
       }
     }
+
+
   }
 
   .logOutBtn {
-    width: 90%;
-    margin: 150px auto 0px;
-    height: 140px;
-    background: #4C5093;
-    border-radius: 18px;
+    position: fixed;
+    bottom: 160px;
+    width: 70%;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 120px;
+    background: #4c5093;
+    border-radius: 50px;
     text-align: center;
     line-height: 140px;
     font-family: Inter;
-    font-size: 28px;
+    font-size: 34px;
     font-weight: 500;
     text-align: center;
     letter-spacing: -0.45px;
-    color: #FFFFFF;
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: space-between;
     transition: transform 0.3s ease-in-out;
+
     .outBnt {
-      width: 100px;
-      height: 100px;
+      width: 70px;
+      height: 70px;
       border-radius: 18px;
-      background-color: #FFFFFF;
+      background-color: #ffffff;
       display: flex;
       justify-content: flex-end;
       align-items: center;
       margin-right: 20px;
-    
     }
-  
   }
-  .logOutBtn:active{
-      transform: translate(5px, 5px);
+
+  .logOutBtn:active {
+    transform: translate(5px, 5px);
+  }
+
+  .custom-action_sheet {
+    display: flex;
+    flex-direction: column;
+
+    &>div:not(:last-child) {
+      padding: 10px 20px;
+      width: 100%;
+      height: 90px;
+      line-height: 90px;
+      display: grid;
+      grid-template-columns: 50px auto;
+      align-items: center;
     }
-}
-</style>
+
+    &>div:last-child {
+      height: 100px;
+      background-color: #F7F7F7;
+      font-size: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      
+    }
+  }
+}</style>
