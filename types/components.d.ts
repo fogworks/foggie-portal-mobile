@@ -29,6 +29,7 @@ declare module 'vue' {
     NutNoticebar: typeof import('@nutui/nutui')['Noticebar']
     NutOverlay: typeof import('@nutui/nutui')['Overlay']
     NutPicker: typeof import('@nutui/nutui')['Picker']
+    NutPopover: typeof import('@nutui/nutui')['Popover']
     NutPopup: typeof import('@nutui/nutui')['Popup']
     NutRow: typeof import('@nutui/nutui')['Row']
     NutSearchbar: typeof import('@nutui/nutui')['Searchbar']
@@ -39,7 +40,11 @@ declare module 'vue' {
     NutUploader: typeof import('@nutui/nutui')['Uploader']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    VanButton: typeof import('vant/es')['Button']
     VanCellGroup: typeof import('vant/es')['CellGroup']
+    VanIcon: typeof import('vant/es')['Icon']
+    VanNumberKeyboard: typeof import('vant/es')['NumberKeyboard']
+    VanPasswordInput: typeof import('vant/es')['PasswordInput']
     VanSpace: typeof import('vant/es')['Space']
   }
 }
