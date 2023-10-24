@@ -107,7 +107,7 @@
           <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
         </div>
       </nut-infinite-loading>
-      <nut-empty v-else description="No data">
+      <nut-empty v-else description="No data" image="error">
         <div style="margin-top: 10px"> </div>
       </nut-empty>
     </template>

@@ -67,7 +67,7 @@
         </div> -->
       </div>
     </nut-infinite-loading>
-    <nut-empty v-else description="No data"></nut-empty>
+    <nut-empty v-else description="No data" image="error"></nut-empty>
   </div>
 </template>
 
@@ -190,11 +190,12 @@
       .nut-grid-item__content {
         border-radius: 16px;
         margin: 5px;
-        padding: 10px;
+        padding: 10px 12px;
         height: unset;
         align-items: flex-start;
         font-size: 30px;
         font-size: 1rem;
+        font-weight: bold;
         > div {
           max-width: 100%;
         }
@@ -206,6 +207,9 @@
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
+          text-align: center;
+          font-size: 24px;
+          font-weight: bold;
         }
       }
     }
@@ -260,16 +264,16 @@
       flex-direction: column;
       justify-content: center;
       padding: 12px 30px;
-      padding-left: 80px;
+      padding-left: 100px;
       min-height: 80px;
-      color: #838080;
-      font-size: 28px;
+      color: #171414;
+      font-size: 24px;
       background: #fff;
       border-radius: 5px;
       border-bottom: 1px solid #eee;
       .item_img_box {
         position: absolute;
-        left: 5px;
+        left: 16px;
         width: 70px;
         height: 70px;
         padding: 5px;
@@ -279,6 +283,21 @@
         img {
           width: 36px;
           margin: 0 auto;
+          transform-style: preserve-3d;
+          -webkit-transform-origin: 50%;
+          -webkit-animation: spin 5s infinite;
+          -webkit-animation-timing-function: linear;
+          -webkit-perspective: 1000;
+          -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+          -webkit-filter: saturate(1.45) hue-rotate(2deg);
+        }
+        @keyframes spin {
+          from {
+            -webkit-transform: rotateY(0deg);
+          }
+          to {
+            -webkit-transform: rotateY(360deg);
+          }
         }
         .cions {
           margin-right: 15px;
@@ -307,6 +326,7 @@
       }
       .time {
         color: #aaa;
+        color: #635858;
         font-size: 24px;
       }
       &:last-child {

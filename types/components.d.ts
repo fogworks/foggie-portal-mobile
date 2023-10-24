@@ -48,8 +48,11 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     VanButton: typeof import('vant/es')['Button']
     VanCellGroup: typeof import('vant/es')['CellGroup']
+    VanIcon: typeof import('vant/es')['Icon']
     VanNumberKeyboard: typeof import('vant/es')['NumberKeyboard']
     VanPasswordInput: typeof import('vant/es')['PasswordInput']
     VanSpace: typeof import('vant/es')['Space']
+    VarButton: typeof import('@varlet/ui')['_ButtonComponent']
+    VarSpace: typeof import('@varlet/ui')['_SpaceComponent']
   }
 }

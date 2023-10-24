@@ -111,6 +111,7 @@
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background: #f5f7fb;
   }
   ::-webkit-scrollbar {
     width: 0px;

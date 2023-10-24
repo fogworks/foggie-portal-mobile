@@ -18,7 +18,8 @@
       <nut-col :span="10">
         <div class="flex-content">
           <div class="svg-box" @click="searchType = 'History'" :class="[searchType == 'History' ? 'active_svg-box' : '']">
-            <IconHistory style="vertical-align: text-top"></IconHistory>
+            <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistoryActivate>
+            <IconHistory style="vertical-align: text-top" color="#5F57FF" v-else></IconHistory>
           </div>
           <span>History</span></div
         >
@@ -57,13 +58,14 @@
       </div>
     </div>
   </nut-infinite-loading>
-  <nut-empty v-else description="No data"></nut-empty>
+  <nut-empty v-else description="No data" image="error"></nut-empty>
 </template>
 
 <script lang="ts" setup name="ListPage">
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconSwitch from '~icons/home/switch.svg';
   import IconHistory from '~icons/home/history.svg';
+  import IconHistoryActivate from '~icons/home/historyActivate.svg';
   import { Search } from '@nutui/icons-vue';
   import { search_cloud } from '@/api';
   // import { listData } from './data';
@@ -160,7 +162,7 @@
     margin-right: -4vw;
     margin-bottom: 10px;
     .keyword-input-text {
-      border-radius: 16px;
+      border-radius: 36px;
       width: 98%;
       margin: 0 auto;
       color: #5264f9;
@@ -228,6 +230,8 @@
         }
         .active_svg-box {
           background: #fbc934;
+          background: #fbc935;
+          background: #171414;
           svg {
             color: #fff;
           }
@@ -288,16 +292,16 @@
       flex-direction: column;
       justify-content: center;
       padding: 12px 30px;
-      padding-left: 80px;
+      padding-left: 100px;
       min-height: 80px;
-      color: #838080;
-      font-size: 28px;
+      color: #171414;
+      font-size: 24px;
       background: #fff;
       border-radius: 5px;
       border-bottom: 1px solid #eee;
       .item_img_box {
         position: absolute;
-        left: 5px;
+        left: 16px;
         width: 70px;
         height: 70px;
         padding: 5px;
@@ -307,6 +311,21 @@
         img {
           width: 36px;
           margin: 0 auto;
+          transform-style: preserve-3d;
+          -webkit-transform-origin: 50%;
+          -webkit-animation: spin 5s infinite;
+          -webkit-animation-timing-function: linear;
+          -webkit-perspective: 1000;
+          -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+          -webkit-filter: saturate(1.45) hue-rotate(2deg);
+        }
+        @keyframes spin {
+          from {
+            -webkit-transform: rotateY(0deg);
+          }
+          to {
+            -webkit-transform: rotateY(360deg);
+          }
         }
         .cions {
           margin-right: 15px;
@@ -335,6 +354,7 @@
       .time {
         color: #aaa;
         font-size: 24px;
+        color: #635858;
       }
       &:last-child {
         border-bottom: none;

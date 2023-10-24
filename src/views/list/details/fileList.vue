@@ -123,7 +123,7 @@
           <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
         </div>
       </nut-infinite-loading>
-      <nut-empty v-else description="No data">
+      <nut-empty v-else description="No data" image="error">
         <div style="margin-top: 10px"> </div>
       </nut-empty>
     </template>
@@ -499,8 +499,6 @@
           let long_name = prefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
           prefix.value = long_name.split('/').slice(0, -1);
         } else {
-          console.log(row, 'row');
-
           chooseItem.value = row;
           detailShow.value = true;
           imgUrl.value = row.imgUrl;
@@ -544,8 +542,6 @@
       }
     };
     let index = 0;
-    console.log(checkData, 'checkData');
-
     const length = checkData.length - 1;
     const rename = function (resolve, reject) {
       if (targetObject(checkData[index]).length > 1024) {
@@ -565,12 +561,9 @@
       ProxRenameObject.setSourceobject(checkData[index].fullName);
       ProxRenameObject.setTargetobject(targetObject(checkData[index]));
       ProxRenameObject.setFiletype(checkData[index].fileType);
-      console.log(ProxRenameObject, 'ProxRenameObject');
 
       server.renameObjects(ProxRenameObject, {}, (err, data) => {
         if (data) {
-          console.log(data, 'data');
-
           if (index === length) {
             showToast.success('Move successful');
             moveShow.value = false;
@@ -677,6 +670,7 @@
       });
     }
   };
+
   const toNextLevel = (row: { name: string }) => {
     keyWord.value = '';
     let long_name = movePrefix.value.length ? movePrefix.value?.join('/') + '/' + row.name : row.name;
@@ -694,36 +688,38 @@
     } else if (type === 'download') {
       //   downLoad();
 
-      const bucketName = 'test11111';
+      // const bucketName = 'test11111';
       const objectKey = encodeURIComponent(checkData[0].fullName);
 
-      console.log('==================', accessKeyId.value, secretAccessKey.value, bucketName, objectKey);
+      // console.log('==================', accessKeyId.value, secretAccessKey.value, bucketName.value, objectKey);
 
-      const date = new Date().toUTCString();
+      // const date = new Date().toUTCString();
 
-      const httpMethod = 'GET';
-      const contentType = '';
-      const contentMd5 = '';
-      const canonicalizedAmzHeaders = '';
-      // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
-      const canonicalizedResource = `/${bucketName}/o/${objectKey}`;
+      // const httpMethod = 'GET';
+      // const contentType = '';
+      // const contentMd5 = '';
+      // const canonicalizedAmzHeaders = '';
+      // // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
+      // const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
 
-      const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
-      console.log(signature, 'signature');
+      // const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
+      // console.log(signature, 'signature');
 
-      let hmac = HmacSHA1(signature, secretAccessKey.value);
-      const signatureBase64 = enc.Base64.stringify(hmac);
-      console.log(signatureBase64, 'signatureBase64');
+      // let hmac = HmacSHA1(signature, secretAccessKey.value);
+      // const signatureBase64 = enc.Base64.stringify(hmac);
+      // console.log(signatureBase64, 'signatureBase64');
 
-      const headers = {
-        'x-amz-date': date,
-        Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
-      };
+      // const headers = {
+      //   'x-amz-date': date,
+      //   Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
+      // };
+
+      const headers = getSignHeaders(objectKey)
 
       // 构建 S3 GET 请求
       // const url = `/o/${bucketName}/${objectKey}`;
-      // const url = `/o/${objectKey}`
-      const url = `/o/${objectKey}?thumb=true`;
+      const url = `/o/${objectKey}`
+      // const url = `/o/${objectKey}?thumb=true`;
       console.log(url, 'url');
       console.log(headers, 'headers');
 
@@ -830,13 +826,10 @@
         list_prefix = list_prefix + '/';
       }
     }
-    console.log(orderInfo.value.rpc, 'orderInfo.value.rpc');
     let ip = orderInfo.value.rpc.split(':')[0];
     server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
     // header.setToken(token.value.split('bearer ')[1]);
-    console.log(token.value, 'token.value.sign');
-
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix(list_prefix);
     let delimiter = category.value != 0 ? '' : '/';
@@ -854,7 +847,6 @@
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
     requestReq.setRequest(listObject);
-    console.log(requestReq, 'requestReq');
     server.listObjects(
       requestReq,
       {},
@@ -873,8 +865,6 @@
       ) => {
         infinityValue.value = false;
         if (res) {
-          console.log(res, 'data');
-
           const transferData = {
             commonPrefixes: res.getCommonprefixesList(),
             content: res
@@ -956,8 +946,58 @@
       // }&token=${token.value}`;
       // let bucketName = 'foggiebucket';
       // imgHttpLink = `/o/${bucketName.value}/${encodeURIComponent(item.key)}?thumb=true`;
-      imgHttpLink = `/o/${encodeURIComponent(item.key)}?thumb=true`;
-      imgHttpLarge = `/o/${encodeURIComponent(item.key)}`;
+      const headers = getSignHeaders(encodeURIComponent(item.key));
+      // const params = new URLSearchParams(headers);
+      // imgHttpLink = `/o/${encodeURIComponent(item.key)}?${params.toString()}&thumb=true`;
+      // imgHttpLarge = `/o/${encodeURIComponent(item.key)}?${params.toString()}`;
+      // console.log('imgHttpLink------------', imgHttpLink);
+
+      const url = `/o/${encodeURIComponent(item.key)}?`
+
+      await fetch(url, { method: 'GET', headers })
+        .then((response) => {
+          if (response.ok) {
+            // 创建一个 Blob 对象，并将响应数据写入其中
+            console.log('Success', response);
+            return response.blob();
+          } else {
+            // 处理错误响应
+            console.error('Error:', response.status, response.statusText);
+          }
+        })
+        .then((blob) => {
+          if (blob) {
+            imgHttpLarge = URL.createObjectURL(blob);
+          }
+        })
+        .catch((error) => {
+          // 处理网络错误
+          console.error('Network Error:', error);
+        });
+        const url_thumb = `/o/${encodeURIComponent(item.key)}?thumb=true`
+
+      await fetch(url_thumb, { method: 'GET', headers })
+          .then((response) => {
+            if (response.ok) {
+              // 创建一个 Blob 对象，并将响应数据写入其中
+              console.log('Success', response);
+              return response.blob();
+            } else {
+              // 处理错误响应
+              console.error('Error:', response.status, response.statusText);
+            }
+          })
+          .then((blob) => {
+            if (blob) {
+              imgHttpLink = URL.createObjectURL(blob);
+            }
+          })
+          .catch((error) => {
+            // 处理网络错误
+            console.error('Network Error:', error);
+          });
+      
+
 
       // foggie://peerid/spaceid/cid
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
@@ -1066,7 +1106,6 @@
         tableData.value.push(item);
       }
     }
-    console.log(data.content, 'data.content+++++++++');
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
       let isDir = data?.content[j].contentType == 'application/x-directory' ? true : false;
@@ -1079,7 +1118,6 @@
       const url = imgData.imgHttpLink;
       const isSystemImg = imgData.isSystemImg;
       const url_large = imgData.imgHttpLarge;
-      console.log('===========url', url);
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
@@ -1146,8 +1184,6 @@
     } else {
       continuationToken.value = '';
     }
-    console.log(tableData.value, 'tableData');
-
     tableLoading.value = false;
     showToast.hide(1);
     nextTick(() => {
@@ -1187,13 +1223,10 @@
         ProxFindRequest.setCid('');
         ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
         ProxFindRequest.setFileid('');
-        console.log(ProxFindRequest, 'kerworddddddddddddddddddddddddddd');
 
         server.findObjects(ProxFindRequest, {}, (err: any, res: { getContentsList: () => any[] }) => {
           infinityValue.value = false;
           if (res) {
-            console.log(res, 'resresresresresresresresresresresresresresresres');
-
             const transferData = res
               .getContentsList()
               .map(
@@ -1266,60 +1299,80 @@
     window.localStorage.notFirst = true;
   };
 
+  const getSignHeaders = (objectKey)=> {
+    // const objectKey = encodeURIComponent(checkData[0].fullName);
+
+    console.log('==================', accessKeyId.value, secretAccessKey.value, bucketName.value, objectKey);
+
+    const date = new Date().toUTCString();
+
+    const httpMethod = 'GET';
+    const contentType = '';
+    const contentMd5 = '';
+    const canonicalizedAmzHeaders = '';
+    // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
+    const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
+
+    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
+    console.log(signature, 'signature');
+
+    let hmac = HmacSHA1(signature, secretAccessKey.value);
+    const signatureBase64 = enc.Base64.stringify(hmac);
+    console.log(signatureBase64, 'signatureBase64');
+
+    const headers = {
+      'x-amz-date': date,
+      Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
+    };
+    return headers;
+  }
+  const getKeys = () => {
+    if (orderInfo.value && orderInfo.value.peer_id) {
+      let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
+      let request = new Prox.default.ProxGetCredRequest();
+      request.setHeader(header);
+      server.listCreds(request, {}, (err: any, res: { array: any }) => {
+        if (err) {
+          console.log('err------111:', err);
+        } else if (res.array.length > 0) {
+          accessKeyId.value = res.array[0][0][0];
+          secretAccessKey.value = res.array[0][0][1];
+          console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
+        }
+      });
+    } else {
+      setTimeout(()=> {
+        getKeys()
+      }, 600)
+    }
+    
+  };
+
+
+
   // const getKeys = () => {
-  //   let server = new pb.default.ServiceClient(ip.value, null, null);
-  //   let header = new grpc.default.ProxHeader();
-  //   header.setPeerid(peer_id.value);
-  //   header.setId(foggie_id.value);
-  //   header.setToken(token.value);
-  //   let request = new grpc.default.ProxGetCredRequest();
+  //   console.log('getKeys--------------');
+  //   let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
+  //   let request = new Prox.default.ProxGetCredRequest();
+
+  //   // let header = new grpcService.default.ProxHeader();
+
+  //   // header.setPeerid('12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp');
+  //   // header.setId('baeqagmrygu');
+  //   // header.setToken('SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b');
+
+  //   console.log(header, 'header---ak', bucketName.value);
   //   request.setHeader(header);
   //   server.listCreds(request, {}, (err: any, res: { array: any }) => {
   //     if (err) {
-  //       console.log('err------:', err);
-  //     } else {
-
-  //       for (let i = 0; i < res.array[0].length; i++) {
-  //         const ak = res.array[0][i][0];
-  //         const sk = res.array[0][i][1];
-  //         console.log('res------ak  sk:', ak, sk);
-  //         if (ak.indexOf('FOG') !== 0 ) {
-  //           dynamicForm.state.tels.push({
-  //             key: Date.now(),
-  //             accessKey: ak,
-  //             secretKey: sk,
-  //             eyeState: false,
-  //           });
-  //         }
-  //       }
+  //       console.log('err------:ak sk', err);
+  //     } else if (res.array.length > 0) {
+  //       console.log('----------ak, sk', res.array);
+  //       accessKeyId.value = res.array[0][0][0];
+  //       secretAccessKey.value = res.array[0][0][1];
   //     }
-
   //   });
   // };
-
-  const getKeys = () => {
-    console.log('getKeys--------------');
-    let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
-    let request = new Prox.default.ProxGetCredRequest();
-
-    let header = new grpcService.default.ProxHeader();
-
-    header.setPeerid('12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp');
-    header.setId('baeqagmrygu');
-    header.setToken('SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b');
-
-    console.log(header, 'header---ak');
-    request.setHeader(header);
-    server.listCreds(request, {}, (err: any, res: { array: any }) => {
-      if (err) {
-        console.log('err------:ak sk', err);
-      } else if (res.array.length > 0) {
-        console.log('----------ak, sk', res.array);
-        accessKeyId.value = res.array[0][0][0];
-        secretAccessKey.value = res.array[0][0][1];
-      }
-    });
-  };
 
   watch(
     category,
@@ -1348,13 +1401,13 @@
   );
 
   onMounted(() => {
-    console.log('onMounted--------------');
     keyWord.value = route.query?.keyWord || '';
     category.value = route.query.category;
 
     bucketName.value = route.query?.bucketName;
     getKeys();
-    // switchType(category.value);
+    
+    switchType(category.value);
   });
 </script>
 <style>
