@@ -20,12 +20,15 @@
         </div>
         <div>Payment Security</div>
       </div>
-      <div>
+
+      <div @click="gotoDetail('/personalInfo')">
         <div class="customBtn">
           <My2 color="#505056" />
         </div>
         <div>Updated information</div>
       </div>
+
+
       <div>
         <div class="customBtn">
           <Link color="#505056" />
@@ -72,13 +75,9 @@ const email = ref<string>('');
 const dmcAccount = ref<string>('');
 const referral_code = ref<string>('');
 const router = useRouter();
-const goLogin = () => {
-  router.push('/login');
-};
-const goToPrivacy = () => {
-  window.open('https://foggie.fogworks.io/#/privacyPolicy_EN');
-  // router.push({ path: '/privacyPolicy' });
-};
+const gotoDetail = (path): void => {
+  router.push(path)
+}
 
 const logout = (): void => {
   showDialog({
@@ -272,4 +271,5 @@ onMounted(() => {
   .logOutBtn:active {
     transform: translate(5px, 5px);
   }
-}</style>
+}
+</style>
