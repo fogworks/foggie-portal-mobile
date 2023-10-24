@@ -392,11 +392,13 @@
     }
     .card_row_top {
       font-weight: bold;
+      font-size: 32px;
     }
     .pst-row {
       margin-top: 40px;
       font-size: 28px;
       text-align: left;
+      font-weight: bold;
       .column_value {
         font-size: 28px;
       }

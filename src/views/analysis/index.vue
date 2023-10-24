@@ -254,10 +254,14 @@
   }
   .balance_chart {
     background: #fff;
-    margin-bottom: 10px;
+    margin: 20px 10px;
+    padding: 10px;
+    border-radius: 10px;
   }
   .list_box {
     box-sizing: border-box;
+    padding: 0 10px;
+    border-radius: 20px;
     .list_item {
       position: relative;
       display: flex;

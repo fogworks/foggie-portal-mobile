@@ -174,7 +174,7 @@
     height: unset;
 
     overflow-x: hidden;
-    background: #fff;
+    // background: #fff;
   }
 
   .tabbar {
