@@ -172,6 +172,7 @@
     // height: calc(100vh - 92px);
     // overflow-y: scroll;
     height: unset;
+    height: 100%;
 
     overflow-x: hidden;
     // background: #fff;

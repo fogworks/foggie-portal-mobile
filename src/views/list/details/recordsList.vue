@@ -316,6 +316,9 @@
   .file_Top {
     z-index: 9999;
   }
+  .file_list {
+    background: #fff;
+  }
   :deep {
     .nut-popover-content--bottom-center {
       background: $main_blue;

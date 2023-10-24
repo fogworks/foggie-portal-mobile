@@ -264,7 +264,9 @@
           >
           </nut-picker>
         </nut-popup>
-        <nut-button type="info" block @click="() => confirmHttpShare(shareType, shareCheckData, accessKeyId, secretAccessKey, bucketName)">Confirm</nut-button>
+        <nut-button type="info" block @click="() => confirmHttpShare(shareType, shareCheckData, accessKeyId, secretAccessKey, bucketName)"
+          >Confirm</nut-button
+        >
       </div>
       <div class="share_info_box" v-else>
         <div v-if="shareRefContent.ipfsStr && +shareCheckData.originalSize <= orderInfo.total_space * 0.01">
@@ -941,12 +943,12 @@
       // console.log('imgHttpLink------------', imgHttpLink);
 
       // const url = `/o/${encodeURIComponent(item.key)}?`
-      console.log('-----------------img-headers', headers)
+      console.log('-----------------img-headers', headers);
       // imgHttpLarge = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
       // imgHttpLink = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
-      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key)
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key)
-      console.log('--------imgHttpLarge', imgHttpLarge)
+      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+      console.log('--------imgHttpLarge', imgHttpLarge);
 
       // await fetch(url, { method: 'GET', headers })
       //   .then((response) => {
@@ -990,8 +992,6 @@
       //       // 处理网络错误
       //       console.error('Network Error:', error);
       //     });
-      
-
 
       // foggie://peerid/spaceid/cid
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
@@ -1410,6 +1410,9 @@
 <style lang="scss" scoped>
   .file_Top {
     z-index: 9999;
+  }
+  .file_list {
+    background: #fff;
   }
   :deep {
     .nut-popover-content--bottom-center {
