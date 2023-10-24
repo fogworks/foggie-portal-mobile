@@ -150,7 +150,7 @@
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
   import { useOrderStore } from '@/store/modules/order';
-  import { showToast } from '@nutui/nutui';
+  import { showToast, showDialog } from '@nutui/nutui';
   import { search_cloud } from '@/api';
   import { get_user_dmc } from '@/api/amb';
   import useUserAssets from './useUserAssets.ts';
@@ -172,6 +172,19 @@
   const { loadMore, listData, hasMore, infinityValue } = useOrderList();
   const { getUserAssets, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
   const showWithdraw = () => {
+    if (!userInfo.value.dmc) {
+      const dmcOk = () => {
+        router.push({ path: '/bindDmc' });
+      };
+      let src = require('@/assets/DMC_token.png');
+      let str = `< img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
+      showDialog({
+        title: 'Bind DMC Account',
+        content: str,
+        onOk: dmcOk,
+      });
+      return false;
+    }
     router.push({ name: 'Withdraw' });
   };
   const toBuyOrder = () => {

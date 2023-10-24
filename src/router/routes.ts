@@ -108,6 +108,11 @@ export const routes = [
         component: () => import('@/views/analysisCate/index.vue'),
         meta: {},
       },
+      {
+        path: 'personalInfo',
+        component: () => import('@/views/personalInfo/index.vue'),
+        meta: {},
+      },
     ],
   },
 

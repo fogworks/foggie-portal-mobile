@@ -5,7 +5,7 @@
   <p class="key_tips"> Please bind your DMC account and ambassador invitation code first </p>
   <nut-sticky>
     <nut-form class="query_form" :model-value="formLine">
-      <nut-form-item v-if="!userInfo.dmc || onlyDMC" label-width="180px" label="DMC Account:">
+      <nut-form-item v-if="!userInfo.dmc && onlyDMC" label-width="180px" label="DMC Account:">
         <nut-input v-model="formLine.dmc" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
       </nut-form-item>
 
