@@ -16,6 +16,19 @@
   const userInfo = computed(() => userStore.getUserInfo);
 
   const bindAmb = async () => {
+    if (!userInfo.value.dmc) {
+      const dmcOk = () => {
+        router.push({ path: '/bindDmc?type=dmc' });
+      };
+      let src = require('@/assets/DMC_token.png');
+      let str = `< img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
+      showDialog({
+        title: 'Bind DMC Account',
+        content: str,
+        onOk: dmcOk,
+      });
+      return false;
+    }
     let isAmbCode = false;
     if (userInfo.value.amb_promo_code) {
       await check_amb_promo(userInfo.value.amb_promo_code).then((res) => {
@@ -23,45 +36,35 @@
       });
     }
     if (isAmbCode) {
-      if (!userInfo.value.dmc) {
-        const dmcOk = () => {
-          router.push({ path: '/bindDmc' });
-        };
-        let src = require('@/assets/DMC_token.png');
-        let str = `< img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
-        showDialog({
-          title: 'Bind DMC Account',
-          content: str,
-          onOk: dmcOk,
-        });
-        return false;
-      }
       check_user_bind(uuid.value).then((res2) => {
         if (res2.code == 200 && !res2.result.bind) {
           const ambOk = () => {
-            bind_promo({
-              user_uuid: uuid.value,
-              amb_promo_code: userInfo.value.amb_promo_code,
-              email: userInfo.value.email,
-              dmc_account: userInfo.value.dmc,
-            }).then((res) => {
-              if (res.code == 200) {
-                bind_user_promo({
-                  amb_promo_code: userInfo.value.amb_promo_code,
-                }).then((res) => {
-                  if (res.code == 200) {
-                    showToast.success('Binding successful, you can buy orders');
-                    userStore.setCloudCodeIsBind(true);
-                  }
-                });
-              }
-            });
+            // bind_promo({
+            //   user_uuid: uuid.value,
+            //   amb_promo_code: userInfo.value.amb_promo_code,
+            //   email: userInfo.value.email,
+            //   dmc_account: userInfo.value.dmc,
+            // }).then((res) => {
+            //   if (res.code == 200) {
+            //     bind_user_promo({
+            //       amb_promo_code: userInfo.value.amb_promo_code,
+            //     }).then((res) => {
+            //       if (res.code == 200) {
+            //         showToast.success('Binding successful, you can buy orders');
+            //         userStore.setCloudCodeIsBind(true);
+            //       }
+            //     });
+            //   }
+            // });
+            router.push('/bindDmc?type=amb');
           };
           showDialog({
             title: 'Notice',
-            content: `Your ambassador invitation code is ${userInfo.value.amb_promo_code}, are you sure you want to bind it?`,
+            content: `Your ambassador invitation code is ${userInfo.value.amb_promo_code}, Whether or not to go to binding?`,
             onOk: ambOk,
           });
+        } else if (res2.result.bind) {
+          userStore.setCloudCodeIsBind(true);
         }
       });
     }

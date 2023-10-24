@@ -22,14 +22,6 @@ export const routes = [
       },
 
       {
-        path: 'bindDmc',
-        name: 'BindDmc',
-        component: () => import('@/views/bindDmc/index.vue'),
-        meta: {
-          title: 'tabbar.bind',
-        },
-      },
-      {
         path: 'list',
         component: () => import('@/views/list/index.vue'),
         meta: {
@@ -107,6 +99,16 @@ export const routes = [
         path: 'analysisCate',
         component: () => import('@/views/analysisCate/index.vue'),
         meta: {},
+      },
+      {
+        path: 'personalInfo',
+        component: () => import('@/views/personalInfo/index.vue'),
+        meta: {},
+      },
+      {
+        path: 'bindDmc',
+        name: 'BindDmc',
+        component: () => import('@/views/bindDmc/index.vue'),
       },
     ],
   },
