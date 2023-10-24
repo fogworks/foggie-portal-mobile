@@ -241,10 +241,6 @@
     import IconRiNodeTree from '~icons/ri/node-tree';
     import IconRiSendToBack from '~icons/ri/send-to-back';
     import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
-  <<<<<<< HEAD
-
-  =======
-  >>>>>>> 4062e2657ec32f6689996c4c142765f66a48bec0
     import keySolid from '~icons/teenyicons/key-solid';
     import * as Prox from '@/pb/prox_pb.js';
     import * as grpcService from '@/pb/prox_grpc_web_pb.js';
@@ -301,42 +297,26 @@
     const isDisabled = ref<boolean>(false);
     const formData = ref<any>({});
 
-    const memo = ref<any>('');
-    const order_id = ref<any>('');
-    const minerIp = ref<string>('');
+  const memo = ref<any>('');
+  const order_id = ref<any>('');
+  const amb_uuid = ref<any>('');
+  const minerIp = ref<string>('');
 
-    // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
-    // order_id.value = '1281';
-    memo.value = route.query.uuid;
-    order_id.value = route.query.id;
-    // search_bill(memo.value, order_id.value).then((res) => {
-    //   console.log('search_bill', res);
-    //   minerIp.value = res?.data?.mp_ipaddr;
-    // });
-    // let timeOutEvent;
-    // const touchRow = () => {
-    //   timeOutEvent = setTimeout(function () {
-    //     timeOutEvent = 0;
-    //   }, 1000);
-    // };
+  // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
+  // order_id.value = '1281';
+  memo.value = route.query.uuid;
+  order_id.value = route.query.id;
+  amb_uuid.value = route.query.amb_uuid;
+  // search_bill(memo.value, order_id.value).then((res) => {
+  //   console.log('search_bill', res);
+  //   minerIp.value = res?.data?.mp_ipaddr;
+  // });
 
-    // const touchmoveRow = () => {
-    //   clearTimeout(timeOutEvent);
-    //   timeOutEvent = 0;
-    // };
+  const beforeupload = async (file: any) => {
 
-    // const touchendRow = () => {
-    //   clearTimeout(timeOutEvent);
-    //   console.log(timeOutEvent);
 
-    //   if (timeOutEvent != 0) {
-    //     console.log(uploadRef.value.submit, 'uploadRef');
 
-    //     uploadRef.value.submit();
-    //   }
-    // };
-    const beforeupload = async (file: any) => {
-      console.log('upload-----------', bucketName.value);
+    console.log('upload-----------', bucketName.value)
 
       const d = {
         orderId: order_id.value,
@@ -509,19 +489,20 @@
       return headers;
     };
 
-    const uploadSuccess = ({ responseText, option, fileItem }: any) => {
-      console.log('uploadSuccess', responseText, option, fileItem);
-      const d = {
-        orderId: order_id.value,
-        uuid: uuid.value,
-        orderUuid: memo.value,
-        mpAddress: orderInfo.value.mp_address,
-      };
-      calc_merkle(d).then((res) => {
-        console.log('calc_merkle-----', res);
-      });
-      uploadRef.value.clearUploadQueue();
-    };
+  const uploadSuccess = ({ responseText, option, fileItem }: any) => {
+    console.log('uploadSuccess', responseText, option, fileItem);
+    const d = {
+      orderId: order_id.value,
+      uuid: amb_uuid.value,
+      // uuid: 'fb08ae12-c5fb-4b24-88d9-746339b72fd0',
+      orderUuid: memo.value,
+      rpc: orderInfo.value.rpc,
+    }
+    calc_merkle(d).then((res) => {
+      console.log('calc_merkle-----', res);
+    })
+    uploadRef.value.clearUploadQueue();
+  };
 
     const onProgress = ({ event, options, percentage }: any) => {
       console.log('onProgress', event, options, percentage);

@@ -264,7 +264,7 @@
           >
           </nut-picker>
         </nut-popup>
-        <nut-button type="info" block @click="() => confirmHttpShare(shareType, shareCheckData)">Confirm</nut-button>
+        <nut-button type="info" block @click="() => confirmHttpShare(shareType, shareCheckData, accessKeyId, secretAccessKey, bucketName)">Confirm</nut-button>
       </div>
       <div class="share_info_box" v-else>
         <div v-if="shareRefContent.ipfsStr && +shareCheckData.originalSize <= orderInfo.total_space * 0.01">
@@ -434,6 +434,7 @@
     shareRefContent,
     copyContent,
     confirmHttpShare,
+    getHttpShare,
   } = useShare(orderInfo, header, deviceType);
   const shareCheckData = computed(() => {
     return isCheckMode.value ? selectArr.value[0] : chooseItem.value;
@@ -727,30 +728,9 @@
       // const url = `/o/${bucketName}/${objectKey}`;
       const url = `/o/${objectKey}`;
       // const url = `/o/${objectKey}?thumb=true`;
+      // const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`
       console.log(url, 'url');
       console.log(headers, 'headers');
-
-      // download_url(url, headers).then((err: any, res: any) => {
-      //   if (err) {
-      //     console.log('err-------------', err);
-      //   }
-      //   console.log('res-------------', res);
-      // });
-
-      // fetch(url, { method: 'GET', headers })
-      //   .then((response) => {
-      //     if (response.ok) {
-      //       // 下载文件或处理响应
-      //       console.log('Success', response);
-      //     } else {
-      //       // 处理错误响应
-      //       console.error('Error:', response.status, response.statusText);
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     // 处理网络错误
-      //     console.error('Network Error:', error);
-      //   });
 
       fetch(url, { method: 'GET', headers })
         .then((response) => {
@@ -954,55 +934,64 @@
       // let bucketName = 'foggiebucket';
       // imgHttpLink = `/o/${bucketName.value}/${encodeURIComponent(item.key)}?thumb=true`;
       const headers = getSignHeaders(encodeURIComponent(item.key));
+
       // const params = new URLSearchParams(headers);
       // imgHttpLink = `/o/${encodeURIComponent(item.key)}?${params.toString()}&thumb=true`;
       // imgHttpLarge = `/o/${encodeURIComponent(item.key)}?${params.toString()}`;
       // console.log('imgHttpLink------------', imgHttpLink);
 
-      const url = `/o/${encodeURIComponent(item.key)}?`;
+      // const url = `/o/${encodeURIComponent(item.key)}?`
+      console.log('-----------------img-headers', headers)
+      // imgHttpLarge = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
+      // imgHttpLink = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
+      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key)
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key)
+      console.log('--------imgHttpLarge', imgHttpLarge)
 
-      await fetch(url, { method: 'GET', headers })
-        .then((response) => {
-          if (response.ok) {
-            // 创建一个 Blob 对象，并将响应数据写入其中
-            console.log('Success', response);
-            return response.blob();
-          } else {
-            // 处理错误响应
-            console.error('Error:', response.status, response.statusText);
-          }
-        })
-        .then((blob) => {
-          if (blob) {
-            imgHttpLarge = URL.createObjectURL(blob);
-          }
-        })
-        .catch((error) => {
-          // 处理网络错误
-          console.error('Network Error:', error);
-        });
-      const url_thumb = `/o/${encodeURIComponent(item.key)}?thumb=true`;
+      // await fetch(url, { method: 'GET', headers })
+      //   .then((response) => {
+      //     if (response.ok) {
+      //       // 创建一个 Blob 对象，并将响应数据写入其中
+      //       console.log('Success------img', response);
+      //       return response.blob();
+      //     } else {
+      //       // 处理错误响应
+      //       console.error('Error:----img', response.status, response.statusText);
+      //     }
+      //   })
+      //   .then((blob) => {
+      //     if (blob) {
+      //       imgHttpLarge = URL.createObjectURL(blob);
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     // 处理网络错误
+      //     console.error('Network Error:---img', error);
+      //   });
+      // const url_thumb = `/o/${encodeURIComponent(item.key)}?thumb=true`
 
-      await fetch(url_thumb, { method: 'GET', headers })
-        .then((response) => {
-          if (response.ok) {
-            // 创建一个 Blob 对象，并将响应数据写入其中
-            console.log('Success', response);
-            return response.blob();
-          } else {
-            // 处理错误响应
-            console.error('Error:', response.status, response.statusText);
-          }
-        })
-        .then((blob) => {
-          if (blob) {
-            imgHttpLink = URL.createObjectURL(blob);
-          }
-        })
-        .catch((error) => {
-          // 处理网络错误
-          console.error('Network Error:', error);
-        });
+      // await fetch(url_thumb, { method: 'GET', headers })
+      //     .then((response) => {
+      //       if (response.ok) {
+      //         // 创建一个 Blob 对象，并将响应数据写入其中
+      //         console.log('Success', response);
+      //         return response.blob();
+      //       } else {
+      //         // 处理错误响应
+      //         console.error('Error:', response.status, response.statusText);
+      //       }
+      //     })
+      //     .then((blob) => {
+      //       if (blob) {
+      //         imgHttpLink = URL.createObjectURL(blob);
+      //       }
+      //     })
+      //     .catch((error) => {
+      //       // 处理网络错误
+      //       console.error('Network Error:', error);
+      //     });
+      
+
 
       // foggie://peerid/spaceid/cid
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
@@ -1310,7 +1299,7 @@
   const getSignHeaders = (objectKey) => {
     // const objectKey = encodeURIComponent(checkData[0].fullName);
 
-    console.log('==================', accessKeyId.value, secretAccessKey.value, bucketName.value, objectKey);
+    console.log('==================1', accessKeyId.value, secretAccessKey.value, bucketName.value, objectKey);
 
     const date = new Date().toUTCString();
 
@@ -1391,6 +1380,7 @@
       }
       if (val == 1) {
       } else {
+        console.log('category--------------', val, orderInfo.value);
         await getOrderInfo();
         doSearch('', prefix.value, true);
       }
@@ -1398,13 +1388,14 @@
     { deep: true, immediate: true },
   );
   onMounted(async () => {
-    console.log(orderInfo.value, 'orderinfo');
-
-    prefix.value = route?.query?.prefix.split('/');
+    if (route?.query?.prefix) {
+      prefix.value = route?.query?.prefix.split('/');
+    }
     // keyWord.value = route.query?.keyWord || '';
     category.value = route.query.category || '0';
 
     bucketName.value = route.query?.bucketName;
+    await getOrderInfo();
     getKeys();
     switchType(category.value);
     // prefix.value = route?.query?.prefix.split('/');

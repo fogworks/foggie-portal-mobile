@@ -155,37 +155,8 @@ export default function useShare(orderInfo, header, deviceType) {
     var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fileLink);
     window.open(twitterUrl, '_blank');
   };
-  const confirmHttpShare = (type, shareOption) => {
-    const awsAccessKeyId = 'FOGaCTsgpOoeXsrtjmk5';
-    const awsSecretAccessKey = '8zztbNHf6CVYdadg3AXmairRZ8mTXoowzMU2sUOq';
-    const bucketName = 'test11111';
-    const objectKey = encodeURIComponent(pinData.item.fullName);
-    const expirationInSeconds = 3600;
-    const expirationTime = Math.floor(Date.now() / 1000) + expirationInSeconds;
-
-    const httpMethod = 'GET';
-    const contentType = '';
-    const contentMd5 = '';
-    const canonicalizedAmzHeaders = '';
-    // const canonicalizedResource = `${bucketName}/o/${objectKey}`;
-
-    const canonicalizedResource = `o/${bucketName}/${objectKey}`;
-    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n${expirationTime}\n${canonicalizedAmzHeaders}/${canonicalizedResource}`;
-    console.log(signature, 'signature');
-
-    // const signature = `${awsAccessKeyId}\n${expirationTime}`;
-
-    let hmac = HmacSHA1(signature, awsSecretAccessKey);
-    const signatureBase64 = enc.Base64.stringify(hmac);
-    console.log(signatureBase64, 'signatureBase64');
-
-    let ip = 'http://45.201.245.223:6008';
-    const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
-    // let ip = 'http://test11111.devus.u2i.net:6008'
-    // const baseUrl = `${ip}/o/${objectKey}`;
-    shareRefContent.httpStr = `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
-      signatureBase64,
-    )}`;
+  const confirmHttpShare = (type, shareOption, awsAccessKeyId, awsSecretAccessKey, bucketName) => {
+    shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
     if (!type) {
       copyLink(shareRefContent.httpStr);
     } else if (type == 'twitter') {
@@ -195,50 +166,34 @@ export default function useShare(orderInfo, header, deviceType) {
     }
     isReady.value = false;
   };
-  // const confirmShare = () => {
-  //   loading.value = true;
-  //   let ProxPresignedURL = new Prox.default.ProxPresignedURL();
-  //   ProxPresignedURL.setHeader(header);
-  //   ProxPresignedURL.setUrl(shareRefContent.httpStr);
-  //   ProxPresignedURL.setMethod('GET');
-  //   ProxPresignedURL.setExpires(periodValue.value[0]);
-  //   let ip = orderInfo.value.rpc.split(':')[0];
-  //   let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-  //   server.getPreSigned(ProxPresignedURL, {}, (err, res) => {
-  //     if (res) {
-  //       res = res.toObject();
-  //       console.log(res, 'res');
-  //       if (res?.url) {
-  //         if (orderInfo.value.device_type !== 'space' && orderInfo.value.device_type != 3) {
-  //           shareRefContent.httpStr = res.url.replace(/\/fog/, ':6008/fog');
-  //         } else {
-  //           shareRefContent.httpStr = res.url;
-  //         }
 
-  //         if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
-  //           if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
-  //           } else {
-  //             if (!pinData.item.isPin) {
-  //               ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
-  //               showToast.text('IPFS link will available later.');
-  //             }
-  //           }
-  //         } else {
-  //           if (!pinData.item.isPin) {
-  //             ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
-  //             showToast.text('IPFS link will available later');
-  //           }
-  //         }
-  //         loading.value = false;
-  //         isReady.value = true;
-  //       } else {
-  //         loading.value = false;
-  //       }
-  //     } else if (err) {
-  //       loading.value = false;
-  //     }
-  //   });
-  // };
+  const getHttpShare = ( awsAccessKeyId, awsSecretAccessKey, bucketName, keyName) => {
+    awsAccessKeyId = 'FOGpmEBp2rE4dvkP2W1r'
+    awsAccessKeyId = 'TgKOPvlv3MSQhYjuyNN0MKVBw9mZChtT7E0GVh2h'
+    const objectKey = encodeURIComponent(keyName);
+    const expirationInSeconds = 3600;
+    const expirationTime = Math.floor(Date.now() / 1000) + expirationInSeconds;
+
+    const httpMethod = 'GET';
+    const contentType = '';
+    const contentMd5 = '';
+    const canonicalizedAmzHeaders = '';
+
+    const canonicalizedResource = `o/${bucketName}/${objectKey}`;
+    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n${expirationTime}\n${canonicalizedAmzHeaders}/${canonicalizedResource}`;
+    console.log(signature, 'signature');
+
+
+    let hmac = HmacSHA1(signature, awsSecretAccessKey);
+    const signatureBase64 = enc.Base64.stringify(hmac);
+    console.log(signatureBase64, 'signatureBase64');
+
+    let ip = `http://${orderInfo.value.rpc.split(':')[0]}:6008`;
+    const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
+    return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
+      signatureBase64,
+    )}`;
+  };
   const confirmShare = () => {
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
       if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
@@ -317,5 +272,6 @@ export default function useShare(orderInfo, header, deviceType) {
     ipfsDialogShow,
     confirmShare,
     confirmHttpShare,
+    getHttpShare,
   };
 }

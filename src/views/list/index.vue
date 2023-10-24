@@ -38,7 +38,7 @@
     <div
       class="list_item"
       v-for="(item, index) in list"
-      @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
+      @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } })"
     >
       <!-- :style="{ background: randomColor() }" -->
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
