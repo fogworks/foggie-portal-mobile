@@ -2,15 +2,22 @@
   <div class="top_box">
     <div class="top_back" @click="router.go(-1)">Bind</div>
   </div>
-  <p class="key_tips"> Please bind your DMC account and ambassador invitation code first </p>
+  <p class="key_tips" v-if="bindType == 'dmc'"> Please bind your DMC account invitation code first </p>
+  <p class="key_tips" v-else-if="bindType == 'amb'"> Please bind ambassador invitation code </p>
   <nut-sticky>
     <nut-form class="query_form" :model-value="formLine">
-      <nut-form-item v-if="!userInfo.dmc && onlyDMC" label-width="180px" label="DMC Account:">
+      <nut-form-item v-if="!userInfo.dmc && bindType == 'dmc'" label-width="180px" label="DMC Account:">
         <nut-input v-model="formLine.dmc" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
       </nut-form-item>
 
-      <nut-form-item v-if="!userInfo.amb_promo_code && !onlyDMC" label-width="180px" label="Ambassador Invitation Code:">
-        <nut-input v-model="formLine.code" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
+      <nut-form-item v-if="!userInfo.amb_promo_code && bindType == 'amb'" label-width="180px" label="Ambassador Invitation Code:">
+        <nut-input
+          v-model="formLine.code"
+          :disabled="loading || userInfo.amb_promo_code"
+          autofocus
+          class="nut-input-text"
+          placeholder="Please Input"
+        />
       </nut-form-item>
       <div class="bind_btn">
         <nut-button block type="info" @click="submit" :loading="loading"> Bind </nut-button>
@@ -33,7 +40,7 @@
   const userInfo = computed(() => useStore.getUserInfo);
   const formLine = reactive({ dmc: '', code: '' });
   const loading = ref(false);
-  const onlyDMC = computed(() => route.query.onlyDMC);
+  const bindType = computed(() => route.query.type);
   const initFoggieDate = async () => {
     let data = await user();
     if (data) {
@@ -44,16 +51,16 @@
   };
   const submit = async () => {
     // const taskList = [];
-    if (!userInfo.value.dmc && formLine.dmc.length !== 12) {
+    if (!userInfo.value.dmc && formLine.dmc.length !== 12 && bindType == 'dmc') {
       showToast.fail('The DMC account length is 12, please enter the correct DMC account');
       return false;
     }
-    if (!userInfo.value.amb_promo_code && !formLine.code) {
+    if (!userInfo.value.amb_promo_code && !formLine.code && bindType == 'amb') {
       showToast.fail('Please enter the Ambassador Invitation Code');
       return false;
     }
     loading.value = true;
-    if (!userInfo.value.dmc) {
+    if (!userInfo.value.dmc && bindType == 'dmc') {
       let postData = {
         dmc: formLine.dmc,
         wallet_type: 'wallet',
@@ -71,43 +78,12 @@
         }
       });
       if (bindRes) {
-        // await initFoggieDate();
+        await initFoggieDate();
       } else {
         return false;
       }
-      // if (bindRes) await initFoggieDate();
-      if (userInfo.value.amb_promo_code) {
-        let postData = {
-          user_uuid: userInfo.value.uuid,
-          amb_promo_code: userInfo.value.amb_promo_code,
-          email: userInfo.value.email,
-          dmc_account: formLine.dmc,
-        };
-        const promoFunction = () => {
-          return check_promo(userInfo.value.amb_promo_code).then((res) => {
-            if (res.code == 200) {
-              return bind_promo(postData).then((res2) => {
-                if (res2.code == 200) {
-                  bind_user_promo({
-                    amb_promo_code: userInfo.value.amb_promo_code,
-                  }).then((res) => {
-                    if (res.code == 200) {
-                      showToast.success('Bind successfully');
-                      useStore.setCloudCodeIsBind(true);
-                      initFoggieDate();
-                    }
-                  });
-                }
-              });
-            }
-          });
-        };
-        await promoFunction();
-      } else {
-        await initFoggieDate();
-      }
     }
-    if (!userInfo.value.amb_promo_code) {
+    if (!userInfo.value.amb_promo_code && bindType == 'amb') {
       let postData = {
         user_uuid: userInfo.value.uuid,
         amb_promo_code: formLine.code,
@@ -135,28 +111,14 @@
       await promoFunction();
       await initFoggieDate();
     }
-    // Promise.all(taskList)
-    //   .then(async (result) => {
-    //     let dmcRes = result[0];
-    //     let promoRes = userInfo.value.dmc ? result[0] : result[1];
-    //     if (!userInfo.value.dmc) {
-    //       if (dmcRes && dmcRes.data && dmcRes.data.dmc) {
-    //         showToast.success('Successfully bound DMC account');
-    //       } else {
-    //         showToast.fail('Binding failed, please try again');
-    //       }
-    //     }
-    //     if (promoRes.code == 200) {
-    //       showToast.success(promoRes.result);
-    //     }
-    //     loading.value = false;
-    //     await initFoggieDate();
-    //   })
-    //   .catch((err) => {
-    //     loading.value = false;
-    //     showToast.fail('Operation failed, please try again');
-    //   });
+    loading.value = false;
   };
+  onMounted(() => {
+    formLine.code = userInfo.value.amb_promo_code || '';
+  });
+  onActivated(() => {
+    formLine.code = userInfo.value.amb_promo_code || '';
+  });
 </script>
 
 <style lang="scss" scoped>

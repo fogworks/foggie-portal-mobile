@@ -186,6 +186,6 @@
   .border {
     padding-left: 30px;
     padding-right: 30px;
-    background: #f5f7fb;
+    // background: #f5f7fb;
   }
 </style>
