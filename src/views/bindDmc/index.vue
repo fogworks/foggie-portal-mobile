@@ -10,14 +10,8 @@
         <nut-input v-model="formLine.dmc" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
       </nut-form-item>
 
-      <nut-form-item v-if="!userInfo.amb_promo_code && bindType == 'amb'" label-width="180px" label="Ambassador Invitation Code:">
-        <nut-input
-          v-model="formLine.code"
-          :disabled="loading || !!userInfo.amb_promo_code"
-          autofocus
-          class="nut-input-text"
-          placeholder="Please Input"
-        />
+      <nut-form-item v-if="bindType == 'amb'" label-width="180px" label="Ambassador Invitation Code:">
+        <nut-input v-model="formLine.code" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
       </nut-form-item>
       <div class="bind_btn">
         <nut-button block type="info" @click="submit" :loading="loading"> Bind </nut-button>
@@ -38,6 +32,7 @@
   const router = useRouter();
   const useStore = useUserStore();
   const userInfo = computed(() => useStore.getUserInfo);
+  const amb_promo_code = computed(() => useStore.getUserInfo.amb_promo_code);
   const formLine = reactive({ dmc: '', code: '' });
   const loading = ref(false);
   const bindType = computed(() => route.query.type);
@@ -115,11 +110,20 @@
     }
     loading.value = false;
   };
+  watch(
+    amb_promo_code,
+    (val) => {
+      if (val) {
+        formLine.code = val;
+      }
+    },
+    { deep: true, immediate: true },
+  );
   onMounted(() => {
-    formLine.code = userInfo.value.amb_promo_code || '';
+    formLine.code = amb_promo_code.value || '';
   });
   onActivated(() => {
-    formLine.code = userInfo.value.amb_promo_code || '';
+    formLine.code = amb_promo_code.value || '';
   });
 </script>
 

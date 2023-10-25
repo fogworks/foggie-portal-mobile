@@ -183,7 +183,7 @@
   import useUserAssets from './useUserAssets.ts';
   import useOrderList from './useOrderList.ts';
   import { transferUTCTime } from '@/utils/util';
-
+  import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
   import '@nutui/nutui/dist/packages/toast/style';
 
   const useStore = useUserStore();
@@ -199,6 +199,7 @@
   const { timeType, searchType } = toRefs(state);
   const { loadMore, listData, hasMore, infinityValue } = useOrderList();
   const { getUserAssets, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
+  const { bindAmbCode } = useUpdateDMC();
   const showWithdraw = () => {
     if (!userInfo.value.dmc) {
       const dmcOk = () => {
@@ -216,7 +217,7 @@
     router.push({ name: 'Withdraw' });
   };
   const toBuyOrder = () => {
-    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+    if (!userInfo.value.amb_promo_code) {
       // showToast.text("Please bind the Ambassador Invitation Code first if you haven't already done so.");
       const dmcOk = () => {
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
@@ -229,12 +230,14 @@
         onOk: dmcOk,
       });
       return false;
+    } else if (!cloudCodeIsBind.value) {
+      bindAmbCode();
     } else {
       router.push({ name: 'Shop' });
     }
   };
   const toRecharge = () => {
-    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+    if (!userInfo.value.amb_promo_code) {
       const dmcOk = () => {
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
       };
@@ -246,6 +249,8 @@
         onOk: dmcOk,
       });
       return false;
+    } else if (!cloudCodeIsBind.value) {
+      bindAmbCode();
     } else {
       router.push({ name: 'Recharge' });
     }
@@ -267,6 +272,15 @@
   onBeforeMount(() => {
     loadMore();
   });
+  watch(
+    userInfo.value.uuid,
+    (val) => {
+      if (val) {
+        getUserAssets();
+      }
+    },
+    { deep: true },
+  );
   onMounted(() => {
     getUserAssets();
   });
