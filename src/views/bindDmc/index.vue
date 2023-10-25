@@ -13,7 +13,7 @@
       <nut-form-item v-if="!userInfo.amb_promo_code && bindType == 'amb'" label-width="180px" label="Ambassador Invitation Code:">
         <nut-input
           v-model="formLine.code"
-          :disabled="loading || userInfo.amb_promo_code"
+          :disabled="loading || !!userInfo.amb_promo_code"
           autofocus
           class="nut-input-text"
           placeholder="Please Input"
@@ -41,6 +41,8 @@
   const formLine = reactive({ dmc: '', code: '' });
   const loading = ref(false);
   const bindType = computed(() => route.query.type);
+  const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
+
   const initFoggieDate = async () => {
     let data = await user();
     if (data) {
@@ -83,7 +85,7 @@
         return false;
       }
     }
-    if (!userInfo.value.amb_promo_code && bindType == 'amb') {
+    if ((!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) && bindType == 'amb') {
       let postData = {
         user_uuid: userInfo.value.uuid,
         amb_promo_code: formLine.code,
@@ -121,6 +123,11 @@
   });
 </script>
 
+<style>
+  #app {
+    background: #fff;
+  }
+</style>
 <style lang="scss" scoped>
   .key_tips {
     margin-top: 30px;

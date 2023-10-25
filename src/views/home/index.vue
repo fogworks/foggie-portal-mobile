@@ -189,6 +189,7 @@
   const useStore = useUserStore();
   const orderStore = useOrderStore();
   const userInfo = computed(() => useStore.getUserInfo);
+  const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
 
   const router = useRouter();
   const state = reactive({
@@ -201,10 +202,10 @@
   const showWithdraw = () => {
     if (!userInfo.value.dmc) {
       const dmcOk = () => {
-        router.push({ path: '/bindDmc?type=dmc' });
+        router.push({ name: 'BindDmc', query: { type: 'dmc' } });
       };
       let src = require('@/assets/DMC_token.png');
-      let str = `<img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
+      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
       showDialog({
         title: 'Bind DMC Account',
         content: str,
@@ -215,25 +216,35 @@
     router.push({ name: 'Withdraw' });
   };
   const toBuyOrder = () => {
-    if (!userInfo.value.dmc || !userInfo.value.amb_promo_code) {
-      if (!userInfo.value.dmc && userInfo.value.amb_promo_code) {
-        showToast.text('Not yet bound to a DMC account, please bind your DMC account.');
-      } else if (userInfo.value.dmc && !userInfo.value.amb_promo_code) {
-        showToast.text("Please bind the Ambassador Invitation Code first if you haven't already done so.");
-      } else if (!userInfo.value.dmc && !userInfo.value.amb_promo_code) {
-        showToast.text(
-          'Have not yet bound the DMC account and the ambassador invitation code, please bind them first before doing this operation',
-        );
-      }
-      router.push({ name: 'BindDmc' });
+    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+      // showToast.text("Please bind the Ambassador Invitation Code first if you haven't already done so.");
+      const dmcOk = () => {
+        router.push({ name: 'BindDmc', query: { type: 'amb' } });
+      };
+      let src = require('@/assets/fog-works.png');
+      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
+      showDialog({
+        title: 'Ambassador Invitation Code',
+        content: str,
+        onOk: dmcOk,
+      });
+      return false;
     } else {
       router.push({ name: 'Shop' });
     }
   };
   const toRecharge = () => {
-    if (!userInfo.value.amb_promo_code) {
-      showToast.text("Please bind the Ambassador Invitation Code first if you haven't already done so.");
-      router.push({ name: 'BindDmc', query: { type: 'amb' } });
+    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+      const dmcOk = () => {
+        router.push({ name: 'BindDmc', query: { type: 'amb' } });
+      };
+      let src = require('@/assets/fog-works.png');
+      let str = `<img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
+      showDialog({
+        title: 'Binding Ambassador Invitation Code',
+        content: str,
+        onOk: dmcOk,
+      });
       return false;
     } else {
       router.push({ name: 'Recharge' });
@@ -290,6 +301,14 @@
     margin: 0 -4vw;
     display: inline-block;
     width: 120%;
+    :deep {
+      .nut-noticebar__page {
+        padding: 0;
+      }
+      .nut-noticebar__page-lefticon {
+        margin: 0 8px;
+      }
+    }
   }
   .dmc_account {
     // background: #5758a0;

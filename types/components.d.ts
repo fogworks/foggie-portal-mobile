@@ -19,6 +19,8 @@ declare module 'vue' {
     NutCol: typeof import('@nutui/nutui')['Col']
     NutDialog: typeof import('@nutui/nutui')['Dialog']
     NutEmpty: typeof import('@nutui/nutui')['Empty']
+    NutForm: typeof import('@nutui/nutui')['Form']
+    NutFormItem: typeof import('@nutui/nutui')['FormItem']
     NutImage: typeof import('@nutui/nutui')['Image']
     NutInfiniteLoading: typeof import('@nutui/nutui')['InfiniteLoading']
     NutInput: typeof import('@nutui/nutui')['Input']
