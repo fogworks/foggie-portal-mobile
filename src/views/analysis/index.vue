@@ -73,7 +73,7 @@
 
 <script setup lang="ts" name="analysis">
   import IconArrowRight from '~icons/home/arrow-right.svg';
-
+  import loadingImg from '@/components/loadingImg/index.vue';
   import IconCions from '~icons/home/cions.svg';
   import IconIncome from '~icons/home/earn-income.svg';
   import IconWithdraw from '~icons/home/earn-withdraw.svg';
@@ -122,6 +122,9 @@
   const searchOrderProfit = () => {
     showToast.loading('Loading', {
       cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
     });
     const [start, end] = shortcuts[timeType.value]();
     const postData = !start && !end ? {} : { start_time: start, end_time: end };

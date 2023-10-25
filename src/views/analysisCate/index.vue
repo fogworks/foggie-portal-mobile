@@ -53,6 +53,7 @@
   import useOrderList from '@/views/home/useOrderList.ts';
   import { search_user_asset, search_order_profit } from '@/api/amb';
   import { showToast } from '@nutui/nutui';
+  import loadingImg from '@/components/loadingImg/index.vue';
   import '@nutui/nutui/dist/packages/toast/style';
 
   const route = useRoute();
@@ -135,6 +136,9 @@
   const searchOrderProfit = () => {
     showToast.loading('Loading', {
       cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
     });
     const [start, end] = shortcuts[timeType.value]();
     const postData = !start && !end ? {} : { start_time: start, end_time: end };

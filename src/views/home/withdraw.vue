@@ -94,6 +94,8 @@
 </template>
 
 <script setup lang="ts" name="Withdraw">
+  import loadingImg from '@/components/loadingImg/index.vue';
+
   import IconCopy from '~icons/home/copy.svg';
   import { reactive, toRefs, computed } from 'vue';
   import { check_account, transfer_valid, bind_valid } from '@/api';
@@ -167,7 +169,9 @@
     loading.value = true;
     showToast.loading('Loading', {
       cover: true,
-      'cover-color': 'rgba(0,0,0,0.8)',
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
     });
     let res = await check_bind_otp();
     if (res.result.bind_secret) {
@@ -198,8 +202,11 @@
   function confirmBind() {
     checkValidate(code.value);
     if (!showErrorTips.value) {
-      showToast.loading('Validating', {
+      showToast.loading('Loading', {
         cover: true,
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
       });
       verify_otp_token({ secret: scret_key.value, token: code.value })
         .then((res) => {
@@ -240,8 +247,11 @@
     }
   }
   function confirmWithdraw() {
-    showToast.loading('Withdrawing cash for you', {
+    showToast.loading('Loading', {
       cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
     });
     if (!amount.value) return false;
     user_withdraw({ quantity: amount.value, token: code.value })

@@ -1,7 +1,34 @@
 <template>
   <div class="fileList_content">
-    <nut-popup position="top" round pop-class="type_check_pop" v-model:visible="showTypeCheckPop">
+    <nut-popup position="top" round pop-class="type_check_pop" v-if="showTypeCheckPop" v-model:visible="showTypeCheckPop">
       <!-- <p class="cate_title">Classifications</p> -->
+      <div :class="['list_header']">
+        <div style="display: flex">
+          <template v-if="!prefix.length">
+            <div class="top_back" @click="router.go(-1)"> </div>
+            <span class="top_title">
+              {{ fileTypeText[category] }}
+            </span>
+            <TriangleUp
+              @click="showTypeCheckPop = !showTypeCheckPop"
+              :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
+            ></TriangleUp>
+          </template>
+          <template v-else>
+            <div
+              class="top_back"
+              @click="
+                prefix.splice(-1);
+                prefixChange();
+              "
+            >
+            </div>
+            <span class="top_title">
+              {{ prefix.at(-1) || '' }}
+            </span>
+          </template>
+        </div>
+      </div>
       <div class="type_check_box">
         <div class="type_item" @click="switchType(0)">
           <div class="svg_box">
@@ -108,9 +135,9 @@
           :id="[index == 0 ? 'list_item_1' : '']"
           v-for="(item, index) in tableData"
           :key="index"
-          @touchstart.prevent="touchRow(item, $event)"
-          @touchmove.prevent="touchmoveRow(item, $event)"
-          @touchend.prevent="touchendRow(item, $event)"
+          @touchstart="touchRow(item, $event)"
+          @touchmove="touchmoveRow(item, $event)"
+          @touchend="touchendRow(item, $event)"
         >
           <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
             <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
@@ -148,57 +175,65 @@
     ></ImgList>
 
     <!-- checkbox action -->
-    <nut-tabbar
-      v-if="isCheckMode"
-      @tab-switch="tabSwitch"
-      :class="['bottom_action', selectArr.length ? 'canAction' : '']"
-      bottom
-      safe-area-inset-bottom
-      placeholder
-    >
-      <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
-        <template #icon>
-          <IconShare :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconShare>
-          <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
-        </template>
-      </nut-tabbar-item>
-      <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 ? 'is-disable' : '']">
-        <template #icon="props">
-          <IconRename :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconRename>
-        </template>
-      </nut-tabbar-item>
-      <nut-tabbar-item tab-title="Move">
-        <template #icon="props">
-          <IconMove :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconMove>
-        </template>
-      </nut-tabbar-item>
-      <nut-tabbar-item tab-title="Download">
-        <template #icon="props">
-          <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
-        </template>
-      </nut-tabbar-item>
-      <nut-tabbar-item tab-title="Delete">
-        <template #icon="props">
-          <IconDelete :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDelete>
-        </template>
-      </nut-tabbar-item>
-    </nut-tabbar>
+    <Teleport to="body">
+      <nut-tabbar
+        v-if="isCheckMode"
+        @tab-switch="tabSwitch"
+        :class="['bottom_action', selectArr.length ? 'canAction' : '']"
+        bottom
+        safe-area-inset-bottom
+        placeholder
+      >
+        <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
+          <template #icon>
+            <IconShare :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconShare>
+            <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
+          </template>
+        </nut-tabbar-item>
+        <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 ? 'is-disable' : '']">
+          <template #icon="props">
+            <IconRename :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconRename>
+          </template>
+        </nut-tabbar-item>
+        <nut-tabbar-item tab-title="Move" :class="[category == 1 ? 'is-disable' : '']">
+          <template #icon="props">
+            <IconMove :color="selectArr.length && category != 1 ? '#fff' : '#ffffff5c'"></IconMove>
+          </template>
+        </nut-tabbar-item>
+        <nut-tabbar-item tab-title="Download">
+          <template #icon="props">
+            <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
+          </template>
+        </nut-tabbar-item>
+        <nut-tabbar-item tab-title="Delete">
+          <template #icon="props">
+            <IconDelete :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDelete>
+          </template>
+        </nut-tabbar-item>
+      </nut-tabbar>
+    </Teleport>
+
     <!-- single action -->
-    <nut-action-sheet class="action_pop" v-model:visible="showActionPop">
-      <div class="custom-content">
-        <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
-        <ul>
-          <li v-if="!chooseItem.isDir && showActionBtn" @click="handlerClick('share')"><IconShare></IconShare> Share</li>
-          <li @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
-          <li @click="handlerClick('move')"><IconMove></IconMove> Move</li>
-          <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
-          <li @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li>
-        </ul>
-        <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
-      </div>
-    </nut-action-sheet>
+    <Teleport to="body">
+      <nut-action-sheet class="action_pop" v-if="showActionPop" v-model:visible="showActionPop">
+        <div class="custom-content">
+          <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
+          <ul>
+            <li v-if="!chooseItem.isDir && showActionBtn" @click="handlerClick('share')"><IconShare></IconShare> Share</li>
+            <li @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
+            <li @click="handlerClick('move')"><IconMove></IconMove> Move</li>
+            <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
+            <li @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li>
+          </ul>
+          <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
+        </div>
+      </nut-action-sheet>
+    </Teleport>
+
     <!-- rename / newFolder -->
     <nut-popup
+      teleport-disable
+      v-if="renameShow"
       @closed="
         isNewFolder = false;
         newName = '';
@@ -217,7 +252,8 @@
       </div>
     </nut-popup>
     <!-- move -->
-    <nut-popup position="bottom" closeable round :style="{ height: '90%' }" v-model:visible="moveShow">
+
+    <nut-popup teleport-disable v-if="moveShow" position="bottom" closeable round :style="{ height: '90%' }" v-model:visible="moveShow">
       <div class="rename_box move_box">
         <IconFolder></IconFolder>
         <div
@@ -230,13 +266,7 @@
         >
           <p> {{ movePrefix.length ? movePrefix.slice(-1)[0] : '' }}</p>
         </div>
-        <nut-infinite-loading
-          v-if="category !== 1"
-          class="file_list"
-          v-model="infinityValue"
-          :has-more="!!continuationToken2"
-          @load-more="loadMore"
-        >
+        <nut-infinite-loading class="file_list" v-model="infinityValue" :has-more="!!continuationToken2" @load-more="loadMore">
           <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in dirData" :key="index">
             <div :class="['left_icon_box']">
               <IconFolder></IconFolder>
@@ -251,7 +281,16 @@
       </div>
     </nut-popup>
     <!-- share -->
-    <nut-popup @closed="isReady = false" position="bottom" closeable round :style="{ height: '200px' }" v-model:visible="showShareDialog">
+    <nut-popup
+      teleport-disable
+      v-if="showShareDialog"
+      @closed="isReady = false"
+      position="bottom"
+      closeable
+      round
+      :style="{ height: '200px' }"
+      v-model:visible="showShareDialog"
+    >
       <div v-if="isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
         <nut-popup position="bottom" v-model:visible="periodShow">
@@ -291,23 +330,28 @@
         </div>
       </div>
     </nut-popup>
-
-    <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
-      <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-      <div class="middle_img">
-        <nut-image :src="imgUrl" fit="contain" position="center" />
-      </div>
-      <div class="bottom_action">
-        <div>
-          <IconShare @click="handlerClick('share')"></IconShare>
-          <p>Share</p>
+    <Teleport to="body">
+      <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
+        <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+        <div class="middle_img">
+          <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
+            <template #loading>
+              <Loading width="16px" height="16px" name="loading" />
+            </template>
+          </nut-image>
         </div>
-        <div>
-          <IconDownload @click="handlerClick('download')"></IconDownload>
-          <p>Download</p>
+        <div class="bottom_action">
+          <div>
+            <IconShare @click="handlerClick('share')"></IconShare>
+            <p>Share</p>
+          </div>
+          <div>
+            <IconDownload @click="handlerClick('download')"></IconDownload>
+            <p>Download</p>
+          </div>
         </div>
-      </div>
-    </nut-overlay>
+      </nut-overlay>
+    </Teleport>
   </div>
 </template>
 
@@ -335,7 +379,7 @@
   import IconHttp from '~icons/home/http.svg';
   import { reactive, toRefs, watch } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
-  import { Search2, TriangleUp } from '@nutui/icons-vue';
+  import { Search2, TriangleUp, Loading } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize } from '@/utils/util';
   import ImgList from './imgList.vue';
@@ -349,12 +393,13 @@
   import useOrderInfo from './useOrderInfo.js';
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
+  import loadingImg from '@/components/loadingImg/index.vue';
 
   import { HmacSHA1, enc } from 'crypto-js';
   // import { download_url } from '@/api/index';
 
-  const accessKeyId = ref<string>('');
-  const secretAccessKey = ref<string>('');
+  // const accessKeyId = ref<string>('');
+  // const secretAccessKey = ref<string>('');
   const bucketName = ref<string>('');
 
   let timeOutEvent: string | number | NodeJS.Timeout | undefined;
@@ -421,7 +466,7 @@
     longPress,
     isFirst,
   } = toRefs(state);
-  const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  const { header, token, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
   const {
     isReady,
     confirmShare,
@@ -511,7 +556,7 @@
         } else {
           chooseItem.value = row;
           detailShow.value = true;
-          imgUrl.value = row.imgUrl;
+          imgUrl.value = row.imgUrlLarge;
         }
       }
     }
@@ -624,7 +669,6 @@
         if (checkData[0]?.type == 'application/x-directory') {
           if (newName.value[newName.value.length - 1] == '/') {
             const newData = newName.value.slice(0, newName.value.length - 1);
-            console.log(newData, 'newDatanewData');
             arr.splice(arr.length - 2, 1, newData);
           } else {
             arr.splice(arr.length - 2, 1, newName.value);
@@ -664,7 +708,6 @@
       ProxRenameObject.setSourceobject(checkData[0].fullName);
       ProxRenameObject.setTargetobject(targetObject());
       ProxRenameObject.setFiletype(checkData[0].fileType);
-      console.log(ProxRenameObject, 'ProxRenameObject');
 
       server.renameObjects(ProxRenameObject, {}, (err, data) => {
         if (data) {
@@ -692,6 +735,7 @@
     showActionPop.value = false;
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
     if (type === 'move') {
+      // if (category.value == 1) return false;
       movePrefix.value = [];
       moveShow.value = true;
       doSearch('', movePrefix.value, true);
@@ -728,17 +772,14 @@
 
       // 构建 S3 GET 请求
       // const url = `/o/${bucketName}/${objectKey}`;
-      const url = `/o/${objectKey}`;
+      // const url = `/o/${objectKey}`;
       // const url = `/o/${objectKey}?thumb=true`;
-      // const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`
-      console.log(url, 'url');
-      console.log(headers, 'headers');
+      const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`
 
       fetch(url, { method: 'GET', headers })
         .then((response) => {
           if (response.ok) {
             // 创建一个 Blob 对象，并将响应数据写入其中
-            console.log('Success', response);
             return response.blob();
           } else {
             // 处理错误响应
@@ -746,8 +787,6 @@
           }
         })
         .then((blob) => {
-          console.log(blob, 'blob');
-
           // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
           const a = document.createElement('a');
           a.href = URL.createObjectURL(blob);
@@ -771,6 +810,7 @@
         content: 'Are you sure you want to delete?',
         cancelText: 'Cancel',
         okText: 'Confirm',
+        popClass: 'dialog_class',
         onOk,
       });
     } else if (type === 'rename') {
@@ -779,8 +819,6 @@
       renameShow.value = true;
     } else if (type === 'newFolder') {
     } else if (type === 'share') {
-      console.log(checkData.length);
-
       if (checkData.length > 1) return false;
       await doShare(checkData[0]);
       // cancelSelect();
@@ -821,7 +859,15 @@
     // header.setToken(token.value.split('bearer ')[1]);
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix(list_prefix);
-    let delimiter = category.value != 0 ? '' : '/';
+    let delimiter;
+    let categoryParam;
+    if (moveShow.value) {
+      delimiter = '/';
+      categoryParam = '0';
+    } else {
+      delimiter = category.value != 0 ? '' : '/';
+      categoryParam = category.value;
+    }
     listObject.setDelimiter(delimiter);
     listObject.setEncodingType('');
     listObject.setMaxKeys(30);
@@ -831,7 +877,8 @@
     listObject.setKeyMarker('');
     listObject.setOrderby('');
     listObject.setTags('');
-    listObject.setCategory(category.value);
+
+    listObject.setCategory(categoryParam);
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
@@ -902,6 +949,8 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
+          console.log(transferData, 'transferData,transferData');
+
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
           console.log('err----', err);
@@ -948,6 +997,7 @@
       // imgHttpLink = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
       console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       console.log('--------imgHttpLarge', imgHttpLarge);
 
       // await fetch(url, { method: 'GET', headers })
@@ -1015,6 +1065,8 @@
       //     ? require(`@/assets/logo-dog.svg`)
       //     : require(`@/assets/logo-dog-black.svg`);
     }
+    console.log({ imgHttpLink, isSystemImg, imgHttpLarge }, '{ imgHttpLink, isSystemImg, imgHttpLarge }');
+
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   const initRemoteData = async (
@@ -1034,7 +1086,7 @@
   ) => {
     if (!data) {
       tableLoading.value = false;
-      showToast.hide(1);
+      showToast.hide();
       return;
     }
     if (data.err) {
@@ -1047,6 +1099,11 @@
       } else {
         tableData.value = [];
       }
+    }
+    console.log('----------ak---1', accessKeyId.value, bucketName.value);
+    if (!accessKeyId.value) {
+      await getOrderInfo(bucketName.value);
+      console.log('----------ak---2', accessKeyId.value);
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = decodeURIComponent(data.commonPrefixes[i]);
@@ -1108,7 +1165,9 @@
       // imgHttpLink, isSystemImg, imgHttpLarge
 
       // let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+      console.log('----------ak---3', accessKeyId.value, bucketName.value);
       const imgData = await handleImg(data.content[j], type, isDir);
+      console.log('----------ak---4', imgData);
       const url = imgData.imgHttpLink;
       const isSystemImg = imgData.isSystemImg;
       const url_large = imgData.imgHttpLarge;
@@ -1179,24 +1238,30 @@
       continuationToken.value = '';
     }
     tableLoading.value = false;
-    showToast.hide(1);
+    showToast.hide();
     nextTick(() => {
       if (window.localStorage.notFirst) {
-        // document.body.style.overflow = '';
+        document.getElementsByClassName('main-page')[0].style.overflow = '';
         isFirst.value = false;
       } else {
-        // document.body.style.overflow = 'hidden';
+        document.getElementsByClassName('main-page')[0].style.overflow = 'hidden';
         isFirst.value = true;
       }
     });
   };
   function doSearch(scroll: string = '', prefixArg: any[] = [], reset = false) {
     if (tableLoading.value) return false;
+    if (category.value == 1 && !moveShow.value && !renameShow.value) {
+      imgListRef.value.refresh();
+      return;
+    }
     // tableData.value = [];
     if (keyWord.value == '') {
       showToast.loading('Loading', {
         cover: true,
-        id: 1,
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
       });
       // if (moveShow.value) {
       getFileList(scroll, prefixArg, reset);
@@ -1207,7 +1272,9 @@
       prefix.value = [];
       showToast.loading('Loading', {
         cover: true,
-        id: 1,
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
       });
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
@@ -1291,7 +1358,7 @@
     window.open(twitterUrl, '_blank');
   };
   const handleFirst = () => {
-    // document.body.style.overflow = '';
+    document.getElementsByClassName('main-page')[0].style.overflow = '';
     isFirst.value = false;
     window.localStorage.notFirst = true;
   };
@@ -1323,26 +1390,26 @@
     };
     return headers;
   };
-  const getKeys = () => {
-    if (orderInfo.value && orderInfo.value.peer_id) {
-      let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
-      let request = new Prox.default.ProxGetCredRequest();
-      request.setHeader(header);
-      server.listCreds(request, {}, (err: any, res: { array: any }) => {
-        if (err) {
-          console.log('err------111:', err);
-        } else if (res.array.length > 0) {
-          accessKeyId.value = res.array[0][0][0];
-          secretAccessKey.value = res.array[0][0][1];
-          console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
-        }
-      });
-    } else {
-      setTimeout(() => {
-        getKeys();
-      }, 600);
-    }
-  };
+  // const getKeys = () => {
+  //   if (orderInfo.value && orderInfo.value.peer_id) {
+  //     let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
+  //     let request = new Prox.default.ProxGetCredRequest();
+  //     request.setHeader(header);
+  //     server.listCreds(request, {}, (err: any, res: { array: any }) => {
+  //       if (err) {
+  //         console.log('err------111:', err);
+  //       } else if (res.array.length > 0) {
+  //         accessKeyId.value = res.array[0][0][0];
+  //         secretAccessKey.value = res.array[0][0][1];
+  //         console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
+  //       }
+  //     });
+  //   } else {
+  //     setTimeout(() => {
+  //       getKeys();
+  //     }, 600);
+  //   }
+  // };
 
   // const getKeys = () => {
   //   console.log('getKeys--------------');
@@ -1371,6 +1438,7 @@
     cancelSelect();
     doSearch('', prefix.value, true);
   };
+  provide('handleImg', handleImg);
   watch(
     category,
     async (val, old) => {
@@ -1381,30 +1449,38 @@
       if (val == 1) {
       } else {
         console.log('category--------------', val, orderInfo.value);
-        await getOrderInfo();
+        if (!orderInfo?.value?.id) {
+          await getOrderInfo();
+        }
         doSearch('', prefix.value, true);
       }
     },
-    { deep: true, immediate: true },
+    { deep: true },
   );
   onMounted(async () => {
     if (route?.query?.prefix) {
       prefix.value = route?.query?.prefix.split('/');
     }
-    // keyWord.value = route.query?.keyWord || '';
-    category.value = route.query.category || '0';
-
     bucketName.value = route.query?.bucketName;
-    await getOrderInfo();
-    getKeys();
-    switchType(category.value);
-    // prefix.value = route?.query?.prefix.split('/');
+    let category1 = route.query.category || '0';
+    switchType(category1);
+    // getKeys();
   });
 </script>
 <style>
   .type_check_pop {
-    padding-top: 120px;
-    height: 350px;
+    /* padding-top: 120px; */
+    height: 450px;
+  }
+  .dialog_class {
+    font-size: 30px;
+    .nut-dialog__header {
+      height: unset;
+      font-size: 35px;
+    }
+    .nut-dialog__content {
+      font-size: 30px;
+    }
   }
 </style>
 <style lang="scss" scoped>
@@ -1412,6 +1488,7 @@
     z-index: 9999;
   }
   .file_list {
+    // height: calc(100% - 300px);
     background: #fff;
   }
   :deep {
@@ -1490,7 +1567,6 @@
   .fileList_content {
     box-sizing: border-box;
     height: 100%;
-    padding: 0 0 40px 0;
   }
   .list_header {
     display: flex;
@@ -1517,10 +1593,11 @@
       transform: rotate(180deg);
     }
   }
-  .header_fixed {
-    position: fixed;
-    z-index: 9999;
-  }
+  // .header_fixed {
+  //   position: fixed;
+  //   top: 0 !important;
+  //   z-index: 9999;
+  // }
 
   .cate_title {
     padding: 20px;
@@ -1605,6 +1682,10 @@
     align-items: center;
     padding: 20px;
     border-top: 1px solid #eee;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     &:active {
       background: #cde3f5;
     }
@@ -1737,6 +1818,7 @@
         p {
           text-align: right;
           margin: 0;
+          font-size: 30px;
         }
       }
     }

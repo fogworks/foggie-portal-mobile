@@ -68,7 +68,6 @@ export default function useShare(orderInfo, header, deviceType) {
       token = foggieToken;
     }
 
-    console.log(token, 'token');
     let poolType = orderInfo.value.pool_type;
     let poolWalletAcc = orderInfo.value.pool_wallet_acc;
     if (device_type == 3) {
@@ -86,7 +85,6 @@ export default function useShare(orderInfo, header, deviceType) {
       return;
     }
     let request = new Prox.default.ProxPinRequest();
-    // console.log(request, 'request');
     request.setCid(item.cid);
     request.setStype(stype);
     request.setExp(exp);
@@ -101,22 +99,17 @@ export default function useShare(orderInfo, header, deviceType) {
     ProxPinReq.setRequest(request);
     ProxPinReq.setPay(pinPay);
     let ip = orderInfo.value.rpc.split(':')[0];
-    console.log(ProxPinReq, 'pinnnnnnnnnnnnnnn');
     let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
     showToast.text('IPFS link will available later.');
     server.pin(ProxPinReq, {}, (err, res) => {
       if (res) {
-        console.log(res, 'res');
       } else if (err) {
-        console.log(err, 'err');
       }
     });
   };
   const doShare = async (item) => {
     pinData.item = item;
-    console.log(item, 'item');
     let key = item.key;
-    console.log(key, 'key');
 
     if (key) {
       let foggie_id = orderInfo.value.foggie_id;
@@ -167,9 +160,9 @@ export default function useShare(orderInfo, header, deviceType) {
     isReady.value = false;
   };
 
-  const getHttpShare = ( awsAccessKeyId, awsSecretAccessKey, bucketName, keyName) => {
-    awsAccessKeyId = 'FOGpmEBp2rE4dvkP2W1r'
-    awsAccessKeyId = 'TgKOPvlv3MSQhYjuyNN0MKVBw9mZChtT7E0GVh2h'
+  const getHttpShare = ( awsAccessKeyId, awsSecretAccessKey, bucketName, keyName, thumb) => {
+    // awsAccessKeyId = 'FOGpmEBp2rE4dvkP2W1r'
+    // awsSecretAccessKey = 'TgKOPvlv3MSQhYjuyNN0MKVBw9mZChtT7E0GVh2h'
     const objectKey = encodeURIComponent(keyName);
     const expirationInSeconds = 3600;
     const expirationTime = Math.floor(Date.now() / 1000) + expirationInSeconds;
@@ -179,17 +172,23 @@ export default function useShare(orderInfo, header, deviceType) {
     const contentMd5 = '';
     const canonicalizedAmzHeaders = '';
 
-    const canonicalizedResource = `o/${bucketName}/${objectKey}`;
+    const canonicalizedResource = `${bucketName}/o/${objectKey}`;
     const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n${expirationTime}\n${canonicalizedAmzHeaders}/${canonicalizedResource}`;
-    console.log(signature, 'signature');
 
 
     let hmac = HmacSHA1(signature, awsSecretAccessKey);
     const signatureBase64 = enc.Base64.stringify(hmac);
-    console.log(signatureBase64, 'signatureBase64');
 
-    let ip = `http://${orderInfo.value.rpc.split(':')[0]}:6008`;
-    const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
+    // let ip = `http://${orderInfo.value.rpc.split(':')[0]}:6008`;
+    // const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
+
+    let ip = `http://${bucketName}.devus.u2i.net:6008`;
+    const baseUrl = `${ip}/o/${objectKey}`;
+    if (thumb) {
+      return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
+        signatureBase64,
+      )}&thumb=true`;
+    }
     return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
       signatureBase64,
     )}`;
@@ -201,7 +200,6 @@ export default function useShare(orderInfo, header, deviceType) {
         showToast.fail('File size exceeds 1% of the order space size, sharing is not supported');
       } else {
         if (!pinData.item.isPin) {
-          console.log('pinData.item.isPin', pinData.item.isPin);
           ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
           copyLink(shareRefContent.ipfsStr);
         }
@@ -212,49 +210,6 @@ export default function useShare(orderInfo, header, deviceType) {
         copyLink(shareRefContent.ipfsStr);
       }
     }
-
-    // loading.value = true;
-    // let ProxPresignedURL = new Prox.default.ProxPresignedURL();
-    // ProxPresignedURL.setHeader(header);
-    // ProxPresignedURL.setUrl(shareRefContent.httpStr);
-    // ProxPresignedURL.setMethod('GET');
-    // ProxPresignedURL.setExpires(periodValue.value[0]);
-    // let ip = orderInfo.value.rpc.split(':')[0];
-    // let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-    // server.getPreSigned(ProxPresignedURL, {}, (err, res) => {
-    //   if (res) {
-    //     res = res.toObject();
-    //     console.log(res, 'res');
-    //     if (res?.url) {
-    //       if (orderInfo.value.device_type !== 'space' && orderInfo.value.device_type != 3) {
-    //         shareRefContent.httpStr = res.url.replace(/\/fog/, ':6008/fog');
-    //       } else {
-    //         shareRefContent.httpStr = res.url;
-    //       }
-
-    //       if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
-    //         if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
-    //         } else {
-    //           if (!pinData.item.isPin) {
-    //             ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
-    //             showToast.text('IPFS link will available later.');
-    //           }
-    //         }
-    //       } else {
-    //         if (!pinData.item.isPin) {
-    //           ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
-    //           showToast.text('IPFS link will available later');
-    //         }
-    //       }
-    //       loading.value = false;
-    //       isReady.value = true;
-    //     } else {
-    //       loading.value = false;
-    //     }
-    //   } else if (err) {
-    //     loading.value = false;
-    //   }
-    // });
   };
   return {
     ipfsPin,

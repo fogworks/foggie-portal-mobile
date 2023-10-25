@@ -50,6 +50,7 @@
       content: createVNode('span', { style: {} }, 'Are you sure you want to Log out?'),
       cancelText: 'Cancel',
       okText: 'OK',
+      popClass: 'dialog_class',
       onCancel: () => {
         // console.log('取消');
       },
