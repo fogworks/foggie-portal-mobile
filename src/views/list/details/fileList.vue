@@ -195,9 +195,9 @@
             <IconRename :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconRename>
           </template>
         </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Move">
+        <nut-tabbar-item tab-title="Move" :class="[category == 1 ? 'is-disable' : '']">
           <template #icon="props">
-            <IconMove :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconMove>
+            <IconMove :color="selectArr.length && category != 1 ? '#fff' : '#ffffff5c'"></IconMove>
           </template>
         </nut-tabbar-item>
         <nut-tabbar-item tab-title="Download">
@@ -266,13 +266,7 @@
         >
           <p> {{ movePrefix.length ? movePrefix.slice(-1)[0] : '' }}</p>
         </div>
-        <nut-infinite-loading
-          v-if="category !== 1"
-          class="file_list"
-          v-model="infinityValue"
-          :has-more="!!continuationToken2"
-          @load-more="loadMore"
-        >
+        <nut-infinite-loading class="file_list" v-model="infinityValue" :has-more="!!continuationToken2" @load-more="loadMore">
           <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in dirData" :key="index">
             <div :class="['left_icon_box']">
               <IconFolder></IconFolder>
@@ -340,7 +334,11 @@
       <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
         <div class="middle_img">
-          <nut-image :src="imgUrl" fit="contain" position="center" />
+          <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
+            <template #loading>
+              <Loading width="16px" height="16px" name="loading" />
+            </template>
+          </nut-image>
         </div>
         <div class="bottom_action">
           <div>
@@ -381,7 +379,7 @@
   import IconHttp from '~icons/home/http.svg';
   import { reactive, toRefs, watch } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
-  import { Search2, TriangleUp } from '@nutui/icons-vue';
+  import { Search2, TriangleUp, Loading } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize } from '@/utils/util';
   import ImgList from './imgList.vue';
@@ -558,7 +556,7 @@
         } else {
           chooseItem.value = row;
           detailShow.value = true;
-          imgUrl.value = row.imgUrl;
+          imgUrl.value = row.imgUrlLarge;
         }
       }
     }
@@ -737,6 +735,7 @@
     showActionPop.value = false;
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
     if (type === 'move') {
+      // if (category.value == 1) return false;
       movePrefix.value = [];
       moveShow.value = true;
       doSearch('', movePrefix.value, true);
@@ -788,7 +787,6 @@
           }
         })
         .then((blob) => {
-
           // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
           const a = document.createElement('a');
           a.href = URL.createObjectURL(blob);
@@ -821,7 +819,6 @@
       renameShow.value = true;
     } else if (type === 'newFolder') {
     } else if (type === 'share') {
-
       if (checkData.length > 1) return false;
       await doShare(checkData[0]);
       // cancelSelect();
@@ -862,7 +859,15 @@
     // header.setToken(token.value.split('bearer ')[1]);
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix(list_prefix);
-    let delimiter = category.value != 0 ? '' : '/';
+    let delimiter;
+    let categoryParam;
+    if (moveShow.value) {
+      delimiter = '/';
+      categoryParam = '0';
+    } else {
+      delimiter = category.value != 0 ? '' : '/';
+      categoryParam = category.value;
+    }
     listObject.setDelimiter(delimiter);
     listObject.setEncodingType('');
     listObject.setMaxKeys(30);
@@ -872,7 +877,8 @@
     listObject.setKeyMarker('');
     listObject.setOrderby('');
     listObject.setTags('');
-    listObject.setCategory(category.value);
+
+    listObject.setCategory(categoryParam);
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
@@ -943,6 +949,8 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
+          console.log(transferData, 'transferData,transferData');
+
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
           console.log('err----', err);
@@ -1057,6 +1065,8 @@
       //     ? require(`@/assets/logo-dog.svg`)
       //     : require(`@/assets/logo-dog-black.svg`);
     }
+    console.log({ imgHttpLink, isSystemImg, imgHttpLarge }, '{ imgHttpLink, isSystemImg, imgHttpLarge }');
+
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   const initRemoteData = async (
@@ -1090,10 +1100,10 @@
         tableData.value = [];
       }
     }
-    console.log('----------ak---1', accessKeyId.value, bucketName.value)
+    console.log('----------ak---1', accessKeyId.value, bucketName.value);
     if (!accessKeyId.value) {
       await getOrderInfo(bucketName.value);
-      console.log('----------ak---2', accessKeyId.value)
+      console.log('----------ak---2', accessKeyId.value);
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = decodeURIComponent(data.commonPrefixes[i]);
@@ -1155,9 +1165,9 @@
       // imgHttpLink, isSystemImg, imgHttpLarge
 
       // let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
-      console.log('----------ak---3', accessKeyId.value, bucketName.value)
+      console.log('----------ak---3', accessKeyId.value, bucketName.value);
       const imgData = await handleImg(data.content[j], type, isDir);
-      console.log('----------ak---4', imgData)
+      console.log('----------ak---4', imgData);
       const url = imgData.imgHttpLink;
       const isSystemImg = imgData.isSystemImg;
       const url_large = imgData.imgHttpLarge;
@@ -1241,6 +1251,10 @@
   };
   function doSearch(scroll: string = '', prefixArg: any[] = [], reset = false) {
     if (tableLoading.value) return false;
+    if (category.value == 1 && !moveShow.value && !renameShow.value) {
+      imgListRef.value.refresh();
+      return;
+    }
     // tableData.value = [];
     if (keyWord.value == '') {
       showToast.loading('Loading', {
@@ -1424,6 +1438,7 @@
     cancelSelect();
     doSearch('', prefix.value, true);
   };
+  provide('handleImg', handleImg);
   watch(
     category,
     async (val, old) => {
@@ -1449,7 +1464,7 @@
     bucketName.value = route.query?.bucketName;
     let category1 = route.query.category || '0';
     switchType(category1);
-    getKeys();
+    // getKeys();
   });
 </script>
 <style>

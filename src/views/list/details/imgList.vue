@@ -2,7 +2,12 @@
   <div class="img-content" v-if="isReady">
     <div v-if="imgData.length" v-for="(item, index) in imgData" class="img-box">
       <p v-if="item.list.length" class="top-title">
-        <nut-checkbox v-if="isCheckMode" v-model="item.checkAll" @change="(val) => handleCheckAllChange(val, item)">
+        <nut-checkbox
+          :indeterminate="item.indeterminate"
+          v-if="isCheckMode"
+          v-model="item.checkAll"
+          @change="(val) => handleCheckAllChange(val, item)"
+        >
           {{ item.time }}</nut-checkbox
         >
         <span v-else>{{ item.time }}</span>
@@ -16,9 +21,9 @@
           <div
             :class="['img-item']"
             v-for="(img, index2) in item.list"
-            @touchstart="emits('touchRow', item)"
-            @touchmove="emits('touchmoveRow', item)"
-            @touchend="emits('touchendRow', item)"
+            @touchstart="emits('touchRow', img)"
+            @touchmove="emits('touchmoveRow', img)"
+            @touchend="emits('touchendRow', img)"
           >
             <div :class="['mask', isCheckMode ? 'isChecking' : '']">
               <nut-checkbox
@@ -59,6 +64,7 @@
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   import useOrderInfo from './useOrderInfo.js';
   import imgUrl from '@/assets/DMC_token.png';
+  let server;
   // import { isCloudCanUpload_Api } from '@/api/upload';
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const imgCheckedData = reactive({
@@ -69,6 +75,7 @@
     orderId: [String, Number],
     isCheckMode: Boolean,
   });
+  const handleImg = inject('handleImg');
   const { orderId } = toRefs(props);
   const resetChecked = () => {
     imgCheckedData.value = {};
@@ -79,7 +86,7 @@
     imgData: [],
   });
   const tableLoading = ref(false);
-  const isReady = ref(true);
+  const isReady = ref(false);
   const imgIndex = ref(0);
   const store = useUserStore();
   const uuid = computed(() => store.getUserInfo?.uuid || '');
@@ -87,6 +94,7 @@
   const refCheckAll = () => {
     imgData.value.forEach((el) => {
       el.checkAll = false;
+      el.indeterminate = false;
     });
   };
   const itemChecked = (cid, pid) => {
@@ -114,19 +122,20 @@
         }
         tableLoading.value = true;
         let ip = orderInfo.value.rpc.split(':')[0];
-        let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+        server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
         let ProxTimeLine = new Prox.default.ProxTimeLine();
         ProxTimeLine.setHeader(header);
         ProxTimeLine.setInterval(interval);
         ProxTimeLine.setDate(date);
         ProxTimeLine.setCategory(1);
-        console.log(ProxTimeLine, 'ProxTimeLine');
         server.getTimeLine(ProxTimeLine, {}, (err, data) => {
-          console.log('get time line', data);
           if (data) {
-            console.log(data, 'data');
-            const content = data.getContentsList();
-            console.log(content, 'content');
+            const content = data.getContentsList().map((el) => {
+              return {
+                date: el.getDate(),
+                count: el.getCount(),
+              };
+            });
             for (let k = content.length - 1; k >= 0; k--) {
               if (content[k].count) {
                 timeLine.value.push(content[k].date);
@@ -139,7 +148,7 @@
                     count: content[k].count,
                   });
                   tableLoading.value = false;
-                  resolve();
+                  resolve(true);
                 }
               }
             }
@@ -163,6 +172,7 @@
         imgData.value.push({
           time: date,
           dateId: date,
+          indeterminate: false,
           list: [],
         });
       }
@@ -236,6 +246,7 @@
           prefix: res.getPrefix(),
           prefixpins: res.getPrefixpinsList(),
         };
+        console.log(transferData, 'transferData');
         initRemoteData(transferData, reset, date);
       } else if (err) {
         tableLoading.value = false;
@@ -244,7 +255,7 @@
       }
     });
   };
-  const initRemoteData = (data, reset = false, dateKey = '') => {
+  const initRemoteData = async (data, reset = false, dateKey = '') => {
     if (!data) {
       tableLoading.value = false;
       return;
@@ -255,11 +266,14 @@
     // let dir = breadcrumbList.prefix.join('/');
     let dir = '';
     if (reset) imgData.value = [];
-    let content = data?.content?.map((el, index) => {
+    let promiseArray = data?.content?.map(async (el, index) => {
       let date = transferTime(el.lastModified);
       let isDir = false;
       const type = el.key.substring(el.key.lastIndexOf('.') + 1);
-      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(el, type, isDir);
+      const imgData2 = await handleImg(el, type, isDir);
+      const url = imgData2.imgHttpLink;
+      const isSystemImg = imgData2.isSystemImg;
+      const url_large = imgData2.imgHttpLarge;
       let cid = el.cid;
       let file_id = el.fileId;
 
@@ -301,9 +315,13 @@
       };
       return item;
     });
+    let content = await Promise.all(promiseArray);
 
     const target = imgData.value.find((el) => el.time == dateKey);
+    console.log(target, 'target');
+
     if (target) {
+      console.log(content, 'content');
       target.list = [...target.list, ...content];
       tableData.value = [...tableData.value, ...content];
     }
@@ -337,7 +355,17 @@
   };
   const handleCheckedItemsChange = (val, item) => {
     const checkedCount = val.length;
-    item.checkAll = checkedCount === item.list.length;
+    console.log(val, 'val');
+    console.log(item.list.length, 'item.list.length');
+    if (checkedCount === item.list.length) {
+      item.indeterminate = false;
+      item.checkAll = true;
+    } else if (val.length && val.length < item.list.length) {
+      item.indeterminate = true;
+    } else {
+      item.indeterminate = false;
+      item.checkAll = false;
+    }
   };
   watch(
     imgCheckedData,
@@ -357,10 +385,18 @@
     },
   );
 
+  // watch(
+  //   imgData,
+  //   () => {
+  //     console.log(imgData.value, 'imgDataimgData');
+  //   },
+  //   { deep: true },
+  // );
   watch(
-    imgData,
-    () => {
-      console.log(imgData.value, 'imgDataimgData');
+    isReady,
+    (val) => {
+      console.log(val);
+      getFileList();
     },
     { deep: true },
   );
@@ -375,10 +411,15 @@
   defineExpose({ resetChecked, refresh });
 </script>
 
+<style>
+  #app {
+    background: #fff;
+  }
+</style>
 <style lang="scss" scoped>
   .img-content {
-    height: calc(100% - 280px);
-    padding: 0 10px;
+    // height: calc(100% - 320px);
+    padding: 10px;
     overflow-y: auto;
     :deep {
       .nut-checkbox__icon {
@@ -410,8 +451,12 @@
       display: flex;
       justify-content: flex-start;
       align-items: flex-start;
+      flex-wrap: wrap;
       margin-top: 10px;
       :deep {
+        .nut-infinite__container {
+          width: 100%;
+        }
         .nut-checkbox-group {
           display: grid;
           grid-gap: 5px;
