@@ -11,7 +11,9 @@
     <div class="infoContent">
       <img src="@/assets/user.svg" alt="" srcset="" />
       <div>{{ dmcAccount }}</div>
-      <div>Invitation: {{ referral_code }}</div>
+      <div>{{ email }}</div>
+
+      <div v-if="promo_code">Invitation: {{ promo_code }}</div>
     </div>
 
     <nut-row class="buttonContent">
@@ -61,7 +63,8 @@
     <nut-action-sheet v-model:visible="visible" title="Links">
       <div class="custom-action_sheet">
         <div @click="choose('dmc')">
-          <img src="@/assets/DMC_token.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
+          <img src="@/assets/DMC_token.png"
+            style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
           <div>DMC</div>
         </div>
         <div @click="choose('ipfs')">
@@ -70,7 +73,8 @@
           <div>IPFS</div>
         </div>
         <div @click="choose('foggie')">
-          <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
+          <img src="@/assets/logo-dog-black.svg"
+            style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
           <div>Fogworks</div>
         </div>
         <div @click="choose('pool')">
@@ -88,309 +92,310 @@
 </template>
 
 <script lang="ts" setup name="MemberPage">
-  import { useUserStore } from '@/store/modules/user';
-  import { useRouter } from 'vue-router';
-  // import { Dongdong } from '@nutui/icons-vue';
-  import { user } from '@/api';
-  import { Category, MoreX, Retweet, My2, Service, Location, Link, ArrowRight2, People, Shop } from '@nutui/icons-vue';
-  import { showDialog } from '@nutui/nutui';
-  import { showToast } from '@nutui/nutui';
+import { useUserStore } from '@/store/modules/user';
+import { useRouter } from 'vue-router';
+// import { Dongdong } from '@nutui/icons-vue';
+import { user } from '@/api';
+import { Category, MoreX, Retweet, My2, Service, Location, Link, ArrowRight2, People, Shop } from '@nutui/icons-vue';
+import { showDialog } from '@nutui/nutui';
+import { showToast } from '@nutui/nutui';
 
-  import '@nutui/nutui/dist/packages/dialog/style';
-  import '@nutui/nutui/dist/packages/toast/style';
-  import { createVNode } from 'vue';
-  const userStore = useUserStore();
+import '@nutui/nutui/dist/packages/dialog/style';
+import '@nutui/nutui/dist/packages/toast/style';
+import { createVNode } from 'vue';
+const userStore = useUserStore();
 
-  const email = ref<string>('');
-  const dmcAccount = ref<string>('');
-  const referral_code = ref<string>('');
-  const router = useRouter();
-  const gotoDetail = (path): void => {
-    router.push(path);
-  };
+const email = ref<string>('');
+const dmcAccount = ref<string>('');
 
-  const visible = ref<boolean>(false);
-  const adminEmail = ref<string>('aaa123@fogworks.com');
-  const goToPrivacy = () => {
-    window.open('https://foggie.fogworks.io/#/');
-  };
-  const logout = (): void => {
-    showDialog({
-      title: 'Logout',
-      content: createVNode('span', { style: {} }, 'Are you sure you want to Log out?'),
-      cancelText: 'Cancel',
-      okText: 'OK',
-      onCancel: () => {
-        // console.log('取消');
-      },
-      onOk: () => {
-        userStore.logout();
-        // localStorage.removeItem('refresh_token');
-        router.push('/login');
-        // console.log('确定');
-      },
-    });
-  };
+const promo_code = ref<string>('');
+const router = useRouter();
+const gotoDetail = (path): void => {
+  router.push(path);
+};
 
-  const contactUs = (): void => {
-    showDialog({
-      title: 'Contact Us',
-      content: createVNode('div', null, [
-        createVNode(
-          'span',
-          { style: { color: '#303030', fontSize: '12px' } },
-          'We sincerely welcome you to contact us for more information!',
-        ),
-        createVNode('div', { style: { color: '#606060', marginTop: '15px', fontSize: '16px' } }, adminEmail.value),
-      ]),
-      noCancelBtn: true,
-      okText: 'Copy',
-      onOk: () => {
-        if (!navigator.clipboard) {
-          fallbackCopyTextToClipboard(adminEmail.value);
-          return;
-        }
-        navigator.clipboard.writeText(adminEmail.value).then(
-          function () {
-            showToast.success('Copying  successful!');
-          },
-          function () {
-            showToast.fail('Copying  unsuccessful!');
-          },
-        );
-      },
-    });
-  };
-
-  function fallbackCopyTextToClipboard(text) {
-    // 1.Create a selectable element
-    let textArea = document.createElement('textarea');
-    textArea.value = text;
-
-    // 2.Use positioning to prevent page scrolling
-    textArea.style.top = '0';
-    textArea.style.left = '0';
-    textArea.style.position = 'fixed';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    try {
-      let successful = document.execCommand('copy');
-      let msg = successful ? 'successful' : 'unsuccessful';
-      showToast.success(msg);
-    } catch (err) {
-      showToast.fail('unsuccessful');
-    }
-    // 3.Remove element
-    document.body.removeChild(textArea);
-  }
-
-  function choose(type: string) {
-    console.log(type);
-    if (type === 'dmc') {
-      window.open('https://dmctech.io/');
-    } else if (type === 'ipfs') {
-      window.open('https://ipfs.tech/');
-    } else if (type === 'foggie') {
-      window.open('https://foggie.fogworks.io/#/');
-    } else if (type === 'pool') {
-      window.open('http://154.31.41.124:8086/');
-    }
-    visible.value = false;
-  }
-
-  onMounted(() => {
-    user()
-      .then((res) => {
-        if (res && res.data && res.data.email) {
-          console.log(res);
-          referral_code.value = res.data.referral_code;
-          email.value = res.data.email;
-          // dmcAccount.value = `DMC Account ${res.data.dmc}`;
-          dmcAccount.value = res.data.dmc;
-        }
-      })
-      .catch(() => {
-        router.push('/login');
-      });
+const visible = ref<boolean>(false);
+const adminEmail = ref<string>('aaa123@fogworks.com');
+const goToPrivacy = () => {
+  window.open('https://foggie.fogworks.io/#/');
+};
+const logout = (): void => {
+  showDialog({
+    title: 'Logout',
+    content: createVNode('span', { style: {} }, 'Are you sure you want to Log out?'),
+    cancelText: 'Cancel',
+    okText: 'OK',
+    onCancel: () => {
+      // console.log('取消');
+    },
+    onOk: () => {
+      userStore.logout();
+      // localStorage.removeItem('refresh_token');
+      router.push('/login');
+      // console.log('确定');
+    },
   });
+};
+
+const contactUs = (): void => {
+  showDialog({
+    title: 'Contact Us',
+    content: createVNode('div', null, [
+      createVNode(
+        'span',
+        { style: { color: '#303030', fontSize: '12px' } },
+        'We sincerely welcome you to contact us for more information!',
+      ),
+      createVNode('div', { style: { color: '#606060', marginTop: '15px', fontSize: '16px' } }, adminEmail.value),
+    ]),
+    noCancelBtn: true,
+    okText: 'Copy',
+    onOk: () => {
+      if (!navigator.clipboard) {
+        fallbackCopyTextToClipboard(adminEmail.value);
+        return;
+      }
+      navigator.clipboard.writeText(adminEmail.value).then(
+        function () {
+          showToast.success('Copying  successful!');
+        },
+        function () {
+          showToast.fail('Copying  unsuccessful!');
+        },
+      );
+    },
+  });
+};
+
+function fallbackCopyTextToClipboard(text) {
+  // 1.Create a selectable element
+  let textArea = document.createElement('textarea');
+  textArea.value = text;
+
+  // 2.Use positioning to prevent page scrolling
+  textArea.style.top = '0';
+  textArea.style.left = '0';
+  textArea.style.position = 'fixed';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    let successful = document.execCommand('copy');
+    let msg = successful ? 'successful' : 'unsuccessful';
+    showToast.success(msg);
+  } catch (err) {
+    showToast.fail('unsuccessful');
+  }
+  // 3.Remove element
+  document.body.removeChild(textArea);
+}
+
+function choose(type: string) {
+  console.log(type);
+  if (type === 'dmc') {
+    window.open('https://dmctech.io/');
+  } else if (type === 'ipfs') {
+    window.open('https://ipfs.tech/');
+  } else if (type === 'foggie') {
+    window.open('https://foggie.fogworks.io/#/');
+  } else if (type === 'pool') {
+    window.open('http://154.31.41.124:8086/');
+  }
+  visible.value = false;
+}
+
+onMounted(() => {
+  user()
+    .then((res) => {
+      if (res && res.data && res.data.email) {
+        console.log(res);
+        promo_code.value = res.data.promo_code;
+        email.value = res.data.email;
+        // dmcAccount.value = `DMC Account ${res.data.dmc}`;
+        dmcAccount.value = res.data.dmc;
+      }
+    })
+    .catch(() => {
+      router.push('/login');
+    });
+});
 </script>
 
 <style lang="scss" scoped>
-  ::v-deep {
-    .nut-popover-menu-item {
-      min-width: 400px;
+::v-deep {
+  .nut-popover-menu-item {
+    min-width: 400px;
+  }
+}
+
+.userInfo {
+  padding: 20px 25px;
+  background-color: #ffffff;
+  height: calc(100vh - 52px);
+
+  .infoList {
+    display: flex;
+    justify-content: space-between;
+    visibility: hidden;
+
+    &>div {
+      width: 87px;
+      height: 87px;
+      border-radius: 25px;
+      background: #ffffff;
+      box-shadow: 0px 30px 65px 0px rgba(111, 136, 157, 0.25);
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 
-  .userInfo {
-    padding: 20px 25px;
-    background-color: #ffffff;
-    height: calc(100vh - 52px);
+  .infoContent {
+    margin-top: 70px;
+    background: #4c5093;
+    border-radius: 20px;
+    min-height: 235px;
+    position: relative;
+    padding-top: 65px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
 
-    .infoList {
-      display: flex;
-      justify-content: space-between;
-      visibility: hidden;
-
-      & > div {
-        width: 87px;
-        height: 87px;
-        border-radius: 25px;
-        background: #ffffff;
-        box-shadow: 0px 30px 65px 0px rgba(111, 136, 157, 0.25);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-    }
-
-    .infoContent {
-      margin-top: 70px;
-      background: #4c5093;
-      border-radius: 20px;
-      min-height: 235px;
-      position: relative;
-      padding-top: 65px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-sizing: border-box;
-
-      img {
-        width: 130px;
-        height: 130px;
-        border-radius: 15px;
-        position: absolute;
-        top: -65px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      & > div:nth-of-type(1) {
-        font-family: Alibaba PuHuiTi 2;
-        font-size: 40px;
-        font-weight: 250;
-        line-height: 54px;
-        text-align: center;
-        letter-spacing: 0px;
-        color: #ffff;
-        margin-top: 20px;
-      }
-
-      & > div:nth-of-type(2) {
-        font-family: Inter;
-        font-size: 24 px;
-        font-weight: 600;
-        line-height: 32px;
-        text-align: center;
-        letter-spacing: -0.45px;
-        margin-top: 10px;
-        color: #fff;
-      }
-    }
-
-    .buttonContent {
-      .customBtn {
-        margin-top: 100px;
-        width: 100px;
-        height: 100px;
-        background: #f4f5f9;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: transform 0.3s ease-in-out;
-      }
-
-      .customBtn:active {
-        transform: scale(1.4);
-      }
-
-      .nut-col,
-      .customPopover {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        & > div:nth-of-type(2) {
-          font-family: Inter;
-          font-size: 28px;
-          font-weight: 500;
-          line-height: 40px;
-          margin-top: 30px;
-          text-align: center;
-          letter-spacing: 0px;
-          color: #151940;
-          user-select: none;
-          word-wrap: break-word !important;
-          word-break: normal;
-          text-align: center;
-        }
-      }
-    }
-
-    .logOutBtn {
-      position: fixed;
-      bottom: 160px;
-      width: 70%;
+    img {
+      width: 130px;
+      height: 130px;
+      border-radius: 15px;
+      position: absolute;
+      top: -65px;
       left: 50%;
       transform: translateX(-50%);
-      background: #4c5093;
-      border-radius: 50px;
+    }
+
+    &>div {
+      font-family: Alibaba PuHuiTi 2;
+      font-size: 30px;
+      font-weight: 250;
+      line-height: 25px;
       text-align: center;
-      line-height: 140px;
+      letter-spacing: 0px;
+      color: #ffff;
+      margin-top: 20px;
+    }
+
+    &>div:last-child {
       font-family: Inter;
-      font-size: 34px;
-      font-weight: 500;
+      font-size: 24 px;
+      font-weight: 600;
+      line-height: 32px;
       text-align: center;
       letter-spacing: -0.45px;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: transform 0.3s ease-in-out;
+      margin-top: 10px;
+      color: #fff;
+    }
+  }
+
+  .buttonContent {
+    .customBtn {
+      margin-top: 100px;
+      width: 100px;
       height: 100px;
-
-      .outBnt {
-        width: 60px;
-        height: 60px;
-        border-radius: 18px;
-        background-color: #ffffff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 20px;
-      }
+      background: #f4f5f9;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.3s ease-in-out;
     }
 
-    .logOutBtn:active {
-      transform: translate(5px, 5px);
+    .customBtn:active {
+      transform: scale(1.4);
     }
 
-    .custom-action_sheet {
+    .nut-col,
+    .customPopover {
       display: flex;
       flex-direction: column;
+      align-items: center;
 
-      & > div:not(:last-child) {
-        padding: 10px 20px;
-        width: 100%;
-        height: 90px;
-        line-height: 90px;
-        display: grid;
-        grid-template-columns: 80px auto;
-        align-items: center;
-      }
-
-      & > div:last-child {
-        height: 100px;
-        background-color: #f7f7f7;
-        font-size: 32px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: 600;
+      &>div:nth-of-type(2) {
+        font-family: Inter;
+        font-size: 28px;
+        font-weight: 500;
+        line-height: 40px;
+        margin-top: 30px;
+        text-align: center;
+        letter-spacing: 0px;
+        color: #151940;
+        user-select: none;
+        word-wrap: break-word !important;
+        word-break: normal;
+        text-align: center;
       }
     }
   }
+
+  .logOutBtn {
+    position: fixed;
+    bottom: 160px;
+    width: 70%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4c5093;
+    border-radius: 50px;
+    text-align: center;
+    line-height: 140px;
+    font-family: Inter;
+    font-size: 34px;
+    font-weight: 500;
+    text-align: center;
+    letter-spacing: -0.45px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.3s ease-in-out;
+    height: 100px;
+
+    .outBnt {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      background-color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 20px;
+    }
+  }
+
+  .logOutBtn:active {
+    transform: translate(5px, 5px);
+  }
+
+  .custom-action_sheet {
+    display: flex;
+    flex-direction: column;
+
+    &>div:not(:last-child) {
+      padding: 10px 20px;
+      width: 100%;
+      height: 90px;
+      line-height: 90px;
+      display: grid;
+      grid-template-columns: 80px auto;
+      align-items: center;
+    }
+
+    &>div:last-child {
+      height: 100px;
+      background-color: #f7f7f7;
+      font-size: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+    }
+  }
+}
 </style>
