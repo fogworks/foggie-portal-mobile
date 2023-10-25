@@ -18,80 +18,59 @@
   const uuid = computed(() => userStore.getUserInfo?.uuid);
   const userInfo = computed(() => userStore.getUserInfo);
 
-  const bindAmb = async () => {
-    if (route.path == '/bindDmc' && route.query?.type == 'amb') {
-      return false;
-    }
-    let isAmbCode = false;
-    if (userInfo.value.amb_promo_code) {
-      await check_amb_promo(userInfo.value.amb_promo_code).then((res) => {
-        if (res.code == 200) isAmbCode = true;
-      });
-    }
-    if (isAmbCode) {
-      check_user_bind(uuid.value).then((res2) => {
-        if (res2.code == 200 && !res2.result.bind) {
-          const ambOk = () => {
-            // bind_promo({
-            //   user_uuid: uuid.value,
-            //   amb_promo_code: userInfo.value.amb_promo_code,
-            //   email: userInfo.value.email,
-            //   dmc_account: userInfo.value.dmc,
-            // }).then((res) => {
-            //   if (res.code == 200) {
-            //     bind_user_promo({
-            //       amb_promo_code: userInfo.value.amb_promo_code,
-            //     }).then((res) => {
-            //       if (res.code == 200) {
-            //         showToast.success('Binding successful, you can buy orders');
-            //         userStore.setCloudCodeIsBind(true);
-            //       }
-            //     });
-            //   }
-            // });
-            router.push('/bindDmc?type=amb');
-          };
-          showDialog({
-            title: 'Notice',
-            content: `Your ambassador invitation code is ${userInfo.value.amb_promo_code}, Whether or not to go to binding?`,
-            onOk: ambOk,
-            popClass: 'dialog_class',
-          });
-        } else if (res2.result.bind) {
-          userStore.setCloudCodeIsBind(true);
-        }
-      });
-    }
-  };
-  const bindUser = async () => {
-    let isUserCode = false;
-    if (userInfo.value.amb_promo_code) {
-      await check_promo({ promo_code: userInfo.value.amb_promo_code }).then((res) => {
-        if (res.code == 200) isUserCode = true;
-      });
-    }
-    if (isUserCode && !userInfo.value.promo_code) {
-      const userOk = () => {
-        bind_user_promo({ promo_code: userInfo.value.amb_promo_code }).then((res) => {});
-      };
-      showDialog({
-        title: 'Notice',
-        content: `Your current invitation code ${userInfo.value.amb_promo_code} is the user's invitation code, are you sure you want to bind it?`,
-        onOk: userOk,
-        popClass: 'dialog_class',
-      });
-    }
-  };
-  watch(
-    uuid,
-    async (val) => {
-      if (val) {
-        bindAmb();
-        bindUser();
-      }
-    },
-    { deep: true },
-  );
+  // const bindAmb = async () => {
+  //   if (route.path == '/bindDmc' && route.query?.type == 'amb') {
+  //     return false;
+  //   }
+  //   let isAmbCode = true;
+  //   if (isAmbCode) {
+  //     check_user_bind(uuid.value).then((res2) => {
+  //       if (res2.code == 200 && !res2.result.bind) {
+  //         const dmcOk = () => {
+  //           router.push({ name: 'BindDmc', query: { type: 'amb' } });
+  //         };
+  //         let src = require('@/assets/fog-works.png');
+  //         let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please confirm that you have filled out the invitation code before placing your order</p >`;
+  //         showDialog({
+  //           title: 'Ambassador Invitation Code',
+  //           content: str,
+  //           onOk: dmcOk,
+  //         });
+  //       } else if (res2.result.bind) {
+  //         userStore.setCloudCodeIsBind(true);
+  //       }
+  //     });
+  //   }
+  // };
+  // const bindUser = async () => {
+  //   let isUserCode = false;
+  //   if (userInfo.value.amb_promo_code) {
+  //     await check_promo({ promo_code: userInfo.value.amb_promo_code }).then((res) => {
+  //       if (res.code == 200) isUserCode = true;
+  //     });
+  //   }
+  //   if (isUserCode && !userInfo.value.promo_code) {
+  //     const userOk = () => {
+  //       bind_user_promo({ promo_code: userInfo.value.amb_promo_code }).then((res) => {});
+  //     };
+  //     showDialog({
+  //       title: 'Notice',
+  //       content: `Your current invitation code ${userInfo.value.amb_promo_code} is the user's invitation code, are you sure you want to bind it?`,
+  //       onOk: userOk,
+  //       popClass: 'dialog_class',
+  //     });
+  //   }
+  // };
+  // watch(
+  //   uuid,
+  //   async (val) => {
+  //     if (val) {
+  //       bindAmb();
+  //       bindUser();
+  //     }
+  //   },
+  //   { deep: true },
+  // );
   let vh = window.innerHeight * 0.01;
 
   onMounted(async () => {

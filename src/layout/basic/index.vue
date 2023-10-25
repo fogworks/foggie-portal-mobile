@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup name="BasicLayoutPage">
-  import { useRouter } from 'vue-router';
+  import { useRouter, useRoute } from 'vue-router';
   import { Home, Horizontal, My } from '@nutui/icons-vue';
   import { user, check_promo, bind_user_promo } from '@/api';
 
@@ -36,6 +36,7 @@
   ];
 
   const router = useRouter();
+  const route = useRoute();
 
   const activeTab = ref(0);
 
@@ -152,14 +153,55 @@
   //   },
   //   { deep: true },
   // );
-  // onMounted(async () => {
-  //   if (userStore.getToken) {
-  //     let res = await user();
-  //     if (res.data) {
-  //       userStore.setInfo(res.data);
-  //     }
-  //   }
-  // });
+  const bindAmb = async () => {
+    if (route.path == '/bindDmc' && route.query?.type == 'amb') {
+      return false;
+    }
+    let isAmbCode = true;
+    if (isAmbCode) {
+      check_user_bind(uuid.value).then((res2) => {
+        if (res2.code == 200 && !res2.result.bind) {
+          const dmcOk = () => {
+            router.push({ name: 'BindDmc', query: { type: 'amb' } });
+          };
+          let src = require('@/assets/fog-works.png');
+          let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please confirm that you have filled out the invitation code before placing your order</p >`;
+          showDialog({
+            title: 'Ambassador Invitation Code',
+            content: str,
+            onOk: dmcOk,
+          });
+        } else if (res2.result.bind) {
+          userStore.setCloudCodeIsBind(true);
+        }
+      });
+    }
+  };
+  const bindUser = async () => {
+    let isUserCode = false;
+    if (userInfo.value.amb_promo_code) {
+      await check_promo({ promo_code: userInfo.value.amb_promo_code }).then((res) => {
+        if (res.code == 200) isUserCode = true;
+      });
+    }
+    if (isUserCode && !userInfo.value.promo_code) {
+      const userOk = () => {
+        bind_user_promo({ promo_code: userInfo.value.amb_promo_code }).then((res) => {});
+      };
+      showDialog({
+        title: 'Notice',
+        content: `Your current invitation code ${userInfo.value.amb_promo_code} is the user's invitation code, are you sure you want to bind it?`,
+        onOk: userOk,
+        popClass: 'dialog_class',
+      });
+    }
+  };
+  onMounted(async () => {
+    if (userStore.getToken) {
+      bindAmb();
+      bindUser();
+    }
+  });
 </script>
 
 <style scoped lang="scss">

@@ -239,9 +239,9 @@
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
       };
       let src = require('@/assets/fog-works.png');
-      let str = `<img class="bind_img" src=${src} style="width:60px;height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
+      let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
       showDialog({
-        title: 'Binding Ambassador Invitation Code',
+        title: 'Ambassador Invitation Code',
         content: str,
         onOk: dmcOk,
       });
