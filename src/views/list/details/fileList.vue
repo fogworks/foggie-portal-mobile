@@ -772,9 +772,9 @@
 
       // 构建 S3 GET 请求
       // const url = `/o/${bucketName}/${objectKey}`;
-      const url = `/o/${objectKey}`;
+      // const url = `/o/${objectKey}`;
       // const url = `/o/${objectKey}?thumb=true`;
-      // const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`
+      const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`
 
       fetch(url, { method: 'GET', headers })
         .then((response) => {
