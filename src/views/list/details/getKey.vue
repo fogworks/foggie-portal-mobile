@@ -3,9 +3,16 @@
     <div class="top_back" @click="router.go(-1)">Generate Access keys</div>
   </div>
   <div class="generateKey">
-    <p class="key_tips"> You can generate access keys here </p>
+    <div class="bucket_svg_box">
+      <img src="@/assets/bucket.svg" class="bucket_svg" />
+    </div>
+
+    <p class="key_tips"> Amazon S3 Object storage built specifically for retrieving any amount of data from any location. </p>
     <p class="key_tips"> You can access S3 clients through a private key. Access address: </p>
-    <a :href="bucketUrl" target="_blank">{{ bucketUrl }}</a>
+    <span class="s3url" @click="copyS3">
+      http://<span>{{ bucketName }}</span
+      >.devus.u2i.net:9900
+    </span>
     <nut-form class="key_form" :model-value="dynamicForm.state" ref="dynamicRefForm">
       <!-- <nut-form-item label="Access Key">
         <span>Secret Key</span>
@@ -15,6 +22,7 @@
         :prop="'tels.' + index + '.value'"
         :key="item.key"
         v-for="(item, index) in dynamicForm.state.tels"
+        class="key_form_item"
       >
         <template #label>
           <div class="left_img">
@@ -27,9 +35,11 @@
         </p>
         <p class="secret_key">
           Secret Key:
-          <span v-if="item.eyeState" class="open_key">{{ item.secretKey }}</span>
-          <span v-if="!item.eyeState">XXXXX</span>
+          <!-- <span v-if="item.eyeState" class="open_key">{{ item.secretKey }}</span> -->
+          <span v-if="item.eyeState" class="open_key">{{ item.secretKey.substring(0, 15) + '...' }}</span>
+          <span v-if="!item.eyeState">xxxxx</span>
           <span class="right_action">
+            <IconCopy @click="copyKey(item)"></IconCopy>
             <eyeOffIon v-if="item.eyeState" @click="dynamicForm.state.tels[index].eyeState = false" />
             <eyeIon v-if="!item.eyeState" @click="dynamicForm.state.tels[index].eyeState = true" />
             <IconDelete @click="deleteKey(index)" />
@@ -37,12 +47,24 @@
         </p>
       </nut-form-item>
     </nut-form>
+    <nut-empty description="" v-if="!dynamicForm.state.tels.length && !loading"> </nut-empty>
+    <p class="key_tips add_tips" v-if="!dynamicForm.state.tels.length">
+      Click the Add button to automatically generate Access Key and Secret Key for you.
+    </p>
+    <p class="key_tips s3_tips" v-if="!dynamicForm.state.tels.length"> Click to learn more about AWS S3. </p>
   </div>
   <nut-button type="primary" class="add_key" @click="dynamicForm.methods.add">+</nut-button>
+  <nut-button type="primary" class="s3_key" @click="s3To">
+    <template #icon>
+      <img src="@/assets/bucketIcon.svg" class="bucket_svg_smal" />
+    </template>
+  </nut-button>
 </template>
 
 <script setup lang="ts">
+  import IconCopy from '~icons/home/copy.svg';
   import { ref, reactive, onMounted } from 'vue';
+  import { showToast } from '@nutui/nutui';
   import eyeOffIon from '~icons/ion/eye-off';
   import keySolid from '~icons/teenyicons/key-solid';
   import { useRoute, useRouter } from 'vue-router';
@@ -63,6 +85,7 @@
   const bucketName = ref<any>('');
   bucketName.value = route.query.bucketName;
   const bucketUrl = ref<any>('');
+  const loading = ref(false);
   bucketUrl.value = `http://${bucketName.value}.devus.u2i.net:9900`;
   ip.value = `http://${bucketName.value}.devus.u2i.net:7007`;
   // peer_id.value = '12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp';
@@ -85,7 +108,25 @@
   //     tels: [],
   //   },
   // };
-
+  const copyS3 = () => {
+    var input = document.createElement('input');
+    input.value = bucketUrl;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('Copy');
+    document.body.removeChild(input);
+    showToast.success('Copy succeeded');
+  };
+  const copyKey = (item) => {
+    let text = `AccessKey:${item.accessKey},SecretKey:${item.secretKey}`;
+    var input = document.createElement('input');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('Copy');
+    document.body.removeChild(input);
+    showToast.success('Copy succeeded');
+  };
   const dynamicRefForm = ref<any>(null);
   const dynamicForm: {
     state: DynamicFormState;
@@ -100,6 +141,12 @@
 
     methods: {
       add() {
+        console.log(dynamicForm.state.tels.length, 'aaa');
+        if (dynamicForm.state.tels.length === 5 || dynamicForm.state.tels.length > 5) {
+          showToast.text('Sorry,Generate up to 5 Access Key and Secret Key for you');
+          return;
+        }
+
         const secretKeyBytes = generateRandomBytes(40);
         const sk = cleanString(encodeBase64(secretKeyBytes), 40);
 
@@ -140,11 +187,12 @@
           secretKey: sk,
           eyeState: false,
         });
-        
       },
     },
   };
-
+  const s3To = () => {
+    window.open('https://aws.amazon.com/s3/?nc1=h_ls');
+  };
   const generateRandomBytes = (n: number): Buffer => {
     let keyStr = Math.random().toString();
     const randomBytesBuffer = AESHelper.encrypt(n.toString(), keyStr);
@@ -172,8 +220,8 @@
     return cleaned;
   };
 
-
   const getKeys = async () => {
+    loading.value = true;
     await get_unique_order({ order_uuid: route?.query?.uuid }).then((res: any) => {
       peer_id.value = res.result.data.peer_id;
       foggie_id.value = res.result.data.foggie_id;
@@ -186,6 +234,7 @@
       let request = new grpc.default.ProxGetCredRequest();
       request.setHeader(header);
       server.listCreds(request, {}, (err: any, res: { array: any }) => {
+        loading.value = false;
         if (err) {
           console.log('err------:', err);
         } else {
@@ -204,7 +253,6 @@
         }
       });
     });
-    
   };
 
   const deleteKey = (index: number) => {
@@ -238,19 +286,61 @@
   });
 </script>
 
-<style lang="scss" scoped></style>
 <style lang="scss">
   .generateKey {
+    height: 100%;
+    padding-bottom: 120px;
+    .bucket_svg_box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px;
+      .bucket_svg {
+        width: 120px;
+        height: 120px;
+      }
+    }
+    .s3url {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      text-decoration: underline;
+      text-align: center;
+      margin: 0 auto;
+      display: inline-block;
+      span {
+        color: #f85c26;
+      }
+    }
+
     .key_tips {
       padding: 0 20px;
-      font-size: 30px;
+      font-size: 22px;
       font-weight: 300;
       line-height: 40px;
+      //   color: #5264f9;
     }
     .key_tips + a {
       display: block;
       padding: 0 20px;
       text-decoration: none;
+      color: #f85c26;
+    }
+    .add_tips {
+      color: #5264f9;
+      font-weight: bold;
+      position: fixed;
+      bottom: 150px;
+      left: 0px;
+      width: calc(100% - 200px);
+    }
+    .s3_tips {
+      color: #f85c26;
+      font-weight: bold;
+      position: fixed;
+      bottom: 320px;
+      left: 0px;
+      width: calc(100% - 200px);
     }
     .left_img {
       display: flex;
@@ -271,12 +361,23 @@
     }
     .secret_key {
       color: #5264f9;
+      font-size: 24px;
+      white-space: nowrap;
+    }
+    .key_form_item {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #f7f1f1;
+      .nut-form-item__label {
+        width: auto !important;
+      }
     }
     .nut-cell-group__wrap {
       box-shadow: none;
     }
     .nut-form-item__body__slots {
       color: #5b5f97;
+      font-size: 24px;
       .open_key {
         word-break: break-all;
       }
@@ -295,6 +396,9 @@
       margin: 10px;
     }
   }
+</style>
+
+<style lang="scss">
   .add_key {
     position: fixed;
     bottom: 150px;
@@ -304,5 +408,26 @@
     padding: 10px;
     width: 100px;
     height: 100px;
+    z-index: 100;
+  }
+  .s3_key {
+    position: fixed;
+    bottom: 280px;
+    right: 50px;
+    font-size: 80px;
+    border-radius: 50%;
+    padding: 10px;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f85c27;
+    z-index: 100;
+  }
+  .bucket_svg_smal {
+    width: 60px;
+    height: 60px;
+    margin-left: 10px;
   }
 </style>
