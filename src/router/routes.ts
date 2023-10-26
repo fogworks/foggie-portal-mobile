@@ -50,6 +50,7 @@ export const routes = [
         meta: {
           title: 'list.details',
           border: false,
+          notKeepAlive: true,
         },
       },
       {
@@ -74,6 +75,10 @@ export const routes = [
         path: 'recordsList',
         name: 'RecordsList',
         component: () => import('@/views/list/details/recordsList.vue'),
+        meta: {
+          notBar: true,
+          notKeepAlive: true,
+        },
       },
       {
         path: 'withdraw',

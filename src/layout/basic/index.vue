@@ -22,10 +22,14 @@
   import { onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast, showDialog } from '@nutui/nutui';
+  import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
+
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
 
   const userStore = useUserStore();
+  const { bindAmbCode } = useUpdateDMC();
+
   const uuid = computed(() => userStore.getUserInfo?.uuid);
   const userInfo = computed(() => userStore.getUserInfo);
   const tabItem = [
@@ -157,25 +161,7 @@
     if (route.path == '/bindDmc' && route.query?.type == 'amb') {
       return false;
     }
-    let isAmbCode = true;
-    if (isAmbCode) {
-      check_user_bind(uuid.value).then((res2) => {
-        if (res2.code == 200 && !res2.result.bind) {
-          const dmcOk = () => {
-            router.push({ name: 'BindDmc', query: { type: 'amb' } });
-          };
-          let src = require('@/assets/fog-works.png');
-          let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please confirm that you have filled out the invitation code before placing your order</p >`;
-          showDialog({
-            title: 'Ambassador Invitation Code',
-            content: str,
-            onOk: dmcOk,
-          });
-        } else if (res2.result.bind) {
-          userStore.setCloudCodeIsBind(true);
-        }
-      });
-    }
+    bindAmbCode();
   };
   const bindUser = async () => {
     let isUserCode = false;
@@ -198,6 +184,10 @@
   };
   onMounted(async () => {
     if (userStore.getToken) {
+      let res = await user();
+      if (res.data) {
+        userStore.setInfo(res.data);
+      }
       bindAmb();
       bindUser();
     }

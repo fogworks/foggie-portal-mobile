@@ -69,7 +69,8 @@
       >
     </div>
     <div>
-      <div class="flex-content" @click="router.push('/analysisCate?type=1')">
+      <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
+      <div class="flex-content" @click="gotoPage('analysisCate')">
         <div class="svg-box">
           <img src="@/assets/earn.svg" alt="" />
         </div>
@@ -77,7 +78,8 @@
       >
     </div>
     <div>
-      <div class="flex-content" @click="router.push('/analysis')">
+      <!-- <div class="flex-content" @click="router.push('/analysis')"> -->
+      <div class="flex-content" @click="gotoPage('analysis')">
         <div class="svg-box">
           <img src="@/assets/analysis.svg" alt="" />
         </div>
@@ -85,7 +87,8 @@
       >
     </div>
     <div>
-      <div class="flex-content" @click="router.push('/transactionRecords')">
+      <div class="flex-content" @click="gotoPage('transactionRecords')">
+        <!-- <div class="flex-content" @click="router.push('/transactionRecords')"> -->
         <div class="svg-box">
           <!-- <img src="@/assets/IconTransaction.svg" alt="" /> -->
           <IconTransaction></IconTransaction>
@@ -183,7 +186,7 @@
   import useUserAssets from './useUserAssets.ts';
   import useOrderList from './useOrderList.ts';
   import { transferUTCTime } from '@/utils/util';
-
+  import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
   import '@nutui/nutui/dist/packages/toast/style';
 
   const useStore = useUserStore();
@@ -199,6 +202,7 @@
   const { timeType, searchType } = toRefs(state);
   const { loadMore, listData, hasMore, infinityValue } = useOrderList();
   const { getUserAssets, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
+  const { bindAmbCode } = useUpdateDMC();
   const showWithdraw = () => {
     if (!userInfo.value.dmc) {
       const dmcOk = () => {
@@ -215,26 +219,38 @@
     }
     router.push({ name: 'Withdraw' });
   };
-  const toBuyOrder = () => {
+  const gotoPage = (type) => {
     if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
-      // showToast.text("Please bind the Ambassador Invitation Code first if you haven't already done so.");
       const dmcOk = () => {
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
       };
       let src = require('@/assets/fog-works.png');
       let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
       showDialog({
-        title: 'Ambassador Invitation Code',
+        title: 'Bind Invitation Code',
         content: str,
         onOk: dmcOk,
       });
       return false;
+    } else if (!cloudCodeIsBind.value) {
+      bindAmbCode();
     } else {
+    }
+    if (type === 'analysisCate') {
+      router.push('/analysisCate?type=1');
+    } else if (type === 'analysis') {
+      router.push('/analysis');
+    } else if (type === 'transactionRecords') {
+      router.push('/transactionRecords');
+    } else if (type === 'shop') {
       router.push({ name: 'Shop' });
     }
   };
+  const toBuyOrder = () => {
+    gotoPage('shop');
+  };
   const toRecharge = () => {
-    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+    if (!userInfo.value.amb_promo_code) {
       const dmcOk = () => {
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
       };
@@ -246,6 +262,8 @@
         onOk: dmcOk,
       });
       return false;
+    } else if (!cloudCodeIsBind.value) {
+      bindAmbCode();
     } else {
       router.push({ name: 'Recharge' });
     }
@@ -267,6 +285,15 @@
   onBeforeMount(() => {
     loadMore();
   });
+  watch(
+    userInfo.value.uuid,
+    (val) => {
+      if (val) {
+        getUserAssets();
+      }
+    },
+    { deep: true },
+  );
   onMounted(() => {
     getUserAssets();
   });

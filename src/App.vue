@@ -74,12 +74,12 @@
   let vh = window.innerHeight * 0.01;
 
   onMounted(async () => {
-    if (userStore.getToken) {
-      let res = await user();
-      if (res.data) {
-        userStore.setInfo(res.data);
-      }
-    }
+    // if (userStore.getToken) {
+    //   let res = await user();
+    //   if (res.data) {
+    //     userStore.setInfo(res.data);
+    //   }
+    // }
     document.documentElement.style.setProperty('--vh', `${vh}px`);
   });
 </script>
@@ -145,6 +145,7 @@
     }
     .nut-dialog__content {
       font-size: 30px;
+      word-break: break-word;
     }
   }
 </style>
