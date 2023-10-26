@@ -357,8 +357,8 @@
 
     // uploadUri.value = '/fog/baeqacmjq/foggiebucket';
     // uploadUri.value = '/o/foggiebucket';
-    // uploadUri.value = `http://${bucketName.value}.devus.u2i.net:6008/o/`;
-    uploadUri.value = '/o';
+    uploadUri.value = `http://${bucketName.value}.devus.u2i.net:6008/o/`;
+    // uploadUri.value = '/o';
 
     const policy = {
       expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
