@@ -50,6 +50,7 @@ export const routes = [
         meta: {
           title: 'list.details',
           border: false,
+          notKeepAlive: true,
         },
       },
       {

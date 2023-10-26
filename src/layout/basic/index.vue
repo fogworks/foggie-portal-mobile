@@ -184,6 +184,10 @@
   };
   onMounted(async () => {
     if (userStore.getToken) {
+      let res = await user();
+      if (res.data) {
+        userStore.setInfo(res.data);
+      }
       bindAmb();
       bindUser();
     }
