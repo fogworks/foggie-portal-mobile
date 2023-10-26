@@ -13,41 +13,39 @@
     Hello,
     {{ userInfo.dmc }}
   </div>
-  <van-cell-group inset class="income-card">
-    <template #default>
-      <img src="@/assets/balance_right.svg" @click="router.push('/analysis')" alt="" />
-      <div class="card_row_1 card_header card_row_top"
-        ><span>Balance</span>
-        <span>Income</span>
+  <div inset class="income-card">
+    <img src="@/assets/balance_right.svg" @click="router.push('/analysis')" alt="" />
+    <div class="card_row_1 card_header card_row_top"
+      ><span>Balance</span>
+      <span>Income</span>
+    </div>
+    <div class="card_row_1 card_header">
+      <div class="total_income">
+        <div> {{ cloudBalance }} </div>
       </div>
-      <div class="card_row_1 card_header">
-        <div class="total_income">
-          <div> {{ cloudBalance }} </div>
-        </div>
-        <div class="total_income">
-          <div> {{ cloudIncome }} </div>
-        </div>
+      <div class="total_income">
+        <div> {{ cloudIncome }} </div>
       </div>
-      <div class="card_row_1 pst-row">
-        <div>
-          <p>Space(GB)</p>
-          <p class="column_value">{{ cloudPst }}</p>
-        </div>
-        <div>
-          <p>Withdrawn</p>
-          <p class="column_value">{{ cloudWithdraw }}</p>
-        </div>
-        <div>
-          <p>New revenue today</p>
-          <p class="column_value today_income"
-            >+ {{ cloudTodayIncome }} DMC
-            <TriangleUp color="#fbd116" width="20px"></TriangleUp>
-          </p>
-        </div>
+    </div>
+    <div class="card_row_1 pst-row">
+      <div>
+        <p>Space(GB)</p>
+        <p class="column_value">{{ cloudPst }}</p>
       </div>
-    </template>
-  </van-cell-group>
-  <van-space class="withdraw-btn" direction="horizontal" align="center">
+      <div>
+        <p>Withdrawn</p>
+        <p class="column_value">{{ cloudWithdraw }}</p>
+      </div>
+      <div>
+        <p>New revenue today</p>
+        <p class="column_value today_income"
+          >+ {{ cloudTodayIncome }} DMC
+          <TriangleUp color="#fbd116" width="20px"></TriangleUp>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="withdraw-btn" direction="horizontal" align="center">
     <div class="action_item" @click="toRecharge">
       <img src="@/assets/recharge.svg" alt="" />
       Recharge
@@ -56,7 +54,7 @@
       <img src="@/assets/withdraw.svg" alt="" />
       Withdraw
     </div>
-  </van-space>
+  </div>
 
   <div class="middle_btn_box">
     <div>

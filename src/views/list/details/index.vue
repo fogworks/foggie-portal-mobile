@@ -131,6 +131,7 @@
           <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
           <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" />
           <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+          <img v-else-if="item.imgUrl" :src="item.imgUrl" alt="" />
           <img v-else src="@/assets/svg/home/file.svg" alt="" />
         </div>
         <div class="name_box">
@@ -228,10 +229,11 @@
       :show-cancel="false"
       :show-confirm="false"
     >
+      <p class="bucket_name_tip">Give the storage space a name that uniquely identifies it.</p>
       <nut-input v-model="newBucketName" placeholder="Please enter bucket Name"></nut-input>
       <template #footer>
-        <nut-button type="primary" @click="dialogVisible = false">Operate Later</nut-button>
-        <nut-button type="primary" @click="creatName">Confirm</nut-button>
+        <nut-button type="primary" @click="router.go(-1)">Operate Later</nut-button>
+        <nut-button type="primary" @click="creatName" :loading="btnLoading">Confirm</nut-button>
       </template>
     </nut-dialog>
   </div>
@@ -276,8 +278,9 @@
   import { check_name, order_name_set, get_merkle, calc_merkle } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
+  import { useUserStore } from '@/store/modules/user';
 
-  const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
     isReady,
     confirmShare,
@@ -299,7 +302,6 @@
 
   const successStatus = ref<number>(204);
 
-  import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
   const uuid = computed(() => userStore.getUserInfo.uuid);
 
@@ -309,9 +311,9 @@
 
   // import { get_order_node } from '@/api/amb';
   const uploadRef = ref<any>(null);
-  const bucketName = ref<string>('');
-  const accessKeyId = ref<string>('');
-  const secretAccessKey = ref<string>('');
+  // const bucketName = ref<string>('');
+  // const accessKeyId = ref<string>('');
+  // const secretAccessKey = ref<string>('');
   const uploadUri = ref<string>('');
   const prefix = ref<string>('');
   const showCreatName = ref<boolean>(false);
@@ -319,6 +321,7 @@
   const tableData = ref<array>([]);
   const tableLoading = ref<boolean>(false);
   const isDisabled = ref<boolean>(false);
+  const btnLoading = ref<boolean>(false);
   const formData = ref<any>({});
 
   const memo = ref<any>('');
@@ -555,13 +558,17 @@
   };
 
   const creatName = async () => {
-    if (!showCreatName.value) {
-      showCreatName.value = true;
-    } else if (newBucketName.value) {
+    if (newBucketName.value) {
+      // if (newBucketName.value.length < 8 || newBucketName.value.length > 10) {
+      //   showToast.fail('Bucket Name length must be between 8 and 10 characters.');
+      //   return false;
+      // }
+      btnLoading.value = true;
       // check name
       const result = await check_name(newBucketName.value);
       if (result?.data?.domain) {
         console.log('name is exist');
+        btnLoading.value = false;
         return;
       }
       let order_data = {
@@ -570,10 +577,12 @@
         order_uuid: orderInfo.value.uuid,
       };
       const order_result = await order_name_set(order_data);
-      if (!order_result?.data?.result) {
+      if (order_result.code == 200) {
         bucketName.value = newBucketName.value;
         dialogVisible.value = false;
-        return;
+        btnLoading.value = false;
+      } else {
+        btnLoading.value = false;
       }
     }
   };
@@ -869,33 +878,40 @@
   };
 
   const getKeys = () => {
-    let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
-    let request = new Prox.default.ProxGetCredRequest();
-    request.setHeader(header);
-    // console.log('request-----------------getkeys', request);
-    server.listCreds(request, {}, (err: any, res: { array: any }) => {
-      if (err) {
-        console.log('err------:', err);
-      } else if (res.array.length > 0) {
-        accessKeyId.value = res.array[0][0][0];
-        secretAccessKey.value = res.array[0][0][1];
-        // console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
-      }
+    return new Prmise((resolve, reject) => {
+      let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
+      let request = new Prox.default.ProxGetCredRequest();
+      request.setHeader(header);
+      // console.log('request-----------------getkeys', request);
+      server.listCreds(request, {}, (err: any, res: { array: any }) => {
+        if (err) {
+          console.log('err------:', err);
+          reject(false);
+        } else if (res.array.length > 0) {
+          accessKeyId.value = res.array[0][0][0];
+          secretAccessKey.value = res.array[0][0][1];
+          reject(true);
+          // console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
+        }
+      });
     });
   };
 
   onMounted(async () => {
-    showToast.loading('Loading', {
-      cover: true,
-      customClass: 'app_loading',
-      icon: loadingImg,
-      loadingRotate: false,
-    });
-    await getOrderInfo();
-    showToast.hide();
-    bucketName.value = orderInfo.value.domain;
+    // showToast.loading('Loading', {
+    //   cover: true,
+    //   customClass: 'app_loading',
+    //   icon: loadingImg,
+    //   loadingRotate: false,
+    // });
+    let res = await getOrderInfo();
+    console.log(res, 'ressssssss');
+
+    // showToast.hide();
+    console.log(orderInfo.value, bucketName.value);
+
     if (bucketName.value) {
-      getKeys();
+      // let key = await getKeys();
       getFileList();
     } else {
       dialogVisible.value = true;
@@ -904,20 +920,20 @@
   watch(
     () => route.query,
     async () => {
-      showToast.loading('Loading', {
-        cover: true,
-        customClass: 'app_loading',
-        icon: loadingImg,
-        loadingRotate: false,
-      });
+      // showToast.loading('Loading', {
+      //   cover: true,
+      //   customClass: 'app_loading',
+      //   icon: loadingImg,
+      //   loadingRotate: false,
+      // });
       dialogVisible.value = false;
       await getOrderInfo();
-      showToast.hide();
-      bucketName.value = orderInfo.value.domain;
+      // showToast.hide();
+      // bucketName.value = orderInfo.value.domain;
       console.log('bucketName------', bucketName.value);
       if (bucketName.value) {
         // console.log('bucketName------');
-        getKeys();
+        // let key = await getKeys();
         getFileList();
       } else {
         // console.log('no bucketName------');
@@ -929,6 +945,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .bucket_name_tip {
+    word-break: break-word;
+    font-size: 30px;
+  }
   .detail_over {
     display: flex;
     flex-direction: column;

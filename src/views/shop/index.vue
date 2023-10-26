@@ -121,7 +121,7 @@
     await node_order_search(nodeIp, {
       week: state.shopForm.week,
       storage: state.shopForm.quantity,
-      poolType: 'vofo.*', //vofo.*  / golden
+      poolType: 'golden', //vofo.*  / golden
       size: 5,
     })
       .then((res) => {

@@ -13,6 +13,7 @@ declare module 'vue' {
     NutActionSheet: typeof import('@nutui/nutui')['ActionSheet']
     NutButton: typeof import('@nutui/nutui')['Button']
     NutCell: typeof import('@nutui/nutui')['Cell']
+    NutCellGroup: typeof import('@nutui/nutui')['CellGroup']
     NutCheckbox: typeof import('@nutui/nutui')['Checkbox']
     NutCheckboxGroup: typeof import('@nutui/nutui')['CheckboxGroup']
     NutCircleProgress: typeof import('@nutui/nutui')['CircleProgress']
@@ -21,6 +22,8 @@ declare module 'vue' {
     NutEmpty: typeof import('@nutui/nutui')['Empty']
     NutForm: typeof import('@nutui/nutui')['Form']
     NutFormItem: typeof import('@nutui/nutui')['FormItem']
+    NutGrid: typeof import('@nutui/nutui')['Grid']
+    NutGridItem: typeof import('@nutui/nutui')['GridItem']
     NutImage: typeof import('@nutui/nutui')['Image']
     NutInfiniteLoading: typeof import('@nutui/nutui')['InfiniteLoading']
     NutInput: typeof import('@nutui/nutui')['Input']
@@ -47,7 +50,10 @@ declare module 'vue' {
     NutUploader: typeof import('@nutui/nutui')['Uploader']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    VanButton: typeof import('vant/es')['Button']
     VanCellGroup: typeof import('vant/es')['CellGroup']
+    VanNumberKeyboard: typeof import('vant/es')['NumberKeyboard']
+    VanPasswordInput: typeof import('vant/es')['PasswordInput']
     VanSpace: typeof import('vant/es')['Space']
   }
 }
