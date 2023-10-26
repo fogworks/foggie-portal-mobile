@@ -298,6 +298,7 @@
     shareRefContent,
     copyContent,
     confirmHttpShare,
+    getHttpShare,
   } = useShare(orderInfo, header, deviceType);
   let server;
   const route = useRoute();
@@ -435,6 +436,7 @@
   const handleRow = (row) => {
     detailRow = row;
     if (row.imgUrl) {
+      imgUrl.value = row.imgUrlLarge;
       detailShow.value = true;
     } else {
       let prefix;
@@ -607,7 +609,6 @@
     }
   };
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
-    let baseUrl = '127.0.0.1';
     let imgHttpLink = '';
     let imgHttpLarge = '';
     type = type.toLowerCase();
@@ -630,18 +631,75 @@
       // imgHttpLarge = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
       //   deviceType.value == 'space' ? 'space' : 'foggie'
       // }&token=${token.value}`;
-      let bucketName = 'foggiebucket';
-      imgHttpLink = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
-      imgHttpLarge = `/o/${bucketName}/${encodeURIComponent(item.key)}`;
+      // let bucketName = 'foggiebucket';
+      // imgHttpLink = `/o/${bucketName.value}/${encodeURIComponent(item.key)}?thumb=true`;
+      const headers = getSignHeaders(encodeURIComponent(item.key));
+
+      // const params = new URLSearchParams(headers);
+      // imgHttpLink = `/o/${encodeURIComponent(item.key)}?${params.toString()}&thumb=true`;
+      // imgHttpLarge = `/o/${encodeURIComponent(item.key)}?${params.toString()}`;
+      // console.log('imgHttpLink------------', imgHttpLink);
+
+      // const url = `/o/${encodeURIComponent(item.key)}?`
+      console.log('-----------------img-headers', headers);
+      // imgHttpLarge = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
+      // imgHttpLink = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
+      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      console.log('--------imgHttpLarge', imgHttpLarge);
+
+      // await fetch(url, { method: 'GET', headers })
+      //   .then((response) => {
+      //     if (response.ok) {
+      //       // 创建一个 Blob 对象，并将响应数据写入其中
+      //       console.log('Success------img', response);
+      //       return response.blob();
+      //     } else {
+      //       // 处理错误响应
+      //       console.error('Error:----img', response.status, response.statusText);
+      //     }
+      //   })
+      //   .then((blob) => {
+      //     if (blob) {
+      //       imgHttpLarge = URL.createObjectURL(blob);
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     // 处理网络错误
+      //     console.error('Network Error:---img', error);
+      //   });
+      // const url_thumb = `/o/${encodeURIComponent(item.key)}?thumb=true`
+
+      // await fetch(url_thumb, { method: 'GET', headers })
+      //     .then((response) => {
+      //       if (response.ok) {
+      //         // 创建一个 Blob 对象，并将响应数据写入其中
+      //         console.log('Success', response);
+      //         return response.blob();
+      //       } else {
+      //         // 处理错误响应
+      //         console.error('Error:', response.status, response.statusText);
+      //       }
+      //     })
+      //     .then((blob) => {
+      //       if (blob) {
+      //         imgHttpLink = URL.createObjectURL(blob);
+      //       }
+      //     })
+      //     .catch((error) => {
+      //       // 处理网络错误
+      //       console.error('Network Error:', error);
+      //     });
 
       // foggie://peerid/spaceid/cid
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
       // item.contentType = "video/mp4";
 
-      imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-        deviceType.value == 'space' ? 'space' : 'foggie'
-      }&token=${token.value}&thumb=true`;
+      // imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
+      //   deviceType.value == 'space' ? 'space' : 'foggie'
+      // }&token=${token.value}&thumb=true`;
     } else {
       isSystemImg = true;
       // imgHttpLink =
@@ -656,6 +714,8 @@
       //     ? require(`@/assets/logo-dog.svg`)
       //     : require(`@/assets/logo-dog-black.svg`);
     }
+    console.log({ imgHttpLink, isSystemImg, imgHttpLarge }, '{ imgHttpLink, isSystemImg, imgHttpLarge }');
+
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {

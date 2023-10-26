@@ -70,13 +70,19 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
         '^/order/buy': {
-          target: 'http://154.31.41.124:18080',
+          target: 'http://45.207.245.24:28080',
           changeOrigin: true,
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
         '^/order/search': {
-          target: 'http://154.31.41.124:18080',
+          target: 'http://45.207.245.24:28080',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+        '^/order/get_average_price': {
+          target: 'http://45.207.245.24:28080',
           changeOrigin: true,
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
@@ -153,7 +159,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           changeOrigin: true,
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
-        },       
+        },
         '^/o': {
           target: 'http://aaa12345.devus.u2i.net:6008',
           // target: 'http://192.168.1.119:6008',

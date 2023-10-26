@@ -75,6 +75,13 @@ export function node_order_search(ip, data) {
     data,
   });
 }
+export function get_average_price(ip, data) {
+  return request({
+    url: ip + '/order/get_average_price',
+    method: 'POST',
+    data,
+  });
+}
 export function user_recharge(data) {
   return request({
     url: '/ambmgr/asset/user_recharge',
