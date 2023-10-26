@@ -18,9 +18,10 @@ export default function useUpdateDMC() {
     });
   }
   async function bindAmbCode() {
+    if (!uuid.value) return false;
     check_user_bind(uuid.value).then((res2) => {
-      if (res2.result.bind) {
-        if (res2.result.approved && res2.result.refuse) {
+      if (!!res2.result.bind) {
+        if (!!res2.result.approved && !!res2.result.refuse) {
           // refuse
           const onOk = () => {
             router.push({ name: 'bindDmc', query: { type: 'amb' } });
