@@ -428,6 +428,9 @@
         background: #ff8b00;
         // box-shadow: 0px 1px 2px 2px #ccc;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        box-shadow:
+          rgba(0, 0, 0, 0.3) 0px 19px 38px,
+          rgba(0, 0, 0, 0.22) 0px 15px 12px;
         svg,
         img {
           width: 55px;
@@ -603,6 +606,9 @@
     background: #fff;
     border-radius: 5px;
     border-bottom: 1px solid #eee;
+    margin: 10px 0;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
     .item_img_box {
       position: absolute;
       left: 16px;

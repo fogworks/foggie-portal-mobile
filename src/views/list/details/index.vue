@@ -1109,7 +1109,7 @@
 
   .detail_box {
     box-sizing: border-box;
-    // height: 100%;
+    height: 100%;
     padding: 20px;
     .type_check_box {
       display: flex;

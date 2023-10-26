@@ -333,6 +333,9 @@
     border-radius: 5px;
     border-top: 1px solid #eee;
     font-size: 30px;
+    margin: 10px 0;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
     .earnings {
       color: $main_green;
     }
