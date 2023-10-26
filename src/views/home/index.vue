@@ -13,41 +13,39 @@
     Hello,
     {{ userInfo.dmc }}
   </div>
-  <van-cell-group inset class="income-card">
-    <template #default>
-      <img src="@/assets/balance_right.svg" @click="router.push('/analysis')" alt="" />
-      <div class="card_row_1 card_header card_row_top" @click="router.push('/analysis')"
-        ><span>Balance</span>
-        <span>Income</span>
+  <div inset class="income-card">
+    <img src="@/assets/balance_right.svg" @click="router.push('/analysis')" alt="" />
+    <div class="card_row_1 card_header card_row_top" @click="router.push('/analysis')"
+      ><span>Balance</span>
+      <span>Income</span>
+    </div>
+    <div class="card_row_1 card_header" @click="router.push('/analysis')">
+      <div class="total_income">
+        <div> {{ cloudBalance }} </div>
       </div>
-      <div class="card_row_1 card_header" @click="router.push('/analysis')">
-        <div class="total_income">
-          <div> {{ cloudBalance }} </div>
-        </div>
-        <div class="total_income">
-          <div> {{ cloudIncome }} </div>
-        </div>
+      <div class="total_income">
+        <div> {{ cloudIncome }} </div>
       </div>
-      <div class="card_row_1 pst-row">
-        <div>
-          <p>Space(GB)</p>
-          <p class="column_value">{{ cloudPst }}</p>
-        </div>
-        <div @click="gotoPage('transactionRecords')">
-          <p>Withdrawn</p>
-          <p class="column_value">{{ cloudWithdraw }}</p>
-        </div>
-        <div @click="router.push('/analysis')">
-          <p>New revenue today</p>
-          <p class="column_value today_income"
-            >+ {{ cloudTodayIncome }} DMC
-            <TriangleUp color="#fbd116" width="20px"></TriangleUp>
-          </p>
-        </div>
+    </div>
+    <div class="card_row_1 pst-row">
+      <div>
+        <p>Space(GB)</p>
+        <p class="column_value">{{ cloudPst }}</p>
       </div>
-    </template>
-  </van-cell-group>
-  <van-space class="withdraw-btn" direction="horizontal" align="center">
+      <div @click="gotoPage('transactionRecords')">
+        <p>Withdrawn</p>
+        <p class="column_value">{{ cloudWithdraw }}</p>
+      </div>
+      <div @click="router.push('/analysis')">
+        <p>New revenue today</p>
+        <p class="column_value today_income"
+          >+ {{ cloudTodayIncome }} DMC
+          <TriangleUp color="#fbd116" width="20px"></TriangleUp>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="withdraw-btn" direction="horizontal" align="center">
     <div class="action_item" @click="toRecharge">
       <img src="@/assets/recharge.svg" alt="" />
       Recharge
@@ -56,7 +54,7 @@
       <img src="@/assets/withdraw.svg" alt="" />
       Withdraw
     </div>
-  </van-space>
+  </div>
   <div class="middle_btn_box">
     <div>
       <div class="flex-content" @click="toBuyOrder">
@@ -122,11 +120,7 @@
     :has-more="hasMore"
     @load-more="loadMore"
   >
-    <div
-      class="list_item"
-      v-for="(item, index) in listData"
-      @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
-    >
+    <div class="list_item" v-for="(item, index) in listData" @click="gotoPage('listDetails', item)">
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 2" class="cions" src="@/assets/list_item_2.svg" alt="" />
@@ -232,8 +226,8 @@
     }
     router.push({ name: 'Withdraw' });
   };
-  const gotoPage = (type) => {
-    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+  const gotoPage = (type, item) => {
+    if (!userInfo.value.amb_promo_code) {
       const dmcOk = () => {
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
       };
@@ -248,15 +242,17 @@
     } else if (!cloudCodeIsBind.value) {
       bindAmbCode();
     } else {
-    }
-    if (type === 'analysisCate') {
-      router.push('/analysisCate?type=1');
-    } else if (type === 'analysis') {
-      router.push('/analysis');
-    } else if (type === 'transactionRecords') {
-      router.push('/transactionRecords');
-    } else if (type === 'shop') {
-      router.push({ name: 'Shop' });
+      if (type === 'analysisCate') {
+        router.push('/analysisCate?type=1');
+      } else if (type === 'analysis') {
+        router.push('/analysis');
+      } else if (type === 'transactionRecords') {
+        router.push('/transactionRecords');
+      } else if (type === 'shop') {
+        router.push({ name: 'Shop' });
+      } else if (type === 'listDetails') {
+        router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } });
+      }
     }
   };
   const toBuyOrder = () => {
@@ -508,6 +504,9 @@
         background: #ff8b00;
         // box-shadow: 0px 1px 2px 2px #ccc;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        box-shadow:
+          rgba(0, 0, 0, 0.3) 0px 19px 38px,
+          rgba(0, 0, 0, 0.22) 0px 15px 12px;
         svg,
         img {
           width: 55px;
@@ -683,6 +682,9 @@
     background: #fff;
     border-radius: 5px;
     border-bottom: 1px solid #eee;
+    margin: 10px 0;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
     .item_img_box {
       position: absolute;
       left: 16px;

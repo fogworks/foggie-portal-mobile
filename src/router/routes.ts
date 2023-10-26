@@ -60,6 +60,7 @@ export const routes = [
         meta: {
           title: 'list.getKey',
           border: false,
+          notKeepAlive: true,
         },
       },
       {

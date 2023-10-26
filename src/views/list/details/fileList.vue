@@ -400,7 +400,6 @@
 
   // const accessKeyId = ref<string>('');
   // const secretAccessKey = ref<string>('');
-  const bucketName = ref<string>('');
 
   let timeOutEvent: string | number | NodeJS.Timeout | undefined;
   let server = null;
@@ -466,7 +465,7 @@
     longPress,
     isFirst,
   } = toRefs(state);
-  const { header, token, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
+  const { bucketName, header, token, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
   const {
     isReady,
     confirmShare,
@@ -774,7 +773,7 @@
       // const url = `/o/${bucketName}/${objectKey}`;
       // const url = `/o/${objectKey}`;
       // const url = `/o/${objectKey}?thumb=true`;
-      const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`
+      const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
 
       fetch(url, { method: 'GET', headers })
         .then((response) => {
@@ -846,6 +845,12 @@
   };
 
   function getFileList(scroll: string, prefix: any[], reset = false) {
+    showToast.loading('Loading', {
+      cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+    });
     let list_prefix = '';
     if (prefix?.length) {
       list_prefix = prefix.join('/');
@@ -953,6 +958,7 @@
 
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
+          showToast.hide();
           console.log('err----', err);
         }
       },
@@ -1102,7 +1108,7 @@
     }
     console.log('----------ak---1', accessKeyId.value, bucketName.value);
     if (!accessKeyId.value) {
-      await getOrderInfo(bucketName.value);
+      await getOrderInfo();
       console.log('----------ak---2', accessKeyId.value);
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
@@ -1257,12 +1263,6 @@
     }
     // tableData.value = [];
     if (keyWord.value == '') {
-      showToast.loading('Loading', {
-        cover: true,
-        customClass: 'app_loading',
-        icon: loadingImg,
-        loadingRotate: false,
-      });
       // if (moveShow.value) {
       getFileList(scroll, prefixArg, reset);
       // } else {
