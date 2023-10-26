@@ -69,11 +69,16 @@
       </div>
     </nut-form>
   </nut-popup>
-  <nut-popup position="bottom" pop-class="confirm_pop" :style="{ height: '40%' }" v-model:visible="showBuy">
-    <nut-cell title="Space" :desc="shopForm.quantity + ' GB'"></nut-cell>
-    <nut-cell title="Weeks" :desc="shopForm.week"></nut-cell>
-    <nut-cell title="Floating Ratio" :desc="shopForm.floating_ratio + '%'"></nut-cell>
-    <nut-cell class="total_price" title="Estimated total price" :desc="totalPrice + ' DMC'"></nut-cell>
+  <nut-popup position="bottom" pop-class="confirm_pop" :style="{ height: '350px' }" v-model:visible="showBuy">
+    <nut-cell-group>
+      <nut-cell title="Space" :desc="shopForm.quantity + ' GB'"></nut-cell>
+      <nut-cell title="Weeks" :desc="shopForm.week"></nut-cell>
+      <nut-cell title="Deposit Ratio" :desc="deposit_ratio"></nut-cell>
+      <nut-cell title="Floating Ratio" :desc="shopForm.floating_ratio + '%'"></nut-cell>
+      <nut-cell title="Unit Price" :desc="curReferenceRate + ' DMC'"></nut-cell>
+      <nut-cell class="total_price" title="Total Price" :desc="totalPrice + ' DMC'"></nut-cell>
+    </nut-cell-group>
+
     <div class="bottom_btn">
       <nut-button type="warning" :loading="loading" plain @click="showBuy = false"> Cancel </nut-button>
       <nut-button type="warning" @click="confirmBuy" :loading="loading"> Buy </nut-button>
@@ -142,7 +147,7 @@
           loading.value = false;
           if (res.code == 200 && res.data.length) {
             curReferenceRate.value = res.data[0].price;
-            deposit_ratio.value = res.data[0].depositRatio;
+            deposit_ratio.value = res.data[0].depositRatio || 0;
           }
         })
         .finally(() => {
@@ -190,12 +195,6 @@
   });
 
   async function submit() {
-    if (cloudBalance.value < totalPrice.value) {
-      let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);
-      showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
-      loading.value = false;
-      return false;
-    }
     loading.value = true;
     // await loadCurReferenceRate();
 
@@ -231,7 +230,12 @@
   const confirmBuy = () => {
     // let nodeIp ='http://'+ res.result.node_address;
     // let nodeIp = 'http://154.31.41.124:18080';
-
+    if (cloudBalance.value < totalPrice.value) {
+      let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);
+      showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
+      loading.value = false;
+      return false;
+    }
     node_order_buy(nodeInfo.value.nodeIp, {
       minPrice: curReferenceRate.value / 10000,
       maxPrice: ((curReferenceRate.value / 10000) * (1 + state.shopForm.floating_ratio / 100)).toFixed(4),
