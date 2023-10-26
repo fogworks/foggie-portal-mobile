@@ -15,11 +15,11 @@
   </div>
   <div inset class="income-card">
     <img src="@/assets/balance_right.svg" @click="router.push('/analysis')" alt="" />
-    <div class="card_row_1 card_header card_row_top"
+    <div class="card_row_1 card_header card_row_top" @click="router.push('/analysis')"
       ><span>Balance</span>
       <span>Income</span>
     </div>
-    <div class="card_row_1 card_header">
+    <div class="card_row_1 card_header" @click="router.push('/analysis')">
       <div class="total_income">
         <div> {{ cloudBalance }} </div>
       </div>
@@ -32,11 +32,11 @@
         <p>Space(GB)</p>
         <p class="column_value">{{ cloudPst }}</p>
       </div>
-      <div>
+      <div @click="gotoPage('transactionRecords')">
         <p>Withdrawn</p>
         <p class="column_value">{{ cloudWithdraw }}</p>
       </div>
-      <div>
+      <div @click="router.push('/analysis')">
         <p>New revenue today</p>
         <p class="column_value today_income"
           >+ {{ cloudTodayIncome }} DMC
@@ -55,7 +55,6 @@
       Withdraw
     </div>
   </div>
-
   <div class="middle_btn_box">
     <div>
       <div class="flex-content" @click="toBuyOrder">
@@ -109,6 +108,11 @@
     <nut-tab-pane title="Three months" pane-key="1"> </nut-tab-pane>
     <nut-tab-pane title="Six months" pane-key="2"> </nut-tab-pane>
   </nut-tabs> -->
+
+  <div class="DouArrowDown" v-if="!targetIsVisible &&  listData.length ==0 " @click="scrollIntoViewTo">
+    <DouArrowUp width="100" height="50" class="nut-icon-am-jump nut-icon-am-infinite" />
+  </div>
+
   <nut-infinite-loading
     v-if="listData.length"
     load-more-txt="No more content"
@@ -153,15 +157,22 @@
       </nut-swiper-item>
     </nut-swiper>
   </div>
-  <div class="my_steps" v-if="!listData.length">
-    <nut-steps direction="vertical" current="2">
+
+  <div class="my_steps" ref="my_steps" id="my_steps" v-if="!listData.length">
+    <nut-steps direction="vertical" :current="curStepIndex">
       <nut-step title="Bind invitation code" content="Please confirm that you have filled out the invitation code before placing your order"
         >1</nut-step
       >
-      <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
+      <nut-step
+        title="Waiting for approval"
+        :content="ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'"
         >2</nut-step
       >
-      <nut-step title="File storage" content="After successful purchase, you can enjoy file storage and order revenue">3</nut-step>
+      <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step>
+      <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
+        >3</nut-step
+      >
+      <nut-step title="File storage" content="After successful purchase, you can enjoy file storage and order revenue">4</nut-step>
     </nut-steps>
   </div>
 </template>
@@ -169,8 +180,8 @@
 <script lang="ts" setup name="HomePage">
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
-  import { Notice, TriangleUp } from '@nutui/icons-vue';
-  import { toRefs, reactive } from 'vue';
+  import { Notice, TriangleUp, DouArrowUp } from '@nutui/icons-vue';
+  import { toRefs, reactive, onActivated } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
   import { useOrderStore } from '@/store/modules/order';
@@ -182,7 +193,7 @@
   import { transferUTCTime } from '@/utils/util';
   import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
   import '@nutui/nutui/dist/packages/toast/style';
-
+  import { useIntersectionObserver } from '@vueuse/core';
   const useStore = useUserStore();
   const orderStore = useOrderStore();
   const userInfo = computed(() => useStore.getUserInfo);
@@ -193,10 +204,12 @@
     timeType: '0',
     searchType: '0',
   });
+
   const { timeType, searchType } = toRefs(state);
   const { loadMore, listData, hasMore, infinityValue } = useOrderList();
   const { getUserAssets, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
-  const { bindAmbCode } = useUpdateDMC();
+  const { bindAmbCode, curStepIndex, ambRefuse } = useUpdateDMC();
+
   const showWithdraw = () => {
     if (!userInfo.value.dmc) {
       const dmcOk = () => {
@@ -243,6 +256,7 @@
     }
   };
   const toBuyOrder = () => {
+    if (curStepIndex.value != 4) return;
     gotoPage('shop');
   };
   const toRecharge = () => {
@@ -278,9 +292,35 @@
     let b = createNumber(150, 255);
     return `rgb(${r} ${g} ${b})`;
   };
+
+  function gotoBindDMC() {
+    if (curStepIndex.value != 3) return;
+    router.push({
+      path: '/bindDmc',
+      query: {
+        type: 'dmc',
+      },
+    });
+  }
+
   onBeforeMount(() => {
     loadMore();
   });
+
+  watch(cloudCodeIsBind, (newVal) => {
+    if (newVal) {
+      if (userInfo.value.dmc) {
+        curStepIndex.value = 4;
+        ambRefuse.value = false;
+      } else {
+        curStepIndex.value = 3;
+        ambRefuse.value = false;
+      }
+    } else {
+      bindAmbCode();
+    }
+  });
+
   watch(
     userInfo.value.uuid,
     (val) => {
@@ -290,15 +330,51 @@
     },
     { deep: true },
   );
+  onActivated(() => {
+    if (userInfo.value.dmc) {
+      curStepIndex.value = 4;
+      ambRefuse.value = false;
+    }
+  });
+
+  const targetIsVisible = ref(false);
+  const my_steps = ref(null);
+  function loadMySwipeDom() {
+    const { stop } = useIntersectionObserver(my_steps, ([{ isIntersecting }]) => {
+      targetIsVisible.value = isIntersecting;
+    });
+  }
+
+  function scrollIntoViewTo() {
+    let my_steps = document.getElementById('my_steps');
+    console.log(my_steps);
+
+    if (my_steps) {
+      my_steps?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
   onMounted(() => {
+    loadMySwipeDom();
     getUserAssets();
   });
 </script>
 
 <style lang="scss" scoped>
+  ::v-deep {
+    .nut-step-main {
+      padding-bottom: 30px !important;
+    }
+  }
+  .DouArrowDown {
+    // transform: rotate(180deg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
   .my_swipe {
     margin-top: 30px;
-
     .nut-swiper {
       height: 300px;
     }
@@ -315,7 +391,7 @@
     margin: 40px auto;
     width: calc(100% - 80px);
     background: #fff;
-    height: 620px;
+    height: 820px;
     border-radius: 20px;
     padding: 20px;
   }
@@ -428,6 +504,9 @@
         background: #ff8b00;
         // box-shadow: 0px 1px 2px 2px #ccc;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        box-shadow:
+          rgba(0, 0, 0, 0.3) 0px 19px 38px,
+          rgba(0, 0, 0, 0.22) 0px 15px 12px;
         svg,
         img {
           width: 55px;
@@ -603,6 +682,9 @@
     background: #fff;
     border-radius: 5px;
     border-bottom: 1px solid #eee;
+    margin: 10px 0;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
     .item_img_box {
       position: absolute;
       left: 16px;
