@@ -230,6 +230,7 @@
     >
       <nut-input v-model="newBucketName" placeholder="Please enter bucket Name"></nut-input>
       <template #footer>
+        <nut-button type="primary" @click="dialogVisible = false">Operate Later</nut-button>
         <nut-button type="primary" @click="creatName">Confirm</nut-button>
       </template>
     </nut-dialog>
@@ -913,9 +914,9 @@
       await getOrderInfo();
       showToast.hide();
       bucketName.value = orderInfo.value.domain;
+      console.log('bucketName------', bucketName.value);
       if (bucketName.value) {
         // console.log('bucketName------');
-
         getKeys();
         getFileList();
       } else {
