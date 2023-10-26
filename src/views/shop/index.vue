@@ -75,7 +75,7 @@
       <nut-cell title="Weeks" :desc="shopForm.week"></nut-cell>
       <nut-cell title="Deposit Ratio" :desc="deposit_ratio"></nut-cell>
       <nut-cell title="Floating Ratio" :desc="shopForm.floating_ratio + '%'"></nut-cell>
-      <nut-cell title="Unit Price" :desc="curReferenceRate + ' DMC'"></nut-cell>
+      <nut-cell title="Unit Price" :desc="curReferenceRate + ' DMC/GB/Week'"></nut-cell>
       <nut-cell class="total_price" title="Total Price" :desc="totalPrice + ' DMC'"></nut-cell>
     </nut-cell-group>
 
