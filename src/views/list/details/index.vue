@@ -1,8 +1,10 @@
 <template>
   <div class="top_box">
     <div class="top_back" @click="router.go(-1)">
-      <div v-if="bucketName">{{ bucketName }} </div>
-      <div v-else> Order-{{ order_id }} </div>
+      <div v-if="bucketName"
+        ><HeartFill color="yellow" style="margin-right: 10px"></HeartFill>{{ bucketName }} <HeartFill color="yellow"></HeartFill
+      ></div>
+      <div v-else> Order:{{ order_id }} </div>
       <!-- <nut-button class="creat-name" type="primary" @click="creatName" v-if="!bucketName">Creat Name</nut-button>
       <nut-input placeholder="Please enter name" v-model="newBucketName" v-if="showCreatName" /> -->
     </div>
@@ -223,15 +225,16 @@
     </nut-uploader>
     <nut-dialog
       v-model:visible="dialogVisible"
-      title="Create Bucket"
+      title="Custom Name"
       :close-on-click-overlay="false"
       :show-cancel="false"
       :show-confirm="false"
+      class="CustomName"
     >
-      <nut-input v-model="newBucketName" placeholder="Please enter bucket Name"></nut-input>
+      <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
       <template #footer>
         <nut-button type="primary" @click="dialogVisible = false">Operate Later</nut-button>
-        <nut-button type="primary" @click="creatName">Confirm</nut-button>
+        <nut-button type="primary" @click="creatName" :loading="isNameLoading">Confirm</nut-button>
       </template>
     </nut-dialog>
   </div>
@@ -266,6 +269,7 @@
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   // import AESHelper from './AESHelper';
   // import { Image } from '@nutui/icons-vue';
+  import { HeartFill } from '@nutui/icons-vue';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute, useRouter } from 'vue-router';
@@ -298,10 +302,12 @@
   const router = useRouter();
 
   const successStatus = ref<number>(204);
+  const isNameLoading = ref(false);
 
   import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
   const uuid = computed(() => userStore.getUserInfo.uuid);
+  const dmcName = computed(() => userStore.getUserInfo.dmc);
 
   const dialogVisible = ref<boolean>(false);
 
@@ -314,7 +320,7 @@
   const secretAccessKey = ref<string>('');
   const uploadUri = ref<string>('');
   const prefix = ref<string>('');
-  const showCreatName = ref<boolean>(false);
+  const showCreatName = ref<boolean>(true);
   const newBucketName = ref<string>('');
   const tableData = ref<array>([]);
   const tableLoading = ref<boolean>(false);
@@ -325,7 +331,6 @@
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
   const minerIp = ref<string>('');
-
   // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
   // order_id.value = '1281';
   memo.value = route.query.uuid;
@@ -558,10 +563,23 @@
     if (!showCreatName.value) {
       showCreatName.value = true;
     } else if (newBucketName.value) {
+      let reg = /^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9]))*(?:\.[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9]))*)*$/;
+      if (newBucketName.value.length < 8 || newBucketName.value.length > 10) {
+        showToast.text('Please enter a name with a length of 8-10 digits');
+        return;
+      }
+      if (!reg.test(newBucketName.value)) {
+        showToast.text(
+          'Custom names can only contain lowercase letters, numbers, periods, and dashes (-), and must start and end with lowercase letters or numbers',
+        );
+        return;
+      }
       // check name
+      isNameLoading.value = true;
       const result = await check_name(newBucketName.value);
       if (result?.data?.domain) {
         console.log('name is exist');
+        isNameLoading.value = false;
         return;
       }
       let order_data = {
@@ -569,12 +587,21 @@
         name: newBucketName.value,
         order_uuid: orderInfo.value.uuid,
       };
-      const order_result = await order_name_set(order_data);
-      if (!order_result?.data?.result) {
-        bucketName.value = newBucketName.value;
-        dialogVisible.value = false;
-        return;
-      }
+      //   const order_result = await order_name_set(order_data);
+      order_name_set(order_data).then(
+        (order_result) => {
+          isNameLoading.value = false;
+          if (!order_result?.data?.result) {
+            bucketName.value = newBucketName.value;
+            dialogVisible.value = false;
+            return;
+          }
+        },
+        (err) => {
+          showToast.text(err.message);
+          isNameLoading.value = false;
+        },
+      );
     }
   };
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
@@ -883,7 +910,13 @@
       }
     });
   };
-
+  const setDefaultName = () => {
+    let orderName = route.query.id;
+    console.log('bucketName------', orderName, dmcName.value);
+    let length = 9 - orderName.toString().length;
+    let str = `${dmcName.value.substring(0, length)}-${orderName}`;
+    newBucketName.value = str;
+  };
   onMounted(async () => {
     showToast.loading('Loading', {
       cover: true,
@@ -899,6 +932,7 @@
       getFileList();
     } else {
       dialogVisible.value = true;
+      setDefaultName();
     }
   });
   watch(
@@ -914,7 +948,6 @@
       await getOrderInfo();
       showToast.hide();
       bucketName.value = orderInfo.value.domain;
-      console.log('bucketName------', bucketName.value);
       if (bucketName.value) {
         // console.log('bucketName------');
         getKeys();
@@ -922,6 +955,7 @@
       } else {
         // console.log('no bucketName------');
         dialogVisible.value = true;
+        setDefaultName();
       }
     },
     { deep: true },
