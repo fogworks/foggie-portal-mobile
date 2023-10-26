@@ -220,8 +220,6 @@ export const bind_user_promo = (data) => {
   });
 };
 
-
-
 export const calc_merkle = (data: any) => {
   return request({
     url: `/order/calc_merkle`,
@@ -243,5 +241,19 @@ export const get_merkle_record = (data: any) => {
     url: `/order/get_merkle_record`,
     method: 'POST',
     data,
+  });
+};
+export const get_challenge = (params) => {
+  return request({
+    url: `/ambmgr/order/get_challenge`,
+    method: 'GET',
+    params,
+  });
+};
+export const get_arbitration = (params) => {
+  return request({
+    url: `ambmgr/order/get_arbitration`,
+    method: 'GET',
+    params,
   });
 };

@@ -6,12 +6,30 @@
   <p class="key_tips" v-else-if="bindType == 'amb'"> Please bind ambassador invitation code </p>
   <nut-sticky>
     <nut-form class="query_form" :model-value="formLine">
-      <nut-form-item v-if="!userInfo.dmc && bindType == 'dmc'" label-width="180px" label="DMC Account:">
+      <nut-form-item
+        v-if="!userInfo.dmc && bindType == 'dmc'"
+        label-width="180px"
+        style="white-space: nowrap; color: #000"
+        label="DMC Account:"
+      >
         <nut-input v-model="formLine.dmc" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
       </nut-form-item>
 
-      <nut-form-item v-if="bindType == 'amb'" label-width="180px" label="Ambassador Invitation Code:">
-        <nut-input v-model="formLine.code" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
+      <!-- <nut-form-item v-if="bindType == 'amb'" label-width="180px" label="Ambassador Invitation Code:">
+        <nut-input v-model="formLine.code" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" /> -->
+      <nut-form-item
+        v-if="bindType == 'amb'"
+        label-width="180px"
+        style="white-space: nowrap; color: #000"
+        label="Ambassador Invitation Code:"
+      >
+        <nut-input
+          v-model="formLine.code"
+          :disabled="loading || !!userInfo.amb_promo_code"
+          autofocus
+          class="nut-input-text"
+          placeholder="Please Input"
+        />
       </nut-form-item>
       <div class="bind_btn">
         <nut-button block type="info" @click="submit" :loading="loading"> Bind </nut-button>
@@ -48,16 +66,17 @@
   };
   const submit = async () => {
     // const taskList = [];
-    if (!userInfo.value.dmc && formLine.dmc.length !== 12 && bindType == 'dmc') {
+    if (!userInfo.value.dmc && formLine.dmc.length !== 12 && bindType.value == 'dmc') {
       showToast.fail('The DMC account length is 12, please enter the correct DMC account');
       return false;
     }
-    if (!userInfo.value.amb_promo_code && !formLine.code && bindType == 'amb') {
+    if (!userInfo.value.amb_promo_code && !formLine.code && bindType.value == 'amb') {
       showToast.fail('Please enter the Ambassador Invitation Code');
       return false;
     }
     loading.value = true;
-    if (!userInfo.value.dmc && bindType == 'dmc') {
+    if (!userInfo.value.dmc && bindType.value == 'dmc') {
+      console.log('1111');
       let postData = {
         dmc: formLine.dmc,
         wallet_type: 'wallet',
@@ -80,7 +99,7 @@
         return false;
       }
     }
-    if ((!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) && bindType == 'amb') {
+    if ((!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) && bindType.value == 'amb') {
       let postData = {
         user_uuid: userInfo.value.uuid,
         amb_promo_code: formLine.code,
@@ -109,6 +128,7 @@
       await initFoggieDate();
     }
     loading.value = false;
+    router.push('/home');
   };
   watch(
     amb_promo_code,
@@ -121,6 +141,8 @@
   );
   onMounted(() => {
     formLine.code = amb_promo_code.value || '';
+    console.log(formLine.code, 'code');
+    formLine.code = userInfo.value.amb_promo_code || '';
   });
   onActivated(() => {
     formLine.code = amb_promo_code.value || '';
@@ -146,6 +168,14 @@
   :deep {
     .nut-cell-group__wrap {
       box-shadow: none;
+    }
+    .nut-input-text {
+      input {
+        color: #000;
+        text-align: right !important;
+        -webkit-text-fill-color: #5758a0;
+        font-weight: bold;
+      }
     }
   }
 

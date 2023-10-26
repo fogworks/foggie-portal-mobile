@@ -34,131 +34,239 @@
       <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
         <div style="display: flex">
           <div class="top_back" @click="router.go(-1)"> </div>
-          <span class="top_title"> {{ fileTypeText[category] }} </span>
+          <span class="top_title">
+            {{ fileTypeText[category] }}
+          </span>
           <TriangleUp
             @click="showTypeCheckPop = !showTypeCheckPop"
             :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
           ></TriangleUp>
         </div>
       </div>
-    </nut-sticky>
-    <nut-infinite-loading v-if="tableData.length" class="file_list record_list">
-      <div
-        :class="['list_item', item.checked ? 'row_is_checked' : '']"
-        :id="[index == 0 ? 'list_item_1' : '']"
-        v-for="(item, index) in tableData"
-        :key="index"
-      >
-        <div :class="['left_icon_box']">
-          <IconRiNodeTree color="#3963eb" v-if="category == 1"></IconRiNodeTree>
-          <IconRiSendToBack color="#3963eb" v-if="category == 2"></IconRiSendToBack>
-          <IconRiInputCursorMove color="#3963eb" v-if="category == 3"></IconRiInputCursorMove>
-        </div>
-        <div class="name_box record_item" v-if="category == 1">
-          <p class="time">{{ transferUTCTime(item.create_time) }}</p>
-          <p>
-            <span>Version:</span>
-            <span> {{ item.merkle_version }}</span>
-          </p>
-          <p>
-            <span>Block:</span>
-            <span> #{{ item.block_num }}</span>
-          </p>
-
-          <p
-            ><span>Merkle Root:</span>
-            <span>
-              {{
-                item.merkle_root.substring(0, 10) + '...' + item.merkle_root.substring(item.merkle_root.length - 6, item.merkle_root.length)
-              }}</span
-            >
-          </p>
-        </div>
-        <div class="name_box record_item" v-if="category == 2">
-          <p class="time">{{ item.create_time && transferUTCTime(item.create_time) }}</p>
-          <p>
-            <span>Version:</span>
-            <span> {{ item.version }}</span>
-          </p>
-          <p>
-            <span>Data ID:</span>
-            <span> {{ item.data_id }}</span>
-          </p>
-
-          <p
-            ><span>CID:</span>
-            <span> {{ item.cid.substring(0, 10) + '...' + item.cid.substring(item.cid.length - 6, item.cid.length) }}</span>
-          </p>
-          <p
-            ><span>Reply Hash:</span>
-            <span>
-              {{
-                item.reply_hash.substring(0, 10) + '...' + item.reply_hash.substring(item.reply_hash.length - 6, item.reply_hash.length)
-              }}</span
-            >
-          </p>
-          <p
-            ><span>Hash Data:</span>
-            <span>
-              {{
-                item.hash_data.substring(0, 10) + '...' + item.hash_data.substring(item.hash_data.length - 6, item.hash_data.length)
-              }}</span
-            >
-          </p>
-        </div>
-        <div class="name_box record_item" v-if="category == 3">
-          <p class="time">{{ item.create_time && transferUTCTime(item.create_time) }}</p>
-          <p>
-            <span>Version:</span>
-            <span> {{ item.version }}</span>
-          </p>
-          <p>
-            <span>Data ID:</span>
-            <span> {{ item.data_id }}</span>
-          </p>
-
-          <p
-            ><span>Data:</span>
-            <span> {{ item.data }}</span>
-          </p>
-        </div>
+      <!-- <div class="search_bar" v-if="!isCheckMode && category !== 1">
+        <IconNewFolder
+          @click="
+            isNewFolder = true;
+            renameShow = true;
+          "
+          v-show="category == 0"
+          class="new_folder"
+        ></IconNewFolder>
+        <nut-searchbar @clear="doSearch('', [], true)" placeholder="Search By Name" v-model="keyWord">
+          <template #rightin> <Search2 @click="doSearch('', [], true)" color="#0a7dd2" /> </template>
+        </nut-searchbar>
       </div>
-    </nut-infinite-loading>
-    <nut-empty v-else description="No data" image="error">
-      <div style="margin-top: 10px"> </div>
-    </nut-empty>
+      <div class="check_top" v-else-if="isCheckMode">
+        <span @click="selectAll">{{ selectArr.length == tableData.length ? 'UnSelect' : 'Select' }} All</span>
+        <span class="checked_num">{{ selectArr.length }} items selected</span>
+        <span @click="cancelSelect">Cancel</span>
+      </div> -->
+    </nut-sticky>
+    <template>
+      <nut-infinite-loading
+        v-if="tableData.length"
+        class="file_list"
+        v-model="infinityValue"
+        :has-more="!!continuationToken"
+        @load-more="loadMore"
+      >
+        <nut-tour
+          class="nut-custom-tour nut-customword-tour nut-customstyle-tour"
+          v-model="isFirst"
+          :steps="longPress"
+          type="tile"
+          location="bottom-center"
+          :close-on-click-overlay="false"
+        >
+          <div class="tour-demo-custom-content">
+            <div>Long press on a list file to enable multi-select mode</div>
+            <nut-button class="tour_btn" @click="handleFirst" type="default">OK</nut-button>
+          </div>
+        </nut-tour>
+        <div
+          :class="['list_item', item.checked ? 'row_is_checked' : '']"
+          :id="[index == 0 ? 'list_item_1' : '']"
+          v-for="(item, index) in tableData"
+          :key="index"
+        >
+          <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
+            <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
+            <template v-else>
+              <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+              <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+              <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" />
+              <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+              <img v-else-if="item.imgUrl" :src="imgUrl" alt="" />
+              <img v-else src="@/assets/svg/home/file.svg" alt="" />
+            </template>
+          </div>
+          <div class="name_box">
+            <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
+            <p>{{ item.date || '' }}</p>
+          </div>
+          <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
+        </div>
+      </nut-infinite-loading>
+      <nut-empty v-else description="No data" image="error">
+        <div style="margin-top: 10px"> </div>
+      </nut-empty>
+    </template>
     <!-- single action -->
   </div>
 </template>
 
 <script setup lang="ts">
+  import detailImg from '@/assets/fog-works.png';
   import IconRiNodeTree from '~icons/ri/node-tree';
   import IconRiSendToBack from '~icons/ri/send-to-back';
   import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
+
+  import IconTwitter from '~icons/home/twitter.svg';
+  import IconFile from '~icons/bxs/file.svg';
+  import IconFacebook from '~icons/devicon/facebook.svg';
+  import IconNewFolder from '~icons/home/new_folder.svg';
+  import IconAllCate from '~icons/home/all-cate.svg';
+  import IconAudio2 from '~icons/home/audio2.svg';
+  import IconImage from '~icons/home/image.svg';
+  import IconDocument from '~icons/home/document.svg';
+  import IconVideo from '~icons/home/video.svg';
+  import IconOk from '~icons/home/ok.svg';
+  import IconFolder from '~icons/home/folder.svg';
+  import IconShare from '~icons/home/share.svg';
+  import IconRename from '~icons/home/rename.svg';
+  import IconMove from '~icons/home/move.svg';
+  import IconDownload from '~icons/home/download.svg';
+  import IconDelete from '~icons/home/delete.svg';
+  import IconSwitch from '~icons/home/switch.svg';
   import IconMore from '~icons/home/more.svg';
-  import { TriangleUp } from '@nutui/icons-vue';
-  import { reactive, toRefs, onMounted } from 'vue';
+  import IconArrowLeft from '~icons/home/arrow-left.svg';
+  import IconCopy from '~icons/home/copy.svg';
+  import IconHttp from '~icons/home/http.svg';
+  import { reactive, toRefs, watch } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
+  import { Search2, TriangleUp } from '@nutui/icons-vue';
+  import { showDialog, showToast } from '@nutui/nutui';
+  import { transferUTCTime, getfilesize } from '@/utils/util';
+  import ImgList from './imgList.vue';
+  import { rename_objects } from '@/api';
+  import useDelete from './useDelete.js';
+  import useShare from './useShare.js';
+  // import { ProxListObjectsRequest, ProxListObjectsReq, ProxHeader } from '@/pb/prox_pb.js';
+  // import Prox from '@/pb/prox_pb.ts';
+  import * as Prox from '@/pb/prox_pb.js';
+  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   import useOrderInfo from './useOrderInfo.js';
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
-  import { transferUTCTime } from '@/utils/util';
+
+  import { HmacSHA1, enc } from 'crypto-js';
+  // import { download_url } from '@/api/index';
+
+  let timeOutEvent: string | number | NodeJS.Timeout | undefined;
+  let server = null;
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
+    category: 0,
+    keyWord: '',
     infinityValue: false,
+    hasMore: false,
+    showActionPop: false,
     tableData: [],
+    chooseItem: { name: '' },
+    isCheckMode: false,
+    renameShow: false,
+    newName: '',
     showTypeCheckPop: false,
     tableLoading: false,
+    detailShow: false,
+    imgCheckedData: [],
+    prefix: [],
+    movePrefix: [],
+    isSearch: false,
+    moveShow: false,
     continuationToken: '',
+    continuationToken2: '',
+    dirData: [],
+    isNewFolder: false,
+    longPress: [
+      {
+        content: 'Long press on a list file to enable multi-select mode',
+        target: 'list_item_1',
+      },
+    ],
+    isFirst: false,
   });
-  const category = ref(1);
-  //   const tableData = ref([]);
-  const { showTypeCheckPop, infinityValue, continuationToken, tableData } = toRefs(state);
+  const imgListRef = ref('');
+
+  const {
+    tableLoading,
+    showTypeCheckPop,
+    newName,
+    renameShow,
+    isCheckMode,
+    chooseItem,
+    showActionPop,
+    tableData,
+    hasMore,
+    infinityValue,
+    keyWord,
+    category,
+    detailShow,
+    imgCheckedData,
+    prefix,
+    movePrefix,
+    isSearch,
+    moveShow,
+    continuationToken,
+    continuationToken2,
+    dirData,
+    isNewFolder,
+    longPress,
+    isFirst,
+  } = toRefs(state);
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
-  import { get_merkle_record, get_challenge, get_arbitration } from '@/api/index';
-  const order_id = ref<any>('');
-  order_id.value = route.query.id;
+  const {
+    isReady,
+    confirmShare,
+    periodValue,
+    confirmPeriod,
+    periodShow,
+    desc,
+    options,
+    doShare,
+    ipfsPin,
+    showShareDialog,
+    shareRefContent,
+    copyContent,
+  } = useShare(orderInfo, header, deviceType);
+  const { deleteItem } = useDelete(
+    tableLoading,
+    () => {
+      doSearch('', prefix.value, true);
+    },
+    orderInfo,
+    header,
+  );
+
+  const selectArr = computed(() => {
+    if (category.value == 1) {
+      return imgCheckedData.value;
+    } else {
+      return tableData.value.filter((el) => el.checked);
+    }
+  });
+
+  const loadMore = () => {
+    if (moveShow.value) {
+      doSearch(continuationToken2.value, movePrefix.value, false);
+    } else {
+      doSearch(continuationToken.value, prefix.value, false);
+    }
+  };
+
+  const imgUrl = ref('');
+
   const fileTypeText = {
     1: 'Merkle List',
     2: 'Challenge List',
@@ -167,65 +275,35 @@
   const switchType = (type: number) => {
     category.value = type;
     showTypeCheckPop.value = false;
-    initListData(type);
-  };
-  const initListData = (type) => {
-    type = Number(type);
-    if (type === 1) {
-      initMarkList();
-    } else if (type === 2) {
-      initchallengeList();
-    } else if (type === 3) {
-      initArbList();
-    }
-  };
-  const initMarkList = () => {
-    tableData.value = [];
-    get_merkle_record({ orderId: order_id.value }).then((res) => {
-      tableData.value = res.data;
-    });
-  };
-  const initchallengeList = () => {
-    tableData.value = [];
-    get_challenge({ order_id: order_id.value }).then((res) => {
-      console.log(res, 'aaa');
-      //   let mockitem = {
-      //     state: 'Success',
-      //     version: '1.0',
-      //     data_id: 'data_id_001',
-      //     cid: 'dsdmfwiefwkf232',
-      //     reply_hash: 'reply_hash3242234vdkjfnvkdjfv',
-      //     hash_data: 'dndajiefnejfner',
-      //   };
-      //   console.log(mockitem, 'mockitem');
-      //   tableData.value.push(mockitem);
-      tableData.value = res && res.result && res.result.data;
-    });
-  };
-  const initArbList = () => {
-    tableData.value = [];
-    get_arbitration({ order_id: order_id.value }).then((res) => {
-      console.log('get_merkle_record-------', res, res.result);
-      //   let mockitem = {
-      //     state: 'Success',
-      //     version: '1.0',
-      //     data_id: 'data_id_001',
-      //     cut_merkle: [],
-      //     data: 'dataxxxx',
-      //   };
-      //   tableData.value.push(mockitem);
-      tableData.value = res && res.result && res.result.data;
-    });
   };
 
-  const initParams = async () => {
-    await getOrderInfo();
-    switchType(category.value);
+  const copyLink = (text: string) => {
+    var input = document.createElement('input');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('Copy');
+    document.body.removeChild(input);
+    // let str = `Copying  ${type} successful!`;
+    // this.$message.success(str);
+    showToast.success('Copy succeeded');
   };
+
+  const handleFirst = () => {
+    isFirst.value = false;
+    window.localStorage.notFirst = true;
+  };
+  watch(
+    category,
+    async (val, old) => {
+      await getOrderInfo();
+      // doSearch('', prefix.value, true);
+    },
+    { deep: true, immediate: true },
+  );
   onMounted(() => {
     category.value = route.query.category;
-    console.log('onMounted', category.value);
-    initParams();
+    switchType(category.value);
   });
 </script>
 <style>
@@ -430,48 +508,55 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    padding: 20px 0 20px 20px;
+    padding: 20px;
     border-top: 1px solid #eee;
-    border-bottom: 1px solid #eee;
     &:active {
       background: #cde3f5;
     }
-
-    .record_item {
-      width: calc(100% - 140px);
+    .left_checkMode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 80px;
+      height: 80px;
+      background: #f1f1f1;
+      border-radius: 50%;
+      img {
+        width: 50px !important;
+        height: 50px !important;
+      }
+      &.is_checked {
+        width: 60px;
+        height: 60px;
+        margin: 10px;
+        background: #2e70ff;
+      }
+      .ok_icon {
+        color: #fff;
+      }
+    }
+    .type_icon {
+      width: 80px;
+      height: 80px;
+    }
+    .left_icon_box {
+      img {
+        width: 80px;
+        height: 80px;
+      }
+    }
+    .name_box {
+      width: calc(100% - 180px);
       margin-left: 30px;
-      .time {
+      p:first-child {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      p {
-        display: flex;
-        height: 50px;
-        line-height: 50px;
-        font-size: 26px;
-        align-items: center;
-        justify-content: space-between;
-        color: #000;
-      }
-      .time {
+      p:last-child {
         margin-top: 5px;
         color: #a7a7a7;
-        font-size: 22px;
-        justify-content: end;
-        color: #3963eb;
-        font-weight: bold;
-      }
-    }
-    .left_icon_box {
-      width: 80px;
-      height: 80px;
-      line-height: 80px;
-      text-align: center;
-      svg {
-        width: 100%;
-        height: 100%;
-        vertical-align: middle;
+        font-size: 20px;
       }
     }
     .right_more {

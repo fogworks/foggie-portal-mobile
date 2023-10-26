@@ -272,10 +272,9 @@
   import useShare from './useShare.js';
   import { showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize } from '@/utils/util';
-  import { check_name, order_name_set, get_merkle, calc_merkle, get_merkle_record } from '@/api/index';
+  import { check_name, order_name_set, get_merkle, calc_merkle } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
-
 
   const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
@@ -304,7 +303,6 @@
   const uuid = computed(() => userStore.getUserInfo.uuid);
 
   const dialogVisible = ref<boolean>(false);
-  
 
   // let details = reactive<any>({ data: {} });
 
@@ -657,7 +655,7 @@
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
     requestReq.setRequest(listObject);
-    console.log(requestReq, 'requestReq');
+    // console.log(requestReq, 'requestReq');
     server.listObjects(
       requestReq,
       {},
@@ -723,7 +721,7 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
-          console.log(transferData, 'transferData');
+          //   console.log(transferData, 'transferData');
 
           initRemoteData(transferData, reset, 0);
         } else if (err) {
@@ -873,14 +871,14 @@
     let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
     let request = new Prox.default.ProxGetCredRequest();
     request.setHeader(header);
-    console.log('request-----------------getkeys', request);
+    // console.log('request-----------------getkeys', request);
     server.listCreds(request, {}, (err: any, res: { array: any }) => {
       if (err) {
         console.log('err------:', err);
       } else if (res.array.length > 0) {
         accessKeyId.value = res.array[0][0][0];
         secretAccessKey.value = res.array[0][0][1];
-        console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
+        // console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
       }
     });
   };
@@ -901,10 +899,6 @@
     } else {
       dialogVisible.value = true;
     }
-
-    get_merkle_record({ orderId: order_id.value }).then((res) => {
-      console.log('get_merkle_record-------', res);
-    });
   });
   watch(
     () => route.query,
@@ -920,12 +914,12 @@
       showToast.hide();
       bucketName.value = orderInfo.value.domain;
       if (bucketName.value) {
-        console.log('bucketName------');
-       
+        // console.log('bucketName------');
+
         getKeys();
         getFileList();
       } else {
-        console.log('no bucketName------');
+        // console.log('no bucketName------');
         dialogVisible.value = true;
       }
     },

@@ -74,6 +74,10 @@ export const routes = [
         path: 'recordsList',
         name: 'RecordsList',
         component: () => import('@/views/list/details/recordsList.vue'),
+        meta: {
+          notBar: true,
+          notKeepAlive: true,
+        },
       },
       {
         path: 'withdraw',
