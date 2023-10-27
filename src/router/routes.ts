@@ -103,6 +103,11 @@ export const routes = [
         meta: {},
       },
       {
+        path: 'analysisChart',
+        component: () => import('@/views/analysisChart/index.vue'),
+        meta: {},
+      },
+      {
         path: 'analysisCate',
         component: () => import('@/views/analysisCate/index.vue'),
         meta: {},

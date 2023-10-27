@@ -1,26 +1,24 @@
 <template>
   <div class="analysis_content">
     <div class="top_box">
-      <div class="top_back" @click="router.go(-1)">Analysis </div>
+      <div class="top_back" @click="router.go(-1)">Assets Analysis </div>
       <nut-grid class="top_grid" :column-num="3">
         <nut-grid-item text="Balance"
           ><div>
             <IconCions class="top_icon"></IconCions>
-            <p>{{ cloudBalance }}</p>
+            <p class="banlance_text">{{ cloudBalance }}</p>
           </div>
         </nut-grid-item>
         <nut-grid-item class="top_icon" text="Earnings" @click="router.push('/analysisCate?type=1')"
           ><div>
             <IconIncome class="top_icon"></IconIncome>
-            <p>{{ cloudIncome }}</p>
-          </div></nut-grid-item
-        >
+            <p>{{ cloudIncome }}<Search2></Search2></p> </div
+        ></nut-grid-item>
         <nut-grid-item class="top_icon" text="Expense" @click="router.push('/analysisCate?type=3')"
           ><div>
             <IconOutCome class="top_icon"></IconOutCome>
-            <p>{{ cloudExpense }}</p>
-          </div></nut-grid-item
-        >
+            <p>{{ cloudExpense }}<Search2></Search2></p> </div
+        ></nut-grid-item>
         <!-- <nut-grid-item class="top_icon" text="Withdrawal" @click="router.push('/analysisCate?type=0')"
           ><div>
             <IconWithdraw class="top_icon"></IconWithdraw>
@@ -81,6 +79,7 @@
   import { reactive, toRefs, onMounted, watch } from 'vue';
   import { barOption } from '@/components/echarts/util';
   import { useRoute, useRouter } from 'vue-router';
+  import { Search2 } from '@nutui/icons-vue';
   import useOrderList from '../home/useOrderList.ts';
   import useUserAssets from '../home/useUserAssets.ts';
   import { transferUTCTime } from '@/utils/util';
@@ -213,6 +212,17 @@
           text-align: center;
           font-size: 24px;
           font-weight: bold;
+          text-decoration: underline;
+          svg {
+            width: 20px;
+            height: 20px;
+            color: #4c5093;
+            margin-left: 10px;
+            font-weight: bold;
+          }
+        }
+        .banlance_text {
+          text-decoration: none;
         }
       }
     }
@@ -260,6 +270,7 @@
     margin: 20px 10px;
     padding: 10px;
     border-radius: 10px;
+    width: 100%;
   }
   .list_box {
     box-sizing: border-box;
