@@ -5,8 +5,8 @@ import { showDialog, showToast } from '@nutui/nutui';
 import { useRouter } from 'vue-router';
 
 export default function useUpdateDMC() {
-  const curStepIndex = ref(1)  // 1 绑定大使邀请码
-  const ambRefuse = ref(false)   //大使是否拒绝  true 拒绝  false 同意
+  const curStepIndex = ref(1); // 1 绑定大使邀请码
+  const ambRefuse = ref(false); //大使是否拒绝  true 拒绝  false 同意
   const userStore = useUserStore();
   const router = useRouter();
   const dmc = computed(() => userStore.getUserInfo.dmc);
@@ -24,24 +24,25 @@ export default function useUpdateDMC() {
     check_user_bind(uuid.value).then((res2) => {
       if (res2.result.bind) {
         if (res2.result.approved && res2.result.refuse) {
-          curStepIndex.value = 2
-          ambRefuse.value = true
+          curStepIndex.value = 2;
+          ambRefuse.value = true;
           // refuse
           const onOk = () => {
-            router.push({ name: 'bindDmc', query: { type: 'amb' } });
+            router.push({ name: 'BindDmc', query: { type: 'amb' } });
           };
           showDialog({
             title: 'Notice',
-            content: `Your application to join the Ambassador platform has been rejected  ${res2.result.fault ? 'with the reason:' + res2.result.fault : ''
-              }. you can change the Ambassador invitation code and try to join another Ambassador platform!`,
+            content: `Your application to join the Ambassador platform has been rejected  ${
+              res2.result.fault ? 'with the reason:' + res2.result.fault : ''
+            }. you can change the Ambassador invitation code and try to join another Ambassador platform!`,
             cancelText: 'Cancel',
             okText: 'Confirm',
             popClass: 'dialog_class',
             onOk,
           });
         } else if (res2.result.approved && !res2.result.refuse) {
-          curStepIndex.value = 2
-          ambRefuse.value = false
+          curStepIndex.value = 2;
+          ambRefuse.value = false;
           // approved
           if (!window.localStorage.hasCloudApproved) {
             window.localStorage.hasCloudApproved = true;
@@ -72,7 +73,7 @@ export default function useUpdateDMC() {
           content: str,
           onOk: dmcOk,
         });
-        curStepIndex.value = 1
+        curStepIndex.value = 1;
       }
     });
   }

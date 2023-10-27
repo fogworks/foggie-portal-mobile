@@ -1,9 +1,11 @@
 <template>
   <div class="top_box">
     <div class="top_back" @click="router.go(-1)">
-      <div v-if="bucketName"
-        ><HeartFill color="yellow" style="margin-right: 10px"></HeartFill>{{ bucketName }} <HeartFill color="yellow"></HeartFill
-      ></div>
+      <div v-if="bucketName">
+        <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
+        {{ bucketName }}
+        <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
+      </div>
       <div v-else> Order:{{ order_id }} </div>
       <!-- <nut-button class="creat-name" type="primary" @click="creatName" v-if="!bucketName">Creat Name</nut-button>
       <nut-input placeholder="Please enter name" v-model="newBucketName" v-if="showCreatName" /> -->
@@ -1062,6 +1064,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .bucket_detail_smal {
+    width: 36px;
+    height: 36px;
+  }
   .bucket_name_tip {
     word-break: break-word;
     font-size: 30px;

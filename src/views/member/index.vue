@@ -13,7 +13,7 @@
       <div>{{ dmcAccount }}</div>
       <div>{{ email }}</div>
 
-      <div v-if="promo_code">Invitation: {{ promo_code }}</div>
+      <div v-if="promo_code">Amb Invitation Code: {{ promo_code }}</div>
     </div>
 
     <nut-row class="buttonContent">
@@ -222,7 +222,7 @@
       .then((res) => {
         if (res && res.data && res.data.email) {
           console.log(res);
-          promo_code.value = res.data.promo_code;
+          promo_code.value = res.data.amb_promo_code;
           email.value = res.data.email;
           // dmcAccount.value = `DMC Account ${res.data.dmc}`;
           dmcAccount.value = res.data.dmc;
