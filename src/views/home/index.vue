@@ -14,12 +14,12 @@
     {{ userInfo.dmc }}
   </div>
   <div inset class="income-card">
-    <img src="@/assets/balance_right.svg" @click="router.push('/analysis')" alt="" />
-    <div class="card_row_1 card_header card_row_top" @click="router.push('/analysis')"
+    <img src="@/assets/balance_right.svg" @click="gotoPage('analysis')" alt="" />
+    <div class="card_row_1 card_header card_row_top" @click="gotoPage('analysis')"
       ><span>Balance</span>
       <span>Income</span>
     </div>
-    <div class="card_row_1 card_header" @click="router.push('/analysis')">
+    <div class="card_row_1 card_header" @click="gotoPage('analysis')">
       <div class="total_income">
         <div> {{ cloudBalance }} </div>
       </div>
@@ -36,7 +36,7 @@
         <p>Withdrawn</p>
         <p class="column_value">{{ cloudWithdraw }}</p>
       </div>
-      <div @click="router.push('/analysis')">
+      <div @click="gotoPage('analysis')">
         <p>New revenue today</p>
         <p class="column_value today_income"
           >+ {{ cloudTodayIncome }} DMC
@@ -62,8 +62,8 @@
           <!-- <Shop></Shop> -->
           <img src="@/assets/buy.svg" alt="" />
         </div>
-        <span>Buy</span></div
-      >
+        <span>Buy</span>
+      </div>
     </div>
     <div>
       <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
@@ -71,8 +71,8 @@
         <div class="svg-box">
           <img src="@/assets/earn.svg" alt="" />
         </div>
-        <span>Analysis</span></div
-      >
+        <span>Analysis</span>
+      </div>
     </div>
     <div>
       <!-- <div class="flex-content" @click="router.push('/analysis')"> -->
@@ -80,8 +80,8 @@
         <div class="svg-box">
           <img src="@/assets/analysis.svg" alt="" />
         </div>
-        <span>Charts</span></div
-      >
+        <span>Charts</span>
+      </div>
     </div>
     <div>
       <div class="flex-content" @click="gotoPage('transactionRecords')">
@@ -162,7 +162,10 @@
 
   <div class="my_steps" ref="my_steps" id="my_steps" v-if="!listData.length">
     <nut-steps direction="vertical" :current="curStepIndex">
-      <nut-step title="Bind invitation code" content="Please confirm that you have filled out the invitation code before placing your order"
+      <nut-step
+        title="Bind invitation code"
+        @click="gotoBindAmb"
+        content="Please confirm that you have filled out the invitation code before placing your order"
         >1</nut-step
       >
       <nut-step
@@ -170,11 +173,11 @@
         :content="ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'"
         >2</nut-step
       >
-      <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step>
+      <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
       <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
-        >4</nut-step
+        >3</nut-step
       >
-      <nut-step title="File storage" content="After successful purchase, you can enjoy file storage and order revenue">5</nut-step>
+      <nut-step title="File storage" content="After successful purchase, you can enjoy file storage and order revenue">4</nut-step>
     </nut-steps>
   </div>
 </template>
@@ -229,7 +232,7 @@
     router.push({ name: 'Withdraw' });
   };
   const gotoPage = (type) => {
-    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+    if (!userInfo.value.amb_promo_code) {
       const dmcOk = () => {
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
       };
@@ -244,21 +247,21 @@
     } else if (!cloudCodeIsBind.value) {
       bindAmbCode();
     } else {
-    }
-    if (type === 'analysisCate') {
-      router.push('/analysisCate?type=1');
-    } else if (type === 'analysis') {
-      router.push('/analysis');
-    } else if (type === 'transactionRecords') {
-      router.push('/transactionRecords');
-    } else if (type === 'shop') {
-      router.push({ name: 'Shop' });
-    } else if (type === 'analysisChart') {
-      router.push('/analysisChart');
+      if (type === 'analysisCate') {
+        router.push('/analysisCate?type=1');
+      } else if (type === 'analysis') {
+        router.push('/analysis');
+      } else if (type === 'transactionRecords') {
+        router.push('/transactionRecords');
+      } else if (type === 'shop') {
+        router.push({ name: 'Shop' });
+      } else if (type === 'analysisChart') {
+        router.push('/analysisChart');
+      }
     }
   };
   const toBuyOrder = () => {
-    if (curStepIndex.value != 4) return;
+    // if (curStepIndex.value != 4) return;
     gotoPage('shop');
   };
   const toRecharge = () => {
@@ -304,6 +307,13 @@
       },
     });
   }
+  function gotoBindAmb() {
+    if (curStepIndex.value !== 1) {
+      showToast.text('You have already bound an invitation code');
+      return;
+    }
+    router.push({ name: 'BindDmc', query: { type: 'amb' } });
+  }
 
   onBeforeMount(() => {
     loadMore();
@@ -311,13 +321,15 @@
 
   watch(cloudCodeIsBind, (newVal) => {
     if (newVal) {
-      if (userInfo.value.dmc) {
-        curStepIndex.value = 4;
-        ambRefuse.value = false;
-      } else {
-        curStepIndex.value = 3;
-        ambRefuse.value = false;
-      }
+      curStepIndex.value = 3;
+      ambRefuse.value = false;
+      // if (userInfo.value.dmc) {
+      //   curStepIndex.value = 4;
+      //   ambRefuse.value = false;
+      // } else {
+      //   curStepIndex.value = 3;
+      //   ambRefuse.value = false;
+      // }
     } else {
       bindAmbCode();
     }
@@ -332,12 +344,12 @@
     },
     { deep: true },
   );
-  onActivated(() => {
-    if (userInfo.value.dmc) {
-      curStepIndex.value = 4;
-      ambRefuse.value = false;
-    }
-  });
+  // onActivated(() => {
+  //   if (userInfo.value.dmc) {
+  //     curStepIndex.value = 4;
+  //     ambRefuse.value = false;
+  //   }
+  // });
 
   const targetIsVisible = ref(false);
   const my_steps = ref(null);
@@ -368,6 +380,7 @@
       padding-bottom: 30px !important;
     }
   }
+
   .DouArrowDown {
     // transform: rotate(180deg);
     display: flex;
@@ -375,20 +388,25 @@
     align-items: center;
     width: 100%;
   }
+
   .my_swipe {
     margin-top: 30px;
+
     .nut-swiper {
       height: 300px;
     }
+
     .nut-swiper-item {
       line-height: 150px;
       height: 300px;
+
       img {
         width: 100%;
         height: 100%;
       }
     }
   }
+
   .my_steps {
     margin: 40px auto;
     width: calc(100% - 80px);
@@ -402,15 +420,18 @@
     margin: 0 -4vw;
     display: inline-block;
     width: 120%;
+
     :deep {
       .nut-noticebar__page {
         padding: 0;
       }
+
       .nut-noticebar__page-lefticon {
         margin: 0 8px;
       }
     }
   }
+
   .dmc_account {
     // background: #5758a0;
     margin: 0 -4vw;
@@ -424,6 +445,7 @@
     // color: #fff;
     font-weight: bold;
     padding: 10px 0 0 10px;
+
     // box-shadow: $main-shadow;
     .img-box {
       display: flex;
@@ -438,16 +460,19 @@
       box-sizing: border-box;
       border-radius: 10px;
       border-radius: 50%;
+
       img {
         width: 45px;
         margin: 0 auto;
         vertical-align: middle;
       }
     }
+
     h2 {
       font-size: 35px;
     }
   }
+
   .middle_btn_box {
     // display: flex;
     // justify-content: flex-start;
@@ -468,22 +493,26 @@
       font-weight: 600;
       width: 150px;
       width: 25%;
+
       &:nth-child(2) {
         .svg-box {
           background: #34964f;
         }
       }
+
       &:nth-child(3) {
         .svg-box {
           background: #fcd116;
         }
       }
+
       &:nth-child(4) {
         .svg-box {
           background: #5f57ff;
         }
       }
     }
+
     .flex-content {
       display: flex;
       flex-direction: column;
@@ -492,9 +521,11 @@
       // height: 120px;
       text-align: center;
       word-break: break-word;
+
       span {
         font-size: 0.8rem;
       }
+
       .svg-box {
         display: flex;
         justify-content: center;
@@ -506,6 +537,7 @@
         background: #ff8b00;
         // box-shadow: 0px 1px 2px 2px #ccc;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
         svg,
         img {
           width: 55px;
@@ -515,6 +547,7 @@
       }
     }
   }
+
   .income-card {
     position: relative;
     padding: 40px;
@@ -535,22 +568,27 @@
       right: 40px;
       width: 100px;
     }
+
     > div {
       min-height: 60px;
       line-height: 60px;
       text-align: center;
     }
+
     .card_row_1 {
       display: flex;
       justify-content: space-between;
+
       &.card_header {
         display: grid;
         grid-template-columns: 1fr 1fr;
         justify-content: space-between;
         margin-right: 100px;
+
         span {
           text-align: left;
         }
+
         .total_income {
           > div {
             font-size: 30px;
@@ -559,29 +597,36 @@
         }
       }
     }
+
     .card_row_top {
       font-weight: bold;
       font-size: 32px;
     }
+
     .pst-row {
       margin-top: 40px;
       font-size: 28px;
       text-align: left;
       font-weight: bold;
+
       .column_value {
         font-size: 28px;
       }
+
       .today_income {
         color: #ff8b00;
         color: #fbd116;
+
         svg {
           vertical-align: sub;
         }
       }
     }
+
     .total_income {
       font-size: 55px;
       font-weight: 700;
+
       .about_income {
         font-size: 35px;
       }
@@ -603,29 +648,35 @@
             height: 60px;
             background-color: #ffffff5c;
           }
+
           &::after {
             left: unset;
             right: 0;
           }
         }
       }
+
       .van-grid-item__content {
         background: transparent;
+
         div:first-child {
           font-size: 40px;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
+
         div:nth-child(2) {
           font-size: 30px;
         }
       }
+
       .van-button {
         height: 60px;
       }
     }
   }
+
   .withdraw-btn {
     display: flex;
     justify-content: space-around;
@@ -637,6 +688,7 @@
     border: 1px dashed #ffffff;
     background: #fff;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+
     .action_item {
       display: flex;
       flex-direction: column;
@@ -644,6 +696,7 @@
       align-items: center;
       color: #333333;
       font-size: 24px;
+
       img {
         display: block;
         width: 100px;
@@ -651,6 +704,7 @@
       }
     }
   }
+
   .tab_top_title {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -658,16 +712,19 @@
     font-size: 35px;
     font-weight: 600;
   }
+
   .time_tabs {
     :deep {
       .nut-tabs__titles {
         // background: transparent;
       }
+
       .nut-tabs__content {
         display: none;
       }
     }
   }
+
   .list_item {
     position: relative;
     display: flex;
@@ -684,6 +741,7 @@
     margin: 10px 0;
     border-radius: 20px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
+
     .item_img_box {
       position: absolute;
       left: 16px;
@@ -693,6 +751,7 @@
       box-sizing: border-box;
       border-radius: 50px;
       background: #ff8b00;
+
       img {
         width: 36px;
         margin: 0 auto;
@@ -704,22 +763,27 @@
         -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
         -webkit-filter: saturate(1.45) hue-rotate(2deg);
       }
+
       @keyframes spin {
         from {
           -webkit-transform: rotateY(0deg);
         }
+
         to {
           -webkit-transform: rotateY(360deg);
         }
       }
+
       .cions {
         margin-right: 15px;
       }
     }
+
     .item_2 {
       background: #5f57ff;
       background: #ffc933;
     }
+
     .item_3 {
       background: #1ba27a;
     }
@@ -730,6 +794,7 @@
       align-items: center;
       margin: 5px 0;
     }
+
     .earnings {
       display: inline-block;
       color: #121212;
@@ -737,11 +802,13 @@
 
       font-size: 36px;
     }
+
     .time {
       color: #aaa;
       font-size: 24px;
       color: #635858;
     }
+
     &:last-child {
       border-bottom: none;
     }

@@ -23,13 +23,8 @@
         style="white-space: nowrap; color: #000"
         label="Ambassador Invitation Code:"
       >
-        <nut-input
-          v-model="formLine.code"
-          :disabled="loading || !!userInfo.amb_promo_code"
-          autofocus
-          class="nut-input-text"
-          placeholder="Please Input"
-        />
+        <!-- :disabled="loading || !!userInfo.amb_promo_code" -->
+        <nut-input v-model="formLine.code" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
       </nut-form-item>
       <div class="bind_btn">
         <nut-button block type="info" @click="submit" :loading="loading"> Bind </nut-button>
@@ -149,6 +144,10 @@
                 });
               }
             });
+          } else {
+            loading.value = false;
+            showToast.fail('Binding failed, please try again');
+            return false;
           }
         });
       };
