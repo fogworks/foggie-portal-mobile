@@ -14,12 +14,12 @@
     {{ userInfo.dmc }}
   </div>
   <div inset class="income-card">
-    <img src="@/assets/balance_right.svg" @click="router.push('/analysis')" alt="" />
-    <div class="card_row_1 card_header card_row_top" @click="router.push('/analysis')"
+    <img src="@/assets/balance_right.svg" @click="gotoPage('analysis')" alt="" />
+    <div class="card_row_1 card_header card_row_top" @click="gotoPage('analysis')"
       ><span>Balance</span>
       <span>Income</span>
     </div>
-    <div class="card_row_1 card_header" @click="router.push('/analysis')">
+    <div class="card_row_1 card_header" @click="gotoPage('analysis')">
       <div class="total_income">
         <div> {{ cloudBalance }} </div>
       </div>
@@ -36,7 +36,7 @@
         <p>Withdrawn</p>
         <p class="column_value">{{ cloudWithdraw }}</p>
       </div>
-      <div @click="router.push('/analysis')">
+      <div @click="gotoPage('analysis')">
         <p>New revenue today</p>
         <p class="column_value today_income"
           >+ {{ cloudTodayIncome }} DMC
@@ -162,7 +162,10 @@
 
   <div class="my_steps" ref="my_steps" id="my_steps" v-if="!listData.length">
     <nut-steps direction="vertical" :current="curStepIndex">
-      <nut-step title="Bind invitation code" content="Please confirm that you have filled out the invitation code before placing your order"
+      <nut-step
+        title="Bind invitation code"
+        @click="gotoBindAmb"
+        content="Please confirm that you have filled out the invitation code before placing your order"
         >1</nut-step
       >
       <nut-step
@@ -229,7 +232,7 @@
     router.push({ name: 'Withdraw' });
   };
   const gotoPage = (type) => {
-    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+    if (!userInfo.value.amb_promo_code) {
       const dmcOk = () => {
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
       };
@@ -244,21 +247,21 @@
     } else if (!cloudCodeIsBind.value) {
       bindAmbCode();
     } else {
-    }
-    if (type === 'analysisCate') {
-      router.push('/analysisCate?type=1');
-    } else if (type === 'analysis') {
-      router.push('/analysis');
-    } else if (type === 'transactionRecords') {
-      router.push('/transactionRecords');
-    } else if (type === 'shop') {
-      router.push({ name: 'Shop' });
-    } else if (type === 'analysisChart') {
-      router.push('/analysisChart');
+      if (type === 'analysisCate') {
+        router.push('/analysisCate?type=1');
+      } else if (type === 'analysis') {
+        router.push('/analysis');
+      } else if (type === 'transactionRecords') {
+        router.push('/transactionRecords');
+      } else if (type === 'shop') {
+        router.push({ name: 'Shop' });
+      } else if (type === 'analysisChart') {
+        router.push('/analysisChart');
+      }
     }
   };
   const toBuyOrder = () => {
-    if (curStepIndex.value != 4) return;
+    // if (curStepIndex.value != 4) return;
     gotoPage('shop');
   };
   const toRecharge = () => {
@@ -303,6 +306,13 @@
         type: 'dmc',
       },
     });
+  }
+  function gotoBindAmb() {
+    if (curStepIndex.value !== 1) {
+      showToast.text('You have already bound an invitation code');
+      return;
+    }
+    router.push({ name: 'BindDmc', query: { type: 'amb' } });
   }
 
   onBeforeMount(() => {
