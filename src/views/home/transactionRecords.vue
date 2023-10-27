@@ -66,7 +66,7 @@
             <span :class="[searchType == 0 ? 'earnings' : 'expense']"> {{ searchType == 0 ? '+' : '-' }}{{ item.quantity }} </span>
           </div>
           <div
-            ><span>{{ item.state }} </span> <span class="time">{{ transferUTCTime(item.created_at) }}</span>
+            ><span>{{ searchType == 0 ? '' : item.state }} </span> <span class="time">{{ transferUTCTime(item.created_at) }}</span>
           </div>
         </div>
       </nut-infinite-loading>
@@ -111,12 +111,11 @@
     const dateList = listData.value.map((el) => transferUTCTime(el.created_at));
     const valueList = listData.value.map((el) => el.quantity);
     chartOptions.value = barOption(dateList, valueList, searchType.value == '0' ? 'Recharge' : 'Withdraw');
-    (chartOptions.value.series[0].tooltip = {
+    chartOptions.value.series[0].tooltip = {
       valueFormatter: function (value) {
         return value + ' DMC';
       },
-    }),
-      console.log(chartOptions.value, ' chartOptions.value');
+    };
   };
   watch(
     listData,

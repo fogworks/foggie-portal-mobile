@@ -32,7 +32,7 @@
   <div class="out_price_box">
     <p>VIP Order <IconSetting @click="showTop = true"></IconSetting></p>
     <div class="price_box">
-      Current market price: <br />
+      Reference price: <br />
       <span style="text-align: center" class="price_box_text"> 100GB = {{ middleTotalPrice }} DMC</span>
     </div>
   </div>
@@ -60,7 +60,7 @@
           <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
         </nut-form-item>
         <div style="text-align: center" class="order-tip">
-          <strong> Current market price: </strong>
+          <strong> Reference price: </strong>
           <strong class="price"> {{ middleTotalPrice || '--' }} DMC </strong>
         </div>
         <!-- <p class="middle_title" v-if="!loading && !curReferenceRate">No eligible orders were found. Please search and try again</p> -->

@@ -282,6 +282,7 @@
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
+  import { getSecondTime } from '@/utils/util';
 
   const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
@@ -367,6 +368,17 @@
   };
   const beforeupload = async (file: any) => {
     console.log('upload-----------', bucketName.value);
+    let nowTime = new Date().getTime();
+    let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
+    let time = ((+endTime - +nowTime) / 1000).toFixed(0);
+    if (time > 4 * 60) {
+      time = time - 60 * 60;
+    }
+    if (time > 0) {
+      let content = 'Upload files after ' + getSecondTime(+time);
+      showToast.fail(content);
+      return false;
+    }
 
     const d = {
       orderId: order_id.value,
