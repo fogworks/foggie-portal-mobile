@@ -67,20 +67,20 @@
     </div>
     <div>
       <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
-      <div class="flex-content" @click="gotoPage('analysisCate')">
+      <div class="flex-content" @click="gotoPage('analysis')">
         <div class="svg-box">
           <img src="@/assets/earn.svg" alt="" />
         </div>
-        <span>Earn</span></div
+        <span>Analysis</span></div
       >
     </div>
     <div>
       <!-- <div class="flex-content" @click="router.push('/analysis')"> -->
-      <div class="flex-content" @click="gotoPage('analysis')">
+      <div class="flex-content" @click="gotoPage('analysisChart')">
         <div class="svg-box">
           <img src="@/assets/analysis.svg" alt="" />
         </div>
-        <span>Analysis</span></div
+        <span>Charts</span></div
       >
     </div>
     <div>
@@ -90,11 +90,9 @@
           <!-- <img src="@/assets/IconTransaction.svg" alt="" /> -->
           <IconTransaction></IconTransaction>
         </div>
-        <span
-          >Transaction <br />
-          records</span
-        ></div
-      >
+        <span>Transaction <br /> </span>
+        <!-- records -->
+      </div>
     </div>
   </div>
   <div class="tab_top_title" v-if="listData.length">Recent Earnings</div>
@@ -255,6 +253,8 @@
       router.push('/transactionRecords');
     } else if (type === 'shop') {
       router.push({ name: 'Shop' });
+    } else if (type === 'analysisChart') {
+      router.push('/analysisChart');
     }
   };
   const toBuyOrder = () => {
@@ -681,6 +681,9 @@
     background: #fff;
     border-radius: 5px;
     border-bottom: 1px solid #eee;
+    margin: 10px 0;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
     .item_img_box {
       position: absolute;
       left: 16px;
