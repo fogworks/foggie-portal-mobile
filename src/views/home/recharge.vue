@@ -81,6 +81,9 @@
     confirmRecharge();
     // getCommissionRate();
   });
+  onActivated(() => {
+    confirmRecharge();
+  });
 </script>
 
 <style lang="scss" scoped>

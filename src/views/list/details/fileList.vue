@@ -1,67 +1,70 @@
 <template>
   <div class="fileList_content">
-    <nut-popup position="top" round pop-class="type_check_pop" v-if="showTypeCheckPop" v-model:visible="showTypeCheckPop">
-      <!-- <p class="cate_title">Classifications</p> -->
-      <div :class="['list_header']">
-        <div style="display: flex">
-          <template v-if="!prefix.length">
-            <div class="top_back" @click="router.go(-1)"> </div>
-            <span class="top_title">
-              {{ fileTypeText[category] }}
-            </span>
-            <TriangleUp
-              @click="showTypeCheckPop = !showTypeCheckPop"
-              :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
-            ></TriangleUp>
-          </template>
-          <template v-else>
-            <div
-              class="top_back"
-              @click="
-                prefix.splice(-1);
-                prefixChange();
-              "
-            >
+    <Teleport to="body">
+      <nut-popup position="top" round pop-class="type_check_pop" v-if="showTypeCheckPop" v-model:visible="showTypeCheckPop">
+        <!-- <p class="cate_title">Classifications</p> -->
+        <div :class="['list_header']">
+          <div style="display: flex">
+            <template v-if="!prefix.length">
+              <div class="top_back" @click="router.go(-1)"> </div>
+              <span class="top_title">
+                {{ fileTypeText[category] }}
+              </span>
+              <TriangleUp
+                @click="showTypeCheckPop = !showTypeCheckPop"
+                :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
+              ></TriangleUp>
+            </template>
+            <template v-else>
+              <div
+                class="top_back"
+                @click="
+                  prefix.splice(-1);
+                  prefixChange();
+                "
+              >
+              </div>
+              <span class="top_title">
+                {{ prefix.at(-1) || '' }}
+              </span>
+            </template>
+          </div>
+        </div>
+        <div class="type_check_box">
+          <div class="type_item" @click="switchType(0)">
+            <div class="svg_box">
+              <IconAllCate></IconAllCate>
             </div>
-            <span class="top_title">
-              {{ prefix.at(-1) || '' }}
-            </span>
-          </template>
-        </div>
-      </div>
-      <div class="type_check_box">
-        <div class="type_item" @click="switchType(0)">
-          <div class="svg_box">
-            <IconAllCate></IconAllCate>
+            <p>All</p>
           </div>
-          <p>All</p>
-        </div>
-        <div class="type_item" @click="switchType(3)">
-          <div class="svg_box">
-            <IconAudio2></IconAudio2>
+          <div class="type_item" @click="switchType(3)">
+            <div class="svg_box">
+              <IconAudio2></IconAudio2>
+            </div>
+            <p>Audio</p>
           </div>
-          <p>Audio</p>
-        </div>
-        <div class="type_item" @click="switchType(1)">
-          <div class="svg_box">
-            <IconImage></IconImage>
+          <div class="type_item" @click="switchType(1)">
+            <div class="svg_box">
+              <IconImage></IconImage>
+            </div>
+            <p>Images</p>
           </div>
-          <p>Images</p>
-        </div>
-        <div class="type_item" @click="switchType(4)">
-          <div class="svg_box">
-            <IconDocument></IconDocument>
+          <div class="type_item" @click="switchType(4)">
+            <div class="svg_box">
+              <IconDocument></IconDocument>
+            </div>
+            <p>Documents</p>
           </div>
-          <p>Documents</p>
-        </div>
-        <div class="type_item" @click="switchType(2)">
-          <div class="svg_box">
-            <IconVideo></IconVideo>
+          <div class="type_item" @click="switchType(2)">
+            <div class="svg_box">
+              <IconVideo></IconVideo>
+            </div>
+            <p>Video</p>
           </div>
-          <p>Video</p>
         </div>
-      </div>
-    </nut-popup>
+      </nut-popup>
+    </Teleport>
+
     <nut-sticky class="file_Top" top="0">
       <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
         <div style="display: flex">

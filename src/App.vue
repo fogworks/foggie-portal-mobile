@@ -124,6 +124,9 @@
   }
   .nut-toast-inner {
     box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.6);
+    .nut-toast-text {
+      word-break: break-word;
+    }
   }
   .nut-icon-success {
     color: #0bde00 !important;

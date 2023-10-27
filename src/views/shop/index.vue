@@ -40,35 +40,38 @@
     <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading"> Buy </nut-button>
     <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
   </div>
-  <nut-popup position="top" :style="{ height: '80%' }" v-model:visible="showTop">
-    <nut-form class="query_form" :model-value="shopForm">
-      <nut-form-item label="Service Period">
-        <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
-          <nut-radio shape="button" :label="52">52 weeks</nut-radio>
-          <nut-radio shape="button" :label="38">38 weeks</nut-radio>
-          <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-        </nut-radio-group>
-      </nut-form-item>
-      <nut-form-item label="Custom Cycle">
-        <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
-      </nut-form-item>
-      <nut-form-item label="Floating Ratio">
-        <nut-range hidden-range v-model="shopForm.floating_ratio" :max="100" :min="0" />
-      </nut-form-item>
-      <nut-form-item label="Space(GB)">
-        <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
-      </nut-form-item>
-      <div style="text-align: center" class="order-tip">
-        <strong> Current market price: </strong>
-        <strong class="price"> {{ middleTotalPrice || '--' }} DMC </strong>
-      </div>
-      <!-- <p class="middle_title" v-if="!loading && !curReferenceRate">No eligible orders were found. Please search and try again</p> -->
-      <div class="bottom_btn">
-        <nut-button type="warning" plain @click="showTop = false"> Cancel </nut-button>
-        <nut-button type="warning" @click="submit" :loading="loading"> Buy </nut-button>
-      </div>
-    </nut-form>
-  </nut-popup>
+  <Teleport to="body">
+    <nut-popup position="top" :style="{ height: '520px' }" v-model:visible="showTop">
+      <nut-form class="query_form" :model-value="shopForm">
+        <nut-form-item label="Service Period">
+          <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
+            <nut-radio shape="button" :label="52">52 weeks</nut-radio>
+            <nut-radio shape="button" :label="38">38 weeks</nut-radio>
+            <nut-radio shape="button" :label="24">24 weeks</nut-radio>
+          </nut-radio-group>
+        </nut-form-item>
+        <nut-form-item label="Custom Cycle">
+          <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
+        </nut-form-item>
+        <nut-form-item label="Floating Ratio">
+          <nut-range hidden-range v-model="shopForm.floating_ratio" :max="100" :min="0" />
+        </nut-form-item>
+        <nut-form-item label="Space(GB)">
+          <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
+        </nut-form-item>
+        <div style="text-align: center" class="order-tip">
+          <strong> Current market price: </strong>
+          <strong class="price"> {{ middleTotalPrice || '--' }} DMC </strong>
+        </div>
+        <!-- <p class="middle_title" v-if="!loading && !curReferenceRate">No eligible orders were found. Please search and try again</p> -->
+        <div class="bottom_btn">
+          <nut-button type="warning" plain @click="showTop = false"> Cancel </nut-button>
+          <nut-button type="warning" @click="submit" :loading="loading"> Buy </nut-button>
+        </div>
+      </nut-form>
+    </nut-popup>
+  </Teleport>
+
   <Teleport to="body">
     <nut-popup position="bottom" pop-class="confirm_pop" :style="{ height: '350px' }" v-model:visible="showBuy">
       <nut-cell-group>
@@ -206,6 +209,9 @@
       pst: state.shopForm.quantity.toFixed(0),
     };
     const nodeRes = await buy_order(params);
+    if (!nodeRes) {
+      loading.value = false;
+    }
     // let nodeIp = "http://" + nodeRes.result.node_address;
 
     // let nodeIp = 'http://154.31.41.124:18080';
@@ -255,6 +261,7 @@
       .then(() => {
         loading.value = false;
         showTop.value = false;
+        showBuy.value = false;
         const dmcOk = () => {
           router.push('/home');
         };
@@ -285,6 +292,10 @@
   onMounted(() => {
     getAveragePrice();
     // loadCurReferenceRate();
+    getUserAssets();
+  });
+  onActivated(() => {
+    getAveragePrice();
     getUserAssets();
   });
 </script>
