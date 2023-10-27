@@ -59,31 +59,33 @@
         <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
       </nut-form-item>
       <div style="text-align: center" class="order-tip">
-        <strong> Total </strong>
+        <strong> Current market price: </strong>
         <strong class="price"> {{ middleTotalPrice || '--' }} DMC </strong>
       </div>
-      <p class="middle_title" v-if="!loading && !curReferenceRate">No eligible orders were found. Please search and try again</p>
+      <!-- <p class="middle_title" v-if="!loading && !curReferenceRate">No eligible orders were found. Please search and try again</p> -->
       <div class="bottom_btn">
         <nut-button type="warning" plain @click="showTop = false"> Cancel </nut-button>
         <nut-button type="warning" @click="submit" :loading="loading"> Buy </nut-button>
       </div>
     </nut-form>
   </nut-popup>
-  <nut-popup position="bottom" pop-class="confirm_pop" :style="{ height: '350px' }" v-model:visible="showBuy">
-    <nut-cell-group>
-      <nut-cell title="Space" :desc="shopForm.quantity + ' GB'"></nut-cell>
-      <nut-cell title="Weeks" :desc="shopForm.week"></nut-cell>
-      <nut-cell title="Deposit Ratio" :desc="deposit_ratio"></nut-cell>
-      <nut-cell title="Floating Ratio" :desc="shopForm.floating_ratio + '%'"></nut-cell>
-      <nut-cell title="Unit Price" :desc="curReferenceRate + ' DMC/GB/Week'"></nut-cell>
-      <nut-cell class="total_price" title="Total Price" :desc="totalPrice + ' DMC'"></nut-cell>
-    </nut-cell-group>
+  <Teleport to="body">
+    <nut-popup position="bottom" pop-class="confirm_pop" :style="{ height: '350px' }" v-model:visible="showBuy">
+      <nut-cell-group>
+        <nut-cell title="Space" :desc="shopForm.quantity + ' GB'"></nut-cell>
+        <nut-cell title="Weeks" :desc="shopForm.week"></nut-cell>
+        <nut-cell title="Deposit Ratio" :desc="deposit_ratio"></nut-cell>
+        <nut-cell title="Floating Ratio" :desc="shopForm.floating_ratio + '%'"></nut-cell>
+        <nut-cell title="Unit Price" :desc="(curReferenceRate / 10000).toFixed(4) + ' DMC/GB/Week'"></nut-cell>
+        <nut-cell class="total_price" title="Total Price" :desc="totalPrice + ' DMC'"></nut-cell>
+      </nut-cell-group>
 
-    <div class="bottom_btn">
-      <nut-button type="warning" :loading="loading" plain @click="showBuy = false"> Cancel </nut-button>
-      <nut-button type="warning" @click="confirmBuy" :loading="loading"> Buy </nut-button>
-    </div>
-  </nut-popup>
+      <div class="bottom_btn">
+        <nut-button type="warning" :loading="loading" plain @click="showBuy = false"> Cancel </nut-button>
+        <nut-button type="warning" @click="confirmBuy" :loading="loading"> Buy </nut-button>
+      </div>
+    </nut-popup>
+  </Teleport>
 </template>
 
 <script setup lang="ts" name="Shop">
@@ -92,7 +94,7 @@
   import { toRefs, reactive, onMounted } from 'vue';
   import { getCurReferenceRate } from '@/api';
   import { buy_order, node_order_buy, node_order_search, get_average_price } from '@/api/amb';
-  import { showToast } from '@nutui/nutui';
+  import { showToast, showDialog } from '@nutui/nutui';
   import { useRouter } from 'vue-router';
   import useDmcTrade from './useDmcTrade.js';
   import useUserAssets from '../home/useUserAssets.ts';
@@ -106,7 +108,7 @@
   const state = reactive({
     shopForm: {
       quantity: 100 as number,
-      week: 25,
+      week: 24,
       floating_ratio: 30,
     },
     loading: false,
@@ -236,6 +238,8 @@
       loading.value = false;
       return false;
     }
+    loading.value = true;
+
     node_order_buy(nodeInfo.value.nodeIp, {
       minPrice: curReferenceRate.value / 10000,
       maxPrice: ((curReferenceRate.value / 10000) * (1 + state.shopForm.floating_ratio / 100)).toFixed(4),
@@ -250,8 +254,19 @@
     })
       .then(() => {
         loading.value = false;
-        showToast.success('Order request has been initiated, please check the order result in the order record later.');
-        router.push('/home');
+        showTop.value = false;
+        const dmcOk = () => {
+          router.push('/home');
+        };
+        let src = require('@/assets/DMC_token.png');
+        let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Order request has been initiated, please check the order result in the order record later.</p >`;
+        showDialog({
+          title: 'Purchase Successfully',
+          content: str,
+          onOk: dmcOk,
+        });
+        // showToast.success('Order request has been initiated, please check the order result in the order record later.');
+        // router.push('/home');
       })
       .catch(() => {
         loading.value = false;
@@ -312,7 +327,7 @@
   }
   .out_blue {
     position: relative;
-    height: 490px;
+    height: 290px;
     background: #43a3fd;
     border-radius: 0 0 50px 50px;
 
@@ -321,7 +336,7 @@
       position: absolute;
       top: 0;
       width: 100%;
-      height: 485px;
+      height: 285px;
       background: #5264f9;
       border-radius: 0 0 50px 50px;
       overflow: hidden;
@@ -342,7 +357,7 @@
       .total_balance {
         color: #b9d4ff;
         font-size: 1.5rem;
-        margin: 230px auto 20px;
+        margin: 20px auto 20px;
         text-align: center;
       }
       .total_balance_value {
@@ -356,8 +371,8 @@
         content: '';
         position: absolute;
         top: -10px;
-        right: -100px;
-        transform: rotate(45deg);
+        right: -240px;
+        transform: rotate(55deg);
         display: block;
         width: 350px;
         height: 350px;
@@ -365,7 +380,7 @@
         border: 5px solid #c72ff8;
       }
       &::after {
-        transform: rotate(70deg);
+        transform: rotate(39deg);
         border: 5px solid #3eb9ff;
       }
     }
@@ -523,7 +538,7 @@
 
     .order-tip {
       padding: 30px 10px;
-      font-size: 35px;
+      font-size: 28px;
 
       strong {
         color: $primary-color;

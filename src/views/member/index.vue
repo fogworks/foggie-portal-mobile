@@ -73,33 +73,34 @@
         <ArrowRight2 color="#5771F9" />
       </div>
     </div>
-
-    <nut-action-sheet v-model:visible="visible" title="Links">
-      <div class="custom-action_sheet">
-        <div @click="choose('dmc')">
-          <img src="@/assets/DMC_token.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
-          <div>DMC</div>
-        </div>
-        <div @click="choose('ipfs')">
-          <img src="@/assets/ipfs.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
-          <!-- <img src="@/assets/DMC_token.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" /> -->
-          <div>IPFS</div>
-        </div>
-        <div @click="choose('foggie')">
-          <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
-          <div>Fogworks</div>
-        </div>
-        <div @click="choose('pool')">
-          <img src="@/assets/user.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
-          <div>Premium Agent</div>
-        </div>
-        <!-- <div @click="choose('client')">
+    <Teleport to="body">
+      <nut-action-sheet v-model:visible="visible" title="Links">
+        <div class="custom-action_sheet">
+          <div @click="choose('dmc')">
+            <img src="@/assets/DMC_token.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
+            <div>DMC</div>
+          </div>
+          <div @click="choose('ipfs')">
+            <img src="@/assets/ipfs.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
+            <!-- <img src="@/assets/DMC_token.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" /> -->
+            <div>IPFS</div>
+          </div>
+          <div @click="choose('foggie')">
+            <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
+            <div>Fogworks</div>
+          </div>
+          <div @click="choose('pool')">
+            <img src="@/assets/user.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
+            <div>Premium Agent</div>
+          </div>
+          <!-- <div @click="choose('client')">
           <Shop></Shop>
           <div>Cloud Mining Pool Client</div>
         </div> -->
-        <div @click="visible = false"> Cancel </div>
-      </div>
-    </nut-action-sheet>
+          <div @click="visible = false"> Cancel </div>
+        </div>
+      </nut-action-sheet>
+    </Teleport>
   </div>
 </template>
 
@@ -232,7 +233,32 @@
       });
   });
 </script>
+<style>
+  .custom-action_sheet {
+    display: flex;
+    flex-direction: column;
 
+    & > div:not(:last-child) {
+      padding: 10px 20px;
+      width: 100%;
+      height: 90px;
+      line-height: 90px;
+      display: grid;
+      grid-template-columns: 80px auto;
+      align-items: center;
+    }
+
+    & > div:last-child {
+      height: 100px;
+      background-color: #f7f7f7;
+      font-size: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+    }
+  }
+</style>
 <style lang="scss" scoped>
   ::v-deep {
     .nut-popover-menu-item {
@@ -385,31 +411,6 @@
 
     .logOutBtn:active {
       transform: translate(5px, 5px);
-    }
-
-    .custom-action_sheet {
-      display: flex;
-      flex-direction: column;
-
-      & > div:not(:last-child) {
-        padding: 10px 20px;
-        width: 100%;
-        height: 90px;
-        line-height: 90px;
-        display: grid;
-        grid-template-columns: 80px auto;
-        align-items: center;
-      }
-
-      & > div:last-child {
-        height: 100px;
-        background-color: #f7f7f7;
-        font-size: 32px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: 600;
-      }
     }
   }
 </style>

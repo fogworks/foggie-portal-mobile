@@ -253,7 +253,7 @@
     </nut-popup>
     <!-- move -->
 
-    <nut-popup teleport-disable v-if="moveShow" position="bottom" closeable round :style="{ height: '90%' }" v-model:visible="moveShow">
+    <nut-popup teleport-disable v-if="moveShow" position="bottom" closeable round :style="{ height: '600px' }" v-model:visible="moveShow">
       <div class="rename_box move_box">
         <IconFolder></IconFolder>
         <div
@@ -1484,6 +1484,13 @@
   }
 </style>
 <style lang="scss" scoped>
+  .nut-custom-tour {
+    :deep {
+      .nut-popover {
+        width: 100%;
+      }
+    }
+  }
   .file_Top {
     z-index: 9999;
   }
@@ -1803,10 +1810,11 @@
       }
     }
     .file_list {
-      height: 950px;
+      height: 600px;
       overflow-y: auto;
       .list_item {
         width: 100%;
+        box-sizing: border-box;
       }
       .left_icon_box {
         svg {
