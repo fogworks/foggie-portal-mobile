@@ -343,17 +343,40 @@
   //   console.log('search_bill', res);
   //   minerIp.value = res?.data?.mp_ipaddr;
   // });
-
+  let merkleTimeOut;
+  const getMerkleState = (timeout = true) => {
+    const d = {
+      orderId: order_id.value,
+    };
+    get_merkle(d).then((res) => {
+      if (res.data?.[0]?.merkle_status === 0) {
+        // TODO
+        isDisabled.value = true;
+        if (timeout) {
+          merkleTimeOut = setTimeout(() => {
+            getMerkleState(timeout);
+          }, 30000);
+        }
+      } else {
+        if (isDisabled.value) {
+          showToast.success('Merkle creation is complete and you can proceed to upload the file');
+        }
+        isDisabled.value = false;
+      }
+    });
+  };
   const beforeupload = async (file: any) => {
     console.log('upload-----------', bucketName.value);
 
     const d = {
       orderId: order_id.value,
     };
-    get_merkle(d).then((res) => {
-      if (res.data[0].merkle_status === 0) {
+    await get_merkle(d).then((res) => {
+      if (res.data?.[0]?.merkle_status === 0) {
+        showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
         // TODO
         isDisabled.value = true;
+        getMerkleState();
         return;
       } else {
         isDisabled.value = false;
@@ -1003,6 +1026,12 @@
       dialogVisible.value = true;
       setDefaultName();
     }
+  });
+  onDeactivated(() => {
+    if (merkleTimeOut) clearTimeout(merkleTimeOut);
+  });
+  onUnmounted(() => {
+    if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });
   watch(
     () => route.query,

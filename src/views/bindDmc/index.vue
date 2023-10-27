@@ -95,6 +95,34 @@
       });
       if (bindRes) {
         await initFoggieDate();
+        let ambBindRes = await check_user_bind(userInfo.value.uuid);
+        if (userInfo.value.amb_promo_code && ambBindRes.result.bind) {
+          let postData = {
+            user_uuid: userInfo.value.uuid,
+            amb_promo_code: userInfo.value.amb_promo_code,
+            email: userInfo.value.email,
+            dmc_account: userInfo.value.dmc,
+          };
+          const promoFunction = () => {
+            return check_promo(userInfo.value.amb_promo_code).then((res) => {
+              if (res.code == 200) {
+                return bind_promo(postData).then((res2) => {
+                  if (res2.code == 200) {
+                    bind_user_promo({
+                      amb_promo_code: userInfo.value.amb_promo_code,
+                    }).then((res) => {
+                      if (res.code == 200) {
+                        // showToast.success('Bind successfully');
+                        useStore.setCloudCodeIsBind(true);
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          };
+          await promoFunction();
+        }
       } else {
         return false;
       }

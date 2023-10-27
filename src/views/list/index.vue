@@ -288,7 +288,7 @@
     }
   }
   .list_box {
-    padding: 0 10px;
+    // padding: 0 10px;
     .list_item {
       position: relative;
       display: flex;
