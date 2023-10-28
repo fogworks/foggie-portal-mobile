@@ -56,7 +56,7 @@
         <div
           class="list_item"
           v-for="(item, index) in listData"
-          @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid } })"
+          @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } })"
         >
           <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
             <img src="@/assets/list_item_2.svg" alt="" />

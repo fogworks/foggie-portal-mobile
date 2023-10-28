@@ -92,9 +92,6 @@
       return el.order_id.indexOf(keyWord.value) > -1 || el.pst == keyWord.value;
     });
   });
-  const toDetails = (index: any) => {
-    router.push({ path: '/details', query: { id: index } });
-  };
   const activeNames = ref([]);
   const onChange = (modelValue: any, currName: any, status: any) => {
     // currName: 当前操作的 collapse-item 的 name

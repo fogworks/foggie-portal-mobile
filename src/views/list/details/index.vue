@@ -385,17 +385,18 @@
     const d = {
       orderId: order_id.value,
     };
-    await get_merkle(d).then((res) => {
-      if (res.data?.[0]?.merkle_status === 0) {
-        showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
-        // TODO
-        isDisabled.value = true;
-        getMerkleState();
-        return;
-      } else {
-        isDisabled.value = false;
-      }
-    });
+    let merkleRes = await get_merkle(d);
+    if (merkleRes?.data?.[0]?.merkle_status === 0) {
+      showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
+      // TODO
+      isDisabled.value = true;
+      getMerkleState(true);
+      return;
+    } else if (merkleRes?.data) {
+      isDisabled.value = false;
+    } else {
+      showToast.fail('Failed to get Merkle status. Please try again.');
+    }
 
     // bucketName.value = 'test11111';
     // accessKeyId.value = 'FOGaCTsgpOoeXsrtjmk5';
@@ -422,6 +423,7 @@
 
     let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
     const signature = enc.Base64.stringify(hmac);
+    console.log(file, 'filefilefile');
 
     console.log('signature', signature);
     formData.value = {};
