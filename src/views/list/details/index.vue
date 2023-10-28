@@ -381,7 +381,7 @@
       showToast.fail(content);
       return false;
     }
-
+    const fileCopy = file[0]; // 保存file变量的副本
     const d = {
       orderId: order_id.value,
     };
@@ -412,7 +412,7 @@
       conditions: [
         { bucket: bucketName.value },
         { acl: 'public-read' }, // 设置 ACL（可根据需求更改）
-        ['starts-with', file[0], prefix.value], // Key 以 "uploads/" 开头
+        ['starts-with', fileCopy, prefix.value], // Key 以 "uploads/" 开头
         ['starts-with', '$Content-Type', ''], // Content-Type 为空
       ],
     };
@@ -427,15 +427,15 @@
 
     console.log('signature', signature);
     formData.value = {};
-    formData.value.Key = encodeURIComponent(prefix.value + file[0].name);
+    formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
     formData.value.Policy = policyBase64;
     formData.value.Signature = signature;
     formData.value.Awsaccesskeyid = accessKeyId.value;
 
-    formData.value.category = getType(file[0].name);
+    formData.value.category = getType(fileCopy.name);
     // formData.value.Success_action_status = 201;
-    console.log('file', file.length, file, file[0]);
-    return [file[0]];
+    // console.log('file', file.length, file, file[0]);
+    return [fileCopy];
   };
 
   const getType = (fileName: string) => {
