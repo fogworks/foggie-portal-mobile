@@ -37,17 +37,17 @@
             </div>
             <p>All</p>
           </div>
-          <div class="type_item" @click="switchType(3)">
-            <div class="svg_box">
-              <IconAudio2></IconAudio2>
-            </div>
-            <p>Audio</p>
-          </div>
           <div class="type_item" @click="switchType(1)">
             <div class="svg_box">
               <IconImage></IconImage>
             </div>
             <p>Images</p>
+          </div>
+          <div class="type_item" @click="switchType(3)">
+            <div class="svg_box">
+              <IconAudio2></IconAudio2>
+            </div>
+            <p>Audio</p>
           </div>
           <div class="type_item" @click="switchType(4)">
             <div class="svg_box">

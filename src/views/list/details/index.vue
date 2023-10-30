@@ -105,17 +105,17 @@
       </div>
     </div>
     <div class="type_check_box">
-      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
-        <div class="svg_box">
-          <IconAudio2></IconAudio2>
-        </div>
-        <p>Audio</p>
-      </div>
       <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1 } })">
         <div class="svg_box">
           <IconImage></IconImage>
         </div>
         <p>Images</p>
+      </div>
+      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
+        <div class="svg_box">
+          <IconAudio2></IconAudio2>
+        </div>
+        <p>Audio</p>
       </div>
       <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4 } })">
         <div class="svg_box">
@@ -151,68 +151,67 @@
       </div>
     </nut-infinite-loading>
     <nut-empty v-else description="No data,Go ahead and upload it." image="error"> </nut-empty>
-    <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
-      <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-      <div class="middle_img">
-        <nut-image :src="imgUrl" fit="contain" position="center" />
-      </div>
-      <div class="bottom_action">
-        <div>
-          <IconShare @click="handlerClick('share')"></IconShare>
-          <p>Share</p>
+    <Teleport to="body">
+      <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
+        <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+        <div class="middle_img">
+          <nut-image :src="imgUrl" fit="contain" position="center" />
         </div>
-        <div>
-          <IconDownload @click="handlerClick('download')"></IconDownload>
-          <p>Download</p>
+        <div class="bottom_action">
+          <div>
+            <IconShare @click="handlerClick('share')"></IconShare>
+            <p>Share</p>
+          </div>
+          <div>
+            <IconDownload @click="handlerClick('download')"></IconDownload>
+            <p>Download</p>
+          </div>
         </div>
-      </div>
-    </nut-overlay>
+      </nut-overlay>
+    </Teleport>
+
     <!-- share -->
-    <nut-popup
-      @closed="isReady = false"
-      position="bottom"
-      closeable
-      round
-      :style="{ height: '200px', 'z-index': 999 }"
-      v-model:visible="showShareDialog"
-    >
-      <div v-if="isReady" class="rename_box move_box">
-        <nut-cell style="margin-top: 50px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
-        <nut-popup position="bottom" v-model:visible="periodShow">
-          <nut-picker
-            v-model="periodValue"
-            :columns="options"
-            title="Select expiration time"
-            @confirm="confirmPeriod"
-            @cancel="periodShow = false"
-          >
-          </nut-picker>
-        </nut-popup>
-        <nut-button type="info" block @click="() => confirmHttpShare(shareType, detailRow)">Confirm</nut-button>
-      </div>
-      <div class="share_info_box" v-else>
-        <div v-if="shareRefContent.ipfsStr && +detailRow.originalSize <= orderInfo.value.total_space * 0.01">
-          <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
-          IPFS Link
-          <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
+    <Teleport to="body">
+      <nut-popup @closed="isReady = false" position="bottom" closeable round :style="{ height: '200px' }" v-model:visible="showShareDialog">
+        <div v-if="isReady" class="rename_box move_box">
+          <nut-cell style="margin-top: 50px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
+          <nut-popup position="bottom" v-model:visible="periodShow">
+            <nut-picker
+              v-model="periodValue"
+              :columns="options"
+              title="Select expiration time"
+              @confirm="confirmPeriod"
+              @cancel="periodShow = false"
+            >
+            </nut-picker>
+          </nut-popup>
+          <nut-button type="info" block @click="() => confirmHttpShare(shareType, detailRow)">Confirm</nut-button>
         </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconHttp @click="isReady = true"></IconHttp>
-          HTTP Link
-          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+        <div class="share_info_box" v-else>
+          <div v-if="shareRefContent.ipfsStr && +detailRow.originalSize <= orderInfo.value.total_space * 0.01">
+            <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
+            IPFS Link
+            <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
+          </div>
+          <div v-if="shareRefContent.httpStr">
+            <IconHttp @click="isReady = true"></IconHttp>
+            HTTP Link
+            <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+          </div>
+          <div v-if="shareRefContent.httpStr">
+            <IconTwitter @click="isReady = true"></IconTwitter>
+            Twitter
+            <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+          </div>
+          <div v-if="shareRefContent.httpStr">
+            <IconFacebook @click="isReady = true"></IconFacebook>
+            Facebook
+            <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+          </div>
         </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconTwitter @click="isReady = true"></IconTwitter>
-          Twitter
-          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconFacebook @click="isReady = true"></IconFacebook>
-          Facebook
-          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-        </div>
-      </div>
-    </nut-popup>
+      </nut-popup>
+    </Teleport>
+
     <nut-uploader
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
@@ -500,10 +499,12 @@
   };
   const handlerClick = async (type: string) => {
     const checkData = JSON.parse(JSON.stringify(detailRow));
+    console.log(checkData, 'checkData');
+
     if (type === 'download') {
       const objectKey = encodeURIComponent(checkData.fullName);
       const headers = getSignHeaders(objectKey);
-      const url = `/o/${objectKey}`;
+      const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
       fetch(url, { method: 'GET', headers })
         .then((response) => {
           if (response.ok) {
@@ -567,6 +568,7 @@
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
     console.log(option, 'option');
+    getFileList();
     const updateUsedSpace = () => {
       return update_order_size({
         used_space: +option.sourceFile.size,

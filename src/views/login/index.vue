@@ -124,6 +124,8 @@
                   .then((res) => {
                     console.log(res);
                     if (res.next_step === 'captcha') {
+                      loading.value = false;
+
                       getCaptcha();
                       showCaptcha.value = true;
                     } else if (res && res.data) {
@@ -146,10 +148,16 @@
                       // userStore.setInfo(userInfo);
                       userStore.setToken(token);
                       getUserInfo();
+                      loading.value = false;
+
                       // this.getUserInfo();
                       // this.$emit("login");
                       // store.dispatch("global/setDmcShow", true);
                       //  this.loadUserLoginStatus()
+                    } else {
+                      showToast.fail(res.error);
+
+                      loading.value = false;
                     }
                   })
                   .catch((err) => {

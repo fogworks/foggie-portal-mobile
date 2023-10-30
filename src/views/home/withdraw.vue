@@ -208,7 +208,7 @@
         icon: loadingImg,
         loadingRotate: false,
       });
-      verify_otp_token({ secret: scret_key.value, token: code.value })
+      verify_otp_token({ secret: scret_key.value, token: window.btoa(code.value) })
         .then((res) => {
           if (res.code == 200) {
             withdraw_otp({ secret: scret_key.value }).then((res2) => {
@@ -232,6 +232,8 @@
     }
   }
   function checkValidate(value) {
+    console.log(value);
+
     let numReg = /^\d{6}$/;
     showErrorTips.value = false;
     if (!value) {
@@ -254,7 +256,7 @@
       loadingRotate: false,
     });
     if (!amount.value) return false;
-    user_withdraw({ quantity: amount.value, token: code.value })
+    user_withdraw({ quantity: amount.value, token: window.btoa(code.value) })
       .then((res) => {
         showToast.hide();
         showToast.success('Withdrawal successful');
@@ -264,6 +266,15 @@
         showToast.hide();
       });
   }
+  watch(
+    code,
+    (val) => {
+      if (val.length > 6) {
+        code.value = val.slice(0, 6);
+      }
+    },
+    { deep: true },
+  );
   onMounted(() => {
     initGoogle();
     getUserAssets();
