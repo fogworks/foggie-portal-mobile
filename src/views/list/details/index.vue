@@ -282,7 +282,7 @@
   import useShare from './useShare.js';
   import { showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize } from '@/utils/util';
-  import { check_name, order_name_set, get_merkle, calc_merkle } from '@/api/index';
+  import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
@@ -353,8 +353,8 @@
     const d = {
       orderId: order_id.value,
     };
-    get_merkle(d).then((res) => {
-      if (res.data?.[0]?.merkle_status === 0) {
+    valid_upload(d).then((res) => {
+      if (res.data?.data) {
         // TODO
         isDisabled.value = true;
         if (timeout) {
@@ -387,8 +387,8 @@
     const d = {
       orderId: order_id.value,
     };
-    let merkleRes = await get_merkle(d);
-    if (merkleRes?.data?.[0]?.merkle_status === 0) {
+    let merkleRes = await valid_upload(d);
+    if (merkleRes?.data?.data) {
       showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
       // TODO
       isDisabled.value = true;

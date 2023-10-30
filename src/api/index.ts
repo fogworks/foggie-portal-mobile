@@ -236,6 +236,17 @@ export const get_merkle = (data: any) => {
   });
 };
 
+
+export const valid_upload = (data: any) => {
+  return request({
+    url: `/file/valid_upload`,
+    method: 'POST',
+    data,
+  });
+};
+
+
+
 export const get_merkle_record = (data: any) => {
   return request({
     url: `/order/get_merkle_record`,
