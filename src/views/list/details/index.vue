@@ -15,7 +15,11 @@
         <span class="span2">Expiration: {{ transferUTCTime(orderInfo.value.expire) }}</span>
       </nut-col>
       <nut-col :span="24" class="order-circle">
-        <nut-circle-progress progress="20" radius="60" color="#5460FE">
+        <nut-circle-progress
+          :progress="((orderInfo.value.used_space || 0) / (orderInfo.value.total_space || 1)) * 100"
+          radius="60"
+          color="#5460FE"
+        >
           Used: {{ Math.round(orderInfo.value.used_space / orderInfo.value.total_space) * 100 }}%
         </nut-circle-progress>
       </nut-col>
@@ -187,7 +191,7 @@
         <nut-button type="info" block @click="() => confirmHttpShare(shareType, detailRow)">Confirm</nut-button>
       </div>
       <div class="share_info_box" v-else>
-        <div v-if="shareRefContent.ipfsStr && +detailRow.originalSize <= orderInfo.total_space * 0.01">
+        <div v-if="shareRefContent.ipfsStr && +detailRow.originalSize <= orderInfo.value.total_space * 0.01">
           <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
           IPFS Link
           <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
@@ -287,7 +291,7 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
   import { getSecondTime } from '@/utils/util';
-  import { update_order_size } from '@/api/amb';
+  import { update_order_size, tag_mobile_upload } from '@/api/amb';
   const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
     isReady,
@@ -560,17 +564,17 @@
     return headers;
   };
 
-  const uploadSuccess = ({ responseText, option, fileItem }: any) => {
+  const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
     console.log(option, 'option');
     const updateUsedSpace = () => {
-      update_order_size({
+      return update_order_size({
         used_space: +option.sourceFile.size,
         order_id: +order_id.value,
       })
         .then((res) => {
           if (res.code == 200) {
-            getOrderInfo(false);
+            // getOrderInfo(false);
             uploadRef.value.clearUploadQueue();
           } else {
             setTimeout(() => {
@@ -584,8 +588,38 @@
           }, 3000);
         });
     };
-    updateUsedSpace();
+    await updateUsedSpace();
 
+    await getOrderInfo(false);
+    if (orderInfo.value.mobile_upload == undefined) {
+      const tagMobile = () => {
+        // orderInfo.value.nodeIp
+        tag_mobile_upload('', {
+          orderUuid: orderInfo.value.uuid,
+          tag: true,
+        })
+          .then((res) => {
+            if (res.code !== 200) {
+              setTimeout(() => {
+                tagMobile();
+              }, 3000);
+            }
+          })
+          .catch(() => {
+            setTimeout(() => {
+              tagMobile();
+            }, 3000);
+          });
+      };
+      tagMobile();
+    }
+    let uploadLine = 1024 * 1024 * 50;
+    let used_space = orderInfo.value.used_space || 0;
+    if (uploadLine >= used_space) {
+      let needSpace = getfilesize(uploadLine - used_space);
+      // showToast.text(`At least ${needSpace} of files need to be uploaded to submit Merkle`);
+      return false;
+    }
     const d = {
       orderId: order_id.value,
       uuid: amb_uuid.value,
@@ -596,7 +630,7 @@
     calc_merkle(d).then((res) => {
       console.log('calc_merkle-----', res);
     });
-    uploadRef.value.clearUploadQueue();
+    // uploadRef.value.clearUploadQueue();
   };
 
   const onProgress = ({ event, options, percentage }: any) => {

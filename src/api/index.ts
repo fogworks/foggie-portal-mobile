@@ -254,17 +254,17 @@ export const get_merkle_record = (data: any) => {
     data,
   });
 };
-export const get_challenge = (params) => {
+export const get_challenge = (data) => {
   return request({
-    url: `/ambmgr/order/get_challenge`,
-    method: 'GET',
-    params,
+    url: `/order/get_challenge`,
+    method: 'POST',
+    data,
   });
 };
-export const get_arbitration = (params) => {
+export const get_arbitration = (data) => {
   return request({
-    url: `ambmgr/order/get_arbitration`,
-    method: 'GET',
-    params,
+    url: `/order/get_arbitration`,
+    method: 'POST',
+    data,
   });
 };

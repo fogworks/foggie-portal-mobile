@@ -89,19 +89,19 @@
             ><span>CID:</span>
             <span> {{ item.cid.substring(0, 10) + '...' + item.cid.substring(item.cid.length - 6, item.cid.length) }}</span>
           </p>
-          <p
+          <!-- <p
             ><span>Reply Hash:</span>
             <span>
               {{
                 item.reply_hash.substring(0, 10) + '...' + item.reply_hash.substring(item.reply_hash.length - 6, item.reply_hash.length)
               }}</span
             >
-          </p>
+          </p> -->
           <p
             ><span>Hash Data:</span>
             <span>
               {{
-                item.hash_data.substring(0, 10) + '...' + item.hash_data.substring(item.hash_data.length - 6, item.hash_data.length)
+                item.data_hash.substring(0, 10) + '...' + item.data_hash.substring(item.data_hash.length - 6, item.data_hash.length)
               }}</span
             >
           </p>
@@ -110,7 +110,7 @@
           <p class="time">{{ item.create_time && transferUTCTime(item.create_time) }}</p>
           <p>
             <span>Version:</span>
-            <span> {{ item.version }}</span>
+            <span> {{ item.versionUser }}</span>
           </p>
           <p>
             <span>Data ID:</span>
@@ -187,33 +187,18 @@
   };
   const initchallengeList = () => {
     tableData.value = [];
-    get_challenge({ order_id: order_id.value }).then((res) => {
-      console.log(res, 'aaa');
-      //   let mockitem = {
-      //     state: 'Success',
-      //     version: '1.0',
-      //     data_id: 'data_id_001',
-      //     cid: 'dsdmfwiefwkf232',
-      //     reply_hash: 'reply_hash3242234vdkjfnvkdjfv',
-      //     hash_data: 'dndajiefnejfner',
-      //   };
-      //   console.log(mockitem, 'mockitem');
-      //   tableData.value.push(mockitem);
-      tableData.value = res && res.result && res.result.data;
+    get_challenge({ orderId: order_id.value }).then((res) => {
+      tableData.value = res.data.map((el) => {
+        return {
+          ...el,
+          versionUser: el.nonce ? el.nonce.split('#').slice(-1)[0] : '',
+        };
+      });
     });
   };
   const initArbList = () => {
     tableData.value = [];
     get_arbitration({ order_id: order_id.value }).then((res) => {
-      console.log('get_merkle_record-------', res, res.result);
-      //   let mockitem = {
-      //     state: 'Success',
-      //     version: '1.0',
-      //     data_id: 'data_id_001',
-      //     cut_merkle: [],
-      //     data: 'dataxxxx',
-      //   };
-      //   tableData.value.push(mockitem);
       tableData.value = res && res.result && res.result.data;
     });
   };
@@ -224,7 +209,6 @@
   };
   onMounted(() => {
     category.value = route.query.category;
-    console.log('onMounted', category.value);
     initParams();
   });
 </script>

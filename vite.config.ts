@@ -167,6 +167,13 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
+        '^/order/get_challenge': {
+          target: 'http://45.207.245.24:28080',
+          // target: 'http://192.168.1.119:6008',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
         '^/o': {
           target: 'http://aaa12345.devus.u2i.net:6008',
           // target: 'http://192.168.1.119:6008',

@@ -82,6 +82,13 @@ export function get_average_price(ip, data) {
     data,
   });
 }
+export function tag_mobile_upload(ip, data) {
+  return request({
+    url: ip + '/order/tag_mobile_upload',
+    method: 'POST',
+    data,
+  });
+}
 export function user_recharge(data) {
   return request({
     url: '/ambmgr/asset/user_recharge',
