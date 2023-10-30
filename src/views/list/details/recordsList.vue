@@ -42,7 +42,7 @@
         </div>
       </div>
     </nut-sticky>
-    <nut-infinite-loading v-if="tableData.length" class="file_list record_list">
+    <nut-infinite-loading v-if="tableData.length" load-more-txt="No more content" class="file_list record_list">
       <div
         :class="['list_item', item.checked ? 'row_is_checked' : '']"
         :id="[index == 0 ? 'list_item_1' : '']"

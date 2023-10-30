@@ -41,6 +41,7 @@
   import { useRoute, useRouter } from 'vue-router';
   import { check_promo, bind_promo } from '@/api/amb';
   import '@nutui/nutui/dist/packages/toast/style';
+  import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
   const route = useRoute();
   const router = useRouter();
   const useStore = useUserStore();
@@ -50,7 +51,7 @@
   const loading = ref(false);
   const bindType = computed(() => route.query.type);
   const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
-
+  const { bindAmbCode, curStepIndex } = useUpdateDMC();
   const initFoggieDate = async () => {
     let data = await user();
     if (data) {
@@ -123,6 +124,12 @@
       }
     }
     if ((!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) && bindType.value == 'amb') {
+      if (amb_promo_code.value == formLine.code && curStepIndex.value == 2) {
+        showToast.fail('This ambassador has rejected your application, please enter another ambassador invitation code');
+        loading.value = false;
+
+        return false;
+      }
       let postData = {
         user_uuid: userInfo.value.uuid,
         amb_promo_code: formLine.code,
@@ -130,26 +137,40 @@
         dmc_account: userInfo.value.dmc,
       };
       const promoFunction = () => {
-        return check_promo(formLine.code).then((res) => {
-          if (res.code == 200) {
-            return bind_promo(postData).then((res2) => {
-              if (res2.code == 200) {
-                bind_user_promo({
-                  amb_promo_code: formLine.code,
-                }).then((res) => {
-                  if (res.code == 200) {
-                    showToast.success('Bind successfully');
-                    useStore.setCloudCodeIsBind(true);
+        return check_promo(formLine.code)
+          .then((res) => {
+            if (res.code == 200) {
+              return bind_promo(postData)
+                .then((res2) => {
+                  if (res2.code == 200) {
+                    bind_user_promo({
+                      amb_promo_code: formLine.code,
+                    })
+                      .then((res) => {
+                        if (res.code == 200) {
+                          showToast.success('Bind successfully');
+                          useStore.setCloudCodeIsBind(true);
+                        } else {
+                          loading.value = false;
+                        }
+                      })
+                      .catch(() => {
+                        loading.value = false;
+                      });
                   }
+                })
+                .catch(() => {
+                  loading.value = false;
                 });
-              }
-            });
-          } else {
+            } else {
+              loading.value = false;
+              showToast.fail('Binding failed, please try again');
+              return false;
+            }
+          })
+          .catch(() => {
             loading.value = false;
-            showToast.fail('Binding failed, please try again');
-            return false;
-          }
-        });
+          });
       };
       await promoFunction();
       await initFoggieDate();
@@ -167,11 +188,13 @@
     { deep: true, immediate: true },
   );
   onMounted(() => {
+    bindAmbCode();
     formLine.code = amb_promo_code.value || '';
     console.log(formLine.code, 'code');
     formLine.code = userInfo.value.amb_promo_code || '';
   });
   onActivated(() => {
+    bindAmbCode();
     formLine.code = amb_promo_code.value || '';
   });
 </script>

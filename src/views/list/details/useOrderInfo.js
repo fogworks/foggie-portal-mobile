@@ -24,7 +24,7 @@ export default function useOrderInfo() {
     }
   });
   const route = useRoute();
-  const getOrderInfo = async () => {
+  const getOrderInfo = async (getKey = true) => {
     showToast.loading('Loading', {
       cover: true,
       customClass: 'app_loading',
@@ -40,7 +40,7 @@ export default function useOrderInfo() {
     // header.setId('baeqacmjq');
     header.setToken(orderInfo.value.sign);
     bucketName.value = orderInfo.value.domain;
-    if (bucketName.value) {
+    if (bucketName.value && getKey) {
       return new Promise((resolve, reject) => {
         let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
         let request = new Prox.default.ProxGetCredRequest();

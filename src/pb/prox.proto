@@ -360,6 +360,19 @@ message ProxUnPinReq{
 message ProxPingRequest {
 	ProxHeader header = 1;
 }
+message ProxPingMinerRequest {
+	ProxHeader header = 1;
+	string  orderID = 2;
+}
+message ProxPingMiner {
+	string peerID = 1;
+	string Addr = 2;
+	string error = 3;
+	string type = 4;
+}
+message ProxPingMinerResponse {
+	repeated ProxPingMiner miners = 1;
+}
 message ProxPingResponse {
 	string peerID = 1;
 }
@@ -368,6 +381,7 @@ message ProxFindRequest{
 		string cid = 2;
 		string key = 3;
 		string fileId = 4;
+		string prefix = 5;
 }
 message ProxObjects {
 	repeated ProxObject contents = 1;
@@ -427,6 +441,7 @@ message ProxTouchResp {
 }
 service Service {
 	rpc Ping(ProxPingRequest)returns(ProxPingResponse){}
+	rpc PingMiner(ProxPingMinerRequest)returns(ProxPingMinerResponse){}
 	rpc Pin(ProxPinReq)returns(ProxPinResp){}
 	rpc Stage(stream ProxStageRequest) returns (ProxStageResponse) {}
 //	rpc Get(GetProxRequest) returns (stream GetProxResponse) {}

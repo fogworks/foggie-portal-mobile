@@ -166,3 +166,10 @@ export function search_order_profit(data) {
     data,
   });
 }
+export function update_order_size(data) {
+  return request({
+    url: '/ambmgr/order/update_order_size',
+    method: 'POST',
+    data,
+  });
+}

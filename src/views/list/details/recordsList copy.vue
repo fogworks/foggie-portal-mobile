@@ -65,6 +65,7 @@
     <template>
       <nut-infinite-loading
         v-if="tableData.length"
+        load-more-txt="No more content"
         class="file_list"
         v-model="infinityValue"
         :has-more="!!continuationToken"

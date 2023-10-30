@@ -12,7 +12,13 @@
         >
         <span v-else>{{ item.time }}</span>
       </p>
-      <nut-infinite-loading v-model="infinityValue" :has-more="!!continuationToken" @load-more="getFileList" class="img-item-box">
+      <nut-infinite-loading
+        load-more-txt="No more content"
+        v-model="infinityValue"
+        :has-more="!!continuationToken"
+        @load-more="getFileList"
+        class="img-item-box"
+      >
         <nut-checkbox-group
           :validate-event="false"
           v-model="imgCheckedData.value[item.dateId]"

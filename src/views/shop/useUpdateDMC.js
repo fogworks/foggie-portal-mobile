@@ -2,7 +2,7 @@ import { computed, ref } from 'vue';
 import { useUserStore } from '@/store/modules/user';
 import { bind_promo, check_promo, get_amb_dmc, check_user_bind } from '@/api/amb';
 import { showDialog, showToast } from '@nutui/nutui';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import loadingImg from '@/components/loadingImg/index.vue';
 
 export default function useUpdateDMC() {
@@ -10,6 +10,7 @@ export default function useUpdateDMC() {
   const ambRefuse = ref(false); //大使是否拒绝  true 拒绝  false 同意
   const userStore = useUserStore();
   const router = useRouter();
+  const route = useRoute();
   const dmc = computed(() => userStore.getUserInfo.dmc);
   const uuid = computed(() => userStore.getUserInfo.uuid);
   const amb_promo_code = computed(() => userStore.getUserInfo?.amb_promo_code || '');
@@ -35,6 +36,9 @@ export default function useUpdateDMC() {
           if (res2.result.approved && res2.result.refuse) {
             curStepIndex.value = 2;
             ambRefuse.value = true;
+            if (route.path == '/bindDmc') {
+              return false;
+            }
             // refuse
             const onOk = () => {
               router.push({ name: 'BindDmc', query: { type: 'amb' } });
@@ -91,19 +95,26 @@ export default function useUpdateDMC() {
               showToast.text('Ambassadors are in the process of approval, please be patient');
             }
           } else {
-            const dmcOk = () => {
-              router.push({ name: 'BindDmc', query: { type: 'amb' } });
-            };
+            curStepIndex.value = 1;
+
+            if (route.path == '/bindDmc') {
+              return false;
+            }
             let src = require('@/assets/fog-works.png');
-            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please confirm that you have filled out the invitation code before placing your order</p >`;
+            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Awaiting approval from the Ambassador, please be patient until the approval is complete</p >`;
             showDialog({
               title: 'Ambassador Invitation Code',
               content: str,
-              onOk: dmcOk,
+              'no-ok-btn': true,
+              'cancel-text': 'OK',
             });
-            curStepIndex.value = 1;
           }
         } else {
+          curStepIndex.value = 1;
+
+          if (route.path == '/bindDmc') {
+            return false;
+          }
           const dmcOk = () => {
             router.push({ name: 'BindDmc', query: { type: 'amb' } });
           };
@@ -114,7 +125,6 @@ export default function useUpdateDMC() {
             content: str,
             onOk: dmcOk,
           });
-          curStepIndex.value = 1;
         }
       })
       .finally(() => {

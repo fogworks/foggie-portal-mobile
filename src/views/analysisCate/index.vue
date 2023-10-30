@@ -26,7 +26,13 @@
           <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
         </div>
         <!-- LIST -->
-        <nut-infinite-loading class="list_box" v-model="infinityValue" :has-more="hasMore" @load-more="loadMore">
+        <nut-infinite-loading
+          load-more-txt="No more content"
+          class="list_box"
+          v-model="infinityValue"
+          :has-more="hasMore"
+          @load-more="loadMore"
+        >
           <div class="list_item" v-for="item in listData">
             <span v-if="item.created_at">{{ transferUTCTime(item.created_at) }}</span>
             <span v-else>Order:{{ item.order_id }}</span>

@@ -102,8 +102,8 @@
           v-show="category == 0"
           class="new_folder"
         ></IconNewFolder>
-        <nut-searchbar @clear="doSearch('', [], true)" placeholder="Search By Name" v-model="keyWord">
-          <template #rightin> <Search2 @click="doSearch('', [], true)" color="#0a7dd2" /> </template>
+        <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
+          <template #rightin> <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" /> </template>
         </nut-searchbar>
       </div>
       <div class="check_top" v-else-if="isCheckMode">
@@ -115,6 +115,7 @@
     <template v-if="category !== 1">
       <nut-infinite-loading
         v-if="tableData.length"
+        load-more-txt="No more content"
         class="file_list"
         v-model="infinityValue"
         :has-more="!!continuationToken"
@@ -269,7 +270,13 @@
         >
           <p> {{ movePrefix.length ? movePrefix.slice(-1)[0] : '' }}</p>
         </div>
-        <nut-infinite-loading class="file_list" v-model="infinityValue" :has-more="!!continuationToken2" @load-more="loadMore">
+        <nut-infinite-loading
+          load-more-txt="No more content"
+          class="file_list"
+          v-model="infinityValue"
+          :has-more="!!continuationToken2"
+          @load-more="loadMore"
+        >
           <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in dirData" :key="index">
             <div :class="['left_icon_box']">
               <IconFolder></IconFolder>
@@ -1272,7 +1279,6 @@
       //   getFileList('', prefix.value, false);
       // }
     } else {
-      prefix.value = [];
       showToast.loading('Loading', {
         cover: true,
         customClass: 'app_loading',
@@ -1289,6 +1295,15 @@
         ProxFindRequest.setCid('');
         ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
         ProxFindRequest.setFileid('');
+        let list_prefix;
+        if (prefixArg?.length) {
+          list_prefix = prefixArg.join('/');
+          if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
+            list_prefix = list_prefix + '/';
+          }
+        }
+        ProxFindRequest.setPrefix(list_prefix);
+        console.log(ProxFindRequest, 'ProxFindRequestProxFindRequest');
 
         server.findObjects(ProxFindRequest, {}, (err: any, res: { getContentsList: () => any[] }) => {
           infinityValue.value = false;
