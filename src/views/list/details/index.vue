@@ -145,9 +145,10 @@
     </nut-infinite-loading>
     <nut-empty v-else description="No data,Go ahead and upload it." image="error"> </nut-empty>
     <Teleport to="body">
-      <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
+      <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-        <div class="middle_img">
+        <HLSVideo v-if="detailRow.value.type && detailRow.value.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
+        <div v-else-if="imgUrl" class="middle_img">
           <nut-image :src="imgUrl" fit="contain" position="center">
             <template #loading>
               <Loading width="16px" height="16px" name="loading" />
@@ -182,12 +183,15 @@
             >
             </nut-picker>
           </nut-popup>
-          <nut-button type="info" block @click="() => confirmHttpShare(shareType, detailRow, accessKeyId, secretAccessKey, bucketName)"
+          <nut-button
+            type="info"
+            block
+            @click="() => confirmHttpShare(shareType, detailRow.value, accessKeyId, secretAccessKey, bucketName)"
             >Confirm</nut-button
           >
         </div>
         <div class="share_info_box" v-else>
-          <div v-if="shareRefContent.ipfsStr && +detailRow.originalSize <= orderInfo.value.total_space * 0.01">
+          <div v-if="shareRefContent.ipfsStr && +detailRow.value.originalSize <= orderInfo.value.total_space * 0.01">
             <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
             IPFS Link
             <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
@@ -307,6 +311,8 @@
   import { getSecondTime } from '@/utils/util';
   import { update_order_size, tag_mobile_upload } from '@/api/amb';
   import { status } from 'grpc';
+  import HLSVideo from './hlsVideo.vue';
+
   const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
     isReady,
@@ -487,20 +493,20 @@
   };
   const detailShow = ref(false);
   const imgUrl = ref('');
-  let detailRow = {};
+  const detailRow = reactive({ value: {} });
   const handleRow = (row) => {
-    detailRow = row;
+    detailRow.value = row;
     if (row.imgUrl) {
       imgUrl.value = row.imgUrlLarge;
       detailShow.value = true;
     } else {
       let prefix;
       if (row.isDir) {
-        prefix = detailRow.fullName.split('/').slice(0, -2);
+        prefix = detailRow.value.fullName.split('/').slice(0, -2);
       } else {
-        prefix = detailRow.fullName.split('/').slice(0, -1);
+        prefix = detailRow.value.fullName.split('/').slice(0, -1);
       }
-      console.log(detailRow.fullName, prefix);
+      console.log(detailRow.value.fullName, prefix);
 
       router.push({
         name: 'FileList',
@@ -509,7 +515,7 @@
     }
   };
   const handlerClick = async (type: string) => {
-    const checkData = JSON.parse(JSON.stringify(detailRow));
+    const checkData = JSON.parse(JSON.stringify(detailRow.value));
     console.log(checkData, 'checkData');
 
     if (type === 'download') {
@@ -805,6 +811,8 @@
       console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else {
       isSystemImg = true;
     }

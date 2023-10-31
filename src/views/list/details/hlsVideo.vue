@@ -1,5 +1,6 @@
 <template>
   <nut-video
+    class="video_box"
     :source="{
       src: imgUrl,
       type: 'video/mp4',
@@ -22,4 +23,14 @@
   });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+  .video_box {
+    max-height: calc(100% - 300px);
+    :deep {
+      .nut-video-player {
+        width: unset;
+        margin: 0 auto;
+      }
+    }
+  }
+</style>

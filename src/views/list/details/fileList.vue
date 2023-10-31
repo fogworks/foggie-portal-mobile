@@ -360,9 +360,8 @@
     <Teleport to="body">
       <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-        <!-- <HLSVideo :imgUrl="imgUrl"></HLSVideo> -->
-
-        <div v-if="imgUrl" class="middle_img">
+        <HLSVideo v-if="chooseItem.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
+        <div v-else-if="imgUrl" class="middle_img">
           <!-- v-if="chooseItem.type.split('/')[0] == 'video'" -->
           <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
             <template #loading>
@@ -1011,7 +1010,7 @@
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
       // item.contentType = "video/mp4";
     } else {
       isSystemImg = true;
