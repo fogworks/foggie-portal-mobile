@@ -159,7 +159,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           changeOrigin: true,
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
-        },        
+        },
         '^/order/get_merkle_record': {
           target: 'http://45.207.245.24:28080',
           // target: 'http://192.168.1.119:6008',

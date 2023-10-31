@@ -44,6 +44,9 @@
               :key="img.cid"
               :src="img.imgUrl"
             >
+              <template #loading>
+                <Loading width="16px" height="16px" name="loading" />
+              </template>
             </nut-image>
           </div>
         </nut-checkbox-group>

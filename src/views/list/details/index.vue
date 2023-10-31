@@ -27,8 +27,6 @@
         <nut-cell>
           <IconMdiF color="#9F9BEF" />
           File:1000
-
-          <!-- File 1000 -->
         </nut-cell>
         <nut-cell>
           <IconSpace color="#7F7AE9" />
@@ -40,44 +38,8 @@
         </nut-cell>
       </nut-col>
     </nut-row>
-    <!-- <span v-if="bucketName">{{ bucketName }}</span>
-    <nut-input placeholder="Please enter name" v-model="newBucketName" v-if="showCreatName" />
-    <nut-button class="creat-name" type="primary" @click="creatName" v-if="!bucketName">Creat Name</nut-button> -->
   </div>
   <div class="detail_box">
-    <!-- <nut-grid class="top_grid" column-num="3" direction="horizontal">
-      <nut-grid-item text="Income">
-        <img src="@/assets/incoming.svg" alt="" />
-      </nut-grid-item>
-      <nut-grid-item text="Merkle">
-        <img src="@/assets/tree.svg" alt="" />
-      </nut-grid-item>
-      <nut-grid-item text="Challenge">
-        <img src="@/assets/setting.svg" alt="" />
-      </nut-grid-item>
-    </nut-grid> -->
-    <!-- <nut-row class="order-icons">
-      <nut-col :span="6" class="order-icon-recycle">
-        <IconRecycleFill color="#fff" />
-      </nut-col>
-      <nut-col :span="6" class="order-icon-node-tree">
-        <IconRiNodeTree color="#fff" />
-        <p>Merkle</p>
-      </nut-col>
-      <nut-col :span="6" class="order-icon-send-to-back">
-        <IconRiSendToBack color="#fff" />
-        <p>Changelle</p>
-      </nut-col>
-      <nut-col :span="6" class="order-icon-input-cursor-move">
-        <IconRiInputCursorMove color="#fff" />
-        <p>Arbitrate</p>
-      </nut-col>
-      <nut-col @click="getKey" :span="6" class="order-icon-recycle">
-        <keySolid color="#fff" />
-        <p>Secret Key</p>
-      </nut-col>
-    </nut-row> -->
-
     <div class="type_check_box">
       <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
         <div class="svg_box svg_box2 order-icon-node-tree">
@@ -155,7 +117,11 @@
       <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
         <div class="middle_img">
-          <nut-image :src="imgUrl" fit="contain" position="center" />
+          <nut-image :src="imgUrl" fit="contain" position="center">
+            <template #loading>
+              <Loading width="16px" height="16px" name="loading" />
+            </template>
+          </nut-image>
         </div>
         <div class="bottom_action">
           <div>
@@ -1098,6 +1064,9 @@
     console.log(orderInfo.value, bucketName.value);
 
     if (bucketName.value) {
+      console.log(11111111111111);
+
+      getSummary();
       // let key = await getKeys();
       getFileList();
     } else {
@@ -1105,6 +1074,26 @@
       setDefaultName();
     }
   });
+  const getSummary = () => {
+    let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
+    let request = new Prox.default.ProxRequestSummaryIds();
+    request.setHeader(header);
+    request.setIds([orderInfo.value.foggie_id]);
+    // console.log('request-----------------getkeys', request);
+    server.summaryInfo(request, {}, (err: any, res: { array: any }) => {
+      if (err) {
+        console.log('err------:', err);
+        reject(false);
+      } else if (res.array.length > 0) {
+        console.log(res, 'ressssssssssssssss');
+
+        // spaceFileCount.value = res.contents?.[0]?.count || 0;
+
+        reject(true);
+        // console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
+      }
+    });
+  };
   onDeactivated(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });

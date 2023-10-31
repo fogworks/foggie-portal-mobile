@@ -92,7 +92,7 @@
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
-    timeType: '0',
+    timeType: '3',
     cloudBalance: '0',
     cloudIncome: '0',
     cloudExpense: '0',

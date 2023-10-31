@@ -98,7 +98,7 @@
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
-    timeType: '0',
+    timeType: '3',
     searchType: '0',
   });
   const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
