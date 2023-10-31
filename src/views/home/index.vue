@@ -130,7 +130,25 @@
         <img src="@/assets/list_item_2.svg" alt="" />
       </div>
       <div>
-        <span>Order:{{ item.order_id }}</span>
+        <span>
+          <span>Order:{{ item.order_id }}</span>
+          <span style="margin-left: 10px">
+            <!-- 待共識 -->
+            <nut-tag v-if="item.state == 0" type="warning">TBC</nut-tag>
+            <!-- 进行中 -->
+            <nut-tag type="success" v-else-if="item.state == 1">WIP</nut-tag>
+            <!-- 已结束 -->
+            <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Closed</nut-tag>
+            <!-- 已取消 -->
+            <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
+            <!-- 下週期將取消 -->
+            <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
+            <!-- 預存⾦不足 -->
+            <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">Closed</nut-tag>
+            <!-- 預存⾦充足 -->
+            <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">INSF</nut-tag>
+          </span>
+        </span>
         <span :class="['earnings']">
           +{{ item.income }}
           <!-- <IconArrowRight style="vertical-align: text-top" width="1.2rem" height="1.2rem" color="#5F57FF"></IconArrowRight

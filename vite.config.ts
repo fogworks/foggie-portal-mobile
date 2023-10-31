@@ -175,7 +175,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
         '^/o': {
-          target: 'http://aaa12345.devus.u2i.net:6008',
+          target: 'http://woshic-394.devus.u2i.net:6008',
           // target: 'http://192.168.1.119:6008',
           changeOrigin: true,
           secure: false,

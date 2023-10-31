@@ -15,11 +15,11 @@
     </div>
     <div class="analysis_content">
       <nut-tabs v-model="timeType" class="time_tabs" direction="horizontal">
-        <nut-tab-pane title="All" pane-key="All"></nut-tab-pane>
-        <nut-tab-pane title="By 3 Months" pane-key="3Months"></nut-tab-pane>
-        <nut-tab-pane title="By Month" pane-key="Month"></nut-tab-pane>
-        <nut-tab-pane title="By Week" pane-key="Week"></nut-tab-pane>
         <nut-tab-pane title="By Day" pane-key="Day"></nut-tab-pane>
+        <nut-tab-pane title="By Week" pane-key="Week"></nut-tab-pane>
+        <nut-tab-pane title="By Month" pane-key="Month"></nut-tab-pane>
+        <nut-tab-pane title="By 3 Months" pane-key="3Months"></nut-tab-pane>
+        <nut-tab-pane title="All" pane-key="All"></nut-tab-pane>
       </nut-tabs>
       <div class="balance_chart">
         <MyEcharts :options="chartOptions0" class="income_charts"></MyEcharts>
@@ -62,7 +62,7 @@
     chartOptionsReward: {},
     chartOptionsExpense: {},
     chartOptions0: {},
-    timeType: 'All',
+    timeType: 'Week',
     cloudBalance: 0,
     cloudIncome: 0,
     cloudExpense: 0,
@@ -200,84 +200,264 @@
         if (res.code == 200) {
           let data = res.result.counts || {};
           chartOptions0.value = {
+            backgroundColor: '#fff',
             title: {
-              text: 'Benefit analysis',
+              text: `Benefit analysis`,
               textStyle: {
-                fontSize: '14px',
-                color: '#4c5093',
-                fontWeight: 'bold',
+                rich: {
+                  a: {
+                    fontSize: 16,
+                    fontWeight: 600,
+                  },
+                },
               },
-            },
-            tooltip: {
-              trigger: 'axis',
-              axisPointer: {
-                type: 'shadow',
-              },
+              // subtext: '2023~2024',
+              // top: '3%',
+              // left: 'center',
+              // itemGap: 20,
+              // subtextStyle: {
+              //   color: '#6C7B8A',
+              //   fontSize: 16,
+              //   fontWeight: 600,
+              // },
             },
             legend: {
-              data: ['Balance', 'Expenses', 'Income'],
-              right: 'right',
+              top: '10%',
+              right: '5%',
+              icon: 'circle',
+            },
+            tooltip: {
+              show: true,
+              trigger: 'axis',
+              backgroundColor: 'rgba(255,255,255)',
+              axisPointer: {
+                lineStyle: {
+                  color: {
+                    type: 'linear',
+                    x: 0,
+                    y: 0,
+                    x2: 0,
+                    y2: 1,
+                    colorStops: [
+                      {
+                        offset: 0,
+                        color: '#A7D6FF',
+                      },
+                      {
+                        offset: 0.5,
+                        color: '#fff',
+                      },
+                      {
+                        offset: 1,
+                        color: '#A7D6FF',
+                      },
+                    ],
+                    global: false,
+                  },
+                },
+              },
             },
             grid: {
-              left: '3%',
-              right: '0%',
-              bottom: '10px',
-              containLabel: false,
+              top: '20%',
+              left: '10%',
+              right: '8%',
+              bottom: '20%',
             },
-            xAxis: [
-              {
-                type: 'value',
+            xAxis: {
+              type: 'category',
+              axisLabel: {
+                rotate: 45,
+                fontSize: 10,
               },
-            ],
+              data: Object.keys(data).map((item) => {
+                let start_time = moment(item.split('~')[0]).format('MMM-D');
+                let end_time = moment(item.split('~')[1]).format('MMM-D');
+                return start_time + '~' + end_time;
+              }),
+            },
             yAxis: [
               {
-                type: 'category',
-                data: Object.keys(data),
+                type: 'value',
+                name: '数量',
                 axisLabel: {
+                  // 坐标轴刻度标签的相关设置。
+                  show: true,
+                  textStyle: {
+                    color: '#737373',
+                    fontSize: 10,
+                  },
+                },
+                axisLine: {
+                  show: true,
+                },
+                axisTick: {
                   show: false,
                 },
+                splitLine: {
+                  lineStyle: {
+                    color: 'rgba(131,101,101,0.2)',
+                    type: 'dashed',
+                  },
+                },
+                show: true,
               },
             ],
             series: [
               {
                 name: 'Balance',
-                type: 'bar',
-                label: {
-                  show: true,
-                  position: 'inside',
+                type: 'line',
+                zlevel: 11,
+                yAxisIndex: 0, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
+                smooth: true, //平滑曲线显示
+                symbol: 'circle', //标记的图形为实心圆
+                symbolSize: 8, //标记的大小
+                itemStyle: {
+                  normal: {
+                    color: '#34b063',
+                    borderColor: 'rgba(52,176,99, 0.5)', //圆点透明 边框
+                    borderWidth: 7,
+                    label: {
+                      show: false, //开启显示
+                      position: 'top', //在上方显示
+                      textStyle: {
+                        //数值样式
+                        color: '#50c878',
+                        fontSize: 12,
+                        fontWeight: 400,
+                      },
+                      formatter: function (res) {
+                        if (res.value) {
+                          return res.value + '%';
+                        } else {
+                          return 0;
+                        }
+                      },
+                    },
+                  },
                 },
-                emphasis: {
-                  focus: 'series',
+                lineStyle: {
+                  color: '#50c878',
                 },
                 data: Object.values(data).map((item) => item.balance),
               },
               {
                 name: 'Income',
                 type: 'bar',
-                stack: 'Total',
-                label: {
-                  show: true,
-                },
-                emphasis: {
-                  focus: 'series',
-                },
+                miniBarWidth: 20,
+                yAxisIndex: 0,
+
                 data: Object.values(data).map((item) => item.income),
               },
               {
                 name: 'Expenses',
                 type: 'bar',
-                stack: 'Total',
-                label: {
-                  show: true,
-                  position: 'left',
-                },
-                emphasis: {
-                  focus: 'series',
-                },
+                miniBarWidth: 20,
+                z: '-1',
+                barGap: '-100%',
+                yAxisIndex: 0,
                 data: Object.values(data).map((item) => item.payout),
               },
             ],
+            color: ['#4474c4', '#ccc'],
           };
+
+          // chartOptions0.value = {
+          //   title: {
+          //     text: 'Benefit analysis',
+          //     textStyle: {
+          //       fontSize: '14px',
+          //       color: '#4c5093',
+          //       fontWeight: 'bold',
+          //     },
+          //   },
+          //   tooltip: {
+          //     trigger: 'axis',
+          //     axisPointer: {
+          //       type: 'shadow',
+          //     },
+          //   },
+          //   legend: {
+          //     data: ['Balance', 'Expenses', 'Income'],
+          //     right: 'right',
+          //   },
+          //   grid: {
+          //     left: '3%',
+          //     right: '0%',
+          //     bottom: '10px',
+          //     containLabel: false,
+          //   },
+          //   xAxis: [
+          //     {
+          //       type: 'value',
+          //     },
+          //   ],
+          //   yAxis: [
+          //     {
+          //       type: 'category',
+          //       data: Object.keys(data),
+          //       axisLabel: {
+          //         show: false,
+          //       },
+          //     },
+          //   ],
+          //   series: [
+          //     {
+          //       name: 'Balance',
+          //       type: 'bar',
+          //       label: {
+          //         show: true,
+          //         position: 'inside',
+          //         formatter: function (params) {
+          //           if (params.value === 0) {
+          //             return ''; // 隐藏数值为0的标签
+          //           }
+          //           return params.value; // 显示非零数值的标签
+          //         },
+          //       },
+          //       emphasis: {
+          //         focus: 'series',
+          //       },
+          //       data: Object.values(data).map((item) => item.balance),
+          //     },
+          //     {
+          //       name: 'Income',
+          //       type: 'bar',
+          //       stack: 'Total',
+          //       label: {
+          //         show: true,
+          //         formatter: function (params) {
+          //           if (params.value === 0) {
+          //             return ''; // 隐藏数值为0的标签
+          //           }
+          //           return params.value; // 显示非零数值的标签
+          //         },
+          //       },
+          //       emphasis: {
+          //         focus: 'series',
+          //       },
+          //       data: Object.values(data).map((item) => item.income),
+          //     },
+          //     {
+          //       name: 'Expenses',
+          //       type: 'bar',
+          //       stack: 'Total',
+          //       label: {
+          //         show: true,
+          //         // position: 'left',
+          //         formatter: function (params) {
+          //           if (params.value === 0) {
+          //             return ''; // 隐藏数值为0的标签
+          //           }
+          //           return params.value; // 显示非零数值的标签
+          //         },
+          //       },
+          //       emphasis: {
+          //         focus: 'series',
+          //       },
+          //       data: Object.values(data).map((item) => -item.payout),
+          //     },
+          //   ],
+          // };
 
           chartOptionsReward.value = {
             tooltip: {
@@ -461,7 +641,6 @@
   .income_charts {
     width: 100%;
     min-height: 400px;
-    height: auto;
-    height: 600px;
+    height: 800px;
   }
 </style>
