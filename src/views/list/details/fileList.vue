@@ -160,7 +160,7 @@
             <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
             <p>{{ item.date || '' }}</p>
           </div>
-          <IconMore v-show="!isCheckMode && isMobileOrder.value" class="right_more" @click.stop="showAction(item)"></IconMore>
+          <IconMore v-show="!isCheckMode && isMobileOrder" class="right_more" @click.stop="showAction(item)"></IconMore>
         </div>
       </nut-infinite-loading>
       <nut-empty v-else description="No data" image="error">
