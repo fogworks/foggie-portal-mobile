@@ -160,13 +160,13 @@ export default function useShare(orderInfo, header, deviceType) {
       copyLink(shareRefContent.httpStr);
     } else if (type == 'twitter') {
       shareTwitter(shareRefContent.httpStr, shareOption);
-    } else if (type == 'slack') {
+    } else if (type == 'faceBook') {
       shareFacebook(shareRefContent.httpStr);
     }
     isReady.value = false;
   };
 
-  const getHttpShare = ( awsAccessKeyId, awsSecretAccessKey, bucketName, keyName, thumb) => {
+  const getHttpShare = (awsAccessKeyId, awsSecretAccessKey, bucketName, keyName, thumb) => {
     // awsAccessKeyId = 'FOGpmEBp2rE4dvkP2W1r'
     // awsSecretAccessKey = 'TgKOPvlv3MSQhYjuyNN0MKVBw9mZChtT7E0GVh2h'
     const objectKey = encodeURIComponent(keyName);
@@ -181,13 +181,11 @@ export default function useShare(orderInfo, header, deviceType) {
     const canonicalizedResource = `${bucketName}/o/${objectKey}`;
     const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n${expirationTime}\n${canonicalizedAmzHeaders}/${canonicalizedResource}`;
 
-
     let hmac = HmacSHA1(signature, awsSecretAccessKey);
     const signatureBase64 = enc.Base64.stringify(hmac);
 
     // let ip = `http://${orderInfo.value.rpc.split(':')[0]}:6008`;
     // const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
-
 
     let ip = `https://${bucketName}.devus.u2i.net:6008`;
     const baseUrl = `${ip}/o/${objectKey}`;
@@ -196,9 +194,7 @@ export default function useShare(orderInfo, header, deviceType) {
         signatureBase64,
       )}&thumb=true`;
     }
-    return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
-      signatureBase64,
-    )}`;
+    return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(signatureBase64)}`;
   };
   const confirmShare = () => {
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {

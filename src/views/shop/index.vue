@@ -96,7 +96,7 @@
   import IconSetting from '~icons/home/setting.svg';
   import { toRefs, reactive, onMounted } from 'vue';
   import { getCurReferenceRate } from '@/api';
-  import { buy_order, node_order_buy, node_order_search, get_average_price } from '@/api/amb';
+  import { buy_order, node_order_buy, node_order_search, get_average_price, query_node } from '@/api/amb';
   import { showToast, showDialog } from '@nutui/nutui';
   import { useRouter } from 'vue-router';
   import useDmcTrade from './useDmcTrade.js';
@@ -125,51 +125,17 @@
       buyOrderUuid: '',
       amb_user_uuid: '',
     },
+    priceNode: '',
   });
-  const { nodeInfo, showBuy, middle_price, deposit_ratio, showTop, shopForm, curReferenceRate, loading } = toRefs(state);
-  const loadCurReferenceRate = () =>
-    debounce(async () => {
-      loading.value = true;
-      let params = {
-        week: state.shopForm.week,
-        floating_ratio: state.shopForm.floating_ratio,
-        pst: state.shopForm.quantity.toFixed(0),
-      };
-      const nodeRes = await buy_order(params);
-      // let nodeIp = "http://" + nodeRes.result.node_address;
-
-      // let nodeIp = 'http://154.31.41.124:18080';
-      nodeInfo.value.buyOrderUuid = nodeRes.result.uuid;
-      nodeInfo.value.amb_user_uuid = nodeRes.result.amb_user_uuid;
-      let nodeIp = '';
-      await node_order_search(nodeInfo.value.nodeIp, {
-        week: state.shopForm.week,
-        storage: state.shopForm.quantity,
-        poolType: 'golden', //vofo.*  / golden
-        size: 5,
-      })
-        .then((res) => {
-          loading.value = false;
-          if (res.code == 200 && res.data.length) {
-            curReferenceRate.value = res.data[0].price;
-            deposit_ratio.value = res.data[0].depositRatio || 0;
-          }
-        })
-        .finally(() => {
-          loading.value = false;
-        });
-    }, 500);
+  const { priceNode, nodeInfo, showBuy, middle_price, deposit_ratio, showTop, shopForm, curReferenceRate, loading } = toRefs(state);
   const getAveragePrice = async () => {
     let params = {
       week: state.shopForm.week,
       floating_ratio: state.shopForm.floating_ratio,
       pst: state.shopForm.quantity.toFixed(0),
     };
-    const nodeRes = await buy_order(params);
-    nodeInfo.value.buyOrderUuid = nodeRes.result.uuid;
-    nodeInfo.value.amb_user_uuid = nodeRes.result.amb_user_uuid;
 
-    get_average_price(nodeInfo.value.nodeIp, {
+    get_average_price(priceNode.value, {
       week: state.shopForm.week,
       storage: state.shopForm.quantity,
       poolType: 'golden', //vofo.*  / golden
@@ -208,16 +174,8 @@
       floating_ratio: state.shopForm.floating_ratio / 100,
       pst: state.shopForm.quantity.toFixed(0),
     };
-    const nodeRes = await buy_order(params);
-    if (!nodeRes) {
-      loading.value = false;
-    }
-    // let nodeIp = "http://" + nodeRes.result.node_address;
 
-    // let nodeIp = 'http://154.31.41.124:18080';
-    nodeInfo.value.buyOrderUuid = nodeRes.result.uuid;
-    nodeInfo.value.amb_user_uuid = nodeRes.result.amb_user_uuid;
-    await node_order_search(nodeInfo.value.nodeIp, {
+    node_order_search(priceNode.value, {
       week: state.shopForm.week,
       storage: state.shopForm.quantity,
       poolType: 'golden', //vofo.*  / golden
@@ -235,7 +193,7 @@
         loading.value = false;
       });
   }
-  const confirmBuy = () => {
+  const confirmBuy = async () => {
     // let nodeIp ='http://'+ res.result.node_address;
     // let nodeIp = 'http://154.31.41.124:18080';
     if (cloudBalance.value < totalPrice.value) {
@@ -245,7 +203,22 @@
       return false;
     }
     loading.value = true;
+    let params = {
+      week: state.shopForm.week,
+      floating_ratio: state.shopForm.floating_ratio / 100,
+      pst: state.shopForm.quantity.toFixed(0),
+    };
+    const nodeRes = await buy_order(params);
+    console.log(nodeRes);
 
+    if (nodeRes.code !== 200) {
+      showToast.fail(`Apologies for the delay, Please Try Again Later`);
+      loading.value = false;
+      return false;
+    }
+
+    nodeInfo.value.buyOrderUuid = nodeRes.result.uuid;
+    nodeInfo.value.amb_user_uuid = nodeRes.result.amb_user_uuid;
     node_order_buy(nodeInfo.value.nodeIp, {
       minPrice: curReferenceRate.value / 10000,
       maxPrice: ((curReferenceRate.value / 10000) * (1 + state.shopForm.floating_ratio / 100)).toFixed(4),
@@ -258,25 +231,46 @@
       deviceType: 3,
       poolType: 'golden', //vofo.*  / golden
     })
-      .then(() => {
+      .then((res) => {
         loading.value = false;
         showTop.value = false;
         showBuy.value = false;
-        const dmcOk = () => {
-          router.push('/home');
-        };
-        let src = require('@/assets/DMC_token.png');
-        let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Order request has been initiated, please check the order result in the order record later.</p >`;
-        showDialog({
-          title: 'Purchase Successfully',
-          content: str,
-          onOk: dmcOk,
-        });
+        if (res.code == 200) {
+          const dmcOk = () => {
+            router.push('/home');
+          };
+          let src = require('@/assets/DMC_token.png');
+          let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Order request has been initiated, please check the order result in the order record later.</p >`;
+          showDialog({
+            title: 'Purchase Successfully',
+            content: str,
+            onOk: dmcOk,
+          });
+        } else {
+          loading.value = false;
+        }
+
         // showToast.success('Order request has been initiated, please check the order result in the order record later.');
         // router.push('/home');
       })
       .catch(() => {
         loading.value = false;
+      });
+  };
+  const queryPriceNode = () => {
+    return query_node()
+      .then((res) => {
+        if (res.code == 200) {
+          const nodeList = res.result.data.filter((el) => el.is_active);
+          // priceNode.value = `http://${nodeList?.[0].ip_address}:28080`;
+          // if (priceNode.value) return true;
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .catch(() => {
+        return false;
       });
   };
   watch(
@@ -289,13 +283,18 @@
     { deep: true },
   );
 
-  onMounted(() => {
-    getAveragePrice();
-    // loadCurReferenceRate();
+  onMounted(async () => {
+    let res = await queryPriceNode();
+    if (res) {
+      getAveragePrice();
+    }
     getUserAssets();
   });
-  onActivated(() => {
-    getAveragePrice();
+  onActivated(async () => {
+    let res = await queryPriceNode();
+    if (res) {
+      getAveragePrice();
+    }
     getUserAssets();
   });
 </script>
@@ -485,7 +484,7 @@
   .price_box {
     position: relative;
     width: 80%;
-    margin: 0 auto;
+    margin: 5px auto;
     padding: 40px;
     color: #fff;
     border-radius: 50px;

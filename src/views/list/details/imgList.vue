@@ -69,10 +69,12 @@
   import { get_timeline } from '@/api';
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
   import { oodFileList, GetFileListAll, GetCloudFileListAll } from '@/api/myFiles';
+  import { showToast } from '@nutui/nutui';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   import useOrderInfo from './useOrderInfo.js';
   import imgUrl from '@/assets/DMC_token.png';
+  import loadingImg from '@/components/loadingImg/index.vue';
   let server;
   // import { isCloudCanUpload_Api } from '@/api/upload';
   const { header, token, deviceType, orderInfo, bucketName, getOrderInfo } = useOrderInfo();
@@ -120,6 +122,13 @@
   const tableData = ref([]);
   const getTimeLine = () => {
     return new Promise((resolve, reject) => {
+      showToast.loading('Loading', {
+        cover: true,
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
+        id: 'order_info_id',
+      });
       const getMethod = (date = '') => {
         let interval = 'year';
         if (!date) {
@@ -136,7 +145,6 @@
         let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
         server = new grpcService.default.ServiceClient(ip, null, null);
 
-
         let ProxTimeLine = new Prox.default.ProxTimeLine();
         ProxTimeLine.setHeader(header);
         ProxTimeLine.setInterval(interval);
@@ -150,6 +158,9 @@
                 count: el.getCount(),
               };
             });
+            if (!content.length) {
+              showToast.hide('order_info_id');
+            }
             for (let k = content.length - 1; k >= 0; k--) {
               if (content[k].count) {
                 timeLine.value.push(content[k].date);
@@ -218,7 +229,6 @@
     let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
-
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix('');
     listObject.setDelimiter('');
@@ -266,6 +276,7 @@
           prefixpins: res.getPrefixpinsList(),
         };
         console.log(transferData, 'transferData');
+
         initRemoteData(transferData, reset, date);
       } else if (err) {
         tableLoading.value = false;
@@ -350,7 +361,7 @@
     } else {
       continuationToken.value = '';
     }
-
+    showToast.hide('order_info_id');
     tableLoading.value = false;
   };
   const init = async () => {

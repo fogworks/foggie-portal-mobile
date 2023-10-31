@@ -6,8 +6,8 @@
         <div :class="['list_header']">
           <div style="display: flex">
             <template v-if="!prefix.length">
-              <!-- <div class="top_back" @click="router.go(-1)"> </div> -->
-              <TopBack> </TopBack>
+              <div class="top_back" @click="router.go(-1)"> </div>
+              <!-- <TopBack> </TopBack> -->
 
               <span class="top_title">
                 {{ fileTypeText[category] }}
@@ -326,17 +326,32 @@
           <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
         </div>
         <div v-if="shareRefContent.httpStr">
-          <IconHttp @click="isReady = true"></IconHttp>
+          <IconHttp
+            @click="
+              shareType = '';
+              isReady = true;
+            "
+          ></IconHttp>
           HTTP Link
           <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
         <div v-if="shareRefContent.httpStr">
-          <IconTwitter @click="isReady = true"></IconTwitter>
+          <IconTwitter
+            @click="
+              shareType = 'twitter';
+              isReady = true;
+            "
+          ></IconTwitter>
           Twitter
           <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
         <div v-if="shareRefContent.httpStr">
-          <IconFacebook @click="isReady = true"></IconFacebook>
+          <IconFacebook
+            @click="
+              shareType = 'faceBook';
+              isReady = true;
+            "
+          ></IconFacebook>
           Facebook
           <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
@@ -345,7 +360,10 @@
     <Teleport to="body">
       <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-        <div class="middle_img">
+        <!-- <HLSVideo :imgUrl="imgUrl"></HLSVideo> -->
+
+        <div v-if="imgUrl" class="middle_img">
+          <!-- v-if="chooseItem.type.split('/')[0] == 'video'" -->
           <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
             <template #loading>
               <Loading width="16px" height="16px" name="loading" />
@@ -398,6 +416,7 @@
   import { rename_objects } from '@/api';
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
+  import HLSVideo from './hlsVideo.vue';
   // import { ProxListObjectsRequest, ProxListObjectsReq, ProxHeader } from '@/pb/prox_pb.js';
   // import Prox from '@/pb/prox_pb.ts';
   import * as Prox from '@/pb/prox_pb.js';
@@ -450,9 +469,17 @@
     shareType: '',
   });
   const imgListRef = ref('');
-  const isMobileOrder = inject('isMobileOrder');
+  const isMobileOrder = computed(() => {
+    if (orderInfo.value.mobile_upload || orderInfo.value.mobile_upload === undefined) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  provide('isMobileOrder', isMobileOrder);
 
   const {
+    shareType,
     tableLoading,
     showTypeCheckPop,
     newName,
@@ -569,6 +596,7 @@
           prefixChange();
         } else {
           chooseItem.value = row;
+          console.log(chooseItem.value, 'chooseItem.value');
           detailShow.value = true;
           imgUrl.value = row.imgUrlLarge;
         }
@@ -982,7 +1010,9 @@
       // foggie://peerid/spaceid/cid
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
-
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+      // item.contentType = "video/mp4";
     } else {
       isSystemImg = true;
     }
@@ -1087,6 +1117,7 @@
 
       // let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
       const imgData = await handleImg(data.content[j], type, isDir);
+      console.log('----------contentType', data?.content[j].contentType);
       const url = imgData.imgHttpLink;
       const isSystemImg = imgData.isSystemImg;
       const url_large = imgData.imgHttpLarge;
@@ -1411,7 +1442,7 @@
     .bottom_action {
       display: flex;
       justify-content: space-evenly;
-      height: 300px;
+      height: 200px;
       div {
         text-align: center;
         color: #fff;
@@ -1433,6 +1464,7 @@
   }
   .top_title {
     margin-left: 80px;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
   }
   .check_top {
     display: flex;

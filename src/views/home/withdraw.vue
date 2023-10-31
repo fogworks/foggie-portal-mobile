@@ -102,7 +102,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
   import useUserAssets from './useUserAssets.ts';
-  import { get_otp, verify_otp_token, withdraw_otp, check_bind_otp, get_commission_rate } from '@/api/amb';
+  import { get_otp, verify_otp_token, withdraw_otp, check_bind_otp, get_commission_rate, user_withdraw } from '@/api/amb';
   const userStore = useUserStore();
   const dmc = computed(() => userStore.getUserInfo.dmc);
   const email = computed(() => userStore.getUserInfo.email);
@@ -256,11 +256,15 @@
       loadingRotate: false,
     });
     if (!amount.value) return false;
-    user_withdraw({ quantity: amount.value, token: window.btoa(code.value) })
+    user_withdraw({ quantity: +amount.value, token: window.btoa(code.value) })
       .then((res) => {
-        showToast.hide();
-        showToast.success('Withdrawal successful');
-        router.go(-1);
+        if (res.code == 200) {
+          showToast.hide();
+          showToast.success('Withdrawal successful');
+        } else {
+          showToast.hide();
+          showToast.fail(res.message);
+        }
       })
       .catch(() => {
         showToast.hide();

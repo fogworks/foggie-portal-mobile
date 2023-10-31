@@ -55,10 +55,11 @@ export function get_user_dmc() {
     method: 'GET',
   });
 }
-export function user_withdraw() {
+export function user_withdraw(data) {
   return request({
     url: '/ambmgr/asset/user_withdraw',
-    method: 'GET',
+    method: 'POST',
+    data,
   });
 }
 export function node_order_buy(ip, data) {
@@ -178,5 +179,15 @@ export function update_order_size(data) {
     url: '/ambmgr/order/update_order_size',
     method: 'POST',
     data,
+  });
+}
+export function query_node() {
+  return request({
+    url: '/ambmgr/node/query_node',
+    method: 'GET',
+    params: {
+      ps: 10,
+      pn: 1,
+    },
   });
 }

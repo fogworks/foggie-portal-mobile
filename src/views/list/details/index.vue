@@ -24,7 +24,7 @@
       <nut-col :span="24" class="order-count">
         <nut-cell>
           <IconMdiF color="#9F9BEF" />
-          File:1000
+          File:{{ filesCount }}
         </nut-cell>
         <nut-cell>
           <IconSpace color="#7F7AE9" />
@@ -105,8 +105,8 @@
         >
           <template #icon-name>
             <template v-if="uploadStatus == 'uploading'">
-              <div  style="display: flex; justify-content: space-between;width: 100%;">
-                <div style="margin-left: 25px;"> {{ curUploadFileSize }}</div>
+              <div style="display: flex; justify-content: space-between; width: 100%">
+                <div style="margin-left: 25px"> {{ curUploadFileSize }}</div>
                 <div>
                   <span>{{ uploadProgress }} %</span>
                   <em style="margin-left: 10px">{{ formatedAverageSpeed }}</em>
@@ -182,7 +182,9 @@
             >
             </nut-picker>
           </nut-popup>
-          <nut-button type="info" block @click="() => confirmHttpShare(shareType, detailRow)">Confirm</nut-button>
+          <nut-button type="info" block @click="() => confirmHttpShare(shareType, detailRow, accessKeyId, secretAccessKey, bucketName)"
+            >Confirm</nut-button
+          >
         </div>
         <div class="share_info_box" v-else>
           <div v-if="shareRefContent.ipfsStr && +detailRow.originalSize <= orderInfo.value.total_space * 0.01">
@@ -191,17 +193,32 @@
             <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
           </div>
           <div v-if="shareRefContent.httpStr">
-            <IconHttp @click="isReady = true"></IconHttp>
+            <IconHttp
+              @click="
+                shareType = '';
+                isReady = true;
+              "
+            ></IconHttp>
             HTTP Link
             <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
           </div>
           <div v-if="shareRefContent.httpStr">
-            <IconTwitter @click="isReady = true"></IconTwitter>
+            <IconTwitter
+              @click="
+                shareType = 'twitter';
+                isReady = true;
+              "
+            ></IconTwitter>
             Twitter
             <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
           </div>
           <div v-if="shareRefContent.httpStr">
-            <IconFacebook @click="isReady = true"></IconFacebook>
+            <IconFacebook
+              @click="
+                shareType = 'faceBook';
+                isReady = true;
+              "
+            ></IconFacebook>
             Facebook
             <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
           </div>
@@ -324,7 +341,6 @@
       return false;
     }
   });
-  provide('isMobileOrder', isMobileOrder);
 
   const dialogVisible = ref<boolean>(false);
 
@@ -350,6 +366,7 @@
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
   const minerIp = ref<string>('');
+  const shareType = ref<any>('');
   // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
   // order_id.value = '1281';
   memo.value = route.query.uuid;
@@ -375,38 +392,40 @@
         }
       } else {
         if (isDisabled.value) {
-          showToast.success('Merkle creation is complete and you can proceed to upload the file');
+          // showToast.success('Merkle creation is complete and you can proceed to upload the file');
         }
         isDisabled.value = false;
       }
     });
   };
   const beforeupload = (file: any) => {
-  return new Promise(async (resolve, reject) => {
-    let nowTime = new Date().getTime();
-    let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
-    let time = ((+endTime - +nowTime) / 1000).toFixed(0);
-    if (time > 4 * 60) {
-      time = time - 60 * 60;
-    }
-    if (time > 0) {
-      let content = 'Upload files after ' + getSecondTime(+time);
-      showToast.fail(content);
-      reject(false);
-    }
-    const fileCopy = file[0]; // 保存file变量的副本
-    const d = {
-      orderId: order_id.value,
-    };
-    let merkleRes = await valid_upload(d);
-    if (merkleRes?.data) {
-      isDisabled.value = false;      
-    } else {
-      showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
-      isDisabled.value = true;
-      getMerkleState(true);
-      reject();
-    }
+    return new Promise(async (resolve, reject) => {
+      console.log('upload-----------', bucketName.value);
+      let nowTime = new Date().getTime();
+      let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
+      let time = ((+endTime - +nowTime) / 1000).toFixed(0);
+      if (time > 4 * 60) {
+        time = time - 60 * 60;
+      }
+      if (time > 0) {
+        let content = 'Upload files after ' + getSecondTime(+time);
+        showToast.fail(content);
+        reject(false);
+      }
+      const fileCopy = file[0]; // 保存file变量的副本
+      const d = {
+        orderId: order_id.value,
+      };
+      let merkleRes = await valid_upload(d);
+      console.log('----------vaild', merkleRes);
+      if (merkleRes?.data) {
+        isDisabled.value = false;
+      } else {
+        // showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
+        isDisabled.value = true;
+        getMerkleState(true);
+        reject();
+      }
 
       uploadUri.value = `https://${bucketName.value}.devus.u2i.net:6008/o/`;
 
@@ -421,14 +440,14 @@
       };
       const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
 
-    let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
-    const signature = enc.Base64.stringify(hmac);
+      let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
+      const signature = enc.Base64.stringify(hmac);
 
-    formData.value = {};
-    formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
-    formData.value.Policy = policyBase64;
-    formData.value.Signature = signature;
-    formData.value.Awsaccesskeyid = accessKeyId.value;
+      formData.value = {};
+      formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
+      formData.value.Policy = policyBase64;
+      formData.value.Signature = signature;
+      formData.value.Awsaccesskeyid = accessKeyId.value;
 
       formData.value.category = getType(fileCopy.name);
       resolve([fileCopy]);
@@ -692,6 +711,9 @@
   };
 
   const onStart = ({ options }: any) => {
+    uploadProgress.value = 0;
+    uploadProgressIsShow.value = true;
+    uploadStatus.value = 'uploading';
     console.log('onStart', options);
   };
 
@@ -705,9 +727,6 @@
   };
 
   const onChange = ({ fileList, event }: any) => {
-    uploadProgress.value = 0;
-    uploadProgressIsShow.value = true;
-    uploadStatus.value = 'uploading';
     console.log('--------------2');
     console.log('onChange', fileList, event);
   };
@@ -784,24 +803,19 @@
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       console.log('--------imgHttpLarge', imgHttpLarge);
-
-    
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
-     
     } else {
       isSystemImg = true;
     }
     if (isDir) {
       isSystemImg = true;
-     
     }
     console.log({ imgHttpLink, isSystemImg, imgHttpLarge }, '{ imgHttpLink, isSystemImg, imgHttpLarge }');
 
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
-    
     let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
     let listObject = new Prox.default.ProxListObjectsRequest();
@@ -1060,7 +1074,6 @@
     console.log(orderInfo.value, bucketName.value);
 
     if (bucketName.value) {
-
       getSummary();
       // let key = await getKeys();
       getFileList();
@@ -1078,8 +1091,21 @@
       if (err) {
         console.log('err------:', err);
         // reject(false);
-      } else if (res.array.length > 0) {
-        filesCount.value = res.contents?.[0]?.count || 0;
+      } else {
+        const contentList = res.getContentsList().map((el) => {
+          return {
+            count: el.getCount(),
+            id: el.getId(),
+            total: el.getTotal(),
+          };
+        });
+        console.log(contentList, 're!!!!!!!!!!!!!!!!!!!!!!!!s');
+
+        filesCount.value = contentList?.[0]?.count || 0;
+        // spaceFileCount.value = res.contents?.[0]?.count || 0;
+
+        // reject(true);
+        // console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
       }
     });
   };
@@ -1111,6 +1137,7 @@
     },
     { deep: true },
   );
+  provide('isMobileOrder', isMobileOrder);
 </script>
 
 <style lang="scss" scoped>
@@ -1138,7 +1165,7 @@
     .bottom_action {
       display: flex;
       justify-content: space-evenly;
-      height: 300px;
+      height: 200px;
 
       div {
         text-align: center;
