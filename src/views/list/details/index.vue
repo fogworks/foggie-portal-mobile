@@ -365,16 +365,14 @@
       orderId: order_id.value,
     };
     let merkleRes = await valid_upload(d);
+    console.log('----------vaild', merkleRes);
     if (merkleRes?.data?.data) {
+      isDisabled.value = false;      
+    } else {
       showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
-      // TODO
       isDisabled.value = true;
       getMerkleState(true);
       return;
-    } else if (merkleRes?.data) {
-      isDisabled.value = false;
-    } else {
-      showToast.fail('Failed to get Merkle status. Please try again.');
     }
 
     // bucketName.value = 'test11111';
@@ -383,7 +381,7 @@
 
     // uploadUri.value = '/fog/baeqacmjq/foggiebucket';
     // uploadUri.value = '/o/foggiebucket';
-    uploadUri.value = `http://${bucketName.value}.devus.u2i.net:6008/o/`;
+    uploadUri.value = `https://${bucketName.value}.devus.u2i.net:6008/o/`;
     // uploadUri.value = '/o';
 
     const policy = {
@@ -395,16 +393,16 @@
         ['starts-with', '$Content-Type', ''], // Content-Type 为空
       ],
     };
-    console.log('policy', policy);
+    // console.log('policy', policy);
     // 将 POST Policy 转换为 JSON 字符串
     const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
-    console.log('policyBase64', policyBase64);
+    // console.log('policyBase64', policyBase64);
 
     let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
     const signature = enc.Base64.stringify(hmac);
     console.log(file, 'filefilefile');
 
-    console.log('signature', signature);
+    console.log('signature4-----------------', signature);
     formData.value = {};
     formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
     formData.value.Policy = policyBase64;
@@ -478,7 +476,7 @@
     if (type === 'download') {
       const objectKey = encodeURIComponent(checkData.fullName);
       const headers = getSignHeaders(objectKey);
-      const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
+      const url = `https://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
       fetch(url, { method: 'GET', headers })
         .then((response) => {
           if (response.ok) {
@@ -795,7 +793,10 @@
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
     // let ip = orderInfo.value.rpc.split(':')[0];
-    let ip = `http://${bucketName.value}.devus.u2i.net:7007`;
+    // let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    // server = new grpcService.default.ServiceClient(ip, null, null);
+
+    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     // header.setToken(token.value.split('bearer ')[1]);
@@ -1034,7 +1035,7 @@
 
   const getKeys = () => {
     return new Prmise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
+      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
       let request = new Prox.default.ProxGetCredRequest();
       request.setHeader(header);
       // console.log('request-----------------getkeys', request);
@@ -1086,18 +1087,19 @@
     let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
     let request = new Prox.default.ProxRequestSummaryIds();
     request.setHeader(header);
-    request.setIds([orderInfo.value.foggie_id]);
+    console.log('------------------------', request)
+    request.setIdsList([orderInfo.value.foggie_id]);
     // console.log('request-----------------getkeys', request);
     server.summaryInfo(request, {}, (err: any, res: { array: any }) => {
       if (err) {
         console.log('err------:', err);
-        reject(false);
+        // reject(false);
       } else if (res.array.length > 0) {
         console.log(res, 'ressssssssssssssss');
         filesCount.value = res.contents?.[0]?.count || 0;
         // spaceFileCount.value = res.contents?.[0]?.count || 0;
 
-        reject(true);
+        // reject(true);
         // console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
       }
     });

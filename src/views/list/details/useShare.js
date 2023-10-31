@@ -98,8 +98,13 @@ export default function useShare(orderInfo, header, deviceType) {
     ProxPinReq.setHeader(header);
     ProxPinReq.setRequest(request);
     ProxPinReq.setPay(pinPay);
-    let ip = orderInfo.value.rpc.split(':')[0];
-    let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+    // let ip = orderInfo.value.rpc.split(':')[0];
+    // let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+    let bucketName = orderInfo.value.domain;
+
+    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let server = new grpcService.default.ServiceClient(ip, null, null);
+
     showToast.text('IPFS link will available later.');
     server.pin(ProxPinReq, {}, (err, res) => {
       if (res) {
@@ -113,7 +118,8 @@ export default function useShare(orderInfo, header, deviceType) {
 
     if (key) {
       let foggie_id = orderInfo.value.foggie_id;
-      let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
+      // let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
+      let httpStr = `https://${bucketName.value}.devus.u2i.net:6008/o/${item.cid}`;
       let ipfsStr = item.cid ? `ipfs://${item.cid}` : '';
       shareRefContent.ipfsStr = ipfsStr;
       shareRefContent.httpStr = httpStr;
@@ -182,7 +188,8 @@ export default function useShare(orderInfo, header, deviceType) {
     // let ip = `http://${orderInfo.value.rpc.split(':')[0]}:6008`;
     // const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
 
-    let ip = `http://${bucketName}.devus.u2i.net:6008`;
+
+    let ip = `https://${bucketName}.devus.u2i.net:6008`;
     const baseUrl = `${ip}/o/${objectKey}`;
     if (thumb) {
       return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(

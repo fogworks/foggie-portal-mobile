@@ -42,7 +42,7 @@ export default function useOrderInfo() {
     bucketName.value = orderInfo.value.domain;
     if (bucketName.value && getKey) {
       return new Promise((resolve, reject) => {
-        let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
+        let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
         let request = new Prox.default.ProxGetCredRequest();
         request.setHeader(header);
         server.listCreds(request, {}, (err, res) => {
