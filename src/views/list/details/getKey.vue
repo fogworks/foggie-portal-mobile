@@ -141,7 +141,6 @@
 
     methods: {
       add() {
-        console.log(dynamicForm.state.tels.length, 'aaa');
         if (dynamicForm.state.tels.length === 5 || dynamicForm.state.tels.length > 5) {
           showToast.text('Sorry,Generate up to 5 Access Key and Secret Key for you');
           return;
@@ -153,7 +152,6 @@
         const accessKeyBytes = generateRandomBytes(20);
         const ak = cleanString(encodeBase64(accessKeyBytes), 20);
 
-        console.log('gener ak sk:', ak, sk);
         // let ip = 'http://154.31.3.222:7007'
         let server = new pb.default.ServiceClient(ip.value, null, null);
 
@@ -172,13 +170,10 @@
         request.setHeader(header);
         request.setCred(cred);
 
-        // console.log("server.generateCred=:", server.generateCred);
-
         server.generateCred(request, {}, (err: any, res: any) => {
           if (err) {
             console.log('err------generateCred:', err);
           }
-          console.log('res------generateCred:', res);
         });
 
         dynamicForm.state.tels.push({
@@ -196,8 +191,6 @@
   const generateRandomBytes = (n: number): Buffer => {
     let keyStr = Math.random().toString();
     const randomBytesBuffer = AESHelper.encrypt(n.toString(), keyStr);
-    console.log('randomBytesBuffer', randomBytesBuffer);
-    console.log('randomBytesBuffer', Buffer.from(randomBytesBuffer));
     return Buffer.from(randomBytesBuffer);
   };
 
@@ -277,7 +270,6 @@
       } else {
         dynamicForm.state.tels.splice(index, 1);
       }
-      console.log('res------:', res.array);
     });
   };
 

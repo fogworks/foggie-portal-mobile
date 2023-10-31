@@ -764,35 +764,8 @@
       // const bucketName = 'test11111';
       const objectKey = encodeURIComponent(checkData[0].fullName);
 
-      // console.log('==================', accessKeyId.value, secretAccessKey.value, bucketName.value, objectKey);
-
-      // const date = new Date().toUTCString();
-
-      // const httpMethod = 'GET';
-      // const contentType = '';
-      // const contentMd5 = '';
-      // const canonicalizedAmzHeaders = '';
-      // // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
-      // const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
-
-      // const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
-      // console.log(signature, 'signature');
-
-      // let hmac = HmacSHA1(signature, secretAccessKey.value);
-      // const signatureBase64 = enc.Base64.stringify(hmac);
-      // console.log(signatureBase64, 'signatureBase64');
-
-      // const headers = {
-      //   'x-amz-date': date,
-      //   Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
-      // };
-
       const headers = getSignHeaders(objectKey);
 
-      // 构建 S3 GET 请求
-      // const url = `/o/${bucketName}/${objectKey}`;
-      // const url = `/o/${objectKey}`;
-      // const url = `/o/${objectKey}?thumb=true`;
       const url = `https://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
 
       fetch(url, { method: 'GET', headers })
@@ -1002,99 +975,20 @@
     let peerId = orderInfo.value.peer_id;
     if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
       type = 'img';
-      // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
-      // imgHttpLink = `${location}/object?pubkey=${pubkey}&new_w=${size}`;
-      // let token = store.getters.token;
-      // imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-      //   deviceType.value == 'space' ? 'space' : 'foggie'
-      // }&token=${token.value}&thumb=true`;
-      // imgHttpLarge = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-      //   deviceType.value == 'space' ? 'space' : 'foggie'
-      // }&token=${token.value}`;
-      // let bucketName = 'foggiebucket';
-      // imgHttpLink = `/o/${bucketName.value}/${encodeURIComponent(item.key)}?thumb=true`;
       const headers = getSignHeaders(encodeURIComponent(item.key));
 
-      // const params = new URLSearchParams(headers);
-      // imgHttpLink = `/o/${encodeURIComponent(item.key)}?${params.toString()}&thumb=true`;
-      // imgHttpLarge = `/o/${encodeURIComponent(item.key)}?${params.toString()}`;
-      // console.log('imgHttpLink------------', imgHttpLink);
-
-      // const url = `/o/${encodeURIComponent(item.key)}?`
-      console.log('-----------------img-headers', headers);
-      // imgHttpLarge = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
-      // imgHttpLink = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
-      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
-      console.log('--------imgHttpLarge', imgHttpLarge);
-
-      // await fetch(url, { method: 'GET', headers })
-      //   .then((response) => {
-      //     if (response.ok) {
-      //       // 创建一个 Blob 对象，并将响应数据写入其中
-      //       console.log('Success------img', response);
-      //       return response.blob();
-      //     } else {
-      //       // 处理错误响应
-      //       console.error('Error:----img', response.status, response.statusText);
-      //     }
-      //   })
-      //   .then((blob) => {
-      //     if (blob) {
-      //       imgHttpLarge = URL.createObjectURL(blob);
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     // 处理网络错误
-      //     console.error('Network Error:---img', error);
-      //   });
-      // const url_thumb = `/o/${encodeURIComponent(item.key)}?thumb=true`
-
-      // await fetch(url_thumb, { method: 'GET', headers })
-      //     .then((response) => {
-      //       if (response.ok) {
-      //         // 创建一个 Blob 对象，并将响应数据写入其中
-      //         console.log('Success', response);
-      //         return response.blob();
-      //       } else {
-      //         // 处理错误响应
-      //         console.error('Error:', response.status, response.statusText);
-      //       }
-      //     })
-      //     .then((blob) => {
-      //       if (blob) {
-      //         imgHttpLink = URL.createObjectURL(blob);
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       // 处理网络错误
-      //       console.error('Network Error:', error);
-      //     });
-
       // foggie://peerid/spaceid/cid
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
-      // item.contentType = "video/mp4";
 
-      // imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-      //   deviceType.value == 'space' ? 'space' : 'foggie'
-      // }&token=${token.value}&thumb=true`;
     } else {
       isSystemImg = true;
-      // imgHttpLink =
-      //   theme === "light"
-      //     ? require(`@/assets/logo-dog.svg`)
-      //     : require(`@/assets/logo-dog-black.svg`);
     }
     if (isDir) {
       isSystemImg = true;
-      // imgHttpLink =
-      //   theme === "light"
-      //     ? require(`@/assets/logo-dog.svg`)
-      //     : require(`@/assets/logo-dog-black.svg`);
     }
-    console.log({ imgHttpLink, isSystemImg, imgHttpLarge }, '{ imgHttpLink, isSystemImg, imgHttpLarge }');
 
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
@@ -1129,10 +1023,8 @@
         tableData.value = [];
       }
     }
-    console.log('----------ak---1', accessKeyId.value, bucketName.value);
     if (!accessKeyId.value) {
       await getOrderInfo();
-      console.log('----------ak---2', accessKeyId.value);
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = decodeURIComponent(data.commonPrefixes[i]);
@@ -1194,9 +1086,7 @@
       // imgHttpLink, isSystemImg, imgHttpLarge
 
       // let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
-      console.log('----------ak---3', accessKeyId.value, bucketName.value);
       const imgData = await handleImg(data.content[j], type, isDir);
-      console.log('----------ak---4', imgData);
       const url = imgData.imgHttpLink;
       const isSystemImg = imgData.isSystemImg;
       const url_large = imgData.imgHttpLarge;
@@ -1399,25 +1289,16 @@
   };
 
   const getSignHeaders = (objectKey) => {
-    // const objectKey = encodeURIComponent(checkData[0].fullName);
-
-    console.log('==================1', accessKeyId.value, secretAccessKey.value, bucketName.value, objectKey);
-
     const date = new Date().toUTCString();
-
     const httpMethod = 'GET';
     const contentType = '';
     const contentMd5 = '';
     const canonicalizedAmzHeaders = '';
-    // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
     const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
-
     const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
-    console.log(signature, 'signature');
 
     let hmac = HmacSHA1(signature, secretAccessKey.value);
     const signatureBase64 = enc.Base64.stringify(hmac);
-    console.log(signatureBase64, 'signatureBase64');
 
     const headers = {
       'x-amz-date': date,
@@ -1425,50 +1306,6 @@
     };
     return headers;
   };
-  // const getKeys = () => {
-  //   if (orderInfo.value && orderInfo.value.peer_id) {
-  //     let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
-  //     let request = new Prox.default.ProxGetCredRequest();
-  //     request.setHeader(header);
-  //     server.listCreds(request, {}, (err: any, res: { array: any }) => {
-  //       if (err) {
-  //         console.log('err------111:', err);
-  //       } else if (res.array.length > 0) {
-  //         accessKeyId.value = res.array[0][0][0];
-  //         secretAccessKey.value = res.array[0][0][1];
-  //         console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
-  //       }
-  //     });
-  //   } else {
-  //     setTimeout(() => {
-  //       getKeys();
-  //     }, 600);
-  //   }
-  // };
-
-  // const getKeys = () => {
-  //   console.log('getKeys--------------');
-  //   let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
-  //   let request = new Prox.default.ProxGetCredRequest();
-
-  //   // let header = new grpcService.default.ProxHeader();
-
-  //   // header.setPeerid('12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp');
-  //   // header.setId('baeqagmrygu');
-  //   // header.setToken('SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b');
-
-  //   console.log(header, 'header---ak', bucketName.value);
-  //   request.setHeader(header);
-  //   server.listCreds(request, {}, (err: any, res: { array: any }) => {
-  //     if (err) {
-  //       console.log('err------:ak sk', err);
-  //     } else if (res.array.length > 0) {
-  //       console.log('----------ak, sk', res.array);
-  //       accessKeyId.value = res.array[0][0][0];
-  //       secretAccessKey.value = res.array[0][0][1];
-  //     }
-  //   });
-  // };
   const prefixChange = () => {
     cancelSelect();
     doSearch('', prefix.value, true);
@@ -1483,7 +1320,6 @@
       }
       if (val == 1) {
       } else {
-        console.log('category--------------', val, orderInfo.value);
         if (!orderInfo?.value?.id) {
           await getOrderInfo();
         }
@@ -1566,6 +1402,11 @@
     box-sizing: border-box;
 
     .middle_img {
+      max-height: 50vw;
+      .nut-image {
+        width: 100%;
+        height: 100%;
+      }
     }
     .bottom_action {
       display: flex;

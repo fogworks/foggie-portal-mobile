@@ -54,7 +54,6 @@ export default function useOrderInfo() {
             accessKeyId.value = res.array[0][0][0];
             secretAccessKey.value = res.array[0][0][1];
             showToast.hide('order_info_id');
-            console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
             resolve(true);
           }
         });

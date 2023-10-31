@@ -404,13 +404,6 @@
     },
   );
 
-  // watch(
-  //   imgData,
-  //   () => {
-  //     console.log(imgData.value, 'imgDataimgData');
-  //   },
-  //   { deep: true },
-  // );
   watch(
     isReady,
     (val) => {

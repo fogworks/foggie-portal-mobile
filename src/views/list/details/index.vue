@@ -382,33 +382,31 @@
     });
   };
   const beforeupload = (file: any) => {
-    return new Promise(async (resolve, reject) => {
-      console.log('upload-----------', bucketName.value);
-      let nowTime = new Date().getTime();
-      let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
-      let time = ((+endTime - +nowTime) / 1000).toFixed(0);
-      if (time > 4 * 60) {
-        time = time - 60 * 60;
-      }
-      if (time > 0) {
-        let content = 'Upload files after ' + getSecondTime(+time);
-        showToast.fail(content);
-        reject(false);
-      }
-      const fileCopy = file[0]; // 保存file变量的副本
-      const d = {
-        orderId: order_id.value,
-      };
-      let merkleRes = await valid_upload(d);
-      console.log('----------vaild', merkleRes);
-      if (merkleRes?.data) {
-        isDisabled.value = false;
-      } else {
-        showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
-        isDisabled.value = true;
-        getMerkleState(true);
-        reject();
-      }
+  return new Promise(async (resolve, reject) => {
+    let nowTime = new Date().getTime();
+    let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
+    let time = ((+endTime - +nowTime) / 1000).toFixed(0);
+    if (time > 4 * 60) {
+      time = time - 60 * 60;
+    }
+    if (time > 0) {
+      let content = 'Upload files after ' + getSecondTime(+time);
+      showToast.fail(content);
+      reject(false);
+    }
+    const fileCopy = file[0]; // 保存file变量的副本
+    const d = {
+      orderId: order_id.value,
+    };
+    let merkleRes = await valid_upload(d);
+    if (merkleRes?.data) {
+      isDisabled.value = false;      
+    } else {
+      showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
+      isDisabled.value = true;
+      getMerkleState(true);
+      reject();
+    }
 
       uploadUri.value = `https://${bucketName.value}.devus.u2i.net:6008/o/`;
 
@@ -423,16 +421,14 @@
       };
       const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
 
-      let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
-      const signature = enc.Base64.stringify(hmac);
-      console.log(file, 'filefilefile');
+    let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
+    const signature = enc.Base64.stringify(hmac);
 
-      console.log('signature4-----------------', signature);
-      formData.value = {};
-      formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
-      formData.value.Policy = policyBase64;
-      formData.value.Signature = signature;
-      formData.value.Awsaccesskeyid = accessKeyId.value;
+    formData.value = {};
+    formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
+    formData.value.Policy = policyBase64;
+    formData.value.Signature = signature;
+    formData.value.Awsaccesskeyid = accessKeyId.value;
 
       formData.value.category = getType(fileCopy.name);
       resolve([fileCopy]);
@@ -535,9 +531,6 @@
   };
   const getSignHeaders = (objectKey) => {
     // const objectKey = encodeURIComponent(checkData[0].fullName);
-
-    console.log('==================', accessKeyId.value, secretAccessKey.value, bucketName.value, objectKey);
-
     const date = new Date().toUTCString();
 
     const httpMethod = 'GET';
@@ -548,11 +541,9 @@
     const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
 
     const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
-    console.log(signature, 'signature');
 
     let hmac = HmacSHA1(signature, secretAccessKey.value);
     const signatureBase64 = enc.Base64.stringify(hmac);
-    console.log(signatureBase64, 'signatureBase64');
 
     const headers = {
       'x-amz-date': date,
@@ -722,7 +713,6 @@
   };
 
   const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
-    console.log('xhr', xhr, options);
     xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
     xhr.send(options.formData);
@@ -790,116 +780,30 @@
     let peerId = orderInfo.value.peer_id;
     if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
       type = 'img';
-      // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
-      // imgHttpLink = `${location}/object?pubkey=${pubkey}&new_w=${size}`;
-      // let token = store.getters.token;
-      // imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-      //   deviceType.value == 'space' ? 'space' : 'foggie'
-      // }&token=${token.value}&thumb=true`;
-      // imgHttpLarge = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-      //   deviceType.value == 'space' ? 'space' : 'foggie'
-      // }&token=${token.value}`;
-      // let bucketName = 'foggiebucket';
-      // imgHttpLink = `/o/${bucketName.value}/${encodeURIComponent(item.key)}?thumb=true`;
-      const headers = getSignHeaders(encodeURIComponent(item.key));
-
-      // const params = new URLSearchParams(headers);
-      // imgHttpLink = `/o/${encodeURIComponent(item.key)}?${params.toString()}&thumb=true`;
-      // imgHttpLarge = `/o/${encodeURIComponent(item.key)}?${params.toString()}`;
-      // console.log('imgHttpLink------------', imgHttpLink);
-
-      // const url = `/o/${encodeURIComponent(item.key)}?`
-      console.log('-----------------img-headers', headers);
-      // imgHttpLarge = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
-      // imgHttpLink = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${orderInfo.value.foggie_id}/${item.cid}`;
       console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       console.log('--------imgHttpLarge', imgHttpLarge);
 
-      // await fetch(url, { method: 'GET', headers })
-      //   .then((response) => {
-      //     if (response.ok) {
-      //       // 创建一个 Blob 对象，并将响应数据写入其中
-      //       console.log('Success------img', response);
-      //       return response.blob();
-      //     } else {
-      //       // 处理错误响应
-      //       console.error('Error:----img', response.status, response.statusText);
-      //     }
-      //   })
-      //   .then((blob) => {
-      //     if (blob) {
-      //       imgHttpLarge = URL.createObjectURL(blob);
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     // 处理网络错误
-      //     console.error('Network Error:---img', error);
-      //   });
-      // const url_thumb = `/o/${encodeURIComponent(item.key)}?thumb=true`
-
-      // await fetch(url_thumb, { method: 'GET', headers })
-      //     .then((response) => {
-      //       if (response.ok) {
-      //         // 创建一个 Blob 对象，并将响应数据写入其中
-      //         console.log('Success', response);
-      //         return response.blob();
-      //       } else {
-      //         // 处理错误响应
-      //         console.error('Error:', response.status, response.statusText);
-      //       }
-      //     })
-      //     .then((blob) => {
-      //       if (blob) {
-      //         imgHttpLink = URL.createObjectURL(blob);
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       // 处理网络错误
-      //       console.error('Network Error:', error);
-      //     });
-
-      // foggie://peerid/spaceid/cid
+    
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
-      // item.contentType = "video/mp4";
-
-      // imgHttpLink = `${baseUrl}/file_download/?cid=${cid}&key=${key}&ip=${ip}&port=${port}&Id=${Id}&peerId=${peerId}&type=${
-      //   deviceType.value == 'space' ? 'space' : 'foggie'
-      // }&token=${token.value}&thumb=true`;
+     
     } else {
       isSystemImg = true;
-      // imgHttpLink =
-      //   theme === "light"
-      //     ? require(`@/assets/logo-dog.svg`)
-      //     : require(`@/assets/logo-dog-black.svg`);
     }
     if (isDir) {
       isSystemImg = true;
-      // imgHttpLink =
-      //   theme === "light"
-      //     ? require(`@/assets/logo-dog.svg`)
-      //     : require(`@/assets/logo-dog-black.svg`);
+     
     }
     console.log({ imgHttpLink, isSystemImg, imgHttpLarge }, '{ imgHttpLink, isSystemImg, imgHttpLarge }');
 
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
-    // let ip = orderInfo.value.rpc.split(':')[0];
-    // let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
-    // server = new grpcService.default.ServiceClient(ip, null, null);
-
+    
     let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
-
-    // header.setToken(token.value.split('bearer ')[1]);
-    // console.log(token.value, 'token.value.sign');
-    // var myDate = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
-    // var time = myDate.toJSON().split('T').join('').substr(0, 10);
-    // console.log(time);
-    console.log('header--------------', header);
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix('');
     listObject.setDelimiter('');
@@ -916,7 +820,6 @@
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
     requestReq.setRequest(listObject);
-    // console.log(requestReq, 'requestReq');
     server.listObjects(
       requestReq,
       {},
@@ -982,7 +885,6 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
-          //   console.log(transferData, 'transferData');
 
           initRemoteData(transferData, reset, 0);
         } else if (err) {
@@ -1133,7 +1035,6 @@
       let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
       let request = new Prox.default.ProxGetCredRequest();
       request.setHeader(header);
-      // console.log('request-----------------getkeys', request);
       server.listCreds(request, {}, (err: any, res: { array: any }) => {
         if (err) {
           console.log('err------:', err);
@@ -1142,33 +1043,23 @@
           accessKeyId.value = res.array[0][0][0];
           secretAccessKey.value = res.array[0][0][1];
           reject(true);
-          // console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
         }
       });
     });
   };
   const setDefaultName = () => {
     let orderName = route.query.id;
-    console.log('bucketName------', orderName, dmcName.value);
     let length = 9 - orderName.toString().length;
     let str = `${dmcName.value.substring(0, length)}-${orderName}`;
     newBucketName.value = str;
   };
   onMounted(async () => {
-    // showToast.loading('Loading', {
-    //   cover: true,
-    //   customClass: 'app_loading',
-    //   icon: loadingImg,
-    //   loadingRotate: false,
-    // });
     let res = await getOrderInfo();
-    console.log(res, 'ressssssss');
 
     // showToast.hide();
     console.log(orderInfo.value, bucketName.value);
 
     if (bucketName.value) {
-      console.log(11111111111111);
 
       getSummary();
       // let key = await getKeys();
@@ -1182,20 +1073,13 @@
     let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
     let request = new Prox.default.ProxRequestSummaryIds();
     request.setHeader(header);
-    console.log('------------------------', request);
     request.setIdsList([orderInfo.value.foggie_id]);
-    // console.log('request-----------------getkeys', request);
     server.summaryInfo(request, {}, (err: any, res: { array: any }) => {
       if (err) {
         console.log('err------:', err);
         // reject(false);
       } else if (res.array.length > 0) {
-        console.log(res, 'ressssssssssssssss');
         filesCount.value = res.contents?.[0]?.count || 0;
-        // spaceFileCount.value = res.contents?.[0]?.count || 0;
-
-        // reject(true);
-        // console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
       }
     });
   };
@@ -1218,13 +1102,9 @@
       await getOrderInfo();
       // showToast.hide();
       // bucketName.value = orderInfo.value.domain;
-      console.log('bucketName------', bucketName.value);
       if (bucketName.value) {
-        // console.log('bucketName------');
-        // let key = await getKeys();
         getFileList();
       } else {
-        // console.log('no bucketName------');
         dialogVisible.value = true;
         setDefaultName();
       }
