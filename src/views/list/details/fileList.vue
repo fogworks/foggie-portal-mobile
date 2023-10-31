@@ -1000,7 +1000,7 @@
     let port = orderInfo.value.rpc.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
-    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'ico' || type === 'jpg' || type === 'svg') {
+    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
       type = 'img';
       // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
       // imgHttpLink = `${location}/object?pubkey=${pubkey}&new_w=${size}`;
