@@ -95,7 +95,7 @@
       <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
     </div>
 
-    <Transition name="fade-transform" mode="out-in">
+    <!-- <Transition name="fade-transform" mode="out-in">
       <div v-if="uploadProgressIsShow" style="margin-top: 30px">
         <nut-progress
           class="upload_progress"
@@ -125,7 +125,7 @@
           </template>
         </nut-progress>
       </div>
-    </Transition>
+    </Transition> -->
 
     <nut-infinite-loading load-more-txt="No more content" v-if="tableData.length" :has-more="false" class="file_list">
       <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
@@ -138,7 +138,7 @@
           <img v-else src="@/assets/svg/home/file.svg" alt="" />
         </div>
         <div class="name_box">
-          <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
+          <p>{{ item.name }}</p>
           <p>{{ item.date || '' }}</p>
         </div>
       </div>
@@ -265,6 +265,38 @@
       </template>
     </nut-dialog>
   </div>
+  <Transition name="fade-transform" mode="out-in">
+      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
+        <nut-progress
+          class="upload_progress"
+          :percentage="uploadProgress"
+          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+          status="icon"
+          :show-text="false"
+        >
+          <!-- <template #icon-name>
+            <template v-if="uploadStatus == 'uploading'">
+              <div  style="display: flex; justify-content: space-between;width: 100%;">
+                <div style="margin-left: 25px;"> {{ curUploadFileSize }}</div>
+                <div>
+                  <span>{{ uploadProgress }} %</span>
+                  <em style="margin-left: 10px">{{ formatedAverageSpeed }}</em>
+                  <i style="margin-left: 15px">{{ formatedTimeRemaining }}</i>
+                </div>
+              </div>
+            </template>
+            <template v-if="uploadStatus == 'success'">
+              <span>Uploaded successfully</span>
+              <Success style="margin-left: 10px" color="#4CC71E" class="nut-icon-am-bounce nut-icon-am-infinite"></Success>
+            </template>
+            <template v-if="uploadStatus == 'error'">
+              <span>Upload Failed</span>
+              <MaskClose style="margin-left: 10px" color="#FA2C19"></MaskClose>
+            </template>
+          </template> -->
+        </nut-progress>
+      </div>
+    </Transition>
 </template>
 
 <script setup lang="ts">
@@ -406,7 +438,6 @@
   };
   const beforeupload = (file: any) => {
     return new Promise(async (resolve, reject) => {
-      console.log('upload-----------', bucketName.value);
       let nowTime = new Date().getTime();
       let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
       let time = ((+endTime - +nowTime) / 1000).toFixed(0);
@@ -423,9 +454,8 @@
         orderId: order_id.value,
       };
       let merkleRes = await valid_upload(d);
-      console.log('----------vaild', merkleRes);
       if (merkleRes?.data) {
-        isDisabled.value = false;
+        isDisabled.value = false;      
       } else {
         // showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
         isDisabled.value = true;
@@ -693,7 +723,7 @@
 
     let used_space = orderInfo.value.used_space || 0;
     if (uploadLine >= used_space) {
-      let needSpace = getfilesize(uploadLine - used_space);
+      // let needSpace = getfilesize(uploadLine - used_space);
       // showToast.text(`At least ${needSpace} of files need to be uploaded to submit Merkle`);
       return false;
     }
@@ -808,7 +838,7 @@
       console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
-      console.log('--------imgHttpLarge', imgHttpLarge);
+      // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
@@ -819,7 +849,7 @@
     if (isDir) {
       isSystemImg = true;
     }
-    console.log({ imgHttpLink, isSystemImg, imgHttpLarge }, '{ imgHttpLink, isSystemImg, imgHttpLarge }');
+    // console.log({ imgHttpLink, isSystemImg, imgHttpLarge }, '{ imgHttpLink, isSystemImg, imgHttpLarge }');
 
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
@@ -1738,5 +1768,9 @@
       top: -40px;
       width: 100%;
     }
+  }
+  .upload_progress {
+    position: fixed;
+    bottom: 14vw;
   }
 </style>
