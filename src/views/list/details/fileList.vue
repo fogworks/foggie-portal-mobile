@@ -1630,6 +1630,8 @@
       height: 80px;
     }
     .left_icon_box {
+      width: 80px;
+      height: 80px;
       img {
         width: 80px;
         height: 80px;
@@ -1724,6 +1726,8 @@
         box-sizing: border-box;
       }
       .left_icon_box {
+        width: 80px;
+        height: 80px;
         svg {
           width: 100px;
           height: 100px;
