@@ -50,6 +50,7 @@ declare module 'vue' {
     NutUploader: typeof import('@nutui/nutui')['Uploader']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TopBack: typeof import('./../src/components/topBack/index.vue')['default']
     VanButton: typeof import('vant/es')['Button']
     VanIcon: typeof import('vant/es')['Icon']
     VanNumberKeyboard: typeof import('vant/es')['NumberKeyboard']

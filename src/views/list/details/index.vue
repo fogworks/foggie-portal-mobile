@@ -347,7 +347,8 @@
       }
     });
   };
-  const beforeupload = async (file: any) => {
+  const beforeupload = (file: any) => {
+  return new Promise(async (resolve, reject) => {
     console.log('upload-----------', bucketName.value);
     let nowTime = new Date().getTime();
     let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
@@ -358,7 +359,7 @@
     if (time > 0) {
       let content = 'Upload files after ' + getSecondTime(+time);
       showToast.fail(content);
-      return false;
+      reject(false);
     }
     const fileCopy = file[0]; // 保存file变量的副本
     const d = {
@@ -366,23 +367,16 @@
     };
     let merkleRes = await valid_upload(d);
     console.log('----------vaild', merkleRes);
-    if (merkleRes?.data?.data) {
+    if (merkleRes?.data) {
       isDisabled.value = false;      
     } else {
       showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
       isDisabled.value = true;
       getMerkleState(true);
-      return;
+      reject();
     }
 
-    // bucketName.value = 'test11111';
-    // accessKeyId.value = 'FOGaCTsgpOoeXsrtjmk5';
-    // secretAccessKey.value = '8zztbNHf6CVYdadg3AXmairRZ8mTXoowzMU2sUOq';
-
-    // uploadUri.value = '/fog/baeqacmjq/foggiebucket';
-    // uploadUri.value = '/o/foggiebucket';
     uploadUri.value = `https://${bucketName.value}.devus.u2i.net:6008/o/`;
-    // uploadUri.value = '/o';
 
     const policy = {
       expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
@@ -393,10 +387,7 @@
         ['starts-with', '$Content-Type', ''], // Content-Type 为空
       ],
     };
-    // console.log('policy', policy);
-    // 将 POST Policy 转换为 JSON 字符串
     const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
-    // console.log('policyBase64', policyBase64);
 
     let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
     const signature = enc.Base64.stringify(hmac);
@@ -410,10 +401,9 @@
     formData.value.Awsaccesskeyid = accessKeyId.value;
 
     formData.value.category = getType(fileCopy.name);
-    // formData.value.Success_action_status = 201;
-    // console.log('file', file.length, file, file[0]);
-    return [fileCopy];
-  };
+    resolve([fileCopy]);
+  });
+};
 
   const getType = (fileName: string) => {
     if (fileName.endsWith('.jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.svg')) {
@@ -587,7 +577,9 @@
       };
       tagMobile();
     }
-    let uploadLine = 1024 * 1024 * 50;
+    // let uploadLine = 1024 * 1024 * 50;
+    let uploadLine = 1024 * 1024 * 1;
+    
     let used_space = orderInfo.value.used_space || 0;
     if (uploadLine >= used_space) {
       let needSpace = getfilesize(uploadLine - used_space);
