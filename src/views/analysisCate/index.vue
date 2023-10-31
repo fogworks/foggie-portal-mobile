@@ -2,7 +2,7 @@
   <div class="analysis_box">
     <div style="background: #fff; margin-bottom: 10px">
       <div class="top_box">
-        <div class="top_back" @click="router.go(-1)">{{ queryType }} </div>
+        <TopBack> {{ queryType }} </TopBack>
         <div class="top_assets">
           <div class="assets_block">
             <span>{{ titleDMC }} DMC</span>
@@ -79,7 +79,7 @@
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
-    timeType: '0',
+    timeType: '3',
     cloudBalance: 0,
     cloudIncome: 0,
     cloudExpense: 0,

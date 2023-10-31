@@ -39,6 +39,7 @@ service.interceptors.response.use(
         return res.rows[0].benchmark_price;
       }
       if (code === 401 || code === 403) {
+        userStore.setInfo({});
         userStore.setToken('');
         router.push('/login');
         return;
@@ -57,8 +58,10 @@ service.interceptors.response.use(
         //   // setToken(token);
         //   return service(response.config);
         // } else {
-        //   router.push('/login');
-        //   return;
+        userStore.setInfo({});
+        userStore.setToken('');
+        router.push('/login');
+        return;
         // }
       } else {
         if (

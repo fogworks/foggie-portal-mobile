@@ -44,6 +44,9 @@
               :key="img.cid"
               :src="img.imgUrl"
             >
+              <template #loading>
+                <Loading width="16px" height="16px" name="loading" />
+              </template>
             </nut-image>
           </div>
         </nut-checkbox-group>
@@ -72,10 +75,11 @@
   import imgUrl from '@/assets/DMC_token.png';
   let server;
   // import { isCloudCanUpload_Api } from '@/api/upload';
-  const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  const { header, token, deviceType, orderInfo, bucketName, getOrderInfo } = useOrderInfo();
   const imgCheckedData = reactive({
     value: {},
   });
+  const isMobileOrder = inject('isMobileOrder');
   const emits = defineEmits(['update:checkedData', 'touchRow', 'touchmoveRow', 'touchendRow']);
   const props = defineProps({
     orderId: [String, Number],
@@ -127,8 +131,12 @@
           interval = 'day';
         }
         tableLoading.value = true;
-        let ip = orderInfo.value.rpc.split(':')[0];
-        server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+        // let ip = orderInfo.value.rpc.split(':')[0];
+        // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+        let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+        server = new grpcService.default.ServiceClient(ip, null, null);
+
+
         let ProxTimeLine = new Prox.default.ProxTimeLine();
         ProxTimeLine.setHeader(header);
         ProxTimeLine.setInterval(interval);
@@ -204,8 +212,13 @@
   const getReomteData = (scroll, prefix, reset = false, date = '', max_keys) => {
     tableLoading.value = true;
     let type = 'space';
-    let ip = orderInfo.value.rpc.split(':')[0];
-    server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+    // let ip = orderInfo.value.rpc.split(':')[0];
+    // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+
+    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    server = new grpcService.default.ServiceClient(ip, null, null);
+
+
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix('');
     listObject.setDelimiter('');

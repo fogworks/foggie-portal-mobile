@@ -2,7 +2,8 @@
   <div class="analysis_box analysis_charts_box">
     <div style="background: #fff; margin-bottom: 10px">
       <div class="top_box">
-        <div class="top_back" @click="router.go(-1)">Data Analysis </div>
+        <TopBack> Data Analysis</TopBack>
+
         <div class="top_assets">
           <div class="assets_block">
             <!-- <span>{{ titleDMC }} DMC</span>

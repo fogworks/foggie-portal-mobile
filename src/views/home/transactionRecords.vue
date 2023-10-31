@@ -1,7 +1,8 @@
 <template>
   <div class="analysis_content">
     <div class="top_box">
-      <div class="top_back" @click="router.go(-1)">Transaction Records </div>
+      <TopBack> Transaction Records </TopBack>
+
       <!-- <nut-grid class="top_grid">
         <nut-grid-item text="Balance"
           ><div>
@@ -98,7 +99,7 @@
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
-    timeType: '0',
+    timeType: '3',
     searchType: '0',
   });
   const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();

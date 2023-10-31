@@ -6,7 +6,9 @@
         <div :class="['list_header']">
           <div style="display: flex">
             <template v-if="!prefix.length">
-              <div class="top_back" @click="router.go(-1)"> </div>
+              <!-- <div class="top_back" @click="router.go(-1)"> </div> -->
+              <TopBack> </TopBack>
+
               <span class="top_title">
                 {{ fileTypeText[category] }}
               </span>
@@ -158,7 +160,7 @@
             <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
             <p>{{ item.date || '' }}</p>
           </div>
-          <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
+          <IconMore v-show="!isCheckMode && isMobileOrder" class="right_more" @click.stop="showAction(item)"></IconMore>
         </div>
       </nut-infinite-loading>
       <nut-empty v-else description="No data" image="error">
@@ -448,6 +450,7 @@
     shareType: '',
   });
   const imgListRef = ref('');
+  const isMobileOrder = inject('isMobileOrder');
 
   const {
     tableLoading,
@@ -536,7 +539,9 @@
   const touchRow = (row: any, event: any) => {
     timeOutEvent = setTimeout(function () {
       timeOutEvent = 0;
-      isCheckMode.value = true;
+      if (isMobileOrder.value) {
+        isCheckMode.value = true;
+      }
     }, 1000);
   };
 
@@ -618,8 +623,10 @@
         }
         return false;
       }
-      let ip = orderInfo.value.rpc.split(':')[0];
-      server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+      // let ip = orderInfo.value.rpc.split(':')[0];
+      // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+      let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+      server = new grpcService.default.ServiceClient(ip, null, null);
       let ProxRenameObject = new Prox.default.ProxRenameObject();
       ProxRenameObject.setHeader(header);
       ProxRenameObject.setSourceobject(checkData[index].fullName);
@@ -692,8 +699,11 @@
       showToast.warn('The file path cannot exceed a maximum of 1024 characters, operation failed');
       return false;
     }
-    let ip = orderInfo.value.rpc.split(':')[0];
-    server = new grpcService.default.ServiceClient(`http://${ip}:7007`);
+    // let ip = orderInfo.value.rpc.split(':')[0];
+    // server = new grpcService.default.ServiceClient(`http://${ip}:7007`);
+    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    server = new grpcService.default.ServiceClient(ip, null, null);
+
     if (isNewFolder.value) {
       let ProxFileInfo = new Prox.default.ProxFileInfo();
       ProxFileInfo.setHeader(header);
@@ -783,7 +793,7 @@
       // const url = `/o/${bucketName}/${objectKey}`;
       // const url = `/o/${objectKey}`;
       // const url = `/o/${objectKey}?thumb=true`;
-      const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
+      const url = `https://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
 
       fetch(url, { method: 'GET', headers })
         .then((response) => {
@@ -868,8 +878,11 @@
         list_prefix = list_prefix + '/';
       }
     }
-    let ip = orderInfo.value.rpc.split(':')[0];
-    server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+    // let ip = orderInfo.value.rpc.split(':')[0];
+    // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+
+    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    server = new grpcService.default.ServiceClient(ip, null, null);
 
     // header.setToken(token.value.split('bearer ')[1]);
     let listObject = new Prox.default.ProxListObjectsRequest();
@@ -987,7 +1000,7 @@
     let port = orderInfo.value.rpc.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
-    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'ico' || type === 'jpg' || type === 'svg') {
+    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
       type = 'img';
       // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
       // imgHttpLink = `${location}/object?pubkey=${pubkey}&new_w=${size}`;
@@ -1288,8 +1301,12 @@
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
       if (type == 'space') {
-        let ip = orderInfo.value.rpc.split(':')[0];
-        server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+        // let ip = orderInfo.value.rpc.split(':')[0];
+        // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+
+        let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+        server = new grpcService.default.ServiceClient(ip, null, null);
+
         let ProxFindRequest = new Prox.default.ProxFindRequest();
         ProxFindRequest.setHeader(header);
         ProxFindRequest.setCid('');

@@ -28,7 +28,7 @@ p {
   font-size: 50px;
   font-family: Hellofont FangHuaTi;
 }
-.top_back::before {
+/* .top_back::before {
   position: absolute;
   left: 10px;
   content: '';
@@ -52,7 +52,7 @@ p {
   background-size: 40px;
   background-color: #fff;
   background-position: center;
-}
+} */
 .top_box {
   /* margin: 20px; */
   padding: 50px 10px 30px;

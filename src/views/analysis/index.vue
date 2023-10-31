@@ -1,7 +1,7 @@
 <template>
   <div class="analysis_content">
     <div class="top_box">
-      <div class="top_back" @click="router.go(-1)">Assets Analysis </div>
+      <TopBack> Assets Analysis </TopBack>
       <nut-grid class="top_grid" :column-num="3">
         <nut-grid-item text="Balance"
           ><div>
@@ -70,6 +70,7 @@
 </template>
 
 <script setup lang="ts" name="analysis">
+  import TopBack from '@/components/topBack/index.vue';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import loadingImg from '@/components/loadingImg/index.vue';
   import IconCions from '~icons/home/cions.svg';
@@ -92,7 +93,7 @@
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
-    timeType: '0',
+    timeType: '3',
     cloudBalance: '0',
     cloudIncome: '0',
     cloudExpense: '0',

@@ -1,15 +1,13 @@
 <template>
   <div class="top_box">
-    <div class="top_back" @click="router.go(-1)">
+    <TopBack>
       <div v-if="bucketName">
         <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
         {{ bucketName }}
         <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
       </div>
       <div v-else> Order:{{ order_id }} </div>
-      <!-- <nut-button class="creat-name" type="primary" @click="creatName" v-if="!bucketName">Creat Name</nut-button>
-      <nut-input placeholder="Please enter name" v-model="newBucketName" v-if="showCreatName" /> -->
-    </div>
+    </TopBack>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
         <span class="span2">Expiration: {{ transferUTCTime(orderInfo.value.expire) }}</span>
@@ -27,8 +25,6 @@
         <nut-cell>
           <IconMdiF color="#9F9BEF" />
           File:1000
-
-          <!-- File 1000 -->
         </nut-cell>
         <nut-cell>
           <IconSpace color="#7F7AE9" />
@@ -40,44 +36,8 @@
         </nut-cell>
       </nut-col>
     </nut-row>
-    <!-- <span v-if="bucketName">{{ bucketName }}</span>
-    <nut-input placeholder="Please enter name" v-model="newBucketName" v-if="showCreatName" />
-    <nut-button class="creat-name" type="primary" @click="creatName" v-if="!bucketName">Creat Name</nut-button> -->
   </div>
   <div class="detail_box">
-    <!-- <nut-grid class="top_grid" column-num="3" direction="horizontal">
-      <nut-grid-item text="Income">
-        <img src="@/assets/incoming.svg" alt="" />
-      </nut-grid-item>
-      <nut-grid-item text="Merkle">
-        <img src="@/assets/tree.svg" alt="" />
-      </nut-grid-item>
-      <nut-grid-item text="Challenge">
-        <img src="@/assets/setting.svg" alt="" />
-      </nut-grid-item>
-    </nut-grid> -->
-    <!-- <nut-row class="order-icons">
-      <nut-col :span="6" class="order-icon-recycle">
-        <IconRecycleFill color="#fff" />
-      </nut-col>
-      <nut-col :span="6" class="order-icon-node-tree">
-        <IconRiNodeTree color="#fff" />
-        <p>Merkle</p>
-      </nut-col>
-      <nut-col :span="6" class="order-icon-send-to-back">
-        <IconRiSendToBack color="#fff" />
-        <p>Changelle</p>
-      </nut-col>
-      <nut-col :span="6" class="order-icon-input-cursor-move">
-        <IconRiInputCursorMove color="#fff" />
-        <p>Arbitrate</p>
-      </nut-col>
-      <nut-col @click="getKey" :span="6" class="order-icon-recycle">
-        <keySolid color="#fff" />
-        <p>Secret Key</p>
-      </nut-col>
-    </nut-row> -->
-
     <div class="type_check_box">
       <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
         <div class="svg_box svg_box2 order-icon-node-tree">
@@ -155,7 +115,11 @@
       <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
         <div class="middle_img">
-          <nut-image :src="imgUrl" fit="contain" position="center" />
+          <nut-image :src="imgUrl" fit="contain" position="center">
+            <template #loading>
+              <Loading width="16px" height="16px" name="loading" />
+            </template>
+          </nut-image>
         </div>
         <div class="bottom_action">
           <div>
@@ -213,6 +177,7 @@
     </Teleport>
 
     <nut-uploader
+      v-if="isMobileOrder"
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
       :before-upload="beforeupload"
@@ -318,6 +283,14 @@
   const userStore = useUserStore();
   const uuid = computed(() => userStore.getUserInfo.uuid);
   const dmcName = computed(() => userStore.getUserInfo.dmc);
+  const isMobileOrder = computed(() => {
+    if (orderInfo.value.mobile_upload || orderInfo.value.mobile_upload === undefined) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  provide('isMobileOrder', isMobileOrder);
 
   const dialogVisible = ref<boolean>(false);
 
@@ -337,6 +310,7 @@
   const isDisabled = ref<boolean>(false);
   const btnLoading = ref<boolean>(false);
   const formData = ref<any>({});
+  const filesCount = ref<any>(0);
 
   const memo = ref<any>('');
   const order_id = ref<any>('');
@@ -373,7 +347,8 @@
       }
     });
   };
-  const beforeupload = async (file: any) => {
+  const beforeupload = (file: any) => {
+  return new Promise(async (resolve, reject) => {
     console.log('upload-----------', bucketName.value);
     let nowTime = new Date().getTime();
     let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
@@ -384,33 +359,24 @@
     if (time > 0) {
       let content = 'Upload files after ' + getSecondTime(+time);
       showToast.fail(content);
-      return false;
+      reject(false);
     }
     const fileCopy = file[0]; // 保存file变量的副本
     const d = {
       orderId: order_id.value,
     };
     let merkleRes = await valid_upload(d);
-    if (merkleRes?.data?.data) {
+    console.log('----------vaild', merkleRes);
+    if (merkleRes?.data) {
+      isDisabled.value = false;      
+    } else {
       showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
-      // TODO
       isDisabled.value = true;
       getMerkleState(true);
-      return;
-    } else if (merkleRes?.data) {
-      isDisabled.value = false;
-    } else {
-      showToast.fail('Failed to get Merkle status. Please try again.');
+      reject();
     }
 
-    // bucketName.value = 'test11111';
-    // accessKeyId.value = 'FOGaCTsgpOoeXsrtjmk5';
-    // secretAccessKey.value = '8zztbNHf6CVYdadg3AXmairRZ8mTXoowzMU2sUOq';
-
-    // uploadUri.value = '/fog/baeqacmjq/foggiebucket';
-    // uploadUri.value = '/o/foggiebucket';
-    uploadUri.value = `http://${bucketName.value}.devus.u2i.net:6008/o/`;
-    // uploadUri.value = '/o';
+    uploadUri.value = `https://${bucketName.value}.devus.u2i.net:6008/o/`;
 
     const policy = {
       expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
@@ -421,16 +387,13 @@
         ['starts-with', '$Content-Type', ''], // Content-Type 为空
       ],
     };
-    console.log('policy', policy);
-    // 将 POST Policy 转换为 JSON 字符串
     const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
-    console.log('policyBase64', policyBase64);
 
     let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
     const signature = enc.Base64.stringify(hmac);
     console.log(file, 'filefilefile');
 
-    console.log('signature', signature);
+    console.log('signature4-----------------', signature);
     formData.value = {};
     formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
     formData.value.Policy = policyBase64;
@@ -438,10 +401,9 @@
     formData.value.Awsaccesskeyid = accessKeyId.value;
 
     formData.value.category = getType(fileCopy.name);
-    // formData.value.Success_action_status = 201;
-    // console.log('file', file.length, file, file[0]);
-    return [fileCopy];
-  };
+    resolve([fileCopy]);
+  });
+};
 
   const getType = (fileName: string) => {
     if (fileName.endsWith('.jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.svg')) {
@@ -504,7 +466,7 @@
     if (type === 'download') {
       const objectKey = encodeURIComponent(checkData.fullName);
       const headers = getSignHeaders(objectKey);
-      const url = `http://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
+      const url = `https://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
       fetch(url, { method: 'GET', headers })
         .then((response) => {
           if (response.ok) {
@@ -615,7 +577,9 @@
       };
       tagMobile();
     }
-    let uploadLine = 1024 * 1024 * 50;
+    // let uploadLine = 1024 * 1024 * 50;
+    let uploadLine = 1024 * 1024 * 1;
+    
     let used_space = orderInfo.value.used_space || 0;
     if (uploadLine >= used_space) {
       let needSpace = getfilesize(uploadLine - used_space);
@@ -721,7 +685,7 @@
     let port = orderInfo.value.rpc.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
-    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'ico' || type === 'jpg' || type === 'svg') {
+    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
       type = 'img';
       // imgHttpLink = `${location}/d/${ID}/${pubkey}?new_w=200`;
       // imgHttpLink = `${location}/object?pubkey=${pubkey}&new_w=${size}`;
@@ -821,7 +785,10 @@
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
     // let ip = orderInfo.value.rpc.split(':')[0];
-    let ip = `http://${bucketName.value}.devus.u2i.net:7007`;
+    // let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    // server = new grpcService.default.ServiceClient(ip, null, null);
+
+    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     // header.setToken(token.value.split('bearer ')[1]);
@@ -1060,7 +1027,7 @@
 
   const getKeys = () => {
     return new Prmise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`http://${bucketName.value}.devus.u2i.net:7007`, null, null);
+      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
       let request = new Prox.default.ProxGetCredRequest();
       request.setHeader(header);
       // console.log('request-----------------getkeys', request);
@@ -1098,6 +1065,9 @@
     console.log(orderInfo.value, bucketName.value);
 
     if (bucketName.value) {
+      console.log(11111111111111);
+
+      getSummary();
       // let key = await getKeys();
       getFileList();
     } else {
@@ -1105,6 +1075,27 @@
       setDefaultName();
     }
   });
+  const getSummary = () => {
+    let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
+    let request = new Prox.default.ProxRequestSummaryIds();
+    request.setHeader(header);
+    console.log('------------------------', request)
+    request.setIdsList([orderInfo.value.foggie_id]);
+    // console.log('request-----------------getkeys', request);
+    server.summaryInfo(request, {}, (err: any, res: { array: any }) => {
+      if (err) {
+        console.log('err------:', err);
+        // reject(false);
+      } else if (res.array.length > 0) {
+        console.log(res, 'ressssssssssssssss');
+        filesCount.value = res.contents?.[0]?.count || 0;
+        // spaceFileCount.value = res.contents?.[0]?.count || 0;
+
+        // reject(true);
+        // console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
+      }
+    });
+  };
   onDeactivated(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });

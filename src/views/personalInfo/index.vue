@@ -1,7 +1,7 @@
 <template>
   <div class="info_box">
     <div class="top_box">
-      <div class="top_back" @click="router.go(-1)">Personal Information</div>
+      <TopBack>Personal Information</TopBack>
     </div>
     <nut-cell-group title="My Account" class="info_title">
       <nut-cell title="Account Name" :desc="userInfo.email"></nut-cell>

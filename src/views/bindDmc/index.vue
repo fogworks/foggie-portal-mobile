@@ -1,6 +1,6 @@
 <template>
   <div class="top_box">
-    <div class="top_back" @click="router.go(-1)">Bind</div>
+    <TopBack> Bind</TopBack>
   </div>
   <p class="key_tips" v-if="bindType == 'dmc'"> Please bind your DMC account invitation code first </p>
   <p class="key_tips" v-else-if="bindType == 'amb'"> Please bind ambassador invitation code </p>
