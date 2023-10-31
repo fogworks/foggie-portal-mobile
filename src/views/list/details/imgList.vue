@@ -79,6 +79,7 @@
   const imgCheckedData = reactive({
     value: {},
   });
+  const isMobileOrder = inject('isMobileOrder');
   const emits = defineEmits(['update:checkedData', 'touchRow', 'touchmoveRow', 'touchendRow']);
   const props = defineProps({
     orderId: [String, Number],

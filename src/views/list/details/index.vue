@@ -1,15 +1,13 @@
 <template>
   <div class="top_box">
-    <div class="top_back" @click="router.go(-1)">
+    <TopBack>
       <div v-if="bucketName">
         <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
         {{ bucketName }}
         <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
       </div>
       <div v-else> Order:{{ order_id }} </div>
-      <!-- <nut-button class="creat-name" type="primary" @click="creatName" v-if="!bucketName">Creat Name</nut-button>
-      <nut-input placeholder="Please enter name" v-model="newBucketName" v-if="showCreatName" /> -->
-    </div>
+    </TopBack>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
         <span class="span2">Expiration: {{ transferUTCTime(orderInfo.value.expire) }}</span>
@@ -179,6 +177,7 @@
     </Teleport>
 
     <nut-uploader
+      v-if="isMobileOrder"
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
       :before-upload="beforeupload"
@@ -284,6 +283,14 @@
   const userStore = useUserStore();
   const uuid = computed(() => userStore.getUserInfo.uuid);
   const dmcName = computed(() => userStore.getUserInfo.dmc);
+  const isMobileOrder = computed(() => {
+    if (orderInfo.value.mobile_upload || orderInfo.value.mobile_upload === undefined) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  provide('isMobileOrder', isMobileOrder);
 
   const dialogVisible = ref<boolean>(false);
 
@@ -303,6 +310,7 @@
   const isDisabled = ref<boolean>(false);
   const btnLoading = ref<boolean>(false);
   const formData = ref<any>({});
+  const filesCount = ref<any>(0);
 
   const memo = ref<any>('');
   const order_id = ref<any>('');
@@ -1086,7 +1094,7 @@
         reject(false);
       } else if (res.array.length > 0) {
         console.log(res, 'ressssssssssssssss');
-
+        filesCount.value = res.contents?.[0]?.count || 0;
         // spaceFileCount.value = res.contents?.[0]?.count || 0;
 
         reject(true);

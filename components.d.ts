@@ -12,5 +12,6 @@ declare module 'vue' {
     MyEcharts: typeof import('./src/components/echarts/myEcharts.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TopBack: typeof import('./src/components/topBack/index.vue')['default']
   }
 }

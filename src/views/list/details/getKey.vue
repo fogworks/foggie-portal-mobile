@@ -1,6 +1,6 @@
 <template>
   <div class="top_box">
-    <div class="top_back" @click="router.go(-1)">Generate Access keys</div>
+    <TopBack>Generate Access keys</TopBack>
   </div>
   <div class="generateKey">
     <div class="bucket_svg_box">

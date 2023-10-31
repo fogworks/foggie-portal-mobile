@@ -6,7 +6,9 @@
         <div :class="['list_header']">
           <div style="display: flex">
             <template v-if="!prefix.length">
-              <div class="top_back" @click="router.go(-1)"> </div>
+              <!-- <div class="top_back" @click="router.go(-1)"> </div> -->
+              <TopBack> </TopBack>
+
               <span class="top_title">
                 {{ fileTypeText[category] }}
               </span>
@@ -158,7 +160,7 @@
             <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
             <p>{{ item.date || '' }}</p>
           </div>
-          <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
+          <IconMore v-show="!isCheckMode && isMobileOrder.value" class="right_more" @click.stop="showAction(item)"></IconMore>
         </div>
       </nut-infinite-loading>
       <nut-empty v-else description="No data" image="error">
@@ -448,6 +450,7 @@
     shareType: '',
   });
   const imgListRef = ref('');
+  const isMobileOrder = inject('isMobileOrder');
 
   const {
     tableLoading,
@@ -536,7 +539,9 @@
   const touchRow = (row: any, event: any) => {
     timeOutEvent = setTimeout(function () {
       timeOutEvent = 0;
-      isCheckMode.value = true;
+      if (isMobileOrder.value) {
+        isCheckMode.value = true;
+      }
     }, 1000);
   };
 
