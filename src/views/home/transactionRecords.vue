@@ -35,11 +35,11 @@
       <nut-tab-pane title="Withdraw" pane-key="1"> </nut-tab-pane>
     </nut-tabs>
     <nut-tabs v-model="timeType" class="time_tabs" direction="horizontal">
-      <nut-tab-pane title="All" pane-key="0"></nut-tab-pane>
-      <nut-tab-pane title="By 3 Months" pane-key="1"></nut-tab-pane>
-      <nut-tab-pane title="By Month" pane-key="2"></nut-tab-pane>
-      <nut-tab-pane title="By Week" pane-key="3"></nut-tab-pane>
       <nut-tab-pane title="By Day" pane-key="4"></nut-tab-pane>
+      <nut-tab-pane title="By Week" pane-key="3"></nut-tab-pane>
+      <nut-tab-pane title="By Month" pane-key="2"></nut-tab-pane>
+      <nut-tab-pane title="By 3 Months" pane-key="1"></nut-tab-pane>
+      <nut-tab-pane title="All" pane-key="0"></nut-tab-pane>
     </nut-tabs>
 
     <template v-if="listData.length">

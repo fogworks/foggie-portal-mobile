@@ -91,9 +91,42 @@
       </div>
     </div>
     <div class="today_file">
-      <span class="title">Recent Files</span>
+      <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
       <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
     </div>
+
+    <Transition name="fade-transform" mode="out-in">
+      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
+        <nut-progress
+          class="upload_progress"
+          :percentage="uploadProgress"
+          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+          status="icon"
+        >
+          <template #icon-name>
+            <template v-if="uploadStatus == 'uploading'">
+              <div  style="display: flex; justify-content: space-between;width: 100%;">
+                <div style="margin-left: 25px;"> {{ curUploadFileSize }}</div>
+                <div>
+                  <span>{{ uploadProgress }} %</span>
+                  <em style="margin-left: 10px">{{ formatedAverageSpeed }}</em>
+                  <i style="margin-left: 15px">{{ formatedTimeRemaining }}</i>
+                </div>
+              </div>
+            </template>
+            <template v-if="uploadStatus == 'success'">
+              <span>Uploaded successfully</span>
+              <Success style="margin-left: 10px" color="#4CC71E" class="nut-icon-am-bounce nut-icon-am-infinite"></Success>
+            </template>
+            <template v-if="uploadStatus == 'error'">
+              <span>Upload Failed</span>
+              <MaskClose style="margin-left: 10px" color="#FA2C19"></MaskClose>
+            </template>
+          </template>
+        </nut-progress>
+      </div>
+    </Transition>
+
     <nut-infinite-loading load-more-txt="No more content" v-if="tableData.length" :has-more="false" class="file_list">
       <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
         <div :class="['left_icon_box']">
@@ -223,7 +256,7 @@
   import IconTwitter from '~icons/home/twitter.svg';
   import IconHttp from '~icons/home/http.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';
-
+  import { delay, throttle } from 'lodash';
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconMore from '~icons/home/more.svg';
   import IconImage from '~icons/home/image.svg';
@@ -242,7 +275,7 @@
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   // import AESHelper from './AESHelper';
   // import { Image } from '@nutui/icons-vue';
-  import { HeartFill } from '@nutui/icons-vue';
+  import { HeartFill, Success, MaskClose } from '@nutui/icons-vue';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute, useRouter } from 'vue-router';
@@ -256,6 +289,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { getSecondTime } from '@/utils/util';
   import { update_order_size, tag_mobile_upload } from '@/api/amb';
+  import { status } from 'grpc';
   const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
     isReady,
@@ -348,62 +382,62 @@
     });
   };
   const beforeupload = (file: any) => {
-  return new Promise(async (resolve, reject) => {
-    console.log('upload-----------', bucketName.value);
-    let nowTime = new Date().getTime();
-    let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
-    let time = ((+endTime - +nowTime) / 1000).toFixed(0);
-    if (time > 4 * 60) {
-      time = time - 60 * 60;
-    }
-    if (time > 0) {
-      let content = 'Upload files after ' + getSecondTime(+time);
-      showToast.fail(content);
-      reject(false);
-    }
-    const fileCopy = file[0]; // 保存file变量的副本
-    const d = {
-      orderId: order_id.value,
-    };
-    let merkleRes = await valid_upload(d);
-    console.log('----------vaild', merkleRes);
-    if (merkleRes?.data) {
-      isDisabled.value = false;      
-    } else {
-      showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
-      isDisabled.value = true;
-      getMerkleState(true);
-      reject();
-    }
+    return new Promise(async (resolve, reject) => {
+      console.log('upload-----------', bucketName.value);
+      let nowTime = new Date().getTime();
+      let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
+      let time = ((+endTime - +nowTime) / 1000).toFixed(0);
+      if (time > 4 * 60) {
+        time = time - 60 * 60;
+      }
+      if (time > 0) {
+        let content = 'Upload files after ' + getSecondTime(+time);
+        showToast.fail(content);
+        reject(false);
+      }
+      const fileCopy = file[0]; // 保存file变量的副本
+      const d = {
+        orderId: order_id.value,
+      };
+      let merkleRes = await valid_upload(d);
+      console.log('----------vaild', merkleRes);
+      if (merkleRes?.data) {
+        isDisabled.value = false;
+      } else {
+        showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
+        isDisabled.value = true;
+        getMerkleState(true);
+        reject();
+      }
 
-    uploadUri.value = `https://${bucketName.value}.devus.u2i.net:6008/o/`;
+      uploadUri.value = `https://${bucketName.value}.devus.u2i.net:6008/o/`;
 
-    const policy = {
-      expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
-      conditions: [
-        { bucket: bucketName.value },
-        { acl: 'public-read' }, // 设置 ACL（可根据需求更改）
-        ['starts-with', fileCopy, prefix.value], // Key 以 "uploads/" 开头
-        ['starts-with', '$Content-Type', ''], // Content-Type 为空
-      ],
-    };
-    const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
+      const policy = {
+        expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
+        conditions: [
+          { bucket: bucketName.value },
+          { acl: 'public-read' }, // 设置 ACL（可根据需求更改）
+          ['starts-with', fileCopy, prefix.value], // Key 以 "uploads/" 开头
+          ['starts-with', '$Content-Type', ''], // Content-Type 为空
+        ],
+      };
+      const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
 
-    let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
-    const signature = enc.Base64.stringify(hmac);
-    console.log(file, 'filefilefile');
+      let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
+      const signature = enc.Base64.stringify(hmac);
+      console.log(file, 'filefilefile');
 
-    console.log('signature4-----------------', signature);
-    formData.value = {};
-    formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
-    formData.value.Policy = policyBase64;
-    formData.value.Signature = signature;
-    formData.value.Awsaccesskeyid = accessKeyId.value;
+      console.log('signature4-----------------', signature);
+      formData.value = {};
+      formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
+      formData.value.Policy = policyBase64;
+      formData.value.Signature = signature;
+      formData.value.Awsaccesskeyid = accessKeyId.value;
 
-    formData.value.category = getType(fileCopy.name);
-    resolve([fileCopy]);
-  });
-};
+      formData.value.category = getType(fileCopy.name);
+      resolve([fileCopy]);
+    });
+  };
 
   const getType = (fileName: string) => {
     if (fileName.endsWith('.jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.svg')) {
@@ -527,9 +561,70 @@
     return headers;
   };
 
+  function secondsToStr(seconds) {
+    let hours: any = Math.floor(seconds / 3600).toFixed(0);
+    let minutes: any = Math.floor((seconds % 3600) / 60).toFixed(0);
+    let remainingSeconds: any = (seconds % 60).toFixed(0);
+
+    hours = hours < 10 ? '0' + hours : hours;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    remainingSeconds = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
+    if (hours >= 24 || seconds < 0) {
+      return '- -';
+    } else {
+      return hours + '：' + minutes + '：' + remainingSeconds;
+    }
+  }
+  const formatSize = (size: number) => {
+    size = Number(size);
+    if (size < 1024) {
+      return size.toFixed(0) + ' bytes';
+    } else if (size < 1024 * 1024) {
+      return (size / 1024.0).toFixed(0) + ' KB';
+    } else if (size < 1024 * 1024 * 1024) {
+      return (size / 1024.0 / 1024.0).toFixed(1) + ' MB';
+    } else {
+      return (size / 1024.0 / 1024.0 / 1024.0).toFixed(1) + ' GB';
+    }
+  };
+
+  const curUploadFileSize = computed(() => formatSize(lastDownloadNumer.value));
+  // 剩余上传时间
+  const formatedTimeRemaining = computed(() => {
+    if (timeRemaining.value === Number.POSITIVE_INFINITY || timeRemaining.value === 0) {
+      return '';
+    }
+    let parsedTimeRemaining = secondsToStr(timeRemaining.value);
+
+    return parsedTimeRemaining;
+  });
+
+  const formatedAverageSpeed = computed(() => `${formatSize(averageSpeed.value)} / s`);
+  const uploadStatus = ref('');
+  const averageSpeed = ref(0); // 当前块 上传的文件大小
+  const timeRemaining = ref(0); // 剩余上传时间(s)
+  const lastDownloadNumer = ref(0); // 最后一次上传的文件大小
+  const uploadProgressIsShow = ref(false); // 是否展示上传进度
+  const uploadProgress = ref(0); // 上传进度
+  const downloadProgress = throttle(
+    function (loaded, total) {
+      if (loaded < lastDownloadNumer.value) return;
+      averageSpeed.value = loaded - lastDownloadNumer.value;
+      timeRemaining.value = (total - loaded) / averageSpeed.value;
+      lastDownloadNumer.value = loaded;
+    },
+    1000,
+    { leading: true, trailing: true },
+  );
+
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
     console.log(option, 'option');
+    uploadStatus.value = 'success';
+
+    delay(() => {
+      uploadProgressIsShow.value = false;
+    }, 2000);
     getFileList();
     const updateUsedSpace = () => {
       return update_order_size({
@@ -579,7 +674,7 @@
     }
     // let uploadLine = 1024 * 1024 * 50;
     let uploadLine = 1024 * 1024 * 1;
-    
+
     let used_space = orderInfo.value.used_space || 0;
     if (uploadLine >= used_space) {
       let needSpace = getfilesize(uploadLine - used_space);
@@ -601,6 +696,8 @@
 
   const onProgress = ({ event, options, percentage }: any) => {
     console.log('onProgress', event, options, percentage);
+    uploadProgress.value = percentage;
+    downloadProgress(event.loaded, event.total);
   };
 
   const onStart = ({ options }: any) => {
@@ -609,11 +706,17 @@
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
     console.log('onFailure', '-----', responseText, '-----', option, '-----', fileItem);
-
+    delay(() => {
+      uploadProgressIsShow.value = false;
+    }, 3000);
+    uploadStatus.value = 'error';
     uploadRef.value.clearUploadQueue();
   };
 
   const onChange = ({ fileList, event }: any) => {
+    uploadProgress.value = 0;
+    uploadProgressIsShow.value = true;
+    uploadStatus.value = 'uploading';
     console.log('--------------2');
     console.log('onChange', fileList, event);
   };
@@ -1079,7 +1182,7 @@
     let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
     let request = new Prox.default.ProxRequestSummaryIds();
     request.setHeader(header);
-    console.log('------------------------', request)
+    console.log('------------------------', request);
     request.setIdsList([orderInfo.value.foggie_id]);
     // console.log('request-----------------getkeys', request);
     server.summaryInfo(request, {}, (err: any, res: { array: any }) => {
@@ -1685,6 +1788,40 @@
       color: #5460fe;
       font-size: 36px !important;
       white-space: pre-wrap;
+    }
+  }
+
+  .fade-transform-leave-active {
+    transition: all 0.3s ease;
+  }
+  .fade-transform-enter-active {
+    transition: all 0.15s ease;
+    transition-delay: 0.1s;
+  }
+
+  .fade-transform-enter-from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  .fade-transform-enter-to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+
+  .fade-transform-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  .upload_progress.nut-progress {
+    .nut-progress-outer-part {
+      width: 100%;
+    }
+    .nut-progress-text {
+      position: absolute;
+      right: 0px;
+      top: -40px;
+      width: 100%;
     }
   }
 </style>

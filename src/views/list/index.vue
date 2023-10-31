@@ -27,6 +27,18 @@
       </nut-col>
     </nut-row>
   </div>
+
+  <div style="margin: 15px 0px">
+    <nut-noticebar
+      :background="`rgba(251, 248, 220, 1)`"
+      :color="`#D9500B`"
+      direction="vertical"
+      :list="horseLamp"
+      :speed="10"
+      :standTime="1000"
+      :close-mode="true"
+    ></nut-noticebar>
+  </div>
   <nut-infinite-loading
     v-if="list.length"
     class="list_box"
@@ -99,7 +111,7 @@
   const loading = ref(false);
   const router = useRouter();
   const keyWord = ref('');
-
+  const horseLamp = ref(['TBC - - Waiting for consensus','']);
   const cloudSpaceList = ref([]);
   const orderStore = useOrderStore();
 
