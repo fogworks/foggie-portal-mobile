@@ -119,7 +119,7 @@ export default function useShare(orderInfo, header, deviceType) {
     if (key) {
       let foggie_id = orderInfo.value.foggie_id;
       // let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
-      let httpStr = `https://${bucketName.value}.devus.u2i.net:6008/o/${item.cid}`;
+      let httpStr = `https://${orderInfo.value.domain}.devus.u2i.net:6008/o/${item.cid}`;
       let ipfsStr = item.cid ? `ipfs://${item.cid}` : '';
       shareRefContent.ipfsStr = ipfsStr;
       shareRefContent.httpStr = httpStr;
