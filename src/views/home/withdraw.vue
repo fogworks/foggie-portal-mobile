@@ -251,13 +251,13 @@
     }
   }
   function confirmWithdraw() {
+    if (!amount.value) return false;
     showToast.loading('Loading', {
       cover: true,
       customClass: 'app_loading',
       icon: loadingImg,
       loadingRotate: false,
     });
-    if (!amount.value) return false;
     user_withdraw({ quantity: +amount.value, token: window.btoa(code.value) })
       .then((res) => {
         if (res.code == 200) {
