@@ -266,15 +266,15 @@
     </nut-dialog>
   </div>
   <Transition name="fade-transform" mode="out-in">
-      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
-        <nut-progress
-          class="upload_progress"
-          :percentage="uploadProgress"
-          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
-          status="icon"
-          :show-text="false"
-        >
-          <!-- <template #icon-name>
+    <div v-if="uploadProgressIsShow" style="margin-top: 30px">
+      <nut-progress
+        class="upload_progress"
+        :percentage="uploadProgress"
+        stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+        status="icon"
+        :show-text="false"
+      >
+        <!-- <template #icon-name>
             <template v-if="uploadStatus == 'uploading'">
               <div  style="display: flex; justify-content: space-between;width: 100%;">
                 <div style="margin-left: 25px;"> {{ curUploadFileSize }}</div>
@@ -294,9 +294,9 @@
               <MaskClose style="margin-left: 10px" color="#FA2C19"></MaskClose>
             </template>
           </template> -->
-        </nut-progress>
-      </div>
-    </Transition>
+      </nut-progress>
+    </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -455,7 +455,7 @@
       };
       let merkleRes = await valid_upload(d);
       if (merkleRes?.data) {
-        isDisabled.value = false;      
+        isDisabled.value = false;
       } else {
         // showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
         isDisabled.value = true;
@@ -526,7 +526,9 @@
   const detailRow = reactive({ value: {} });
   const handleRow = (row) => {
     detailRow.value = row;
-    if (row.imgUrl) {
+    if (row.type == 'pdf') {
+      window.open(row.imgUrl);
+    } else if (row.imgUrl) {
       imgUrl.value = row.imgUrlLarge;
       detailShow.value = true;
     } else {

@@ -4,6 +4,7 @@ import { showToast } from '@nutui/nutui';
 import '@nutui/nutui/dist/packages/toast/style';
 import { transferUTCTimeDay } from '@/utils/util';
 import loadingImg from '@/components/loadingImg/index.vue';
+import { useUserStore } from '@/store/modules/user';
 
 export default function useOrderList() {
   const shortcuts = {
@@ -37,11 +38,13 @@ export default function useOrderList() {
   };
   const cloudSpaceList = ref([]);
   const orderStore = useOrderStore();
+  const useStore = useUserStore();
   const listData = ref([] as any);
   const total = ref(0);
   const hasMore = computed(() => {
     return total.value > pn.value * ps.value;
   });
+  const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
   const infinityValue = ref(false);
   const pn = ref(1);
   const ps = ref(10);
@@ -51,6 +54,11 @@ export default function useOrderList() {
     listData.value = [];
   };
   const loadMore = async (order_state = null, start_time = '', end_time = '', buy_result = 'success') => {
+    console.log(cloudCodeIsBind.value, 'cloudCodeIsBindcloudCodeIsBindcloudCodeIsBind');
+
+    if (!cloudCodeIsBind.value) {
+      return false;
+    }
     showToast.loading('Loading', {
       cover: true,
       customClass: 'app_loading',

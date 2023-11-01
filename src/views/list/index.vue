@@ -101,6 +101,7 @@
   import { useOrderStore } from '@/store/modules/order';
   import useOrderList from '../home/useOrderList.ts';
   import { transferUTCTime } from '@/utils/util';
+  import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
 
   import { ref } from 'vue';
   const { uuid } = useVariable();
@@ -117,7 +118,7 @@
   ]);
   const cloudSpaceList = ref([]);
   const orderStore = useOrderStore();
-
+  const { bindAmbCode, cloudCodeIsBind } = useUpdateDMC();
   const { resetData, loadMore, listData, hasMore, infinityValue } = useOrderList();
 
   let list = computed(() => {
@@ -172,19 +173,30 @@
       router.push({ name: 'orderSummary', query: { id: item.order_id } });
     }
   };
-  onMounted(() => {
-    loadMore();
-  });
+  // onMounted(async () => {
+  //   loadMore();
+  // });
+  watch(
+    cloudCodeIsBind,
+    (val) => {
+      if (val) {
+        loadMore([0, 1, 2, 3, 6]);
+      }
+    },
+    { deep: true, immediate: true },
+  );
   watch(
     searchType,
     (val) => {
       resetData();
-      if (val == 'Open') {
-        loadMore([0, 1, 2, 3, 6]);
-      } else if (val == 'History') {
-        loadMore([4, 5]);
-      } else {
-        loadMore();
+      if (cloudCodeIsBind.value) {
+        if (val == 'Open') {
+          loadMore([0, 1, 2, 3, 6]);
+        } else if (val == 'History') {
+          loadMore([4, 5]);
+        } else {
+          loadMore();
+        }
       }
     },
     { deep: true },

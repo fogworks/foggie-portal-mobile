@@ -15,6 +15,7 @@ export default function useUpdateDMC() {
   const dmc = computed(() => userStore.getUserInfo.dmc);
   const uuid = computed(() => userStore.getUserInfo.uuid);
   const amb_promo_code = computed(() => userStore.getUserInfo?.amb_promo_code || '');
+  const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
   const targetAccount = ref('');
   const pn = ref(1);
   const ps = ref(10);
@@ -33,7 +34,7 @@ export default function useUpdateDMC() {
       loadingRotate: false,
       id: 'amb-code',
     });
-    check_user_bind(uuid.value)
+    return check_user_bind(uuid.value)
       .then((res2) => {
         if (res2.result.bind) {
           if (res2.result.approved && res2.result.refuse) {
@@ -57,7 +58,8 @@ export default function useUpdateDMC() {
               onOk,
             });
           } else if (res2.result.approved && !res2.result.refuse) {
-            curStepIndex.value = 2;
+            userStore.setCloudCodeIsBind(true);
+            curStepIndex.value = 3;
             ambRefuse.value = false;
             // approved
             if (!window.localStorage.hasCloudApproved) {
@@ -76,7 +78,7 @@ export default function useUpdateDMC() {
                 onOk,
               });
             } else if (res2.result.approved && !res2.result.refuse) {
-              curStepIndex.value = 2;
+              curStepIndex.value = 3;
               ambRefuse.value = false;
               // approved
               if (!window.localStorage.hasCloudApproved) {
@@ -93,12 +95,12 @@ export default function useUpdateDMC() {
                   onOk,
                 });
               }
-              userStore.setCloudCodeIsBind(true);
+              // userStore.setCloudCodeIsBind(true);
             } else {
               showToast.text('Ambassadors are in the process of approval, please be patient');
             }
           } else {
-            curStepIndex.value = 1;
+            curStepIndex.value = 2;
 
             if (route.path == '/bindDmc') {
               return false;
@@ -114,7 +116,6 @@ export default function useUpdateDMC() {
           }
         } else {
           curStepIndex.value = 1;
-
           if (route.path == '/bindDmc') {
             return false;
           }
@@ -158,5 +159,6 @@ export default function useUpdateDMC() {
     targetAccount,
     bindAmbCode,
     getOrder,
+    cloudCodeIsBind,
   };
 }

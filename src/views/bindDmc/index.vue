@@ -109,7 +109,7 @@
                     }).then((res) => {
                       if (res.code == 200) {
                         // showToast.success('Bind successfully');
-                        useStore.setCloudCodeIsBind(true);
+                        // useStore.setCloudCodeIsBind(true);
                       }
                     });
                   }
@@ -149,7 +149,7 @@
                       .then((res) => {
                         if (res.code == 200) {
                           showToast.success('Bind successfully');
-                          useStore.setCloudCodeIsBind(true);
+                          // useStore.setCloudCodeIsBind(true);
                         } else {
                           loading.value = false;
                         }

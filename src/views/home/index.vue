@@ -197,6 +197,7 @@
   import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
   import '@nutui/nutui/dist/packages/toast/style';
   import { useIntersectionObserver } from '@vueuse/core';
+
   const useStore = useUserStore();
   const orderStore = useOrderStore();
   const userInfo = computed(() => useStore.getUserInfo);
@@ -336,32 +337,39 @@
   }
 
   onBeforeMount(() => {
-    searchOrderProfit();
-    getOrder();
-  });
-
-  watch(cloudCodeIsBind, (newVal) => {
-    if (newVal) {
-      //   curStepIndex.value = 3;
-      ambRefuse.value = false;
+    if (cloudCodeIsBind.value) {
+      searchOrderProfit();
       getOrder();
-      // if (userInfo.value.dmc) {
-      //   curStepIndex.value = 4;
-      //   ambRefuse.value = false;
-      // } else {
-      //   curStepIndex.value = 3;
-      //   ambRefuse.value = false;
-      // }
-    } else {
-      bindAmbCode();
     }
   });
+
+  watch(
+    cloudCodeIsBind,
+    (newVal) => {
+      if (newVal) {
+        ambRefuse.value = false;
+        getOrder();
+        // if (userInfo.value.dmc) {
+        //   curStepIndex.value = 4;
+        //   ambRefuse.value = false;
+        // } else {
+        //   curStepIndex.value = 3;
+        //   ambRefuse.value = false;
+        // }
+      } else {
+        bindAmbCode();
+      }
+    },
+    { deep: true },
+  );
 
   watch(
     userInfo.value.uuid,
     (val) => {
       if (val) {
-        getUserAssets();
+        if (cloudCodeIsBind.value) {
+          getUserAssets();
+        }
       }
     },
     { deep: true },
@@ -390,9 +398,13 @@
     }
   }
 
-  onMounted(() => {
+  onMounted(async () => {
+    bindAmbCode();
+
     loadMySwipeDom();
-    getUserAssets();
+    if (cloudCodeIsBind.value) {
+      getUserAssets();
+    }
   });
 </script>
 
