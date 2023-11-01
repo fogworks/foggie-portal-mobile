@@ -261,6 +261,8 @@
     user_withdraw({ quantity: +amount.value, token: window.btoa(code.value) })
       .then((res) => {
         if (res.code == 200) {
+          amount.value = '';
+          code.value = '';
           showToast.hide();
           showToast.success('Withdrawal successful');
         } else {
