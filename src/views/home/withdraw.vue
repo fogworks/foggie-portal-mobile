@@ -49,7 +49,9 @@
     ></nut-noticebar>
 
     <div style="margin: 40px; margin-bottom: 150px">
-      <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmWithdraw"> Withdraw </nut-button>
+      <nut-button round block type="info" class="withdraw_btn" native-type="submit" :disabled="realAmount == '--'" @click="confirmWithdraw">
+        Withdraw
+      </nut-button>
     </div>
   </div>
   <div v-else-if="!loading && !canWithDraw" :class="['middle_box', 'qrcode-step', showKeyboard ? 'full_height' : '']" class="qrcode-step">
@@ -259,6 +261,8 @@
     user_withdraw({ quantity: +amount.value, token: window.btoa(code.value) })
       .then((res) => {
         if (res.code == 200) {
+          amount.value = '';
+          code.value = '';
           showToast.hide();
           showToast.success('Withdrawal successful');
         } else {

@@ -7679,11 +7679,6 @@ pathval@^1.1.1:
   resolved "https://registry.npmjs.org/pathval/-/pathval-1.1.1.tgz"
   integrity sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==
 
-pdfh5@^1.4.7:
-  version "1.4.7"
-  resolved "https://registry.npmjs.org/pdfh5/-/pdfh5-1.4.7.tgz"
-  integrity sha512-bVfxQl5G7jCRCn1ogiW7ozuSSeoLsQ7zJ1OPvp5mKH8aTRvHP4a2Us/Wj7srhSf1i42OyvDCjVDETCoIiW3huQ==
-
 pend@~1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/pend/-/pend-1.2.0.tgz"
@@ -10215,6 +10210,11 @@ webidl-conversions@^7.0.0:
   version "7.0.0"
   resolved "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-7.0.0.tgz"
   integrity sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==
+
+WebODF@^0.5.10:
+  version "0.5.10"
+  resolved "https://registry.npmjs.org/WebODF/-/WebODF-0.5.10.tgz"
+  integrity sha512-JGQW7ors0LYLmTZURs48LP1Fq3zNV7Dgr1mDaFDu68DzyM03tF/4tx66R3Y7K5Omy/TBgycDUGZ7uTIzew5IOg==
 
 webpack-sources@^3.2.3:
   version "3.2.3"

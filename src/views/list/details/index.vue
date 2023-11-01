@@ -1,12 +1,15 @@
 <template>
   <div class="top_box">
-    <TopBack>
+    <TopBack class="detail_top">
       <div v-if="bucketName">
         <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
         {{ bucketName }}
         <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
       </div>
       <div v-else> Order:{{ order_id }} </div>
+      <span class="benefit_analysis" @click="gotoSummary(order_id)">
+        <img src="@/assets/analysis.svg" class="bucket_detail_smal" />
+      </span>
     </TopBack>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
@@ -148,6 +151,9 @@
       <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
         <HLSVideo v-if="detailRow.value.type && detailRow.value.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
+        <pre v-else-if="detailRow.value.detailType == 'txt'" id="txtContainer"></pre>
+        <!-- <div v-else-if="detailRow.value.detailType == 'word'" id="odfContainer"></div> -->
+
         <div v-else-if="imgUrl" class="middle_img">
           <nut-image :src="imgUrl" fit="contain" position="center">
             <template #loading>
@@ -230,7 +236,10 @@
       </nut-popup>
     </Teleport>
 
-    <nut-uploader
+
+   
+
+    <!-- <nut-uploader
       v-if="isMobileOrder"
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
@@ -249,7 +258,7 @@
       class="upload_class"
     >
       <nut-button type="success" class="upload_btn" size="small">+</nut-button>
-    </nut-uploader>
+    </nut-uploader> -->
     <nut-dialog
       v-model:visible="dialogVisible"
       title="Custom Name"
@@ -265,16 +274,16 @@
       </template>
     </nut-dialog>
   </div>
-  <Transition name="fade-transform" mode="out-in">
-    <div v-if="uploadProgressIsShow" style="margin-top: 30px">
-      <nut-progress
-        class="upload_progress"
-        :percentage="uploadProgress"
-        stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
-        status="icon"
-        :show-text="false"
-      >
-        <!-- <template #icon-name>
+  <!-- <Transition name="fade-transform" mode="out-in">
+      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
+        <nut-progress
+          class="upload_progress"
+          :percentage="uploadProgress"
+          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+          status="icon"
+          :show-text="false"
+        >
+          <template #icon-name>
             <template v-if="uploadStatus == 'uploading'">
               <div  style="display: flex; justify-content: space-between;width: 100%;">
                 <div style="margin-left: 25px;"> {{ curUploadFileSize }}</div>
@@ -293,10 +302,20 @@
               <span>Upload Failed</span>
               <MaskClose style="margin-left: 10px" color="#FA2C19"></MaskClose>
             </template>
-          </template> -->
-      </nut-progress>
-    </div>
-  </Transition>
+          </template>
+        </nut-progress>
+      </div>
+    </Transition> -->
+
+    <uploader
+      v-if="isMobileOrder"
+      :bucketName="bucketName"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      :orderInfo="orderInfo"
+      @uploadComplete="uploadComplete"
+    ></uploader>
+    
 </template>
 
 <script setup lang="ts">
@@ -344,6 +363,7 @@
   import { update_order_size, tag_mobile_upload } from '@/api/amb';
   import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
+  import uploader from './uploader.vue';
 
   const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
@@ -526,9 +546,24 @@
   const detailRow = reactive({ value: {} });
   const handleRow = (row) => {
     detailRow.value = row;
-    if (row.type == 'pdf') {
-      window.open(row.imgUrl);
-    } else if (row.imgUrl) {
+    console.log(row, 'row');
+    const type = row.name.substring(row.name.lastIndexOf('.') + 1);
+    if (type == 'pdf') {
+      window.open(row.imgUrlLarge);
+    } else if (type == 'txt') {
+      detailRow.value.detailType = 'txt';
+      detailShow.value = true;
+      fetch(row.imgUrlLarge)
+        .then((response) => response.text())
+        .then((text) => {
+          document.getElementById('txtContainer').textContent = text;
+        });
+    } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+      detailRow.value.detailType = 'word';
+      window.open('https://docs.google.com/viewer?url=' + encodeURIComponent(row.imgUrlLarge));
+      imgUrl.value = row.imgUrlLarge;
+      // detailShow.value = true;
+    } else if (row.imgUrlLarge) {
       imgUrl.value = row.imgUrlLarge;
       detailShow.value = true;
     } else {
@@ -678,6 +713,7 @@
       return update_order_size({
         used_space: +option.sourceFile.size,
         order_id: +order_id.value,
+        device_type: 'mobile',
       })
         .then((res) => {
           if (res.code == 200) {
@@ -696,32 +732,10 @@
         });
     };
     await updateUsedSpace();
-
-    await getOrderInfo(false);
-    console.log(orderInfo.value.mobile_upload);
-
     if (orderInfo.value.mobile_upload == undefined) {
-      const tagMobile = () => {
-        // orderInfo.value.nodeIp
-        tag_mobile_upload('', {
-          orderUuid: orderInfo.value.uuid,
-          tag: true,
-        })
-          .then((res) => {
-            if (res.code !== 200) {
-              setTimeout(() => {
-                tagMobile();
-              }, 3000);
-            }
-          })
-          .catch(() => {
-            setTimeout(() => {
-              tagMobile();
-            }, 3000);
-          });
-      };
-      tagMobile();
+      await getOrderInfo(false);
     }
+
     // let uploadLine = 1024 * 1024 * 50;
     let uploadLine = 1024 * 1024 * 1;
 
@@ -743,6 +757,11 @@
     });
     // uploadRef.value.clearUploadQueue();
   };
+
+  const uploadComplete = ()=> {
+    console.log('uploadComplete');
+    getFileList();
+  }
 
   const onProgress = ({ event, options, percentage }: any) => {
     console.log('onProgress', event, options, percentage);
@@ -812,10 +831,13 @@
       order_name_set(order_data).then(
         (order_result) => {
           isNameLoading.value = false;
-          if (!order_result?.data?.result) {
-            bucketName.value = newBucketName.value;
-            dialogVisible.value = false;
-            return;
+          if (order_result.code == 200) {
+            if (!order_result?.data?.result) {
+              bucketName.value = newBucketName.value;
+              getOrderInfo();
+              dialogVisible.value = false;
+              return;
+            }
           }
         },
         (err) => {
@@ -847,14 +869,14 @@
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
       isSystemImg = true;
     }
     if (isDir) {
       isSystemImg = true;
     }
-    // console.log({ imgHttpLink, isSystemImg, imgHttpLarge }, '{ imgHttpLink, isSystemImg, imgHttpLarge }');
-
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
@@ -1025,6 +1047,8 @@
 
       tableData.value.push(item);
     }
+    console.log(data);
+
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
       let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
@@ -1037,7 +1061,9 @@
       if (data.prefix) {
         name = name.split(data.prefix)[1];
       }
-      if (name.indexOf('/') > 0) {
+      if (name.indexOf('/') > 0 && name[name.length - 1] != '/') {
+        name = name.split('/')[name.split('/').length - 1];
+      } else if (name.indexOf('/') > 0) {
         name = name.split('/')[name.split('/').length - 2];
       }
       let isPersistent = data.content[j].isPersistent;
@@ -1105,12 +1131,16 @@
   };
   const setDefaultName = () => {
     let orderName = route.query.id;
-    let length = 9 - orderName.toString().length;
-    let str = `${dmcName.value.substring(0, length)}-${orderName}`;
+    let length = 10 - orderName.toString().length;
+    const _dmcName = dmcName.value ? dmcName.value : 'dmcaccount';
+    let str = `${_dmcName.substring(0, length)}${orderName}`;
     newBucketName.value = str;
   };
+  const gotoSummary = (order_id) => {
+    router.push({ name: 'orderSummary', query: { id: order_id } });
+  };
   onMounted(async () => {
-    let res = await getOrderInfo();
+    await getOrderInfo();
 
     // showToast.hide();
     console.log(orderInfo.value, bucketName.value);
@@ -1160,16 +1190,8 @@
   watch(
     () => route.query,
     async () => {
-      // showToast.loading('Loading', {
-      //   cover: true,
-      //   customClass: 'app_loading',
-      //   icon: loadingImg,
-      //   loadingRotate: false,
-      // });
       dialogVisible.value = false;
       await getOrderInfo();
-      // showToast.hide();
-      // bucketName.value = orderInfo.value.domain;
       if (bucketName.value) {
         getFileList();
       } else {
@@ -1183,6 +1205,54 @@
 </script>
 
 <style lang="scss" scoped>
+  #txtContainer {
+    color: #fff;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    max-height: calc(100% - 300px);
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .benefit_analysis {
+    // font-size: 16px;
+    position: absolute;
+    right: 10px;
+    background: #4d5092;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // border: 1px solid #fff;
+    box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+    box-shadow:
+      rgb(204, 219, 232) 3px 3px 6px 0px inset,
+      rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+    transform-style: preserve-3d;
+    -webkit-transform-origin: 50%;
+    -webkit-animation: sizeChange 5s infinite;
+    -webkit-animation-timing-function: linear;
+    -webkit-perspective: 1000;
+    -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+    -webkit-filter: saturate(1.45) hue-rotate(2deg);
+    img {
+      width: 42px;
+      height: 42px;
+    }
+    @keyframes sizeChange {
+      from {
+        -webkit-transform: rotateY(0deg);
+        // transform: scale(1.1);
+      }
+      to {
+        -webkit-transform: rotateY(360deg);
+        // transform: scale(1.2);
+      }
+    }
+  }
   .bucket_detail_smal {
     width: 36px;
     height: 36px;
@@ -1516,6 +1586,8 @@
       }
 
       .left_icon_box {
+        width: 80px;
+        height: 80px;
         img {
           width: 80px;
           height: 80px;
@@ -1642,6 +1714,8 @@
       }
 
       .left_icon_box {
+        width: 80px;
+        height: 80px;
         svg {
           width: 100px;
           height: 100px;

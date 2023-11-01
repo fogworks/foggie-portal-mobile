@@ -26,10 +26,14 @@
 <style lang="scss" scoped>
   .video_box {
     max-height: calc(100% - 300px);
+    max-width: 100%;
     :deep {
       .nut-video-player {
+        max-width: 100%;
         width: unset;
+        max-height: 100%;
         margin: 0 auto;
+        object-fit: contain;
       }
     }
   }

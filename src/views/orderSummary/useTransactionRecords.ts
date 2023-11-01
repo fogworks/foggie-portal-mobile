@@ -46,7 +46,8 @@ export default function useOrderList() {
     total.value = 0;
     listData.value = [];
   };
-  const loadMore = async (start_time = '', end_time = '', type = 0, order_id) => {
+  const loadMore = async (start_time = '', end_time = '', type = 2, order_id) => {
+    console.log(type);
     showToast.loading('Loading', {
       cover: true,
       customClass: 'app_loading',
@@ -54,7 +55,18 @@ export default function useOrderList() {
       loadingRotate: false,
     });
     if (type == 0) {
-      await search_user_asset_detail({ start_time, end_time, type: 'income', order_id })
+      await search_user_asset_detail({ start_time, end_time, trade_type: 'income', order_id })
+        .then((res) => {
+          total.value = res.result.total;
+          const cloudList = res.result.data;
+          pn.value++;
+          listData.value = [...listData.value, ...cloudList];
+        })
+        .finally(() => {
+          showToast.hide();
+        });
+    } else if (type == 1) {
+      await search_user_asset_detail({ start_time, end_time, trade_type: 'payout', order_id })
         .then((res) => {
           total.value = res.result.total;
           const cloudList = res.result.data;
@@ -65,7 +77,7 @@ export default function useOrderList() {
           showToast.hide();
         });
     } else {
-      await search_user_asset_detail({ start_time, end_time, type: 'payout', order_id })
+      await search_user_asset_detail({ start_time, end_time, trade_type: '', order_id })
         .then((res) => {
           total.value = res.result.total;
           const cloudList = res.result.data;

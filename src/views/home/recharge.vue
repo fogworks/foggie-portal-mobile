@@ -23,6 +23,11 @@
       <p>Your Payment Account:</p>
       <p class="dmc_account">{{ dmc }}</p>
     </div>
+    <div class="recharge_btn_box" v-if="memo" @click="$router.push({ name: 'rechargeInfo' })">
+      <div class="recharge_btn">
+        <span> How to recharge?</span>
+      </div>
+    </div>
 
     <!-- <div style="margin: 40px">
       <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmRecharge"> Confirm </nut-button>
@@ -87,6 +92,45 @@
 </script>
 
 <style lang="scss" scoped>
+  .recharge_btn_box {
+    width: 100%;
+    display: flex;
+    align-items: end;
+    justify-content: end;
+  }
+  .recharge_btn {
+    background: #4d5092;
+    border-radius: 50%;
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+    box-shadow:
+      rgb(204, 219, 232) 3px 3px 6px 0px inset,
+      rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+    transform-style: preserve-3d;
+    -webkit-transform-origin: 50%;
+    -webkit-animation: sizeChange 5s infinite;
+    -webkit-animation-timing-function: linear;
+    -webkit-perspective: 1000;
+    -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+    -webkit-filter: saturate(1.45) hue-rotate(2deg);
+    color: #fff;
+    text-align: center;
+    span {
+      white-space: pre-wrap;
+    }
+  }
+  @keyframes sizeChange {
+    from {
+      -webkit-transform: rotateY(0deg);
+    }
+    to {
+      -webkit-transform: rotateY(360deg);
+    }
+  }
   .top_img {
     display: block;
     width: 200px;

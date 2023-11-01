@@ -88,7 +88,7 @@
                 prefixChange();
               "
             >
-            <TopBack> </TopBack>
+              <TopBack> </TopBack>
             </div>
             <span class="top_title">
               {{ prefix.at(-1) || '' }}
@@ -230,7 +230,7 @@
             <li @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
             <li @click="handlerClick('move')"><IconMove></IconMove> Move</li>
             <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
-            <li @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li>
+            <!-- <li @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li> -->
           </ul>
           <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
         </div>
@@ -362,6 +362,7 @@
       <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
         <HLSVideo v-if="chooseItem.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
+        <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
         <div v-else-if="imgUrl" class="middle_img">
           <!-- v-if="chooseItem.type.split('/')[0] == 'video'" -->
           <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
@@ -383,6 +384,15 @@
       </nut-overlay>
     </Teleport>
   </div>
+  <uploader
+      v-if="isMobileOrder"
+      :bucketName="bucketName"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      :orderInfo="orderInfo"
+      :prefix="prefix"
+      @uploadComplete="uploadComplete"
+    ></uploader>
 </template>
 
 <script setup lang="ts">
@@ -427,6 +437,8 @@
   import loadingImg from '@/components/loadingImg/index.vue';
 
   import { HmacSHA1, enc } from 'crypto-js';
+  import uploader from './uploader.vue';
+  
   // import { download_url } from '@/api/index';
 
   // const accessKeyId = ref<string>('');
@@ -597,8 +609,27 @@
         } else {
           chooseItem.value = row;
           console.log(chooseItem.value, 'chooseItem.value');
-          detailShow.value = true;
-          imgUrl.value = row.imgUrlLarge;
+          const type = row.name.substring(row.name.lastIndexOf('.') + 1);
+
+          if (type == 'pdf') {
+            window.open(row.imgUrlLarge);
+          } else if (type == 'txt') {
+            chooseItem.value.detailType = 'txt';
+            detailShow.value = true;
+            fetch(row.imgUrlLarge)
+              .then((response) => response.text())
+              .then((text) => {
+                document.getElementById('txtContainer').textContent = text;
+              });
+          } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+            chooseItem.value.detailType = 'word';
+            window.open('https://docs.google.com/viewer?url=' + encodeURIComponent(row.imgUrlLarge));
+            imgUrl.value = row.imgUrlLarge;
+            // detailShow.value = true;
+          } else if (row.imgUrlLarge) {
+            imgUrl.value = row.imgUrlLarge;
+            detailShow.value = true;
+          }
         }
       }
     }
@@ -865,6 +896,12 @@
     showTypeCheckPop.value = false;
   };
 
+
+  const uploadComplete = ()=> {
+    console.log('uploadComplete');
+    getFileList('', prefix.value, true);
+  }
+
   function getFileList(scroll: string, prefix: any[], reset = false) {
     showToast.loading('Loading', {
       cover: true,
@@ -1003,23 +1040,22 @@
     let peerId = orderInfo.value.peer_id;
     if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
       type = 'img';
-      const headers = getSignHeaders(encodeURIComponent(item.key));
-
+      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
-      // foggie://peerid/spaceid/cid
+      // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-      // item.contentType = "video/mp4";
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
       isSystemImg = true;
     }
     if (isDir) {
       isSystemImg = true;
     }
-
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   const initRemoteData = async (
@@ -1386,6 +1422,16 @@
   }
 </style>
 <style lang="scss" scoped>
+  #txtContainer {
+    color: #fff;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    max-height: calc(100% - 300px);
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
   .nut-custom-tour {
     :deep {
       .nut-popover {

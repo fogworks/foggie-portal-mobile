@@ -69,7 +69,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
-        '^/order/buy': {
+        '^/order': {
           target: 'http://45.207.245.24:28080',
           changeOrigin: true,
           secure: false,
@@ -168,6 +168,13 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
         '^/order/get_challenge': {
+          target: 'http://45.207.245.24:28080',
+          // target: 'http://192.168.1.119:6008',
+          changeOrigin: true,
+          secure: false,
+          // rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+        '^/order/tag_mobile_upload': {
           target: 'http://45.207.245.24:28080',
           // target: 'http://192.168.1.119:6008',
           changeOrigin: true,
