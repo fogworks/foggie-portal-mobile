@@ -61,11 +61,11 @@
           <span>Order:{{ item.order_id }}</span>
           <span style="margin-left: 10px">
             <!-- 待共識 -->
-            <nut-tag v-if="item.state == 0" type="warning">TBC</nut-tag>
+            <nut-tag v-if="item.state == 0" type="warning">CNR</nut-tag>
             <!-- 进行中 -->
-            <nut-tag type="success" v-else-if="item.state == 1">WIP</nut-tag>
+            <nut-tag type="success" v-else-if="item.state == 1">CR</nut-tag>
             <!-- 已结束 -->
-            <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Closed</nut-tag>
+            <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Order over</nut-tag>
             <!-- 已取消 -->
             <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
             <!-- 下週期將取消 -->
@@ -110,8 +110,8 @@
   const router = useRouter();
   const keyWord = ref('');
   const horseLamp = ref([
-    'TBC - - Waiting for consensus',
-    'WIP - - Orders in progress',
+    'CNR - - Consensus not reached ',
+    'CR - - Consensus reached ',
     'Next: canceled - - Cancellation of the next cycle',
     'APB - - Insufficient advance deposit to cancel the next cycle',
     'INSF - - Sufficient funds in advance ',

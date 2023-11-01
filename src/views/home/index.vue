@@ -15,8 +15,7 @@
   </div>
   <div inset class="income-card">
     <img src="@/assets/balance_right.svg" @click="gotoPage('analysis')" alt="" />
-    <div class="card_row_1 card_header card_row_top" @click="gotoPage('analysis')"
-      ><span>Balance</span>
+    <div class="card_row_1 card_header card_row_top" @click="gotoPage('analysis')"><span>Balance</span>
       <span>Income</span>
     </div>
     <div class="card_row_1 card_header" @click="gotoPage('analysis')">
@@ -38,8 +37,7 @@
       </div>
       <div @click="gotoPage('analysis')">
         <p>New revenue today</p>
-        <p class="column_value today_income"
-          >+ {{ cloudTodayIncome }} DMC
+        <p class="column_value today_income">+ {{ cloudTodayIncome }} DMC
           <TriangleUp color="#fbd116" width="20px"></TriangleUp>
         </p>
       </div>
@@ -67,11 +65,18 @@
     </div>
     <div>
       <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
-      <div class="flex-content" @click="gotoPage('analysis')">
+      <!-- <div class="flex-content" @click="gotoPage('analysis')">
         <div class="svg-box">
           <img src="@/assets/earn.svg" alt="" />
         </div>
         <span>Analysis</span>
+      </div> -->
+      <div class="flex-content" @click="gotoPage('order')">
+        <div class="svg-box">
+          <img src="@/assets/orders.svg" alt="" />
+          
+        </div>
+        <span>Orders</span>
       </div>
     </div>
     <div>
@@ -120,36 +125,21 @@
   <div class="tab_top_title" v-if="earningsList.length">Recent Earnings</div>
   <div class="my_steps" ref="my_steps" id="my_steps" v-if="!earningsList.length">
     <nut-steps direction="vertical" :current="curStepIndex">
-      <nut-step
-        title="Bind invitation code"
-        @click="gotoBindAmb"
-        content="Please confirm that you have filled out the invitation code before placing your order"
-        >1</nut-step
-      >
-      <nut-step
-        title="Waiting for approval"
-        :content="ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'"
-        >2</nut-step
-      >
+      <nut-step title="Bind invitation code" @click="gotoBindAmb"
+        content="Please confirm that you have filled out the invitation code before placing your order">1</nut-step>
+      <nut-step title="Waiting for approval"
+        :content="ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'">2</nut-step>
       <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
-      <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
-        >3</nut-step
-      >
-      <nut-step
-        @click="gotoOrderList"
-        title="Ops, you haven't made a profit yet"
-        content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you."
-        >4</nut-step
-      >
+      <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase"
+        @click="toBuyOrder">3</nut-step>
+      <nut-step @click="gotoOrderList" title="Ops, you haven't made a profit yet"
+        content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you.">4</nut-step>
     </nut-steps>
   </div>
 
   <nut-infinite-loading v-if="earningsList.length" load-more-txt="No more content" :has-more="false">
-    <div
-      class="list_item"
-      v-for="(item, index) in earningsList"
-      @click="$router.push({ name: 'orderSummary', query: { id: item.order_id } })"
-    >
+    <div class="list_item" v-for="(item, index) in earningsList"
+      @click="$router.push({ name: 'orderSummary', query: { id: item.order_id } })">
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <img src="@/assets/list_item_2.svg" alt="" />
       </div>
@@ -181,670 +171,673 @@
 </template>
 
 <script lang="ts" setup name="HomePage">
-  import IconArrowRight from '~icons/home/arrow-right.svg';
-  import IconTransaction from '~icons/home/transaction.svg';
-  import { Notice, TriangleUp, DouArrowUp } from '@nutui/icons-vue';
-  import { toRefs, reactive, onActivated } from 'vue';
-  import { useRouter } from 'vue-router';
-  import { useUserStore } from '@/store/modules/user';
-  import { useOrderStore } from '@/store/modules/order';
-  import { showToast, showDialog } from '@nutui/nutui';
-  //   import { search_cloud } from '@/api';
-  import { get_user_dmc } from '@/api/amb';
-  import useUserAssets from './useUserAssets.ts';
-  import useOrderList from './useOrderList.ts';
-  import { transferUTCTime } from '@/utils/util';
-  import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
-  import '@nutui/nutui/dist/packages/toast/style';
-  import { useIntersectionObserver } from '@vueuse/core';
+import IconArrowRight from '~icons/home/arrow-right.svg';
+import IconTransaction from '~icons/home/transaction.svg';
+import { Notice, TriangleUp, DouArrowUp,Order } from '@nutui/icons-vue';
+import { toRefs, reactive, onActivated } from 'vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/store/modules/user';
+import { useOrderStore } from '@/store/modules/order';
+import { showToast, showDialog } from '@nutui/nutui';
+//   import { search_cloud } from '@/api';
+import { get_user_dmc } from '@/api/amb';
+import useUserAssets from './useUserAssets.ts';
+import useOrderList from './useOrderList.ts';
+import { transferUTCTime } from '@/utils/util';
+import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
+import '@nutui/nutui/dist/packages/toast/style';
+import { useIntersectionObserver } from '@vueuse/core';
 
-  const useStore = useUserStore();
-  const orderStore = useOrderStore();
-  const userInfo = computed(() => useStore.getUserInfo);
-  const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
+const useStore = useUserStore();
+const orderStore = useOrderStore();
+const userInfo = computed(() => useStore.getUserInfo);
+const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
 
-  const router = useRouter();
-  const state = reactive({
-    timeType: '0',
-    searchType: '0',
-  });
-  const earningsList = ref([] as any);
-  import { search_order_profit } from '@/api/amb';
-  import loadingImg from '@/components/loadingImg/index.vue';
-  const { timeType, searchType } = toRefs(state);
-  const { getUserAssets, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
-  const { bindAmbCode, curStepIndex, ambRefuse, getOrder } = useUpdateDMC();
-  const { shortcuts } = useOrderList();
-  const searchOrderProfit = () => {
-    const [start, end] = shortcuts[1]();
-    const postData = !start && !end ? {} : { start_time: start, end_time: end };
-    search_order_profit(postData)
-      .then((res) => {
-        console.log(res, 'search_order_profit');
-        if (res && res.result && res.result.length) {
-          earningsList.value = res.result;
-        }
-      })
-      .finally(() => {});
-  };
-
-  const showWithdraw = () => {
-    if (!userInfo.value.dmc) {
-      const dmcOk = () => {
-        router.push({ name: 'BindDmc', query: { type: 'dmc' } });
-      };
-      let src = require('@/assets/DMC_token.png');
-      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
-      showDialog({
-        title: 'Bind DMC Account',
-        content: str,
-        onOk: dmcOk,
-      });
-      return false;
-    }
-    router.push({ name: 'Withdraw' });
-  };
-  const gotoPage = (type) => {
-    if (!userInfo.value.amb_promo_code) {
-      const dmcOk = () => {
-        router.push({ name: 'BindDmc', query: { type: 'amb' } });
-      };
-      let src = require('@/assets/fog-works.png');
-      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
-      showDialog({
-        title: 'Bind Invitation Code',
-        content: str,
-        onOk: dmcOk,
-      });
-      return false;
-    } else if (!cloudCodeIsBind.value) {
-      bindAmbCode();
-    } else {
-      if (type === 'analysisCate') {
-        router.push('/analysisCate?type=1');
-      } else if (type === 'analysis') {
-        router.push('/analysis');
-      } else if (type === 'transactionRecords') {
-        router.push('/transactionRecords');
-      } else if (type === 'shop') {
-        router.push({ name: 'Shop' });
-      } else if (type === 'analysisChart') {
-        router.push('/analysisChart');
+const router = useRouter();
+const state = reactive({
+  timeType: '0',
+  searchType: '0',
+});
+const earningsList = ref([] as any);
+import { search_order_profit } from '@/api/amb';
+import loadingImg from '@/components/loadingImg/index.vue';
+const { timeType, searchType } = toRefs(state);
+const { getUserAssets, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
+const { bindAmbCode, curStepIndex, ambRefuse, getOrder } = useUpdateDMC();
+const { shortcuts } = useOrderList();
+const searchOrderProfit = () => {
+  const [start, end] = shortcuts[1]();
+  const postData = !start && !end ? {} : { start_time: start, end_time: end };
+  search_order_profit(postData)
+    .then((res) => {
+      console.log(res, 'search_order_profit');
+      if (res && res.result && res.result.length) {
+        earningsList.value = res.result;
       }
-    }
-  };
-  const toBuyOrder = () => {
-    // if (curStepIndex.value != 4) return;
-    gotoPage('shop');
-  };
-  const toRecharge = () => {
-    if (!userInfo.value.amb_promo_code) {
-      const dmcOk = () => {
-        router.push({ name: 'BindDmc', query: { type: 'amb' } });
-      };
-      let src = require('@/assets/fog-works.png');
-      let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
-      showDialog({
-        title: 'Ambassador Invitation Code',
-        content: str,
-        onOk: dmcOk,
-      });
-      return false;
-    } else if (!cloudCodeIsBind.value) {
-      bindAmbCode();
-    } else {
-      router.push({ name: 'Recharge' });
-    }
-  };
-  const randomColor = () => {
-    const createNumber = (min, max) => {
-      let color = Math.floor(Math.random() * 255);
-      if (color <= max && color >= min) {
-        return color;
-      } else {
-        return createNumber(min, max);
-      }
+    })
+    .finally(() => { });
+};
+
+const showWithdraw = () => {
+  if (!userInfo.value.dmc) {
+    const dmcOk = () => {
+      router.push({ name: 'BindDmc', query: { type: 'dmc' } });
     };
-    let r = createNumber(0, 60);
-    let g = createNumber(40, 120);
-    let b = createNumber(150, 255);
-    return `rgb(${r} ${g} ${b})`;
-  };
-
-  function gotoBindDMC() {
-    if (curStepIndex.value != 3) return;
-    router.push({
-      path: '/bindDmc',
-      query: {
-        type: 'dmc',
-      },
+    let src = require('@/assets/DMC_token.png');
+    let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
+    showDialog({
+      title: 'Bind DMC Account',
+      content: str,
+      onOk: dmcOk,
     });
+    return false;
   }
-  function gotoBindAmb() {
-    if (curStepIndex.value !== 1) {
-      showToast.text('You have already bound an invitation code');
-      return;
-    }
-    router.push({ name: 'BindDmc', query: { type: 'amb' } });
-  }
-
-  function gotoOrderList() {
-    if (curStepIndex.value !== 4) {
-      showToast.text('You do not have any available order records yet');
-      return;
-    }
-    router.push('/list');
-  }
-
-  onBeforeMount(() => {
-    if (cloudCodeIsBind.value) {
-      searchOrderProfit();
-      getOrder();
-    }
-  });
-
-  watch(
-    cloudCodeIsBind,
-    (newVal) => {
-      if (newVal) {
-        ambRefuse.value = false;
-        getOrder();
-        // if (userInfo.value.dmc) {
-        //   curStepIndex.value = 4;
-        //   ambRefuse.value = false;
-        // } else {
-        //   curStepIndex.value = 3;
-        //   ambRefuse.value = false;
-        // }
-      } else {
-        bindAmbCode();
-      }
-    },
-    { deep: true },
-  );
-
-  watch(
-    userInfo.value.uuid,
-    (val) => {
-      if (val) {
-        if (cloudCodeIsBind.value) {
-          getUserAssets();
-        }
-      }
-    },
-    { deep: true },
-  );
-  // onActivated(() => {
-  //   if (userInfo.value.dmc) {
-  //     curStepIndex.value = 4;
-  //     ambRefuse.value = false;
-  //   }
-  // });
-
-  const targetIsVisible = ref(false);
-  const my_steps = ref(null);
-  function loadMySwipeDom() {
-    const { stop } = useIntersectionObserver(my_steps, ([{ isIntersecting }]) => {
-      targetIsVisible.value = isIntersecting;
+  router.push({ name: 'Withdraw' });
+};
+const gotoPage = (type) => {
+  if (!userInfo.value.amb_promo_code) {
+    const dmcOk = () => {
+      router.push({ name: 'BindDmc', query: { type: 'amb' } });
+    };
+    let src = require('@/assets/fog-works.png');
+    let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
+    showDialog({
+      title: 'Bind Invitation Code',
+      content: str,
+      onOk: dmcOk,
     });
-  }
-
-  function scrollIntoViewTo() {
-    let my_steps = document.getElementById('my_steps');
-    console.log(my_steps);
-
-    if (my_steps) {
-      my_steps?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
-
-  onMounted(async () => {
+    return false;
+  } else if (!cloudCodeIsBind.value) {
     bindAmbCode();
-
-    loadMySwipeDom();
-    if (cloudCodeIsBind.value) {
-      getUserAssets();
+  } else {
+    if (type === 'analysisCate') {
+      router.push('/analysisCate?type=1');
+    } else if (type === 'analysis') {
+      router.push('/analysis');
+    } else if (type === 'transactionRecords') {
+      router.push('/transactionRecords');
+    } else if (type === 'shop') {
+      router.push({ name: 'Shop' });
+    } else if (type === 'analysisChart') {
+      router.push('/analysisChart');
+    } else if (type === 'order') {
+      router.push('/list');
     }
+  }
+};
+const toBuyOrder = () => {
+  // if (curStepIndex.value != 4) return;
+  gotoPage('shop');
+};
+const toRecharge = () => {
+  if (!userInfo.value.amb_promo_code) {
+    const dmcOk = () => {
+      router.push({ name: 'BindDmc', query: { type: 'amb' } });
+    };
+    let src = require('@/assets/fog-works.png');
+    let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
+    showDialog({
+      title: 'Ambassador Invitation Code',
+      content: str,
+      onOk: dmcOk,
+    });
+    return false;
+  } else if (!cloudCodeIsBind.value) {
+    bindAmbCode();
+  } else {
+    router.push({ name: 'Recharge' });
+  }
+};
+const randomColor = () => {
+  const createNumber = (min, max) => {
+    let color = Math.floor(Math.random() * 255);
+    if (color <= max && color >= min) {
+      return color;
+    } else {
+      return createNumber(min, max);
+    }
+  };
+  let r = createNumber(0, 60);
+  let g = createNumber(40, 120);
+  let b = createNumber(150, 255);
+  return `rgb(${r} ${g} ${b})`;
+};
+
+function gotoBindDMC() {
+  if (curStepIndex.value != 3) return;
+  router.push({
+    path: '/bindDmc',
+    query: {
+      type: 'dmc',
+    },
   });
+}
+function gotoBindAmb() {
+  if (curStepIndex.value !== 1) {
+    showToast.text('You have already bound an invitation code');
+    return;
+  }
+  router.push({ name: 'BindDmc', query: { type: 'amb' } });
+}
+
+function gotoOrderList() {
+  if (curStepIndex.value !== 4) {
+    showToast.text('You do not have any available order records yet');
+    return;
+  }
+  router.push('/list');
+}
+
+onBeforeMount(() => {
+  if (cloudCodeIsBind.value) {
+    searchOrderProfit();
+    getOrder();
+  }
+});
+
+watch(
+  cloudCodeIsBind,
+  (newVal) => {
+    if (newVal) {
+      ambRefuse.value = false;
+      getOrder();
+      // if (userInfo.value.dmc) {
+      //   curStepIndex.value = 4;
+      //   ambRefuse.value = false;
+      // } else {
+      //   curStepIndex.value = 3;
+      //   ambRefuse.value = false;
+      // }
+    } else {
+      bindAmbCode();
+    }
+  },
+  { deep: true },
+);
+
+watch(
+  userInfo.value.uuid,
+  (val) => {
+    if (val) {
+      if (cloudCodeIsBind.value) {
+        getUserAssets();
+      }
+    }
+  },
+  { deep: true },
+);
+// onActivated(() => {
+//   if (userInfo.value.dmc) {
+//     curStepIndex.value = 4;
+//     ambRefuse.value = false;
+//   }
+// });
+
+const targetIsVisible = ref(false);
+const my_steps = ref(null);
+function loadMySwipeDom() {
+  const { stop } = useIntersectionObserver(my_steps, ([{ isIntersecting }]) => {
+    targetIsVisible.value = isIntersecting;
+  });
+}
+
+function scrollIntoViewTo() {
+  let my_steps = document.getElementById('my_steps');
+  console.log(my_steps);
+
+  if (my_steps) {
+    my_steps?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+onMounted(async () => {
+  bindAmbCode();
+
+  loadMySwipeDom();
+  if (cloudCodeIsBind.value) {
+    getUserAssets();
+  }
+});
 </script>
 
 <style lang="scss" scoped>
-  ::v-deep {
-    .nut-step-main {
-      padding-bottom: 30px !important;
-    }
+::v-deep {
+  .nut-step-main {
+    padding-bottom: 30px !important;
+  }
+}
+
+.DouArrowDown {
+  // transform: rotate(180deg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.my_swipe {
+  margin-top: 30px;
+
+  .nut-swiper {
+    height: 300px;
   }
 
-  .DouArrowDown {
-    // transform: rotate(180deg);
+  .nut-swiper-item {
+    line-height: 150px;
+    height: 300px;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.my_steps {
+  margin: 40px auto;
+  width: calc(100% - 80px);
+  background: #fff;
+  height: 820px;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.my_noticebar {
+  margin: 0 -4vw;
+  display: inline-block;
+  width: 120%;
+
+  :deep {
+    .nut-noticebar__page {
+      padding: 0;
+    }
+
+    .nut-noticebar__page-lefticon {
+      margin: 0 8px;
+    }
+  }
+}
+
+.dmc_account {
+  // background: #5758a0;
+  margin: 0 -4vw;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  // margin-top: 5px;
+  font-size: 40px;
+  color: #5758a0;
+  height: 100px;
+  // color: #fff;
+  font-weight: bold;
+  padding: 10px 0 0 10px;
+
+  // box-shadow: $main-shadow;
+  .img-box {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-  }
 
-  .my_swipe {
-    margin-top: 30px;
+    width: 58px;
+    height: 58px;
+    padding: 15px;
+    margin-right: 10px;
+    //   background: #5758a0;
+    box-sizing: border-box;
+    border-radius: 10px;
+    border-radius: 50%;
 
-    .nut-swiper {
-      height: 300px;
-    }
-
-    .nut-swiper-item {
-      line-height: 150px;
-      height: 300px;
-
-      img {
-        width: 100%;
-        height: 100%;
-      }
+    img {
+      width: 45px;
+      margin: 0 auto;
+      vertical-align: middle;
     }
   }
 
-  .my_steps {
-    margin: 40px auto;
-    width: calc(100% - 80px);
-    background: #fff;
-    height: 820px;
-    border-radius: 20px;
-    padding: 20px;
+  h2 {
+    font-size: 35px;
   }
+}
 
-  .my_noticebar {
-    margin: 0 -4vw;
+.middle_btn_box {
+  // display: flex;
+  // justify-content: flex-start;
+  // align-items: flex-start;
+  margin-top: -60px;
+  border-radius: 10px;
+  padding: 10px 0px;
+  box-sizing: border-box;
+  overflow-x: auto;
+  white-space: nowrap;
+  width: 100%;
+
+  // background: #fff;
+  >div {
     display: inline-block;
-    width: 120%;
+    color: #1e0a0a;
+    font-size: 28px;
+    font-weight: 600;
+    width: 150px;
+    width: 25%;
 
-    :deep {
-      .nut-noticebar__page {
-        padding: 0;
+    &:nth-child(2) {
+      .svg-box {
+        background: #34964f;
       }
+    }
 
-      .nut-noticebar__page-lefticon {
-        margin: 0 8px;
+    &:nth-child(3) {
+      .svg-box {
+        background: #fcd116;
+      }
+    }
+
+    &:nth-child(4) {
+      .svg-box {
+        background: #5f57ff;
       }
     }
   }
 
-  .dmc_account {
-    // background: #5758a0;
-    margin: 0 -4vw;
+  .flex-content {
     display: flex;
-    justify-content: flex-start;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    // margin-top: 5px;
-    font-size: 40px;
-    color: #5758a0;
-    height: 100px;
-    // color: #fff;
-    font-weight: bold;
-    padding: 10px 0 0 10px;
+    // height: 120px;
+    text-align: center;
+    word-break: break-word;
 
-    // box-shadow: $main-shadow;
-    .img-box {
+    span {
+      font-size: 0.8rem;
+    }
+
+    .svg-box {
       display: flex;
       justify-content: center;
       align-items: center;
+      border-radius: 50px;
+      width: 100px;
+      height: 100px;
+      margin-bottom: 15px;
+      background: #ff8b00;
+      // box-shadow: 0px 1px 2px 2px #ccc;
+      box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
-      width: 58px;
-      height: 58px;
-      padding: 15px;
-      margin-right: 10px;
-      //   background: #5758a0;
-      box-sizing: border-box;
-      border-radius: 10px;
-      border-radius: 50%;
-
+      svg,
       img {
-        width: 45px;
-        margin: 0 auto;
-        vertical-align: middle;
+        width: 55px;
+        height: 55px;
+        color: #fff;
       }
     }
+  }
+}
 
-    h2 {
+.income-card {
+  position: relative;
+  padding: 40px;
+  height: 410px;
+  box-sizing: border-box;
+  margin: 0;
+  // margin-top: 20px;
+  margin-left: -4vw;
+  margin-right: -4vw;
+  //   box-shadow: 0px 0px 4px 1px #ccc;
+  // background-color: var(--van-blue);
+  background: $primary-color;
+  color: #fff;
+  border-radius: 0;
+
+  img {
+    position: absolute;
+    right: 40px;
+    width: 100px;
+  }
+
+  >div {
+    min-height: 60px;
+    line-height: 60px;
+    text-align: center;
+  }
+
+  .card_row_1 {
+    display: flex;
+    justify-content: space-between;
+
+    &.card_header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      justify-content: space-between;
+      margin-right: 100px;
+
+      span {
+        text-align: left;
+      }
+
+      .total_income {
+        >div {
+          font-size: 30px;
+          text-align: left;
+        }
+      }
+    }
+  }
+
+  .card_row_top {
+    font-weight: bold;
+    font-size: 32px;
+  }
+
+  .pst-row {
+    margin-top: 40px;
+    font-size: 28px;
+    text-align: left;
+    font-weight: bold;
+
+    .column_value {
+      font-size: 28px;
+    }
+
+    .today_income {
+      color: #ff8b00;
+      color: #fbd116;
+
+      svg {
+        vertical-align: sub;
+      }
+    }
+  }
+
+  .total_income {
+    font-size: 55px;
+    font-weight: 700;
+
+    .about_income {
       font-size: 35px;
     }
   }
 
-  .middle_btn_box {
-    // display: flex;
-    // justify-content: flex-start;
-    // align-items: flex-start;
-    margin-top: -60px;
-    border-radius: 10px;
-    padding: 10px 0px;
-    box-sizing: border-box;
-    overflow-x: auto;
-    white-space: nowrap;
-    width: 100%;
-
-    // background: #fff;
-    > div {
-      display: inline-block;
-      color: #1e0a0a;
-      font-size: 28px;
-      font-weight: 600;
-      width: 150px;
-      width: 25%;
-
+  :deep {
+    .van-grid-item {
       &:nth-child(2) {
-        .svg-box {
-          background: #34964f;
-        }
-      }
 
-      &:nth-child(3) {
-        .svg-box {
-          background: #fcd116;
+        // border: 1px solid #fff;
+        // border-width: 0 1px 0 1px;
+        &::before,
+        &::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 60px;
+          display: block;
+          width: 1px;
+          height: 60px;
+          background-color: #ffffff5c;
         }
-      }
 
-      &:nth-child(4) {
-        .svg-box {
-          background: #5f57ff;
+        &::after {
+          left: unset;
+          right: 0;
         }
       }
     }
 
-    .flex-content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      // height: 120px;
-      text-align: center;
-      word-break: break-word;
+    .van-grid-item__content {
+      background: transparent;
 
-      span {
-        font-size: 0.8rem;
+      div:first-child {
+        font-size: 40px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
-      .svg-box {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50px;
-        width: 100px;
-        height: 100px;
-        margin-bottom: 15px;
-        background: #ff8b00;
-        // box-shadow: 0px 1px 2px 2px #ccc;
-        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-
-        svg,
-        img {
-          width: 55px;
-          height: 55px;
-          color: #fff;
-        }
+      div:nth-child(2) {
+        font-size: 30px;
       }
+    }
+
+    .van-button {
+      height: 60px;
     }
   }
+}
 
-  .income-card {
-    position: relative;
-    padding: 40px;
-    height: 410px;
-    box-sizing: border-box;
-    margin: 0;
-    // margin-top: 20px;
-    margin-left: -4vw;
-    margin-right: -4vw;
-    //   box-shadow: 0px 0px 4px 1px #ccc;
-    // background-color: var(--van-blue);
-    background: $primary-color;
-    color: #fff;
-    border-radius: 0;
+.withdraw-btn {
+  display: flex;
+  justify-content: space-around;
+  transform: translateY(-80px);
+  width: 90%;
+  margin: 0 auto;
+  padding: 20px 0;
+  border-radius: 16px;
+  border: 1px dashed #ffffff;
+  background: #fff;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
 
-    img {
-      position: absolute;
-      right: 40px;
-      width: 100px;
-    }
-
-    > div {
-      min-height: 60px;
-      line-height: 60px;
-      text-align: center;
-    }
-
-    .card_row_1 {
-      display: flex;
-      justify-content: space-between;
-
-      &.card_header {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        justify-content: space-between;
-        margin-right: 100px;
-
-        span {
-          text-align: left;
-        }
-
-        .total_income {
-          > div {
-            font-size: 30px;
-            text-align: left;
-          }
-        }
-      }
-    }
-
-    .card_row_top {
-      font-weight: bold;
-      font-size: 32px;
-    }
-
-    .pst-row {
-      margin-top: 40px;
-      font-size: 28px;
-      text-align: left;
-      font-weight: bold;
-
-      .column_value {
-        font-size: 28px;
-      }
-
-      .today_income {
-        color: #ff8b00;
-        color: #fbd116;
-
-        svg {
-          vertical-align: sub;
-        }
-      }
-    }
-
-    .total_income {
-      font-size: 55px;
-      font-weight: 700;
-
-      .about_income {
-        font-size: 35px;
-      }
-    }
-
-    :deep {
-      .van-grid-item {
-        &:nth-child(2) {
-          // border: 1px solid #fff;
-          // border-width: 0 1px 0 1px;
-          &::before,
-          &::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 60px;
-            display: block;
-            width: 1px;
-            height: 60px;
-            background-color: #ffffff5c;
-          }
-
-          &::after {
-            left: unset;
-            right: 0;
-          }
-        }
-      }
-
-      .van-grid-item__content {
-        background: transparent;
-
-        div:first-child {
-          font-size: 40px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        div:nth-child(2) {
-          font-size: 30px;
-        }
-      }
-
-      .van-button {
-        height: 60px;
-      }
-    }
-  }
-
-  .withdraw-btn {
-    display: flex;
-    justify-content: space-around;
-    transform: translateY(-80px);
-    width: 90%;
-    margin: 0 auto;
-    padding: 20px 0;
-    border-radius: 16px;
-    border: 1px dashed #ffffff;
-    background: #fff;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-
-    .action_item {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #333333;
-      font-size: 24px;
-
-      img {
-        display: block;
-        width: 100px;
-        margin-bottom: 10px;
-      }
-    }
-  }
-
-  .tab_top_title {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    // font-style: italic;
-    font-size: 35px;
-    font-weight: 600;
-  }
-
-  .time_tabs {
-    :deep {
-      .nut-tabs__titles {
-        // background: transparent;
-      }
-
-      .nut-tabs__content {
-        display: none;
-      }
-    }
-  }
-
-  .list_item {
-    position: relative;
+  .action_item {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 12px 30px;
-    padding-left: 100px;
-    min-height: 80px;
-    color: #171414;
+    align-items: center;
+    color: #333333;
     font-size: 24px;
-    background: #fff;
-    border-radius: 5px;
-    border-bottom: 1px solid #eee;
-    margin: 10px 0;
-    border-radius: 20px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
 
-    .item_img_box {
-      position: absolute;
-      left: 16px;
-      width: 70px;
-      height: 70px;
-      padding: 5px;
-      box-sizing: border-box;
-      border-radius: 50px;
-      background: #ff8b00;
-
-      img {
-        width: 36px;
-        margin: 0 auto;
-        transform-style: preserve-3d;
-        -webkit-transform-origin: 50%;
-        -webkit-animation: spin 5s infinite;
-        -webkit-animation-timing-function: linear;
-        -webkit-perspective: 1000;
-        -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
-        -webkit-filter: saturate(1.45) hue-rotate(2deg);
-      }
-
-      @keyframes spin {
-        from {
-          -webkit-transform: rotateY(0deg);
-        }
-
-        to {
-          -webkit-transform: rotateY(360deg);
-        }
-      }
-
-      .cions {
-        margin-right: 15px;
-      }
-    }
-
-    .item_2 {
-      background: #5f57ff;
-      background: #ffc933;
-    }
-
-    .item_3 {
-      background: #1ba27a;
-    }
-
-    > div {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 5px 0;
-    }
-
-    .earnings {
-      display: inline-block;
-      color: #121212;
-      color: $main_green;
-
-      font-size: 36px;
-    }
-
-    .time {
-      color: #aaa;
-      font-size: 24px;
-      color: #635858;
-    }
-
-    &:last-child {
-      border-bottom: none;
+    img {
+      display: block;
+      width: 100px;
+      margin-bottom: 10px;
     }
   }
+}
+
+.tab_top_title {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  // font-style: italic;
+  font-size: 35px;
+  font-weight: 600;
+}
+
+.time_tabs {
+  :deep {
+    .nut-tabs__titles {
+      // background: transparent;
+    }
+
+    .nut-tabs__content {
+      display: none;
+    }
+  }
+}
+
+.list_item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px 30px;
+  padding-left: 100px;
+  min-height: 80px;
+  color: #171414;
+  font-size: 24px;
+  background: #fff;
+  border-radius: 5px;
+  border-bottom: 1px solid #eee;
+  margin: 10px 0;
+  border-radius: 20px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
+
+  .item_img_box {
+    position: absolute;
+    left: 16px;
+    width: 70px;
+    height: 70px;
+    padding: 5px;
+    box-sizing: border-box;
+    border-radius: 50px;
+    background: #ff8b00;
+
+    img {
+      width: 36px;
+      margin: 0 auto;
+      transform-style: preserve-3d;
+      -webkit-transform-origin: 50%;
+      -webkit-animation: spin 5s infinite;
+      -webkit-animation-timing-function: linear;
+      -webkit-perspective: 1000;
+      -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+      -webkit-filter: saturate(1.45) hue-rotate(2deg);
+    }
+
+    @keyframes spin {
+      from {
+        -webkit-transform: rotateY(0deg);
+      }
+
+      to {
+        -webkit-transform: rotateY(360deg);
+      }
+    }
+
+    .cions {
+      margin-right: 15px;
+    }
+  }
+
+  .item_2 {
+    background: #5f57ff;
+    background: #ffc933;
+  }
+
+  .item_3 {
+    background: #1ba27a;
+  }
+
+  >div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+  }
+
+  .earnings {
+    display: inline-block;
+    color: #121212;
+    color: $main_green;
+
+    font-size: 36px;
+  }
+
+  .time {
+    color: #aaa;
+    font-size: 24px;
+    color: #635858;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
 </style>
