@@ -547,10 +547,10 @@
   const handleRow = (row) => {
     detailRow.value = row;
     console.log(row, 'row');
-
-    if (row.type == 'application/pdf') {
+    const type = row.name.substring(row.name.lastIndexOf('.') + 1);
+    if (type == 'pdf') {
       window.open(row.imgUrlLarge);
-    } else if (row.type == 'text/plain; charset=utf-8') {
+    } else if (type == 'txt') {
       detailRow.value.detailType = 'txt';
       detailShow.value = true;
       fetch(row.imgUrlLarge)
@@ -558,7 +558,7 @@
         .then((text) => {
           document.getElementById('txtContainer').textContent = text;
         });
-    } else if (row.type == 'application/msword' || row.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
       detailRow.value.detailType = 'word';
       window.open('https://docs.google.com/viewer?url=' + encodeURIComponent(row.imgUrlLarge));
       imgUrl.value = row.imgUrlLarge;
@@ -869,7 +869,7 @@
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (['pdf', 'txt', 'doc', 'docx'].includes(type)) {
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
       isSystemImg = true;
