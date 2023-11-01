@@ -20,25 +20,21 @@
     </nut-uploader>
   </div>
   <Transition name="fade-transform" mode="out-in">
-      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
-        <nut-progress
-          class="upload_progress"
-          :percentage="uploadProgress"
-          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
-          status="icon"
-          :show-text="false"
-        >
-        </nut-progress>
-      </div>
-    </Transition>
+    <div v-if="uploadProgressIsShow" style="margin-top: 30px">
+      <nut-progress
+        class="upload_progress"
+        :percentage="uploadProgress"
+        stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+        status="icon"
+        :show-text="false"
+      >
+      </nut-progress>
+    </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
-  import {
-  ref,
-  toRefs,
-  defineProps,
-} from "vue";
+  import { ref, toRefs, defineProps } from 'vue';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute } from 'vue-router';
@@ -51,20 +47,19 @@
   import { delay, throttle } from 'lodash';
 
   import { minSize } from '@/setting.json';
-  console.log('----minSize', minSize)
+  console.log('----minSize', minSize);
 
   const emits = defineEmits(['uploadComplete']);
 
   interface Props {
-    bucketName?: string,
-    accessKeyId?: string,
-    secretAccessKey?: string,
-    prefix?: any,
-    orderInfo?: any,
+    bucketName?: string;
+    accessKeyId?: string;
+    secretAccessKey?: string;
+    prefix?: any;
+    orderInfo?: any;
   }
 
-  const props = defineProps<Props>()
-
+  const props = defineProps<Props>();
 
   // const props = defineProps({
   //   bucketName: [String],
@@ -76,14 +71,10 @@
   // const { bucketName, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
 
   const { getOrderInfo } = useOrderInfo();
- 
+
   const route = useRoute();
 
   const successStatus = ref<number>(204);
-
-
-
-
 
   const uploadRef = ref<any>(null);
   const uploadUri = ref<string>('');
@@ -213,7 +204,6 @@
     }
   };
 
-
   const uploadStatus = ref('');
   const averageSpeed = ref(0); // 当前块 上传的文件大小
   const timeRemaining = ref(0); // 剩余上传时间(s)
@@ -245,7 +235,7 @@
       return update_order_size({
         used_space: +option.sourceFile.size,
         order_id: +order_id.value,
-        device_type: 'mobile',
+        device_type: orderInfo.used_space === 0 ? 'mobile' : '',
       })
         .then((res: any) => {
           if (res.code == 200) {
@@ -292,7 +282,7 @@
     let uploadLine = 1024 * 1024 * minSize;
 
     let used_space = props.orderInfo.value.used_space || 0;
-    if (uploadLine  >= used_space) {
+    if (uploadLine >= used_space) {
       return false;
     }
     const d = {
@@ -338,13 +328,9 @@
     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
     xhr.send(options.formData);
   };
-
- 
 </script>
 
 <style lang="scss" scoped>
-
-
   .upload_btn {
     position: fixed;
     bottom: 150px;
@@ -370,10 +356,8 @@
       }
     }
   }
-
 </style>
 <style lang="scss">
-
   .upload_progress.nut-progress {
     .nut-progress-outer-part {
       width: 100%;

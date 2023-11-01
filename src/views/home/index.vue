@@ -343,7 +343,10 @@
     (newVal) => {
       if (newVal) {
         ambRefuse.value = false;
+        getUserAssets();
         getOrder();
+        searchOrderProfit();
+
         // if (userInfo.value.dmc) {
         //   curStepIndex.value = 4;
         //   ambRefuse.value = false;
@@ -358,17 +361,6 @@
     { deep: true },
   );
 
-  watch(
-    userInfo.value.uuid,
-    (val) => {
-      if (val) {
-        if (cloudCodeIsBind.value) {
-          getUserAssets();
-        }
-      }
-    },
-    { deep: true },
-  );
   // onActivated(() => {
   //   if (userInfo.value.dmc) {
   //     curStepIndex.value = 4;
@@ -774,6 +766,8 @@
     .item_img_box {
       position: absolute;
       left: 16px;
+      display: flex;
+      justify-content: center;
       width: 70px;
       height: 70px;
       padding: 5px;
@@ -818,9 +812,11 @@
     }
 
     > div {
-      display: flex;
+      display: grid;
       justify-content: space-between;
       align-items: center;
+      grid-template-columns: repeat(3, 1fr);
+
       margin: 5px 0;
     }
 
@@ -828,7 +824,7 @@
       display: inline-block;
       color: #121212;
       color: $main_green;
-
+      text-align: right;
       font-size: 36px;
     }
 
