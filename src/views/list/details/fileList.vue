@@ -362,6 +362,7 @@
       <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
         <HLSVideo v-if="chooseItem.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
+        <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
         <div v-else-if="imgUrl" class="middle_img">
           <!-- v-if="chooseItem.type.split('/')[0] == 'video'" -->
           <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
@@ -597,8 +598,29 @@
         } else {
           chooseItem.value = row;
           console.log(chooseItem.value, 'chooseItem.value');
-          detailShow.value = true;
-          imgUrl.value = row.imgUrlLarge;
+
+          if (row.type == 'application/pdf') {
+            window.open(row.imgUrlLarge);
+          } else if (row.type == 'text/plain; charset=utf-8') {
+            chooseItem.value.detailType = 'txt';
+            detailShow.value = true;
+            fetch(row.imgUrlLarge)
+              .then((response) => response.text())
+              .then((text) => {
+                document.getElementById('txtContainer').textContent = text;
+              });
+          } else if (
+            row.type == 'application/msword' ||
+            row.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          ) {
+            chooseItem.value.detailType = 'word';
+            window.open('https://docs.google.com/viewer?url=' + encodeURIComponent(row.imgUrlLarge));
+            imgUrl.value = row.imgUrlLarge;
+            // detailShow.value = true;
+          } else if (row.imgUrlLarge) {
+            imgUrl.value = row.imgUrlLarge;
+            detailShow.value = true;
+          }
         }
       }
     }
@@ -1003,23 +1025,22 @@
     let peerId = orderInfo.value.peer_id;
     if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
       type = 'img';
-      const headers = getSignHeaders(encodeURIComponent(item.key));
-
+      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
-      // foggie://peerid/spaceid/cid
+      // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-      // item.contentType = "video/mp4";
+    } else if (['pdf', 'txt', 'doc', 'docx'].includes(type)) {
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
       isSystemImg = true;
     }
     if (isDir) {
       isSystemImg = true;
     }
-
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   const initRemoteData = async (
@@ -1386,6 +1407,16 @@
   }
 </style>
 <style lang="scss" scoped>
+  #txtContainer {
+    color: #fff;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    max-height: calc(100% - 300px);
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
   .nut-custom-tour {
     :deep {
       .nut-popover {

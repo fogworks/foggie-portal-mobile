@@ -59,8 +59,9 @@ export default function useUpdateDMC() {
               onOk,
             });
           } else if (res2.result.approved && !res2.result.refuse) {
-            userStore.setCloudCodeIsBind(true);
+            console.log(111111111111);
             curStepIndex.value = 3;
+            userStore.setCloudCodeIsBind(true);
             ambRefuse.value = false;
             // approved
             if (route.path == '/bindDmc') {
@@ -82,7 +83,6 @@ export default function useUpdateDMC() {
                 onOk,
               });
             } else if (res2.result.approved && !res2.result.refuse) {
-              curStepIndex.value = 3;
               ambRefuse.value = false;
               // approved
               if (!window.localStorage.hasCloudApproved) {
@@ -152,6 +152,13 @@ export default function useUpdateDMC() {
       console.log(curStepIndex.value, 'sxzcz');
     });
   }
+  watch(
+    curStepIndex,
+    (val) => {
+      console.log(val, 'curStepIndexcurStepIndex');
+    },
+    { deep: true },
+  );
 
   return {
     getAmbDmc,

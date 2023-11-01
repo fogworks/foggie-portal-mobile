@@ -151,6 +151,9 @@
       <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
         <HLSVideo v-if="detailRow.value.type && detailRow.value.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
+        <pre v-else-if="detailRow.value.detailType == 'txt'" id="txtContainer"></pre>
+        <!-- <div v-else-if="detailRow.value.detailType == 'word'" id="odfContainer"></div> -->
+
         <div v-else-if="imgUrl" class="middle_img">
           <nut-image :src="imgUrl" fit="contain" position="center">
             <template #loading>
@@ -529,9 +532,24 @@
   const detailRow = reactive({ value: {} });
   const handleRow = (row) => {
     detailRow.value = row;
-    if (row.type == 'pdf') {
-      window.open(row.imgUrl);
-    } else if (row.imgUrl) {
+    console.log(row, 'row');
+
+    if (row.type == 'application/pdf') {
+      window.open(row.imgUrlLarge);
+    } else if (row.type == 'text/plain; charset=utf-8') {
+      detailRow.value.detailType = 'txt';
+      detailShow.value = true;
+      fetch(row.imgUrlLarge)
+        .then((response) => response.text())
+        .then((text) => {
+          document.getElementById('txtContainer').textContent = text;
+        });
+    } else if (row.type == 'application/msword' || row.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      detailRow.value.detailType = 'word';
+      window.open('https://docs.google.com/viewer?url=' + encodeURIComponent(row.imgUrlLarge));
+      imgUrl.value = row.imgUrlLarge;
+      // detailShow.value = true;
+    } else if (row.imgUrlLarge) {
       imgUrl.value = row.imgUrlLarge;
       detailShow.value = true;
     } else {
@@ -681,6 +699,7 @@
       return update_order_size({
         used_space: +option.sourceFile.size,
         order_id: +order_id.value,
+        device_type: 'mobile',
       })
         .then((res) => {
           if (res.code == 200) {
@@ -699,32 +718,10 @@
         });
     };
     await updateUsedSpace();
-
-    await getOrderInfo(false);
-    console.log(orderInfo.value.mobile_upload);
-
     if (orderInfo.value.mobile_upload == undefined) {
-      const tagMobile = () => {
-        // orderInfo.value.nodeIp
-        tag_mobile_upload('', {
-          orderUuid: orderInfo.value.uuid,
-          tag: true,
-        })
-          .then((res) => {
-            if (res.code !== 200) {
-              setTimeout(() => {
-                tagMobile();
-              }, 3000);
-            }
-          })
-          .catch(() => {
-            setTimeout(() => {
-              tagMobile();
-            }, 3000);
-          });
-      };
-      tagMobile();
+      await getOrderInfo(false);
     }
+
     // let uploadLine = 1024 * 1024 * 50;
     let uploadLine = 1024 * 1024 * 1;
 
@@ -815,10 +812,13 @@
       order_name_set(order_data).then(
         (order_result) => {
           isNameLoading.value = false;
-          if (!order_result?.data?.result) {
-            bucketName.value = newBucketName.value;
-            dialogVisible.value = false;
-            return;
+          if (order_result.code == 200) {
+            if (!order_result?.data?.result) {
+              bucketName.value = newBucketName.value;
+              getOrderInfo();
+              dialogVisible.value = false;
+              return;
+            }
           }
         },
         (err) => {
@@ -850,14 +850,14 @@
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+    } else if (['pdf', 'txt', 'doc', 'docx'].includes(type)) {
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
       isSystemImg = true;
     }
     if (isDir) {
       isSystemImg = true;
     }
-    // console.log({ imgHttpLink, isSystemImg, imgHttpLarge }, '{ imgHttpLink, isSystemImg, imgHttpLarge }');
-
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
@@ -1028,6 +1028,8 @@
 
       tableData.value.push(item);
     }
+    console.log(data);
+
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
       let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
@@ -1040,7 +1042,9 @@
       if (data.prefix) {
         name = name.split(data.prefix)[1];
       }
-      if (name.indexOf('/') > 0) {
+      if (name.indexOf('/') > 0 && name[name.length - 1] != '/') {
+        name = name.split('/')[name.split('/').length - 1];
+      } else if (name.indexOf('/') > 0) {
         name = name.split('/')[name.split('/').length - 2];
       }
       let isPersistent = data.content[j].isPersistent;
@@ -1190,6 +1194,16 @@
 </script>
 
 <style lang="scss" scoped>
+  #txtContainer {
+    color: #fff;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    max-height: calc(100% - 300px);
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
   .benefit_analysis {
     // font-size: 16px;
     position: absolute;
@@ -1561,6 +1575,8 @@
       }
 
       .left_icon_box {
+        width: 80px;
+        height: 80px;
         img {
           width: 80px;
           height: 80px;
@@ -1687,6 +1703,8 @@
       }
 
       .left_icon_box {
+        width: 80px;
+        height: 80px;
         svg {
           width: 100px;
           height: 100px;
