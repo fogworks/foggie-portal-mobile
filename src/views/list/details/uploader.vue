@@ -108,7 +108,6 @@
   };
   const beforeupload = (file: any) => {
     return new Promise(async (resolve, reject) => {
-      console.log('beforeupload', file, '-------------------');
       const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
       if (!bucketName || !accessKeyId || !secretAccessKey) {
         return reject(false);
@@ -223,7 +222,8 @@
 
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
-    console.log(option, 'option');
+    // console.log(option, 'option');
+    console.log('responseText--------', option?.sourceFile?.size);
     uploadStatus.value = 'success';
 
     delay(() => {
@@ -235,7 +235,7 @@
       return update_order_size({
         used_space: +option.sourceFile.size,
         order_id: +order_id.value,
-        device_type: orderInfo.used_space === 0 ? 'mobile' : '',
+        device_type: props.orderInfo.value.used_space === 0 ? 'mobile' : '',
       })
         .then((res: any) => {
           if (res.code == 200) {
@@ -255,7 +255,9 @@
     };
     await updateUsedSpace();
 
+    console.log('-------------------used---1', props.orderInfo.value.used_space )
     await getOrderInfo(false);
+    console.log('-------------------used---2', props.orderInfo.value.used_space )
     if (props.orderInfo.value.mobile_upload == undefined) {
       const tagMobile = () => {
         // orderInfo.value.nodeIp
@@ -283,6 +285,7 @@
 
     let used_space = props.orderInfo.value.used_space || 0;
     if (uploadLine >= used_space) {
+      console.log('uploadLine', uploadLine, 'used_space', used_space);
       return false;
     }
     const d = {
@@ -290,6 +293,8 @@
       uuid: amb_uuid.value,
       orderUuid: memo.value,
       rpc: props.orderInfo.value.rpc,
+      fileSize: option?.sourceFile?.size,
+      usedSpace: used_space,
     };
     calc_merkle(d).then((res) => {
       console.log('calc_merkle-----', res);
