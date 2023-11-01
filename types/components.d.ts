@@ -29,6 +29,8 @@ declare module 'vue' {
     NutProgress: typeof import('@nutui/nutui')['Progress']
     NutRow: typeof import('@nutui/nutui')['Row']
     NutSearchbar: typeof import('@nutui/nutui')['Searchbar']
+    NutStep: typeof import('@nutui/nutui')['Step']
+    NutSteps: typeof import('@nutui/nutui')['Steps']
     NutSticky: typeof import('@nutui/nutui')['Sticky']
     NutTabbar: typeof import('@nutui/nutui')['Tabbar']
     NutTabbarItem: typeof import('@nutui/nutui')['TabbarItem']

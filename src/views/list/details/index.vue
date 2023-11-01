@@ -236,7 +236,10 @@
       </nut-popup>
     </Teleport>
 
-    <nut-uploader
+
+   
+
+    <!-- <nut-uploader
       v-if="isMobileOrder"
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
@@ -255,7 +258,7 @@
       class="upload_class"
     >
       <nut-button type="success" class="upload_btn" size="small">+</nut-button>
-    </nut-uploader>
+    </nut-uploader> -->
     <nut-dialog
       v-model:visible="dialogVisible"
       title="Custom Name"
@@ -271,16 +274,16 @@
       </template>
     </nut-dialog>
   </div>
-  <Transition name="fade-transform" mode="out-in">
-    <div v-if="uploadProgressIsShow" style="margin-top: 30px">
-      <nut-progress
-        class="upload_progress"
-        :percentage="uploadProgress"
-        stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
-        status="icon"
-        :show-text="false"
-      >
-        <!-- <template #icon-name>
+  <!-- <Transition name="fade-transform" mode="out-in">
+      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
+        <nut-progress
+          class="upload_progress"
+          :percentage="uploadProgress"
+          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+          status="icon"
+          :show-text="false"
+        >
+          <template #icon-name>
             <template v-if="uploadStatus == 'uploading'">
               <div  style="display: flex; justify-content: space-between;width: 100%;">
                 <div style="margin-left: 25px;"> {{ curUploadFileSize }}</div>
@@ -299,10 +302,20 @@
               <span>Upload Failed</span>
               <MaskClose style="margin-left: 10px" color="#FA2C19"></MaskClose>
             </template>
-          </template> -->
-      </nut-progress>
-    </div>
-  </Transition>
+          </template>
+        </nut-progress>
+      </div>
+    </Transition> -->
+
+    <uploader
+      v-if="isMobileOrder"
+      :bucketName="bucketName"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      :orderInfo="orderInfo"
+      @uploadComplete="uploadComplete"
+    ></uploader>
+    
 </template>
 
 <script setup lang="ts">
@@ -350,6 +363,7 @@
   import { update_order_size, tag_mobile_upload } from '@/api/amb';
   import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
+  import uploader from './uploader.vue';
 
   const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
@@ -744,6 +758,11 @@
     // uploadRef.value.clearUploadQueue();
   };
 
+  const uploadComplete = ()=> {
+    console.log('uploadComplete');
+    getFileList();
+  }
+
   const onProgress = ({ event, options, percentage }: any) => {
     console.log('onProgress', event, options, percentage);
     uploadProgress.value = percentage;
@@ -1121,7 +1140,7 @@
     router.push({ name: 'orderSummary', query: { id: order_id } });
   };
   onMounted(async () => {
-    let res = await getOrderInfo();
+    await getOrderInfo();
 
     // showToast.hide();
     console.log(orderInfo.value, bucketName.value);
@@ -1171,16 +1190,8 @@
   watch(
     () => route.query,
     async () => {
-      // showToast.loading('Loading', {
-      //   cover: true,
-      //   customClass: 'app_loading',
-      //   icon: loadingImg,
-      //   loadingRotate: false,
-      // });
       dialogVisible.value = false;
       await getOrderInfo();
-      // showToast.hide();
-      // bucketName.value = orderInfo.value.domain;
       if (bucketName.value) {
         getFileList();
       } else {

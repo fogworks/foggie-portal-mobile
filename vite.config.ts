@@ -69,7 +69,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
-        '^/order/buy': {
+        '^/order': {
           target: 'http://45.207.245.24:28080',
           changeOrigin: true,
           secure: false,

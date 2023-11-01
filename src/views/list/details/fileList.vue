@@ -384,6 +384,15 @@
       </nut-overlay>
     </Teleport>
   </div>
+  <uploader
+      v-if="isMobileOrder"
+      :bucketName="bucketName"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      :orderInfo="orderInfo"
+      :prefix="prefix"
+      @uploadComplete="uploadComplete"
+    ></uploader>
 </template>
 
 <script setup lang="ts">
@@ -428,6 +437,8 @@
   import loadingImg from '@/components/loadingImg/index.vue';
 
   import { HmacSHA1, enc } from 'crypto-js';
+  import uploader from './uploader.vue';
+  
   // import { download_url } from '@/api/index';
 
   // const accessKeyId = ref<string>('');
@@ -886,6 +897,12 @@
     cancelSelect();
     showTypeCheckPop.value = false;
   };
+
+
+  const uploadComplete = ()=> {
+    console.log('uploadComplete');
+    getFileList('', prefix.value, true);
+  }
 
   function getFileList(scroll: string, prefix: any[], reset = false) {
     showToast.loading('Loading', {

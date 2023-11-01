@@ -35,7 +35,8 @@ service.interceptors.response.use(
     const res = response.data;
     const code = res.code;
     if (code !== 200) {
-      if (response.config.url?.indexOf('/v1') == 0) {
+      if (code == 30015 || code == 30048 || code == 30050 || code == 30033) {
+      } else if (response.config.url?.indexOf('/v1') == 0) {
         // return Promise.resolve(res.rows[0].benchmark_price)
         return res.rows[0].benchmark_price;
       }
