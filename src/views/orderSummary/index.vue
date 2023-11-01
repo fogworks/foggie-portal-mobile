@@ -24,6 +24,7 @@
       </nut-grid>
     </div>
     <nut-tabs class="type_tabs" v-model="searchType">
+      <nut-tab-pane title="All " pane-key="2"> </nut-tab-pane>
       <nut-tab-pane title="Earnings " pane-key="0"> </nut-tab-pane>
       <nut-tab-pane title="Expense" pane-key="1"> </nut-tab-pane>
     </nut-tabs>
@@ -57,11 +58,14 @@
           </div>
           <div>
             <span>Order:{{ item.order_id }}</span>
-            <span :class="[searchType == 0 ? 'earnings' : 'expense']"> {{ searchType == 0 ? '+' : '-' }}{{ item.quantity }} </span>
+            <span :class="[item.trade_type == 'user_delivery_income' ? 'earnings' : 'expense']">
+              {{ item.trade_type == 'user_delivery_income' ? '+' : '-' }}{{ item.quantity }}
+            </span>
           </div>
           <div>
             <span>Type:{{ mapTypes[item.trade_type] }}</span>
-            <span>{{ searchType == 0 ? '' : item.state }} </span> <span class="time">{{ transferUTCTime(item.created_at) }}</span>
+            <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span>
+            <span class="time">{{ transferUTCTime(item.created_at) }}</span>
           </div>
         </div>
       </nut-infinite-loading>
@@ -93,7 +97,7 @@
     typeShow: false,
     chartOptions: {},
     timeType: '3',
-    searchType: '0',
+    searchType: '2',
   });
   const mapTypes = {
     user_delivery_income: 'UserDeliveryIncome',
@@ -147,7 +151,7 @@
     getUserAssets(postData);
     // loadMore();
     const [start, end] = shortcuts[timeType.value]();
-    loadMore(start, end, 0, order_id.value);
+    loadMore(start, end, 2, order_id.value);
     getBarOptions();
   });
 </script>
