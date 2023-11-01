@@ -76,13 +76,17 @@
             <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">INSF</nut-tag>
           </span>
         </span>
-        <span :class="['earnings']">
+        <span :class="['earnings']" v-if="item.income" style="font-weight: bold">
           +{{ item.income }}
           <!-- <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight> -->
         </span>
       </div>
       <div
         ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ transferUTCTime(item.order_created_at) }}</span>
+      </div>
+      <div style="color: #ff7f20">
+        <span>Payment:</span>
+        <span class="time" style="color: #ff7f20; font-weight: bold"> - {{ item.total_price }} DMC</span>
       </div>
     </div>
   </nut-infinite-loading>

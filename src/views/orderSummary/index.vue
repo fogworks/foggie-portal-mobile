@@ -6,19 +6,19 @@
         <nut-grid-item text="Profit"
           ><div>
             <IconCions class="top_icon"></IconCions>
-            <p>{{ cloudBalance }}</p>
+            <p style="color: green; font-weight: bold">{{ cloudBalance }}</p>
           </div>
         </nut-grid-item>
         <nut-grid-item class="top_icon" text="Earnings"
           ><div>
             <IconIncome class="top_icon"></IconIncome>
-            <p>{{ cloudProfit }}</p>
+            <p style="color: green; font-weight: bold">+{{ cloudProfit }}</p>
           </div></nut-grid-item
         >
         <nut-grid-item class="top_icon" text="Expense"
           ><div>
             <IconOutCome class="top_icon"></IconOutCome>
-            <p>{{ orderPayout }}</p>
+            <p style="color: red; font-weight: bold">-{{ orderPayout }}</p>
           </div></nut-grid-item
         >
       </nut-grid>
