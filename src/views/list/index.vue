@@ -34,6 +34,7 @@
       :color="`#D9500B`"
       direction="vertical"
       :list="horseLamp"
+      wrapable
       :speed="10"
       :standTime="1000"
       :close-mode="true"
@@ -72,11 +73,11 @@
             <!-- 已取消 -->
             <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
             <!-- 下週期將取消 -->
-            <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Closed</nut-tag>
+            <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
             <!-- 預存⾦不足 -->
-            <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">Closed</nut-tag>
+            <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">APB</nut-tag>
             <!-- 預存⾦充足 -->
-            <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 4">Closed</nut-tag>
+            <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">INSF</nut-tag>
           </span>
         </span>
         <span :class="['earnings']">
@@ -111,7 +112,13 @@
   const loading = ref(false);
   const router = useRouter();
   const keyWord = ref('');
-  const horseLamp = ref(['TBC - - Waiting for consensus','']);
+  const horseLamp = ref([
+    'TBC - - Waiting for consensus',
+    'WIP - - Orders in progress',
+    'Next: canceled - - Cancellation of the next cycle',
+    'APB - - Insufficient advance deposit to cancel the next cycle',
+    'INSF - - Sufficient funds in advance ',
+  ]);
   const cloudSpaceList = ref([]);
   const orderStore = useOrderStore();
 
