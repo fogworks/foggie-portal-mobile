@@ -122,9 +122,18 @@ export const routes = [
         name: 'BindDmc',
         component: () => import('@/views/bindDmc/index.vue'),
       },
+      {
+        name: 'orderSummary',
+        path: '/orderSummary',
+        component: () => import('@/views/orderSummary/index.vue'),
+        meta: {
+          title: 'orderSummary',
+          border: false,
+          notKeepAlive: true,
+        },
+      },
     ],
   },
-
   {
     name: 'Login',
     path: '/login',

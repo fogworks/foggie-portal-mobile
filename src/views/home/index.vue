@@ -95,73 +95,12 @@
       </div>
     </div>
   </div>
-  <div class="tab_top_title" v-if="listData.length">Recent Earnings</div>
-  <!-- <nut-tabs style="border-bottom: 1px solid #cccccc82" v-model="searchType" class="time_tabs">
-    <nut-tab-pane title="All" pane-key="0"> </nut-tab-pane>
-    <nut-tab-pane title="Income" pane-key="1"> </nut-tab-pane>
-    <nut-tab-pane title="Expenditure" pane-key="2"> </nut-tab-pane>
-  </nut-tabs>
-  <nut-tabs v-model="timeType" class="time_tabs">
-    <nut-tab-pane title="Last month" pane-key="0"> </nut-tab-pane>
-    <nut-tab-pane title="Three months" pane-key="1"> </nut-tab-pane>
-    <nut-tab-pane title="Six months" pane-key="2"> </nut-tab-pane>
-  </nut-tabs> -->
 
-  <div class="DouArrowDown" v-if="!targetIsVisible && listData.length == 0" @click="scrollIntoViewTo">
+  <div class="DouArrowDown" v-if="!targetIsVisible && earningsList.length == 0" @click="scrollIntoViewTo">
     <DouArrowUp width="100" height="50" class="nut-icon-am-jump nut-icon-am-infinite" />
   </div>
-
-  <nut-infinite-loading
-    v-if="listData.length"
-    load-more-txt="No more content"
-    v-model="infinityValue"
-    :has-more="hasMore"
-    @load-more="loadMore"
-  >
-    <div
-      class="list_item"
-      v-for="(item, index) in listData"
-      @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } })"
-    >
-      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-        <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
-        <img v-else-if="(index + 1) % 3 == 2" class="cions" src="@/assets/list_item_2.svg" alt="" />
-        <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
-        <img src="@/assets/list_item_2.svg" alt="" />
-      </div>
-      <div>
-        <span>
-          <span>Order:{{ item.order_id }}</span>
-          <span style="margin-left: 10px">
-            <!-- 待共識 -->
-            <nut-tag v-if="item.state == 0" type="warning">TBC</nut-tag>
-            <!-- 进行中 -->
-            <nut-tag type="success" v-else-if="item.state == 1">WIP</nut-tag>
-            <!-- 已结束 -->
-            <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Closed</nut-tag>
-            <!-- 已取消 -->
-            <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
-            <!-- 下週期將取消 -->
-            <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
-            <!-- 預存⾦不足 -->
-            <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">Closed</nut-tag>
-            <!-- 預存⾦充足 -->
-            <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">INSF</nut-tag>
-          </span>
-        </span>
-        <span :class="['earnings']">
-          +{{ item.income }}
-          <!-- <IconArrowRight style="vertical-align: text-top" width="1.2rem" height="1.2rem" color="#5F57FF"></IconArrowRight
-        > -->
-        </span>
-      </div>
-      <div
-        ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ transferUTCTime(item.order_created_at) }}</span>
-      </div>
-    </div>
-  </nut-infinite-loading>
   <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
-  <div v-else class="my_swipe">
+  <div v-if="!earningsList.length" class="my_swipe">
     <nut-swiper :init-page="1" :pagination-visible="true" pagination-color="#426543" auto-play="3000">
       <nut-swiper-item>
         <img src="@/assets/banner1.svg" alt="" />
@@ -178,7 +117,8 @@
     </nut-swiper>
   </div>
 
-  <div class="my_steps" ref="my_steps" id="my_steps" v-if="!listData.length">
+  <div class="tab_top_title" v-if="earningsList.length">Recent Earnings</div>
+  <div class="my_steps" ref="my_steps" id="my_steps" v-if="!earningsList.length">
     <nut-steps direction="vertical" :current="curStepIndex">
       <nut-step
         title="Bind invitation code"
@@ -195,9 +135,49 @@
       <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
         >3</nut-step
       >
-      <nut-step title="File storage" content="After successful purchase, you can enjoy file storage and order revenue">4</nut-step>
+      <nut-step
+        @click="gotoOrderList"
+        title="Ops, you haven't made a profit yet"
+        content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you."
+        >4</nut-step
+      >
     </nut-steps>
   </div>
+
+  <nut-infinite-loading v-if="earningsList.length" load-more-txt="No more content" :has-more="false">
+    <div
+      class="list_item"
+      v-for="(item, index) in earningsList"
+      @click="$router.push({ name: 'orderSummary', query: { id: item.order_id } })"
+    >
+      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+        <img src="@/assets/list_item_2.svg" alt="" />
+      </div>
+      <div>
+        <span>Order:{{ item.order_id }}</span>
+        <span style="margin-left: 10px">
+          <!-- 待共識 -->
+          <nut-tag v-if="item.state == 0" type="warning">TBC</nut-tag>
+          <!-- 进行中 -->
+          <nut-tag type="success" v-else-if="item.state == 1">WIP</nut-tag>
+          <!-- 已结束 -->
+          <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Closed</nut-tag>
+          <!-- 已取消 -->
+          <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
+          <!-- 下週期將取消 -->
+          <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
+          <!-- 預存⾦不足 -->
+          <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">Closed</nut-tag>
+          <!-- 預存⾦充足 -->
+          <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">INSF</nut-tag>
+        </span>
+        <span :class="['earnings']"> +{{ item.profit }} </span>
+      </div>
+      <!-- <div>
+          <span class="time">{{ transferUTCTime(item.order_created_at) }} </span>
+        </div> -->
+    </div>
+  </nut-infinite-loading>
 </template>
 
 <script lang="ts" setup name="HomePage">
@@ -209,7 +189,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { useOrderStore } from '@/store/modules/order';
   import { showToast, showDialog } from '@nutui/nutui';
-  import { search_cloud } from '@/api';
+  //   import { search_cloud } from '@/api';
   import { get_user_dmc } from '@/api/amb';
   import useUserAssets from './useUserAssets.ts';
   import useOrderList from './useOrderList.ts';
@@ -227,11 +207,25 @@
     timeType: '0',
     searchType: '0',
   });
-
+  const earningsList = ref([] as any);
+  import { search_order_profit } from '@/api/amb';
+  import loadingImg from '@/components/loadingImg/index.vue';
   const { timeType, searchType } = toRefs(state);
-  const { loadMore, listData, hasMore, infinityValue } = useOrderList();
   const { getUserAssets, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
-  const { bindAmbCode, curStepIndex, ambRefuse } = useUpdateDMC();
+  const { bindAmbCode, curStepIndex, ambRefuse, getOrder } = useUpdateDMC();
+  const { shortcuts } = useOrderList();
+  const searchOrderProfit = () => {
+    const [start, end] = shortcuts[1]();
+    const postData = !start && !end ? {} : { start_time: start, end_time: end };
+    search_order_profit(postData)
+      .then((res) => {
+        console.log(res, 'search_order_profit');
+        if (res && res.result && res.result.length) {
+          earningsList.value = res.result;
+        }
+      })
+      .finally(() => {});
+  };
 
   const showWithdraw = () => {
     if (!userInfo.value.dmc) {
@@ -333,14 +327,24 @@
     router.push({ name: 'BindDmc', query: { type: 'amb' } });
   }
 
+  function gotoOrderList() {
+    if (curStepIndex.value !== 4) {
+      showToast.text('You do not have any available order records yet');
+      return;
+    }
+    router.push('/list');
+  }
+
   onBeforeMount(() => {
-    loadMore();
+    searchOrderProfit();
+    getOrder();
   });
 
   watch(cloudCodeIsBind, (newVal) => {
     if (newVal) {
-      curStepIndex.value = 3;
+      //   curStepIndex.value = 3;
       ambRefuse.value = false;
+      getOrder();
       // if (userInfo.value.dmc) {
       //   curStepIndex.value = 4;
       //   ambRefuse.value = false;
