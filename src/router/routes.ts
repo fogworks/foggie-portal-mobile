@@ -132,6 +132,12 @@ export const routes = [
           notKeepAlive: true,
         },
       },
+      {
+        path: 'rechargeInfo',
+        name: 'rechargeInfo',
+        component: () => import('@/views/home/rechargeInfo.vue'),
+        meta: {},
+      },
     ],
   },
   {

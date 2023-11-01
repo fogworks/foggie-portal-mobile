@@ -36,6 +36,7 @@ export default function useUpdateDMC() {
     });
     return check_user_bind(uuid.value)
       .then((res2) => {
+        console.log(res2.result, 'res2.result.bind');
         if (res2.result.bind) {
           if (res2.result.approved && res2.result.refuse) {
             curStepIndex.value = 2;
@@ -62,6 +63,9 @@ export default function useUpdateDMC() {
             curStepIndex.value = 3;
             ambRefuse.value = false;
             // approved
+            if (route.path == '/bindDmc') {
+              return false;
+            }
             if (!window.localStorage.hasCloudApproved) {
               window.localStorage.hasCloudApproved = true;
               const onOk = () => {

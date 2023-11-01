@@ -64,7 +64,6 @@
 <script setup lang="ts">
   import IconCopy from '~icons/home/copy.svg';
   import { ref, reactive, onMounted } from 'vue';
-  import { showToast } from '@nutui/nutui';
   import eyeOffIon from '~icons/ion/eye-off';
   import keySolid from '~icons/teenyicons/key-solid';
   import { useRoute, useRouter } from 'vue-router';
@@ -73,6 +72,7 @@
   import AESHelper from './AESHelper';
   import { Base64 } from 'js-base64';
   import { get_unique_order } from '@/api/index';
+  import { showToast, showDialog } from '@nutui/nutui';
 
   import * as pb from '@/pb/prox_grpc_web_pb';
   import * as grpc from '@/pb/prox_pb';
@@ -110,7 +110,7 @@
   // };
   const copyS3 = () => {
     var input = document.createElement('input');
-    input.value = bucketUrl;
+    input.value = bucketUrl.value;
     document.body.appendChild(input);
     input.select();
     document.execCommand('Copy');
@@ -118,7 +118,7 @@
     showToast.success('Copy succeeded');
   };
   const copyKey = (item) => {
-    let text = `AccessKey:${item.accessKey},SecretKey:${item.secretKey}`;
+    let text = `S3Url:${bucketUrl.value};AccessKey:${item.accessKey};SecretKey:${item.secretKey}`;
     var input = document.createElement('input');
     input.value = text;
     document.body.appendChild(input);
@@ -247,8 +247,8 @@
       });
     });
   };
-
-  const deleteKey = (index: number) => {
+  const onOk = (index: number) => {
+    console.log('deleteConfirm', index);
     let server = new pb.default.ServiceClient(ip.value, null, null);
 
     let header = new grpc.default.ProxHeader();
@@ -270,6 +270,22 @@
       } else {
         dynamicForm.state.tels.splice(index, 1);
       }
+    });
+  };
+  const deleteKey = (index: number) => {
+    showDialog({
+      title: 'Delete Confirmation',
+      content: `Are you sure you want to delete AK SK?`,
+      popClass: 'dialog_class',
+      cancelText: 'Cancel',
+      okText: 'OK',
+      onCancel: () => {
+        console.log('onCancel');
+      },
+      onOk: () => {
+        console.log('ok');
+        onOk(index);
+      },
     });
   };
 

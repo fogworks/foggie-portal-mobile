@@ -1,12 +1,15 @@
 <template>
   <div class="top_box">
-    <TopBack>
+    <TopBack class="detail_top">
       <div v-if="bucketName">
         <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
         {{ bucketName }}
         <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
       </div>
       <div v-else> Order:{{ order_id }} </div>
+      <span class="benefit_analysis" @click="gotoSummary(order_id)">
+        <img src="@/assets/analysis.svg" class="bucket_detail_smal" />
+      </span>
     </TopBack>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
@@ -1105,9 +1108,13 @@
   };
   const setDefaultName = () => {
     let orderName = route.query.id;
-    let length = 9 - orderName.toString().length;
-    let str = `${dmcName.value.substring(0, length)}-${orderName}`;
+    let length = 10 - orderName.toString().length;
+    const _dmcName = dmcName.value ? dmcName.value : 'dmcaccount';
+    let str = `${_dmcName.substring(0, length)}${orderName}`;
     newBucketName.value = str;
+  };
+  const gotoSummary = (order_id) => {
+    router.push({ name: 'orderSummary', query: { id: order_id } });
   };
   onMounted(async () => {
     let res = await getOrderInfo();
@@ -1183,6 +1190,44 @@
 </script>
 
 <style lang="scss" scoped>
+  .benefit_analysis {
+    // font-size: 16px;
+    position: absolute;
+    right: 10px;
+    background: #4d5092;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // border: 1px solid #fff;
+    box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+    box-shadow:
+      rgb(204, 219, 232) 3px 3px 6px 0px inset,
+      rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+    transform-style: preserve-3d;
+    -webkit-transform-origin: 50%;
+    -webkit-animation: sizeChange 5s infinite;
+    -webkit-animation-timing-function: linear;
+    -webkit-perspective: 1000;
+    -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+    -webkit-filter: saturate(1.45) hue-rotate(2deg);
+    img {
+      width: 42px;
+      height: 42px;
+    }
+    @keyframes sizeChange {
+      from {
+        -webkit-transform: rotateY(0deg);
+        // transform: scale(1.1);
+      }
+      to {
+        -webkit-transform: rotateY(360deg);
+        // transform: scale(1.2);
+      }
+    }
+  }
   .bucket_detail_smal {
     width: 36px;
     height: 36px;

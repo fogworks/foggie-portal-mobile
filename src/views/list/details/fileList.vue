@@ -88,7 +88,7 @@
                 prefixChange();
               "
             >
-            <TopBack> </TopBack>
+              <TopBack> </TopBack>
             </div>
             <span class="top_title">
               {{ prefix.at(-1) || '' }}
@@ -230,7 +230,7 @@
             <li @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
             <li @click="handlerClick('move')"><IconMove></IconMove> Move</li>
             <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
-            <li @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li>
+            <!-- <li @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li> -->
           </ul>
           <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
         </div>

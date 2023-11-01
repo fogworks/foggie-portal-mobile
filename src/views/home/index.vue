@@ -245,6 +245,7 @@
     router.push({ name: 'Withdraw' });
   };
   const gotoPage = (type) => {
+    console.log(userInfo.value.amb_promo_code, cloudCodeIsBind.value);
     if (!userInfo.value.amb_promo_code) {
       const dmcOk = () => {
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
