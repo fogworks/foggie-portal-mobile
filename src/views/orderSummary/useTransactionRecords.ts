@@ -1,7 +1,5 @@
-import { search_cloud } from '@/api';
-import { useOrderStore } from '@/store/modules/order';
+import { search_user_asset_detail } from '@/api/amb';
 import { showToast } from '@nutui/nutui';
-import '@nutui/nutui/dist/packages/toast/style';
 import { transferUTCTimeDay } from '@/utils/util';
 import loadingImg from '@/components/loadingImg/index.vue';
 
@@ -35,8 +33,6 @@ export default function useOrderList() {
       return [transferUTCTimeDay(start), transferUTCTimeDay(end)];
     },
   };
-  const cloudSpaceList = ref([]);
-  const orderStore = useOrderStore();
   const listData = ref([] as any);
   const total = ref(0);
   const hasMore = computed(() => {
@@ -50,30 +46,36 @@ export default function useOrderList() {
     total.value = 0;
     listData.value = [];
   };
-  const loadMore = async (order_state = null, start_time = '', end_time = '', buy_result = 'success') => {
+  const loadMore = async (start_time = '', end_time = '', type = 0, order_id) => {
     showToast.loading('Loading', {
       cover: true,
       customClass: 'app_loading',
       icon: loadingImg,
       loadingRotate: false,
     });
-    await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result })
-      .then((res) => {
-        total.value = res?.result?.total;
-        const cloudList =
-          res?.result?.data.filter((el) => {
-            const target = cloudSpaceList.value.find((item) => item.order_id == el.order_id);
-            if (!target) {
-              el.notThisClient = true;
-            }
-            return true;
-          }) || [];
-        pn.value++;
-        listData.value = [...listData.value, ...cloudList];
-      })
-      .finally(() => {
-        showToast.hide();
-      });
+    if (type == 0) {
+      await search_user_asset_detail({ start_time, end_time, type: 'income', order_id })
+        .then((res) => {
+          total.value = res.result.total;
+          const cloudList = res.result.data;
+          pn.value++;
+          listData.value = [...listData.value, ...cloudList];
+        })
+        .finally(() => {
+          showToast.hide();
+        });
+    } else {
+      await search_user_asset_detail({ start_time, end_time, type: 'payout', order_id })
+        .then((res) => {
+          total.value = res.result.total;
+          const cloudList = res.result.data;
+          pn.value++;
+          listData.value = [...listData.value, ...cloudList];
+        })
+        .finally(() => {
+          showToast.hide();
+        });
+    }
   };
   return {
     loadMore,

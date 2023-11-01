@@ -16,7 +16,10 @@ function transferTime(utc_datetime) {
   let ss = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
   return YY + MM + DD + ' ' + hh + mm + ss;
 }
-const transferUTCTime = (time,type='YYYY-MM-DD HH:mm:ss') => {
+const transferUTCTime = (time, type = 'YYYY-MM-DD HH:mm:ss') => {
+  return moment.utc(time).local().format(type);
+};
+const transferUTCTimeDay = (time, type = 'YYYY-MM-DD') => {
   return moment.utc(time).local().format(type);
 };
 function handleTimeStamp(timestamp) {
@@ -162,4 +165,5 @@ export {
   getfilesize,
   getfilesize2,
   numberToThousands,
+  transferUTCTimeDay,
 };

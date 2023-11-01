@@ -48,11 +48,7 @@
     :has-more="hasMore"
     @load-more="loadMore"
   >
-    <div
-      class="list_item"
-      v-for="(item, index) in list"
-      @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } })"
-    >
+    <div class="list_item" v-for="(item, index) in list" @click="gotoOrder(item)">
       <!-- :style="{ background: randomColor() }" -->
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
@@ -168,6 +164,13 @@
     let g = createNumber(40, 120);
     let b = createNumber(150, 255);
     return `rgb(${r} ${g} ${b})`;
+  };
+  const gotoOrder = (item) => {
+    if (searchType.value === 'Open') {
+      router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } });
+    } else if (searchType.value === 'History') {
+      router.push({ name: 'orderSummary', query: { id: item.order_id } });
+    }
   };
   onMounted(() => {
     loadMore();
