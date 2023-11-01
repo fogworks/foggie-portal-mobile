@@ -698,6 +698,8 @@
     await updateUsedSpace();
 
     await getOrderInfo(false);
+    console.log(orderInfo.value.mobile_upload);
+
     if (orderInfo.value.mobile_upload == undefined) {
       const tagMobile = () => {
         // orderInfo.value.nodeIp

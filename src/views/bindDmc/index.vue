@@ -87,6 +87,7 @@
             showToast.fail('Binding failed, please try again');
             return false;
           }
+          loading.value = false;
         }
       });
       if (bindRes) {

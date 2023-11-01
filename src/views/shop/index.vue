@@ -4,7 +4,13 @@
       <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
       <p class="title">Buy</p>
       <p class="total_balance">Total Balance</p>
-      <p class="total_balance_value">{{ cloudBalance }} DMC</p>
+      <p class="total_balance_value" v-if="cloudBalance">{{ cloudBalance }} DMC</p>
+      <div class="action_item" v-else>
+        <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px">
+          <img src="@/assets/recharge.svg" alt="" />
+          Recharge
+        </router-link>
+      </div>
     </div>
   </div>
   <div class="middle_content">
@@ -346,7 +352,7 @@
       position: absolute;
       top: 0;
       width: 100%;
-      height: 285px;
+      height: 345px;
       background: #5264f9;
       border-radius: 0 0 50px 50px;
       overflow: hidden;
@@ -375,6 +381,7 @@
         color: #fff;
         font-size: 1.75rem;
         text-align: center;
+        margin-top: 30px;
       }
       &::before,
       &::after {
@@ -570,6 +577,19 @@
           }
         }
       }
+    }
+  }
+  .action_item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+
+    img {
+      display: block;
+      width: 100px;
+      margin-bottom: 10px;
     }
   }
 </style>
