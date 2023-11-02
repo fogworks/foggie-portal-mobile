@@ -90,7 +90,7 @@
         </span>
       </div>
       <div
-        ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ transferUTCTime(item.order_created_at) }}</span>
+        ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ transferGMTTime(item.order_created_at) }}</span>
       </div>
       <div style="color: #ff7f20">
         <span>Payment:</span>
@@ -112,7 +112,7 @@
   import useVariable from './details/useVariable.js';
   import { useOrderStore } from '@/store/modules/order';
   import useOrderList from '../home/useOrderList.ts';
-  import { transferUTCTime } from '@/utils/util';
+  import { transferGMTTime } from '@/utils/util';
   import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
 
   import { ref } from 'vue';

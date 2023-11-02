@@ -204,8 +204,21 @@
     // let nodeIp = 'http://154.31.41.124:18080';
     if (cloudBalance.value < totalPrice.value) {
       let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);
-      showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
+      // showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
+
       loading.value = false;
+      const dmcOk = () => {
+        router.push('/recharge');
+      };
+      let src = require('@/assets/DMC_token.png');
+      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p >`;
+      showDialog({
+        title: 'The balance is insufficient',
+        content: str,
+        noCancelBtn: true,
+        okText: 'Recharge',
+        onOk: dmcOk,
+      });
       return false;
     }
     loading.value = true;
@@ -250,6 +263,8 @@
           showDialog({
             title: 'Purchase Successfully',
             content: str,
+            noCancelBtn: true,
+            okText: 'OK',
             onOk: dmcOk,
           });
         } else {

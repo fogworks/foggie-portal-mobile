@@ -45,6 +45,7 @@ service.interceptors.response.use(
       if (code === 401 || code === 403) {
         userStore.setInfo({});
         userStore.setToken('');
+        userStore.setCloudCodeIsBind(false);
         router.push('/login');
         return;
       } else if (code === 420) {
@@ -64,6 +65,7 @@ service.interceptors.response.use(
         // } else {
         userStore.setInfo({});
         userStore.setToken('');
+        userStore.setCloudCodeIsBind(false);
         router.push('/login');
         return;
         // }
@@ -71,6 +73,7 @@ service.interceptors.response.use(
         if (ignoreUrl.indexOf(response.config.url) > -1) {
           return res;
         }
+        showToast.fail(res.message);
         // return Promise.reject(res);
         return res;
       }
@@ -81,6 +84,9 @@ service.interceptors.response.use(
   },
   (error: AxiosError) => {
     console.log('err' + error);
+    if (ignoreUrl.indexOf(error.config.url) > -1) {
+      return Promise.reject(error.message);
+    }
     showToast.fail(error.message);
     return Promise.reject(error.message);
   },

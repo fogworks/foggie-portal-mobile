@@ -114,6 +114,7 @@ export const routes = [
       },
       {
         path: 'personalInfo',
+        name: 'PersonalInfo',
         component: () => import('@/views/personalInfo/index.vue'),
         meta: {},
       },

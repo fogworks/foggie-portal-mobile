@@ -264,6 +264,7 @@
       :show-confirm="false"
       class="CustomName"
     >
+      <p>Unique identification for your space</p>
       <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
       <template #footer>
         <nut-button type="primary" @click="router.go(-1)">Operate Later</nut-button>
@@ -356,7 +357,7 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
   import { getSecondTime } from '@/utils/util';
-  import { update_order_size, tag_mobile_upload } from '@/api/amb';
+  import { update_order_size } from '@/api/amb';
   import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
