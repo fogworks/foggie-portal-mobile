@@ -2,7 +2,7 @@
   <div class="top_box">
     <TopBack> Bind</TopBack>
   </div>
-  <p class="key_tips" v-if="bindType == 'dmc'"> Please bind your DMC account invitation code first </p>
+  <p class="key_tips" v-if="bindType == 'dmc'"> Please bind your DMC account first </p>
   <p class="key_tips" v-else-if="bindType == 'amb'"> Please bind ambassador invitation code </p>
   <nut-sticky>
     <nut-form class="query_form" :model-value="formLine">

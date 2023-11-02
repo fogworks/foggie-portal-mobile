@@ -90,18 +90,18 @@
   };
   const bindUser = async () => {
     let isUserCode = false;
-    if (userInfo.value.amb_promo_code) {
-      await check_promo({ promo_code: userInfo.value.amb_promo_code }).then((res) => {
+    if (userInfo.value.promo_code) {
+      await check_promo({ promo_code: userInfo.value.promo_code }).then((res) => {
         if (res.code == 200) isUserCode = true;
       });
     }
     if (isUserCode && !userInfo.value.promo_code) {
       const userOk = () => {
-        bind_user_promo({ promo_code: userInfo.value.amb_promo_code }).then((res) => {});
+        bind_user_promo({ promo_code: userInfo.value.promo_code }).then((res) => {});
       };
       showDialog({
         title: 'Notice',
-        content: `Your current invitation code ${userInfo.value.amb_promo_code} is the user's invitation code, are you sure you want to bind it?`,
+        content: `Your current invitation code ${userInfo.value.promo_code} is the user's invitation code, are you sure you want to bind it?`,
         onOk: userOk,
         popClass: 'dialog_class',
       });

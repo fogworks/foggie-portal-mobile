@@ -7,10 +7,10 @@
 
     <nut-form ref="ruleForm" :model-value="loginForm" :rules="formRules">
       <nut-form-item required prop="email">
-        <input v-model="loginForm.email" name="email" class="nut-input-text" placeholder="Email" type="text" />
+        <input v-model.trim="loginForm.email" name="email" class="nut-input-text" placeholder="Email" type="text" />
       </nut-form-item>
       <nut-form-item required prop="password">
-        <input v-model="loginForm.password" class="nut-input-text" placeholder="Password" type="password" />
+        <input v-model.trim="loginForm.password" class="nut-input-text" placeholder="Password" type="password" />
       </nut-form-item>
       <div style="margin: 5px 0 10px 10px" v-if="loginForm.password">
         <div class="passwordTip">
@@ -35,11 +35,11 @@
         </div>
       </div>
       <nut-form-item required prop="confirmPassword">
-        <input v-model="loginForm.confirmPassword" class="nut-input-text" placeholder="Confirm password" type="password" />
+        <input v-model.trim="loginForm.confirmPassword" class="nut-input-text" placeholder="Confirm password" type="password" />
       </nut-form-item>
 
       <nut-form-item required prop="verifyPw">
-        <input style="width: 70%" v-model="loginForm.verifyPw" class="nut-input-text" placeholder="Email verification code" />
+        <input style="width: 70%" v-model.trim="loginForm.verifyPw" class="nut-input-text" placeholder="Email verification code" />
         <nut-button class="get_code" v-if="numCount > 0" disabled>{{ numCount }}s</nut-button>
         <nut-button class="get_code" v-else type="info" @click="getVerifyPw">Get Code</nut-button>
       </nut-form-item>
@@ -47,7 +47,7 @@
         <input v-model="loginForm.promo_code" class="nut-input-text" placeholder="Enter your invitation code(optional)" type="text" />
       </nut-form-item> -->
       <nut-form-item required prop="amb_promo_code">
-        <input v-model="loginForm.amb_promo_code" class="nut-input-text" placeholder="Invitation Code(optional)" type="text" />
+        <input v-model.trim="loginForm.amb_promo_code" class="nut-input-text" placeholder="Invitation Code(optional)" type="text" />
       </nut-form-item>
     </nut-form>
     <div>
