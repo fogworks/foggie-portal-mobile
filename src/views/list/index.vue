@@ -174,7 +174,9 @@
     if (searchType.value === 'Open') {
       router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } });
     } else if (searchType.value === 'History') {
-      router.push({ name: 'orderSummary', query: { id: item.order_id } });
+      if (item.order_id) {
+        router.push({ name: 'orderSummary', query: { id: item.order_id } });
+      }
     }
   };
   // onMounted(async () => {
