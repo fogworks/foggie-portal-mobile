@@ -236,9 +236,6 @@
       </nut-popup>
     </Teleport>
 
-
-   
-
     <!-- <nut-uploader
       v-if="isMobileOrder"
       :url="uploadUri"
@@ -307,15 +304,14 @@
       </div>
     </Transition> -->
 
-    <uploader
-      v-if="isMobileOrder"
-      :bucketName="bucketName"
-      :accessKeyId="accessKeyId"
-      :secretAccessKey="secretAccessKey"
-      :orderInfo="orderInfo"
-      @uploadComplete="uploadComplete"
-    ></uploader>
-    
+  <uploader
+    v-if="isMobileOrder"
+    :bucketName="bucketName"
+    :accessKeyId="accessKeyId"
+    :secretAccessKey="secretAccessKey"
+    :orderInfo="orderInfo"
+    @uploadComplete="uploadComplete"
+  ></uploader>
 </template>
 
 <script setup lang="ts">
@@ -758,10 +754,10 @@
     // uploadRef.value.clearUploadQueue();
   };
 
-  const uploadComplete = ()=> {
+  const uploadComplete = () => {
     console.log('uploadComplete');
     getFileList();
-  }
+  };
 
   const onProgress = ({ event, options, percentage }: any) => {
     console.log('onProgress', event, options, percentage);
@@ -796,7 +792,7 @@
     xhr.send(options.formData);
   };
   const getKey = () => {
-    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value } });
+    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain } });
   };
 
   const creatName = async () => {

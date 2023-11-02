@@ -1,5 +1,5 @@
 <template>
-  <div class="top_box">
+  <div class="top_box" :class="[searchType == 'History' ? 'top_history' : 'top_open']">
     <!-- <div class="top_type">{{ searchType }} </div> -->
     <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search">
       <template #left> <Search></Search> </template>
@@ -8,7 +8,11 @@
     <nut-row type="flex" justify="space-between" class="top_btn_box">
       <nut-col :span="10">
         <div class="flex-content">
-          <div class="svg-box" @click="searchType = 'Open'" :class="[searchType == 'Open' ? 'active_svg-box' : '']">
+          <div
+            class="svg-box"
+            @click="searchType = 'Open'"
+            :class="[searchType == 'Open' ? 'active_svg-box active_svg-boxOpen' : 'svg-box-open']"
+          >
             <!-- <Shop></Shop> -->
             <IconSwitch style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'Open'"></IconSwitch>
             <IconSwitch style="vertical-align: text-top" color="#ffffff" v-else></IconSwitch>
@@ -18,7 +22,11 @@
       </nut-col>
       <nut-col :span="10">
         <div class="flex-content">
-          <div class="svg-box" @click="searchType = 'History'" :class="[searchType == 'History' ? 'active_svg-box' : '']">
+          <div
+            class="svg-box"
+            @click="searchType = 'History'"
+            :class="[searchType == 'History' ? 'active_svg-box active_svg-boxHistory' : 'svg-box-history']"
+          >
             <IconHistory style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistory>
             <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-else></IconHistoryActivate>
           </div>
@@ -48,7 +56,7 @@
     :has-more="hasMore"
     @load-more="loadMore"
   >
-    <div class="list_item" v-for="(item, index) in list" @click="gotoOrder(item)">
+    <div class="list_item" v-for="(item, index) in list" @click="gotoOrder(item)" :class="[searchType === 'History' ? 'history_item' : '']">
       <!-- :style="{ background: randomColor() }" -->
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
@@ -76,7 +84,7 @@
             <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">INSF</nut-tag>
           </span>
         </span>
-        <span :class="['earnings']" v-if="item.income" style="font-weight: bold">
+        <span :class="['earnings']" v-if="!item.income" style="font-weight: bold">
           +{{ item.income }}
           <!-- <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight> -->
         </span>
@@ -285,20 +293,61 @@
             color: #fff;
           }
         }
-        .active_svg-box {
-          background: #fbc934;
-          background: #fbc935;
-          background: #fff;
-          svg {
+        .svg-box-history {
+          background: #000;
+          svg,
+          img {
+            width: 70px;
+            height: 70px;
             color: #fff;
-            color: #fbc934;
           }
-          & + span {
-            color: #fbc934;
+        }
+        .svg-box-open {
+          background: #fff;
+          svg,
+          img {
+            color: #ffe879;
+            width: 70px;
+            height: 70px;
+          }
+        }
+        // .active_svg-box {
+        //   background: #fbc934;
+        //   background: #fbc935;
+        //   background: #fff;
+        //   svg {
+        //     color: #fff;
+        //     color: #fbc934;
+        //   }
+        //   & + span {
+        //     color: #fbc934;
+        //   }
+        // }
+        .active_svg-boxHistory {
+          border: 5px solid orange;
+          background: #000;
+          svg,
+          img {
+            width: 70px;
+            height: 70px;
+            color: #fff;
+          }
+        }
+        .active_svg-boxOpen {
+          border: 5px solid orange;
+          background: #fff;
+          svg,
+          img {
+            color: #ffe879;
+            width: 70px;
+            height: 70px;
           }
         }
       }
     }
+  }
+  .top_history {
+    background: #2b2929;
   }
   .nut-row {
     overflow: hidden;
@@ -419,6 +468,14 @@
       }
       &:last-child {
         border-bottom: none;
+      }
+    }
+    .history_item {
+      background: #2b2929;
+      color: #fff !important;
+      .time,
+      span {
+        color: #fff !important;
       }
     }
   }

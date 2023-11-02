@@ -83,7 +83,7 @@
   const foggie_id = ref<any>('');
   const token = ref<any>('');
   const bucketName = ref<any>('');
-  bucketName.value = route.query.bucketName;
+  bucketName.value = route.query.domain;
   const bucketUrl = ref<any>('');
   const loading = ref(false);
   bucketUrl.value = `https://${bucketName.value}.devus.u2i.net:9900`;
