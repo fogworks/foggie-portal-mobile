@@ -196,7 +196,7 @@
   };
   const initchallengeList = () => {
     tableData.value = [];
-    get_challenge({ orderId: order_id.value }).then((res) => {
+    get_challenge({ order_id: order_id.value }).then((res) => {
       tableData.value = res.data.map((el) => {
         return {
           ...el,

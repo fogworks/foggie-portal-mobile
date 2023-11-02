@@ -2,7 +2,7 @@
   <div class="analysis_content">
     <div class="top_box">
       <div class="top_back" @click="router.go(-1)">Order_{{ order_id }} Summary </div>
-      <nut-grid class="top_grid" :column-num="3">
+      <nut-grid class="my_summary_grid" :column-num="3">
         <nut-grid-item text="Profit"
           ><div>
             <IconCions class="top_icon"></IconCions>
@@ -191,8 +191,9 @@
     border-radius: 20px;
     background: $primary-color;
   }
-  .top_grid {
+  .my_summary_grid {
     border: none;
+    flex-wrap: nowrap !important;
     .top_icon {
       width: 80px;
       height: 80px;
@@ -220,6 +221,7 @@
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
+          font-size: 26px;
         }
       }
     }
@@ -339,12 +341,12 @@
         color: #121212;
         color: $main_green;
 
-        font-size: 36px;
+        font-size: 30px;
       }
       .expense {
         display: inline-block;
         color: $main_red;
-        font-size: 36px;
+        font-size: 30px;
       }
       .time {
         color: #aaa;

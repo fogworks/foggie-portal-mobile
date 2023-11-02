@@ -253,16 +253,16 @@ export const get_merkle_record = (data: any) => {
 };
 export const get_challenge = (data) => {
   return request({
-    url: `/order/get_challenge`,
-    method: 'POST',
-    data,
+    url: `/ambmgr/order/get_challenge`,
+    method: 'GET',
+    params: data,
   });
 };
 export const get_arbitration = (data) => {
   return request({
-    url: `/order/get_arbitration`,
-    method: 'POST',
-    data,
+    url: `/ambmgr/order/get_arbitration`,
+    method: 'GET',
+    params: data,
   });
 };
 
