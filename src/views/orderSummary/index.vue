@@ -58,13 +58,13 @@
           </div>
           <div>
             <span>Order:{{ item.order_id }}</span>
-            <span :class="[item.trade_type == 'user_delivery_income' ? 'earnings' : 'expense']">
-              {{ item.trade_type == 'user_delivery_income' ? '+' : '-' }}{{ item.quantity }}
+            <span :class="[item.inner_user_trade_type == 'payout' ? 'expense' : 'earnings']">
+              {{ item.inner_user_trade_type == 'payout' ? '-' : '+' }}{{ item.quantity }} DMC
             </span>
           </div>
           <div>
             <span>Type:{{ mapTypes[item.trade_type] }}</span>
-            <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span>
+            <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
             <span class="time">{{ transferUTCTime(item.created_at) }}</span>
           </div>
         </div>
@@ -102,8 +102,20 @@
   const mapTypes = {
     user_delivery_income: 'UserDeliveryIncome',
     buy_order: 'BuyOrder',
-    challenge: 'Challenge',
-    arbitration: 'Arbitration',
+    challenge: 'Order Challenge',
+    arbitration: 'Order Arbitration',
+    OrderReceiptAddReserve: 'Increase order deposit', // 增加订单预存金
+    OrderReceiptSubReserve: 'Reduce order deposit', // 减少订单预存金
+    OrderReceiptDeposit: 'Order deposit', // 押金
+    OrderReceiptClaim: 'Order deliver', // 交付
+    OrderReceiptReward: 'Order incentive', // 激励
+    OrderReceiptRenew: 'Order Update', // 订单更新
+    OrderReceiptChallengeReq: 'Initiate a Challenge', // 发起挑战
+    OrderReceiptChallengeAns: 'Responding to challenges', // 响应挑战
+    OrderReceiptChallengeArb: 'arbitrate', // 仲裁
+    OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
+    OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
+    OrderReceiptEnd: 12,
   };
   const { getUserAssets, cloudBalance, cloudProfit, orderPayout } = useOrderAssets();
 

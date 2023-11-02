@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory, Router } from 'vue-router';
+import { createRouter, createWebHistory, createWebHashHistory, Router } from 'vue-router';
 import routes from './routes';
 import { useUserStore } from '@/store/modules/user';
 import { useOrderStore } from '@/store/modules/order';
 import { showToast } from '@nutui/nutui';
 
 const router: Router = createRouter({
-  history: createWebHistory('/'),
+  history: createWebHashHistory(),
   routes: routes,
 });
 router.afterEach(() => {
@@ -28,6 +28,7 @@ router.beforeEach((to, from, next) => {
       next();
     }
   } else {
+    userStore.setCloudCodeIsBind(false);
     if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget') {
       next();
     } else {

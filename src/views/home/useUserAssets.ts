@@ -1,4 +1,4 @@
-import { get_user_dmc } from '@/api/amb';
+import { get_user_dmc, get_exchange_rate } from '@/api/amb';
 import { useUserStore } from '@/store/modules/user';
 
 export default function useUserAssets() {
@@ -8,6 +8,7 @@ export default function useUserAssets() {
   const cloudIncome = ref('--');
   const cloudWithdraw = ref('--');
   const cloudTodayIncome = ref('--');
+  const dmc2usdRate = ref(0);
   function getUserAssets() {
     get_user_dmc().then((res) => {
       if (res?.result?.data) {
@@ -20,7 +21,15 @@ export default function useUserAssets() {
       }
     });
   }
+  function getExchangeRate() {
+    get_exchange_rate().then((res) => {
+      console.log(res);
+      dmc2usdRate.value = res.result;
+    });
+  }
   return {
+    dmc2usdRate,
+    getExchangeRate,
     getUserAssets,
     cloudBalance,
     cloudPst,

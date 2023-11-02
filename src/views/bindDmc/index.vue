@@ -2,7 +2,7 @@
   <div class="top_box">
     <TopBack> Bind</TopBack>
   </div>
-  <p class="key_tips" v-if="bindType == 'dmc'"> Please bind your DMC account invitation code first </p>
+  <p class="key_tips" v-if="bindType == 'dmc'"> Please bind your DMC account first </p>
   <p class="key_tips" v-else-if="bindType == 'amb'"> Please bind ambassador invitation code </p>
   <nut-sticky>
     <nut-form class="query_form" :model-value="formLine">
@@ -37,7 +37,7 @@
   import { reactive, computed, ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
-  import { user, updateUser, bind_user_promo } from '@/api';
+  import { user, updateUser, bind_user_promo, checkDmcAccount } from '@/api';
   import { useRoute, useRouter } from 'vue-router';
   import { check_promo, bind_promo } from '@/api/amb';
   import '@nutui/nutui/dist/packages/toast/style';
@@ -72,57 +72,87 @@
     }
     loading.value = true;
     if (!userInfo.value.dmc && bindType.value == 'dmc') {
-      console.log('1111');
-      let postData = {
-        dmc: formLine.dmc,
-        wallet_type: 'wallet',
-      };
-
-      let bindRes = await updateUser(userInfo.value.id, postData).then((dmcRes) => {
-        if (!userInfo.value.dmc) {
-          if (dmcRes.code == 200) {
-            showToast.success('Successfully bound DMC account');
-            return true;
-          } else {
-            showToast.fail('Binding failed, please try again');
-            return false;
-          }
-          loading.value = false;
-        }
-      });
-      if (bindRes) {
-        await initFoggieDate();
-        let ambBindRes = await check_user_bind(userInfo.value.uuid);
-        if (userInfo.value.amb_promo_code && ambBindRes.result.bind) {
-          let postData = {
-            user_uuid: userInfo.value.uuid,
-            amb_promo_code: userInfo.value.amb_promo_code,
-            email: userInfo.value.email,
-            dmc_account: userInfo.value.dmc,
-          };
-          const promoFunction = () => {
-            return check_promo(userInfo.value.amb_promo_code).then((res) => {
-              if (res.code == 200) {
-                return bind_promo(postData).then((res2) => {
-                  if (res2.code == 200) {
-                    bind_user_promo({
-                      amb_promo_code: userInfo.value.amb_promo_code,
-                    }).then((res) => {
-                      if (res.code == 200) {
-                        // showToast.success('Bind successfully');
-                        // useStore.setCloudCodeIsBind(true);
-                      }
-                    });
-                  }
-                });
+      checkDmcAccount({
+        account_name: formLine.dmc,
+      })
+        .then(async (res) => {
+          if (res.account_name == formLine.dmc) {
+            let postData = {
+              dmc: formLine.dmc,
+              wallet_type: 'wallet',
+            };
+            let bindRes = await updateUser(userInfo.value.id, postData).then((dmcRes) => {
+              if (!userInfo.value.dmc) {
+                if (dmcRes.code == 200) {
+                  showToast.success('Successfully bound DMC account');
+                  return true;
+                } else {
+                  showToast.fail('Binding failed, please try again');
+                  return false;
+                }
+                loading.value = false;
               }
             });
-          };
-          await promoFunction();
-        }
-      } else {
-        return false;
-      }
+            if (bindRes) {
+              await initFoggieDate();
+              let ambBindRes = await check_user_bind(userInfo.value.uuid);
+              if (userInfo.value.amb_promo_code && !ambBindRes.result.bind && ambBindRes.code == 200) {
+                let postData = {
+                  user_uuid: userInfo.value.uuid,
+                  amb_promo_code: userInfo.value.amb_promo_code,
+                  email: userInfo.value.email,
+                  dmc_account: userInfo.value.dmc,
+                };
+                const promoFunction = () => {
+                  return check_promo(userInfo.value.amb_promo_code)
+                    .then((res) => {
+                      if (res.code == 200) {
+                        return bind_promo(postData)
+                          .then((res2) => {
+                            if (res2.code == 200) {
+                              bind_user_promo({
+                                amb_promo_code: userInfo.value.amb_promo_code,
+                              })
+                                .then((res) => {
+                                  if (res.code == 200) {
+                                    loading.value = false;
+                                    showToast.success('Bind successfully');
+                                    router.push({ name: 'PersonalInfo' });
+                                  } else {
+                                    loading.value = false;
+                                  }
+                                })
+                                .catch(() => {
+                                  loading.value = false;
+                                });
+                            } else {
+                              loading.value = false;
+                            }
+                          })
+                          .catch(() => {
+                            loading.value = false;
+                          });
+                      }
+                    })
+                    .catch(() => {
+                      loading.value = false;
+                    });
+                };
+                await promoFunction();
+              }
+            } else {
+              loading.value = false;
+              return false;
+            }
+          } else {
+            loading.value = false;
+          }
+          console.log(res);
+        })
+        .catch(() => {
+          showToast.fail('This DMC account name is incorrect, please fill in a valid account');
+          loading.value = false;
+        });
     }
     if ((!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) && bindType.value == 'amb') {
       if (amb_promo_code.value == formLine.code && curStepIndex.value == 2) {
@@ -150,6 +180,8 @@
                       .then((res) => {
                         if (res.code == 200) {
                           showToast.success('Bind successfully');
+                          router.push({ name: 'PersonalInfo' });
+
                           // useStore.setCloudCodeIsBind(true);
                         } else {
                           loading.value = false;

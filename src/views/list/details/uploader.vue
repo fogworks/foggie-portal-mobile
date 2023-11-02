@@ -43,7 +43,7 @@
   import { calc_merkle, valid_upload } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import { getSecondTime } from '@/utils/util';
-  import { update_order_size, tag_mobile_upload } from '@/api/amb';
+  import { update_order_size } from '@/api/amb';
   import { delay, throttle } from 'lodash';
 
   import { minSize } from '@/setting.json';
@@ -258,28 +258,7 @@
     console.log('-------------------used---1', props.orderInfo.value.used_space);
     await getOrderInfo(false);
     console.log('-------------------used---2', props.orderInfo.value.used_space);
-    if (props.orderInfo.value.mobile_upload == undefined) {
-      const tagMobile = () => {
-        // orderInfo.value.nodeIp
-        tag_mobile_upload('', {
-          orderUuid: props.orderInfo.value.uuid,
-          tag: true,
-        })
-          .then((res: any) => {
-            if (res.code !== 200) {
-              setTimeout(() => {
-                tagMobile();
-              }, 3000);
-            }
-          })
-          .catch(() => {
-            setTimeout(() => {
-              tagMobile();
-            }, 3000);
-          });
-      };
-      tagMobile();
-    }
+
     // let uploadLine = 1024 * 1024 * 50;
     let uploadLine = 1024 * 1024 * minSize;
 

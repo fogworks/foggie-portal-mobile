@@ -1,30 +1,25 @@
 <template>
-  <nut-noticebar v-if="!userInfo.dmc" class="my_noticebar">
+  <!-- <nut-noticebar v-if="!userInfo.dmc" class="my_noticebar">
     <template #left-icon>
       <Notice width="20px" left="20px"></Notice>
     </template>
     <span>You have not yet bound a DMC account </span>
     <router-link to="/bindDmc?type=dmc"> Go to Binding.</router-link>
   </nut-noticebar>
-  <div class="dmc_account" v-else>
+  <div class="dmc_account" v-else> -->
+  <div class="dmc_account">
     <div class="img-box">
       <img src="@/assets/user.svg" alt="" />
     </div>
     Hello,
-    {{ userInfo.dmc }}
+    {{ userInfo.email && userInfo.email.split('@')[0] }}
   </div>
   <div inset class="income-card">
     <img src="@/assets/balance_right.svg" @click="gotoPage('analysis')" alt="" />
-    <div class="card_row_1 card_header card_row_top" @click="gotoPage('analysis')"
-      ><span>Balance</span>
-      <span>Income</span>
-    </div>
+    <div class="card_row_1 card_header card_row_top" @click="gotoPage('analysis')"><span>Balance</span> </div>
     <div class="card_row_1 card_header" @click="gotoPage('analysis')">
       <div class="total_income">
         <div> {{ cloudBalance }} </div>
-      </div>
-      <div class="total_income">
-        <div> {{ cloudIncome }} </div>
       </div>
     </div>
     <div class="card_row_1 pst-row">
@@ -117,7 +112,7 @@
     </nut-swiper>
   </div>
 
-  <div class="tab_top_title" v-if="earningsList.length">Recent Earnings</div>
+  <div class="tab_top_title" v-if="earningsList.length">Revenue And Expenditure</div>
   <div class="my_steps" ref="my_steps" id="my_steps" v-if="!earningsList.length">
     <nut-steps direction="vertical" :current="curStepIndex">
       <nut-step
@@ -155,23 +150,17 @@
       </div>
       <div>
         <span>Order:{{ item.order_id }}</span>
-        <span style="margin-left: 10px">
-          <!-- 待共識 -->
+        <!-- <span style="margin-left: 10px">
           <nut-tag v-if="item.state == 0" type="warning">TBC</nut-tag>
-          <!-- 进行中 -->
           <nut-tag type="success" v-else-if="item.state == 1">WIP</nut-tag>
-          <!-- 已结束 -->
           <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Closed</nut-tag>
-          <!-- 已取消 -->
           <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
-          <!-- 下週期將取消 -->
           <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
-          <!-- 預存⾦不足 -->
           <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">Closed</nut-tag>
-          <!-- 預存⾦充足 -->
           <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">INSF</nut-tag>
-        </span>
-        <span :class="['earnings']"> +{{ item.profit }} </span>
+        </span> -->
+        <span :class="['earnings']" v-if="item.profit"> {{ item.profit }} DMC </span>
+        <span :class="['earnings']" v-if="!item.profit" style="color: red"> -{{ item.payout }} DMC </span>
       </div>
       <!-- <div>
           <span class="time">{{ transferUTCTime(item.order_created_at) }} </span>
@@ -212,8 +201,17 @@
   import { search_order_profit } from '@/api/amb';
   import loadingImg from '@/components/loadingImg/index.vue';
   const { timeType, searchType } = toRefs(state);
-  const { getUserAssets, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
+  const { getUserAssets, getExchangeRate, dmc2usdRate, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } =
+    useUserAssets();
   const { bindAmbCode, curStepIndex, ambRefuse, getOrder } = useUpdateDMC();
+  const stepVal = computed(() => curStepIndex.value);
+  watch(
+    stepVal,
+    (val) => {
+      console.log(val, 'homeval');
+    },
+    { deep: true, immediate: true },
+  );
   const { shortcuts } = useOrderList();
   const searchOrderProfit = () => {
     const [start, end] = shortcuts[1]();
@@ -351,6 +349,9 @@
       if (newVal) {
         ambRefuse.value = false;
         getOrder();
+        getUserAssets();
+        // getExchangeRate();
+
         // if (userInfo.value.dmc) {
         //   curStepIndex.value = 4;
         //   ambRefuse.value = false;
@@ -362,20 +363,9 @@
         bindAmbCode();
       }
     },
-    { deep: true },
+    { deep: true, immediate: true },
   );
 
-  watch(
-    userInfo.value.uuid,
-    (val) => {
-      if (val) {
-        if (cloudCodeIsBind.value) {
-          getUserAssets();
-        }
-      }
-    },
-    { deep: true },
-  );
   // onActivated(() => {
   //   if (userInfo.value.dmc) {
   //     curStepIndex.value = 4;
@@ -406,6 +396,7 @@
     loadMySwipeDom();
     if (cloudCodeIsBind.value) {
       getUserAssets();
+      // getExchangeRate();
     }
   });
 </script>

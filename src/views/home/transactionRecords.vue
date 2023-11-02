@@ -63,7 +63,7 @@
             <span :class="[searchType == 0 ? 'earnings' : 'expense']"> {{ searchType == 0 ? '+' : '-' }}{{ item.quantity }} </span>
           </div>
           <div
-            ><span>{{ searchType == 0 ? '' : item.state }} </span> <span class="time">{{ transferUTCTime(item.created_at) }}</span>
+            ><span>{{ searchType == 0 ? '' : item.state }} </span> <span class="time">{{ transferGMTTime(item.created_at) }}</span>
           </div>
         </div>
       </nut-infinite-loading>
@@ -84,7 +84,7 @@
   import { useRoute, useRouter } from 'vue-router';
   import useTransactionRecords from './useTransactionRecords.ts';
   import useUserAssets from './useUserAssets.ts';
-  import { transferUTCTime } from '@/utils/util';
+  import { transferUTCTime, transferGMTTime } from '@/utils/util';
   import { get_user_recharge } from '@/api/amb';
   import * as echarts from 'echarts';
 

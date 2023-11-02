@@ -7,10 +7,10 @@
 
     <nut-form ref="ruleForm" :model-value="loginForm" :rules="formRules">
       <nut-form-item required prop="email">
-        <input v-model="loginForm.email" name="email" class="nut-input-text" placeholder="Email" type="text" />
+        <input v-model.trim="loginForm.email" name="email" class="nut-input-text" placeholder="Email" type="text" />
       </nut-form-item>
       <nut-form-item required prop="password">
-        <input v-model="loginForm.password" class="nut-input-text" placeholder="Password" type="password" />
+        <input v-model.trim="loginForm.password" class="nut-input-text" placeholder="Password" type="password" />
       </nut-form-item>
       <div style="margin: 5px 0 10px 10px" v-if="loginForm.password">
         <div class="passwordTip">
@@ -35,11 +35,11 @@
         </div>
       </div>
       <nut-form-item required prop="confirmPassword">
-        <input v-model="loginForm.confirmPassword" class="nut-input-text" placeholder="Confirm password" type="password" />
+        <input v-model.trim="loginForm.confirmPassword" class="nut-input-text" placeholder="Confirm password" type="password" />
       </nut-form-item>
 
       <nut-form-item required prop="verifyPw">
-        <input style="width: 70%" v-model="loginForm.verifyPw" class="nut-input-text" placeholder="Email verification code" />
+        <input style="width: 70%" v-model.trim="loginForm.verifyPw" class="nut-input-text" placeholder="Email verification code" />
         <nut-button class="get_code" v-if="numCount > 0" disabled>{{ numCount }}s</nut-button>
         <nut-button class="get_code" v-else type="info" @click="getVerifyPw">Get Code</nut-button>
       </nut-form-item>
@@ -47,7 +47,7 @@
         <input v-model="loginForm.promo_code" class="nut-input-text" placeholder="Enter your invitation code(optional)" type="text" />
       </nut-form-item> -->
       <nut-form-item required prop="amb_promo_code">
-        <input v-model="loginForm.amb_promo_code" class="nut-input-text" placeholder="Invitation Code(optional)" type="text" />
+        <input v-model.trim="loginForm.amb_promo_code" class="nut-input-text" placeholder="Invitation Code(optional)" type="text" />
       </nut-form-item>
     </nut-form>
     <div>
@@ -60,10 +60,10 @@
 </template>
 
 <script lang="ts" setup name="LoginPage">
-  import { register, get_verify_pw, check_promo } from '@/api';
+  import { register, get_verify_pw, check_promo, user, login } from '@/api';
   import { useRouter, useRoute } from 'vue-router';
   import { reactive, ref } from 'vue';
-  // import { useUserStore } from '@/store/modules/user';
+  import { useUserStore } from '@/store/modules/user';
 
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
@@ -71,9 +71,9 @@
 
   const router = useRouter();
   const route = useRoute();
-  //   const bcryptjs = require('bcryptjs');
+  const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
-  // const userStore = useUserStore();
+  const userStore = useUserStore();
   const loginForm = reactive({
     email: '',
     password: '',
@@ -161,6 +161,13 @@
       }
     });
   }
+  // async function getUserInfo() {
+  //   let res = await user();
+  //   if (res.data) {
+  //     userStore.setInfo(res.data);
+  //     router.push({ path: '/home' });
+  //   }
+  // }
   const submit = () => {
     ruleForm.value.validate().then(async ({ valid, errors }: any) => {
       if (valid) {
@@ -193,6 +200,7 @@
           }
           if (!isAmbCode && !isUserCode) {
             showToast.fail('Please enter a valid invitation code');
+            loading.value = false;
             return false;
           }
           if (isUserCode) {
@@ -205,12 +213,54 @@
         register(postData)
           .then((res) => {
             if (res && res.data && res.data.uuid) {
-              router.push('/login');
-              showToast.success('Registration successful, please log in');
+              showToast.success('Registration successful');
+              const loginPassword = loginForm.password;
+              let hashPwd = bcryptjs.hashSync(loginPassword, 10);
+              let postData = {
+                email: loginForm.email,
+                password: hashPwd,
+                captcha_text: '',
+                captcha_id: '',
+                is_client: true,
+                login_type: 'password',
+                // recaptcha_token: reCaptchaV3Token,
+              };
+              login(postData)
+                .then((res) => {
+                  console.log(res);
+                  if (res.next_step === 'captcha') {
+                    loading.value = false;
+                  } else if (res && res.data) {
+                    let data = res.data;
+                    let token = data.token_type + ' ' + data.access_token;
+                    // let refresh_token = data.token_type + ' ' + data.refresh_token;
+                    let user_id = data.user_id;
+                    window.localStorage.setItem('user_id', user_id);
+
+                    userStore.setToken(token);
+                    router.push('/home');
+                    // getUserInfo();
+                    loading.value = false;
+                  } else {
+                    showToast.fail(res.error);
+                    loading.value = false;
+                  }
+                })
+                .catch((err) => {
+                  loading.value = false;
+                  console.log(err);
+                  showToast.fail(err.error);
+                  if (err.next_step === 'captcha') {
+                    getCaptcha();
+                    showCaptcha.value = true;
+                  }
+                });
             } else if (res && res.data) {
               showToast.text(
                 'A verification link has been sent to your email address, please check your email to verify and Login your account.',
               );
+            } else {
+              loading.value = false;
             }
           })
           .catch(() => {

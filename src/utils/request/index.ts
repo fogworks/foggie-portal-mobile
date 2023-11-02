@@ -5,7 +5,7 @@ import Qs from 'qs';
 import { useUserStore } from '@/store/modules/user';
 import { useRouter } from 'vue-router';
 import { refreshToken, user } from '@/api';
-import ignoreUrl from './ignoreUrl.ts';
+import ignoreUrl from './ignoreUrl';
 const router = useRouter();
 
 const service: AxiosInstance = axios.create({
@@ -35,9 +35,11 @@ service.interceptors.response.use(
     const res = response.data;
     const code = res.code;
     if (code !== 200) {
-      showToast.fail(res.error || 'error');
+      if (ignoreUrl.indexOf(response.config.url) > -1) {
+      } else {
+        showToast.fail(res.error || 'error');
+      }
       if (code == 30015 || code == 30048 || code == 30050 || code == 30033) {
-
       } else if (response.config.url?.indexOf('/v1') == 0) {
         // return Promise.resolve(res.rows[0].benchmark_price)
         return res.rows[0].benchmark_price;
@@ -45,6 +47,7 @@ service.interceptors.response.use(
       if (code === 401 || code === 403) {
         userStore.setInfo({});
         userStore.setToken('');
+        userStore.setCloudCodeIsBind(false);
         router.push('/login');
         return;
       } else if (code === 420) {
@@ -64,6 +67,7 @@ service.interceptors.response.use(
         // } else {
         userStore.setInfo({});
         userStore.setToken('');
+        userStore.setCloudCodeIsBind(false);
         router.push('/login');
         return;
         // }
@@ -71,16 +75,19 @@ service.interceptors.response.use(
         if (ignoreUrl.indexOf(response.config.url) > -1) {
           return res;
         }
+        // showToast.fail(res.message);
         // return Promise.reject(res);
         return res;
       }
-
     } else {
       return res;
     }
   },
   (error: AxiosError) => {
     console.log('err' + error);
+    if (ignoreUrl.indexOf(error.config.url) > -1) {
+      return Promise.reject(error.message);
+    }
     showToast.fail(error.message);
     return Promise.reject(error.message);
   },

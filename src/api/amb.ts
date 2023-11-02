@@ -194,8 +194,14 @@ export function query_node() {
 
 export function search_user_asset_detail(data) {
   return request({
-    url: ' /ambmgr/asset/search_user_asset_detail',
+    url: '/ambmgr/asset/search_user_asset_detail',
     method: 'POST',
     data,
+  });
+}
+export function get_exchange_rate() {
+  return request({
+    url: '/ambmgr/common/get_exchange_rate',
+    method: 'GET',
   });
 }

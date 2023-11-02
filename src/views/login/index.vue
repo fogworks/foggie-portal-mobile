@@ -8,10 +8,10 @@
     <!-- <h1>Login</h1> -->
     <nut-form ref="ruleForm" :model-value="loginForm">
       <nut-form-item required prop="email" :rules="[{ required: true, message: 'E-mail' }]">
-        <input v-model="loginForm.email" name="email" class="nut-input-text" placeholder="Email" type="text" />
+        <input v-model.trim="loginForm.email" name="email" class="nut-input-text" placeholder="Email" type="text" />
       </nut-form-item>
       <nut-form-item required prop="password" :rules="[{ required: true, message: 'Please enter password' }]">
-        <input v-model="loginForm.password" class="nut-input-text" placeholder="Password" type="password" />
+        <input v-model.trim="loginForm.password" class="nut-input-text" placeholder="Password" type="password" />
       </nut-form-item>
       <nut-form-item
         required
@@ -21,7 +21,7 @@
       >
         <input
           ref="captcha_text"
-          v-model="loginForm.captcha_text"
+          v-model.trim="loginForm.captcha_text"
           :placeholder="'verification code!'"
           name="captcha_text"
           tabindex="5"
@@ -147,8 +147,10 @@
                       // store.dispatch('token/login', userInfo);
                       // userStore.setInfo(userInfo);
                       userStore.setToken(token);
-                      getUserInfo();
+                      // getUserInfo();
                       loading.value = false;
+
+                      router.push({ path: '/home' });
 
                       // this.getUserInfo();
                       // this.$emit("login");

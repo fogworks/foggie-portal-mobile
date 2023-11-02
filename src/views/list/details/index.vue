@@ -236,9 +236,6 @@
       </nut-popup>
     </Teleport>
 
-
-   
-
     <!-- <nut-uploader
       v-if="isMobileOrder"
       :url="uploadUri"
@@ -267,6 +264,7 @@
       :show-confirm="false"
       class="CustomName"
     >
+      <p>Unique identification for your space</p>
       <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
       <template #footer>
         <nut-button type="primary" @click="router.go(-1)">Operate Later</nut-button>
@@ -307,15 +305,14 @@
       </div>
     </Transition> -->
 
-    <uploader
-      v-if="isMobileOrder"
-      :bucketName="bucketName"
-      :accessKeyId="accessKeyId"
-      :secretAccessKey="secretAccessKey"
-      :orderInfo="orderInfo"
-      @uploadComplete="uploadComplete"
-    ></uploader>
-    
+  <uploader
+    v-if="isMobileOrder"
+    :bucketName="bucketName"
+    :accessKeyId="accessKeyId"
+    :secretAccessKey="secretAccessKey"
+    :orderInfo="orderInfo"
+    @uploadComplete="uploadComplete"
+  ></uploader>
 </template>
 
 <script setup lang="ts">
@@ -360,7 +357,7 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
   import { getSecondTime } from '@/utils/util';
-  import { update_order_size, tag_mobile_upload } from '@/api/amb';
+  import { update_order_size } from '@/api/amb';
   import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
@@ -758,10 +755,10 @@
     // uploadRef.value.clearUploadQueue();
   };
 
-  const uploadComplete = ()=> {
+  const uploadComplete = () => {
     console.log('uploadComplete');
     getFileList();
-  }
+  };
 
   const onProgress = ({ event, options, percentage }: any) => {
     console.log('onProgress', event, options, percentage);
@@ -796,7 +793,7 @@
     xhr.send(options.formData);
   };
   const getKey = () => {
-    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value } });
+    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain } });
   };
 
   const creatName = async () => {
