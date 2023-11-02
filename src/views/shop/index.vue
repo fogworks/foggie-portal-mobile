@@ -167,7 +167,7 @@
     let total =
       ((middle_price.value / 10000) * state.shopForm.week * state.shopForm.quantity +
         (middle_price.value / 10000) * 1 * state.shopForm.quantity) *
-      (1 + 30 / 100);
+      (1 + state.shopForm.floating_ratio / 100);
     return total.toFixed(4);
   });
 
@@ -205,7 +205,7 @@
     if (cloudBalance.value < totalPrice.value) {
       let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);
       // showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
-
+      showBuy.value = false;
       loading.value = false;
       const dmcOk = () => {
         router.push('/recharge');

@@ -161,7 +161,7 @@
             <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
             <p>{{ item.date || '' }}</p>
           </div>
-          <IconMore v-show="!isCheckMode && isMobileOrder" class="right_more" @click.stop="showAction(item)"></IconMore>
+          <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
         </div>
       </nut-infinite-loading>
       <nut-empty v-else description="No data" image="error">
@@ -193,18 +193,18 @@
       >
         <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
           <template #icon>
-            <IconShare :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconShare>
+            <IconShare :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconShare>
             <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
           </template>
         </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 ? 'is-disable' : '']">
+        <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
           <template #icon="props">
-            <IconRename :color="selectArr.length == 1 ? '#fff' : '#ffffff5c'"></IconRename>
+            <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
           </template>
         </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Move" :class="[category == 1 ? 'is-disable' : '']">
+        <nut-tabbar-item tab-title="Move" :class="[category == 1 || !isMobileOrder ? 'is-disable' : '']">
           <template #icon="props">
-            <IconMove :color="selectArr.length && category != 1 ? '#fff' : '#ffffff5c'"></IconMove>
+            <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
           </template>
         </nut-tabbar-item>
         <nut-tabbar-item tab-title="Download">
@@ -212,11 +212,11 @@
             <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
           </template>
         </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Delete">
+        <!-- <nut-tabbar-item tab-title="Delete">
           <template #icon="props">
             <IconDelete :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDelete>
           </template>
-        </nut-tabbar-item>
+        </nut-tabbar-item> -->
       </nut-tabbar>
     </Teleport>
 
@@ -227,8 +227,8 @@
           <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
           <ul>
             <li v-if="!chooseItem.isDir && showActionBtn" @click="handlerClick('share')"><IconShare></IconShare> Share</li>
-            <li @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
-            <li @click="handlerClick('move')"><IconMove></IconMove> Move</li>
+            <li v-if="isMobileOrder" @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
+            <li v-if="isMobileOrder" @click="handlerClick('move')"><IconMove></IconMove> Move</li>
             <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
             <!-- <li @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li> -->
           </ul>
@@ -385,14 +385,14 @@
     </Teleport>
   </div>
   <uploader
-      v-if="isMobileOrder"
-      :bucketName="bucketName"
-      :accessKeyId="accessKeyId"
-      :secretAccessKey="secretAccessKey"
-      :orderInfo="orderInfo"
-      :prefix="prefix"
-      @uploadComplete="uploadComplete"
-    ></uploader>
+    v-if="isMobileOrder"
+    :bucketName="bucketName"
+    :accessKeyId="accessKeyId"
+    :secretAccessKey="secretAccessKey"
+    :orderInfo="orderInfo"
+    :prefix="prefix"
+    @uploadComplete="uploadComplete"
+  ></uploader>
 </template>
 
 <script setup lang="ts">
@@ -438,7 +438,7 @@
 
   import { HmacSHA1, enc } from 'crypto-js';
   import uploader from './uploader.vue';
-  
+
   // import { download_url } from '@/api/index';
 
   // const accessKeyId = ref<string>('');
@@ -896,11 +896,10 @@
     showTypeCheckPop.value = false;
   };
 
-
-  const uploadComplete = ()=> {
+  const uploadComplete = () => {
     console.log('uploadComplete');
     getFileList('', prefix.value, true);
-  }
+  };
 
   function getFileList(scroll: string, prefix: any[], reset = false) {
     showToast.loading('Loading', {

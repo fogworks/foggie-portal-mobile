@@ -60,7 +60,6 @@
   }
 
   const props = defineProps<Props>();
-
   // const props = defineProps({
   //   bucketName: [String],
   //   accessKeyId: [String],
@@ -70,7 +69,7 @@
 
   // const { bucketName, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
 
-  const { getOrderInfo } = useOrderInfo();
+  const getOrderInfo = inject('getOrderInfo');
 
   const route = useRoute();
 
@@ -231,7 +230,6 @@
     }, 2000);
     // emits('getFileList');
     emits('uploadComplete');
-
     const updateUsedSpace = () => {
       return update_order_size({
         used_space: +option.sourceFile.size,

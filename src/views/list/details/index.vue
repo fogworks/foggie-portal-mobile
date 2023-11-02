@@ -258,7 +258,7 @@
     </nut-uploader> -->
     <nut-dialog
       v-model:visible="dialogVisible"
-      title="Custom Name"
+      title="Bucket Name"
       :close-on-click-overlay="false"
       :show-cancel="false"
       :show-confirm="false"
@@ -363,6 +363,7 @@
   import uploader from './uploader.vue';
 
   const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  provide('getOrderInfo', getOrderInfo);
   const {
     isReady,
     confirmShare,

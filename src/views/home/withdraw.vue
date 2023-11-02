@@ -28,7 +28,7 @@
         </nut-input>
       </div>
     </div>
-    <div class="title_item">
+    <div class="title_item" v-if="isBind">
       <p>Please enter the Google captcha:</p>
       <van-password-input
         :mask="false"
@@ -38,13 +38,18 @@
         :focused="showKeyboard"
         @focus="showKeyboard = true"
       />
-      <van-number-keyboard v-model="code" :show="showKeyboard" @blur="showKeyboard = false" />
+      <Teleport to="body">
+        <van-number-keyboard v-model="code" :show="showKeyboard" @blur="showKeyboard = false" />
+      </Teleport>
     </div>
+    <div class="real_amount balance"> Balance: {{ cloudBalance }} DMC </div>
     <div v-if="realAmount != '--'" class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
     <div v-else class="real_amount">Failed to get ambassador pumping rate, please retry </div>
     <nut-noticebar
-      text="Please note that withdrawals are subject to a handling fee of 10% for ambassadors and 1% for officials. Ambassadors take a cut first,
-      and officials take a cut second."
+      :text="`Please note that withdrawals are subject to a handling fee of ${
+        commissionRate * 100
+      }% for ambassadors and 2% for officials. Ambassadors take a cut first,
+      and officials take a cut second.`"
       wrapable
     ></nut-noticebar>
 
@@ -54,7 +59,7 @@
       </nut-button>
     </div>
   </div>
-  <div v-else-if="!loading && !canWithDraw" :class="['middle_box', 'qrcode-step', showKeyboard ? 'full_height' : '']" class="qrcode-step">
+  <div v-else-if="!loading && !canWithDraw" :class="['middle_box', 'qrcode-step', showKeyboard ? 'full_height' : '']">
     <div class="google-tips">
       Please use Google Authenticator or other compatible programs on your phone to scan the QR code below, or manually enter a 16 digit
       key.
@@ -84,13 +89,18 @@
         :focused="showKeyboard"
         @focus="showKeyboard = true"
       />
-      <van-number-keyboard v-model="code" :show="showKeyboard" @blur="showKeyboard = false" />
+      <Teleport to="body">
+        <van-number-keyboard v-model="code" :show="showKeyboard" @blur="showKeyboard = false" />
+      </Teleport>
     </div>
     <div v-if="showErrorTips" class="showErrorTips">
       {{ googleErrorTip }}
     </div>
     <div style="margin: 40px; width: 80%; margin-bottom: 150px">
       <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmBind"> Confirm </nut-button>
+      <nut-button round block type="info" style="margin-top: 20px" v-if="showSkip && !isBind && !loading" @click="canWithDraw = true">
+        Skip
+      </nut-button>
     </div>
   </div>
 </template>
@@ -102,7 +112,7 @@
   import { reactive, toRefs, computed } from 'vue';
   import { check_account, transfer_valid, bind_valid } from '@/api';
   import { useUserStore } from '@/store/modules/user';
-  import { showToast } from '@nutui/nutui';
+  import { showToast, showDialog } from '@nutui/nutui';
   import useUserAssets from './useUserAssets.ts';
   import { get_otp, verify_otp_token, withdraw_otp, check_bind_otp, get_commission_rate, user_withdraw } from '@/api/amb';
   const userStore = useUserStore();
@@ -121,8 +131,12 @@
     googleErrorTip: '',
     amount: '',
     commissionRate: '--',
+    isBind: false,
+    showSkip: true,
   });
   const {
+    showSkip,
+    isBind,
     commissionRate,
     amount,
     showErrorTips,
@@ -138,7 +152,7 @@
   const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
   const realAmount = computed(() => {
     if (typeof commissionRate.value == 'number') {
-      return (amount.value * (1 - commissionRate.value) * 0.99).toFixed(4);
+      return (amount.value * (1 - commissionRate.value) * 0.98).toFixed(4);
     } else {
       return '--';
     }
@@ -177,6 +191,7 @@
     });
     let res = await check_bind_otp();
     if (res.result.bind_secret) {
+      isBind.value = true;
       canWithDraw.value = true;
       loading.value = false;
 
@@ -186,6 +201,7 @@
         .then((res) => {
           console.log(res, 'res');
           if (res.code == 200) {
+            loading.value = false;
             scret_key.value = res.result.data.secret;
             authQrcode.value = 'data:image/jpg;base64,' + res.result.data.qrcode;
             canWithDraw.value = false;
@@ -196,7 +212,6 @@
         })
         .finally(() => {
           showToast.hide();
-          loading.value = false;
         });
     }
   }
@@ -250,34 +265,74 @@
     }
   }
   function confirmWithdraw() {
-    if (!amount.value) return false;
-    showToast.loading('Loading', {
-      cover: true,
-      customClass: 'app_loading',
-      icon: loadingImg,
-      loadingRotate: false,
-    });
-    user_withdraw({ quantity: +amount.value, token: window.btoa(code.value) })
-      .then((res) => {
-        if (res.code == 200) {
-          amount.value = '';
-          code.value = '';
-          showToast.hide();
-          showToast.success('Withdrawal successful');
-        } else {
-          showToast.hide();
-          showToast.fail(res.message);
-        }
-      })
-      .catch(() => {
-        showToast.hide();
+    if (!amount.value) {
+      showToast.fail('Please fill in the amount to be withdrawn');
+      return false;
+    }
+    if (cloudBalance.value < amount.value) {
+      showToast.fail('Exceeding the maximum withdrawable amount');
+      return false;
+    }
+    const onOk = () => {
+      showToast.loading('Loading', {
+        cover: true,
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
       });
+      user_withdraw({ quantity: +amount.value, token: window.btoa(code.value) })
+        .then((res) => {
+          if (res.code == 200) {
+            amount.value = '';
+            code.value = '';
+            showToast.hide();
+            showToast.success('Withdrawal successful');
+            getUserAssets();
+          } else {
+            showToast.hide();
+            showToast.fail(res.message);
+          }
+        })
+        .catch(() => {
+          showToast.hide();
+        });
+    };
+    let src = require('@/assets/fog-works.png');
+    let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>The final amount is ${realAmount.value} DMC. Are you sure you want to withdraw it?</p >`;
+    showDialog({
+      title: 'Notice',
+      content: str,
+      cancelText: 'Cancel',
+      okText: 'Confirm',
+      popClass: 'dialog_class',
+      onOk,
+    });
   }
   watch(
     code,
     (val) => {
       if (val.length > 6) {
         code.value = val.slice(0, 6);
+      }
+    },
+    { deep: true },
+  );
+  watch(
+    showKeyboard,
+    (val) => {
+      if (val) {
+        showSkip.value = false;
+        nextTick(() => {
+          console.log(document.getElementsByClassName('main-page')[0].scrollHeight, ' document.getElementsByClassName[0].scrollHeight');
+          console.log(document.getElementsByClassName('middle_box')[0].scrollHeight, ' document.getElementsByClassName[0].middle_box');
+
+          document.getElementsByClassName('main-page')[0].scroll({
+            top: document.getElementsByClassName('main-page')[0].scrollHeight,
+            smooth: true,
+          });
+        });
+      } else {
+        showSkip.value = true;
       }
     },
     { deep: true },
@@ -299,7 +354,7 @@
     padding: 0 10px;
   }
   .full_height {
-    height: 115%;
+    height: 150%;
   }
   .title_item {
     margin-bottom: 50px;
@@ -333,6 +388,9 @@
   .real_amount {
     margin-bottom: 20px;
     text-align: center;
+  }
+  .balance {
+    font-size: 35px;
   }
   .qrcode-step {
     display: flex;

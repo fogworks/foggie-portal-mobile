@@ -12,6 +12,7 @@ export default function useUpdateDMC() {
   const userStore = useUserStore();
   const router = useRouter();
   const route = useRoute();
+  const userInfo = computed(() => userStore.getUserInfo);
   const dmc = computed(() => userStore.getUserInfo.dmc);
   const uuid = computed(() => userStore.getUserInfo.uuid);
   const amb_promo_code = computed(() => userStore.getUserInfo?.amb_promo_code || '');

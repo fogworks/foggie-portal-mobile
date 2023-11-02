@@ -17,7 +17,7 @@
             <IconSwitch style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'Open'"></IconSwitch>
             <IconSwitch style="vertical-align: text-top" color="#ffffff" v-else></IconSwitch>
           </div>
-          <span>Open</span></div
+          <span>Ongoing</span></div
         >
       </nut-col>
       <nut-col :span="10">
