@@ -202,7 +202,11 @@
   const confirmBuy = async () => {
     // let nodeIp ='http://'+ res.result.node_address;
     // let nodeIp = 'http://154.31.41.124:18080';
-    if (cloudBalance.value < totalPrice.value) {
+    console.log(cloudBalance.value < totalPrice.value);
+    console.log(cloudBalance.value);
+    console.log(totalPrice.value);
+
+    if (+cloudBalance.value < +totalPrice.value) {
       let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);
       // showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
       showBuy.value = false;
