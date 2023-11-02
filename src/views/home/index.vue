@@ -270,7 +270,7 @@
         router.push({ name: 'Shop' });
       } else if (type === 'analysisChart') {
         router.push('/analysisChart');
-      }else if (type === 'Order') {
+      } else if (type === 'Order') {
         router.push('/list');
       }
     }
