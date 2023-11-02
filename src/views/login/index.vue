@@ -150,6 +150,8 @@
                       // getUserInfo();
                       loading.value = false;
 
+                      router.push({ path: '/home' });
+
                       // this.getUserInfo();
                       // this.$emit("login");
                       // store.dispatch("global/setDmcShow", true);
