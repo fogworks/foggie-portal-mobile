@@ -34,6 +34,9 @@ service.interceptors.response.use(
 
     const res = response.data;
     const code = res.code;
+    if (response.config.url == '/v1/chain/get_account') {
+      return res;
+    }
     if (code !== 200) {
       if (ignoreUrl.indexOf(response.config.url) > -1) {
       } else {

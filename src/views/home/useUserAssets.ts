@@ -24,7 +24,7 @@ export default function useUserAssets() {
   function getExchangeRate() {
     get_exchange_rate().then((res) => {
       console.log(res);
-      dmc2usdRate.value = res.result;
+      dmc2usdRate.value = res.result.exchange_rate;
     });
   }
   return {

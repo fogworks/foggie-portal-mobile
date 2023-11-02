@@ -184,14 +184,6 @@ export default function useUpdateDMC() {
       // console.log(curStepIndex.value, 'sxzcz');
     });
   }
-  watch(
-    curStepIndex,
-    (val) => {
-      console.log(val, 'curStepIndexcurStepIndex');
-    },
-    { deep: true, immediate: true },
-  );
-
   return {
     getAmbDmc,
     curStepIndex,

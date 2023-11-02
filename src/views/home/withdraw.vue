@@ -191,7 +191,6 @@
             canWithDraw.value = false;
             showToast.hide();
           } else {
-            canWithDraw.value = true;
             showToast.hide();
           }
         })

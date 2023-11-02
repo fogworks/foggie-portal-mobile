@@ -16,10 +16,13 @@
   </div>
   <div inset class="income-card">
     <img src="@/assets/balance_right.svg" @click="gotoPage('analysis')" alt="" />
-    <div class="card_row_1 card_header card_row_top" @click="gotoPage('analysis')"><span>Balance</span> </div>
+    <!-- <div class="card_row_1 card_header card_row_top" @click="gotoPage('analysis')"><span>Balance</span> </div> -->
     <div class="card_row_1 card_header" @click="gotoPage('analysis')">
-      <div class="total_income">
-        <div> {{ cloudBalance }} </div>
+      <div class="total_income" @click="gotoPage('analysis')">
+        <div class="balance_text"> {{ cloudBalance }} <img src="@/assets/DMC(1).png" alt="" /> </div>
+        <div class="usd_text" v-if="dmc2usdRate && cloudBalance && cloudBalance != '--'">
+          ≈ {{ (dmc2usdRate * cloudBalance).toFixed(4) + ' USD' }}
+        </div>
       </div>
     </div>
     <div class="card_row_1 pst-row">
@@ -204,9 +207,8 @@
   const { getUserAssets, getExchangeRate, dmc2usdRate, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } =
     useUserAssets();
   const { bindAmbCode, curStepIndex, ambRefuse, getOrder } = useUpdateDMC();
-  const stepVal = computed(() => curStepIndex.value);
   watch(
-    stepVal,
+    curStepIndex,
     (val) => {
       console.log(val, 'homeval');
     },
@@ -350,7 +352,7 @@
         ambRefuse.value = false;
         getOrder();
         getUserAssets();
-        // getExchangeRate();
+        getExchangeRate();
 
         // if (userInfo.value.dmc) {
         //   curStepIndex.value = 4;
@@ -396,7 +398,7 @@
     loadMySwipeDom();
     if (cloudCodeIsBind.value) {
       getUserAssets();
-      // getExchangeRate();
+      getExchangeRate();
     }
   });
 </script>
@@ -590,7 +592,7 @@
     color: #fff;
     border-radius: 0;
 
-    img {
+    > img {
       position: absolute;
       right: 40px;
       width: 100px;
@@ -608,7 +610,7 @@
 
       &.card_header {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         justify-content: space-between;
         margin-right: 100px;
 
@@ -620,6 +622,16 @@
           > div {
             font-size: 30px;
             text-align: left;
+          }
+          .balance_text {
+            font-size: 45px;
+            img {
+              height: 55px;
+              vertical-align: sub;
+            }
+          }
+          .usd_text {
+            color: #ccc;
           }
         }
       }

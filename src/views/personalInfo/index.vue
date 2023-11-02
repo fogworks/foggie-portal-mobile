@@ -42,7 +42,7 @@
   .not_amb {
     :deep {
       .nut-cell__value {
-        width: 150px;
+        width: 200px;
         flex: 0;
       }
     }
