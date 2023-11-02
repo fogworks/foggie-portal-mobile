@@ -236,7 +236,6 @@ export const get_merkle = (data: any) => {
   });
 };
 
-
 export const valid_upload = (data: any) => {
   return request({
     url: `/file/valid_upload`,
@@ -244,8 +243,6 @@ export const valid_upload = (data: any) => {
     data,
   });
 };
-
-
 
 export const get_merkle_record = (data: any) => {
   return request({
@@ -264,6 +261,14 @@ export const get_challenge = (data) => {
 export const get_arbitration = (data) => {
   return request({
     url: `/order/get_arbitration`,
+    method: 'POST',
+    data,
+  });
+};
+
+export const checkDmcAccount = (data) => {
+  return request({
+    url: `/v1/chain/get_account`,
     method: 'POST',
     data,
   });

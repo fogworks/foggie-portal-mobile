@@ -16,16 +16,10 @@
   </div>
   <div inset class="income-card">
     <img src="@/assets/balance_right.svg" @click="gotoPage('analysis')" alt="" />
-    <div class="card_row_1 card_header card_row_top" @click="gotoPage('analysis')"
-      ><span>Balance</span>
-      <span>Income</span>
-    </div>
+    <div class="card_row_1 card_header card_row_top" @click="gotoPage('analysis')"><span>Balance</span> </div>
     <div class="card_row_1 card_header" @click="gotoPage('analysis')">
       <div class="total_income">
         <div> {{ cloudBalance }} </div>
-      </div>
-      <div class="total_income">
-        <div> {{ cloudIncome }} </div>
       </div>
     </div>
     <div class="card_row_1 pst-row">
@@ -207,8 +201,17 @@
   import { search_order_profit } from '@/api/amb';
   import loadingImg from '@/components/loadingImg/index.vue';
   const { timeType, searchType } = toRefs(state);
-  const { getUserAssets, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
+  const { getUserAssets, getExchangeRate, dmc2usdRate, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } =
+    useUserAssets();
   const { bindAmbCode, curStepIndex, ambRefuse, getOrder } = useUpdateDMC();
+  const stepVal = computed(() => curStepIndex.value);
+  watch(
+    stepVal,
+    (val) => {
+      console.log(val, 'homeval');
+    },
+    { deep: true, immediate: true },
+  );
   const { shortcuts } = useOrderList();
   const searchOrderProfit = () => {
     const [start, end] = shortcuts[1]();
@@ -346,6 +349,9 @@
       if (newVal) {
         ambRefuse.value = false;
         getOrder();
+        getUserAssets();
+        // getExchangeRate();
+
         // if (userInfo.value.dmc) {
         //   curStepIndex.value = 4;
         //   ambRefuse.value = false;
@@ -357,20 +363,9 @@
         bindAmbCode();
       }
     },
-    { deep: true },
+    { deep: true, immediate: true },
   );
 
-  watch(
-    userInfo.value.uuid,
-    (val) => {
-      if (val) {
-        if (cloudCodeIsBind.value) {
-          getUserAssets();
-        }
-      }
-    },
-    { deep: true },
-  );
   // onActivated(() => {
   //   if (userInfo.value.dmc) {
   //     curStepIndex.value = 4;
@@ -401,6 +396,7 @@
     loadMySwipeDom();
     if (cloudCodeIsBind.value) {
       getUserAssets();
+      // getExchangeRate();
     }
   });
 </script>

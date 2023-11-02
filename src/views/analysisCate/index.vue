@@ -34,7 +34,7 @@
           @load-more="loadMore"
         >
           <div class="list_item" v-for="item in listData">
-            <span v-if="item.created_at">{{ transferUTCTime(item.created_at) }}</span>
+            <span v-if="item.created_at">{{ transferGMTTime(item.created_at) }}</span>
             <span v-else>Order:{{ item.order_id }}</span>
             <span :class="[item.type == 'earnings' ? 'earnings' : 'expenditures']">
               {{ (item.type == 'earnings' ? '+' : '-') + item.quantity }} DMC
@@ -52,7 +52,7 @@
   import { reactive, toRefs, onMounted, watch } from 'vue';
   import { barOption } from '@/components/echarts/util';
   import { useRoute, useRouter } from 'vue-router';
-  import { transferUTCTime } from '@/utils/util';
+  import { transferGMTTime } from '@/utils/util';
   import useUserAssets from '../home/useUserAssets.ts';
   import useWithdrawList from './useWithdrawList.ts';
   import IconRunning from '~icons/home/running.svg';

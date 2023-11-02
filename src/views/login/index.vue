@@ -147,7 +147,7 @@
                       // store.dispatch('token/login', userInfo);
                       // userStore.setInfo(userInfo);
                       userStore.setToken(token);
-                      getUserInfo();
+                      // getUserInfo();
                       loading.value = false;
 
                       // this.getUserInfo();

@@ -60,10 +60,10 @@
 </template>
 
 <script lang="ts" setup name="LoginPage">
-  import { register, get_verify_pw, check_promo } from '@/api';
+  import { register, get_verify_pw, check_promo, user, login } from '@/api';
   import { useRouter, useRoute } from 'vue-router';
   import { reactive, ref } from 'vue';
-  // import { useUserStore } from '@/store/modules/user';
+  import { useUserStore } from '@/store/modules/user';
 
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
@@ -71,9 +71,9 @@
 
   const router = useRouter();
   const route = useRoute();
-  //   const bcryptjs = require('bcryptjs');
+  const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
-  // const userStore = useUserStore();
+  const userStore = useUserStore();
   const loginForm = reactive({
     email: '',
     password: '',
@@ -161,6 +161,13 @@
       }
     });
   }
+  // async function getUserInfo() {
+  //   let res = await user();
+  //   if (res.data) {
+  //     userStore.setInfo(res.data);
+  //     router.push({ path: '/home' });
+  //   }
+  // }
   const submit = () => {
     ruleForm.value.validate().then(async ({ valid, errors }: any) => {
       if (valid) {
@@ -205,8 +212,48 @@
         register(postData)
           .then((res) => {
             if (res && res.data && res.data.uuid) {
-              router.push('/login');
-              showToast.success('Registration successful, please log in');
+              showToast.success('Registration successful');
+              const loginPassword = loginForm.password;
+              let hashPwd = bcryptjs.hashSync(loginPassword, 10);
+              let postData = {
+                email: loginForm.email,
+                password: hashPwd,
+                captcha_text: '',
+                captcha_id: '',
+                is_client: true,
+                login_type: 'password',
+                // recaptcha_token: reCaptchaV3Token,
+              };
+              login(postData)
+                .then((res) => {
+                  console.log(res);
+                  if (res.next_step === 'captcha') {
+                    loading.value = false;
+                  } else if (res && res.data) {
+                    let data = res.data;
+                    let token = data.token_type + ' ' + data.access_token;
+                    // let refresh_token = data.token_type + ' ' + data.refresh_token;
+                    let user_id = data.user_id;
+                    window.localStorage.setItem('user_id', user_id);
+
+                    userStore.setToken(token);
+                    router.push('/home');
+                    // getUserInfo();
+                    loading.value = false;
+                  } else {
+                    showToast.fail(res.error);
+                    loading.value = false;
+                  }
+                })
+                .catch((err) => {
+                  loading.value = false;
+                  console.log(err);
+                  showToast.fail(err.error);
+                  if (err.next_step === 'captcha') {
+                    getCaptcha();
+                    showCaptcha.value = true;
+                  }
+                });
             } else if (res && res.data) {
               showToast.text(
                 'A verification link has been sent to your email address, please check your email to verify and Login your account.',

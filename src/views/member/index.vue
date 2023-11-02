@@ -143,6 +143,8 @@
       },
       onOk: () => {
         userStore.logout();
+        userStore.setCloudCodeIsBind(false);
+
         // localStorage.removeItem('refresh_token');
         router.push('/login');
         // console.log('确定');

@@ -4,7 +4,7 @@ import { bind_promo, check_promo, get_amb_dmc, check_user_bind } from '@/api/amb
 import { showDialog, showToast } from '@nutui/nutui';
 import { useRouter, useRoute } from 'vue-router';
 import loadingImg from '@/components/loadingImg/index.vue';
-import { search_cloud } from '@/api';
+import { search_cloud, bind_user_promo } from '@/api';
 
 export default function useUpdateDMC() {
   const curStepIndex = ref(1); // 1 绑定大使邀请码
@@ -72,36 +72,16 @@ export default function useUpdateDMC() {
               const onOk = () => {
                 router.push({ name: 'bindDmc', query: { type: 'amb' } });
               };
+              let src = require('@/assets/fog-works.png');
+              let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>The ambassador platform is approved and you can now start purchasing orders, should you head over right away?</p >`;
               showDialog({
                 title: 'Notice',
-                content: `Your application to join the Ambassador platform has been rejected  ${
-                  res2.result.fault ? 'with the reason:' + res2.result.fault : ''
-                }. you can change the Ambassador invitation code and try to join another Ambassador platform!`,
+                content: str,
                 cancelText: 'Cancel',
                 okText: 'Confirm',
                 popClass: 'dialog_class',
                 onOk,
               });
-            } else if (res2.result.approved && !res2.result.refuse) {
-              ambRefuse.value = false;
-              // approved
-              if (!window.localStorage.hasCloudApproved) {
-                window.localStorage.hasCloudApproved = true;
-                const onOk = () => {
-                  router.push({ name: 'Shop' });
-                };
-                showDialog({
-                  title: 'Notice',
-                  content: `The ambassador platform is approved and you can now start purchasing orders, should you head over right away?`,
-                  cancelText: 'Cancel',
-                  okText: 'Confirm',
-                  popClass: 'dialog_class',
-                  onOk,
-                });
-              }
-              // userStore.setCloudCodeIsBind(true);
-            } else {
-              showToast.text('Ambassadors are in the process of approval, please be patient');
             }
           } else {
             curStepIndex.value = 2;
@@ -119,20 +99,72 @@ export default function useUpdateDMC() {
             });
           }
         } else {
+          console.log('未绑定！！！！！！！！');
           curStepIndex.value = 1;
-          if (route.path == '/bindDmc') {
-            return false;
+          if (!amb_promo_code.value) {
+            if (route.path == '/bindDmc') {
+              return false;
+            }
+            const dmcOk = () => {
+              router.push({ name: 'BindDmc', query: { type: 'amb' } });
+            };
+            let src = require('@/assets/fog-works.png');
+            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please confirm that you have filled out the invitation code before placing your order</p >`;
+            showDialog({
+              title: 'Bind',
+              content: str,
+              onOk: dmcOk,
+            });
+          } else {
+            if (route.path == '/bindDmc') {
+              return false;
+            }
+            const dmcOk = async () => {
+              let postData = {
+                user_uuid: userInfo.value.uuid,
+                amb_promo_code: amb_promo_code.value,
+                email: userInfo.value.email,
+                dmc_account: userInfo.value.dmc,
+              };
+              const promoFunction = () => {
+                return check_promo(amb_promo_code.value)
+                  .then((res) => {
+                    if (res.code == 200) {
+                      return bind_promo(postData)
+                        .then((res2) => {
+                          if (res2.code == 200) {
+                            bind_user_promo({
+                              amb_promo_code: amb_promo_code.value,
+                            })
+                              .then((res) => {
+                                if (res.code == 200) {
+                                  bindAmbCode();
+                                  showToast.success('Bind successfully');
+                                  // useStore.setCloudCodeIsBind(true);
+                                } else {
+                                }
+                              })
+                              .catch(() => {});
+                          }
+                        })
+                        .catch(() => {});
+                    } else {
+                      showToast.fail('Binding failed, please try again');
+                      return false;
+                    }
+                  })
+                  .catch(() => {});
+              };
+              await promoFunction();
+            };
+            let src = require('@/assets/fog-works.png');
+            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Your current Ambassador Invitation Code is ${amb_promo_code.value}, are you sure you want to bind?</p >`;
+            showDialog({
+              title: 'Bind',
+              content: str,
+              onOk: dmcOk,
+            });
           }
-          const dmcOk = () => {
-            router.push({ name: 'BindDmc', query: { type: 'amb' } });
-          };
-          let src = require('@/assets/fog-works.png');
-          let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please confirm that you have filled out the invitation code before placing your order</p >`;
-          showDialog({
-            title: 'Ambassador Invitation Code',
-            content: str,
-            onOk: dmcOk,
-          });
         }
       })
       .finally(() => {
@@ -149,7 +181,7 @@ export default function useUpdateDMC() {
       if (total > 0) {
         curStepIndex.value = 4;
       }
-      console.log(curStepIndex.value, 'sxzcz');
+      // console.log(curStepIndex.value, 'sxzcz');
     });
   }
   watch(
@@ -157,7 +189,7 @@ export default function useUpdateDMC() {
     (val) => {
       console.log(val, 'curStepIndexcurStepIndex');
     },
-    { deep: true },
+    { deep: true, immediate: true },
   );
 
   return {
