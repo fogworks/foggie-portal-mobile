@@ -5,6 +5,7 @@
         <TopBack> Data Analysis</TopBack>
 
         <div class="top_assets">
+          <div class="right_img"><img src="@/assets/Trading.svg" alt="" /> </div>
           <nut-grid class="top_grid" :column-num="3">
             <nut-grid-item text="Balance">
               <div>
@@ -24,14 +25,7 @@
                 <p class="banlance_text1">{{ cloudExpense > 0 ? '-' : '' }}{{ cloudExpense }}<Search2></Search2> </p>
               </div>
             </nut-grid-item>
-            <!-- <nut-grid-item class="top_icon" text="Withdrawal" @click="router.push('/analysisCate?type=0')"
-          ><div>
-            <IconWithdraw class="top_icon"></IconWithdraw>
-            <p>{{ cloudWithdraw }}</p>
-          </div></nut-grid-item
-        > -->
           </nut-grid>
-          <div class="right_img"><img src="@/assets/Trading.svg" alt="" /> </div>
         </div>
       </div>
     </div>
@@ -509,11 +503,72 @@
 
     .top_assets {
       display: flex;
-      justify-content: space-between;
-      // align-items: center;
-      align-items: end;
+      width: 100%;
+      justify-content: flex-end;
+      align-items: flex-end;
       color: #fff;
+      height: 250px;
+      .top_grid {
+        border: none;
+        width: 100%;
+        .top_icon {
+          width: 60px;
+          height: 60px;
+        }
 
+        :deep {
+          // .nut-grid-item {
+          //   max-width: 25%;
+          // }
+          .nut-grid-item__content {
+            border-radius: 16px;
+            margin: 5px;
+            padding: 10px 12px;
+            height: unset;
+            align-items: flex-start;
+            font-size: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+
+            > div {
+              max-width: 100%;
+            }
+
+            img {
+              width: 100px;
+            }
+
+            p {
+              max-width: 100%;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              text-align: center;
+              font-size: 24px;
+              font-weight: bold;
+              text-decoration: underline;
+
+              svg {
+                width: 20px;
+                height: 20px;
+                color: #4c5093;
+                margin-left: 10px;
+                font-weight: bold;
+              }
+            }
+
+            .banlance_text {
+              text-decoration: none;
+              color: var(--nut-grid-item-text-color, var(--nut-title-color2, #666666));
+            }
+
+            .banlance_text1 {
+              text-decoration: none;
+              color: #dfa1a1;
+            }
+          }
+        }
+      }
       .left_title {
         width: 150px;
         align-self: flex-start;
@@ -526,6 +581,9 @@
       }
 
       .right_img {
+        position: absolute;
+        top: 35px;
+        right: -15px;
         img {
           width: 160px;
         }
@@ -684,70 +742,6 @@
 
       &:last-child {
         border-bottom: none;
-      }
-    }
-  }
-
-  .top_grid {
-    border: none;
-    flex: 1;
-    margin-right: 30px;
-
-    .top_icon {
-      width: 60px;
-      height: 60px;
-    }
-
-    :deep {
-      // .nut-grid-item {
-      //   max-width: 25%;
-      // }
-      .nut-grid-item__content {
-        border-radius: 16px;
-        margin: 5px;
-        padding: 10px 12px;
-        height: unset;
-        align-items: flex-start;
-        font-size: 30px;
-        font-size: 1rem;
-        font-weight: bold;
-
-        > div {
-          max-width: 100%;
-        }
-
-        img {
-          width: 100px;
-        }
-
-        p {
-          max-width: 100%;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          text-align: center;
-          font-size: 24px;
-          font-weight: bold;
-          text-decoration: underline;
-
-          svg {
-            width: 20px;
-            height: 20px;
-            color: #4c5093;
-            margin-left: 10px;
-            font-weight: bold;
-          }
-        }
-
-        .banlance_text {
-          text-decoration: none;
-          color: var(--nut-grid-item-text-color, var(--nut-title-color2, #666666));
-        }
-
-        .banlance_text1 {
-          text-decoration: none;
-          color: #dfa1a1;
-        }
       }
     }
   }
