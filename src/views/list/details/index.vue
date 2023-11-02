@@ -268,7 +268,7 @@
       <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
       <template #footer>
         <nut-button type="primary" @click="router.go(-1)">Operate Later</nut-button>
-        <nut-button type="primary" @click="creatName" :loading="isNameLoading">Confirm</nut-button>
+        <nut-button type="primary" @click="createName" :loading="isNameLoading">Confirm</nut-button>
       </template>
     </nut-dialog>
   </div>
@@ -408,7 +408,7 @@
   // const secretAccessKey = ref<string>('');
   const uploadUri = ref<string>('');
   const prefix = ref<string>('');
-  const showCreatName = ref<boolean>(true);
+  const showCreateName = ref<boolean>(true);
   const newBucketName = ref<string>('');
   const tableData = ref<array>([]);
   const tableLoading = ref<boolean>(false);
@@ -796,9 +796,9 @@
     router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain } });
   };
 
-  const creatName = async () => {
-    if (!showCreatName.value) {
-      showCreatName.value = true;
+  const createName = async () => {
+    if (!showCreateName.value) {
+      showCreateName.value = true;
     } else if (newBucketName.value) {
       let reg = /^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9]))*(?:\.[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9]))*)*$/;
       if (newBucketName.value.length < 8 || newBucketName.value.length > 10) {
@@ -1168,16 +1168,11 @@
             total: el.getTotal(),
           };
         });
-        console.log(contentList, 're!!!!!!!!!!!!!!!!!!!!!!!!s');
-
         filesCount.value = contentList?.[0]?.count || 0;
-        // spaceFileCount.value = res.contents?.[0]?.count || 0;
-
-        // reject(true);
-        // console.log('ak ---- sk:', accessKeyId.value, secretAccessKey.value);
       }
     });
   };
+  provide('getSummary', getSummary);
   onDeactivated(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });

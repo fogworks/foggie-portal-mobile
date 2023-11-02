@@ -219,7 +219,7 @@
     1000,
     { leading: true, trailing: true },
   );
-
+  const getSummary = inject('getSummary');
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
     // console.log(option, 'option');
@@ -231,6 +231,7 @@
     }, 2000);
     // emits('getFileList');
     emits('uploadComplete');
+
     const updateUsedSpace = () => {
       return update_order_size({
         used_space: +option.sourceFile.size,
@@ -254,7 +255,7 @@
         });
     };
     await updateUsedSpace();
-
+    getSummary();
     console.log('-------------------used---1', props.orderInfo.value.used_space);
     await getOrderInfo(false);
     console.log('-------------------used---2', props.orderInfo.value.used_space);
