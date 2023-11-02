@@ -7,7 +7,7 @@
         <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
       </div>
       <div v-else> Order:{{ order_id }} </div>
-      <span class="benefit_analysis" @click="gotoSummary(order_id)">
+      <span class="benefit_analysis" @click="gotoSummary(order_id, orderInfo.value.state)">
         <img src="@/assets/analysis.svg" class="bucket_detail_smal" />
       </span>
     </TopBack>
@@ -1133,8 +1133,9 @@
     let str = `${_dmcName.substring(0, length)}${orderName}`;
     newBucketName.value = str;
   };
-  const gotoSummary = (order_id) => {
-    router.push({ name: 'orderSummary', query: { id: order_id } });
+  const gotoSummary = (order_id, state) => {
+    console.log(order_id, state, 'order_id, state');
+    router.push({ name: 'orderSummary', query: { id: order_id, status: state } });
   };
   onMounted(async () => {
     await getOrderInfo();

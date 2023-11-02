@@ -2,23 +2,42 @@
   <div class="analysis_content">
     <div class="top_box">
       <div class="top_back" @click="router.go(-1)">Order_{{ order_id }} Summary </div>
+      <span style="text-align: center; width: 100%; display: inline-block" class="my_state">
+        <!-- 待共識 -->
+        <nut-tag v-if="orderStatus == 0" type="warning">Consensus not reached</nut-tag>
+        <!-- 进行中 -->
+        <nut-tag type="success" v-else-if="orderStatus == 1">Consensus reached </nut-tag>
+        <!-- 已结束 -->
+        <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="orderStatus == 4">Order over</nut-tag>
+        <!-- 已取消 -->
+        <nut-tag type="danger" v-else-if="orderStatus == 5">Canceled</nut-tag>
+        <!-- 下週期將取消 -->
+        <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="orderStatus == 6">Cancellation of the next cycle</nut-tag>
+        <!-- 預存⾦不足 -->
+        <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="orderStatus == 2"
+          >Insufficient advance deposit to cancel the next cycle</nut-tag
+        >
+        <!-- 預存⾦充足 -->
+        <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="orderStatus == 3">Sufficient funds in advance</nut-tag>
+      </span>
+
       <nut-grid class="my_summary_grid" :column-num="3">
         <nut-grid-item text="Profit"
           ><div>
             <IconCions class="top_icon"></IconCions>
-            <p style="color: green; font-weight: bold">{{ cloudBalance }}</p>
+            <p style="color: green; font-weight: bold">{{ cloudBalance && cloudBalance.toFixed(4) }}</p>
           </div>
         </nut-grid-item>
         <nut-grid-item class="top_icon" text="Earnings"
           ><div>
             <IconIncome class="top_icon"></IconIncome>
-            <p style="color: green; font-weight: bold">+{{ cloudProfit }}</p>
+            <p style="color: green; font-weight: bold">+{{ cloudProfit && cloudProfit.toFixed(4) }}</p>
           </div></nut-grid-item
         >
         <nut-grid-item class="top_icon" text="Expense"
           ><div>
             <IconOutCome class="top_icon"></IconOutCome>
-            <p style="color: red; font-weight: bold">-{{ orderPayout }}</p>
+            <p style="color: red; font-weight: bold">-{{ orderPayout && orderPayout.toFixed(4) }}</p>
           </div></nut-grid-item
         >
       </nut-grid>
@@ -48,11 +67,7 @@
         :has-more="hasMore"
         @load-more="loadMore"
       >
-        <div
-          class="list_item"
-          v-for="(item, index) in listData"
-          @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } })"
-        >
+        <div class="list_item" v-for="(item, index) in listData" @click="gotoOrder(item)">
           <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
             <img src="@/assets/list_item_2.svg" alt="" />
           </div>
@@ -88,9 +103,13 @@
   import { transferUTCTime } from '@/utils/util';
   import * as echarts from 'echarts';
   const order_id = ref<any>('');
+  const ordertype = ref('');
   const route = useRoute();
   const router = useRouter();
+  const orderStatus = ref('');
   order_id.value = route.query.id;
+  ordertype.value = route.query.type;
+  orderStatus.value = route.query.status;
   const state = reactive({
     queryType: 'Earnings',
     queryTypeValue: [],
@@ -123,6 +142,15 @@
 
   const { searchType, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
 
+  const gotoOrder = (item) => {
+    //no function
+    // if (ordertype.value !== 'history') {
+    //   router.push({
+    //     name: 'listDetails',
+    //     query: { id: item.order_id, uuid: item.order_info && item.order_info.uuid, amb_uuid: item.amb_uuid },
+    //   });
+    // }
+  };
   const getBarOptions = () => {
     const dateList = listData.value.map((el) => transferUTCTime(el.created_at));
     const valueList = listData.value.map((el) => el.quantity);
@@ -169,6 +197,22 @@
 </script>
 
 <style lang="scss" scoped>
+  .my_state {
+    .nut-tag {
+      //   border-radius: 20px;
+      //   padding: 4px 10px;
+      //   background: #0c0d1a33;
+      //   border: 1px solid #fff;
+      //   margin: 4px 0;
+      //   box-shadow:
+      //     rgba(0, 0, 0, 0.25) 0px 54px 55px,
+      //     rgba(0, 0, 0, 0.12) 0px -12px 30px,
+      //     rgba(0, 0, 0, 0.12) 0px 4px 6px,
+      //     rgba(0, 0, 0, 0.17) 0px 12px 13px,
+      //     rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    }
+  }
+
   .type_tabs {
     margin-bottom: 20px;
     :deep {

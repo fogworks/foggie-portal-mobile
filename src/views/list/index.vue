@@ -183,7 +183,7 @@
       router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } });
     } else if (searchType.value === 'History') {
       if (item.order_id) {
-        router.push({ name: 'orderSummary', query: { id: item.order_id } });
+        router.push({ name: 'orderSummary', query: { id: item.order_id, type: 'history', status: item.state } });
       }
     }
   };

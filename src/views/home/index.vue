@@ -142,28 +142,20 @@
     </nut-steps>
   </div>
 
-  <!-- <nut-infinite-loading v-if="earningsList.length" load-more-txt="No more content" :has-more="false">
-    <div
-      class="list_item"
-      v-for="(item, index) in earningsList"
-      @click="$router.push({ name: 'orderSummary', query: { id: item.order_id } })"
-    >
-      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-        <img src="@/assets/list_item_2.svg" alt="" />
-      </div>
-      <div>
-        <span>Order:{{ item.order_id }}</span>
-        <span :class="['earnings']" v-if="item.profit"> {{ item.profit }} DMC </span>
-        <span :class="['earnings']" v-if="!item.profit" style="color: red"> -{{ item.payout }} DMC </span>
-      </div>
-    </div>
-  </nut-infinite-loading> -->
-
   <nut-infinite-loading v-if="earningsList.length" load-more-txt="No more content" :has-more="false">
     <div
       class="list_item"
       v-for="(item, index) in earningsList"
-      @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } })"
+      @click="
+        $router.push({
+          name: 'listDetails',
+          query: {
+            id: item.order_id,
+            uuid: item.order_info && item.order_info.uuid,
+            amb_uuid: item.amb_uuid,
+          },
+        })
+      "
     >
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <img src="@/assets/list_item_2.svg" alt="" />
