@@ -129,6 +129,10 @@
     </nut-empty>
     <!-- single action -->
   </div>
+  <div v-if="category == 1" class="submit-merkle">
+    <nut-button block class="buy_btn" type="info" @click="submitMerkle" :loading="merkleLoading"> Submit Merkle </nut-button>
+    <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -143,6 +147,11 @@
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
   import { transferUTCTime } from '@/utils/util';
+
+  import { calc_merkle } from '@/api/index';
+
+  import { showToast } from '@nutui/nutui';
+  
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
@@ -207,6 +216,29 @@
     await getOrderInfo();
     switchType(category.value);
   };
+
+  const merkleLoading = ref(false);
+
+  const memo = ref<any>('');
+  const amb_uuid = ref<any>('');
+  memo.value = route.query.uuid;
+  amb_uuid.value = route.query.amb_uuid;
+
+  const submitMerkle = () => {
+    merkleLoading.value = true;
+    const d = {
+      orderId: order_id.value,
+      uuid: amb_uuid.value,
+      orderUuid: memo.value,
+      rpc: orderInfo.value.rpc,
+    };
+    calc_merkle(d).then((res) => {
+      merkleLoading.value = false;
+      console.log('calc_merkle-----', res);
+      showToast.success('Joined the Merkle queue!');
+    });
+  }
+
   onMounted(() => {
     category.value = route.query.category;
     initParams();
@@ -606,4 +638,23 @@
       font-size: 35px;
     }
   }
+  .submit-merkle {
+    position: fixed;
+    padding: 0 40px;
+    width: calc(100vw - 80px);
+    // right: 5vw;
+    bottom: 20vw;
+    .buy_btn {
+      height: 120px;
+      font-size: 40px;
+      margin: 40px 0;
+      :deep {
+        &.nut-button--disabled {
+          background: #aaa !important;
+        }
+      }
+    }
+  }
+
+  
 </style>

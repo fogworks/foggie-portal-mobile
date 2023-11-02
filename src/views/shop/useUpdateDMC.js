@@ -59,7 +59,6 @@ export default function useUpdateDMC() {
               onOk,
             });
           } else if (res2.result.approved && !res2.result.refuse) {
-            console.log(111111111111);
             curStepIndex.value = 3;
             userStore.setCloudCodeIsBind(true);
             ambRefuse.value = false;
@@ -180,10 +179,12 @@ export default function useUpdateDMC() {
       let total = res?.result?.total;
       if (total > 0) {
         curStepIndex.value = 4;
+      } else {
+        curStepIndex.value = 3;
       }
-      // console.log(curStepIndex.value, 'sxzcz');
     });
   }
+
   return {
     getAmbDmc,
     curStepIndex,
