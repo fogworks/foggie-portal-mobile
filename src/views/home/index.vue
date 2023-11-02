@@ -142,7 +142,7 @@
     </nut-steps>
   </div>
 
-  <nut-infinite-loading v-if="earningsList.length" load-more-txt="No more content" :has-more="false">
+  <!-- <nut-infinite-loading v-if="earningsList.length" load-more-txt="No more content" :has-more="false">
     <div
       class="list_item"
       v-for="(item, index) in earningsList"
@@ -153,21 +153,32 @@
       </div>
       <div>
         <span>Order:{{ item.order_id }}</span>
-        <!-- <span style="margin-left: 10px">
-          <nut-tag v-if="item.state == 0" type="warning">TBC</nut-tag>
-          <nut-tag type="success" v-else-if="item.state == 1">WIP</nut-tag>
-          <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Closed</nut-tag>
-          <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
-          <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
-          <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">Closed</nut-tag>
-          <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">INSF</nut-tag>
-        </span> -->
         <span :class="['earnings']" v-if="item.profit"> {{ item.profit }} DMC </span>
         <span :class="['earnings']" v-if="!item.profit" style="color: red"> -{{ item.payout }} DMC </span>
       </div>
-      <!-- <div>
-          <span class="time">{{ transferUTCTime(item.order_created_at) }} </span>
-        </div> -->
+    </div>
+  </nut-infinite-loading> -->
+
+  <nut-infinite-loading v-if="earningsList.length" load-more-txt="No more content" :has-more="false">
+    <div
+      class="list_item"
+      v-for="(item, index) in earningsList"
+      @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } })"
+    >
+      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+        <img src="@/assets/list_item_2.svg" alt="" />
+      </div>
+      <div>
+        <span>Order:{{ item.order_id }}</span>
+        <span :class="[item.inner_user_trade_type == 'payout' ? 'expense' : 'earnings']">
+          {{ item.inner_user_trade_type == 'payout' ? '-' : '+' }}{{ item.quantity }} DMC
+        </span>
+      </div>
+      <div>
+        <span>Type:{{ mapTypes[item.trade_type] }}</span>
+        <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
+        <span class="time">{{ transferUTCTime(item.created_at) }}</span>
+      </div>
     </div>
   </nut-infinite-loading>
 </template>
@@ -200,8 +211,26 @@
     timeType: '0',
     searchType: '0',
   });
+  const mapTypes = {
+    user_delivery_income: 'UserDeliveryIncome',
+    buy_order: 'BuyOrder',
+    challenge: 'Order Challenge',
+    arbitration: 'Order Arbitration',
+    OrderReceiptAddReserve: 'Increase order deposit', // 增加订单预存金
+    OrderReceiptSubReserve: 'Reduce order deposit', // 减少订单预存金
+    OrderReceiptDeposit: 'Order deposit', // 押金
+    OrderReceiptClaim: 'Order deliver', // 交付
+    OrderReceiptReward: 'Order incentive', // 激励
+    OrderReceiptRenew: 'Order Update', // 订单更新
+    OrderReceiptChallengeReq: 'Initiate a Challenge', // 发起挑战
+    OrderReceiptChallengeAns: 'Responding to challenges', // 响应挑战
+    OrderReceiptChallengeArb: 'arbitrate', // 仲裁
+    OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
+    OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
+    OrderReceiptEnd: 12,
+  };
   const earningsList = ref([] as any);
-  import { search_order_profit } from '@/api/amb';
+  import { search_order_profit, search_user_asset_detail } from '@/api/amb';
   import loadingImg from '@/components/loadingImg/index.vue';
   const { timeType, searchType } = toRefs(state);
   const { getUserAssets, getExchangeRate, dmc2usdRate, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } =
@@ -211,6 +240,9 @@
     curStepIndex,
     (val) => {
       console.log(val, 'homeval');
+      if (val === 4) {
+        searchOrderProfit();
+      }
     },
     { deep: true, immediate: true },
   );
@@ -218,11 +250,19 @@
   const searchOrderProfit = () => {
     const [start, end] = shortcuts[1]();
     const postData = !start && !end ? {} : { start_time: start, end_time: end };
-    search_order_profit(postData)
+    // search_order_profit(postData)
+    //   .then((res) => {
+    //     console.log(res, 'search_order_profit');
+    //     if (res && res.result && res.result.length) {
+    //       earningsList.value = res.result;
+    //     }
+    //   })
+    //   .finally(() => {});
+
+    search_user_asset_detail(postData)
       .then((res) => {
-        console.log(res, 'search_order_profit');
-        if (res && res.result && res.result.length) {
-          earningsList.value = res.result;
+        if (res && res.result && res.result.data.length) {
+          earningsList.value = res.result.data;
         }
       })
       .finally(() => {});
@@ -340,7 +380,7 @@
 
   onBeforeMount(() => {
     if (cloudCodeIsBind.value) {
-      searchOrderProfit();
+      //   searchOrderProfit();
       getOrder();
     }
   });
@@ -836,10 +876,14 @@
 
     .earnings {
       display: inline-block;
-      color: #121212;
       color: $main_green;
 
-      font-size: 36px;
+      font-size: 30px;
+    }
+    .expense {
+      display: inline-block;
+      color: red;
+      font-size: 30px;
     }
 
     .time {

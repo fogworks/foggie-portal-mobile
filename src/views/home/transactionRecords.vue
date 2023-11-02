@@ -54,16 +54,17 @@
         :has-more="hasMore"
         @load-more="loadMore"
       >
-        <div class="list_item" v-for="(item, index) in listData">
+        <div class="list_item" v-for="(item, index) in listData" @click="goToHash(item.trx_id)">
           <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
             <img src="@/assets/list_item_2.svg" alt="" />
           </div>
           <div>
-            <span>Memo:{{ item.memo }}</span>
-            <span :class="[searchType == 0 ? 'earnings' : 'expense']"> {{ searchType == 0 ? '+' : '-' }}{{ item.quantity }} </span>
+            <span class="txt_id">Trx ID:{{ handleID(item.trx_id) }}</span>
+            <span :class="[searchType == 1 ? 'earnings' : 'expense']"> {{ searchType == 1 ? '+' : '-' }}{{ item.quantity }} </span>
           </div>
-          <div
-            ><span>{{ searchType == 0 ? '' : item.state }} </span> <span class="time">{{ transferGMTTime(item.created_at) }}</span>
+          <div>
+            <span>Memo:{{ item.memo }}</span>
+            <span>{{ searchType == 0 ? '' : item.state }} </span> <span class="time">{{ transferGMTTime(item.created_at) }}</span>
           </div>
         </div>
       </nut-infinite-loading>
@@ -114,6 +115,14 @@
       },
     };
   };
+  const handleID = (id) => {
+    if (id) {
+      return id.substring(0, 8) + '...' + id.substring(id.length - 8, id.length);
+    }
+  };
+  const goToHash = (transaction_hash) => {
+    window.open(`https://explorer.dmctech.io/transaction/${transaction_hash}`);
+  };
   watch(
     listData,
     (val) => {
@@ -143,6 +152,11 @@
 </script>
 
 <style lang="scss" scoped>
+  .txt_id {
+    text-decoration: underline;
+    color: #496af2;
+    font-weight: bold;
+  }
   .type_tabs {
     margin-bottom: 20px;
     :deep {
