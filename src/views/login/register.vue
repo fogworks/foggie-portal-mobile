@@ -61,7 +61,7 @@
 
 <script lang="ts" setup name="LoginPage">
   import { register, get_verify_pw, check_promo } from '@/api';
-  import { useRouter } from 'vue-router';
+  import { useRouter, useRoute } from 'vue-router';
   import { reactive, ref } from 'vue';
   // import { useUserStore } from '@/store/modules/user';
 
@@ -70,6 +70,7 @@
   import { check_promo as check_amb_promo } from '@/api/amb.ts';
 
   const router = useRouter();
+  const route = useRoute();
   //   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
   // const userStore = useUserStore();
@@ -225,6 +226,9 @@
       }
     });
   };
+  onMounted(() => {
+    loginForm.amb_promo_code = route.query.amb_promo_code || '';
+  });
 </script>
 
 <style lang="scss">

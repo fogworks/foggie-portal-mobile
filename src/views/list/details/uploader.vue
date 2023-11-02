@@ -114,7 +114,7 @@
       }
 
       let prefixStr = '';
-      if (prefix.length > 0) {
+      if (prefix?.length > 0) {
         prefixStr = prefix.join('/') + '/';
       }
 
@@ -255,9 +255,9 @@
     };
     await updateUsedSpace();
 
-    console.log('-------------------used---1', props.orderInfo.value.used_space )
+    console.log('-------------------used---1', props.orderInfo.value.used_space);
     await getOrderInfo(false);
-    console.log('-------------------used---2', props.orderInfo.value.used_space )
+    console.log('-------------------used---2', props.orderInfo.value.used_space);
     if (props.orderInfo.value.mobile_upload == undefined) {
       const tagMobile = () => {
         // orderInfo.value.nodeIp
