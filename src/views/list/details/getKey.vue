@@ -87,7 +87,7 @@
   const bucketUrl = ref<any>('');
   const loading = ref(false);
   bucketUrl.value = `${bucketName.value}.devus.u2i.net:9900`;
-  ip.value = `${bucketName.value}.devus.u2i.net:7007`;
+  ip.value = `https://${bucketName.value}.devus.u2i.net:7007`;
   // peer_id.value = '12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp';
   // foggie_id.value = 'baeqagmrygu';
   // token.value = 'SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b';
