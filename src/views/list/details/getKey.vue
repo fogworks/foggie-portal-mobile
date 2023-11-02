@@ -10,7 +10,7 @@
     <p class="key_tips"> Amazon S3 Object storage built specifically for retrieving any amount of data from any location. </p>
     <p class="key_tips"> You can access S3 clients through a private key. Access address: </p>
     <span class="s3url" @click="copyS3">
-      https://<span>{{ bucketName }}</span
+      <span>{{ bucketName }}</span
       >.devus.u2i.net:9900
     </span>
     <nut-form class="key_form" :model-value="dynamicForm.state" ref="dynamicRefForm">
@@ -86,8 +86,8 @@
   bucketName.value = route.query.domain;
   const bucketUrl = ref<any>('');
   const loading = ref(false);
-  bucketUrl.value = `https://${bucketName.value}.devus.u2i.net:9900`;
-  ip.value = `https://${bucketName.value}.devus.u2i.net:7007`;
+  bucketUrl.value = `${bucketName.value}.devus.u2i.net:9900`;
+  ip.value = `${bucketName.value}.devus.u2i.net:7007`;
   // peer_id.value = '12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp';
   // foggie_id.value = 'baeqagmrygu';
   // token.value = 'SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b';

@@ -193,6 +193,7 @@
           }
           if (!isAmbCode && !isUserCode) {
             showToast.fail('Please enter a valid invitation code');
+            loading.value = false;
             return false;
           }
           if (isUserCode) {
@@ -211,6 +212,8 @@
               showToast.text(
                 'A verification link has been sent to your email address, please check your email to verify and Login your account.',
               );
+            } else {
+              loading.value = false;
             }
           })
           .catch(() => {

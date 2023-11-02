@@ -97,12 +97,14 @@
     display: flex;
     align-items: end;
     justify-content: end;
+    margin-top: -80px;
   }
   .recharge_btn {
     background: #4d5092;
+    font-size: 22px;
     border-radius: 50%;
-    width: 160px;
-    height: 160px;
+    width: 120px;
+    height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
