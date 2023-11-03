@@ -6,7 +6,7 @@
     <div class="bucket_svg_box">
       <img src="@/assets/bucket.svg" class="bucket_svg" />
     </div>
-
+    <span class="how" @click="s3To">How to use S3 Browser?</span>
     <p class="key_tips"> Amazon S3 Object storage built specifically for retrieving any amount of data from any location. </p>
     <p class="key_tips"> You can access S3 clients through a private key. Access address: </p>
     <span class="s3url" @click="copyS3">
@@ -186,7 +186,8 @@
     },
   };
   const s3To = () => {
-    window.open('https://aws.amazon.com/s3/?nc1=h_ls');
+    // window.open('https://aws.amazon.com/s3/?nc1=h_ls');
+    router.push({ name: 's3Info' });
   };
   const generateRandomBytes = (n: number): Buffer => {
     let keyStr = Math.random().toString();
@@ -338,16 +339,17 @@
       color: #5264f9;
       font-weight: bold;
       position: fixed;
-      bottom: 150px;
-      left: 0px;
+      bottom: 280px;
+      left: 20px;
       width: calc(100% - 200px);
     }
     .s3_tips {
       color: #f85c26;
       font-weight: bold;
       position: fixed;
-      bottom: 320px;
-      left: 0px;
+
+      bottom: 150px;
+      left: 20px;
       width: calc(100% - 200px);
     }
     .left_img {
@@ -406,7 +408,7 @@
   }
 </style>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .add_key {
     position: fixed;
     bottom: 280px;
@@ -420,7 +422,6 @@
   }
   .s3_key {
     position: fixed;
-
     bottom: 150px;
     right: 50px;
     font-size: 80px;
@@ -433,10 +434,23 @@
     justify-content: center;
     background: #f85c27;
     z-index: 100;
+    transform-style: preserve-3d;
+    -webkit-transform-origin: 50%;
+    // -webkit-animation: spin 2s infinite;
+    // -webkit-animation-timing-function: linear;
+    -webkit-perspective: 1000;
+    -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.2));
+    -webkit-filter: saturate(1.45) hue-rotate(2deg);
   }
   .bucket_svg_smal {
     width: 60px;
     height: 60px;
     margin-left: 10px;
+  }
+  .how {
+    width: 100%;
+    text-align: center;
+    display: inline-block;
+    text-decoration: underline;
   }
 </style>

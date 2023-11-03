@@ -139,6 +139,12 @@ export const routes = [
         component: () => import('@/views/home/rechargeInfo.vue'),
         meta: {},
       },
+      {
+        path: 's3Info',
+        name: 's3Info',
+        component: () => import('@/views/list/details/s3Info.vue'),
+        meta: {},
+      },
     ],
   },
   {
