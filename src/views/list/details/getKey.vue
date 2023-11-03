@@ -118,8 +118,8 @@
     showToast.success('Copy succeeded');
   };
   const copyKey = (item) => {
-    let text = `S3Url:${bucketUrl.value};AccessKey:${item.accessKey};SecretKey:${item.secretKey}`;
-    var input = document.createElement('input');
+    let text = `S3Url:${bucketUrl.value}\r\nAccessKey:${item.accessKey}\nSecretKey:${item.secretKey}`;
+    var input = document.createElement('textarea');
     input.value = text;
     document.body.appendChild(input);
     input.select();
@@ -409,7 +409,7 @@
 <style lang="scss">
   .add_key {
     position: fixed;
-    bottom: 150px;
+    bottom: 280px;
     right: 50px;
     font-size: 80px;
     border-radius: 50%;
@@ -420,7 +420,8 @@
   }
   .s3_key {
     position: fixed;
-    bottom: 280px;
+
+    bottom: 150px;
     right: 50px;
     font-size: 80px;
     border-radius: 50%;
