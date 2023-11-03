@@ -7,7 +7,7 @@
           <div class="assets_block">
             <span>{{ titleDMC }} DMC</span>
             <span>≈</span>
-            <span>$10.00</span>
+            <span>{{ (dmc2usdRate * titleDMC).toFixed(4) }} USD</span>
           </div>
           <div class="right_img"><img src="@/assets/Trading.svg" alt="" /> </div>
         </div>
@@ -61,7 +61,7 @@
   import { showToast } from '@nutui/nutui';
   import loadingImg from '@/components/loadingImg/index.vue';
   import '@nutui/nutui/dist/packages/toast/style';
-
+  const { getExchangeRate, dmc2usdRate } = useUserAssets();
   const route = useRoute();
   const router = useRouter();
   // const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
@@ -205,6 +205,7 @@
 
   onMounted(async () => {
     loadMore();
+    getExchangeRate();
     searchUserAsset();
     switch (route.query.type) {
       case '0':
