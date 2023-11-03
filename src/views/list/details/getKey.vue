@@ -11,7 +11,7 @@
     <p class="key_tips"> You can access S3 clients through a private key. Access address: </p>
     <span class="s3url" @click="copyS3">
       <span>{{ bucketName }}</span
-      >.devus.u2i.net:9900
+      >.devpool.u2i.net:9900
     </span>
     <nut-form class="key_form" :model-value="dynamicForm.state" ref="dynamicRefForm">
       <!-- <nut-form-item label="Access Key">
@@ -86,7 +86,7 @@
   bucketName.value = route.query.domain;
   const bucketUrl = ref<any>('');
   const loading = ref(false);
-  bucketUrl.value = `${bucketName.value}.devus.u2i.net:9900`;
+  bucketUrl.value = `${bucketName.value}.devpool.u2i.net:9900`;
   ip.value = `https://${bucketName.value}.devus.u2i.net:7007`;
   // peer_id.value = '12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp';
   // foggie_id.value = 'baeqagmrygu';
