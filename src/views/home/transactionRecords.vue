@@ -139,14 +139,25 @@
     },
     { deep: true },
   );
-  watch(searchType, (val) => {
-    resetData();
-    const [start, end] = shortcuts[timeType.value]();
-    loadMore(start, end, val);
-  });
+  watch(
+    searchType,
+    (val) => {
+      resetData();
+      const [start, end] = shortcuts[timeType.value]();
+      loadMore(start, end, val);
+    },
+    { deep: true },
+  );
   onMounted(() => {
+    switch (route.query.type) {
+      case '1':
+        searchType.value = '1';
+      default:
+        break;
+    }
+
     getUserAssets();
-    loadMore();
+    // loadMore();
     getBarOptions();
   });
 </script>
