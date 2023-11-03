@@ -60,7 +60,7 @@
           </div>
           <div>
             <span class="txt_id">Trx ID:{{ handleID(item.trx_id) }}</span>
-            <span :class="[searchType == 1 ? 'earnings' : 'expense']"> {{ searchType == 1 ? '+' : '-' }}{{ item.quantity }} </span>
+            <span :class="[searchType == 0 ? 'earnings' : 'expense']"> {{ searchType == 0 ? '+' : '-' }}{{ item.quantity }} </span>
           </div>
           <div>
             <span>Memo:{{ item.memo }}</span>
