@@ -1,6 +1,6 @@
 <template>
   <div class="analysis_content">
-    <div class="top_box">
+    <div class="top_box" :class="[ordertype === 'history' ? 'historyOrder' : '']">
       <div class="top_back" @click="router.go(-1)">Order_{{ order_id }} Summary </div>
       <span style="text-align: center; width: 100%; display: inline-block" class="my_state">
         <!-- 待共識 -->
@@ -234,6 +234,9 @@
     padding: 50px 10px 30px;
     border-radius: 20px;
     background: $primary-color;
+  }
+  .historyOrder {
+    background: #2b2929;
   }
   .my_summary_grid {
     border: none;

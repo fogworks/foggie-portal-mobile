@@ -30,7 +30,7 @@
         <p>Space(GB)</p>
         <p class="column_value">{{ cloudPst }}</p>
       </div>
-      <div @click="gotoPage('transactionRecords')">
+      <div @click="gotoPage('transactionRecords', '1')">
         <p>Withdrawn</p>
         <p class="column_value">{{ cloudWithdraw }}</p>
       </div>
@@ -276,7 +276,7 @@
     }
     router.push({ name: 'Withdraw' });
   };
-  const gotoPage = (type) => {
+  const gotoPage = (type, query = '') => {
     if (!userInfo.value.amb_promo_code) {
       const dmcOk = () => {
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
@@ -297,7 +297,7 @@
       } else if (type === 'analysis') {
         router.push('/analysis');
       } else if (type === 'transactionRecords') {
-        router.push('/transactionRecords');
+        router.push(`/transactionRecords${query ? `?type=${query}` : ''}`);
       } else if (type === 'shop') {
         router.push({ name: 'Shop' });
       } else if (type === 'analysisChart') {

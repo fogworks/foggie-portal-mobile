@@ -30,11 +30,11 @@
         >
       </nut-grid> -->
     </div>
-    <nut-tabs class="type_tabs" v-model="searchType">
+    <nut-tabs @change="searchTypeChange" class="type_tabs" v-model="searchType">
       <nut-tab-pane title="Recharge " pane-key="0"> </nut-tab-pane>
       <nut-tab-pane title="Withdraw" pane-key="1"> </nut-tab-pane>
     </nut-tabs>
-    <nut-tabs v-model="timeType" class="time_tabs" direction="horizontal">
+    <nut-tabs @change="timeTypeChange" v-model="timeType" class="time_tabs" direction="horizontal">
       <nut-tab-pane title="By Day" pane-key="4"></nut-tab-pane>
       <nut-tab-pane title="By Week" pane-key="3"></nut-tab-pane>
       <nut-tab-pane title="By Month" pane-key="2"></nut-tab-pane>
@@ -101,8 +101,6 @@
   });
   const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
 
-  const { shortcuts, resetData, loadMore, listData, hasMore, infinityValue } = useTransactionRecords();
-
   const { searchType, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
 
   const getBarOptions = () => {
@@ -115,6 +113,8 @@
       },
     };
   };
+  const { shortcuts, resetData, loadMore, listData, hasMore, infinityValue } = useTransactionRecords(getBarOptions);
+
   const handleID = (id) => {
     if (id) {
       return id.substring(0, 8) + '...' + id.substring(id.length - 8, id.length);
@@ -123,31 +123,52 @@
   const goToHash = (transaction_hash) => {
     window.open(`https://explorer.dmctech.io/transaction/${transaction_hash}`);
   };
-  watch(
-    listData,
-    (val) => {
-      getBarOptions();
-    },
-    { deep: true },
-  );
-  watch(
-    timeType,
-    (val) => {
-      resetData();
-      const [start, end] = shortcuts[val]();
-      loadMore(start, end, searchType.value);
-    },
-    { deep: true },
-  );
-  watch(searchType, (val) => {
+  // watch(
+  //   listData,
+  //   (val) => {
+  //     getBarOptions();
+  //   },
+  //   { deep: true },
+  // );
+  // watch(
+  //   timeType,
+  //   (val) => {
+  //     resetData();
+  //     const [start, end] = shortcuts[val]();
+  //     loadMore(start, end, searchType.value);
+  //   },
+  //   { deep: true },
+  // );
+  const searchTypeChange = () => {
     resetData();
     const [start, end] = shortcuts[timeType.value]();
-    loadMore(start, end, val);
-  });
+    loadMore(start, end, searchType.value);
+  };
+  const timeTypeChange = () => {
+    resetData();
+    const [start, end] = shortcuts[timeType.value]();
+    loadMore(start, end, searchType.value);
+  };
+  // watch(
+  //   searchType,
+  //   (val) => {
+  //     resetData();
+  //     const [start, end] = shortcuts[timeType.value]();
+  //     loadMore(start, end, val);
+  //   },
+  //   { deep: true },
+  // );
   onMounted(() => {
+    switch (route.query.type) {
+      case '1':
+        searchType.value = '1';
+      default:
+        break;
+    }
+    const [start, end] = shortcuts[timeType.value]();
     getUserAssets();
-    loadMore();
-    getBarOptions();
+    resetData();
+    loadMore(start, end, searchType.value);
   });
 </script>
 

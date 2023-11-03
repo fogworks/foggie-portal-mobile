@@ -3,7 +3,7 @@ import { showToast } from '@nutui/nutui';
 import { transferUTCTimeDay } from '@/utils/util';
 import loadingImg from '@/components/loadingImg/index.vue';
 
-export default function useOrderList() {
+export default function useOrderList(getBarOptions) {
   const shortcuts = {
     0: () => {
       return ['', ''];
@@ -60,6 +60,7 @@ export default function useOrderList() {
           const cloudList = res.result.data;
           pn.value++;
           listData.value = [...listData.value, ...cloudList];
+          getBarOptions();
         })
         .finally(() => {
           showToast.hide();
@@ -71,6 +72,7 @@ export default function useOrderList() {
           const cloudList = res.result.data;
           pn.value++;
           listData.value = [...listData.value, ...cloudList];
+          getBarOptions();
         })
         .finally(() => {
           showToast.hide();
