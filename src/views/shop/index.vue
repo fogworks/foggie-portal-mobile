@@ -253,6 +253,7 @@
       memo: `${nodeInfo.value.buyOrderUuid}_Order_buy`,
       deviceType: 3,
       poolType: 'golden', //vofo.*  / golden
+      terminalType: 2,
     })
       .then((res) => {
         loading.value = false;
