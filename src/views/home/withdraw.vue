@@ -98,7 +98,17 @@
     </div>
     <div style="margin: 40px; width: 80%; margin-bottom: 150px">
       <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmBind"> Confirm </nut-button>
-      <nut-button round block type="info" style="margin-top: 20px" v-if="showSkip && !isBind && !loading" @click="canWithDraw = true">
+      <nut-button
+        round
+        block
+        type="info"
+        style="margin-top: 20px"
+        v-if="showSkip && !isBind && !loading"
+        @click="
+          canWithDraw = true;
+          code = '';
+        "
+      >
         Skip
       </nut-button>
     </div>

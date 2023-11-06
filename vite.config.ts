@@ -187,6 +187,12 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           changeOrigin: true,
           secure: false,
         },
+        '^/link/get': {
+          target: 'https://45.207.245.24:17071',
+          // target: 'http://192.168.1.119:6008',
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
     plugins: [

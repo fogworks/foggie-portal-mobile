@@ -53,14 +53,6 @@ export const modify_pw = (data) => {
   });
 };
 
-export function getCurReferenceRate() {
-  return request({
-    url: '/v1/chain/get_table_rows',
-    method: 'POST',
-    data: JSON.stringify({ json: true, code: 'dmc.token', scope: 'dmc.token', table: 'bcprice' }),
-  });
-}
-
 export const updateUser = (id, data) => {
   return request({
     url: `/api_accounts/accounts/user/${id}`,
@@ -269,6 +261,13 @@ export const get_arbitration = (data) => {
 export const checkDmcAccount = (data) => {
   return request({
     url: `/v1/chain/get_account`,
+    method: 'POST',
+    data,
+  });
+};
+export const getLink = (data) => {
+  return request({
+    url: `/link/get`,
     method: 'POST',
     data,
   });

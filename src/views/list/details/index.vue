@@ -262,9 +262,31 @@
       :close-on-click-overlay="false"
       :show-cancel="false"
       :show-confirm="false"
-      class="CustomName"
+      custom-class="CustomName"
     >
-      <p>Unique identification for your space</p>
+      <template #header>
+        <span>
+          <IconBucket color="#000"></IconBucket>
+        </span>
+        Create a Bucket
+      </template>
+      <p class="bucket_tip" style="text-align: left"
+        >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
+        (-), and must start and end with lowercase letters or numbers</p
+      >
+      <p
+        style="
+          margin-top: 10px;
+          margin-bottom: 5px;
+          font-weight: 600;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: #000;
+        "
+      >
+        <span>Bucket Name</span> <span>Required</span></p
+      >
       <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
       <template #footer>
         <nut-button type="primary" @click="router.go(-1)">Operate Later</nut-button>
@@ -319,6 +341,7 @@
   import { ref, onMounted, watch } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
+  import IconBucket from '~icons/home/bucket.svg';
   import IconShare from '~icons/home/share.svg';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
   import IconDownload from '~icons/home/download.svg';
@@ -1795,6 +1818,39 @@
   }
 </style>
 <style lang="scss">
+  .CustomName {
+    .nut-dialog__header {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      height: 60px;
+      font-weight: 800;
+      color: #000;
+      padding-bottom: 20px;
+      border-bottom: 0.5px solid #e2ecff;
+      span {
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        background: #ebebeb;
+        border-radius: 20px;
+        svg {
+          width: 40px;
+          height: 40px;
+          margin: 0 auto;
+          vertical-align: middle;
+        }
+      }
+    }
+    .bucket_tip {
+      padding-bottom: 10px;
+      border-bottom: 0.5px solid #e2ecff;
+    }
+    .nut-input--border {
+      border: 1px solid #a1b0cc;
+      border-radius: 16px;
+    }
+  }
   .order-circle .nut-circle-progress {
     svg {
       border-radius: 50%;

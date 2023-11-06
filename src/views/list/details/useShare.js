@@ -3,11 +3,14 @@ import { ref } from 'vue';
 import { showToast } from '@nutui/nutui';
 import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+import { getLink } from '@/api/index.ts';
+import { useUserStore } from '@/store/modules/user';
 
 import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
 // import { file_pin } from '@/api';
 export default function useShare(orderInfo, header, deviceType) {
+  const userStore = useUserStore();
   const daySeconds = 86400;
   const monthSeconds = 2592000;
   const { shareRefContent, copyContent, pinData, ipfsDialogShow } = useVariable();
@@ -17,6 +20,7 @@ export default function useShare(orderInfo, header, deviceType) {
   const isReady = ref(false);
   const desc = ref('1 hour');
   const periodValue = ref([3600]);
+  const userInfo = computed(() => userStore.getUserInfo);
   const options = ref([
     {
       text: '1 hour',
@@ -145,13 +149,27 @@ export default function useShare(orderInfo, header, deviceType) {
     desc.value = selectedOptions.map((val) => val.text).join(',');
     periodShow.value = false;
   };
-  const shareTwitter = (fileLink, checkData) => {
+  const createLowLink = (fileLink) => {
+    return getLink({
+      url: fileLink,
+      username: userInfo.value.email,
+      userUuid: userInfo.value.uuid,
+      period: periodValue.value[0],
+    }).then((res) => {
+      if (res.code == 200) {
+        return 'http://154.31.41.124:30001/?id=' + res.data;
+      }
+    });
+  };
+  const shareTwitter = async (fileLink, checkData) => {
     let tweetText = checkData?.name || '';
-    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(fileLink);
+    let link = await createLowLink(fileLink);
+    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(link);
     window.open(twitterUrl, '_blank');
   };
-  const shareFacebook = (fileLink) => {
-    var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fileLink);
+  const shareFacebook = async (fileLink) => {
+    let link = await createLowLink(fileLink);
+    var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link);
     window.open(twitterUrl, '_blank');
   };
   const confirmHttpShare = (type, shareOption, awsAccessKeyId, awsSecretAccessKey, bucketName) => {
@@ -170,8 +188,8 @@ export default function useShare(orderInfo, header, deviceType) {
     // awsAccessKeyId = 'FOGpmEBp2rE4dvkP2W1r'
     // awsSecretAccessKey = 'TgKOPvlv3MSQhYjuyNN0MKVBw9mZChtT7E0GVh2h'
     const objectKey = encodeURIComponent(keyName);
-    const expirationInSeconds = 3600;
-    const expirationTime = Math.floor(Date.now() / 1000) + expirationInSeconds;
+    // const expirationInSeconds = periodValue.value[0]
+    const expirationTime = Math.floor(Date.now() / 1000) + periodValue.value[0];
 
     const httpMethod = 'GET';
     const contentType = '';

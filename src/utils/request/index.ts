@@ -40,12 +40,7 @@ service.interceptors.response.use(
     if (code !== 200) {
       if (ignoreUrl.indexOf(response.config.url) > -1) {
       } else {
-        showToast.fail(res.error || 'error');
-      }
-      if (code == 30015 || code == 30048 || code == 30050 || code == 30033) {
-      } else if (response.config.url?.indexOf('/v1') == 0) {
-        // return Promise.resolve(res.rows[0].benchmark_price)
-        return res.rows[0].benchmark_price;
+        showToast.fail(res.error || 'Network error. Please try again.');
       }
       if (code === 401 || code === 403) {
         userStore.setInfo({});
