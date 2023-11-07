@@ -95,7 +95,9 @@
     }
   }
   const submit = async () => {
+    loading.value = true;
     let isPass = await load_gpa_token();
+    loading.value = false;
       console.log(isPass);
       
     // let isPass = true

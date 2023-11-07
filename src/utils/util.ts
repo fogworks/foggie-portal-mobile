@@ -175,6 +175,7 @@ function load_gpa_token(type = 'LOGIN') {
     if (grecaptcha.enterprise) {
       grecaptcha.enterprise.ready(async () => {
         const token = await grecaptcha.enterprise.execute(privatekey, { action: type });
+        console.log(token);
         let isPass = await reCAPTCHA_verification(token)
         resolve(isPass)
       });

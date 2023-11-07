@@ -195,10 +195,10 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
         },
         '^/reCAPTCHA_verification': {
           target: 'https://amb.dev.u2i.net',
-          // target: 'http://192.168.1.119:6008',
           changeOrigin: true,
           secure: false,
         },
+ 
   
       },
     },
