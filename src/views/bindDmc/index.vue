@@ -196,7 +196,7 @@
                 });
             } else {
               loading.value = false;
-              showToast.fail('Binding failed, please try again');
+              showToast.fail(res.message || 'Binding failed, please try again');
               return false;
             }
           })

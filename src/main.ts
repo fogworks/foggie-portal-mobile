@@ -7,7 +7,6 @@ import * as echarts from 'echarts';
 import './assets/font/iconfont.css';
 import './assets/app.css';
 import TopBack from '@/components/topBack/index.vue';
-
 import * as buffer from 'buffer';
 
 if (typeof (window as any).global === 'undefined') {

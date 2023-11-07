@@ -103,6 +103,7 @@
         title: 'Notice',
         content: `Your current invitation code ${userInfo.value.promo_code} is the user's invitation code, are you sure you want to bind it?`,
         onOk: userOk,
+        okText:'Accept',
         popClass: 'dialog_class',
       });
     }

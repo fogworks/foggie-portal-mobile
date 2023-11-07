@@ -92,4 +92,48 @@
       word-break: break-word;
     }
   }
+
+  .nut-popup {
+    background-color: #2d2e41  !important;
+    color: #f5f7fb;
+
+    .nut-dialog__header,.nut-dialog__content{
+      color: #f5f7fb;
+    }
+    .nut-button--primary{
+      border-radius: 15px;
+      border: 0px;
+      font-size: 32px;
+      font-weight: 600;
+    }
+    .nut-dialog__footer-ok {
+      background-image: linear-gradient(135deg, #5b6954 0%, #9cb77d 100%);
+      margin-left: 10px !important;
+
+    }
+    .nut-dialog__footer-cancel {
+      color: rgb(248, 248, 248);
+      background-image: linear-gradient(135deg, #712b42 15%, #a94858 100%);
+      margin-right: 10px !important;
+      
+    }
+    .nut-dialog__footer{
+      display: flex;
+
+      .nut-button {
+        flex: 1 0 50%;
+        width: 50%;
+        padding: 30px !important;
+        margin: 0px;
+      }
+      .nut-button--small {
+        height: 70px !important;
+        max-width: 50%;
+      }
+    }
+  }
+
+  .grecaptcha-badge {
+    display: none !important;
+  }
 </style>

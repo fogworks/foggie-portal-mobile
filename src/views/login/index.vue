@@ -48,7 +48,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
-
+  import { load_gpa_token } from '@/utils/util.ts';
   const router = useRouter();
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
@@ -94,8 +94,14 @@
       router.push({ path: '/home' });
     }
   }
-  const submit = () => {
-    ruleForm.value.validate().then(async ({ valid, errors }: any) => {
+  const submit = async () => {
+    let isPass = await load_gpa_token();
+      console.log(isPass);
+      
+    // let isPass = true
+
+    if(isPass){
+      ruleForm.value.validate().then(async ({ valid, errors }: any) => {
       if (valid) {
         loading.value = true;
         const password = loginForm.password;
@@ -187,6 +193,11 @@
         console.log('error submit!!', errors);
       }
     });
+    }else{
+      showToast.fail('The current identity is suspicious, you can try switching networks and retry.');
+
+    }
+    
   };
 </script>
 

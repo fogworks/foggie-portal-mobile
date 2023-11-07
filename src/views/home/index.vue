@@ -143,20 +143,7 @@
   </div>
 
   <nut-infinite-loading v-if="earningsList.length" load-more-txt="No more content" :has-more="false">
-    <div
-      class="list_item"
-      v-for="(item, index) in earningsList"
-      @click="
-        $router.push({
-          name: 'listDetails',
-          query: {
-            id: item.order_id,
-            uuid: item.order_info && item.order_info.uuid,
-            amb_uuid: item.amb_uuid,
-          },
-        })
-      "
-    >
+    <div class="list_item" v-for="(item, index) in earningsList" @click="gotoOrderPage(item)">
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <img src="@/assets/list_item_2.svg" alt="" />
       </div>
@@ -421,6 +408,29 @@
 
     if (my_steps) {
       my_steps?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function gotoOrderPage(row) {
+    console.log(row);
+    if (row.order_info.state == 5 || row.order_info.state == 4) {
+      router.push({
+        name: 'orderSummary',
+        query: {
+          id: row.order_id,
+          status:row.order_info.state,
+          type:'history',
+        },
+      });
+    } else {
+      router.push({
+        name: 'listDetails',
+        query: {
+          id: row.order_id,
+          uuid: row.order_info && row.order_info.uuid,
+          amb_uuid: row.amb_uuid,
+        },
+      });
     }
   }
 

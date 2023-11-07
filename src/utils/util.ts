@@ -1,5 +1,5 @@
 import moment from 'moment';
-
+import { get_reCAPTCHA_Score_API } from '@/api/index'
 function transferTime(utc_datetime) {
   let new_datetime = utc_datetime.split('T')[0] + ' ' + utc_datetime.split('T')[1].split('.')[0];
 
@@ -160,6 +160,54 @@ function getSecondTime(second_time) {
   }
   return time;
 }
+
+
+/**
+ * @param {string} type - homePage / login / social  / e-commerce / Buy
+ * 
+ *  */
+const privatekey = '6Lfb1P8oAAAAAOLRpus_iOzdPyWVJZmxqmggXwiC'
+const secret = '6Lfb1P8oAAAAACjGYFUlFaWKOR6NqmYTKLkzRztj'
+const Lower_score_limit = 0
+function load_gpa_token(type = 'LOGIN') {
+  return new Promise(async (resolve, inject) => {
+   const grecaptcha = window.grecaptcha  || {}
+    if (grecaptcha.enterprise) {
+      grecaptcha.enterprise.ready(async () => {
+        const token = await grecaptcha.enterprise.execute(privatekey, { action: type });
+        let isPass = await reCAPTCHA_verification(token)
+        resolve(isPass)
+      });
+    } else {
+      grecaptcha.ready(async () => {
+        const token = await grecaptcha.execute(privatekey, { action: type });
+        let isPass = await reCAPTCHA_verification(token, type)
+        resolve(isPass)
+      });
+    }
+  })
+}
+
+
+async function reCAPTCHA_verification(token) {
+  let params = {
+    secret: secret,
+    response: token,
+  }  
+  let res = await get_reCAPTCHA_Score_API(params)
+  console.log(res);
+  if (res.success) {
+    if (res.score > Lower_score_limit) {
+      return true
+    } else {
+      return false
+    }
+  } else {
+    return false
+  }
+}
+
+
 export {
   getSecondTime,
   transferTime,
@@ -172,4 +220,5 @@ export {
   numberToThousands,
   transferUTCTimeDay,
   transferGMTTime,
+  load_gpa_token
 };

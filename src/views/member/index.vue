@@ -137,7 +137,7 @@
       title: 'Logout',
       content: createVNode('span', { style: {} }, 'Are you sure you want to Log out?'),
       cancelText: 'Cancel',
-      okText: 'OK',
+      okText: 'Yes',
       onCancel: () => {
         // console.log('取消');
       },
@@ -235,7 +235,7 @@
       });
   });
 </script>
-<style>
+<style lang="scss">
   .custom-action_sheet {
     display: flex;
     flex-direction: column;
