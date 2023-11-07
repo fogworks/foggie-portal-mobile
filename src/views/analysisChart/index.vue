@@ -333,7 +333,13 @@ function loadSearchUserAssetCount(params: object) {
             data: Object.keys(dmcCount.value).map((item) => {
               let start_time = moment(item.split('~')[0]).format('MMM-D');
               let end_time = moment(item.split('~')[1]).format('MMM-D');
-              return start_time + '~' + end_time;
+              if(timeType.value == 'Week' || timeType.value == 'Day'){
+                return start_time
+              }else{
+                return start_time + '~' + end_time;
+              }
+
+              
             }),
           },
           yAxis: {

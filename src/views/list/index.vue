@@ -98,7 +98,11 @@
       </div>
     </div>
   </nut-infinite-loading>
-  <nut-empty v-else description="No data" image="error"></nut-empty>
+  <nut-empty v-else description="No data" image="error">
+    <div style="margin-top: 10px" v-if="!listData.length">
+      <nut-button icon="refresh" type="primary" @click="router.push({path:'/shop'})">Buy Order</nut-button>
+    </div>
+  </nut-empty>
 </template>
 
 <script lang="ts" setup name="ListPage">

@@ -4,7 +4,7 @@
       <div class="top_back" @click="router.go(-1)">Order_{{ order_id }} Summary </div>
       <span style="text-align: center; width: 100%; display: inline-block" class="my_state">
         <!-- 待共識 -->
-        <nut-tag v-if="orderStatus == 0" type="warning">Consensus not reached</nut-tag>
+        <nut-tag v-if="orderStatus == 0" class="nut-icon-am-bounce nut-icon-am-infinite" style="padding: 5px 10px;" type="warning">Consensus not reached</nut-tag>
         <!-- 进行中 -->
         <nut-tag type="success" v-else-if="orderStatus == 1">Consensus reached </nut-tag>
         <!-- 已结束 -->

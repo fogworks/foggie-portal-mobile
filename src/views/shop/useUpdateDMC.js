@@ -162,6 +162,7 @@ export default function useUpdateDMC() {
             showDialog({
               title: 'Bind',
               content: str,
+              okText:'Accept',
               onOk: dmcOk,
             });
           }

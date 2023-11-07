@@ -243,6 +243,7 @@ export default function useShare(orderInfo, header, deviceType) {
     }
     return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(signatureBase64)}`;
   };
+  
   const confirmShare = () => {
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
       if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {

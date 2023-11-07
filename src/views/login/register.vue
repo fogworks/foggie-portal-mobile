@@ -35,11 +35,17 @@
         </div>
       </div>
       <nut-form-item required prop="confirmPassword">
-        <input v-model.trim="loginForm.confirmPassword" class="nut-input-text" placeholder="Confirm password" type="password" />
+        <input
+          v-model.trim="loginForm.confirmPassword"
+          @blur="customChangeValidate('confirmPassword')"
+          class="nut-input-text"
+          placeholder="Confirm password"
+          type="password"
+        />
       </nut-form-item>
 
       <nut-form-item required prop="verifyPw">
-        <input style="width: 70%" v-model.trim="loginForm.verifyPw" class="nut-input-text" placeholder="Email verification code" />
+        <input style="width: 70%" v-model.trim="loginForm.verifyPw" class="nut-input-text" @blur="customChangeValidate('verifyPw')" placeholder="Email verification code" />
         <nut-button class="get_code" v-if="numCount > 0" disabled>{{ numCount }}s</nut-button>
         <nut-button class="get_code" v-else type="info" @click="getVerifyPw">Get Code</nut-button>
       </nut-form-item>
@@ -64,7 +70,7 @@
   import { useRouter, useRoute } from 'vue-router';
   import { reactive, ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
-
+  import { debounce } from 'lodash';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
   import { check_promo as check_amb_promo } from '@/api/amb.ts';
@@ -83,6 +89,8 @@
     amb_promo_code: '',
   });
   const validatePass2 = (value: string) => {
+    console.log(value);
+
     if (value === '') {
       return Promise.reject('Please input the password again');
     } else if (value !== loginForm.password) {
@@ -276,6 +284,18 @@
       }
     });
   };
+
+  const customChangeValidate = debounce((prop: string) => {
+    console.log(prop);
+    
+    ruleForm.value.validate(prop).then(({ valid, errors }: any) => {
+      if (valid) {
+        console.log('success',);
+      } else {
+        console.log('error submit!!', errors);
+      }
+    });
+  }, 300);
   onMounted(() => {
     loginForm.amb_promo_code = route.query.amb_promo_code || '';
   });

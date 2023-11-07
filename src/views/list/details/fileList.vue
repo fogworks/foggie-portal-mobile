@@ -632,7 +632,10 @@
           const type = row.name.substring(row.name.lastIndexOf('.') + 1);
 
           if (type == 'pdf') {
-            window.open(row.imgUrlLarge);
+            // window.open(row.imgUrlLarge);
+            console.log(row.imgUrlLarge);
+            
+            router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge) , fileType: 'pdf' } });
           } else if (type == 'txt') {
             chooseItem.value.detailType = 'txt';
             detailShow.value = true;

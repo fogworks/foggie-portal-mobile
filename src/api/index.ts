@@ -272,3 +272,19 @@ export const getLink = (data) => {
     data,
   });
 };
+
+export const get_reCAPTCHA_Score_API = (data) => {
+  // let url = `/recaptcha/api/siteverify`;
+  // let url = `/recaptcha/api/siteverify`;
+  let url = `/reCAPTCHA_verification/recaptcha/api/siteverify`;
+
+  return request({
+    url: url,
+    method: "POST",
+    data,
+    timeout:60000,
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+};

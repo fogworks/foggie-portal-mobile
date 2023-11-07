@@ -193,6 +193,13 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           changeOrigin: true,
           secure: false,
         },
+        '^/reCAPTCHA_verification': {
+          target: 'https://amb.dev.u2i.net',
+          changeOrigin: true,
+          secure: false,
+        },
+ 
+  
       },
     },
     plugins: [

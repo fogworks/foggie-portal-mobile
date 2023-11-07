@@ -27,6 +27,15 @@ export const routes = [
         },
       },
       {
+        path: 'filePreview',
+        name: 'filePreview',
+        component: () => import('@/views/list/index.vue'),
+        meta: {
+          title: 'tabbar.list',
+          // keepAlive: true,
+        },
+      },
+      {
         path: 'member',
         component: () => import('@/views/member/index.vue'),
         meta: {
@@ -51,6 +60,15 @@ export const routes = [
           title: 'list.details',
           border: false,
           notKeepAlive: true,
+        },
+      },
+      {
+        name: 'filePreview',
+        path: '/filePreview',
+        component: () => import('@/views/list/details/filePreview.vue'),
+        meta: {
+          title: 'list.filePreview',
+          // keepAlive: true,
         },
       },
       {
