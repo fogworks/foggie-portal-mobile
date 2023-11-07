@@ -218,6 +218,24 @@
             Facebook
             <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
           </div>
+          <div v-if="shareRefContent.httpStr">
+            <IconSlack
+              @click="
+                shareType = 'slack';
+                isReady = true;
+              "
+            ></IconSlack>
+            Slack
+          </div>
+          <div v-if="shareRefContent.httpStr">
+            <IconPinterest
+              @click="
+                shareType = 'pinterest';
+                isReady = true;
+              "
+            ></IconPinterest>
+            Pinterest
+          </div>
         </div>
       </nut-popup>
     </Teleport>
@@ -250,10 +268,12 @@
         </span>
         Create a Bucket
       </template>
-      <p class="bucket_tip" style="text-align: left">Buckets are used to store and organize your files.Custom names can
-        only contain lowercase letters, numbers, periods, and dashes
-        (-), and must start and end with lowercase letters or numbers</p>
-      <p style="
+      <p class="bucket_tip" style="text-align: left; word-break: break-word"
+        >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
+        (-), and must start and end with lowercase letters or numbers</p
+      >
+      <p
+        style="
           margin-top: 10px;
           margin-bottom: 5px;
           font-weight: 600;
@@ -335,58 +355,54 @@
 </template>
 
 <script setup lang="ts">
-
-
-
-
-
-
-import { ref, onMounted, watch } from 'vue';
-// import recycleFill from '~icons/home/recycle-fill';
-// import IconAudio from '~icons/home/audio.svg';
-import IconBucket from '~icons/home/bucket.svg';
-import IconShare from '~icons/home/share.svg';
-import IconArrowLeft from '~icons/home/arrow-left.svg';
-import IconDownload from '~icons/home/download.svg';
-import IconTwitter from '~icons/home/twitter.svg';
-import IconHttp from '~icons/home/http.svg';
-import IconFacebook from '~icons/devicon/facebook.svg';
-import { delay, throttle } from 'lodash';
-import IconAudio2 from '~icons/home/audio2.svg';
-import IconMore from '~icons/home/more.svg';
-import IconImage from '~icons/home/image.svg';
-import IconDocument from '~icons/home/document.svg';
-import IconVideo from '~icons/home/video.svg';
-//   import IconMdiF from '~icons/mdi/file-cloud';
-//   import IconRiPie from '~icons/ri/pie-chart-fill';
-import IconMdiF from '~icons/home/png.svg';
-import IconRiPie from '~icons/home/pie.svg';
-import IconSpace from '~icons/home/space.svg';
-import IconRiNodeTree from '~icons/ri/node-tree';
-import IconRiSendToBack from '~icons/ri/send-to-back';
-import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
-import keySolid from '~icons/teenyicons/key-solid';
-import * as Prox from '@/pb/prox_pb.js';
-import * as grpcService from '@/pb/prox_grpc_web_pb.js';
-// import AESHelper from './AESHelper';
-// import { Image } from '@nutui/icons-vue';
-import { HeartFill, Success, MaskClose } from '@nutui/icons-vue';
-import { HmacSHA1, enc } from 'crypto-js';
-import { Buffer } from 'buffer';
-import { useRoute, useRouter } from 'vue-router';
-import useOrderInfo from './useOrderInfo.js';
-import useShare from './useShare.js';
-import { showToast } from '@nutui/nutui';
-import { transferUTCTime, getfilesize } from '@/utils/util';
-import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload } from '@/api/index';
-import '@nutui/nutui/dist/packages/toast/style';
-import loadingImg from '@/components/loadingImg/index.vue';
-import { useUserStore } from '@/store/modules/user';
-import { getSecondTime } from '@/utils/util';
-import { update_order_size } from '@/api/amb';
-import { status } from 'grpc';
-import HLSVideo from './hlsVideo.vue';
-import uploader from './uploader.vue';
+  import { ref, onMounted, watch } from 'vue';
+  // import recycleFill from '~icons/home/recycle-fill';
+  // import IconAudio from '~icons/home/audio.svg';
+  import IconPinterest from '~icons/logos/pinterest.svg';
+  import IconSlack from '~icons/home/slack.svg';
+  import IconBucket from '~icons/home/bucket.svg';
+  import IconShare from '~icons/home/share.svg';
+  import IconArrowLeft from '~icons/home/arrow-left.svg';
+  import IconDownload from '~icons/home/download.svg';
+  import IconTwitter from '~icons/home/twitter.svg';
+  import IconHttp from '~icons/home/http.svg';
+  import IconFacebook from '~icons/devicon/facebook.svg';
+  import { delay, throttle } from 'lodash';
+  import IconAudio2 from '~icons/home/audio2.svg';
+  import IconMore from '~icons/home/more.svg';
+  import IconImage from '~icons/home/image.svg';
+  import IconDocument from '~icons/home/document.svg';
+  import IconVideo from '~icons/home/video.svg';
+  //   import IconMdiF from '~icons/mdi/file-cloud';
+  //   import IconRiPie from '~icons/ri/pie-chart-fill';
+  import IconMdiF from '~icons/home/png.svg';
+  import IconRiPie from '~icons/home/pie.svg';
+  import IconSpace from '~icons/home/space.svg';
+  import IconRiNodeTree from '~icons/ri/node-tree';
+  import IconRiSendToBack from '~icons/ri/send-to-back';
+  import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
+  import keySolid from '~icons/teenyicons/key-solid';
+  import * as Prox from '@/pb/prox_pb.js';
+  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+  // import AESHelper from './AESHelper';
+  // import { Image } from '@nutui/icons-vue';
+  import { HeartFill, Success, MaskClose } from '@nutui/icons-vue';
+  import { HmacSHA1, enc } from 'crypto-js';
+  import { Buffer } from 'buffer';
+  import { useRoute, useRouter } from 'vue-router';
+  import useOrderInfo from './useOrderInfo.js';
+  import useShare from './useShare.js';
+  import { showToast } from '@nutui/nutui';
+  import { transferUTCTime, getfilesize } from '@/utils/util';
+  import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload } from '@/api/index';
+  import '@nutui/nutui/dist/packages/toast/style';
+  import loadingImg from '@/components/loadingImg/index.vue';
+  import { useUserStore } from '@/store/modules/user';
+  import { getSecondTime } from '@/utils/util';
+  import { update_order_size } from '@/api/amb';
+  import { status } from 'grpc';
+  import HLSVideo from './hlsVideo.vue';
+  import uploader from './uploader.vue';
 
 const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
 provide('getOrderInfo', getOrderInfo);

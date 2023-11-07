@@ -62,7 +62,7 @@
         <nut-form-item label="Floating Ratio">
           <nut-range hidden-range v-model="shopForm.floating_ratio" :max="100" :min="0" />
         </nut-form-item>
-        <nut-form-item label="Space(GB)">
+        <nut-form-item label="Space(GB) Min:100GB">
           <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
         </nut-form-item>
         <div style="text-align: center" class="order-tip">
@@ -101,7 +101,6 @@
   import IconArrowLeft from '~icons/home/arrow-left.svg';
   import IconSetting from '~icons/home/setting.svg';
   import { toRefs, reactive, onMounted } from 'vue';
-  import { getCurReferenceRate } from '@/api';
   import { buy_order, node_order_buy, node_order_search, get_average_price, query_node } from '@/api/amb';
   import { showToast, showDialog } from '@nutui/nutui';
   import { useRouter } from 'vue-router';
@@ -253,7 +252,6 @@
       memo: `${nodeInfo.value.buyOrderUuid}_Order_buy`,
       deviceType: 3,
       poolType: 'golden', //vofo.*  / golden
-      terminalType: 2,
     })
       .then((res) => {
         loading.value = false;
