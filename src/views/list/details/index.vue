@@ -232,6 +232,24 @@
             Facebook
             <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
           </div>
+          <div v-if="shareRefContent.httpStr">
+            <IconSlack
+              @click="
+                shareType = 'slack';
+                isReady = true;
+              "
+            ></IconSlack>
+            Slack
+          </div>
+          <div v-if="shareRefContent.httpStr">
+            <IconPinterest
+              @click="
+                shareType = 'pinterest';
+                isReady = true;
+              "
+            ></IconPinterest>
+            Pinterest
+          </div>
         </div>
       </nut-popup>
     </Teleport>
@@ -270,7 +288,7 @@
         </span>
         Create a Bucket
       </template>
-      <p class="bucket_tip" style="text-align: left"
+      <p class="bucket_tip" style="text-align: left; word-break: break-word"
         >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
         (-), and must start and end with lowercase letters or numbers</p
       >
@@ -341,6 +359,8 @@
   import { ref, onMounted, watch } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
+  import IconPinterest from '~icons/logos/pinterest.svg';
+  import IconSlack from '~icons/home/slack.svg';
   import IconBucket from '~icons/home/bucket.svg';
   import IconShare from '~icons/home/share.svg';
   import IconArrowLeft from '~icons/home/arrow-left.svg';

@@ -356,6 +356,24 @@
           Facebook
           <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
+        <div v-if="shareRefContent.httpStr">
+          <IconSlack
+            @click="
+              shareType = 'slack';
+              isReady = true;
+            "
+          ></IconSlack>
+          Slack
+        </div>
+        <div v-if="shareRefContent.httpStr">
+          <IconPinterest
+            @click="
+              shareType = 'pinterest';
+              isReady = true;
+            "
+          ></IconPinterest>
+          Pinterest
+        </div>
       </div>
     </nut-popup>
     <Teleport to="body">
@@ -396,6 +414,8 @@
 </template>
 
 <script setup lang="ts">
+  import IconPinterest from '~icons/logos/pinterest.svg';
+  import IconSlack from '~icons/home/slack.svg';
   import IconTwitter from '~icons/home/twitter.svg';
   import IconFile from '~icons/bxs/file.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';

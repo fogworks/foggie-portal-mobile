@@ -20,6 +20,8 @@ export default function useShare(orderInfo, header, deviceType) {
   const isReady = ref(false);
   const desc = ref('1 hour');
   const periodValue = ref([3600]);
+  const imgUrl = ref('');
+  const imgDesc = ref('');
   const userInfo = computed(() => userStore.getUserInfo);
   const options = ref([
     {
@@ -157,20 +159,34 @@ export default function useShare(orderInfo, header, deviceType) {
       period: periodValue.value[0],
     }).then((res) => {
       if (res.code == 200) {
-        return 'http://154.31.41.124:30001/?id=' + res.data;
+        imgUrl.value = 'https://share.dev.u2i.net/img/' + res.data;
+        return 'https://share.dev.u2i.net/share/' + res.data;
       }
     });
   };
   const shareTwitter = async (fileLink, checkData) => {
     let tweetText = checkData?.name || '';
     let link = await createLowLink(fileLink);
-    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(link);
+    var twitterUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(tweetText);
     window.open(twitterUrl, '_blank');
   };
   const shareFacebook = async (fileLink) => {
     let link = await createLowLink(fileLink);
     var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link);
+    // var twitterUrl = 'https://www.facebook.com/dialog/share?href=' + encodeURIComponent(link) + '&display=popup';
     window.open(twitterUrl, '_blank');
+  };
+  const sharePinterest = async (fileLink) => {
+    let link = await createLowLink(fileLink);
+    var twitterUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(link)}&media=${imgUrl.value}&description=${
+      imgDesc.value || '11111'
+    }`;
+    // var twitterUrl = 'https://www.facebook.com/dialog/share?href=' + encodeURIComponent(link) + '&display=popup';
+    window.open(twitterUrl, '_blank');
+  };
+  const shareSlack = async (fileLink) => {
+    let link = await createLowLink(fileLink);
+    copyLink(link);
   };
   const confirmHttpShare = (type, shareOption, awsAccessKeyId, awsSecretAccessKey, bucketName) => {
     shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
@@ -180,6 +196,10 @@ export default function useShare(orderInfo, header, deviceType) {
       shareTwitter(shareRefContent.httpStr, shareOption);
     } else if (type == 'faceBook') {
       shareFacebook(shareRefContent.httpStr);
+    } else if (type == 'slack') {
+      shareSlack(shareRefContent.httpStr);
+    } else if (type == 'pinterest') {
+      sharePinterest(shareRefContent.httpStr);
     }
     isReady.value = false;
   };
