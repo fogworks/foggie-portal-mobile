@@ -817,7 +817,7 @@
     xhr.send(options.formData);
   };
   const getKey = () => {
-    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain } });
+    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.domain } });
   };
 
   const createName = async () => {
