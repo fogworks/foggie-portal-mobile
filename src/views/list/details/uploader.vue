@@ -40,7 +40,7 @@
   import { useRoute } from 'vue-router';
   import useOrderInfo from './useOrderInfo.js';
   import { showToast } from '@nutui/nutui';
-  import { calc_merkle, valid_upload } from '@/api/index';
+  import { save_upload, valid_upload } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import { getSecondTime } from '@/utils/util';
   import { update_order_size } from '@/api/amb';
@@ -274,8 +274,8 @@
       fileSize: option?.sourceFile?.size,
       usedSpace: used_space,
     };
-    calc_merkle(d).then((res) => {
-      console.log('calc_merkle-----', res);
+    save_upload(d).then((res) => {
+      console.log('save_upload-----', res);
     });
   };
 

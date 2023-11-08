@@ -220,6 +220,14 @@ export const calc_merkle = (data: any) => {
   });
 };
 
+export const save_upload = (data: any) => {
+  return request({
+    url: `/file/save_upload`,
+    method: 'POST',
+    data,
+  });
+};
+
 export const get_merkle = (data: any) => {
   return request({
     url: `/order/get_merkle`,
