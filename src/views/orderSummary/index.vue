@@ -97,7 +97,7 @@
   import IconOutCome from '~icons/home/out-come.svg';
   import { reactive, toRefs, onMounted, watch } from 'vue';
   import { barOption } from '@/components/echarts/util';
-  import { useRoute, useRouter } from 'vue-router';
+  import { useRoute, useRouter,onBeforeRouteLeave } from 'vue-router';
   import useTransactionRecords from './useTransactionRecords.ts';
   import useOrderAssets from './useOrderAssets.ts';
   import { transferUTCTime } from '@/utils/util';
@@ -194,6 +194,15 @@
     loadMore(start, end, 2, order_id.value);
     getBarOptions();
   });
+
+  onBeforeRouteLeave((to, from)=>{
+    if(to.path == '/list'){
+      to.query.searchType = 'History'
+    } 
+
+
+    
+  })
 </script>
 
 <style lang="scss" scoped>

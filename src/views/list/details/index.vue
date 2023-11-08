@@ -1898,6 +1898,7 @@ provide('isMobileOrder', isMobileOrder);
 </style>
 <style lang="scss">
 .CustomName {
+   background-color: #2d2e41 !important;
   .nut-dialog__header {
     display: flex;
     justify-content: flex-start;
@@ -1928,11 +1929,32 @@ provide('isMobileOrder', isMobileOrder);
     padding-bottom: 10px;
     border-bottom: 0.5px solid #e2ecff;
   }
+  .nut-input {
+    background-color: rgb(128 128 128 / 39%);
+  }
 
   .nut-input--border {
     border: 1px solid #a1b0cc;
     border-radius: 16px;
   }
+  .nut-dialog__footer{
+    .nut-button{
+      border-radius: 15px;
+      border: 0px;
+      font-size: 32px;
+      font-weight: 600;
+    }
+    .nut-button:first-child{
+      color: rgb(248, 248, 248);
+      background-image: linear-gradient(135deg, #712b42 15%, #a94858 100%);
+    }
+    .nut-button:last-child{
+      background-image: linear-gradient(135deg, #5b6954 0%, #9cb77d 100%);
+      margin-left: 10px !important;
+    }
+  }
+
+
 }
 
 .order-circle .nut-circle-progress {

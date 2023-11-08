@@ -100,7 +100,7 @@
   </nut-infinite-loading>
   <nut-empty v-else description="No data" image="error">
     <div style="margin-top: 10px" v-if="!listData.length">
-      <nut-button icon="refresh" type="primary" @click="router.push({path:'/shop'})">Buy Order</nut-button>
+      <nut-button icon="refresh" type="primary" @click="router.push({ path: '/shop' })">Buy Order</nut-button>
     </div>
   </nut-empty>
 </template>
@@ -119,11 +119,18 @@
   import { transferGMTTime } from '@/utils/util';
   import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
 
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
+  import { useRoute, useRouter } from 'vue-router';
   const { uuid } = useVariable();
-  const searchType = ref('Open');
   const loading = ref(false);
   const router = useRouter();
+  const route = useRoute();
+  const searchType = ref(route.query.searchType == 'History' ? 'History' : 'Open');
+ console.log(route.query.searchType);
+ 
+  
+  
+  
   const keyWord = ref('');
   const horseLamp = ref([
     'CNR - - Consensus not reached ',
@@ -198,7 +205,12 @@
     cloudCodeIsBind,
     (val) => {
       if (val) {
-        loadMore([0, 1, 2, 3, 6]);
+        if(searchType.value == 'Open'){
+          loadMore([0, 1, 2, 3, 6]);
+        }else{
+          loadMore([4, 5]);
+        }
+        
       }
     },
     { deep: true, immediate: true },
@@ -208,6 +220,8 @@
     (val) => {
       resetData();
       if (cloudCodeIsBind.value) {
+        console.log(val,'12222222222222222222');
+        
         if (val == 'Open') {
           loadMore([0, 1, 2, 3, 6]);
         } else if (val == 'History') {

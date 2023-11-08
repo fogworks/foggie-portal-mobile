@@ -145,6 +145,29 @@
       bottom: '30px',
     };
   };
+
+  function gotoOrderPage(row) {
+    console.log(row);
+    if (row.order_info.state == 5 || row.order_info.state == 4) {
+      router.push({
+        name: 'orderSummary',
+        query: {
+          id: row.order_id,
+          status: row.order_info.state,
+          type: 'history',
+        },
+      });
+    } else {
+      router.push({
+        name: 'listDetails',
+        query: {
+          id: row.order_id,
+          uuid: row.order_info && row.order_info.uuid,
+          amb_uuid: row.amb_uuid,
+        },
+      });
+    }
+  }
   watch(
     listData,
     (val) => {
