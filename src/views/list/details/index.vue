@@ -185,8 +185,10 @@
               ></span>
             </template>
           </nut-cell>
-          <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
-          <nut-textarea rows="3" v-model="imgDesc" />
+          <template v-if="shareType">
+            <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
+            <nut-textarea rows="3" v-model="imgDesc" />
+          </template>
           <nut-popup position="bottom" v-model:visible="periodShow">
             <nut-picker
               v-model="periodValue"

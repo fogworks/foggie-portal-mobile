@@ -418,8 +418,8 @@
         name: 'orderSummary',
         query: {
           id: row.order_id,
-          status:row.order_info.state,
-          type:'history',
+          status: row.order_info.state,
+          type: 'history',
         },
       });
     } else {

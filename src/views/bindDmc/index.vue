@@ -141,6 +141,7 @@
             };
             await promoFunction();
           } else {
+            router.push({ name: 'PersonalInfo' });
             loading.value = false;
           }
         } else {

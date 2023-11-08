@@ -5,6 +5,7 @@ import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import { getLink } from '@/api/index.ts';
 import { useUserStore } from '@/store/modules/user';
+import { transferUTCTime } from '@/utils/util.ts';
 
 import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
@@ -111,7 +112,7 @@ export default function useShare(orderInfo, header, deviceType) {
     let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
     let server = new grpcService.default.ServiceClient(ip, null, null);
 
-    showToast.text('IPFS link will available later.');
+    // showToast.text('IPFS link will available later.');
     server.pin(ProxPinReq, {}, (err, res) => {
       if (res) {
       } else if (err) {
@@ -157,6 +158,7 @@ export default function useShare(orderInfo, header, deviceType) {
     if (category == 1 || category == 2) {
       return getLink({
         url: fileLink,
+        coverUrl: category == 2 ? fileLink + '&thumb=true' : '',
         username: userInfo.value.email,
         userUuid: userInfo.value.uuid,
         period: periodValue.value[0],
@@ -268,10 +270,49 @@ export default function useShare(orderInfo, header, deviceType) {
     (val) => {
       if (val) {
         imgDesc.value = '';
+        let expireTimeStamp = new Date(orderInfo.value.expire).getTime();
+        let startTimeStamp = new Date(orderInfo.value.created_at).getTime();
+        options.value = options.value.filter((el) => {
+          return el.value < (expireTimeStamp - startTimeStamp) / 1000;
+        });
+        periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
+        desc.value = transferUTCTime(orderInfo.value.expire);
+      } else {
+        options.value = [
+          {
+            text: '1 hour',
+            value: 3600,
+          },
+          {
+            text: '1 day',
+            value: 3600 * 24,
+          },
+          {
+            text: '7 days',
+            value: daySeconds * 7,
+          },
+          {
+            text: '1 month',
+            value: monthSeconds,
+          },
+          {
+            text: '3 months',
+            value: monthSeconds * 3,
+          },
+          {
+            text: '6 months',
+            value: monthSeconds * 6,
+          },
+          {
+            text: '1 year',
+            value: monthSeconds * 12,
+          },
+        ];
       }
     },
     { deep: true },
   );
+  watch;
   return {
     ipfsPin,
     loading,
