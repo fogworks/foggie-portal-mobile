@@ -634,8 +634,8 @@
           if (type == 'pdf') {
             // window.open(row.imgUrlLarge);
             console.log(row.imgUrlLarge);
-            
-            router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge) , fileType: 'pdf' } });
+
+            router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
           } else if (type == 'txt') {
             chooseItem.value.detailType = 'txt';
             detailShow.value = true;
@@ -1813,10 +1813,12 @@
   }
   .share_info_box {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: flex-start;
+    flex-wrap: wrap;
     align-items: center;
-    margin-top: 150px;
+    margin-top: 100px;
     div {
+      min-width: 180px;
       margin-top: 20px;
       text-align: center;
       color: $main_blue;

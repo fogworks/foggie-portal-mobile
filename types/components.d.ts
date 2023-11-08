@@ -13,6 +13,8 @@ declare module 'vue' {
     NutActionSheet: typeof import('@nutui/nutui')['ActionSheet']
     NutButton: typeof import('@nutui/nutui')['Button']
     NutCell: typeof import('@nutui/nutui')['Cell']
+    NutCheckbox: typeof import('@nutui/nutui')['Checkbox']
+    NutCheckboxGroup: typeof import('@nutui/nutui')['CheckboxGroup']
     NutCircleProgress: typeof import('@nutui/nutui')['CircleProgress']
     NutCol: typeof import('@nutui/nutui')['Col']
     NutDialog: typeof import('@nutui/nutui')['Dialog']

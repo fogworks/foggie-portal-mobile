@@ -647,24 +647,6 @@
       }
     }
   }
-  .share_info_box {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    margin-top: 150px;
-    div {
-      margin-top: 20px;
-      text-align: center;
-      color: $main_blue;
-      img,
-      svg {
-        display: block;
-        margin: 0 auto;
-        width: 80px;
-        height: 80px;
-      }
-    }
-  }
   .custom-content {
     p {
       padding: 30px 20px;

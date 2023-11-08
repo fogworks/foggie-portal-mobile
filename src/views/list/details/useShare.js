@@ -197,18 +197,21 @@ export default function useShare(orderInfo, header, deviceType) {
     let link = await createLowLink(fileLink, tweetText);
     copyLink(link);
   };
-  const confirmHttpShare = (type, shareOption, awsAccessKeyId, awsSecretAccessKey, bucketName) => {
+  const confirmHttpShare = async (type, shareOption, awsAccessKeyId, awsSecretAccessKey, bucketName) => {
     shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
+    let fileType = pinData.item;
     if (!type) {
-      copyLink(shareRefContent.httpStr);
+      let tweetText = shareOption?.name || '';
+      let link = await createLowLink(shareRefContent.httpStr, tweetText);
+      copyLink(link);
     } else if (type == 'twitter') {
       shareTwitter(shareRefContent.httpStr, shareOption);
     } else if (type == 'faceBook') {
-      shareFacebook(shareRefContent.httpStr);
+      shareFacebook(shareRefContent.httpStr, shareOption);
     } else if (type == 'slack') {
-      shareSlack(shareRefContent.httpStr);
+      shareSlack(shareRefContent.httpStr, shareOption);
     } else if (type == 'pinterest') {
-      sharePinterest(shareRefContent.httpStr);
+      sharePinterest(shareRefContent.httpStr, shareOption);
     }
     isReady.value = false;
   };
@@ -243,7 +246,7 @@ export default function useShare(orderInfo, header, deviceType) {
     }
     return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(signatureBase64)}`;
   };
-  
+
   const confirmShare = () => {
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
       if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {

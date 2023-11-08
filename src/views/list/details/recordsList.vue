@@ -151,7 +151,7 @@
   import { calc_merkle } from '@/api/index';
 
   import { showToast } from '@nutui/nutui';
-  
+
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
@@ -237,7 +237,7 @@
       console.log('calc_merkle-----', res);
       showToast.success('Joined the Merkle queue!');
     });
-  }
+  };
 
   onMounted(() => {
     category.value = route.query.category;
@@ -580,24 +580,6 @@
       }
     }
   }
-  .share_info_box {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    margin-top: 150px;
-    div {
-      margin-top: 20px;
-      text-align: center;
-      color: $main_blue;
-      img,
-      svg {
-        display: block;
-        margin: 0 auto;
-        width: 80px;
-        height: 80px;
-      }
-    }
-  }
   .custom-content {
     p {
       padding: 30px 20px;
@@ -655,6 +637,4 @@
       }
     }
   }
-
-  
 </style>
