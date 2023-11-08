@@ -151,58 +151,56 @@ export default function useShare(orderInfo, header, deviceType) {
     desc.value = selectedOptions.map((val) => val.text).join(',');
     periodShow.value = false;
   };
-  const createLowLink = (fileLink, imageName = '') => {
-    return getLink({
-      url: fileLink,
-      username: userInfo.value.email,
-      userUuid: userInfo.value.uuid,
-      period: periodValue.value[0],
-      imageName,
-      title: '标题',
-      detail: 'desc',
-    }).then((res) => {
-      if (res.code == 200) {
-        imgUrl.value = 'https://share.dev.u2i.net/img/' + res.data;
-        return 'https://share.dev.u2i.net/share/' + res.data;
-      }
-    });
+  const createLowLink = (fileLink, shareOption) => {
+    let category = shareOption.category;
+    console.log(shareOption, 'shareOption');
+    if (category == 1 || category == 2) {
+      return getLink({
+        url: fileLink,
+        username: userInfo.value.email,
+        userUuid: userInfo.value.uuid,
+        period: periodValue.value[0],
+        imageName: shareOption.name,
+        title: shareOption.name,
+        detail: imgDesc.value,
+      }).then((res) => {
+        if (res.code == 200) {
+          imgUrl.value = 'https://share.dev.u2i.net/img/' + res.data;
+          return 'https://share.dev.u2i.net/share/' + res.data;
+        }
+      });
+    } else {
+      imgUrl.value = '';
+      return fileLink;
+    }
   };
   const shareTwitter = async (fileLink, checkData) => {
-    let tweetText = checkData?.name || '';
-    let link = await createLowLink(fileLink, tweetText);
-    var twitterUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(tweetText);
+    let link = await createLowLink(fileLink, checkData);
+    var twitterUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(checkData.name);
     window.open(twitterUrl, '_blank');
   };
   const shareFacebook = async (fileLink, checkData) => {
-    let tweetText = checkData?.name || '';
-
-    let link = await createLowLink(fileLink, tweetText);
+    let link = await createLowLink(fileLink, checkData);
     var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link);
     // var twitterUrl = 'https://www.facebook.com/dialog/share?href=' + encodeURIComponent(link) + '&display=popup';
     window.open(twitterUrl, '_blank');
   };
   const sharePinterest = async (fileLink, checkData) => {
-    let tweetText = checkData?.name || '';
-
-    let link = await createLowLink(fileLink, tweetText);
+    let link = await createLowLink(fileLink, checkData);
     var twitterUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(link)}&media=${imgUrl.value}&description=${
-      imgDesc.value || '11111'
+      imgDesc.value
     }`;
     // var twitterUrl = 'https://www.facebook.com/dialog/share?href=' + encodeURIComponent(link) + '&display=popup';
     window.open(twitterUrl, '_blank');
   };
   const shareSlack = async (fileLink, checkData) => {
-    let tweetText = checkData?.name || '';
-
-    let link = await createLowLink(fileLink, tweetText);
+    let link = await createLowLink(fileLink, checkData);
     copyLink(link);
   };
   const confirmHttpShare = async (type, shareOption, awsAccessKeyId, awsSecretAccessKey, bucketName) => {
     shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
-    let fileType = pinData.item;
     if (!type) {
-      let tweetText = shareOption?.name || '';
-      let link = await createLowLink(shareRefContent.httpStr, tweetText);
+      let link = await createLowLink(shareRefContent.httpStr, shareOption);
       copyLink(link);
     } else if (type == 'twitter') {
       shareTwitter(shareRefContent.httpStr, shareOption);
@@ -265,6 +263,15 @@ export default function useShare(orderInfo, header, deviceType) {
       }
     }
   };
+  watch(
+    isReady,
+    (val) => {
+      if (val) {
+        imgDesc.value = '';
+      }
+    },
+    { deep: true },
+  );
   return {
     ipfsPin,
     loading,
@@ -272,6 +279,7 @@ export default function useShare(orderInfo, header, deviceType) {
     periodShow,
     periodValue,
     desc,
+    imgDesc,
     options,
     doShare,
     confirmPeriod,

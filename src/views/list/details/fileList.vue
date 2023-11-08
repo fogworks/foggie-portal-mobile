@@ -301,11 +301,19 @@
       position="bottom"
       closeable
       round
-      :style="{ height: '200px' }"
+      :style="{ height: '300px' }"
       v-model:visible="showShareDialog"
     >
       <div v-if="isReady" class="rename_box move_box">
-        <nut-cell style="margin-top: 50px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
+        <nut-cell style="margin-top: 50px" title="Access Period:">
+          <template #link>
+            <span style="display: flex"
+              >{{ desc }} <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
+            ></span>
+          </template>
+        </nut-cell>
+        <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
+        <nut-textarea rows="3" v-model="imgDesc" />
         <nut-popup position="bottom" v-model:visible="periodShow">
           <nut-picker
             v-model="periodValue"
@@ -545,6 +553,7 @@
     confirmPeriod,
     periodShow,
     desc,
+    imgDesc,
     options,
     doShare,
     ipfsPin,
@@ -1762,6 +1771,17 @@
   .rename_box {
     margin-top: 40px;
     padding: 0 40px;
+    :deep {
+      .nut-cell {
+        padding-left: 0;
+        padding-right: 0;
+        box-shadow: none;
+      }
+      .nut-textarea {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
     p {
       text-align: center;
       margin-bottom: 30px;
