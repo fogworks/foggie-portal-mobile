@@ -12,7 +12,7 @@ export default function useUserAssets() {
   function getUserAssets() {
     get_user_dmc().then((res) => {
       if (res?.result?.data) {
-        cloudBalance.value = res?.result?.data?.balance.toFixed(4);
+        cloudBalance.value = res?.result?.data?.balance.toFixed(4) || 0;
         useStore.setBalance(res.result.data.balance);
         cloudPst.value = res.result.data.pst || '--';
         cloudIncome.value = res.result.data.income;

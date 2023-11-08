@@ -25,19 +25,19 @@
         <nut-grid-item text="Profit"
           ><div>
             <IconCions class="top_icon"></IconCions>
-            <p style="color: green; font-weight: bold">{{ cloudBalance && cloudBalance.toFixed(4) }}</p>
+            <p style="color: green; font-weight: bold">{{ cloudBalanceNum?.integerPart }}<span style="font-size: 10px;">.{{cloudBalanceNum?.decimalPart}}</span> </p>
           </div>
         </nut-grid-item>
         <nut-grid-item class="top_icon" text="Earnings"
           ><div>
             <IconIncome class="top_icon"></IconIncome>
-            <p style="color: green; font-weight: bold">+{{ cloudProfit && cloudProfit.toFixed(4) }}</p>
+            <p style="color: green; font-weight: bold">+ {{ cloudProfitNum?.integerPart }}<span style="font-size: 10px;">.{{cloudProfitNum?.decimalPart}}</span> </p>
           </div></nut-grid-item
         >
         <nut-grid-item class="top_icon" text="Expense"
           ><div>
             <IconOutCome class="top_icon"></IconOutCome>
-            <p style="color: red; font-weight: bold">-{{ orderPayout && orderPayout.toFixed(4) }}</p>
+            <p style="color: red; font-weight: bold">- {{ orderPayoutNum?.integerPart }}<span style="font-size: 10px;">.{{orderPayoutNum?.decimalPart}}</span> </p>
           </div></nut-grid-item
         >
       </nut-grid>
@@ -74,13 +74,14 @@
           <div>
             <span>Order:{{ item.order_id }}</span>
             <span :class="[item.inner_user_trade_type == 'payout' ? 'expense' : 'earnings']">
-              {{ item.inner_user_trade_type == 'payout' ? '-' : '+' }}{{ item.quantity }} DMC
+              {{ item.inner_user_trade_type == 'payout' ? '-' : '+' }} {{ formatNumber(item.quantity)?.integerPart  }}<span style="font-size: 13px;">.{{ formatNumber(item.quantity)?.decimalPart  }}</span> DMC
             </span>
           </div>
           <div>
-            <span>Type:{{ mapTypes[item.trade_type] }}</span>
-            <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
             <span class="time">{{ transferUTCTime(item.created_at) }}</span>
+
+            <span>Type: {{ mapTypes[item.trade_type] }}</span>
+  
           </div>
         </div>
       </nut-infinite-loading>
@@ -100,7 +101,7 @@
   import { useRoute, useRouter,onBeforeRouteLeave } from 'vue-router';
   import useTransactionRecords from './useTransactionRecords.ts';
   import useOrderAssets from './useOrderAssets.ts';
-  import { transferUTCTime } from '@/utils/util';
+  import { transferUTCTime ,formatNumber} from '@/utils/util';
   import * as echarts from 'echarts';
   const order_id = ref<any>('');
   const ordertype = ref('');
@@ -134,9 +135,16 @@
     OrderReceiptChallengeArb: 'arbitrate', // 仲裁
     OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
     OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
+    user_cancel_order:'Order Cancellation Refund',
     OrderReceiptEnd: 12,
   };
   const { getUserAssets, cloudBalance, cloudProfit, orderPayout } = useOrderAssets();
+
+const cloudBalanceNum = computed(()=> formatNumber(cloudBalance.value))
+const cloudProfitNum = computed(()=> formatNumber(cloudProfit.value))
+const orderPayoutNum = computed(()=> formatNumber(orderPayout.value))
+
+
 
   const { shortcuts, resetData, loadMore, listData, hasMore, infinityValue } = useTransactionRecords();
 

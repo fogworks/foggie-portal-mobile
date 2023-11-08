@@ -1914,44 +1914,7 @@
   }
 </style>
 <style lang="scss">
-  .CustomName {
-    background-color: #2d2e41 !important;
-    .nut-dialog__header {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      height: 60px;
-      font-weight: 800;
-      color: #000;
-      padding-bottom: 20px;
-      border-bottom: 0.5px solid #e2ecff;
 
-      span {
-        display: inline-block;
-        width: 60px;
-        height: 60px;
-        background: #ebebeb;
-        border-radius: 20px;
-
-        svg {
-          width: 40px;
-          height: 40px;
-          margin: 0 auto;
-          vertical-align: middle;
-        }
-      }
-    }
-
-    .bucket_tip {
-      padding-bottom: 10px;
-      border-bottom: 0.5px solid #e2ecff;
-    }
-
-    .nut-input--border {
-      border: 1px solid #a1b0cc;
-      border-radius: 16px;
-    }
-  }
 
   .order-circle .nut-circle-progress {
     svg {

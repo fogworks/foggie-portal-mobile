@@ -85,7 +85,7 @@
   const bindAmb = async () => {
     if (route.path == '/bindDmc' && route.query?.type == 'amb') {
       return false;
-    }
+    }    
     bindAmbCode();
   };
   const bindUser = async () => {
@@ -99,6 +99,7 @@
       const userOk = () => {
         bind_user_promo({ promo_code: userInfo.value.promo_code }).then((res) => {});
       };
+      
       showDialog({
         title: 'Notice',
         content: `Your current invitation code ${userInfo.value.promo_code} is the user's invitation code, are you sure you want to bind it?`,
@@ -114,7 +115,7 @@
       if (res.data) {
         userStore.setInfo(res.data);
       }
-      bindAmb();
+
       bindUser();
     }
   });

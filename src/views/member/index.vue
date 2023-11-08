@@ -28,7 +28,7 @@
         <div class="customBtn">
           <My2 color="#505056" />
         </div>
-        <div>Updated Information</div>
+        <div>Profile</div>
       </nut-col>
       <nut-col :span="6" @click="visible = true">
         <div class="customBtn">
@@ -48,7 +48,9 @@
           <!-- <Link color="#505056" /> -->
           <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; display: inline-block" />
         </div>
-        <div>About FogWorks</div>
+        <div>About 
+          <div>Fog Works</div>
+        </div>
       </nut-col>
     </nut-row>
 
@@ -130,7 +132,7 @@
   const visible = ref<boolean>(false);
   const adminEmail = ref<string>('aaa123@fogworks.com');
   const goToPrivacy = () => {
-    window.open('https://foggie.fogworks.io/#/');
+    window.open('https://fogworks.io/');
   };
   const logout = (): void => {
     showDialog({
@@ -158,19 +160,19 @@
       content: createVNode('div', null, [
         createVNode(
           'span',
-          { style: { color: '#303030', fontSize: '12px' } },
+          { style: { color: '#d1cece', fontSize: '12px' } },
           'We sincerely welcome you to contact us for more information!',
         ),
-        createVNode('div', { style: { color: '#606060', marginTop: '15px', fontSize: '16px' } }, adminEmail.value),
+        createVNode('div', { style: { color: '#606060', marginTop: '14px', fontSize: '16px' } }, 'https://discord.com/channels/@me'),
       ]),
       noCancelBtn: true,
       okText: 'Copy',
       onOk: () => {
         if (!navigator.clipboard) {
-          fallbackCopyTextToClipboard(adminEmail.value);
+          fallbackCopyTextToClipboard('https://discord.com/channels/@me');
           return;
         }
-        navigator.clipboard.writeText(adminEmail.value).then(
+        navigator.clipboard.writeText('https://discord.com/channels/@me').then(
           function () {
             showToast.success('Copying  successful!');
           },

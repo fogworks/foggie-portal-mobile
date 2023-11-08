@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { computed, reactive, ref,watch } from 'vue';
 import { useUserStore } from '@/store/modules/user';
 import { bind_promo, check_promo, get_amb_dmc, check_user_bind } from '@/api/amb';
 import { showDialog, showToast } from '@nutui/nutui';
@@ -6,7 +6,7 @@ import { useRouter, useRoute } from 'vue-router';
 import loadingImg from '@/components/loadingImg/index.vue';
 import { search_cloud, bind_user_promo } from '@/api';
 
-export default function useUpdateDMC() {
+export default function() {
   const curStepIndex = ref(1); // 1 绑定大使邀请码
   const ambRefuse = ref(false); //大使是否拒绝  true 拒绝  false 同意
   const userStore = useUserStore();
@@ -20,12 +20,19 @@ export default function useUpdateDMC() {
   const targetAccount = ref('');
   const pn = ref(1);
   const ps = ref(10);
-  // const passwordIsExist = ref(false)
+
+  const bindAmbCodeDialogIsShow = ref(false)
+
   function getAmbDmc() {
     get_amb_dmc().then((res) => {
       targetAccount.value = res.result.dmc_account;
     });
   }
+  
+
+  
+
+
   async function bindAmbCode() {
     if (!uuid.value) return false;
     showToast.loading('Loading', {
@@ -35,7 +42,7 @@ export default function useUpdateDMC() {
       loadingRotate: false,
       id: 'amb-code',
     });
-    return check_user_bind(uuid.value)
+    await check_user_bind(uuid.value)
       .then((res2) => {
         console.log(res2.result, 'res2.result.bind');
         if (res2.result.bind) {
@@ -73,7 +80,7 @@ export default function useUpdateDMC() {
                 router.push({ name: 'bindDmc', query: { type: 'amb' } });
               };
               let src = require('@/assets/fog-works_w.png');
-              let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>The ambassador platform is approved and you can now start purchasing orders, should you head over right away?</p >`;
+              let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Welcome to Foggie Mobile! Your application has been approved, and you can now begin placing orders,embarking on your Foggie journey.</p >`;
               showDialog({
                 title: 'Notice',
                 content: str,
@@ -85,10 +92,11 @@ export default function useUpdateDMC() {
             }
           } else {
             curStepIndex.value = 2;
-
             if (route.path == '/bindDmc') {
               return false;
             }
+
+
             let src = require('@/assets/fog-works_w.png');
             let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Awaiting approval from the Ambassador, please be patient until the approval is complete</p >`;
             showDialog({
@@ -97,25 +105,33 @@ export default function useUpdateDMC() {
               'no-ok-btn': true,
               'cancel-text': 'OK',
             });
+
+
           }
         } else {
           console.log('未绑定！！！！！！！！');
           curStepIndex.value = 1;
+  
           if (!amb_promo_code.value) {
+            // 注册时没有输入大使邀请码
             if (route.path == '/bindDmc') {
               return false;
             }
-            const dmcOk = () => {
-              router.push({ name: 'BindDmc', query: { type: 'amb' } });
-            };
-            let src = require('@/assets/fog-works_w.png');
-            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Please confirm that you have filled out the invitation code before placing your order</p >`;
-            showDialog({
-              title: 'Bind',
-              content: str,
-              onOk: dmcOk,
-            });
+        
+            bindAmbCodeDialogIsShow.value = true
+
+            // const dmcOk = () => {
+            //   router.push({ name: 'BindDmc', query: { type: 'amb' } });
+            // };
+            // let src = require('@/assets/fog-works_w.png');
+            // let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Please confirm that you have filled out the invitation code before placing your order</p >`;
+            // showDialog({
+            //   title: 'Bind',
+            //   content: str,
+            //   onOk: dmcOk,
+            // });
           } else {
+             // 注册时输入大使邀请码
             if (route.path == '/bindDmc') {
               return false;
             }
@@ -187,6 +203,8 @@ export default function useUpdateDMC() {
     });
   }
 
+
+
   return {
     getAmbDmc,
     curStepIndex,
@@ -198,5 +216,6 @@ export default function useUpdateDMC() {
     bindAmbCode,
     getOrder,
     cloudCodeIsBind,
+    bindAmbCodeDialogIsShow,
   };
 }

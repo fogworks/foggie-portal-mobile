@@ -209,6 +209,25 @@ async function reCAPTCHA_verification(token) {
 }
 
 
+ function formatNumber(number) {
+  
+  // 先判断输入是否是有效数字
+  if (isNaN(number)) {
+    return { integerPart:0, decimalPart:0 };
+  }
+
+  // 将数字切分为整数和小数部分
+  const parts = number.toString().split('.');
+
+  // 整数部分
+  let integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  // 小数部分，保留4位小数
+  let decimalPart = parts[1] ? parseFloat(`0.${parts[1]}`).toFixed(4).substring(2) : "0000";
+
+  // 返回整数和小数部分的组合
+  return { integerPart, decimalPart }
+}
+
 export {
   getSecondTime,
   transferTime,
@@ -221,5 +240,6 @@ export {
   numberToThousands,
   transferUTCTimeDay,
   transferGMTTime,
-  load_gpa_token
+  load_gpa_token,
+  formatNumber
 };

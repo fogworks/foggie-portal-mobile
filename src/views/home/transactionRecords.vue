@@ -59,11 +59,14 @@
             <img src="@/assets/list_item_2.svg" alt="" />
           </div>
           <div>
-            <span class="txt_id">Trx ID:{{ handleID(item.trx_id) }}</span>
-            <span :class="[searchType == 0 ? 'earnings' : 'expense']"> {{ searchType == 0 ? '+' : '-' }}{{ item.quantity }} </span>
+            <span class="txt_id">{{ handleID(item.trx_id) }}</span>
+            <span :class="[searchType == 0 ? 'earnings' : 'expense']">
+              {{ searchType == 0 ? '+' : '-' }} {{ formatNumber(item.quantity)?.integerPart
+              }}<span style="font-size: 12px">.{{ formatNumber(item.quantity)?.decimalPart }}</span>
+            </span>
           </div>
           <div>
-            <span>Memo:{{ item.memo }}</span>
+            <span>memo:{{ item.memo }}</span>
             <span>{{ searchType == 0 ? '' : item.state }} </span> <span class="time">{{ transferGMTTime(item.created_at) }}</span>
           </div>
         </div>
@@ -85,7 +88,7 @@
   import { useRoute, useRouter } from 'vue-router';
   import useTransactionRecords from './useTransactionRecords.ts';
   import useUserAssets from './useUserAssets.ts';
-  import { transferUTCTime, transferGMTTime } from '@/utils/util';
+  import { transferUTCTime, transferGMTTime, formatNumber } from '@/utils/util';
   import { get_user_recharge } from '@/api/amb';
   import * as echarts from 'echarts';
 

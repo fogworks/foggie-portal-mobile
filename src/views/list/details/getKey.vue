@@ -276,7 +276,7 @@
   const deleteKey = (index: number) => {
     showDialog({
       title: 'Delete Confirmation',
-      content: `Are you sure you want to delete AK SK?`,
+      content: `Are you sure you want to delete ?`,
       popClass: 'dialog_class',
       cancelText: 'Cancel',
       okText: 'OK',

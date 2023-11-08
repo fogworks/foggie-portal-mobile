@@ -6,18 +6,18 @@
         <nut-grid-item text="Balance"
           ><div>
             <IconCions class="top_icon"></IconCions>
-            <p class="banlance_text">{{ cloudBalance }}</p>
+            <p class="banlance_text">{{ cloudBalanceNum?.integerPart }}<span style="font-size: 10px;">.{{ cloudBalanceNum?.decimalPart }}</span></p>
           </div>
         </nut-grid-item>
         <nut-grid-item class="top_icon" text="Earnings" @click="router.push('/analysisCate?type=1')"
           ><div>
             <IconIncome class="top_icon"></IconIncome>
-            <p>{{ cloudIncome }}<Search2></Search2></p> </div
+            <p>{{ cloudIncomeNum?.integerPart }}<span style="font-size: 10px;">.{{ cloudIncomeNum?.decimalPart }}</span><Search2></Search2></p> </div
         ></nut-grid-item>
         <nut-grid-item class="top_icon" text="Expense" @click="router.push('/analysisCate?type=3')"
           ><div>
             <IconOutCome class="top_icon"></IconOutCome>
-            <p>{{ cloudExpense }}<Search2></Search2></p> </div
+            <p>{{ cloudExpenseNum?.integerPart }}<span style="font-size: 10px;">.{{ cloudExpenseNum?.decimalPart }}</span><Search2></Search2></p> </div
         ></nut-grid-item>
         <!-- <nut-grid-item class="top_icon" text="Withdrawal" @click="router.push('/analysisCate?type=0')"
           ><div>
@@ -39,11 +39,7 @@
     </div>
     <!-- LIST -->
     <nut-infinite-loading v-if="listData.length" class="list_box" load-more-txt="No more content" :has-more="false">
-      <div
-        class="list_item"
-        v-for="(item, index) in listData"
-        @click="$router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } })"
-      >
+      <div class="list_item" v-for="(item, index) in listData" @click="gotoOrderPage(item)">
         <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
           <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
           <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
@@ -55,9 +51,10 @@
           <span>Order:{{ item.order_id }}</span>
 
           <span :class="['earnings']">
-            +{{ item.profit }}
-            <!-- <IconArrowRight style="vertical-align: text-top" width="1.1rem" height="1.1rem" color="#5F57FF"></IconArrowRight
-          > -->
+            <span v-if="item.profit > 0">+ {{ formatNumber(item.profit)?.integerPart  }}<span style="font-size: 13px;">.{{formatNumber(item.profit)?.decimalPart}}</span></span>
+            <span v-else style="font-size: 13px;">No revenue at present</span>
+            
+            
           </span>
         </div>
         <!-- <div
@@ -83,7 +80,7 @@
   import { Search2 } from '@nutui/icons-vue';
   import useOrderList from '../home/useOrderList.ts';
   import useUserAssets from '../home/useUserAssets.ts';
-  import { transferUTCTime } from '@/utils/util';
+  import { transferUTCTime,formatNumber } from '@/utils/util';
   import { search_user_asset, search_order_profit } from '@/api/amb';
   import { showToast } from '@nutui/nutui';
   const route = useRoute();
@@ -103,6 +100,14 @@
   const { shortcuts } = useOrderList();
 
   const { listData, cloudBalance, cloudIncome, cloudExpense, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
+
+  const cloudBalanceNum = computed(()=> formatNumber(cloudBalance.value) )
+  const cloudIncomeNum = computed(()=> formatNumber(cloudIncome.value) )
+  const cloudExpenseNum = computed(()=> formatNumber(cloudExpense.value) )
+
+
+
+  
   const searchUserAsset = () => {
     const [start, end] = shortcuts[timeType.value]();
     console.log(!start && !end, 'startstartstart');
@@ -119,6 +124,8 @@
       }
     });
   };
+
+
   const searchOrderProfit = () => {
     showToast.loading('Loading', {
       cover: true,
@@ -147,26 +154,14 @@
   };
 
   function gotoOrderPage(row) {
-    console.log(row);
-    if (row.order_info.state == 5 || row.order_info.state == 4) {
-      router.push({
-        name: 'orderSummary',
-        query: {
-          id: row.order_id,
-          status: row.order_info.state,
-          type: 'history',
-        },
-      });
-    } else {
-      router.push({
-        name: 'listDetails',
-        query: {
-          id: row.order_id,
-          uuid: row.order_info && row.order_info.uuid,
-          amb_uuid: row.amb_uuid,
-        },
-      });
-    }
+    router.push({
+      name: 'orderSummary',
+      query: {
+        id: row.order_id,
+        status: row.state,
+        type: 'history',
+      },
+    });
   }
   watch(
     listData,
