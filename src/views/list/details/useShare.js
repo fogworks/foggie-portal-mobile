@@ -23,6 +23,7 @@ export default function useShare(orderInfo, header, deviceType) {
   const periodValue = ref([3600]);
   const imgUrl = ref('');
   const imgDesc = ref('');
+  const shareType = ref('');
   const userInfo = computed(() => userStore.getUserInfo);
   const options = ref([
     {
@@ -312,8 +313,13 @@ export default function useShare(orderInfo, header, deviceType) {
     },
     { deep: true },
   );
-  watch;
+
+  watch(showShareDialog, (val) => {
+    isReady.value = false;
+    shareType.value = '';
+  });
   return {
+    shareType,
     ipfsPin,
     loading,
     isReady,

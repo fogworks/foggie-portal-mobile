@@ -365,6 +365,7 @@
     tableLoading.value = false;
   };
   const init = async () => {
+    await getOrderInfo();
     await getTimeLine();
     isReady.value = true;
   };

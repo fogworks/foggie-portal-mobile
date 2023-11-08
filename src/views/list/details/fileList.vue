@@ -115,7 +115,7 @@
         <span @click="cancelSelect">Cancel</span>
       </div>
     </nut-sticky>
-    <template v-if="category !== 1">
+    <template v-if="category != 1">
       <nut-infinite-loading
         v-if="tableData.length"
         load-more-txt="No more content"
@@ -297,7 +297,10 @@
     <nut-popup
       teleport-disable
       v-if="showShareDialog"
-      @closed="isReady = false"
+      @closed="
+        isReady = false;
+        shareType = '';
+      "
       position="bottom"
       closeable
       round
@@ -331,7 +334,7 @@
         >
       </div>
       <div class="share_info_box" v-else>
-        <div v-if="shareRefContent.ipfsStr && +shareCheckData.originalSize <= orderInfo.total_space * 0.01">
+        <div v-if="shareRefContent.ipfsStr">
           <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
           IPFS Link
           <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
@@ -447,7 +450,7 @@
   import IconArrowLeft from '~icons/home/arrow-left.svg';
   import IconCopy from '~icons/home/copy.svg';
   import IconHttp from '~icons/home/http.svg';
-  import { reactive, toRefs, watch } from 'vue';
+  import { reactive, toRefs, watch, onMounted } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { Search2, TriangleUp, Loading } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
@@ -508,7 +511,6 @@
       },
     ],
     isFirst: false,
-    shareType: '',
   });
   const imgListRef = ref('');
   const isMobileOrder = computed(() => {
@@ -521,7 +523,6 @@
   provide('isMobileOrder', isMobileOrder);
 
   const {
-    shareType,
     tableLoading,
     showTypeCheckPop,
     newName,
@@ -549,6 +550,7 @@
   } = toRefs(state);
   const { bucketName, header, token, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
   const {
+    shareType,
     isReady,
     confirmShare,
     periodValue,
@@ -774,7 +776,7 @@
           return newName.value + '/';
         }
       } else {
-        const arr = checkData[0]?.fullName.split('/');
+        const arr = checkData?.[0]?.fullName.split('/');
         if (checkData[0]?.type == 'application/x-directory') {
           if (newName.value[newName.value.length - 1] == '/') {
             const newData = newName.value.slice(0, newName.value.length - 1);
@@ -1067,8 +1069,8 @@
     let cid = item.cid;
     let key = item.key;
 
-    let ip = orderInfo.value.rpc.split(':')[0];
-    let port = orderInfo.value.rpc.split(':')[1];
+    let ip = orderInfo.value.rpc?.split(':')[0];
+    let port = orderInfo.value.rpc?.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
     if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
@@ -1429,13 +1431,13 @@
     { deep: true },
   );
   onMounted(async () => {
+    console.log(route, 'routerouteroute');
     if (route?.query?.prefix) {
-      prefix.value = route?.query?.prefix.split('/');
+      prefix.value = route?.query?.prefix?.split('/');
     }
-    bucketName.value = route.query?.bucketName;
     let category1 = route.query.category || '0';
     switchType(category1);
-    // getKeys();
+    await getOrderInfo();
   });
 </script>
 <style>
@@ -1840,7 +1842,7 @@
     align-items: center;
     margin-top: 100px;
     div {
-      min-width: 180px;
+      min-width: 240px;
       margin-top: 20px;
       text-align: center;
       color: $main_blue;

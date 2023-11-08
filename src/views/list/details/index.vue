@@ -176,7 +176,18 @@
 
     <!-- share -->
     <Teleport to="body">
-      <nut-popup @closed="isReady = false" position="bottom" closeable round :style="{ height: '300px' }" v-model:visible="showShareDialog">
+      <nut-popup
+        v-if="showShareDialog"
+        @closed="
+          isReady = false;
+          shareType = '';
+        "
+        position="bottom"
+        closeable
+        round
+        :style="{ height: '300px' }"
+        v-model:visible="showShareDialog"
+      >
         <div v-if="isReady" class="rename_box move_box">
           <nut-cell style="margin-top: 50px" title="Access Period:">
             <template #link>
@@ -439,6 +450,7 @@
   const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
   const {
+    shareType,
     isReady,
     confirmShare,
     periodValue,
@@ -498,7 +510,7 @@
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
   const minerIp = ref<string>('');
-  const shareType = ref<any>('');
+
   // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
   // order_id.value = '1281';
   memo.value = route.query.uuid;
@@ -1866,7 +1878,7 @@
     margin-top: 100px;
 
     div {
-      min-width: 180px;
+      min-width: 240px;
       margin-top: 20px;
       text-align: center;
       color: $main_blue;
