@@ -307,8 +307,8 @@
           showToast.hide();
         });
     };
-    let src = require('@/assets/fog-works.png');
-    let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>The final amount is ${realAmount.value} DMC. Are you sure you want to withdraw it?</p >`;
+    let src = require('@/assets/fog-works_w.png');
+    let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>The final amount is ${realAmount.value} DMC. Are you sure you want to withdraw it?</p >`;
     showDialog({
       title: 'Notice',
       content: str,

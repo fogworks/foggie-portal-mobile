@@ -253,7 +253,7 @@
         router.push({ name: 'BindDmc', query: { type: 'dmc' } });
       };
       let src = require('@/assets/DMC_token.png');
-      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
+      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>You have not bound a DMC account yet. Please bind the account first before proceeding with the operation.</p >`;
       showDialog({
         title: 'Bind DMC Account',
         content: str,
@@ -268,8 +268,8 @@
       const dmcOk = () => {
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
       };
-      let src = require('@/assets/fog-works.png');
-      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
+      let src = require('@/assets/fog-works_w.png');
+      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
       showDialog({
         title: 'Bind Invitation Code',
         content: str,
@@ -303,8 +303,8 @@
       const dmcOk = () => {
         router.push({ name: 'BindDmc', query: { type: 'amb' } });
       };
-      let src = require('@/assets/fog-works.png');
-      let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
+      let src = require('@/assets/fog-works_w.png');
+      let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
       showDialog({
         title: 'Ambassador Invitation Code',
         content: str,

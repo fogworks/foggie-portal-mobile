@@ -214,7 +214,7 @@
         router.push('/recharge');
       };
       let src = require('@/assets/DMC_token.png');
-      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p >`;
+      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p >`;
       showDialog({
         title: 'The balance is insufficient',
         content: str,
@@ -263,7 +263,7 @@
             router.push('/home');
           };
           let src = require('@/assets/DMC_token.png');
-          let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#4c5093;text-align:left;'>Order request has been initiated, please check the order result in the order record later.</p >`;
+          let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Order request has been initiated, please check the order result in the order record later.</p >`;
           showDialog({
             title: 'Purchase Successfully',
             content: str,
