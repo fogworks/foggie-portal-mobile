@@ -151,12 +151,15 @@ export default function useShare(orderInfo, header, deviceType) {
     desc.value = selectedOptions.map((val) => val.text).join(',');
     periodShow.value = false;
   };
-  const createLowLink = (fileLink) => {
+  const createLowLink = (fileLink, imageName = '') => {
     return getLink({
       url: fileLink,
       username: userInfo.value.email,
       userUuid: userInfo.value.uuid,
       period: periodValue.value[0],
+      imageName,
+      title: '标题',
+      detail: 'desc',
     }).then((res) => {
       if (res.code == 200) {
         imgUrl.value = 'https://share.dev.u2i.net/img/' + res.data;
@@ -166,26 +169,32 @@ export default function useShare(orderInfo, header, deviceType) {
   };
   const shareTwitter = async (fileLink, checkData) => {
     let tweetText = checkData?.name || '';
-    let link = await createLowLink(fileLink);
+    let link = await createLowLink(fileLink, tweetText);
     var twitterUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(tweetText);
     window.open(twitterUrl, '_blank');
   };
-  const shareFacebook = async (fileLink) => {
-    let link = await createLowLink(fileLink);
+  const shareFacebook = async (fileLink, checkData) => {
+    let tweetText = checkData?.name || '';
+
+    let link = await createLowLink(fileLink, tweetText);
     var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link);
     // var twitterUrl = 'https://www.facebook.com/dialog/share?href=' + encodeURIComponent(link) + '&display=popup';
     window.open(twitterUrl, '_blank');
   };
-  const sharePinterest = async (fileLink) => {
-    let link = await createLowLink(fileLink);
+  const sharePinterest = async (fileLink, checkData) => {
+    let tweetText = checkData?.name || '';
+
+    let link = await createLowLink(fileLink, tweetText);
     var twitterUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(link)}&media=${imgUrl.value}&description=${
       imgDesc.value || '11111'
     }`;
     // var twitterUrl = 'https://www.facebook.com/dialog/share?href=' + encodeURIComponent(link) + '&display=popup';
     window.open(twitterUrl, '_blank');
   };
-  const shareSlack = async (fileLink) => {
-    let link = await createLowLink(fileLink);
+  const shareSlack = async (fileLink, checkData) => {
+    let tweetText = checkData?.name || '';
+
+    let link = await createLowLink(fileLink, tweetText);
     copyLink(link);
   };
   const confirmHttpShare = (type, shareOption, awsAccessKeyId, awsSecretAccessKey, bucketName) => {
