@@ -197,10 +197,12 @@
           //   router.push({ path: '/home' });
           // }
         } else {
+          loading.value = false;
           console.log('error submit!!', errors);
         }
       });
     } else {
+      loading.value = false;
       showToast.fail('The current identity is suspicious, you can try switching networks and retry.');
     }
   };

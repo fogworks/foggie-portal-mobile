@@ -176,15 +176,30 @@
 
     <!-- share -->
     <Teleport to="body">
-      <nut-popup @closed="isReady = false" position="bottom" closeable round :style="{ height: '200px' }" v-model:visible="showShareDialog">
+      <nut-popup
+        v-if="showShareDialog"
+        @closed="
+          isReady = false;
+          shareType = '';
+        "
+        position="bottom"
+        closeable
+        round
+        :style="{ height: '300px' }"
+        v-model:visible="showShareDialog"
+      >
         <div v-if="isReady" class="rename_box move_box">
-          <div style="margin-top: 50px; display: flex; justify-content: space-between; align-items: center">
-            <span>Access Period</span>
-            <span style="display: flex"
-              >{{ desc }} <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
-            ></span>
-          </div>
-          <nut-cell style="margin-top: 50px" title="Access Period" :desc="desc" @click="periodShow = true"></nut-cell>
+          <nut-cell style="margin-top: 50px" title="Access Period:">
+            <template #link>
+              <span style="display: flex"
+                >{{ desc }} <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
+              ></span>
+            </template>
+          </nut-cell>
+          <template v-if="shareType">
+            <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
+            <nut-textarea rows="3" v-model="imgDesc" />
+          </template>
           <nut-popup position="bottom" v-model:visible="periodShow">
             <nut-picker
               v-model="periodValue"
@@ -435,12 +450,14 @@
   const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
   const {
+    shareType,
     isReady,
     confirmShare,
     periodValue,
     confirmPeriod,
     periodShow,
     desc,
+    imgDesc,
     options,
     doShare,
     ipfsPin,
@@ -493,7 +510,7 @@
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
   const minerIp = ref<string>('');
-  const shareType = ref<any>('');
+
   // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
   // order_id.value = '1281';
   memo.value = route.query.uuid;
@@ -1783,6 +1800,17 @@
   .rename_box {
     margin-top: 40px;
     padding: 0 40px;
+    :deep {
+      .nut-cell {
+        padding-left: 0;
+        padding-right: 0;
+        box-shadow: none;
+      }
+      .nut-textarea {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
 
     p {
       text-align: center;
@@ -1850,7 +1878,7 @@
     margin-top: 100px;
 
     div {
-      min-width: 180px;
+      min-width: 240px;
       margin-top: 20px;
       text-align: center;
       color: $main_blue;

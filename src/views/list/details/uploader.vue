@@ -40,7 +40,7 @@
   import { useRoute } from 'vue-router';
   import useOrderInfo from './useOrderInfo.js';
   import { showToast } from '@nutui/nutui';
-  import { calc_merkle, valid_upload } from '@/api/index';
+  import { save_upload, valid_upload, get_unique_order } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import { getSecondTime } from '@/utils/util';
   import { update_order_size } from '@/api/amb';
@@ -266,6 +266,10 @@
       console.log('uploadLine', uploadLine, 'used_space', used_space);
       return false;
     }
+    if (!amb_uuid.value) {
+      let res = await get_unique_order({ order_uuid: route?.query?.uuid });
+      amb_uuid.value = res?.result?.data?.amb_uuid;
+    }
     const d = {
       orderId: order_id.value,
       uuid: amb_uuid.value,
@@ -274,8 +278,8 @@
       fileSize: option?.sourceFile?.size,
       usedSpace: used_space,
     };
-    calc_merkle(d).then((res) => {
-      console.log('calc_merkle-----', res);
+    save_upload(d).then((res) => {
+      console.log('save_upload-----', res);
     });
   };
 

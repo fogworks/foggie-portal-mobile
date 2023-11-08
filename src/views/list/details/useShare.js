@@ -5,6 +5,7 @@ import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import { getLink } from '@/api/index.ts';
 import { useUserStore } from '@/store/modules/user';
+import { transferUTCTime } from '@/utils/util.ts';
 
 import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
@@ -22,6 +23,7 @@ export default function useShare(orderInfo, header, deviceType) {
   const periodValue = ref([3600]);
   const imgUrl = ref('');
   const imgDesc = ref('');
+  const shareType = ref('');
   const userInfo = computed(() => userStore.getUserInfo);
   const options = ref([
     {
@@ -111,7 +113,7 @@ export default function useShare(orderInfo, header, deviceType) {
     let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
     let server = new grpcService.default.ServiceClient(ip, null, null);
 
-    showToast.text('IPFS link will available later.');
+    // showToast.text('IPFS link will available later.');
     server.pin(ProxPinReq, {}, (err, res) => {
       if (res) {
       } else if (err) {
@@ -151,58 +153,57 @@ export default function useShare(orderInfo, header, deviceType) {
     desc.value = selectedOptions.map((val) => val.text).join(',');
     periodShow.value = false;
   };
-  const createLowLink = (fileLink, imageName = '') => {
-    return getLink({
-      url: fileLink,
-      username: userInfo.value.email,
-      userUuid: userInfo.value.uuid,
-      period: periodValue.value[0],
-      imageName,
-      title: '标题',
-      detail: 'desc',
-    }).then((res) => {
-      if (res.code == 200) {
-        imgUrl.value = 'https://share.dev.u2i.net/img/' + res.data;
-        return 'https://share.dev.u2i.net/share/' + res.data;
-      }
-    });
+  const createLowLink = (fileLink, shareOption) => {
+    let category = shareOption.category;
+    console.log(shareOption, 'shareOption');
+    if (category == 1 || category == 2) {
+      return getLink({
+        url: fileLink,
+        coverUrl: category == 2 ? fileLink + '&thumb=true' : '',
+        username: userInfo.value.email,
+        userUuid: userInfo.value.uuid,
+        period: periodValue.value[0],
+        imageName: shareOption.name,
+        title: shareOption.name,
+        detail: imgDesc.value,
+      }).then((res) => {
+        if (res.code == 200) {
+          imgUrl.value = 'https://share.dev.u2i.net/img/' + res.data;
+          return 'https://share.dev.u2i.net/share/' + res.data;
+        }
+      });
+    } else {
+      imgUrl.value = '';
+      return fileLink;
+    }
   };
   const shareTwitter = async (fileLink, checkData) => {
-    let tweetText = checkData?.name || '';
-    let link = await createLowLink(fileLink, tweetText);
-    var twitterUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(tweetText);
+    let link = await createLowLink(fileLink, checkData);
+    var twitterUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(checkData.name);
     window.open(twitterUrl, '_blank');
   };
   const shareFacebook = async (fileLink, checkData) => {
-    let tweetText = checkData?.name || '';
-
-    let link = await createLowLink(fileLink, tweetText);
+    let link = await createLowLink(fileLink, checkData);
     var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link);
     // var twitterUrl = 'https://www.facebook.com/dialog/share?href=' + encodeURIComponent(link) + '&display=popup';
     window.open(twitterUrl, '_blank');
   };
   const sharePinterest = async (fileLink, checkData) => {
-    let tweetText = checkData?.name || '';
-
-    let link = await createLowLink(fileLink, tweetText);
+    let link = await createLowLink(fileLink, checkData);
     var twitterUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(link)}&media=${imgUrl.value}&description=${
-      imgDesc.value || '11111'
+      imgDesc.value
     }`;
     // var twitterUrl = 'https://www.facebook.com/dialog/share?href=' + encodeURIComponent(link) + '&display=popup';
     window.open(twitterUrl, '_blank');
   };
   const shareSlack = async (fileLink, checkData) => {
-    let tweetText = checkData?.name || '';
-
-    let link = await createLowLink(fileLink, tweetText);
+    let link = await createLowLink(fileLink, checkData);
     copyLink(link);
   };
   const confirmHttpShare = async (type, shareOption, awsAccessKeyId, awsSecretAccessKey, bucketName) => {
     shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
-    let fileType = pinData.item;
     if (!type) {
-      let tweetText = shareOption?.name || '';
-      let link = await createLowLink(shareRefContent.httpStr, tweetText);
+      let link = await createLowLink(shareRefContent.httpStr, shareOption);
       copyLink(link);
     } else if (type == 'twitter') {
       shareTwitter(shareRefContent.httpStr, shareOption);
@@ -265,13 +266,67 @@ export default function useShare(orderInfo, header, deviceType) {
       }
     }
   };
+  watch(
+    isReady,
+    (val) => {
+      if (val) {
+        imgDesc.value = '';
+        let expireTimeStamp = new Date(orderInfo.value.expire).getTime();
+        let startTimeStamp = new Date(orderInfo.value.created_at).getTime();
+        options.value = options.value.filter((el) => {
+          return el.value < (expireTimeStamp - startTimeStamp) / 1000;
+        });
+        periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
+        desc.value = transferUTCTime(orderInfo.value.expire);
+      } else {
+        options.value = [
+          {
+            text: '1 hour',
+            value: 3600,
+          },
+          {
+            text: '1 day',
+            value: 3600 * 24,
+          },
+          {
+            text: '7 days',
+            value: daySeconds * 7,
+          },
+          {
+            text: '1 month',
+            value: monthSeconds,
+          },
+          {
+            text: '3 months',
+            value: monthSeconds * 3,
+          },
+          {
+            text: '6 months',
+            value: monthSeconds * 6,
+          },
+          {
+            text: '1 year',
+            value: monthSeconds * 12,
+          },
+        ];
+      }
+    },
+    { deep: true },
+  );
+
+  watch(showShareDialog, (val) => {
+    isReady.value = false;
+    shareType.value = '';
+  });
   return {
+    shareType,
     ipfsPin,
     loading,
     isReady,
     periodShow,
     periodValue,
     desc,
+    imgDesc,
     options,
     doShare,
     confirmPeriod,
