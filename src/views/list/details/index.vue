@@ -1295,6 +1295,7 @@
           };
         });
         filesCount.value = contentList?.[0]?.count || 0;
+        orderInfo.value.used_space = contentList?.[0]?.total || 0;
       }
     });
   };
@@ -1943,8 +1944,6 @@
   }
 </style>
 <style lang="scss">
-
-
   .order-circle .nut-circle-progress {
     svg {
       border-radius: 50%;

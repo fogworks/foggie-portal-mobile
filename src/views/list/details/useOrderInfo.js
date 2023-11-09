@@ -34,6 +34,7 @@ export default function useOrderInfo() {
     });
     let res = await get_unique_order({ order_uuid: route?.query?.uuid });
     orderInfo.value = res.result.data;
+    orderInfo.value.used_space = 0;
     // orderInfo.value.rpc = '218.2.96.99:6007';
     header.setPeerid(orderInfo.value.peer_id);
     header.setId(orderInfo.value.foggie_id);
