@@ -222,5 +222,4 @@ onMounted(async () => {
 
 .grecaptcha-badge {
   display: none !important;
-}
-</style>
+}</style>

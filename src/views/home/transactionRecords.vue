@@ -54,12 +54,12 @@
         :has-more="hasMore"
         @load-more="loadMore"
       >
-        <div class="list_item" v-for="(item, index) in listData" @click="goToHash(item.trx_id)">
+        <div class="list_item" v-for="(item, index) in listData" >
           <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
             <img src="@/assets/list_item_2.svg" alt="" />
           </div>
           <div>
-            <span class="txt_id">{{ handleID(item.trx_id) }}</span>
+            <span class="txt_id" @click="goToHash(item.trx_id)">{{ handleID(item.trx_id) }}</span>
             <span :class="[searchType == 0 ? 'earnings' : 'expense']">
               {{ searchType == 0 ? '+' : '-' }} {{ formatNumber(item.quantity)?.integerPart
               }}<span style="font-size: 12px">.{{ formatNumber(item.quantity)?.decimalPart }}</span>
@@ -124,7 +124,9 @@
     }
   };
   const goToHash = (transaction_hash) => {
-    window.open(`https://explorer.dmctech.io/transaction/${transaction_hash}`);
+    // window.open(`https://explorer.dmctech.io/transaction/${transaction_hash}`);
+    window.open(`http://154:64.7.46:8801/transaction/${transaction_hash}`);
+
   };
   // watch(
   //   listData,
@@ -177,7 +179,7 @@
 
 <style lang="scss" scoped>
   .txt_id {
-    text-decoration: underline;
+    // text-decoration: underline;
     color: #496af2;
     font-weight: bold;
   }

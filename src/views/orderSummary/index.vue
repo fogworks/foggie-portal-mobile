@@ -136,6 +136,7 @@
     OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
     OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
     user_cancel_order:'Order Cancellation Refund',
+    user_OrderReceiptDeposit:'Order expires. Deposit refunded',  
     OrderReceiptEnd: 12,
   };
   const { getUserAssets, cloudBalance, cloudProfit, orderPayout } = useOrderAssets();
