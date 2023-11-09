@@ -268,11 +268,10 @@
           showToast.fail(res.msg);
         }
       });
-    }else if(!sumRes)(
-          showToast.fail('Failed to get data, please try again');
-    )else if(!usedSpace.value){
-          showToast.fail("You haven't uploaded a file yet, please do so!");
-
+    }else if(!sumRes) {
+      showToast.fail('Failed to get data, please try again');
+    } else if(!usedSpace.value) {
+      showToast.fail("You haven't uploaded a file yet, please do so!");
     }
   };
 

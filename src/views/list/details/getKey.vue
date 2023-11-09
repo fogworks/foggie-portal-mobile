@@ -71,11 +71,15 @@
   import IconDelete from '~icons/material-symbols/delete';
   import AESHelper from './AESHelper';
   import { Base64 } from 'js-base64';
-  import { get_unique_order } from '@/api/index';
+  import { get_unique_order, get_order_sign } from '@/api/index';
   import { showToast, showDialog } from '@nutui/nutui';
 
   import * as pb from '@/pb/prox_grpc_web_pb';
   import * as grpc from '@/pb/prox_pb';
+
+  // import * as grpcWeb from 'grpc-web';
+
+
   const router = useRouter();
   const route = useRoute();
   const ip = ref<any>('');
@@ -140,7 +144,7 @@
     }),
 
     methods: {
-      add() {
+      async add() {
         if (dynamicForm.state.tels.length === 5 || dynamicForm.state.tels.length > 5) {
           showToast.text('Sorry,Generate up to 5 Access Key and Secret Key for you');
           return;
@@ -151,6 +155,18 @@
 
         const accessKeyBytes = generateRandomBytes(20);
         const ak = cleanString(encodeBase64(accessKeyBytes), 20);
+
+
+        let param = {
+          order_uuid: route?.query?.uuid,
+        }
+        const signData = await get_order_sign(param);
+        console.log('signData==:', signData);
+        token.value = signData?.result?.data?.sign;
+        const date = signData?.result?.data?.timestamp;
+        let metadata = {
+          'X-Custom-Date': date,
+        }
 
         // let ip = 'http://154.31.3.222:7007'
         let server = new pb.default.ServiceClient(ip.value, null, null);
@@ -170,7 +186,7 @@
         request.setHeader(header);
         request.setCred(cred);
 
-        server.generateCred(request, {}, (err: any, res: any) => {
+        server.generateCred(request, metadata, (err: any, res: any) => {
           if (err) {
             console.log('err------generateCred:', err);
           }
@@ -216,10 +232,21 @@
 
   const getKeys = async () => {
     loading.value = true;
-    await get_unique_order({ order_uuid: route?.query?.uuid }).then((res: any) => {
+    await get_unique_order({ order_uuid: route?.query?.uuid }).then(async (res: any) => {
       peer_id.value = res.result.data.peer_id;
       foggie_id.value = res.result.data.foggie_id;
       token.value = res.result.data.sign;
+      let param = {
+        order_uuid: route?.query?.uuid,
+      }
+
+      const signData = await get_order_sign(param);
+      console.log('signData==:', signData);
+      token.value = signData?.result?.data?.sign;
+      const date = signData?.result?.data?.timestamp;
+
+      
+
       let server = new pb.default.ServiceClient(ip.value, null, null);
       let header = new grpc.default.ProxHeader();
       header.setPeerid(peer_id.value);
@@ -227,11 +254,19 @@
       header.setToken(token.value);
       let request = new grpc.default.ProxGetCredRequest();
       request.setHeader(header);
-      server.listCreds(request, {}, (err: any, res: { array: any }) => {
+      // console.log('-------metadata:',  grpcWeb.Metadata, grpc, pb)
+      // let metadata = new grpcWeb.Metadata();
+      // metadata.add('Date', date);
+      let metadata = {
+        'X-Custom-Date': date,
+      }
+      console.log('metadata==:', metadata)
+      server.listCreds(request, metadata, (err: any, res: { array: any }) => {
         loading.value = false;
         if (err) {
-          console.log('err------:', err);
+          console.log('err------11:', err);
         } else {
+          console.log('res.array[0]==:', res.array[0]);
           for (let i = 0; i < res.array[0].length; i++) {
             const ak = res.array[0][i][0];
             const sk = res.array[0][i][1];
@@ -248,8 +283,20 @@
       });
     });
   };
-  const onOk = (index: number) => {
+  const onOk = async (index: number) => {
     console.log('deleteConfirm', index);
+
+    let param = {
+      order_uuid: route?.query?.uuid,
+    }
+    const signData = await get_order_sign(param);
+    console.log('signData==:', signData);
+    token.value = signData?.result?.data?.sign;
+    const date = signData?.result?.data?.timestamp;
+    let metadata = {
+      'X-Custom-Date': date,
+    }
+
     let server = new pb.default.ServiceClient(ip.value, null, null);
 
     let header = new grpc.default.ProxHeader();
@@ -265,9 +312,9 @@
     let request = new grpc.default.ProxCredRequest();
     request.setHeader(header);
     request.setCred(cred);
-    server.deleteCred(request, {}, (err: any, res: { array: any }) => {
+    server.deleteCred(request, metadata, (err: any, res: { array: any }) => {
       if (err) {
-        console.log('err------:', err);
+        console.log('err------1:', err);
       } else {
         dynamicForm.state.tels.splice(index, 1);
       }

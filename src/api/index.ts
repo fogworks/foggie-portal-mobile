@@ -296,3 +296,12 @@ export const get_reCAPTCHA_Score_API = (data) => {
     },
   });
 };
+
+
+export const get_order_sign = (data) => {
+  return request({
+    url: `/ambmgr/order/get_order_sign`,
+    method: 'GET',
+    params: data,
+  });
+};
