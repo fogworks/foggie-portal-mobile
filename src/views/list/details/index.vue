@@ -41,33 +41,36 @@
     </nut-row>
   </div>
   <div class="detail_box">
-    <div class="type_check_box">
-      <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
-        <div class="svg_box svg_box2 order-icon-node-tree">
-          <IconRiNodeTree color="#fff" />
+    <div class="type_check_box type_check_box1">
+      <div class="type_check">
+        <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
+          <div class="svg_box svg_box2 order-icon-node-tree">
+            <IconRiNodeTree color="#fff" />
+          </div>
+          <p>Merkle</p>
         </div>
-        <p>Merkle</p>
-      </div>
-      <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 2 } })">
-        <div class="svg_box svg_box2 order-icon-send-to-back">
-          <IconRiSendToBack color="#fff" />
+        <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 2 } })">
+          <div class="svg_box svg_box2 order-icon-send-to-back">
+            <IconRiSendToBack color="#fff" />
+          </div>
+          <p>Challenge</p>
         </div>
-        <p>Challenge</p>
-      </div>
-      <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 3 } })">
-        <div class="svg_box svg_box2 order-icon-input-cursor-move">
-          <IconRiInputCursorMove color="#fff" />
+        <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 3 } })">
+          <div class="svg_box svg_box2 order-icon-input-cursor-move">
+            <IconRiInputCursorMove color="#fff" />
+          </div>
+          <p>Arbitrate</p>
         </div>
-        <p>Arbitrate</p>
       </div>
-      <div class="type_item" @click="getKey">
+
+      <div class="type_item s3key" @click="getKey">
         <div class="svg_box svg_box2 order-icon-recycle">
           <keySolid color="#fff" />
         </div>
         <p>S3 Access</p>
       </div>
     </div>
-    <div class="type_check_box">
+    <div class="type_check_box" style="margin-top: 5px; border-radius: 10px; background-color: #fff">
       <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1 } })">
         <div class="svg_box">
           <IconImage></IconImage>
@@ -1264,18 +1267,18 @@
   onMounted(async () => {
     await getOrderInfo();
 
-    if (orderInfo.value.electronic_type == '0') {
-      if (bucketName.value) {
-        getFileList();
-        getSummary();
-      } else {
-        dialogVisible.value = true;
-        setDefaultName();
-      }
-    } else {
+    // if (orderInfo.value.electronic_type == '0') {
+    if (bucketName.value) {
       getFileList();
       getSummary();
+    } else {
+      dialogVisible.value = true;
+      setDefaultName();
     }
+    // } else {
+    //   getFileList();
+    //   getSummary();
+    // }
   });
   const getSummary = () => {
     let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
@@ -1295,7 +1298,6 @@
           };
         });
         filesCount.value = contentList?.[0]?.count || 0;
-        orderInfo.value.used_space = contentList?.[0]?.total || 0;
       }
     });
   };
@@ -1311,16 +1313,16 @@
     async () => {
       dialogVisible.value = false;
       await getOrderInfo();
-      if (orderInfo.value.electronic_type == '0') {
-        if (bucketName.value) {
-          getFileList();
-        } else {
-          dialogVisible.value = true;
-          setDefaultName();
-        }
-      } else {
+      // if (orderInfo.value.electronic_type == '0') {
+      if (bucketName.value) {
         getFileList();
+      } else {
+        dialogVisible.value = true;
+        setDefaultName();
       }
+      // } else {
+      //   getFileList();
+      // }
     },
     { deep: true },
   );
@@ -1540,7 +1542,6 @@
       justify-content: flex-start;
       align-items: center;
       flex-wrap: wrap;
-      // background: #fff;
       padding: 10px;
 
       .type_item {
@@ -1643,6 +1644,34 @@
         //     background: #e2e4ff;
         //   }
         // }
+      }
+    }
+
+    .type_check_box1 {
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+
+      .type_check {
+        display: flex;
+        align-items: center;
+        margin-right: 10px;
+        border-radius: 10px;
+
+        background-color: #fff;
+        .type_item {
+          width: 33.3333%;
+        }
+      }
+
+      .s3key {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        background: #fff;
+        border-radius: 10px;
+        margin-left: 10px;
       }
     }
 
@@ -1802,12 +1831,14 @@
   .rename_box {
     margin-top: 40px;
     padding: 0 40px;
+
     :deep {
       .nut-cell {
         padding-left: 0;
         padding-right: 0;
         box-shadow: none;
       }
+
       .nut-textarea {
         padding-left: 0;
         padding-right: 0;
@@ -1894,52 +1925,55 @@
       }
     }
   }
-
-  .custom-content {
-    p {
-      padding: 30px 20px;
-      color: #909090;
-      border-bottom: 1px solid #eee;
-
-      svg {
-        width: 60px;
-        height: 60px;
-        margin-right: 20px;
-        vertical-align: middle;
-      }
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-
-      li {
+</style>
+<style lang="scss">
+  .order-circle .nut-circle-progress {
+    .custom-content {
+      p {
         padding: 30px 20px;
+        color: #909090;
+        border-bottom: 1px solid #eee;
 
         svg {
-          width: 40px;
-          height: 40px;
-          margin-right: 15px;
-          vertical-align: text-bottom;
-        }
-
-        &:active {
-          background: #cde3f5;
+          width: 60px;
+          height: 60px;
+          margin-right: 20px;
+          vertical-align: middle;
         }
       }
 
-      .is-disable {
-        color: #ccc;
-      }
-    }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
 
-    .cancel_btn {
-      padding: 20px;
-      background-color: #f7f7f7;
-      color: #000;
-      text-align: center;
-      font-size: 35px;
+        li {
+          padding: 30px 20px;
+
+          svg {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            vertical-align: text-bottom;
+          }
+
+          &:active {
+            background: #cde3f5;
+          }
+        }
+
+        .is-disable {
+          color: #ccc;
+        }
+      }
+
+      .cancel_btn {
+        padding: 20px;
+        background-color: #f7f7f7;
+        color: #000;
+        text-align: center;
+        font-size: 35px;
+      }
     }
   }
 </style>
