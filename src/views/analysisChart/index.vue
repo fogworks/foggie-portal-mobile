@@ -225,37 +225,6 @@
                 fontWeight: 'bold',
               },
             },
-<<<<<<< HEAD
-          ],
-        };
-      }
-    })
-    .catch((err) => { });
-}
-
-function loadSearchUserAssetCount(params: object) {
-  showToast.loading('Loading', {
-    cover: true,
-    coverColor: 'rgba(0,0,0,0.45)',
-    customClass: 'app_loading',
-    icon: loadingImg,
-    loadingRotate: false,
-  });
-  search_user_asset(params)
-    .then((res) => {
-      if (res.code == 200) {
-        dmcCount.value = res.result.counts || {};
-
-        chartOptions0.value = {
-          backgroundColor: '#fff',
-          title: {
-            text: `Benefit analysis`,
-            textStyle: {
-              rich: {
-                a: {
-                  fontSize: 16,
-                  fontWeight: 600,
-=======
             tooltip: {},
             legend: {
               top: 'bottom',
@@ -270,7 +239,6 @@ function loadSearchUserAssetCount(params: object) {
                 roseType: 'radius',
                 itemStyle: {
                   borderRadius: 1,
->>>>>>> 1160352c529b111a77a7ecf4f0b70df968376e51
                 },
                 data: [
                   { value: data?.income, name: 'Income' },
