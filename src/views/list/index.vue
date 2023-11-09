@@ -14,8 +14,10 @@
             :class="[searchType == 'Open' ? 'active_svg-box active_svg-boxOpen' : 'svg-box-open']"
           >
             <!-- <Shop></Shop> -->
-            <IconSwitch style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'Open'"></IconSwitch>
-            <IconSwitch style="vertical-align: text-top" color="#ffffff" v-else></IconSwitch>
+            <!-- bidian.png -->
+            <img src="@/assets/dingdanhetong.png" style="background-color: transparent;" alt="" srcset="">
+            <!-- <IconSwitch style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'Open'"></IconSwitch>
+            <IconSwitch style="vertical-align: text-top" color="#ffffff" v-else></IconSwitch> -->
           </div>
           <span>Ongoing</span></div
         >
@@ -27,8 +29,9 @@
             @click="searchType = 'History'"
             :class="[searchType == 'History' ? 'active_svg-box active_svg-boxHistory' : 'svg-box-history']"
           >
-            <IconHistory style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistory>
-            <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-else></IconHistoryActivate>
+            <img src="@/assets/bidian.png" style="background-color: transparent;" alt="" srcset="">
+            <!-- <IconHistory style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistory>
+            <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-else></IconHistoryActivate> -->
           </div>
           <span>History</span></div
         >
@@ -312,7 +315,7 @@
           }
         }
         .svg-box-history {
-          background: #000;
+          background-color: #fff7;
           svg,
           img {
             width: 70px;
@@ -343,7 +346,8 @@
         // }
         .active_svg-boxHistory {
           border: 5px solid orange;
-          background: #000;
+          background-color: #aeaeae;
+         
           svg,
           img {
             width: 70px;

@@ -17,26 +17,23 @@
     <p class="middle_title">VIP orders will receive a higher amount of revenue</p>
     <div class="product_box">
       <div class="product_card">
-        <p
-          >General Orders <br />
-          (48 Weeks)</p
-        >
+        <p>General Orders <br />
+          (48 Weeks)</p>
         <p>{{ (perMpPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
       </div>
       <!-- <img src="@/assets/arrow-right.svg" alt="" /> -->
       <span style="font-weight: bold"> VS</span>
 
       <div class="product_card">
-        <p
-          >VIP Orders <br />
-          (48 Weeks)</p
-        >
+        <p>VIP Orders <br />
+          (48 Weeks)</p>
         <p>{{ (perGoldenPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
       </div>
     </div>
   </div>
   <div class="out_price_box">
-    <p>VIP Order <IconSetting @click="showTop = true"></IconSetting></p>
+    <p>VIP Order <IconSetting @click="showTop = true"></IconSetting>
+    </p>
     <div class="price_box">
       Reference price: <br />
       <span style="text-align: center" class="price_box_text"> 100GB = {{ middleTotalPrice }} DMC</span>
@@ -63,7 +60,8 @@
           <nut-range hidden-range v-model="shopForm.floating_ratio" :max="100" :min="0" />
         </nut-form-item>
         <nut-form-item label="Space(GB) Min:100GB">
-          <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
+          <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text"
+            placeholder="Space" />
         </nut-form-item>
         <div style="text-align: center" class="order-tip">
           <strong> Reference price: </strong>
@@ -79,7 +77,17 @@
   </Teleport>
 
   <Teleport to="body">
-    <nut-popup position="bottom" pop-class="confirm_pop" :style="{ height: '350px' }" v-model:visible="showBuy">
+    <nut-popup position="bottom" pop-class="confirm_pop" round :style="{ height: 'auto' }" v-model:visible="showBuy">
+      <h3 class="buyOrderTitle"> Pre-trading information</h3>
+      <ul class="buyOrderTips">
+        <li>The order book is only partly open during the outcry phase。</li>
+        <li>When orders match such as to enable a transaction to be executed, the indicative auction price
+          is shown</li>
+        <li>This is the price that would result for the auction if the price determination were to take place at
+          this point in time</li>
+      </ul>
+
+
       <nut-cell-group>
         <nut-cell title="Space" :desc="shopForm.quantity + ' GB'"></nut-cell>
         <nut-cell title="Weeks" :desc="shopForm.week"></nut-cell>
@@ -90,525 +98,601 @@
       </nut-cell-group>
 
       <div class="bottom_btn">
-        <nut-button type="warning" :loading="loading" plain @click="showBuy = false"> Cancel </nut-button>
-        <nut-button type="warning" @click="confirmBuy" :loading="loading"> Buy </nut-button>
+        <nut-button type="warning" block :loading="loading" plain @click="showBuy = false"> Cancel </nut-button>
+        <div class="BuyOrderButton nut-icon-am-breathe nut-icon-am-infinite">
+          <img src="@/assets/crypto_badges_15.png" alt="" srcset="" class="">
+          <nut-button type="warning" @click="confirmBuy" :loading="loading"> Buy Now </nut-button>
+        </div>
+        <!-- <nut-button type="warning" @click="confirmBuy" :loading="loading"> Buy Now </nut-button> -->
       </div>
     </nut-popup>
   </Teleport>
 </template>
 
 <script setup lang="ts" name="Shop">
-  import IconArrowLeft from '~icons/home/arrow-left.svg';
-  import IconSetting from '~icons/home/setting.svg';
-  import { toRefs, reactive, onMounted } from 'vue';
-  import { buy_order, node_order_buy, node_order_search, get_average_price, query_node } from '@/api/amb';
-  import { showToast, showDialog } from '@nutui/nutui';
-  import { useRouter } from 'vue-router';
-  import useDmcTrade from './useDmcTrade.js';
-  import useUserAssets from '../home/useUserAssets.ts';
-  import { debounce } from 'lodash';
+import IconArrowLeft from '~icons/home/arrow-left.svg';
+import IconSetting from '~icons/home/setting.svg';
+import { toRefs, reactive, onMounted } from 'vue';
+import { buy_order, node_order_buy, node_order_search, get_average_price, query_node } from '@/api/amb';
+import { showToast, showDialog } from '@nutui/nutui';
+import { useRouter } from 'vue-router';
+import useDmcTrade from './useDmcTrade.js';
+import useUserAssets from '../home/useUserAssets.ts';
+import { debounce } from 'lodash';
 
-  // import useUpdateDMC from './useUpdateDMC';
-  // const { getAmbDmc, targetAccount } = useUpdateDMC();
-  const { getUserAssets, cloudBalance } = useUserAssets();
-  const { perMpPSTIncome, perGoldenPSTIncome } = useDmcTrade();
-  const router = useRouter();
-  const state = reactive({
-    shopForm: {
-      quantity: 100 as number,
-      week: 24,
-      floating_ratio: 30,
-    },
-    loading: false,
-    curReferenceRate: 0,
-    showTop: false,
-    deposit_ratio: 0,
-    middle_price: 0,
-    showBuy: false,
-    nodeInfo: {
-      nodeIp: '',
-      buyOrderUuid: '',
-      amb_user_uuid: '',
-    },
-    priceNode: '',
-  });
-  const { priceNode, nodeInfo, showBuy, middle_price, deposit_ratio, showTop, shopForm, curReferenceRate, loading } = toRefs(state);
-  const getAveragePrice = async () => {
-    let params = {
-      week: state.shopForm.week,
-      floating_ratio: state.shopForm.floating_ratio,
-      pst: state.shopForm.quantity.toFixed(0),
-    };
-
-    get_average_price(priceNode.value, {
-      week: state.shopForm.week,
-      storage: state.shopForm.quantity,
-      poolType: 'golden', //vofo.*  / golden
-      size: 5,
-    })
-      .then((res) => {
-        if (res.code == 200 && res.data) {
-          middle_price.value = res.data;
-          // curReferenceRate.value = res.data[0].price;
-          // deposit_ratio.value = res.data[0].depositRatio;
-        }
-      })
-      .finally(() => {});
+// import useUpdateDMC from './useUpdateDMC';
+// const { getAmbDmc, targetAccount } = useUpdateDMC();
+const { getUserAssets, cloudBalance } = useUserAssets();
+const { perMpPSTIncome, perGoldenPSTIncome } = useDmcTrade();
+const router = useRouter();
+const state = reactive({
+  shopForm: {
+    quantity: 100 as number,
+    week: 24,
+    floating_ratio: 30,
+  },
+  loading: false,
+  curReferenceRate: 0,
+  showTop: false,
+  deposit_ratio: 0,
+  middle_price: 0,
+  showBuy: false,
+  nodeInfo: {
+    nodeIp: '',
+    buyOrderUuid: '',
+    amb_user_uuid: '',
+  },
+  priceNode: '',
+});
+const { priceNode, nodeInfo, showBuy, middle_price, deposit_ratio, showTop, shopForm, curReferenceRate, loading } = toRefs(state);
+const getAveragePrice = async () => {
+  let params = {
+    week: state.shopForm.week,
+    floating_ratio: state.shopForm.floating_ratio,
+    pst: state.shopForm.quantity.toFixed(0),
   };
-  const totalPrice = computed(() => {
-    let total =
-      ((curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity +
-        (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity) *
-      (1 + state.shopForm.floating_ratio / 100);
-    return total.toFixed(4);
-  });
-  const middleTotalPrice = computed(() => {
-    let total =
-      ((middle_price.value / 10000) * state.shopForm.week * state.shopForm.quantity +
-        (middle_price.value / 10000) * 1 * state.shopForm.quantity) *
-      (1 + state.shopForm.floating_ratio / 100);
-    return total.toFixed(4);
-  });
 
-  async function submit() {
-    loading.value = true;
-    // await loadCurReferenceRate();
-
-    let params = {
-      week: state.shopForm.week,
-      floating_ratio: state.shopForm.floating_ratio / 100,
-      pst: state.shopForm.quantity.toFixed(0),
-    };
-
-    node_order_search(priceNode.value, {
-      week: state.shopForm.week,
-      storage: state.shopForm.quantity,
-      poolType: 'golden', //vofo.*  / golden
-      size: 5,
+  get_average_price(priceNode.value, {
+    week: state.shopForm.week,
+    storage: state.shopForm.quantity,
+    poolType: 'golden', //vofo.*  / golden
+    size: 5,
+  })
+    .then((res) => {
+      if (res.code == 200 && res.data) {
+        middle_price.value = res.data;
+        // curReferenceRate.value = res.data[0].price;
+        // deposit_ratio.value = res.data[0].depositRatio;
+      }
     })
-      .then((res) => {
-        loading.value = false;
-        if (res.code == 200 && res.data.length) {
-          curReferenceRate.value = res.data[0].price;
-          deposit_ratio.value = res.data[0].depositRatio;
-          showBuy.value = true;
-        }
-      })
-      .finally(() => {
-        loading.value = false;
-      });
+    .finally(() => { });
+};
+const totalPrice = computed(() => {
+  let total =
+    ((curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity +
+      (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity) *
+    (1 + state.shopForm.floating_ratio / 100);
+  return total.toFixed(4);
+});
+const middleTotalPrice = computed(() => {
+  let total =
+    ((middle_price.value / 10000) * state.shopForm.week * state.shopForm.quantity +
+      (middle_price.value / 10000) * 1 * state.shopForm.quantity) *
+    (1 + state.shopForm.floating_ratio / 100);
+  return total.toFixed(4);
+});
+
+async function submit() {
+  loading.value = true;
+  // await loadCurReferenceRate();
+
+  let params = {
+    week: state.shopForm.week,
+    floating_ratio: state.shopForm.floating_ratio / 100,
+    pst: state.shopForm.quantity.toFixed(0),
+  };
+
+  node_order_search(priceNode.value, {
+    week: state.shopForm.week,
+    storage: state.shopForm.quantity,
+    poolType: 'golden', //vofo.*  / golden
+    size: 5,
+  })
+    .then((res) => {
+      loading.value = false;
+      if (res.code == 200 && res.data.length) {
+        curReferenceRate.value = res.data[0].price;
+        deposit_ratio.value = res.data[0].depositRatio;
+        showBuy.value = true;
+      }
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+}
+const confirmBuy = async () => {
+  // let nodeIp ='http://'+ res.result.node_address;
+  // let nodeIp = 'http://154.31.41.124:18080';
+  console.log(cloudBalance.value < totalPrice.value);
+  console.log(cloudBalance.value);
+  console.log(totalPrice.value);
+
+  if (+cloudBalance.value < +totalPrice.value) {
+    let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);
+    // showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
+    showBuy.value = false;
+    loading.value = false;
+    const dmcOk = () => {
+      router.push('/recharge');
+    };
+    let src = require('@/assets/DMC_token.png');
+    let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p >`;
+    showDialog({
+      title: 'The balance is insufficient',
+      content: str,
+      noCancelBtn: true,
+      okText: 'Recharge',
+      onOk: dmcOk,
+    });
+    return false;
   }
-  const confirmBuy = async () => {
-    // let nodeIp ='http://'+ res.result.node_address;
-    // let nodeIp = 'http://154.31.41.124:18080';
-    console.log(cloudBalance.value < totalPrice.value);
-    console.log(cloudBalance.value);
-    console.log(totalPrice.value);
+  loading.value = true;
+  let params = {
+    week: state.shopForm.week,
+    floating_ratio: state.shopForm.floating_ratio / 100,
+    pst: state.shopForm.quantity.toFixed(0),
+  };
+  const nodeRes = await buy_order(params);
+  console.log(nodeRes);
 
-    if (+cloudBalance.value < +totalPrice.value) {
-      let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);
-      // showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
+  if (nodeRes.code !== 200) {
+    showToast.fail(`Apologies for the delay, Please Try Again Later`);
+    loading.value = false;
+    return false;
+  }
+
+  nodeInfo.value.buyOrderUuid = nodeRes.result.uuid;
+  nodeInfo.value.amb_user_uuid = nodeRes.result.amb_user_uuid;
+  node_order_buy(nodeInfo.value.nodeIp, {
+    minPrice: curReferenceRate.value / 10000,
+    maxPrice: ((curReferenceRate.value / 10000) * (1 + state.shopForm.floating_ratio / 100)).toFixed(4),
+    buyOrderUuid: nodeInfo.value.buyOrderUuid,
+    userUuid: nodeInfo.value.amb_user_uuid,
+    period: state.shopForm.week.toString(),
+    pst: state.shopForm.quantity.toFixed(0),
+    totalPrice: totalPrice.value,
+    memo: `${nodeInfo.value.buyOrderUuid}_Order_buy`,
+    deviceType: 3,
+    poolType: 'golden', //vofo.*  / golden
+    terminalType: 2,
+  })
+    .then((res) => {
+      loading.value = false;
+      showTop.value = false;
       showBuy.value = false;
-      loading.value = false;
-      const dmcOk = () => {
-        router.push('/recharge');
-      };
-      let src = require('@/assets/DMC_token.png');
-      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p >`;
-      showDialog({
-        title: 'The balance is insufficient',
-        content: str,
-        noCancelBtn: true,
-        okText: 'Recharge',
-        onOk: dmcOk,
-      });
-      return false;
-    }
-    loading.value = true;
-    let params = {
-      week: state.shopForm.week,
-      floating_ratio: state.shopForm.floating_ratio / 100,
-      pst: state.shopForm.quantity.toFixed(0),
-    };
-    const nodeRes = await buy_order(params);
-    console.log(nodeRes);
+      if (res.code == 200) {
+        const dmcOk = () => {
+          router.push('/home');
+        };
+        let src = require('@/assets/DMC_token.png');
+        let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Order request has been initiated, please check the order result in the order record later.</p >`;
+        showDialog({
+          title: 'Purchase Successfully',
+          content: str,
+          noCancelBtn: true,
+          okText: 'OK',
+          onOk: dmcOk,
+        });
+      } else {
+        loading.value = false;
+      }
 
-    if (nodeRes.code !== 200) {
-      showToast.fail(`Apologies for the delay, Please Try Again Later`);
-      loading.value = false;
-      return false;
-    }
-
-    nodeInfo.value.buyOrderUuid = nodeRes.result.uuid;
-    nodeInfo.value.amb_user_uuid = nodeRes.result.amb_user_uuid;
-    node_order_buy(nodeInfo.value.nodeIp, {
-      minPrice: curReferenceRate.value / 10000,
-      maxPrice: ((curReferenceRate.value / 10000) * (1 + state.shopForm.floating_ratio / 100)).toFixed(4),
-      buyOrderUuid: nodeInfo.value.buyOrderUuid,
-      userUuid: nodeInfo.value.amb_user_uuid,
-      period: state.shopForm.week.toString(),
-      pst: state.shopForm.quantity.toFixed(0),
-      totalPrice: totalPrice.value,
-      memo: `${nodeInfo.value.buyOrderUuid}_Order_buy`,
-      deviceType: 3,
-      poolType: 'golden', //vofo.*  / golden
-      terminalType: 2,
+      // showToast.success('Order request has been initiated, please check the order result in the order record later.');
+      // router.push('/home');
     })
-      .then((res) => {
-        loading.value = false;
-        showTop.value = false;
-        showBuy.value = false;
-        if (res.code == 200) {
-          const dmcOk = () => {
-            router.push('/home');
-          };
-          let src = require('@/assets/DMC_token.png');
-          let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Order request has been initiated, please check the order result in the order record later.</p >`;
-          showDialog({
-            title: 'Purchase Successfully',
-            content: str,
-            noCancelBtn: true,
-            okText: 'OK',
-            onOk: dmcOk,
-          });
-        } else {
-          loading.value = false;
-        }
-
-        // showToast.success('Order request has been initiated, please check the order result in the order record later.');
-        // router.push('/home');
-      })
-      .catch(() => {
-        loading.value = false;
-      });
-  };
-  const queryPriceNode = () => {
-    return query_node()
-      .then((res) => {
-        if (res.code == 200) {
-          const nodeList = res.result.data.filter((el) => el.is_active);
-          // priceNode.value = `http://${nodeList?.[0].ip_address}:28080`;
-          // if (priceNode.value) return true;
-          return true;
-        } else {
-          return false;
-        }
-      })
-      .catch(() => {
+    .catch(() => {
+      loading.value = false;
+    });
+};
+const queryPriceNode = () => {
+  return query_node()
+    .then((res) => {
+      if (res.code == 200) {
+        const nodeList = res.result.data.filter((el) => el.is_active);
+        // priceNode.value = `http://${nodeList?.[0].ip_address}:28080`;
+        // if (priceNode.value) return true;
+        return true;
+      } else {
         return false;
-      });
-  };
-  watch(
-    showTop,
-    (val) => {
-      state.shopForm.quantity = 100;
-      state.shopForm.week = 24;
-      state.shopForm.floating_ratio = 30;
-    },
-    { deep: true },
-  );
+      }
+    })
+    .catch(() => {
+      return false;
+    });
+};
+watch(
+  showTop,
+  (val) => {
+    state.shopForm.quantity = 100;
+    state.shopForm.week = 24;
+    state.shopForm.floating_ratio = 30;
+  },
+  { deep: true },
+);
 
-  onMounted(async () => {
-    let res = await queryPriceNode();
-    if (res) {
-      getAveragePrice();
-    }
-    getUserAssets();
-  });
-  onActivated(async () => {
-    let res = await queryPriceNode();
-    if (res) {
-      getAveragePrice();
-    }
-    getUserAssets();
-  });
+onMounted(async () => {
+  let res = await queryPriceNode();
+  if (res) {
+    getAveragePrice();
+  }
+  getUserAssets();
+});
+onActivated(async () => {
+  let res = await queryPriceNode();
+  if (res) {
+    getAveragePrice();
+  }
+  getUserAssets();
+});
 </script>
 <style lang="scss">
-  .confirm_pop {
+.confirm_pop {
+  padding-bottom: 20px;
+  .nut-cell__value {
+    color: $main_blue;
+  }
+
+  .total_price {
     .nut-cell__value {
-      color: $main_blue;
+      color: $main_red;
+      font-size: 40px;
     }
-    .total_price {
-      .nut-cell__value {
-        color: $main_red;
-        font-size: 40px;
+  }
+
+  .bottom_btn {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    .nut-button {
+      // width: 100%;
+
+      &.nut-button--disabled {
+        background: #aaa !important;
       }
     }
-    .bottom_btn {
+    .BuyOrderButton{
+      position: absolute;
+      bottom: 300px;
       display: flex;
-      justify-content: space-around;
+      flex-direction: column;
+      justify-content: center;
       align-items: center;
+      img{
+        width: 35vw;
+        height: 35vw;
+      }
+      .nut-button{
+        margin-top: 20px;
+        width: auto;
+      }
+    }
+  }
+}
+</style>
+<style lang="scss" scoped>
+.price_box_text {
+  width: 100%;
+  display: inline-block;
+  font-weight: bold;
+}
+
+.middle_title {
+  text-align: center;
+  font-weight: 600;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  color: $main_red;
+}
+
+.out_blue {
+  position: relative;
+  height: 290px;
+  background: #43a3fd;
+  border-radius: 0 0 50px 50px;
+
+  .inside_blue {
+    z-index: 999;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 345px;
+    background: #5264f9;
+    border-radius: 0 0 50px 50px;
+    overflow: hidden;
+
+    .back_img {
+      position: absolute;
+      left: 20px;
+      top: 40px;
+      width: 60px;
+      height: 60px;
+      color: #fff;
+    }
+
+    .title {
+      color: #fff;
+      font-size: 1.5rem;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .total_balance {
+      color: #b9d4ff;
+      font-size: 1.5rem;
+      margin: 20px auto 20px;
+      text-align: center;
+    }
+
+    .total_balance_value {
+      font-weight: 250;
+      color: #fff;
+      font-size: 1.75rem;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      right: -240px;
+      transform: rotate(55deg);
+      display: block;
+      width: 350px;
+      height: 350px;
+      border-radius: 60px;
+      border: 5px solid #c72ff8;
+    }
+
+    &::after {
+      transform: rotate(39deg);
+      border: 5px solid #3eb9ff;
+    }
+  }
+}
+
+.middle_content {
+  padding: 20px;
+
+  .middle_title {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #000;
+  }
+
+  .product_box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+
+    img {
+      width: 40px;
+      margin: 0 5px;
+    }
+  }
+
+  .product_card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 260px;
+    height: 160px;
+    padding: 20px;
+    border-radius: 35px;
+    color: #a27430;
+    background: #ffcf87;
+    overflow: hidden;
+    text-align: center;
+
+    p {
+      z-index: 1;
+      margin-bottom: 5px;
+      font-size: 26px;
+      white-space: nowrap;
+
+      &:first-child {
+        font-size: 26px;
+      }
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -80px;
+      left: -30px;
+      width: 250px;
+      height: 250px;
+      background: #f3dcb9;
+      border-radius: 50%;
+    }
+
+    &:nth-child(3) {
+      color: #a73131;
+      background: #fa8596;
+
+      &::after {
+        background: #ffc1c1;
+      }
+    }
+  }
+}
+
+.out_price_box {
+  padding: 20px;
+
+  p {
+    padding: 0 20px;
+    color: #999999;
+    font-size: 1.1rem;
+    font-weight: bold;
+
+    svg {
+      float: right;
+      width: 40px;
+      height: 40px;
+      color: #5264f9;
+    }
+  }
+}
+
+.buy_btn {
+  height: 120px;
+  font-size: 40px;
+  margin: 40px 0;
+
+  :deep {
+    &.nut-button--disabled {
+      background: #aaa !important;
+    }
+  }
+}
+
+.price_box {
+  position: relative;
+  width: 80%;
+  margin: 5px auto;
+  padding: 40px;
+  color: #fff;
+  border-radius: 50px;
+  background: #5264f9;
+  font-size: 1.25rem;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -100px;
+    right: -50px;
+    width: 185px;
+    height: 200px;
+    opacity: 0.75;
+    border-radius: 50%;
+    transform: rotate(-129.95deg);
+    background: linear-gradient(154deg, #c72ff8 -2%, #c72ff8 11%, rgba(198, 48, 248, 0) 91%);
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    transform: rotate(-152.43deg);
+    bottom: -80px;
+    right: -80px;
+    width: 185px;
+    height: 200px;
+    opacity: 0.75;
+    border-radius: 50%;
+    background: linear-gradient(149deg, #5264f9 0%, #3af9ef 98%);
+  }
+}
+
+.query_form {
+  padding: 0 20px 20px 20px;
+
+  :deep {
+    .nut-form-item {
+      flex-direction: column;
+      height: 180px;
+
+      .nut-form-item__label {
+        width: 100%;
+        margin-bottom: 20px;
+        font-weight: 800;
+      }
+    }
+
+    .nut-cell-group__wrap {
+      padding-bottom: 20px;
+      box-shadow: none;
+    }
+
+    .nut-range-button .number {
+      font-weight: 800;
+      transform: translate3d(0, 100%, 0);
+    }
+
+    .nut-range-container {
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+  }
+
+  .order-tip {
+    padding: 30px 10px;
+    font-size: 28px;
+
+    strong {
+      color: $primary-color;
+    }
+
+    .price {
+      font-size: 50px;
+    }
+  }
+
+  .bottom_btn {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    :deep {
       .nut-button {
         width: 40%;
+
         &.nut-button--disabled {
           background: #aaa !important;
         }
       }
     }
   }
-</style>
-<style lang="scss" scoped>
-  .price_box_text {
-    width: 100%;
-    display: inline-block;
-    font-weight: bold;
-  }
-  .middle_title {
-    text-align: center;
-    font-weight: 600;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    color: $main_red;
-  }
-  .out_blue {
-    position: relative;
-    height: 290px;
-    background: #43a3fd;
-    border-radius: 0 0 50px 50px;
+}
 
-    .inside_blue {
-      z-index: 999;
-      position: absolute;
-      top: 0;
-      width: 100%;
-      height: 345px;
-      background: #5264f9;
-      border-radius: 0 0 50px 50px;
-      overflow: hidden;
-      .back_img {
-        position: absolute;
-        left: 20px;
-        top: 40px;
-        width: 60px;
-        height: 60px;
-        color: #fff;
-      }
-      .title {
-        color: #fff;
-        font-size: 1.5rem;
-        text-align: center;
-        margin-top: 40px;
-      }
-      .total_balance {
-        color: #b9d4ff;
-        font-size: 1.5rem;
-        margin: 20px auto 20px;
-        text-align: center;
-      }
-      .total_balance_value {
-        font-weight: 250;
-        color: #fff;
-        font-size: 1.75rem;
-        text-align: center;
-        margin-top: 30px;
-      }
-      &::before,
-      &::after {
-        content: '';
-        position: absolute;
-        top: -10px;
-        right: -240px;
-        transform: rotate(55deg);
-        display: block;
-        width: 350px;
-        height: 350px;
-        border-radius: 60px;
-        border: 5px solid #c72ff8;
-      }
-      &::after {
-        transform: rotate(39deg);
-        border: 5px solid #3eb9ff;
-      }
-    }
-  }
-  .middle_content {
-    padding: 20px;
-    .middle_title {
-      text-align: center;
-      font-weight: 600;
-      margin-top: 40px;
-      margin-bottom: 20px;
-      color: #000;
-    }
-    .product_box {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 30px;
-      img {
-        width: 40px;
-        margin: 0 5px;
-      }
-    }
-    .product_card {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      width: 260px;
-      height: 160px;
-      padding: 20px;
-      border-radius: 35px;
-      color: #a27430;
-      background: #ffcf87;
-      overflow: hidden;
-      text-align: center;
-      p {
-        z-index: 1;
-        margin-bottom: 5px;
-        font-size: 26px;
-        white-space: nowrap;
-        &:first-child {
-          font-size: 26px;
-        }
-      }
-      &::after {
-        content: '';
-        position: absolute;
-        top: -80px;
-        left: -30px;
-        width: 250px;
-        height: 250px;
-        background: #f3dcb9;
-        border-radius: 50%;
-      }
-      &:nth-child(3) {
-        color: #a73131;
-        background: #fa8596;
-        &::after {
-          background: #ffc1c1;
-        }
-      }
-    }
-  }
-  .out_price_box {
-    padding: 20px;
+.action_item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
 
-    p {
-      padding: 0 20px;
-      color: #999999;
-      font-size: 1.1rem;
-      font-weight: bold;
-      svg {
-        float: right;
-        width: 40px;
-        height: 40px;
-        color: #5264f9;
-      }
-    }
+  img {
+    display: block;
+    width: 100px;
+    margin-bottom: 10px;
   }
-  .buy_btn {
-    height: 120px;
-    font-size: 40px;
-    margin: 40px 0;
-    :deep {
-      &.nut-button--disabled {
-        background: #aaa !important;
-      }
-    }
-  }
-  .price_box {
-    position: relative;
-    width: 80%;
-    margin: 5px auto;
-    padding: 40px;
-    color: #fff;
-    border-radius: 50px;
-    background: #5264f9;
-    font-size: 1.25rem;
-    overflow: hidden;
-    &::before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: -100px;
-      right: -50px;
-      width: 185px;
-      height: 200px;
-      opacity: 0.75;
-      border-radius: 50%;
-      transform: rotate(-129.95deg);
-      background: linear-gradient(154deg, #c72ff8 -2%, #c72ff8 11%, rgba(198, 48, 248, 0) 91%);
-      z-index: 1;
-    }
-    &::after {
-      content: '';
-      display: block;
-      position: absolute;
-      transform: rotate(-152.43deg);
-      bottom: -80px;
-      right: -80px;
-      width: 185px;
-      height: 200px;
-      opacity: 0.75;
-      border-radius: 50%;
-      background: linear-gradient(149deg, #5264f9 0%, #3af9ef 98%);
-    }
-  }
-  .query_form {
-    padding: 0 20px 20px 20px;
+}
 
-    :deep {
-      .nut-form-item {
-        flex-direction: column;
-        height: 180px;
-        .nut-form-item__label {
-          width: 100%;
-          margin-bottom: 20px;
-          font-weight: 800;
-        }
-      }
-      .nut-cell-group__wrap {
-        padding-bottom: 20px;
-        box-shadow: none;
-      }
-      .nut-range-button .number {
-        font-weight: 800;
-        transform: translate3d(0, 100%, 0);
-      }
-      .nut-range-container {
-        padding: 0 20px;
-        box-sizing: border-box;
-      }
-    }
-
-    .order-tip {
-      padding: 30px 10px;
-      font-size: 28px;
-
-      strong {
-        color: $primary-color;
-      }
-
-      .price {
-        font-size: 50px;
-      }
-    }
-    .bottom_btn {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      :deep {
-        .nut-button {
-          width: 40%;
-          &.nut-button--disabled {
-            background: #aaa !important;
-          }
-        }
-      }
-    }
-  }
-  .action_item {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.buyOrderTitle {
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  font-size: 34px;
+  color: #999999;
+}
+.buyOrderTips{
+  margin: 0px;
+  padding: 0px;
+  li{
+    text-indent: 35px;
     font-size: 24px;
-
-    img {
-      display: block;
-      width: 100px;
-      margin-bottom: 10px;
-    }
+    color: #999999;
   }
+}
 </style>

@@ -157,58 +157,6 @@
   </nut-infinite-loading>
   <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit"
     description="There are currently no returns this week"></nut-empty>
-  <nut-dialog v-model:visible="bindDmcIsShow" title="Withdraw Crypto" :close-on-click-overlay="false" :show-cancel="false"
-    :show-confirm="false" custom-class="CustomName">
-    <template #header>
-      <img src="@/assets/DMC_token.png" alt="" srcset="" style="width: 30px; height: 30px" />
-      <div style="color: #9e9e9e;margin-left: 5px;">Withdraw Crypto</div>
-    </template>
-    <p class="bucket_tip" style="text-align: left; word-break: break-word; color: #9e9e9e;padding-bottom: 15px;">
-    <div>* This account will become the default withdrawal account</div>
-    </p>
-
-
-    <p style="
-        margin-top: 10px;
-        margin-bottom: 5px;
-        font-weight: 600;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: #d9d6d6;
-      ">
-      <span>Wallet account</span> <span>Required</span>
-    </p>
-    <nut-input v-model="accountName" placeholder="Please enter wallet account" max-length="12"
-      min-length="12"></nut-input>
-    <template #footer>
-      <nut-button type="primary" @click="bindDmcIsShow = false">Operate Later</nut-button>
-      <nut-button type="primary" @click="bindDmc" :loading="bindDmcLoading">Submit</nut-button>
-    </template>
-  </nut-dialog>
-  {{ bindAmbCodeDialogIsShow }}
-  <!-- 绑定amb code -->
-
-
-  <nut-dialog v-model:visible="bindAmbCodeDialogIsShow" :close-on-click-overlay="false" :show-cancel="false"
-    :show-confirm="false" custom-class="CustomName bindAmbCodeDialog">
-    <template #header style="border-bottom: 0px;">
-      <div style="color: #f5f7fb;font-weight: 600;font-size: 17px;">Bind</div>
-    </template>
-    <img src="@/assets/fog-works_w.png" style="height: 60px;margin-bottom: 15px;" alt="" srcset="">
-
-
-    <nut-input v-model="userBindAmbCode" placeholder="Please enter wallet account" max-length="12"
-      min-length="12"></nut-input>
-    <nut-checkbox v-model="isConfirm" class="isConfirmCheckbox" style="text-align: left;" icon-size="24">I understand the
-      usage scenario of this
-      invitation code</nut-checkbox>
-    <template #footer>
-      <nut-button type="primary" @click="bindAmbCodeDialogIsShow = false">Operate Later</nut-button>
-      <nut-button type="primary" @click="bindUserAmbCode" :loading="userBindLoading"
-        :disabled="!isConfirm">Accept</nut-button>
-    </template>
-  </nut-dialog>
 </template>
 
 <script lang="ts" setup name="HomePage">
@@ -218,33 +166,26 @@ import { Notice, TriangleUp, DouArrowUp } from '@nutui/icons-vue';
 import { toRefs, computed, reactive, ref, watch, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/modules/user';
-import { useOrderStore } from '@/store/modules/order';
+
 import { showToast, showDialog } from '@nutui/nutui';
 //   import { search_cloud } from '@/api';
-import { checkDmcAccount, updateUser, user, bind_user_promo, search_cloud } from '@/api';
+import { search_cloud } from '@/api';
 import useUserAssets from './useUserAssets.ts';
 import useOrderList from './useOrderList.ts';
 import { transferUTCTime, formatNumber } from '@/utils/util';
 import '@nutui/nutui/dist/packages/toast/style';
 import { useIntersectionObserver } from '@vueuse/core';
 
-const userStore = useUserStore();
-import { bind_promo, check_promo, get_amb_dmc, check_user_bind } from '@/api/amb';
-import loadingImg from '@/components/loadingImg/index.vue';
 
 
 
 
-const useStore = useUserStore();
-const orderStore = useOrderStore();
-const userInfo = computed(() => useStore.getUserInfo);
-const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
-const uuid = computed(() => userStore.getUserInfo.uuid);
+
+const userInfo = computed(() => userStore.getUserInfo);
+const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+
 const router = useRouter();
-const state = reactive({
-  timeType: '0',
-  searchType: '0',
-});
+
 const mapTypes = {
   user_delivery_income: 'UserDeliveryIncome',
   buy_order: 'BuyOrder',
@@ -264,165 +205,29 @@ const mapTypes = {
   user_cancel_order: 'Order Cancellation Refund',
   OrderReceiptEnd: 12,
 };
+
+const userStore = useUserStore();
 const earningsList = ref([] as any);
 import { search_order_profit, search_user_asset_detail } from '@/api/amb';
-const { timeType, searchType } = toRefs(state);
 const { getUserAssets, getExchangeRate, dmc2usdRate, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } =
   useUserAssets();
 
-const curStepIndex = ref(1); // 1 绑定大使邀请码
-const ambRefuse = ref(false); //大使是否拒绝  true 拒绝  false 同意
 
-const amb_promo_code = computed(() => userStore.getUserInfo?.amb_promo_code || '');
+const ambRefuse = computed(() => userStore.getambRefuse); //大使是否拒绝  true 拒绝  false 同意
+const curStepIndex = computed(() => userStore.getCurStepIndex); // 1 绑定大使邀请码
+const bindAmbCode = inject('bindAmbCode')
+const openBindDMCDiaolg = inject('openBindDMCDiaolg')
 
 
 
-const targetAccount = ref('');
 const pn = ref(1);
 const ps = ref(10);
 
 
-watch(amb_promo_code, (newVal) => {
-  console.log(newVal);
-  
-  userBindAmbCode.value = newVal
-})
-watchEffect(() => {
-  if (uuid.value && !cloudCodeIsBind.value) {
-    bindAmbCode()
-  }
-})
 
 
-const bindAmbCodeDialogIsShow = ref(false)
-const userBindAmbCode = ref('')  // 用户想要绑定的ambcode
-const userBindLoading = ref(false)  // 用户绑定ambcode的 loading
-const isConfirm = ref(false)  //用户是否勾选已知 
-async function bindAmbCode() {
-  if (!uuid.value) return false;
-  showToast.loading('Loading', {
-    cover: true,
-    customClass: 'app_loading',
-    icon: loadingImg,
-    loadingRotate: false,
-    id: 'amb-code',
-  });
-  await check_user_bind(uuid.value)
-    .then((res2) => {
-
-      if (res2.result.bind) {
-
-        if (res2.result.approved && res2.result.refuse) {
-          curStepIndex.value = 2;
-          ambRefuse.value = true;
-
-          // refuse
-          const onOk = () => {
-            curStepIndex.value = 1;
-            bindAmbCodeDialogIsShow.value = true
-          };
-          showDialog({
-            title: 'Notice',
-            content: `Your application to join the Ambassador platform has been rejected  ${res2.result.fault ? 'with the reason:' + res2.result.fault : ''
-              }. you can change the Ambassador invitation code and try to join another Ambassador platform!`,
-            cancelText: 'Cancel',
-            okText: 'Confirm',
-            popClass: 'dialog_class',
-            onOk,
-          });
-        } else if (res2.result.approved && !res2.result.refuse) {
-          curStepIndex.value = 3;
-          userStore.setCloudCodeIsBind(true);
-          ambRefuse.value = false;
-          // approved
-
-          if (!window.localStorage.hasCloudApproved) {
-            window.localStorage.hasCloudApproved = true;
-            const onOk = () => {
-              router.push({ name: 'bindDmc', query: { type: 'amb' } });
-            };
-            let src = require('@/assets/fog-works_w.png');
-            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Welcome to Foggie Mobile! Your application has been approved, and you can now begin placing orders,embarking on your Foggie journey.</p >`;
-            showDialog({
-              title: 'Notice',
-              content: str,
-              cancelText: 'Cancel',
-              okText: 'Confirm',
-              popClass: 'dialog_class',
-              onOk,
-            });
-          }
-        } else {
-          curStepIndex.value = 2;
-          let src = require('@/assets/fog-works_w.png');
-          let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Awaiting approval from the Ambassador, please be patient until the approval is complete</p >`;
-          showDialog({
-            title: 'Ambassador Invitation Code',
-            content: str,
-            'no-ok-btn': true,
-            'cancel-text': 'OK',
-          });
 
 
-        }
-      } else {
-        curStepIndex.value = 1;
-        bindAmbCodeDialogIsShow.value = true
-      }
-    })
-    .finally(() => {
-      showToast.hide('amb-code');
-    });
-}
-
-function bindUserAmbCode() {
-  console.log(userBindAmbCode.value);
-
-  if (!userBindAmbCode.value) {
-    showToast.fail('Please enter the invitation code');
-    return
-  }
-  let params = {
-    user_uuid: userInfo.value.uuid,
-    amb_promo_code: userBindAmbCode.value,
-    email: userInfo.value.email,
-    dmc_account: userInfo.value.dmc,
-  }
-
-  userBindLoading.value = true
-  check_promo(userBindAmbCode.value).then((res) => {
-    if (res.code == 200) {
-      bind_promo(params).then((res2) => {
-        if (res2.code == 200) {
-          bind_user_promo({ amb_promo_code: userBindAmbCode.value, }).then((res) => {
-            if (res.code == 200) {
-              bindAmbCode()
-              showToast.success('Bind successfully');
-              userBindLoading.value = false
-              bindAmbCodeDialogIsShow.value = false
-            } else {
-              userBindLoading.value = false
-            }
-          }).finally(() => {
-            userBindLoading.value = false
-          })
-
-        } else {
-          userBindLoading.value = false
-        }
-      }).catch(() => {
-        userBindLoading.value = false
-      })
-    } else {
-      userBindLoading.value = false
-      showToast.fail(res.message || 'Binding failed, please try again');
-      return false;
-    }
-  }).catch(() => {
-    userBindLoading.value = false
-  })
-
-}
 async function getOrder() {
   const order_state = null;
   const start_time = '';
@@ -431,9 +236,9 @@ async function getOrder() {
   await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result }).then((res) => {
     let total = res?.result?.total;
     if (total > 0) {
-      curStepIndex.value = 4;
+      userStore.setcurStepIndex(4)
     } else {
-      curStepIndex.value = 3;
+      userStore.setcurStepIndex(3)
     }
   });
 }
@@ -488,10 +293,8 @@ const ishaveProfit = ref(false)   //是否订单已经产生过收益 如果有�
 const searchAllOrderProfit = () => {
   const [start, end] = shortcuts[0]();
   const postData = !start && !end ? {} : { start_time: start, end_time: end };
-
   search_user_asset_detail(postData)
     .then((res) => {
-      console.log(res, '111111111');
       if (res.code == 200) {
         if (res.result.data.length > 0) {
           ishaveProfit.value = true
@@ -500,21 +303,16 @@ const searchAllOrderProfit = () => {
 
         }
       }
-      // if (res && res.result && res.result.data.length) {
-      //   earningsList.value = res.result.data;
-      // }
     })
     .finally(() => { });
 };
 
 
 
-const bindDmcIsShow = ref(false); // 绑定dmc账户钱包弹窗 是否展示
-const accountName = ref(''); // 用户钱包名称
-const bindDmcLoading = ref(false) // 提交绑定dmc钱包loading状态
+
 const showWithdraw = () => {
   if (!userInfo.value.dmc) {
-    bindDmcIsShow.value = true;
+    openBindDMCDiaolg()
 
     return false;
   } else if (!cloudCodeIsBind.value) {
@@ -525,104 +323,8 @@ const showWithdraw = () => {
   }
 };
 
-const initFoggieDate = async () => {
-  let data = await user();
-  if (data) {
-    useStore.setInfo({
-      ...data.data,
-    });
-  }
-};
 
-async function bindDmc() {
-  if (accountName.value.length != 12) {
-    showToast.fail('The DMC account length is 12, please enter the correct DMC account');
-    return
-  } else {
-    let checkRes = await checkDmcAccount({
-      account_name: accountName.value,
-    });
-    if (checkRes.account_name == accountName.value) {
-      let postData = {
-        dmc: accountName.value,
-        wallet_type: 'wallet',
-      };
-      bindDmcLoading.value = true
-      let bindRes = await updateUser(userInfo.value.id, postData).then((dmcRes) => {
-        if (!userInfo.value.dmc) {
-          if (dmcRes.code == 200) {
-            showToast.success('Successfully bound DMC account');
-            return true;
-          } else {
-            showToast.fail('Binding failed, please try again');
-            return false;
-          }
 
-        } else {
-          showToast.success(dmcRes.data);
-        }
-      });
-      if (bindRes) {
-        await initFoggieDate();
-        let ambBindRes = await check_user_bind(userInfo.value.uuid);
-        if (userInfo.value.amb_promo_code && ambBindRes.code == 200) {
-          showToast.text('Please wait while we update your account information.');
-
-          let postData = {
-            user_uuid: userInfo.value.uuid,
-            amb_promo_code: userInfo.value.amb_promo_code,
-            email: userInfo.value.email,
-            dmc_account: userInfo.value.dmc,
-          };
-          const promoFunction = () => {
-            return bind_promo(postData)
-              .then((res2) => {
-                if (res2.code == 200) {
-                  bind_user_promo({
-                    amb_promo_code: userInfo.value.amb_promo_code,
-                  })
-                    .then((res) => {
-                      if (res.code == 200) {
-                        bindDmcLoading.value = false;
-                        showToast.success('Bind successfully');
-                        bindDmcIsShow.value = false
-                      } else {
-                        setTimeout(() => {
-                          promoFunction();
-                        }, 4000);
-                      }
-                    })
-                    .catch(() => {
-                      setTimeout(() => {
-                        promoFunction();
-                      }, 4000);
-                    });
-                } else {
-                  setTimeout(() => {
-                    promoFunction();
-                  }, 4000);
-                }
-              })
-              .catch(() => {
-                setTimeout(() => {
-                  promoFunction();
-                }, 4000);
-              });
-          };
-          await promoFunction();
-        } else {
-          bindDmcLoading.value = false;
-          bindDmcIsShow.value = false
-        }
-      } else {
-        bindDmcLoading.value = false;
-      }
-    } else {
-      showToast.fail('This DMC account name is incorrect, please fill in a valid account');
-      bindDmcLoading.value = false;
-    }
-  }
-}
 
 
 
@@ -630,7 +332,7 @@ async function bindDmc() {
 const gotoPage = (type, query = '') => {
   if (!userInfo.value.amb_promo_code) {
     const dmcOk = () => {
-      router.push({ name: 'BindDmc', query: { type: 'amb' } });
+      bindAmbCode();
     };
     let src = require('@/assets/fog-works_w.png');
     let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
@@ -659,13 +361,12 @@ const gotoPage = (type, query = '') => {
   }
 };
 const toBuyOrder = () => {
-  // if (curStepIndex.value != 4) return;
   gotoPage('shop');
 };
 const toRecharge = () => {
   if (!userInfo.value.amb_promo_code) {
     const dmcOk = () => {
-      router.push({ name: 'BindDmc', query: { type: 'amb' } });
+      bindAmbCode();
     };
     let src = require('@/assets/fog-works_w.png');
     let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
@@ -681,20 +382,7 @@ const toRecharge = () => {
     router.push({ name: 'Recharge' });
   }
 };
-const randomColor = () => {
-  const createNumber = (min, max) => {
-    let color = Math.floor(Math.random() * 255);
-    if (color <= max && color >= min) {
-      return color;
-    } else {
-      return createNumber(min, max);
-    }
-  };
-  let r = createNumber(0, 60);
-  let g = createNumber(40, 120);
-  let b = createNumber(150, 255);
-  return `rgb(${r} ${g} ${b})`;
-};
+
 
 
 function gotoBindAmb() {
@@ -702,7 +390,7 @@ function gotoBindAmb() {
     showToast.text('You have already bound an invitation code');
     return;
   }
-  router.push({ name: 'BindDmc', query: { type: 'amb' } });
+  bindAmbCode();
 }
 
 function gotoOrderList() {
@@ -723,7 +411,7 @@ watch(
   cloudCodeIsBind,
   async (newVal) => {
     if (newVal) {
-      ambRefuse.value = false;
+      userStore.setambRefuse(false);
       getOrder();
       getUserAssets();
       getExchangeRate();
@@ -751,28 +439,28 @@ function scrollIntoViewTo() {
   }
 }
 
-  function gotoOrderPage(row) {
-    console.log(row);
-    if (row.order_info.state == 5 || row.order_info.state == 4) {
-      router.push({
-        name: 'orderSummary',
-        query: {
-          id: row.order_id,
-          status: row.order_info.state,
-          type: 'history',
-        },
-      });
-    } else {
-      router.push({
-        name: 'listDetails',
-        query: {
-          id: row.order_id,
-          uuid: row.order_info && row.order_info.uuid,
-          amb_uuid: row.amb_uuid,
-        },
-      });
-    }
+function gotoOrderPage(row) {
+  console.log(row);
+  if (row.order_info.state == 5 || row.order_info.state == 4) {
+    router.push({
+      name: 'orderSummary',
+      query: {
+        id: row.order_id,
+        status: row.order_info.state,
+        type: 'history',
+      },
+    });
+  } else {
+    router.push({
+      name: 'listDetails',
+      query: {
+        id: row.order_id,
+        uuid: row.order_info && row.order_info.uuid,
+        amb_uuid: row.amb_uuid,
+      },
+    });
   }
+}
 
 
 onMounted(async () => {

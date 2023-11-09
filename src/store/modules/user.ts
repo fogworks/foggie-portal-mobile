@@ -10,6 +10,9 @@ interface StoreUser {
   info: Record<any, any>;
   balance: any;
   cloudCodeIsBind: boolean;
+  ambRefuse: boolean;
+  curStepIndex:any,
+
 }
 
 export const useUserStore = defineStore({
@@ -19,6 +22,8 @@ export const useUserStore = defineStore({
     info: {},
     balance: 0,
     cloudCodeIsBind: false,
+    ambRefuse: false, //
+    curStepIndex:'1',
   }),
   getters: {
     getUserInfo(): any {
@@ -33,10 +38,22 @@ export const useUserStore = defineStore({
     getCloudCodeIsBind(): any {
       return this.cloudCodeIsBind;
     },
+    getambRefuse(): any {
+      return this.ambRefuse;
+    },    
+    getCurStepIndex(): any {
+      return this.curStepIndex;
+    },
   },
   actions: {
     setCloudCodeIsBind(bool: boolean) {
       this.cloudCodeIsBind = bool;
+    },
+    setambRefuse(bool: boolean) {
+      this.ambRefuse = bool;
+    },  
+    setcurStepIndex(num: any) {
+      this.curStepIndex = num;
     },
     setToken(token: string) {
       this.token = token;
@@ -47,6 +64,7 @@ export const useUserStore = defineStore({
     setBalance(balance: any) {
       this.balance = balance;
     },
+    
     logout() {
       this.token = '';
       this.info = {};

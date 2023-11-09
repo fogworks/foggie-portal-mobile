@@ -162,8 +162,10 @@ onMounted(async () => {
       padding-bottom: 20px;
       border-bottom: 0.5px solid #e2ecff;
 
-      span {
-        display: inline-block;
+      span.icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 60px;
         height: 60px;
         background: #ebebeb;

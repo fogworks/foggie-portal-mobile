@@ -304,7 +304,7 @@
       custom-class="CustomName"
     >
       <template #header>
-        <span>
+        <span class="icon">
           <IconBucket color="#000"></IconBucket>
         </span>
         Create a Bucket
