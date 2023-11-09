@@ -291,7 +291,10 @@
         router.push('/recharge');
       };
       let src = require('@/assets/DMC_token.png');
-      let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p >`;
+      let str = `<img class="bind_img" src=${src} style="height:60px;"/>
+      <p style='word-break:break-word;color:#d1cece;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p >
+        
+        `;
       showDialog({
         title: 'The balance is insufficient',
         content: str,
@@ -349,17 +352,13 @@
     order_buy_state(nodeInfo.value.nodeIp, { buyOrderUuid: nodeInfo.value.buyOrderUuid })
       .then((res) => {
         if (res.code == 200) {
-          if (res.data == '0') {
-            delay(() => {
-              loadOrderBuyState();
-            }, 1000);
-          } else {
+          if (res.data.orderId && res.data.orderId != '') {
             fake.end();
             const dmcOk = () => {
               router.push('/list');
             };
             let src = require('@/assets/DMC_token.png');
-            let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Orders purchased successfully go to the home page to view.</p >`;
+            let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'></p><p style='word-break:break-word;color:#d1cece;text-align:left;'>You have spent ${res.data.totalPrice} DMC for order ID ${res.data.orderId}. Orders purchased successfully go to the home page to view.</p >`;
             delay(() => {
               showTop.value = false;
               showBuy.value = false;
@@ -370,6 +369,10 @@
                 okText: 'OK',
                 onOk: dmcOk,
               });
+            }, 1000);
+          } else {
+            delay(() => {
+              loadOrderBuyState();
             }, 1000);
           }
         } else {

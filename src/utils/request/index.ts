@@ -40,7 +40,7 @@ service.interceptors.response.use(
     if (code !== 200) { 
       if (ignoreUrl.indexOf(response.config.url) > -1) {
       } else {
-        showToast.fail(res.error || res.msg || 'Network error. Please try again.');
+        showToast.fail(res.error || res.msg || res.message  || 'Network error. Please try again.');
       }
       if (code === 401 || code === 403) {
         userStore.setInfo({});
