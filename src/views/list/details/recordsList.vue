@@ -162,9 +162,10 @@
     continuationToken: '',
   });
   const category = ref(1);
+  const usedSpace = ref(0);
   //   const tableData = ref([]);
   const { showTypeCheckPop, infinityValue, continuationToken, tableData } = toRefs(state);
-  const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  const { header, token, deviceType, orderInfo, getOrderInfo, bucketName } = useOrderInfo();
   import { get_merkle_record, get_challenge, get_arbitration } from '@/api/index';
   const order_id = ref<any>('');
   order_id.value = route.query.id;
@@ -211,9 +212,33 @@
       tableData.value = res && res.result && res.result.data;
     });
   };
-
+  const getSummary = () => {
+    return new Promise((resolve, reject) => {
+      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
+      let request = new Prox.default.ProxRequestSummaryIds();
+      request.setHeader(header);
+      request.setIdsList([orderInfo.value.foggie_id]);
+      server.summaryInfo(request, {}, (err: any, res: { array: any }) => {
+        if (err) {
+          console.log('err------:', err);
+          reject(false);
+        } else {
+          const contentList = res.getContentsList().map((el) => {
+            return {
+              count: el.getCount(),
+              id: el.getId(),
+              total: el.getTotal(),
+            };
+          });
+          usedSpace.value = contentList?.[0]?.total || 0;
+          resolve(true);
+        }
+      });
+    });
+  };
   const initParams = async () => {
     await getOrderInfo();
+    getSummary();
     switchType(category.value);
   };
 
@@ -224,23 +249,31 @@
   memo.value = route.query.uuid;
   amb_uuid.value = route.query.amb_uuid;
 
-  const submitMerkle = () => {
+  const submitMerkle = async () => {
     merkleLoading.value = true;
-    const d = {
-      orderId: order_id.value,
-      uuid: amb_uuid.value,
-      orderUuid: memo.value,
-      rpc: orderInfo.value.rpc,
-    };
-    calc_merkle(d).then((res) => {
-      merkleLoading.value = false;
-      console.log('calc_merkle-----', res);
-      if (res.code == 200) {
-        showToast.success('Joined the Merkle queue!');
-      } else {
-        showToast.fail(res.msg);
-      }
-    });
+    let sumRes = await getSummary();
+    if (sumRes && usedSpace.value > 0) {
+      const d = {
+        orderId: order_id.value,
+        uuid: amb_uuid.value,
+        orderUuid: memo.value,
+        rpc: orderInfo.value.rpc,
+      };
+      calc_merkle(d).then((res) => {
+        merkleLoading.value = false;
+        console.log('calc_merkle-----', res);
+        if (res.code == 200) {
+          showToast.success('Joined the Merkle queue!');
+        } else {
+          showToast.fail(res.msg);
+        }
+      });
+    }else if(!sumRes)(
+          showToast.fail('Failed to get data, please try again');
+    )else if(!usedSpace.value){
+          showToast.fail("You haven't uploaded a file yet, please do so!");
+
+    }
   };
 
   onMounted(() => {
