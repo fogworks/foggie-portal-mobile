@@ -921,7 +921,7 @@
       // });
     } else if (type == 'nft') {
       if (checkData.length > 1) return false;
-      await createNFT(checkData[0], accessKeyId.value, secretAccessKey, bucketName);
+      await createNFT(checkData[0], accessKeyId.value, secretAccessKey.value, bucketName.value);
     } else if (type === 'ipfs') {
     } else if (type === 'unipfs') {
       // ipfsPin(checkedData.value[0], "ipfs", "unpin");
@@ -1221,7 +1221,6 @@
         checked: false,
         name,
         category: data.content[j].category,
-        category: 2,
         fileType: 2,
         fullName: decodeURIComponent(data.content[j].key),
         key: data.content[j].key,

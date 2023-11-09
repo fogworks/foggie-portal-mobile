@@ -284,7 +284,7 @@ export default function useShare(orderInfo, header, deviceType) {
     let startTimeStamp = new Date(orderInfo.value.created_at).getTime();
     periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
     shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
-    window.open(`https://drops.fogworks.io/personal/#/create/${shareRefContent.httpStr}`);
+    window.open(`https://drops.fogworks.io/personal/#/create/${encodeURIComponent(shareRefContent.httpStr)}`);
   };
   watch(
     isReady,

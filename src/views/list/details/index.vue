@@ -63,7 +63,7 @@
         </div>
       </div>
 
-      <div class="type_item s3key" @click="getKey">
+      <div :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' ? 'router_disabled' : '']" @click="getKey">
         <div class="svg_box svg_box2 order-icon-recycle">
           <keySolid color="#fff" />
         </div>
@@ -483,7 +483,7 @@
   const uuid = computed(() => userStore.getUserInfo.uuid);
   const dmcName = computed(() => userStore.getUserInfo.dmc);
   const isMobileOrder = computed(() => {
-    if (orderInfo.value.mobile_upload || orderInfo.value.mobile_upload === undefined) {
+    if (orderInfo.value.electronic_type == '0') {
       return true;
     } else {
       return false;
@@ -920,7 +920,14 @@
     xhr.send(options.formData);
   };
   const getKey = () => {
-    router.push({ name: 'getKey', query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain } });
+    if (orderInfo.value.electronic_type == '1') {
+      return false;
+    } else {
+      router.push({
+        name: 'getKey',
+        query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain },
+      });
+    }
   };
 
   const createName = async () => {
@@ -959,6 +966,7 @@
             if (!order_result?.data?.result) {
               bucketName.value = newBucketName.value;
               getOrderInfo();
+              getSummary();
               dialogVisible.value = false;
               return;
             }
@@ -1672,6 +1680,14 @@
         background: #fff;
         border-radius: 10px;
         margin-left: 10px;
+        &.router_disabled {
+          .order-icon-recycle {
+            background-color: #ccc;
+          }
+          p {
+            color: #ccc;
+          }
+        }
       }
     }
 

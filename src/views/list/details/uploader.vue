@@ -1,7 +1,6 @@
 <template>
   <div class="">
     <nut-uploader
-      v-if="props.orderInfo.electronic_type == '0'"
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
       :before-upload="beforeupload"
@@ -106,7 +105,6 @@
     });
   };
   const beforeupload = (file: any) => {
-    showToast.text('Sensitive information is recommended to be encrypted and uploaded');
     return new Promise(async (resolve, reject) => {
       const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
       if (!bucketName || !accessKeyId || !secretAccessKey) {
@@ -131,6 +129,7 @@
         showToast.fail(content);
         return reject(false);
       }
+      showToast.text('Sensitive information is recommended to be encrypted and uploaded');
 
       const fileCopy = file[0];
       const d = { orderId: order_id.value };
