@@ -187,6 +187,7 @@ onMounted(async () => {
     .bucket_tip {
       padding-bottom: 10px;
       border-bottom: 0.5px solid #e2ecff;
+      color: #ebebeb;
     }
 
     .nut-input--border {

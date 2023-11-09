@@ -272,7 +272,7 @@ function loadSearchUserAssetCount(params: object) {
         chartOptions0.value = {
           backgroundColor: '#fff',
           title: {
-            text: `Benefit analysis`,
+            text: `Earnings analysis`,
             textStyle: {
               rich: {
                 a: {

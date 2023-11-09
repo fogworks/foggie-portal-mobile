@@ -295,6 +295,7 @@
     >
       <nut-button type="success" class="upload_btn" size="small">+</nut-button>
     </nut-uploader> -->
+    <!-- dialogVisible -->
     <nut-dialog
       v-model:visible="dialogVisible"
       title="Bucket Name"
@@ -1538,7 +1539,7 @@
       justify-content: flex-start;
       align-items: center;
       flex-wrap: wrap;
-      background: #fff;
+      // background: #fff;
       padding: 10px;
 
       .type_item {

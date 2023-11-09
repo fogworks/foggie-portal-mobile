@@ -16,8 +16,8 @@
   </div>
   <div inset class="income-card">
     <img src="@/assets/balance_right.svg" />
-    <div class="card_row_1 card_header" @click="gotoPage('analysis')">
-      <div class="total_income" @click="gotoPage('analysis')">
+    <div class="card_row_1 card_header" >
+      <div class="total_income">
         <div class="balance_text">
           <span>{{ cloudBalanceNum?.integerPart }}</span>
           <span style="font-size: 13px;">.{{ cloudBalanceNum?.decimalPart }}</span>
@@ -119,7 +119,7 @@
     </nut-swiper>
   </div>
 
-  <div class="tab_top_title" v-if="ishaveProfit">Last seven days</div>
+  <div class="tab_top_title" v-if="ishaveProfit">Last 7 days <span style="font-size: 12px;">(DMC)</span></div>
   <div class="my_steps" ref="my_steps" id="my_steps" v-if="!ishaveProfit">
     <nut-steps direction="vertical" :current="curStepIndex">
       <nut-step title="Bind invitation code" @click="gotoBindAmb"
@@ -141,9 +141,11 @@
       </div>
       <div>
         <span>Order:{{ item.order_id }}</span>
-        <span :class="[item.inner_user_trade_type == 'payout' ? 'expense' : 'earnings']">
-          {{ item.inner_user_trade_type == 'payout' ? '-' : '+' }}{{ formatNumber(item.quantity)?.integerPart }}<span
-            style="font-size: 13px;">.{{ formatNumber(item.quantity)?.decimalPart }}</span> DMC
+        <span
+          :class="[item.inner_user_trade_type == 'payout' ? 'expense' : '', item.inner_user_trade_type == 'income' ? 'earnings' : '', 'trade_type']">
+          <span v-if="item.inner_user_trade_type == 'payout'">-</span><span
+            v-else-if="item.inner_user_trade_type == 'income'">+</span> {{ formatNumber(item.quantity)?.integerPart
+            }}<span style="font-size: 13px;">.{{ formatNumber(item.quantity)?.decimalPart }}</span> 
         </span>
       </div>
       <div>
@@ -171,7 +173,8 @@ import { showToast, showDialog } from '@nutui/nutui';
 //   import { search_cloud } from '@/api';
 import { search_cloud } from '@/api';
 import useUserAssets from './useUserAssets.ts';
-import useOrderList from './useOrderList.ts';
+
+import { transferUTCTimeDay } from '@/utils/util';
 import { transferUTCTime, formatNumber } from '@/utils/util';
 import '@nutui/nutui/dist/packages/toast/style';
 import { useIntersectionObserver } from '@vueuse/core';
@@ -202,7 +205,8 @@ const mapTypes = {
   OrderReceiptChallengeArb: 'arbitrate', // 仲裁
   OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
   OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
-  user_cancel_order: 'Order Cancellation Refund',
+  user_cancel_order: 'Order Cancellation Refund', // 订单取消
+  user_OrderReceiptDeposit: 'Order expires. Deposit refunded',       // 订单到期退还押金
   OrderReceiptEnd: 12,
 };
 
@@ -264,18 +268,23 @@ const cloudTodayIncomeNum = computed(() => {
 })
 
 
-const { shortcuts } = useOrderList();
-
-const handleID = (id) => {
+function handleID(id) {
   if (id) {
     return id.substring(0, 8) + '...' + id.substring(id.length - 8, id.length);
-  } else {
-    return '- -'
   }
 };
-const searchOrderProfit = () => {
-  const [start, end] = shortcuts[3]();
-  const postData = !start && !end ? {} : { start_time: start, end_time: end };
+
+
+function searchOrderProfit() {
+  const end = new Date();
+  const start = new Date();
+  start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+  const postData = {
+    start_time: transferUTCTimeDay(start),
+    end_time: transferUTCTimeDay(end),
+    ps: 100,
+    pm: 1,
+  };
 
   search_user_asset_detail(postData)
     .then((res) => {
@@ -290,9 +299,8 @@ const searchOrderProfit = () => {
 };
 
 const ishaveProfit = ref(false)   //是否订单已经产生过收益 如果有收益不展示引导页
-const searchAllOrderProfit = () => {
-  const [start, end] = shortcuts[0]();
-  const postData = !start && !end ? {} : { start_time: start, end_time: end };
+function searchAllOrderProfit() {
+  const postData = { start_time: '', end_time: '' };
   search_user_asset_detail(postData)
     .then((res) => {
       if (res.code == 200) {
@@ -329,21 +337,10 @@ const showWithdraw = () => {
 
 
 
-const gotoPage = (type, query = '') => {
-  if (!userInfo.value.amb_promo_code) {
-    const dmcOk = () => {
-      bindAmbCode();
-    };
-    let src = require('@/assets/fog-works_w.png');
-    let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
-    showDialog({
-      title: 'Bind Invitation Code',
-      content: str,
-      onOk: dmcOk,
-    });
-    return false;
-  } else if (!cloudCodeIsBind.value) {
+const gotoPage = (type, query = '') => {  
+  if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
     bindAmbCode();
+    return false
   } else {
     if (type === 'analysisCate') {
       router.push('/analysisCate?type=1');
@@ -364,20 +361,9 @@ const toBuyOrder = () => {
   gotoPage('shop');
 };
 const toRecharge = () => {
-  if (!userInfo.value.amb_promo_code) {
-    const dmcOk = () => {
-      bindAmbCode();
-    };
-    let src = require('@/assets/fog-works_w.png');
-    let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Please bind the Ambassador Invitation Code first if you haven't already done so.</p >`;
-    showDialog({
-      title: 'Ambassador Invitation Code',
-      content: str,
-      onOk: dmcOk,
-    });
-    return false;
-  } else if (!cloudCodeIsBind.value) {
+  if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
     bindAmbCode();
+    return false;
   } else {
     router.push({ name: 'Recharge' });
   }
@@ -432,8 +418,6 @@ function loadMySwipeDom() {
 
 function scrollIntoViewTo() {
   let my_steps = document.getElementById('my_steps');
-  console.log(my_steps);
-
   if (my_steps) {
     my_steps?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -702,6 +686,7 @@ onMounted(async () => {
 
           img {
             height: 50px;
+            width: 100px;
             vertical-align: sub;
           }
         }
@@ -852,10 +837,10 @@ onMounted(async () => {
   color: #171414;
   font-size: 24px;
   background: #fff;
-  border-radius: 5px;
+
   border-bottom: 1px solid #eee;
   margin: 10px 0;
-  border-radius: 20px;
+  border-radius: 12px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
 
   .item_img_box {
@@ -924,10 +909,16 @@ onMounted(async () => {
     font-size: 30px;
   }
 
+  .trade_type {
+    display: inline-block;
+    font-size: 30px;
+  }
+
   .time {
-    color: #aaa;
+
     font-size: 24px;
-    color: #635858;
+    color: #000000;
+    font-weight: 600;
   }
 
   &:last-child {
