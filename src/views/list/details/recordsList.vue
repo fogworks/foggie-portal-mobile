@@ -129,7 +129,7 @@
     </nut-empty>
     <!-- single action -->
   </div>
-  <div v-if="category == 1" class="submit-merkle">
+  <div v-if="category == 1 && orderInfo.electronic_type == '0'" class="submit-merkle">
     <nut-button block class="buy_btn" type="info" @click="submitMerkle" :loading="merkleLoading"> Submit Merkle </nut-button>
     <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
   </div>
@@ -147,7 +147,7 @@
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
   import { transferUTCTime } from '@/utils/util';
-
+  import { minSize } from '@/setting.json';
   import { calc_merkle } from '@/api/index';
 
   import { showToast } from '@nutui/nutui';
@@ -235,7 +235,11 @@
     calc_merkle(d).then((res) => {
       merkleLoading.value = false;
       console.log('calc_merkle-----', res);
-      showToast.success('Joined the Merkle queue!');
+      if (res.code == 200) {
+        showToast.success('Joined the Merkle queue!');
+      } else {
+        showToast.fail(res.msg);
+      }
     });
   };
 

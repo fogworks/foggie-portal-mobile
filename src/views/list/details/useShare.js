@@ -138,16 +138,18 @@ export default function useShare(orderInfo, header, deviceType) {
       showShareDialog.value = true;
     }
   };
-  const copyLink = (text) => {
-    var input = document.createElement('input');
-    input.value = text;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('Copy');
-    document.body.removeChild(input);
-    // let str = `Copying  ${type} successful!`;
-    // this.$message.success(str);
-    showToast.success('Copy succeeded');
+  const copyLink = async (text) => {
+    if (!navigator.clipboard) {
+      // Clipboard API 不可用
+      showToast.fail('copy is not available, please try upgrading your browser before doing this.');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast.success('Copy succeeded');
+    } catch (err) {
+      showToast.fail('Copy failed');
+    }
   };
   const confirmPeriod = ({ selectedValue, selectedOptions }) => {
     desc.value = selectedOptions.map((val) => val.text).join(',');
@@ -266,6 +268,24 @@ export default function useShare(orderInfo, header, deviceType) {
       }
     }
   };
+  const createNFT = (shareOption, awsAccessKeyId, awsSecretAccessKey, bucketName) => {
+    pinData.item = shareOption;
+    let key = shareOption.key;
+
+    if (key) {
+      // let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
+      let httpStr = `https://${orderInfo.value.domain}.devus.u2i.net:6008/o/${shareOption.cid}`;
+      shareRefContent.httpStr = httpStr;
+      // if (+pinData.shareOption.originalSize > orderInfo.value.total_space * 0.01) {
+      //   shareRefContent.ipfsStr = '';
+      // }
+    }
+    let expireTimeStamp = new Date(orderInfo.value.expire).getTime();
+    let startTimeStamp = new Date(orderInfo.value.created_at).getTime();
+    periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
+    shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
+    window.open(`https://drops.fogworks.io/personal/#/create/${shareRefContent.httpStr}`);
+  };
   watch(
     isReady,
     (val) => {
@@ -319,6 +339,7 @@ export default function useShare(orderInfo, header, deviceType) {
     shareType.value = '';
   });
   return {
+    createNFT,
     shareType,
     ipfsPin,
     loading,

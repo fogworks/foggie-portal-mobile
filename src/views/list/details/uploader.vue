@@ -1,6 +1,7 @@
 <template>
   <div class="">
     <nut-uploader
+      v-if="props.orderInfo.electronic_type == '0'"
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
       :before-upload="beforeupload"
@@ -47,7 +48,6 @@
   import { delay, throttle } from 'lodash';
 
   import { minSize } from '@/setting.json';
-  console.log('----minSize', minSize);
 
   const emits = defineEmits(['uploadComplete']);
 
@@ -106,6 +106,7 @@
     });
   };
   const beforeupload = (file: any) => {
+    showToast.text('Sensitive information is recommended to be encrypted and uploaded');
     return new Promise(async (resolve, reject) => {
       const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
       if (!bucketName || !accessKeyId || !secretAccessKey) {
@@ -230,32 +231,10 @@
     }, 2000);
     // emits('getFileList');
     emits('uploadComplete');
-    const updateUsedSpace = () => {
-      return update_order_size({
-        used_space: +option.sourceFile.size,
-        order_id: +order_id.value,
-        device_type: props.orderInfo.value.used_space === 0 ? 'mobile' : '',
-      })
-        .then((res: any) => {
-          if (res.code == 200) {
-            // getOrderInfo(false);
-            uploadRef.value.clearUploadQueue();
-          } else {
-            setTimeout(() => {
-              updateUsedSpace();
-            }, 3000);
-          }
-        })
-        .catch(() => {
-          setTimeout(() => {
-            updateUsedSpace();
-          }, 3000);
-        });
-    };
-    await updateUsedSpace();
+    uploadRef.value.clearUploadQueue();
     getSummary();
     console.log('-------------------used---1', props.orderInfo.value.used_space);
-    await getOrderInfo(false);
+    // await getOrderInfo(false);
     console.log('-------------------used---2', props.orderInfo.value.used_space);
 
     // let uploadLine = 1024 * 1024 * 50;
