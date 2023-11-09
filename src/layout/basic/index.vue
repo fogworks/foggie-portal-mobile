@@ -7,13 +7,13 @@
   </nut-tabbar>
 
   <!-- 绑定dmc账户 -->
-  <nut-dialog v-model:visible="bindDmcIsShow" title=" " :close-on-click-overlay="false" :show-cancel="false"
+  <nut-dialog v-model:visible="bindDmcIsShow" title="Withdraw Crypto" :close-on-click-overlay="false" :show-cancel="false"
     :show-confirm="false" custom-class="CustomName">
     <template #header>
       <img src="@/assets/DMC_token.png" alt="" srcset="" style="width: 30px; height: 30px" />
-      <div style="color: #9e9e9e;margin-left: 5px;">Add Withdrawal Account</div>
+      <div style="color: #9e9e9e;margin-left: 5px;">Withdraw Crypto</div>
     </template>
-    <p class="bucket_tip" style="text-align: left; color: #9e9e9e;padding-bottom: 15px;">
+    <p class="bucket_tip" style="text-align: left; word-break: break-word; color: #9e9e9e;padding-bottom: 15px;">
     <div>* This account will become the default withdrawal account</div>
     </p>
 
@@ -64,7 +64,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { Home, Horizontal, My } from '@nutui/icons-vue';
 import { user, check_promo, bind_user_promo, checkDmcAccount, updateUser, } from '@/api';
 import { bind_promo, check_promo as check_amb_promo, check_user_bind } from '@/api/amb';
-import { onMounted, provide } from 'vue';
+import { onMounted,provide } from 'vue';
 import { useUserStore } from '@/store/modules/user';
 import { showToast, showDialog } from '@nutui/nutui';
 // import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
@@ -281,12 +281,7 @@ async function bindDmc() {
 
 
 async function bindAmbCode() {
-
-  if (!uuid.value){
-    showToast.fail('Failed to get user id, please refresh the page and try again.');
-
-    return false;
-  } 
+  if (!uuid.value) return false;
   showToast.loading('Loading', {
     cover: true,
     customClass: 'app_loading',
@@ -320,7 +315,7 @@ async function bindAmbCode() {
           userStore.setCloudCodeIsBind(true);
           userStore.setambRefuse(false);
           userStore.setcurStepIndex(3)
-
+    
           // approved
 
           if (!window.localStorage.hasCloudApproved) {
@@ -410,9 +405,8 @@ function bindUserAmbCode() {
 }
 
 
-provide('openBindDMCDiaolg', openBindDMCDiaolg)
-provide('bindAmbCode', bindAmbCode)
-
+provide('openBindDMCDiaolg',openBindDMCDiaolg)
+provide('bindAmbCode',bindAmbCode)
 
 
 

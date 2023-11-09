@@ -40,7 +40,7 @@
     </div>
   </div>
   <div style="margin: 0 20px 40px">
-    <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading"> Buy Now </nut-button>
+    <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading"> Buy </nut-button>
     <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
   </div>
   <Teleport to="body">
@@ -552,18 +552,11 @@ onActivated(async () => {
 }
 
 .buy_btn {
-  height: 100px;
+  height: 120px;
   font-size: 40px;
-  // margin: 40px 0;
-  position: absolute;
-  bottom: 150px;
-  width: 90vw;
-  left: 50%;
-  transform: translateX(-50%);
+  margin: 40px 0;
+
   :deep {
-    .nut-button{
-      background-color: #2D2E41 !important;
-    }
     &.nut-button--disabled {
       background: #aaa !important;
     }

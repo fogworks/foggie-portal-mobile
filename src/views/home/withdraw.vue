@@ -1,6 +1,6 @@
 <template>
   <div class="top_box">
-    <div class="top_back" @click="router.go(-1)">Withdraw Crypto </div>
+    <div class="top_back" @click="router.go(-1)">Withdraw </div>
   </div>
   <div v-if="canWithDraw && !loading" :class="['middle_box', showKeyboard ? 'full_height' : '']">
     <img class="top_img" src="@/assets/withdraw-cion.png" alt="" />
