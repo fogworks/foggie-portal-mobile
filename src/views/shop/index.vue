@@ -105,7 +105,7 @@
           </div>
           <div class="row_box">
             <span class="row_box_title">Deposit</span>
-            <span class="row_box_value">{{ deposit_ratio }} DMC</span>
+            <span class="row_box_value">{{ deposit_ratio }} <span>DMC</span></span>
           </div>
           <div class="row_box" style="border-bottom-style: solid">
             <span class="row_box_title">Variation price</span>

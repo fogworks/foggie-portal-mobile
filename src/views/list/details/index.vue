@@ -384,10 +384,10 @@
     <nut-action-sheet v-model:visible="sheetVisible" title="Links">
       <div class="custom-action_sheet">
         <div @click="choose('google')">
-          <img src="@/assets/googlelogo_preview.png" style="width: 100px; height: 30px" />
+          <img src="@/assets/googlelogo_preview.png" style="width: 80px; height: 25px" />
         </div>
         <div @click="choose('Microsoft')">
-          <img src="@/assets/removebg-preview.png" style="width: 100px; height: 30px" />
+          <img src="@/assets/removebg-preview.png" style="width: 80px; height: 25px" />
         </div>
 
         <div @click="choose('other')">
