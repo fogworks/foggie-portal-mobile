@@ -81,7 +81,66 @@
   <Teleport to="body">
     <nut-popup position="bottom" pop-class="confirm_pop" round :style="{ height: 'auto' }" v-model:visible="showBuy">
       <h3 class="buyOrderTitle"> Pre-trading information</h3>
-      <ul class="buyOrderTips">
+      <div class="storagebox">
+        <img src="@/assets/shujuguifan.svg" alt="" srcset="" />
+        <div class="BaseBox">
+          <div class="base_box">
+            <span class="span1">Price:</span>
+            <span class="span2">{{ (curReferenceRate / 10000).toFixed(4) }}</span>
+            <span class="span2">/GB</span>
+            <span class="span2">/Week</span>
+          </div>
+          <div class="base_box1">
+            <span class="s1">{{ shopForm.quantity }} GB</span>
+            <span class="s2">X</span>
+            <span class="s1">{{ shopForm.week }} W</span>
+          </div>
+        </div>
+      </div>
+      <div class="storageDetail">
+        <div class="rowBox">
+          <div class="row_box">
+            <span class="row_box_title">Base Price</span>
+            <span class="row_box_value">{{ base_Proce }} <span>DMC</span></span>
+          </div>
+          <div class="row_box">
+            <span class="row_box_title">Deposit</span>
+            <span class="row_box_value">{{ deposit_ratio }} DMC</span>
+          </div>
+          <div class="row_box" style="border-bottom-style: solid">
+            <span class="row_box_title">Variation price</span>
+            <span class="row_box_value">{{ (+totalPrice - +base_Proce - +deposit_ratio).toFixed(4) }}<span>DMC</span></span>
+          </div>
+          <div class="row_box">
+            <span class="row_box_title">Upper limit Total</span>
+            <span class="row_box_value">{{ totalPrice }} <span>DMC</span></span>
+          </div>
+        </div>
+        <div class="row_tips">
+          <div>* The order book is only partly open during the outcry phase。</div>
+          <div>* When orders match such as to enable a transaction to be executed, the indicative auction price is shown。</div>
+          <div
+            >* This is the price that would result for the auction if the price determination were to take place at this point in
+            time。</div
+          >
+        </div>
+      </div>
+      <div class="bottom_btn">
+        <nut-progress
+          v-if="buyOrderIsSuccess"
+          :percentage="progressPercentage"
+          :text-inside="true"
+          size="base"
+          status="active"
+          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+          style="margin: 30px auto"
+          :class="buyOrderIsSuccess ? 'bounceInUp' : ''"
+        >
+        </nut-progress>
+        <nut-button block type="warning" :disabled="!buyOrderIsSuccess" @click="confirmBuy" :loading="loading"> Confirm Buy </nut-button>
+      </div>
+
+      <!-- <ul class="buyOrderTips">
         <li>The order book is only partly open during the outcry phase。</li>
         <li>When orders match such as to enable a transaction to be executed, the indicative auction price is shown</li>
         <li>This is the price that would result for the auction if the price determination were to take place at this point in time</li>
@@ -94,16 +153,7 @@
         <nut-cell title="Floating Ratio" :desc="shopForm.floating_ratio + '%'"></nut-cell>
         <nut-cell title="Unit Price" :desc="(curReferenceRate / 10000).toFixed(4) + ' DMC/GB/Week'"></nut-cell>
         <nut-cell class="total_price" title="Total Price" :desc="totalPrice + ' DMC'"></nut-cell>
-      </nut-cell-group>
-
-      <div class="bottom_btn">
-        <nut-button type="warning" block :loading="loading" plain @click="showBuy = false"> Cancel </nut-button>
-        <div class="BuyOrderButton nut-icon-am-breathe nut-icon-am-infinite">
-          <img src="@/assets/crypto_badges_15.png" alt="" srcset="" class="" />
-          <nut-button type="warning" @click="confirmBuy" :loading="loading"> Buy Now </nut-button>
-        </div>
-        <!-- <nut-button type="warning" @click="confirmBuy" :loading="loading"> Buy Now </nut-button> -->
-      </div>
+      </nut-cell-group> -->
     </nut-popup>
   </Teleport>
 </template>
@@ -112,15 +162,25 @@
   import IconArrowLeft from '~icons/home/arrow-left.svg';
   import IconSetting from '~icons/home/setting.svg';
   import { toRefs, reactive, onMounted } from 'vue';
-  import { buy_order, node_order_buy, node_order_search, get_average_price, query_node } from '@/api/amb';
+  import { buy_order, node_order_buy, order_buy_state, node_order_search, get_average_price, query_node } from '@/api/amb';
   import { showToast, showDialog } from '@nutui/nutui';
   import { useRouter } from 'vue-router';
   import useDmcTrade from './useDmcTrade.js';
   import useUserAssets from '../home/useUserAssets.ts';
-  import { debounce } from 'lodash';
+  import { debounce, delay } from 'lodash';
+  import FakeProgress from 'fake-progress';
 
   // import useUpdateDMC from './useUpdateDMC';
   // const { getAmbDmc, targetAccount } = useUpdateDMC();
+
+  const fake = reactive(
+    new FakeProgress({
+      timeConstant: 10000,
+      autoStart: true,
+    }),
+  );
+  const progressPercentage = computed(() => Math.floor(fake.progress * 100));
+
   const { getUserAssets, cloudBalance } = useUserAssets();
   const { perMpPSTIncome, perGoldenPSTIncome } = useDmcTrade();
   const router = useRouter();
@@ -173,6 +233,11 @@
       (1 + state.shopForm.floating_ratio / 100);
     return total.toFixed(4);
   });
+  const base_Proce = computed(() => {
+    let total = (curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity;
+    return total.toFixed(4);
+  });
+
   const middleTotalPrice = computed(() => {
     let total =
       ((middle_price.value / 10000) * state.shopForm.week * state.shopForm.quantity +
@@ -208,6 +273,8 @@
         loading.value = false;
       });
   }
+
+  const buyOrderIsSuccess = ref(false); // 是否买单成功
   const confirmBuy = async () => {
     // let nodeIp ='http://'+ res.result.node_address;
     // let nodeIp = 'http://154.31.41.124:18080';
@@ -266,32 +333,54 @@
     })
       .then((res) => {
         loading.value = false;
-        showTop.value = false;
-        showBuy.value = false;
-        if (res.code == 200) {
-          const dmcOk = () => {
-            router.push('/home');
-          };
-          let src = require('@/assets/DMC_token.png');
-          let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Order request has been initiated, please check the order result in the order record later.</p >`;
-          showDialog({
-            title: 'Purchase Successfully',
-            content: str,
-            noCancelBtn: true,
-            okText: 'OK',
-            onOk: dmcOk,
-          });
-        } else {
-          loading.value = false;
-        }
 
-        // showToast.success('Order request has been initiated, please check the order result in the order record later.');
-        // router.push('/home');
+        if (res.code == 200) {
+          fake.progress = 0;
+          fake.start();
+          buyOrderIsSuccess.value = true;
+          loadOrderBuyState();
+        }
       })
       .catch(() => {
         loading.value = false;
       });
   };
+  function loadOrderBuyState() {
+    order_buy_state(nodeInfo.value.nodeIp, { buyOrderUuid: nodeInfo.value.buyOrderUuid })
+      .then((res) => {
+        if (res.code == 200) {
+          if (res.data == '0') {
+            delay(() => {
+              loadOrderBuyState();
+            }, 1000);
+          } else {
+            fake.end();
+            const dmcOk = () => {
+              router.push('/list');
+            };
+            let src = require('@/assets/DMC_token.png');
+            let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Orders purchased successfully go to the home page to view.</p >`;
+            delay(() => {
+              showTop.value = false;
+              showBuy.value = false;
+              showDialog({
+                title: 'Purchase Successfully',
+                content: str,
+                noCancelBtn: true,
+                okText: 'OK',
+                onOk: dmcOk,
+              });
+            }, 1000);
+          }
+        } else {
+          fake.stop();
+        }
+      })
+      .catch(() => {
+        fake.stop();
+      });
+  }
+
   const queryPriceNode = () => {
     return query_node()
       .then((res) => {
@@ -336,44 +425,104 @@
 <style lang="scss">
   .confirm_pop {
     padding-bottom: 20px;
-    .nut-cell__value {
-      color: $main_blue;
+    background-color: #d5d5d5 !important;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+    .storagebox {
+      display: grid;
+      grid-template-columns: 150px auto;
+      gap: 20px;
+      align-items: center;
+      padding: 30px 40px;
+      background-color: #ffffff;
+      margin: 0px 40px;
+      border-radius: 10px;
+      & > img {
+        width: 100%;
+        object-fit: cover;
+      }
+      .BaseBox {
+        .base_box {
+          .span1 {
+            color: #c19993;
+            font-size: 40px;
+            margin-right: 5px;
+          }
+          .span2 {
+            color: #f4b976;
+            font-size: 40px;
+            margin-left: 3px;
+          }
+        }
+      }
+      .base_box1 {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        .s1 {
+          font-weight: 700px;
+          font-size: 60px;
+        }
+        .s2 {
+          font-weight: 600;
+          font-size: 70px;
+          color: #a52a17;
+        }
+      }
     }
 
-    .total_price {
-      .nut-cell__value {
-        color: $main_red;
-        font-size: 40px;
+    .storageDetail {
+      padding: 30px 20px;
+      background-color: #ffffff;
+      margin: 0px 40px;
+      border-radius: 10px;
+      margin-top: 40px;
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+      .rowBox {
+        .row_box {
+          display: flex;
+          justify-content: space-between;
+          padding: 20px 10px;
+          border-bottom: 2px dashed #616161;
+          .row_box_title,
+          .row_box_value {
+            font-weight: 600;
+            font-size: 34px;
+            color: #5e5e5e;
+            span {
+              font-size: 18px;
+            }
+          }
+        }
+        .row_box:last-child {
+          border-bottom: 2px dashed transparent;
+        }
+      }
+      .row_tips {
+        margin-top: 20px;
+        padding: 0px;
+        font-size: 24px;
+        color: #666766;
+        & > div {
+          line-height: 40px;
+        }
       }
     }
 
     .bottom_btn {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-
+      padding: 20px 40px;
       .nut-button {
-        // width: 100%;
-
-        &.nut-button--disabled {
-          background: #aaa !important;
-        }
+        height: 100px;
+        background-color: #2d2e41 !important;
+        font-size: 40px;
+        border: 0px;
+        color: #ffffff;
+        font-weight: 600px;
       }
-      .BuyOrderButton {
-        position: absolute;
-        bottom: 300px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        img {
-          width: 35vw;
-          height: 35vw;
-        }
-        .nut-button {
-          margin-top: 20px;
-          width: auto;
-        }
+      .nut-button--disabled {
+        background: #aaa !important;
+        opacity: 0.28 !important;
       }
     }
   }
@@ -664,6 +813,7 @@
 
           &.nut-button--disabled {
             background: #aaa !important;
+            opacity: 0.28 !important;
           }
         }
       }
@@ -688,8 +838,8 @@
     height: 100px;
     line-height: 100px;
     text-align: center;
-    font-size: 34px;
-    color: #999999;
+    font-size: 40px;
+    color: #030303;
   }
   .buyOrderTips {
     margin: 0px;

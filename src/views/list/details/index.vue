@@ -13,6 +13,8 @@
     </TopBack>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
+        <span class="span1">FoggieID: {{ orderInfo.value?.foggie_id}}</span>
+
         <span class="span2">Expiration: {{ transferUTCTime(orderInfo.value.expire) }}</span>
       </nut-col>
       <nut-col :span="24" class="order-circle">
@@ -331,8 +333,8 @@
       </p>
       <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
       <template #footer>
-        <nut-button type="primary" @click="router.go(-1)">Operate Later</nut-button>
-        <nut-button type="primary" @click="createName" :loading="isNameLoading">Confirm</nut-button>
+        <!-- <nut-button type="primary" @click="router.go(-1)">Operate Later</nut-button> -->
+        <nut-button type="primary" size="large" @click="createName" :loading="isNameLoading">Confirm</nut-button>
       </template>
     </nut-dialog>
   </div>
@@ -1476,7 +1478,6 @@
       //   border-bottom: 1px dashed #fff;
 
       .span1 {
-        margin-left: 5vw;
         float: left;
         font-size: 24px;
         font-weight: bold;

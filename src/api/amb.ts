@@ -69,6 +69,14 @@ export function node_order_buy(ip, data) {
     data,
   });
 }
+export function order_buy_state(ip, data) {
+  return request({
+    url: ip + '/order/get_buy_order_status',
+    method: 'POST',
+    data,
+  });
+}
+
 export function node_order_search(ip, data) {
   return request({
     url: ip + '/order/search',

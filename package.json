@@ -37,6 +37,7 @@
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.9",
     "echarts": "^5.4.3",
+    "fake-progress": "^1.0.4",
     "google-protobuf": "^3.21.2",
     "grpc": "^1.24.11",
     "grpc-web": "^1.4.2",
