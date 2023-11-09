@@ -40,6 +40,7 @@ export default function useOrderInfo() {
     // header.setId('baeqacmjq');
     header.setToken(orderInfo.value.sign);
     bucketName.value = orderInfo.value.domain;
+    orderInfo.value.used_space = 0;
     if (bucketName.value && getKey) {
       return new Promise((resolve, reject) => {
         let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);

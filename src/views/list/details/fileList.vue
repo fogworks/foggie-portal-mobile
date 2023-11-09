@@ -102,7 +102,7 @@
             isNewFolder = true;
             renameShow = true;
           "
-          v-show="category == 0"
+          v-show="category == 0 && isMobileOrder"
           class="new_folder"
         ></IconNewFolder>
         <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
@@ -227,6 +227,9 @@
           <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
           <ul>
             <li v-if="!chooseItem.isDir && showActionBtn" @click="handlerClick('share')"><IconShare></IconShare> Share</li>
+            <li v-if="!chooseItem.isDir && showActionBtn && chooseItem.category == 1 && isMobileOrder" @click="handlerClick('nft')"
+              ><IconNFT></IconNFT> Cast NFT</li
+            >
             <li v-if="isMobileOrder" @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
             <li v-if="isMobileOrder" @click="handlerClick('move')"><IconMove></IconMove> Move</li>
             <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
@@ -334,7 +337,7 @@
         >
       </div>
       <div class="share_info_box" v-else>
-        <div v-if="shareRefContent.ipfsStr">
+        <div v-if="shareRefContent.ipfsStr && isMobileOrder">
           <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
           IPFS Link
           <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
@@ -427,6 +430,7 @@
 </template>
 
 <script setup lang="ts">
+  import IconNFT from '~icons/material-symbols/cast';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
   import IconTwitter from '~icons/home/twitter.svg';
@@ -514,7 +518,7 @@
   });
   const imgListRef = ref('');
   const isMobileOrder = computed(() => {
-    if (orderInfo.value.mobile_upload || orderInfo.value.mobile_upload === undefined) {
+    if (orderInfo.value.electronic_type == '0') {
       return true;
     } else {
       return false;
@@ -560,6 +564,7 @@
     imgDesc,
     options,
     doShare,
+    createNFT,
     ipfsPin,
     showShareDialog,
     shareRefContent,
@@ -914,6 +919,9 @@
       //   message: "Share succeeded",
       //   position: "bottom-left",
       // });
+    } else if (type == 'nft') {
+      if (checkData.length > 1) return false;
+      await createNFT(checkData[0], accessKeyId.value, secretAccessKey, bucketName);
     } else if (type === 'ipfs') {
     } else if (type === 'unipfs') {
       // ipfsPin(checkedData.value[0], "ipfs", "unpin");
@@ -1512,9 +1520,9 @@
     padding: 30px 10px;
     background: #000;
     box-sizing: border-box;
-
     .middle_img {
-      max-height: 50vw;
+      max-height: calc(100vh - 500px);
+
       .nut-image {
         width: 100%;
         height: 100%;
@@ -1524,6 +1532,7 @@
       display: flex;
       justify-content: space-evenly;
       height: 200px;
+      margin-top: 20px;
       div {
         text-align: center;
         color: #fff;

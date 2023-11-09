@@ -95,10 +95,10 @@
     }
   }
   const submit = async () => {
-    let isPass = false;
+    let isPass = true;
     try {
       loading.value = true;
-      isPass = await load_gpa_token();
+      // isPass = await load_gpa_token();
     } catch (error) {
       loading.value = false;
     }

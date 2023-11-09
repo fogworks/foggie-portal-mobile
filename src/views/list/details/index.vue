@@ -155,7 +155,7 @@
         <!-- <div v-else-if="detailRow.value.detailType == 'word'" id="odfContainer"></div> -->
 
         <div v-else-if="imgUrl" class="middle_img">
-          <nut-image :src="imgUrl" fit="contain" position="center">
+          <nut-image :src="imgUrl" width="100%" fit="contain" position="center">
             <template #loading>
               <Loading width="16px" height="16px" name="loading" />
             </template>
@@ -479,7 +479,7 @@
   const uuid = computed(() => userStore.getUserInfo.uuid);
   const dmcName = computed(() => userStore.getUserInfo.dmc);
   const isMobileOrder = computed(() => {
-    if (orderInfo.value.mobile_upload || orderInfo.value.mobile_upload === undefined) {
+    if (orderInfo.value.electronic_type == '0') {
       return true;
     } else {
       return false;
@@ -1293,7 +1293,11 @@
             total: el.getTotal(),
           };
         });
+        console.log(contentList, 'contentListcontentListcontentList');
+
         filesCount.value = contentList?.[0]?.count || 0;
+
+        orderInfo.value.used_space = contentList?.[0]?.total || 0;
       }
     });
   };
@@ -1396,14 +1400,19 @@
     padding: 30px 10px;
     background: #000;
     box-sizing: border-box;
-
     .middle_img {
+      max-height: calc(100vh - 500px);
+      .nut-image {
+        width: 100%;
+        height: 100%;
+      }
     }
 
     .bottom_action {
       display: flex;
       justify-content: space-evenly;
       height: 200px;
+      margin-top: 20px;
 
       div {
         text-align: center;
@@ -1942,8 +1951,6 @@
   }
 </style>
 <style lang="scss">
-
-
   .order-circle .nut-circle-progress {
     svg {
       border-radius: 50%;
