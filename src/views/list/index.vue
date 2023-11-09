@@ -39,6 +39,7 @@
     </nut-row>
   </div>
 
+  
   <div style="margin: 15px 0px">
     <nut-noticebar
       :background="`rgba(251, 248, 220, 1)`"
