@@ -161,7 +161,7 @@ onMounted(async () => {
       color: #000;
       padding-bottom: 20px;
       border-bottom: 0.5px solid #e2ecff;
-
+      color: #f5f7fb;
       span.icon {
         display: flex;
         justify-content: center;
@@ -182,6 +182,10 @@ onMounted(async () => {
 
     .nut-input {
       background-color: rgb(128 128 128 / 39%);
+ 
+    }
+    .nut-input .input-text, .nut-input__text--readonly{
+      color: #ebebeb !important;
     }
 
     .bucket_tip {

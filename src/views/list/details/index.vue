@@ -308,7 +308,7 @@
       custom-class="CustomName"
     >
       <template #header>
-        <span class="icon">
+        <span class="icon" style="margin-right: 5px;">
           <IconBucket color="#000"></IconBucket>
         </span>
         Create a Bucket
@@ -325,9 +325,8 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
-          color: #000;
-        "
-      >
+          color: #fdfdfd;
+        ">
         <span>Bucket Name</span> <span>Required</span>
       </p>
       <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>

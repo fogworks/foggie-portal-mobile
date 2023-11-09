@@ -121,7 +121,7 @@
   });
   const mapTypes = {
     user_delivery_income: 'UserDeliveryIncome',
-    buy_order: 'BuyOrder',
+    buy_order: 'Buy order',
     challenge: 'Order Challenge',
     arbitration: 'Order Arbitration',
     OrderReceiptAddReserve: 'Increase order deposit', // 增加订单预存金
