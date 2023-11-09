@@ -137,7 +137,7 @@
           :class="buyOrderIsSuccess ? 'bounceInUp' : ''"
         >
         </nut-progress>
-        <nut-button block type="warning" :disabled="!buyOrderIsSuccess" @click="confirmBuy" :loading="loading"> Confirm Buy </nut-button>
+        <nut-button block type="warning" :disabled="buyOrderIsSuccess" @click="confirmBuy" :loading="loading"> Confirm Buy </nut-button>
       </div>
 
       <!-- <ul class="buyOrderTips">
