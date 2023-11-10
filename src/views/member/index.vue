@@ -9,7 +9,9 @@
       </div>
     </div>
     <div class="infoContent">
-      <img src="@/assets/user.svg" alt="" srcset="" />
+      <div class="user_box">
+        <img src="@/assets/user.png" alt="" srcset="" />
+      </div>
       <div>{{ dmcAccount }}</div>
       <div>{{ email }}</div>
 
@@ -48,7 +50,8 @@
           <!-- <Link color="#505056" /> -->
           <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; display: inline-block" />
         </div>
-        <div>About 
+        <div
+          >About
           <div>Fog Works</div>
         </div>
       </nut-col>
@@ -89,7 +92,7 @@
           </div>
           <div @click="choose('foggie')">
             <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
-            <div>Fogworks</div>
+            <div>Fog Works</div>
           </div>
           <div @click="choose('pool')">
             <img src="@/assets/user.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
@@ -137,7 +140,7 @@
   const logout = (): void => {
     showDialog({
       title: 'Logout',
-      content: createVNode('span', { style: {} }, 'Are you sure you want to Log out?'),
+      content: createVNode('span', { style: {} }, 'Are you sure you want to Logout?'),
       cancelText: 'Cancel',
       okText: 'Yes',
       onCancel: () => {
@@ -160,26 +163,31 @@
       content: createVNode('div', null, [
         createVNode(
           'span',
-          { style: { color: '#d1cece', fontSize: '12px' } },
+          { style: { color: '#d1cece', fontSize: '16px' } },
           'We sincerely welcome you to contact us for more information!',
         ),
-        createVNode('div', { style: { color: '#606060', marginTop: '14px', fontSize: '16px' } }, 'https://discord.com/channels/@me'),
+        // createVNode(
+        //   'div',
+        //   { style: { color: '#606060', marginTop: '14px', fontSize: '16px' } },
+        //   'https://discord.com/channels/1046683342025789541/1070536042677030973/1070584672066752573',
+        // ),
       ]),
       noCancelBtn: true,
-      okText: 'Copy',
+      okText: 'Contact',
       onOk: () => {
-        if (!navigator.clipboard) {
-          fallbackCopyTextToClipboard('https://discord.com/channels/@me');
-          return;
-        }
-        navigator.clipboard.writeText('https://discord.com/channels/@me').then(
-          function () {
-            showToast.success('Copying  successful!');
-          },
-          function () {
-            showToast.fail('Copying  unsuccessful!');
-          },
-        );
+        window.open('https://discord.com/channels/1046683342025789541/1070536042677030973/1070584672066752573');
+        // if (!navigator.clipboard) {
+        //   fallbackCopyTextToClipboard('https://discord.com/channels/1046683342025789541/1070536042677030973/1070584672066752573');
+        //   return;
+        // }
+        // navigator.clipboard.writeText('https://discord.com/channels/1046683342025789541/1070536042677030973/1070584672066752573').then(
+        //   function () {
+        //     showToast.success('Copying  successful!');
+        //   },
+        //   function () {
+        //     showToast.fail('Copying  unsuccessful!');
+        //   },
+        // );
       },
     });
   };
@@ -214,7 +222,7 @@
     } else if (type === 'ipfs') {
       window.open('https://ipfs.tech/');
     } else if (type === 'foggie') {
-      window.open('https://foggie.fogworks.io/#/');
+      window.open('https://fogworks.io/');
     } else if (type === 'pool') {
       window.open('http://154.31.41.124:8086/');
     }
@@ -305,15 +313,19 @@
       flex-direction: column;
       align-items: center;
       box-sizing: border-box;
+      .user_box {
+        position: absolute;
+        top: -80px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        background: #fff;
+      }
 
       img {
         width: 130px;
         height: 130px;
-        border-radius: 15px;
-        position: absolute;
-        top: -65px;
-        left: 50%;
-        transform: translateX(-50%);
+        // border-radius: 15px;
       }
 
       & > div {

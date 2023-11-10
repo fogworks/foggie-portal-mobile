@@ -99,7 +99,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
-        '^/1.1': {
+        '^/2.1': {
           target: 'https://explorer.dmctech.io',
           changeOrigin: true,
           secure: false,
@@ -206,8 +206,6 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           changeOrigin: true,
           secure: false,
         },
- 
-  
       },
     },
     plugins: [

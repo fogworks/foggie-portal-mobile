@@ -173,7 +173,7 @@
       <div>
         <span class="time">{{ item.trx_id }}</span>
         <!-- <span class="time">{{ transferUTCTime(item.created_at) }}</span> -->
-        <span>{{ mapTypes[item.trade_type] }}</span>
+        <span style="text-align: right">{{ mapTypes[item.trade_type] }}</span>
         <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
       </div>
     </div>
@@ -285,9 +285,7 @@
 
   function loadMore() {
     console.log(1111);
-    
   }
-
 
   function searchOrderProfit() {
     const end = new Date();

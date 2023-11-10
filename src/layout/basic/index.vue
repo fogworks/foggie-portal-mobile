@@ -215,6 +215,7 @@ async function bindDmc() {
 
         } else {
           showToast.success(dmcRes.data);
+            return false;
         }
       });
       if (bindRes) {

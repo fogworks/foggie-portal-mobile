@@ -141,7 +141,7 @@ export default function useShare(orderInfo, header, deviceType) {
   const copyLink = async (text) => {
     if (!navigator.clipboard) {
       // Clipboard API 不可用
-      showToast.fail('copy is not available, please try upgrading your browser before doing this.');
+      fallbackCopyTextToClipboard(text);
       return;
     }
     try {
@@ -151,17 +151,55 @@ export default function useShare(orderInfo, header, deviceType) {
       showToast.fail('Copy failed');
     }
   };
+  function fallbackCopyTextToClipboard(text) {
+    // 1.Create a selectable element
+    let textArea = document.createElement('textarea');
+    textArea.value = text;
+
+    // 2.Use positioning to prevent page scrolling
+    textArea.style.top = '0';
+    textArea.style.left = '0';
+    textArea.style.position = 'fixed';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      let successful = document.execCommand('copy');
+      let msg = successful ? 'successful' : 'unsuccessful';
+      showToast.success(msg);
+    } catch (err) {
+      showToast.fail('unsuccessful');
+    }
+    // 3.Remove element
+    document.body.removeChild(textArea);
+  }
   const confirmPeriod = ({ selectedValue, selectedOptions }) => {
     desc.value = selectedOptions.map((val) => val.text).join(',');
     periodShow.value = false;
   };
-  const createLowLink = (fileLink, shareOption) => {
+  const createLowLink = async (fileLink, shareOption) => {
     let category = shareOption.category;
     console.log(shareOption, 'shareOption');
     if (category == 1 || category == 2) {
+      let coverUrl;
+      if (category == 2) {
+        let linkRes = await getLink({
+          url: fileLink + '&thumb=true',
+          coverUrl: fileLink + '&thumb=true',
+          username: userInfo.value.email,
+          userUuid: userInfo.value.uuid,
+          period: periodValue.value[0],
+          imageName: shareOption.name,
+          title: shareOption.name,
+          detail: imgDesc.value,
+        });
+        if (linkRes.data) {
+          coverUrl = 'https://share.dev.u2i.net/img/' + linkRes.data;
+        }
+      }
       return getLink({
         url: fileLink,
-        coverUrl: category == 2 ? fileLink + '&thumb=true' : '',
+        coverUrl: category == 2 ? coverUrl : '',
         username: userInfo.value.email,
         userUuid: userInfo.value.uuid,
         period: periodValue.value[0],

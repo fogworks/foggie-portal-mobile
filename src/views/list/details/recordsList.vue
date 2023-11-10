@@ -129,7 +129,7 @@
     </nut-empty>
     <!-- single action -->
   </div>
-  <div v-if="category == 1 && orderInfo.electronic_type == '0'" class="submit-merkle">
+  <div v-if="category == 1 && orderInfo.value.electronic_type == '0'" class="submit-merkle">
     <nut-button block class="buy_btn" type="info" @click="submitMerkle" :loading="merkleLoading"> Submit Merkle </nut-button>
     <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
   </div>
@@ -149,6 +149,8 @@
   import { transferUTCTime } from '@/utils/util';
   import { minSize } from '@/setting.json';
   import { calc_merkle } from '@/api/index';
+  import * as Prox from '@/pb/prox_pb.js';
+  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 
   import { showToast } from '@nutui/nutui';
   import * as Prox from '@/pb/prox_pb.js';
@@ -164,7 +166,6 @@
     continuationToken: '',
   });
   const category = ref(1);
-  const usedSpace = ref(0);
   //   const tableData = ref([]);
   const { showTypeCheckPop, infinityValue, continuationToken, tableData } = toRefs(state);
   const { header, metadata, token, deviceType, orderInfo, getOrderInfo, bucketName } = useOrderInfo();
@@ -214,33 +215,8 @@
       tableData.value = res && res.result && res.result.data;
     });
   };
-  const getSummary = () => {
-    return new Promise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
-      let request = new Prox.default.ProxRequestSummaryIds();
-      request.setHeader(header);
-      request.setIdsList([orderInfo.value.foggie_id]);
-      server.summaryInfo(request, metadata.value, (err: any, res: { array: any }) => {
-        if (err) {
-          console.log('err------:', err);
-          reject(false);
-        } else {
-          const contentList = res.getContentsList().map((el) => {
-            return {
-              count: el.getCount(),
-              id: el.getId(),
-              total: el.getTotal(),
-            };
-          });
-          usedSpace.value = contentList?.[0]?.total || 0;
-          resolve(true);
-        }
-      });
-    });
-  };
   const initParams = async () => {
     await getOrderInfo();
-    getSummary();
     switchType(category.value);
   };
 
@@ -253,15 +229,14 @@
 
   const submitMerkle = async () => {
     merkleLoading.value = true;
-    let sumRes = await getSummary();
-    if (sumRes && usedSpace.value > 0) {
-      const d = {
-        orderId: order_id.value,
-        uuid: amb_uuid.value,
-        orderUuid: memo.value,
-        rpc: orderInfo.value.rpc,
-      };
-      calc_merkle(d).then((res) => {
+    const d = {
+      orderId: order_id.value,
+      uuid: amb_uuid.value,
+      orderUuid: memo.value,
+      rpc: orderInfo.value.rpc,
+    };
+    calc_merkle(d)
+      .then((res) => {
         merkleLoading.value = false;
         console.log('calc_merkle-----', res);
         if (res.code == 200) {
@@ -269,12 +244,10 @@
         } else {
           showToast.fail(res.msg);
         }
+      })
+      .catch(() => {
+        merkleLoading.value = false;
       });
-    }else if(!sumRes) {
-      showToast.fail('Failed to get data, please try again');
-    } else if(!usedSpace.value) {
-      showToast.fail("You haven't uploaded a file yet, please do so!");
-    }
   };
 
   onMounted(() => {

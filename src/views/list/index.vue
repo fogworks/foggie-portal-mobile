@@ -1,7 +1,7 @@
 <template>
   <div class="top_box" :class="[searchType == 'History' ? 'top_history' : 'top_open']">
     <!-- <div class="top_type">{{ searchType }} </div> -->
-    <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search">
+    <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search by order number">
       <template #left> <Search></Search> </template>
     </nut-input>
     <!-- <p>You can search your order here.</p> -->
@@ -15,7 +15,7 @@
           >
             <!-- <Shop></Shop> -->
             <!-- bidian.png -->
-            <img src="@/assets/dingdanhetong.png" style="background-color: transparent;" alt="" srcset="">
+            <img src="@/assets/dingdanhetong.png" style="background-color: transparent" alt="" srcset="" />
             <!-- <IconSwitch style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'Open'"></IconSwitch>
             <IconSwitch style="vertical-align: text-top" color="#ffffff" v-else></IconSwitch> -->
           </div>
@@ -29,7 +29,7 @@
             @click="searchType = 'History'"
             :class="[searchType == 'History' ? 'active_svg-box active_svg-boxHistory' : 'svg-box-history']"
           >
-            <img src="@/assets/bidian.png" style="background-color: transparent;" alt="" srcset="">
+            <img src="@/assets/bidian.png" style="background-color: transparent" alt="" srcset="" />
             <!-- <IconHistory style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistory>
             <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-else></IconHistoryActivate> -->
           </div>
@@ -39,7 +39,6 @@
     </nut-row>
   </div>
 
-  
   <div style="margin: 15px 0px">
     <nut-noticebar
       :background="`rgba(251, 248, 220, 1)`"
@@ -58,7 +57,7 @@
     load-more-txt="No more content"
     v-model="infinityValue"
     :has-more="hasMore"
-    @load-more="loadMore"
+    @load-more="loadMoreFun"
   >
     <div class="list_item" v-for="(item, index) in list" @click="gotoOrder(item)" :class="[searchType === 'History' ? 'history_item' : '']">
       <!-- :style="{ background: randomColor() }" -->
@@ -130,11 +129,8 @@
   const router = useRouter();
   const route = useRoute();
   const searchType = ref(route.query.searchType == 'History' ? 'History' : 'Open');
- console.log(route.query.searchType);
- 
-  
-  
-  
+  console.log(route.query.searchType);
+
   const keyWord = ref('');
   const horseLamp = ref([
     'CNR - - Consensus not reached ',
@@ -205,16 +201,22 @@
   // onMounted(async () => {
   //   loadMore();
   // });
+  const loadMoreFun = () => {
+    if (searchType.value == 'Open') {
+      loadMore([0, 1, 2, 3, 6]);
+    } else {
+      loadMore([4, 5]);
+    }
+  };
   watch(
     cloudCodeIsBind,
     (val) => {
       if (val) {
-        if(searchType.value == 'Open'){
+        if (searchType.value == 'Open') {
           loadMore([0, 1, 2, 3, 6]);
-        }else{
+        } else {
           loadMore([4, 5]);
         }
-        
       }
     },
     { deep: true, immediate: true },
@@ -224,8 +226,8 @@
     (val) => {
       resetData();
       if (cloudCodeIsBind.value) {
-        console.log(val,'12222222222222222222');
-        
+        console.log(val, '12222222222222222222');
+
         if (val == 'Open') {
           loadMore([0, 1, 2, 3, 6]);
         } else if (val == 'History') {
@@ -348,7 +350,7 @@
         .active_svg-boxHistory {
           border: 5px solid orange;
           background-color: #aeaeae;
-         
+
           svg,
           img {
             width: 70px;

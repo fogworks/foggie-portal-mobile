@@ -951,6 +951,7 @@
       customClass: 'app_loading',
       icon: loadingImg,
       loadingRotate: false,
+      id: 'file_list',
     });
     let list_prefix = '';
     if (prefix?.length) {
@@ -1062,7 +1063,7 @@
 
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
-          showToast.hide();
+          showToast.hide('file_list');
           console.log('err----', err);
         }
       },
@@ -1118,7 +1119,7 @@
   ) => {
     if (!data) {
       tableLoading.value = false;
-      showToast.hide();
+      showToast.hide('file_list');
       return;
     }
     if (data.err) {
@@ -1266,7 +1267,7 @@
       continuationToken.value = '';
     }
     tableLoading.value = false;
-    showToast.hide();
+    showToast.hide('file_list');
     nextTick(() => {
       if (window.localStorage.notFirst) {
         document.getElementsByClassName('main-page')[0].style.overflow = '';
@@ -1296,6 +1297,7 @@
         customClass: 'app_loading',
         icon: loadingImg,
         loadingRotate: false,
+        id: 'file_list',
       });
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';

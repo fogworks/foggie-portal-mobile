@@ -13,17 +13,13 @@
     </TopBack>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
-        <span class="span1">FoggieID: {{ orderInfo.value?.foggie_id}}</span>
+        <span class="span1">FoggieID: {{ orderInfo.value?.foggie_id }}</span>
 
         <span class="span2">Expiration: {{ transferUTCTime(orderInfo.value.expire) }}</span>
       </nut-col>
       <nut-col :span="24" class="order-circle">
-        <nut-circle-progress
-          :progress="((orderInfo.value.used_space || 0) / (orderInfo.value.total_space || 1)) * 100"
-          radius="60"
-          color="#5460FE"
-        >
-          Used: {{ Math.round((orderInfo.value.used_space / orderInfo.value.total_space) * 10000) / 100 }} %
+        <nut-circle-progress :progress="((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100" radius="60" color="#5460FE">
+          Used: {{ Math.round((usedSize / orderInfo.value.total_space) * 10000) / 100 }} %
         </nut-circle-progress>
       </nut-col>
       <nut-col :span="24" class="order-count">
@@ -37,7 +33,7 @@
         </nut-cell>
         <nut-cell>
           <IconRiPie color="#7F7AE9" />
-          Used: {{ getfilesize(orderInfo.value.used_space, 'B') }}
+          Used: {{ getfilesize(usedSize, 'B') }}
         </nut-cell>
       </nut-col>
     </nut-row>
@@ -301,42 +297,46 @@
       <nut-button type="success" class="upload_btn" size="small">+</nut-button>
     </nut-uploader> -->
     <!-- dialogVisible -->
-    <nut-dialog
-      v-model:visible="dialogVisible"
-      title="Bucket Name"
-      :close-on-click-overlay="false"
-      :show-cancel="false"
-      :show-confirm="false"
-      custom-class="CustomName"
-    >
-      <template #header>
-        <span class="icon" style="margin-right: 5px;">
-          <IconBucket color="#000"></IconBucket>
-        </span>
-        Create a Bucket
-      </template>
-      <p class="bucket_tip" style="text-align: left; word-break: break-word"
-        >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
-        (-), and must start and end with lowercase letters or numbers</p
+    <Teleport to="body">
+      <nut-dialog
+        v-model:visible="dialogVisible"
+        title="Bucket Name"
+        :close-on-click-overlay="false"
+        :show-cancel="false"
+        :show-confirm="false"
+        custom-class="CustomName"
+        overlayClass="CustomOverlay"
       >
-      <p
-        style="
-          margin-top: 10px;
-          margin-bottom: 5px;
-          font-weight: 600;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          color: #fdfdfd;
-        ">
-        <span>Bucket Name</span> <span>Required</span>
-      </p>
-      <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
-      <template #footer>
-        <!-- <nut-button type="primary" @click="router.go(-1)">Operate Later</nut-button> -->
-        <nut-button type="primary" size="large" @click="createName" :loading="isNameLoading">Confirm</nut-button>
-      </template>
-    </nut-dialog>
+        <template #header>
+          <span class="icon" style="margin-right: 5px">
+            <IconBucket color="#000"></IconBucket>
+          </span>
+          Create a Bucket
+        </template>
+        <p class="bucket_tip" style="text-align: left; word-break: break-word"
+          >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
+          (-), and must start and end with lowercase letters or numbers</p
+        >
+        <p
+          style="
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fdfdfd;
+          "
+        >
+          <span>Bucket Name</span> <span>Required</span>
+        </p>
+        <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
+        <template #footer>
+          <!-- <nut-button type="primary" @click="router.go(-1)">Operate Later</nut-button> -->
+          <nut-button type="primary" size="large" @click="createName" :loading="isNameLoading">Confirm</nut-button>
+        </template>
+      </nut-dialog>
+    </Teleport>
   </div>
   <!-- <Transition name="fade-transform" mode="out-in">
       <div v-if="uploadProgressIsShow" style="margin-top: 30px">
@@ -510,6 +510,7 @@
   const btnLoading = ref<boolean>(false);
   const formData = ref<any>({});
   const filesCount = ref<any>(0);
+  const usedSize = ref<any>(0);
 
   const memo = ref<any>('');
   const order_id = ref<any>('');
@@ -864,7 +865,7 @@
     // let uploadLine = 1024 * 1024 * 50;
     let uploadLine = 1024 * 1024 * 1;
 
-    let used_space = orderInfo.value.used_space || 0;
+    let used_space = usedSize || 0;
     if (uploadLine >= used_space) {
       // let needSpace = getfilesize(uploadLine - used_space);
       // showToast.text(`At least ${needSpace} of files need to be uploaded to submit Merkle`);
@@ -1290,24 +1291,36 @@
     // }
   });
   const getSummary = () => {
-    let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
-    let request = new Prox.default.ProxRequestSummaryIds();
-    request.setHeader(header);
-    request.setIdsList([orderInfo.value.foggie_id]);
-    server.summaryInfo(request, metadata.value, (err: any, res: { array: any }) => {
-      if (err) {
-        console.log('err------:', err);
-        // reject(false);
-      } else {
-        const contentList = res.getContentsList().map((el) => {
-          return {
-            count: el.getCount(),
-            id: el.getId(),
-            total: el.getTotal(),
-          };
-        });
-        filesCount.value = contentList?.[0]?.count || 0;
-      }
+    return new Promise((resolve, reject) => {
+      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
+      let request = new Prox.default.ProxRequestSummaryIds();
+      request.setHeader(header);
+
+      request.setIdsList([orderInfo.value.foggie_id]);
+
+      console.log(`https://${bucketName.value}.devus.u2i.net:7007`, 'bucketNamebucketNamebucketNamebucketName');
+      console.log(request, 'requestrequestrequestrequest');
+
+      server.summaryInfo(request, {}, (err: any, res: { array: any }) => {
+        if (err) {
+          console.log('errsummry------:', err);
+          // reject(false);
+          resolve(false);
+        } else {
+          const contentList = res.getContentsList().map((el) => {
+            return {
+              count: el.getCount(),
+              id: el.getId(),
+              total: el.getTotal(),
+            };
+          });
+          console.log(contentList, 'contentListcontentListcontentListcontentList');
+
+          filesCount.value = contentList?.[0]?.count || 0;
+          usedSize.value = contentList?.[0]?.total || 0;
+          resolve(usedSize.value);
+        }
+      });
     });
   };
   provide('getSummary', getSummary);

@@ -5,12 +5,11 @@ export const lineOption = (xAxis, data, title = 'Earn Analysis') => {
       color: '#000',
     },
     title: {
-      left: '10px',
       text: title,
       textStyle: {
-        color: '#5F57FF',
-        fontSize: 25,
-        fontFamily: 'HelloFont WenYiHei',
+        fontSize: '14px',
+        color: '#4c5093',
+        fontWeight: 'bold',
       },
     },
     tooltip: {
@@ -67,12 +66,11 @@ export const barOption = (xAxis, data, title = 'Earn Analysis') => {
       color: '#000',
     },
     title: {
-      left: '10px',
       text: title,
       textStyle: {
-        color: '#5F57FF',
-        fontSize: 25,
-        fontFamily: 'HelloFont WenYiHei',
+        fontSize: '14px',
+        color: '#4c5093',
+        fontWeight: 'bold',
       },
     },
     tooltip: {

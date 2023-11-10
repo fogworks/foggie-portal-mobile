@@ -230,20 +230,7 @@
     }, 2000);
     // emits('getFileList');
     emits('uploadComplete');
-    uploadRef.value.clearUploadQueue();
-    getSummary();
-    console.log('-------------------used---1', props.orderInfo.value.used_space);
-    // await getOrderInfo(false);
-    console.log('-------------------used---2', props.orderInfo.value.used_space);
-
-    // let uploadLine = 1024 * 1024 * 50;
-    let uploadLine = 1024 * 1024 * minSize;
-
-    let used_space = props.orderInfo.value.used_space || 0;
-    if (uploadLine >= used_space) {
-      console.log('uploadLine', uploadLine, 'used_space', used_space);
-      return false;
-    }
+    let used_space = await getSummary();
     if (!amb_uuid.value) {
       let res = await get_unique_order({ order_uuid: route?.query?.uuid });
       amb_uuid.value = res?.result?.data?.amb_uuid;
@@ -259,6 +246,7 @@
     save_upload(d).then((res) => {
       console.log('save_upload-----', res);
     });
+    uploadRef.value.clearUploadQueue();
   };
 
   const onProgress = ({ event, options, percentage }: any) => {

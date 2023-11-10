@@ -34,13 +34,13 @@ service.interceptors.response.use(
 
     const res = response.data;
     const code = res.code;
-    if (response.config.url == '/v1/chain/get_account') {
+    if (response.config.url?.indexOf('/v1/chain/get_account') > -1) {
       return res;
     }
-    if (code !== 200) { 
+    if (code !== 200) {
       if (ignoreUrl.indexOf(response.config.url) > -1) {
       } else {
-        showToast.fail(res.error || res.msg || res.message  || 'Network error. Please try again.');
+        showToast.fail(res.error || res.msg || res.message || 'Network error. Please try again.');
       }
       if (code === 401 || code === 403) {
         userStore.setInfo({});
@@ -82,6 +82,9 @@ service.interceptors.response.use(
     }
   },
   (error: AxiosError) => {
+    if (error.config.url?.indexOf('/v1/chain/get_account') > -1) {
+      return error;
+    }
     console.log('err' + error);
     if (ignoreUrl.indexOf(error.config.url) > -1) {
       return Promise.reject(error.message);
