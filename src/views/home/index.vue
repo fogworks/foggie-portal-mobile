@@ -229,6 +229,7 @@
     OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
     user_cancel_order: 'Order Cancellation Refund', // 订单取消
     user_OrderReceiptDeposit: 'Order expires. Deposit refunded', // 订单到期退还押金
+    OrderRefund:'Order refund', // 订单退款
     OrderReceiptEnd: 12,
   };
 

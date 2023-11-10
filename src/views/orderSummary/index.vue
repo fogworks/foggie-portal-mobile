@@ -138,6 +138,7 @@
     OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
     user_cancel_order:'Order Cancellation Refund',
     user_OrderReceiptDeposit:'Order expired. Deposit refunded.',  
+    OrderRefund:'Order refund', // 订单退款
     OrderReceiptEnd: 12,
   };
   const { getUserAssets, cloudBalance, cloudProfit, orderPayout } = useOrderAssets();
