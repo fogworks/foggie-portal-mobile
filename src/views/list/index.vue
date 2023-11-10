@@ -83,9 +83,9 @@
             <!-- 下週期將取消 -->
             <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
             <!-- 預存⾦不足 -->
-            <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">APB</nut-tag>
+            <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">IADTCNC</nut-tag>
             <!-- 預存⾦充足 -->
-            <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">INSF</nut-tag>
+            <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">SFIA</nut-tag>
           </span>
         </span>
         <span :class="['earnings']" v-if="item.income" style="font-weight: bold">
@@ -137,8 +137,8 @@
     'CNR - - Consensus not reached ',
     'CR - - Consensus reached ',
     'Next: canceled - - Cancellation of the next cycle',
-    'APB - - Insufficient advance deposit to cancel the next cycle',
-    'INSF - - Sufficient funds in advance ',
+    'IADTCNC - - Insufficient advance deposit to cancel the next cycle',
+    'SFIA - - Sufficient funds in advance ',
   ]);
   const cloudSpaceList = ref([]);
   const orderStore = useOrderStore();
