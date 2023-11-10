@@ -336,7 +336,7 @@
         <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
         <template #footer>
           <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button>
-          <nut-button type="primary"  @click="createName" :loading="isNameLoading">Confirm</nut-button>
+          <nut-button type="primary" @click="createName" :loading="isNameLoading">Confirm</nut-button>
         </template>
       </nut-dialog>
     </Teleport>
@@ -1448,20 +1448,23 @@
     padding: 30px 10px;
     background: #000;
     box-sizing: border-box;
-
     .middle_img {
-    }
+      max-height: calc(100vh - 500px);
 
+      .nut-image {
+        width: 100%;
+        height: 100%;
+      }
+    }
     .bottom_action {
       display: flex;
       justify-content: space-evenly;
       height: 200px;
-
+      margin-top: 20px;
       div {
         text-align: center;
         color: #fff;
       }
-
       svg {
         color: #fff;
         width: 80px;

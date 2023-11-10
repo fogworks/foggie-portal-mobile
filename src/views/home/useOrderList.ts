@@ -42,7 +42,7 @@ export default function useOrderList() {
   const listData = ref([] as any);
   const total = ref(0);
   const hasMore = computed(() => {
-    return total.value > pn.value * ps.value;
+    return total.value > (pn.value - 1) * ps.value;
   });
   const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
   const infinityValue = ref(false);
@@ -78,6 +78,10 @@ export default function useOrderList() {
           }) || [];
         pn.value++;
         listData.value = [...listData.value, ...cloudList];
+        infinityValue.value = false;
+      })
+      .catch(() => {
+        pn.value--;
       })
       .finally(() => {
         showToast.hide();

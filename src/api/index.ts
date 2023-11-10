@@ -141,7 +141,7 @@ export const file_download = (params) => {
 };
 export const search_cloud = (data) => {
   return request({
-    url: `/ambmgr/order/get_order`,
+    url: `/ambmgr/order/get_order?pn=${data.pn}&ps=${data.ps}`,
     method: 'POST',
     data,
   });
@@ -153,7 +153,6 @@ export const get_unique_order = (params) => {
     params,
   });
 };
-
 
 export const check_name = (bucketName: any) => {
   return request({
@@ -289,15 +288,14 @@ export const get_reCAPTCHA_Score_API = (data) => {
 
   return request({
     url: url,
-    method: "POST",
+    method: 'POST',
     data,
-    timeout:60000,
+    timeout: 60000,
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
   });
 };
-
 
 export const get_order_sign = (data) => {
   return request({
