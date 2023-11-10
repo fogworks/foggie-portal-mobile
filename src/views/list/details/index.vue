@@ -1301,7 +1301,7 @@
       console.log(`https://${bucketName.value}.devus.u2i.net:7007`, 'bucketNamebucketNamebucketNamebucketName');
       console.log(request, 'requestrequestrequestrequest');
 
-      server.summaryInfo(request, {}, (err: any, res: { array: any }) => {
+      server.summaryInfo(request, metadata.value, (err: any, res: { array: any }) => {
         if (err) {
           console.log('errsummry------:', err);
           // reject(false);
