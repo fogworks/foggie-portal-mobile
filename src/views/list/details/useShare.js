@@ -148,7 +148,7 @@ export default function useShare(orderInfo, header, deviceType) {
       await navigator.clipboard.writeText(text);
       showToast.success('Copy succeeded');
     } catch (err) {
-      showToast.fail('Copy failed');
+      fallbackCopyTextToClipboard(text);
     }
   };
   function fallbackCopyTextToClipboard(text) {
@@ -168,7 +168,7 @@ export default function useShare(orderInfo, header, deviceType) {
       let msg = successful ? 'successful' : 'unsuccessful';
       showToast.success(msg);
     } catch (err) {
-      showToast.fail('unsuccessful');
+      showToast.fail('Copy failed');
     }
     // 3.Remove element
     document.body.removeChild(textArea);
