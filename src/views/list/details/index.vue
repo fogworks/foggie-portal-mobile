@@ -13,7 +13,7 @@
     </TopBack>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
-        <span class="span1">FoggieID: {{ orderInfo.value?.foggie_id }}</span>
+        <span class="span1">ID: {{ orderInfo.value?.foggie_id }}</span>
 
         <span class="span2">Expiration: {{ transferUTCTime(orderInfo.value.expire) }}</span>
       </nut-col>

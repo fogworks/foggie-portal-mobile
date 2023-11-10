@@ -46,5 +46,8 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TopBack: typeof import('./../src/components/topBack/index.vue')['default']
+    VanButton: typeof import('vant/es')['Button']
+    VanNumberKeyboard: typeof import('vant/es')['NumberKeyboard']
+    VanPasswordInput: typeof import('vant/es')['PasswordInput']
   }
 }
