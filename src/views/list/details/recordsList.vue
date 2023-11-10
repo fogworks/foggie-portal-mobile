@@ -149,8 +149,6 @@
   import { transferUTCTime } from '@/utils/util';
   import { minSize } from '@/setting.json';
   import { calc_merkle } from '@/api/index';
-  import * as Prox from '@/pb/prox_pb.js';
-  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 
   import { showToast } from '@nutui/nutui';
   import * as Prox from '@/pb/prox_pb.js';
