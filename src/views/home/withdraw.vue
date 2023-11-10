@@ -47,9 +47,9 @@
     <div v-if="realAmount != '--'" class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
     <div v-else class="real_amount">Failed to get ambassador pumping rate, please retry </div>
     <nut-noticebar
-      :text="`Please be aware that withdrawals incur a handling fee of  ${
-        commissionRate * 100
-      }% for ambassadors and 2% for DMC Foundation`"
+      :text="`Please be aware that withdrawals incur a handling fee of  ${(commissionRate * 100).toFixed(
+        2,
+      )}% for ambassadors and 2% for DMC Foundation`"
       wrapable
     ></nut-noticebar>
 
@@ -61,8 +61,8 @@
   </div>
   <div v-else-if="!loading && !canWithDraw" :class="['middle_box', 'qrcode-step', showKeyboard ? 'full_height' : '']">
     <div class="google-tips">
-      Please use Google Authenticator or other compatible programs on your phone to scan the QR code below, or manually enter a manually enter a 16-digit key
-      key.
+      Please use Google Authenticator or other compatible programs on your phone to scan the QR code below, or manually enter a manually
+      enter a 16-digit key key.
     </div>
     <div class="auth_qrcode" v-if="authQrcode && !canWithDraw">
       <img :src="authQrcode" />
@@ -279,7 +279,7 @@
       showToast.fail('Please fill in the amount to be withdrawn');
       return false;
     }
-    if (cloudBalance.value < amount.value) {
+    if (+cloudBalance.value < +amount.value) {
       showToast.fail('Exceeding the maximum withdrawable amount');
       return false;
     }
@@ -355,10 +355,9 @@
 </script>
 
 <style lang="scss" scoped>
-
-.top_back{
-  font-size: 36px;
-}
+  .top_back {
+    font-size: 36px;
+  }
   .top_img {
     display: block;
     width: 200px;
