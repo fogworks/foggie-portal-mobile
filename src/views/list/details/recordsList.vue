@@ -151,6 +151,8 @@
   import { calc_merkle } from '@/api/index';
 
   import { showToast } from '@nutui/nutui';
+  import * as Prox from '@/pb/prox_pb.js';
+  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 
   const route = useRoute();
   const router = useRouter();
@@ -165,7 +167,7 @@
   const usedSpace = ref(0);
   //   const tableData = ref([]);
   const { showTypeCheckPop, infinityValue, continuationToken, tableData } = toRefs(state);
-  const { header, token, deviceType, orderInfo, getOrderInfo, bucketName } = useOrderInfo();
+  const { header, metadata, token, deviceType, orderInfo, getOrderInfo, bucketName } = useOrderInfo();
   import { get_merkle_record, get_challenge, get_arbitration } from '@/api/index';
   const order_id = ref<any>('');
   order_id.value = route.query.id;
@@ -218,7 +220,7 @@
       let request = new Prox.default.ProxRequestSummaryIds();
       request.setHeader(header);
       request.setIdsList([orderInfo.value.foggie_id]);
-      server.summaryInfo(request, {}, (err: any, res: { array: any }) => {
+      server.summaryInfo(request, metadata.value, (err: any, res: { array: any }) => {
         if (err) {
           console.log('err------:', err);
           reject(false);

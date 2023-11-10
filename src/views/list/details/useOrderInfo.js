@@ -1,4 +1,4 @@
-import { get_unique_order } from '@/api/index.ts';
+import { get_unique_order, get_order_sign } from '@/api/index';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/store/modules/user';
 import * as Prox from '@/pb/prox_pb.js';
@@ -15,6 +15,7 @@ export default function useOrderInfo() {
   const accessKeyId = ref('');
   const secretAccessKey = ref('');
   let header = new Prox.default.ProxHeader();
+  let metadata = ref({});
   const deviceType = computed(() => orderInfo.value.device_type);
   const token = computed(() => {
     if (deviceType.value == 'space') {
@@ -39,7 +40,21 @@ export default function useOrderInfo() {
     header.setPeerid(orderInfo.value.peer_id);
     header.setId(orderInfo.value.foggie_id);
     // header.setId('baeqacmjq');
-    header.setToken(orderInfo.value.sign);
+    // header.setToken(orderInfo.value.sign);
+    let param = {
+      order_uuid: route?.query?.uuid,
+    }
+    const signData = await get_order_sign(param);
+    // console.log('signData==11:', signData);
+    let cur_token = signData?.result?.data?.sign;
+    const date = signData?.result?.data?.timestamp;
+    metadata.value = {
+      'X-Custom-Date': date,
+    }
+
+    // console.log('cur_token==11:', cur_token);
+    header.setToken(cur_token);
+
     bucketName.value = orderInfo.value.domain;
     orderInfo.value.used_space = 0;
     if (bucketName.value && getKey) {
@@ -47,9 +62,10 @@ export default function useOrderInfo() {
         let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
         let request = new Prox.default.ProxGetCredRequest();
         request.setHeader(header);
-        server.listCreds(request, {}, (err, res) => {
+        console.log('metadata==11:', request, metadata.value);
+        server.listCreds(request, metadata.value, (err, res) => {
           if (err) {
-            console.log('err------111:', err);
+            console.log('err------111222:', err);
             showToast.hide('order_info_id');
             reject(false);
           } else if (res.array.length > 0) {
@@ -73,6 +89,7 @@ export default function useOrderInfo() {
     getOrderInfo,
     token,
     header,
+    metadata,
     accessKeyId,
     secretAccessKey,
   };
