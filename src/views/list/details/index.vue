@@ -7,7 +7,10 @@
         <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
       </div>
       <div v-else> Order:{{ order_id }} </div>
-      <span class="benefit_analysis" @click="gotoSummary(order_id, orderInfo.value.state)">
+      <span class="benefit_analysis" v-if="orderInfo.value.state == '0'" @click="closedOrder">
+        <img src="@/assets/orderclosed.svg" class="bucket_detail_smal" />
+      </span>
+      <span class="benefit_analysis" v-else @click="gotoSummary(order_id, orderInfo.value.state)">
         <img src="@/assets/analysis.svg" class="bucket_detail_smal" />
       </span>
     </TopBack>
@@ -333,7 +336,7 @@
         <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
         <template #footer>
           <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button>
-          <nut-button type="primary" size="large" @click="createName" :loading="isNameLoading">Confirm</nut-button>
+          <nut-button type="primary"  @click="createName" :loading="isNameLoading">Confirm</nut-button>
         </template>
       </nut-dialog>
     </Teleport>
@@ -402,7 +405,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, watch } from 'vue';
+  import { ref, onMounted, watch, createVNode } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
@@ -435,6 +438,8 @@
   // import AESHelper from './AESHelper';
   // import { Image } from '@nutui/icons-vue';
   import { HeartFill, Success, MaskClose } from '@nutui/icons-vue';
+  import { showDialog } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/dialog/style';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute, useRouter } from 'vue-router';
@@ -447,7 +452,8 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
   import { getSecondTime } from '@/utils/util';
-  import { update_order_size } from '@/api/amb';
+  import { update_order_size, closedOrderApi } from '@/api/amb';
+
   import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
@@ -1323,6 +1329,26 @@
       });
     });
   };
+  function closedOrder() {
+    showDialog({
+      title: 'Cancel order',
+      content: createVNode('span', { style: {} }, 'Are you sure you want to cancel this order?'),
+      cancelText: 'Cancel',
+      okText: 'Yes',
+      onCancel: () => {
+        // console.log('取消');
+      },
+      onOk: () => {
+        closedOrderApi({ uuid: orderInfo.value.amb_uuid, orderId: orderInfo.value.orderId }).then((res) => {
+          if (res.code == 200) {
+            router.replace({ name: 'orderSummary', query: { id: orderInfo.value.orderId, type: 'history', status: 5 } });
+          } else {
+            showToast.fail('Cancel failed please try again');
+          }
+        });
+      },
+    });
+  }
   provide('getSummary', getSummary);
   onDeactivated(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);

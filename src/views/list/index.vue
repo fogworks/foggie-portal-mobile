@@ -59,48 +59,51 @@
     :has-more="hasMore"
     @load-more="loadMoreFun"
   >
-    <div class="list_item" v-for="(item, index) in list" @click="gotoOrder(item)" :class="[searchType === 'History' ? 'history_item' : '']">
-      <!-- :style="{ background: randomColor() }" -->
-      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-        <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
+    <template v-for="(item, index) in list">
+      <div class="list_item" v-if="!(item?.income && item?.state == 0)"  @click="gotoOrder(item)" :class="[searchType === 'History' ? 'history_item' : '']">
+        <!-- :style="{ background: randomColor() }" -->
+
+        <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+          <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
-        <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-        <img src="@/assets/DMC_Token1.png" alt="" />
-      </div>
-      <div>
-        <span>
-          <span>Order:{{ item.order_id }}</span>
-          <span style="margin-left: 10px">
-            <!-- 待共識 -->
-            <nut-tag v-if="item.state == 0" type="warning">CNR</nut-tag>
-            <!-- 进行中 -->
-            <nut-tag type="success" v-else-if="item.state == 1">CR</nut-tag>
-            <!-- 已结束 -->
-            <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Expired</nut-tag>
-            <!-- 已取消 -->
-            <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
-            <!-- 下週期將取消 -->
-            <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
-            <!-- 預存⾦不足 -->
-            <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">IADTCNC</nut-tag>
-            <!-- 預存⾦充足 -->
-            <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">SFIA</nut-tag>
+          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+          <img src="@/assets/DMC_Token1.png" alt="" />
+        </div>
+        <div>
+          <span>
+            <span>Order:{{ item.order_id }}</span>
+            <span style="margin-left: 10px">
+              <!-- 待共識 -->
+              <nut-tag v-if="item.state == 0" type="warning">CNR</nut-tag>
+              <!-- 进行中 -->
+              <nut-tag type="success" v-else-if="item.state == 1">CR</nut-tag>
+              <!-- 已结束 -->
+              <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Expired</nut-tag>
+              <!-- 已取消 -->
+              <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
+              <!-- 下週期將取消 -->
+              <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
+              <!-- 預存⾦不足 -->
+              <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">IADTCNC</nut-tag>
+              <!-- 預存⾦充足 -->
+              <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">SFIA</nut-tag>
+            </span>
           </span>
-        </span>
-        <span :class="['earnings']" v-if="item.income" style="font-weight: bold">
-          +{{ item.income }}
-          <!-- <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight> -->
-        </span>
+          <span :class="['earnings']" v-if="item.income" style="font-weight: bold">
+            +{{ item.income }}
+            <!-- <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight> -->
+          </span>
+        </div>
+        <div
+          ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ transferGMTTime(item.order_created_at) }}</span>
+        </div>
+        <div style="color: red">
+          <span>Payment:</span>
+          <span class="time" style="color: red; font-weight: bold"> - {{ item.total_price }} DMC</span>
+        </div>
       </div>
-      <div
-        ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ transferGMTTime(item.order_created_at) }}</span>
-      </div>
-      <div style="color: red">
-        <span>Payment:</span>
-        <span class="time" style="color: red; font-weight: bold"> - {{ item.total_price }} DMC</span>
-      </div>
-    </div>
+    </template>
   </nut-infinite-loading>
   <nut-empty v-else description=" " image="error">
     <div style="margin-top: 10px" v-if="!listData.length">

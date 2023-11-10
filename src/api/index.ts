@@ -154,6 +154,7 @@ export const get_unique_order = (params) => {
   });
 };
 
+
 export const check_name = (bucketName: any) => {
   return request({
     url: `/api/vps/check_name?domain=${bucketName}`,

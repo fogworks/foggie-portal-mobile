@@ -76,6 +76,13 @@ export function order_buy_state(ip, data) {
     data,
   });
 }
+export const closedOrderApi = (data) => {
+  return request({
+    url: `/order/cancel`,
+    method: 'POST',
+    data,
+  });
+};
 
 export function node_order_search(ip, data) {
   return request({
