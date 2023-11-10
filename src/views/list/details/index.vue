@@ -13,7 +13,7 @@
     </TopBack>
     <nut-row class="order-detail">
       <nut-col :span="24" class="order-des">
-        <span class="span1">FoggieID: {{ orderInfo.value?.foggie_id}}</span>
+        <span class="span1">FoggieID: {{ orderInfo.value?.foggie_id }}</span>
 
         <span class="span2">Expiration: {{ transferUTCTime(orderInfo.value.expire) }}</span>
       </nut-col>
@@ -310,14 +310,14 @@
       custom-class="CustomName"
     >
       <template #header>
-        <span class="icon" style="margin-right: 5px;">
+        <span class="icon" style="margin-right: 5px">
           <IconBucket color="#000"></IconBucket>
         </span>
         Create a Bucket
       </template>
       <p class="bucket_tip" style="text-align: left; word-break: break-word"
-        >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
-        (-), and must start and end with lowercase letters or numbers</p
+        >Buckets are used to store and organize files. Custom names should use only lowercase letters, numbers, periods, and dashes (-),
+        starting and ending with lowercase letters or numbers for validation.</p
       >
       <p
         style="
@@ -328,13 +328,14 @@
           justify-content: space-between;
           align-items: center;
           color: #fdfdfd;
-        ">
+        "
+      >
         <span>Bucket Name</span> <span>Required</span>
       </p>
       <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
       <template #footer>
-        <!-- <nut-button type="primary" @click="router.go(-1)">Operate Later</nut-button> -->
-        <nut-button type="primary" size="large" @click="createName" :loading="isNameLoading">Confirm</nut-button>
+        <nut-button type="primary"  style="font-size: 12px;" @click="router.go(-1)">Operate Later</nut-button>
+        <nut-button type="primary"  @click="createName" :loading="isNameLoading">Confirm</nut-button>
       </template>
     </nut-dialog>
   </div>
@@ -1674,7 +1675,7 @@
       .s3key {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         width: 100%;
         background: #fff;

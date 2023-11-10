@@ -3,10 +3,10 @@
     <div class="top_back" @click="router.go(-1)">Recharge Guide</div>
   </div>
   <div class="recharge_info">
-    <div class="title"> 1. Enter the DMC APP and click on the transfer operation on the homepage. </div>
+    <div class="title"> 1. Open the DMC Wallet App and click on the "Transfer" button on the homepage. </div>
     <img src="@/assets/dmcHome.jpg" />
     <div class="title">
-      2.Copy the Target account and memo we generated for you, and then proceed with the transfer operation on the app transfer page.
+      2.Copy the provided receiving account name and memo from your Foggie Mobile, then proceed with the transaction on your DMC Wallet App.
     </div>
     <img src="@/assets/dmcTrans.jpg" />
   </div>

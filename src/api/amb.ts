@@ -202,7 +202,7 @@ export function query_node() {
 
 export function search_user_asset_detail(data) {
   return request({
-    url: '/ambmgr/asset/search_user_asset_detail',
+    url: `/ambmgr/asset/search_user_asset_detail?ps=${data.ps}&pn=${data.pn}`,
     method: 'POST',
     data,
   });

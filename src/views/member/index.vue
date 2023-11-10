@@ -9,7 +9,9 @@
       </div>
     </div>
     <div class="infoContent">
-      <img src="@/assets/user.svg" alt="" srcset="" />
+      <!-- <img src="@/assets/user.svg" alt="" srcset="" /> -->
+      <img src="@/assets/user.png" alt="" srcset="" />
+
       <div>{{ dmcAccount }}</div>
       <div>{{ email }}</div>
 
@@ -314,6 +316,8 @@
         top: -65px;
         left: 50%;
         transform: translateX(-50%);
+        background: #fff;
+        border-radius: 50%;
       }
 
       & > div {
