@@ -11,7 +11,7 @@
   import { useRouter, useRoute } from 'vue-router';
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
-
+  import '@nutui/nutui/dist/packages/notify/style';
   const userStore = useUserStore();
   const router = useRouter();
   const route = useRoute();
@@ -227,7 +227,9 @@
       }
     }
   }
-
+  .notify_primary {
+    height: unset;
+  }
   .grecaptcha-badge {
     display: none !important;
   }

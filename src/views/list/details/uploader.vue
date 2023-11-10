@@ -39,7 +39,7 @@
   import { Buffer } from 'buffer';
   import { useRoute } from 'vue-router';
   import useOrderInfo from './useOrderInfo.js';
-  import { showToast } from '@nutui/nutui';
+  import { showToast, showNotify } from '@nutui/nutui';
   import { save_upload, valid_upload, get_unique_order } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import { getSecondTime } from '@/utils/util';
@@ -129,7 +129,6 @@
         showToast.fail(content);
         return reject(false);
       }
-      showToast.text('Sensitive information is recommended to be encrypted and uploaded');
 
       const fileCopy = file[0];
       const d = { orderId: order_id.value };
@@ -235,17 +234,20 @@
       let res = await get_unique_order({ order_uuid: route?.query?.uuid });
       amb_uuid.value = res?.result?.data?.amb_uuid;
     }
-    const d = {
-      orderId: order_id.value,
-      uuid: amb_uuid.value,
-      orderUuid: memo.value,
-      rpc: props.orderInfo.value.rpc,
-      fileSize: option?.sourceFile?.size,
-      usedSpace: used_space,
-    };
-    save_upload(d).then((res) => {
-      console.log('save_upload-----', res);
-    });
+    if (used_space) {
+      const d = {
+        orderId: order_id.value,
+        uuid: amb_uuid.value,
+        orderUuid: memo.value,
+        rpc: props.orderInfo.value.rpc,
+        fileSize: option?.sourceFile?.size,
+        usedSpace: used_space,
+      };
+      save_upload(d).then((res) => {
+        console.log('save_upload-----', res);
+      });
+    }
+
     uploadRef.value.clearUploadQueue();
   };
 
@@ -281,6 +283,13 @@
     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
     xhr.send(options.formData);
   };
+  onMounted(() => {
+    document.querySelector('.nut-uploader__input')?.addEventListener('click', () => {
+      showNotify.primary('Sensitive information is recommended to be encrypted and uploaded', {
+        'class-name': 'notify_primary',
+      });
+    });
+  });
 </script>
 
 <style lang="scss" scoped>
