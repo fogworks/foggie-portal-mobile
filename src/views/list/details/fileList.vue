@@ -552,7 +552,7 @@
     longPress,
     isFirst,
   } = toRefs(state);
-  const { bucketName, header, token, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
+  const { bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
   const {
     shareType,
     isReady,
@@ -965,7 +965,6 @@
     let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
-    // header.setToken(token.value.split('bearer ')[1]);
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix(list_prefix);
     let delimiter;
@@ -991,10 +990,11 @@
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
+    console.log('list-object--header', header, metadata.value);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
-      {},
+      metadata.value,
       (
         err: any,
         res: {

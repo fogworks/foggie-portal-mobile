@@ -452,7 +452,7 @@
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
 
-  const { accessKeyId, secretAccessKey, bucketName, header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  const { accessKeyId, secretAccessKey, bucketName, header, metadata, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
   const {
     shareType,
@@ -1033,7 +1033,7 @@
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
-      {},
+      metadata.value,
       (
         err: any,
         res: {
@@ -1294,7 +1294,7 @@
     let request = new Prox.default.ProxRequestSummaryIds();
     request.setHeader(header);
     request.setIdsList([orderInfo.value.foggie_id]);
-    server.summaryInfo(request, {}, (err: any, res: { array: any }) => {
+    server.summaryInfo(request, metadata.value, (err: any, res: { array: any }) => {
       if (err) {
         console.log('err------:', err);
         // reject(false);

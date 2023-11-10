@@ -77,7 +77,7 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   let server;
   // import { isCloudCanUpload_Api } from '@/api/upload';
-  const { header, token, deviceType, orderInfo, bucketName, getOrderInfo } = useOrderInfo();
+  const { header, metadata, deviceType, orderInfo, bucketName, getOrderInfo } = useOrderInfo();
   const imgCheckedData = reactive({
     value: {},
   });
@@ -150,7 +150,7 @@
         ProxTimeLine.setInterval(interval);
         ProxTimeLine.setDate(date);
         ProxTimeLine.setCategory(1);
-        server.getTimeLine(ProxTimeLine, {}, (err, data) => {
+        server.getTimeLine(ProxTimeLine, metadata.value, (err, data) => {
           if (data) {
             const content = data.getContentsList().map((el) => {
               return {
@@ -210,14 +210,6 @@
     if (deviceType.value == 'space' || deviceType.value == 3) {
       getReomteData(scroll, list_prefix, reset, date, max_keys);
     } else {
-      // let type = 'foggie';
-      // oodFileList(email.value, type, token.value, deviceData, list_prefix, scroll, 1, date, max_keys)
-      //   .then((res) => {
-      //     if (res && res.content) {
-      //       initFileData(res, reset, date);
-      //     }
-      //   })
-      //   .finally(() => (tableLoading.value = false));
     }
   };
   const getReomteData = (scroll, prefix, reset = false, date = '', max_keys) => {
@@ -245,7 +237,7 @@
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
     requestReq.setRequest(listObject);
-    server.listObjects(requestReq, {}, (err, res) => {
+    server.listObjects(requestReq, metadata.value, (err, res) => {
       if (res) {
         const transferData = {
           commonPrefixes: res.getCommonprefixesList(),

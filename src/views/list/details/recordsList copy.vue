@@ -226,7 +226,7 @@
     longPress,
     isFirst,
   } = toRefs(state);
-  const { header, token, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  const { header, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
   const {
     isReady,
     confirmShare,
