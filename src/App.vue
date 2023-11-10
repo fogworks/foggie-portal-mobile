@@ -152,7 +152,28 @@
         }
       }
     }
-
+    .BuyOrderClass {
+      .nut-dialog__content {
+        white-space: inherit;
+      }
+      .nut-dialog__content {
+        .buyOrderItem {
+          word-break: break-word;
+          color: #d1cece;
+          text-align: left;
+          border-bottom: 2px solid #f5f7fb;
+          padding: 10px 10px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+         
+        }
+      }
+      .nut-dialog__footer .nut-dialog__footer-cancel {
+        background-image: linear-gradient(135deg, #5b6954 0%, #9cb77d 100%);
+        margin-left: 10px !important;
+      }
+    }
     .CustomName {
       background-color: #2d2e41 !important;
 

@@ -116,14 +116,14 @@
             <span class="row_box_value">{{ totalPrice }} <span>DMC</span></span>
           </div>
         </div>
-        <div class="row_tips">
+        <!-- <div class="row_tips">
           <div>* The order book is only partly open during the outcry phase。</div>
           <div>* When orders match such as to enable a transaction to be executed, the indicative auction price is shown。</div>
           <div
             >* This is the price that would result for the auction if the price determination were to take place at this point in
             time。</div
           >
-        </div>
+        </div> -->
       </div>
       <div class="bottom_btn">
         <nut-progress
@@ -353,20 +353,28 @@
         if (res.code == 200) {
           if (res.data.orderId && res.data.orderId != '') {
             fake.end();
-            const dmcOk = () => {
-              router.push('/list');
-            };
-            let src = require('@/assets/DMC_token.png');
-            let str = `<img class="bind_img" src=${src} style="height:60px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'></p><p style='word-break:break-word;color:#d1cece;text-align:left;'>You have spent ${res.data.totalPrice} DMC for order ID ${res.data.orderId}. Orders purchased successfully go to the home page to view.</p >`;
+
+            let src = require('@/assets/DMC_Token1.png');
+            let str = `<img class="bind_img nut-icon-am-jump nut-icon-am-infinite" src=${src} style="height:60px; padding: 20px;"/>
+    <div class='buyOrderItem'><span>Order ID:</span> <span>${res.data?.orderId}</span></div >
+    <div class='buyOrderItem'><span>Total price:</span> <span>${res.data?.totalPrice} DMC</span></div >
+    <div class='buyOrderItem'><span>Total Space:</span> <span>${res.data?.pst} GB </span></div > 
+    <div class='buyOrderItem'><span>Service time:</span> <span>${res.data?.epoch} Week</span></div > `;
             delay(() => {
               showTop.value = false;
               showBuy.value = false;
               showDialog({
                 title: 'Purchase Successfully',
                 content: str,
-                noCancelBtn: true,
-                okText: 'OK',
-                onOk: dmcOk,
+                okText: 'Go List',
+                cancelText: 'Go Home',
+                customClass: 'BuyOrderClass',
+                onOk: () => {
+                  router.push({ name: 'listDetails', query: { id: res.data?.orderId, uuid: res.data?.uuid, amb_uuid: res.data?.ambUuid } });
+                },
+                onCancel: () => {
+                  router.push('/home');
+                },
               });
             }, 1000);
           } else {
