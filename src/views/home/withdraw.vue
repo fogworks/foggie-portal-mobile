@@ -1,9 +1,10 @@
 <template>
   <div class="top_box">
-    <div class="top_back" @click="router.go(-1)">Withdraw Crypto </div>
+    <div class="top_back" @click="router.go(-1)">Withdraw DMC to your wallet</div>
   </div>
   <div v-if="canWithDraw && !loading" :class="['middle_box', showKeyboard ? 'full_height' : '']">
-    <img class="top_img" src="@/assets/withdraw-cion.png" alt="" />
+    <!-- <img class="top_img" src="@/assets/withdraw-cion.png" alt="" /> -->
+    <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" />
     <div class="title_item">
       <p>Withdrawal account:</p>
       <p class="dmc_account">{{ dmc }}</p>
@@ -46,10 +47,9 @@
     <div v-if="realAmount != '--'" class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
     <div v-else class="real_amount">Failed to get ambassador pumping rate, please retry </div>
     <nut-noticebar
-      :text="`Please note that withdrawals are subject to a handling fee of ${
+      :text="`Please be aware that withdrawals incur a handling fee of  ${
         commissionRate * 100
-      }% for ambassadors and 2% for officials. Ambassadors take a cut first,
-      and officials take a cut second.`"
+      }% for ambassadors and 2% for DMC Foundation`"
       wrapable
     ></nut-noticebar>
 
@@ -61,7 +61,7 @@
   </div>
   <div v-else-if="!loading && !canWithDraw" :class="['middle_box', 'qrcode-step', showKeyboard ? 'full_height' : '']">
     <div class="google-tips">
-      Please use Google Authenticator or other compatible programs on your phone to scan the QR code below, or manually enter a 16 digit
+      Please use Google Authenticator or other compatible programs on your phone to scan the QR code below, or manually enter a manually enter a 16-digit key
       key.
     </div>
     <div class="auth_qrcode" v-if="authQrcode && !canWithDraw">
@@ -296,7 +296,7 @@
             amount.value = '';
             code.value = '';
             showToast.hide();
-            showToast.success('Withdrawal successful');
+            showToast.success('Withdraw successfully');
             getUserAssets();
           } else {
             showToast.hide();
@@ -308,7 +308,7 @@
         });
     };
     let src = require('@/assets/fog-works_w.png');
-    let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>The final amount is ${realAmount.value} DMC. Are you sure you want to withdraw it?</p >`;
+    let str = `<img class="withdraw_img" src=${src} style="height:60px;width:120px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>The final amount is ${realAmount.value} DMC. Are you sure you want to withdraw it?</p >`;
     showDialog({
       title: 'Notice',
       content: str,
@@ -355,10 +355,14 @@
 </script>
 
 <style lang="scss" scoped>
+
+.top_back{
+  font-size: 36px;
+}
   .top_img {
     display: block;
     width: 200px;
-    margin: 0 auto;
+    margin: 40px auto;
   }
   .middle_box {
     padding: 0 10px;

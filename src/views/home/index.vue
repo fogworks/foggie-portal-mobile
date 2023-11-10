@@ -39,7 +39,7 @@
         <p class="column_value">{{ cloudWithdraw }}</p>
       </div>
       <div @click="gotoPage('analysis')">
-        <p>New revenue today</p>
+        <p>Today's new funds</p>
         <p class="column_value today_income"
           >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
           <TriangleUp color="#fbd116" width="20px"></TriangleUp>
@@ -49,11 +49,15 @@
   </div>
   <div class="withdraw-btn" direction="horizontal" align="center">
     <div class="action_item" @click="toRecharge">
-      <img src="@/assets/recharge.svg" alt="" />
+      <!-- <img src="@/assets/recharge.svg" alt="" /> -->
+      <img src="@/assets/Recharge.png" alt="" />
+
       Recharge
     </div>
     <div class="action_item" @click="showWithdraw">
-      <img src="@/assets/withdraw.svg" alt="" />
+      <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
+      <img src="@/assets/Withdraw.png" alt="" />
+
       Withdraw
     </div>
   </div>
@@ -147,6 +151,7 @@
   </div>
 
   <nut-infinite-loading
+    style="min-height: 280px; height: 0px; padding-bottom: 10px"
     v-if="earningsList.length"
     load-more-txt="No more content"
     :has-more="hasMore"
@@ -155,7 +160,8 @@
   >
     <div class="list_item" v-for="(item, index) in earningsList" @click="gotoOrderPage(item)">
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-        <img src="@/assets/list_item_2.svg" alt="" />
+        <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+        <img src="@/assets/DMC_Token1.png" alt="" />
       </div>
       <div>
         <span>Order:{{ item.order_id }}</span>
@@ -178,13 +184,14 @@
       </div>
     </div>
   </nut-infinite-loading>
+
   <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week"></nut-empty>
 </template>
 
 <script lang="ts" setup name="HomePage">
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
-  import { Notice, TriangleUp, DouArrowUp } from '@nutui/icons-vue';
+  import { Notice, TriangleUp, DouArrowUp, RectUp } from '@nutui/icons-vue';
   import { toRefs, computed, reactive, ref, watch, watchEffect } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
@@ -206,7 +213,7 @@
 
   const mapTypes = {
     user_delivery_income: 'UserDeliveryIncome',
-    buy_order: 'Buy order',
+    buy_order: 'Purchased Order',
     challenge: 'Order Challenge',
     arbitration: 'Order Arbitration',
     OrderReceiptAddReserve: 'Increase order deposit', // 增加订单预存金
@@ -235,6 +242,18 @@
   const curStepIndex = computed(() => userStore.getCurStepIndex); // 1 绑定大使邀请码
   const bindAmbCode = inject('bindAmbCode');
   const openBindDMCDiaolg = inject('openBindDMCDiaolg');
+
+  const infinityValue = ref(false);
+  const hasMore = computed(() => {
+    if (total.value > earningsList.value.length) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  const pageSize = ref(10);
+  const pageNum = ref(1);
+  const total = ref(0);
 
   const pn = ref(1);
   const ps = ref(10);
@@ -277,14 +296,9 @@
     }
   }
 
-  const infinityValue = ref(true);
-  const hasMore = ref(true);
-  const pageSize = ref(10);
-  const pageNum = ref(1);
-  const total = ref(0);
-
   function loadMore() {
-    console.log(1111);
+    pageNum.value = pageNum.value + 1;
+    searchOrderProfit();
   }
 
   function searchOrderProfit() {
@@ -294,20 +308,25 @@
     const postData = {
       start_time: transferUTCTimeDay(start),
       end_time: transferUTCTimeDay(end),
-      ps: 100,
-      pn: 1,
+      ps: pageSize.value,
+      pn: pageNum.value,
     };
-
+    infinityValue.value = true;
     search_user_asset_detail(postData)
       .then((res) => {
+        infinityValue.value = false;
+
         if (res && res.result && res.result.data.length) {
           for (const item of res.result.data || []) {
             item.trx_id = handleID(item.trx_id);
           }
-          earningsList.value = res.result.data;
+          earningsList.value.push(...res.result.data);
+          total.value = res.result.total;
         }
       })
-      .finally(() => {});
+      .catch(() => {
+        infinityValue.value = false;
+      });
   }
 
   const ishaveProfit = ref(false); //是否订单已经产生过收益 如果有收益不展示引导页
@@ -788,11 +807,11 @@
       justify-content: center;
       align-items: center;
       color: #333333;
-      font-size: 24px;
+      font-size: 30px;
 
       img {
         display: block;
-        width: 100px;
+        width: 160px;
         margin-bottom: 10px;
       }
     }

@@ -12,6 +12,7 @@
       <div class="user_box">
         <img src="@/assets/user.png" alt="" srcset="" />
       </div>
+      <!-- <img src="@/assets/user.svg" alt="" srcset="" /> -->
       <div>{{ dmcAccount }}</div>
       <div>{{ email }}</div>
 

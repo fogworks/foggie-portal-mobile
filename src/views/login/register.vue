@@ -95,6 +95,9 @@
       return Promise.reject('Please input the password again');
     } else if (value !== loginForm.password) {
       return Promise.reject("Two inputs don't match!");
+    }else if(value.length >16 || value.length <6){
+      console.log(123);
+      return Promise.reject('Password length needs to be between 6 and 16');
     } else {
       return Promise.resolve();
     }
@@ -111,6 +114,8 @@
   const validatePassword = (value: string) => {
     if (value === '') {
       return Promise.reject('Please enter password');
+    }else if(value.length >16 || value.length <6){
+      return Promise.reject('Password length needs to be between 6 and 16');
     } else if (/[a-z]+/.test(value) && /[A-Z]+/.test(value) && /\d+/.test(value) && /[!@#$%^&*+]+/.test(value)) {
       return Promise.resolve();
     } else {

@@ -65,7 +65,8 @@
         <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
-        <img src="@/assets/list_item_2.svg" alt="" />
+        <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+        <img src="@/assets/DMC_Token1.png" alt="" />
       </div>
       <div>
         <span>
@@ -76,7 +77,7 @@
             <!-- 进行中 -->
             <nut-tag type="success" v-else-if="item.state == 1">CR</nut-tag>
             <!-- 已结束 -->
-            <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Order over</nut-tag>
+            <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Expired</nut-tag>
             <!-- 已取消 -->
             <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
             <!-- 下週期將取消 -->

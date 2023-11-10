@@ -8,7 +8,7 @@
         <!-- 进行中 -->
         <nut-tag type="success" v-else-if="orderStatus == 1">Consensus reached </nut-tag>
         <!-- 已结束 -->
-        <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="orderStatus == 4">Order over</nut-tag>
+        <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="orderStatus == 4">Expired</nut-tag>
         <!-- 已取消 -->
         <nut-tag type="danger" v-else-if="orderStatus == 5">Canceled</nut-tag>
         <!-- 下週期將取消 -->
@@ -45,15 +45,15 @@
     <nut-tabs class="type_tabs" v-model="searchType">
       <nut-tab-pane title="All " pane-key="2"> </nut-tab-pane>
       <nut-tab-pane title="Earnings " pane-key="0"> </nut-tab-pane>
-      <nut-tab-pane title="Expense" pane-key="1"> </nut-tab-pane>
+      <nut-tab-pane title="Earning" pane-key="1"> </nut-tab-pane>
     </nut-tabs>
-    <nut-tabs v-model="timeType" class="time_tabs" direction="horizontal">
+    <!-- <nut-tabs v-model="timeType" class="time_tabs" direction="horizontal">
       <nut-tab-pane title="By Day" pane-key="4"></nut-tab-pane>
       <nut-tab-pane title="By Week" pane-key="3"></nut-tab-pane>
       <nut-tab-pane title="By Month" pane-key="2"></nut-tab-pane>
       <nut-tab-pane title="By 3 Months" pane-key="1"></nut-tab-pane>
       <nut-tab-pane title="All" pane-key="0"></nut-tab-pane>
-    </nut-tabs>
+    </nut-tabs> -->
 
     <template v-if="listData.length">
       <!-- <div class="balance_chart">
@@ -69,7 +69,8 @@
       >
         <div class="list_item" v-for="(item, index) in listData" @click="gotoOrder(item)">
           <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-            <img src="@/assets/list_item_2.svg" alt="" />
+          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+          <img src="@/assets/DMC_Token1.png" alt="" />
           </div>
           <div>
             <span>Order:{{ item.order_id }}</span>
@@ -80,7 +81,7 @@
           <div>
             <span class="time">{{ transferUTCTime(item.created_at) }}</span>
 
-            <span>Type: {{ mapTypes[item.trade_type] }}</span>
+            <span>{{ mapTypes[item.trade_type] }}</span>
   
           </div>
         </div>
@@ -116,12 +117,12 @@
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
-    timeType: '3',
+    timeType: '0',
     searchType: '2',
   });
   const mapTypes = {
     user_delivery_income: 'UserDeliveryIncome',
-    buy_order: 'Buy order',
+    buy_order: 'Purchased Order',
     challenge: 'Order Challenge',
     arbitration: 'Order Arbitration',
     OrderReceiptAddReserve: 'Increase order deposit', // 增加订单预存金
@@ -136,7 +137,7 @@
     OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
     OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
     user_cancel_order:'Order Cancellation Refund',
-    user_OrderReceiptDeposit:'Order expires. Deposit refunded',  
+    user_OrderReceiptDeposit:'Order expired. Deposit refunded.',  
     OrderReceiptEnd: 12,
   };
   const { getUserAssets, cloudBalance, cloudProfit, orderPayout } = useOrderAssets();

@@ -3,10 +3,10 @@
     <div class="top_back" @click="router.go(-1)">Recharge </div>
   </div>
   <div :class="['middle_box']">
-    <img class="top_img" src="@/assets/withdraw-cion.png" alt="" />
+    <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" />
     <nut-noticebar
       v-if="memo"
-      :text="`Please open the DMC Wallet APP, copy the receiving account and Memo information to recharge, please be sure to fill in this Memo information!!!`"
+      :text="`Please open the DMC Wallet App, copy the receiving account name and memo for recharging. Make sure to fill in the Memo to ensure a smooth and successful transaction.`"
       wrapable
     ></nut-noticebar>
     <div class="title_item" style="margin-top: 10px" v-if="memo">
@@ -136,7 +136,8 @@
   .top_img {
     display: block;
     width: 200px;
-    margin: 0 auto;
+    margin: 40px auto;
+
   }
   .middle_box {
     padding: 0 10px;

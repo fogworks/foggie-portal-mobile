@@ -332,7 +332,7 @@
         </p>
         <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
         <template #footer>
-          <!-- <nut-button type="primary" @click="router.go(-1)">Operate Later</nut-button> -->
+          <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button>
           <nut-button type="primary" size="large" @click="createName" :loading="isNameLoading">Confirm</nut-button>
         </template>
       </nut-dialog>
@@ -1687,7 +1687,7 @@
       .s3key {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         width: 100%;
         background: #fff;

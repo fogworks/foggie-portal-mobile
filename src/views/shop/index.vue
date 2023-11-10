@@ -130,11 +130,10 @@
           v-if="buyOrderIsSuccess"
           :percentage="progressPercentage"
           :text-inside="true"
-          size="base"
+          size="large"
           status="active"
           stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
           style="margin: 30px auto"
-          :class="buyOrderIsSuccess ? 'bounceInUp' : ''"
         >
         </nut-progress>
         <nut-button block type="warning" :disabled="buyOrderIsSuccess" @click="confirmBuy" :loading="loading"> Confirm Buy </nut-button>
@@ -188,7 +187,7 @@
     shopForm: {
       quantity: 100 as number,
       week: 24,
-      floating_ratio: 30,
+      floating_ratio: 5,
     },
     loading: false,
     curReferenceRate: 0,
@@ -405,7 +404,7 @@
     (val) => {
       state.shopForm.quantity = 100;
       state.shopForm.week = 24;
-      state.shopForm.floating_ratio = 30;
+      state.shopForm.floating_ratio = 5;
     },
     { deep: true },
   );
