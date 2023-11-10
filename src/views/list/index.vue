@@ -60,7 +60,12 @@
     @load-more="loadMoreFun"
   >
     <template v-for="(item, index) in list">
-      <div class="list_item" v-if="!(item?.income && item?.state == 0)"  @click="gotoOrder(item)" :class="[searchType === 'History' ? 'history_item' : '']">
+      <div
+        class="list_item"
+        v-if="!(item?.income && item?.state == 0)"
+        @click="gotoOrder(item)"
+        :class="[searchType === 'History' ? 'history_item' : '']"
+      >
         <!-- :style="{ background: randomColor() }" -->
 
         <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
@@ -421,6 +426,8 @@
     }
   }
   .list_box {
+    height: calc(100vh - 600px);
+    overflow: auto;
     // padding: 0 10px;
     .list_item {
       position: relative;
