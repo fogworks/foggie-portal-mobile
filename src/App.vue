@@ -2,9 +2,8 @@
   <router-view />
 </template>
 <script setup lang="ts">
-  import { user, check_promo, bind_user_promo } from '@/api';
+  import { user, bind_user_promo } from '@/api';
 
-  import { bind_promo, check_promo as check_amb_promo } from '@/api/amb';
   import { onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast, showDialog } from '@nutui/nutui';

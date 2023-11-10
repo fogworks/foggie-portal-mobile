@@ -152,7 +152,7 @@
 
   <nut-infinite-loading
     style="min-height: 280px; height: 0px; padding-bottom: 10px"
-    v-if="earningsList.length"
+    v-if="cloudCodeIsBind && earningsList.length"
     load-more-txt="No more content"
     :has-more="hasMore"
     v-model="infinityValue"
@@ -229,7 +229,7 @@
     OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
     user_cancel_order: 'Order Cancellation Refund', // 订单取消
     user_OrderReceiptDeposit: 'Order expires. Deposit refunded', // 订单到期退还押金
-    OrderRefund:'Order refund', // 订单退款
+    OrderRefund: 'Order refund', // 订单退款
     OrderReceiptEnd: 12,
   };
 

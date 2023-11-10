@@ -46,7 +46,7 @@
     <img src="@/assets/fog-works_w.png" style="height: 60px;margin-bottom: 15px;" alt="" srcset="">
 
 
-    <nut-input v-model="userBindAmbCode" placeholder="Please enter wallet account" max-length="12"
+    <nut-input v-model="userBindAmbCode" placeholder="Please enter Ambassador Invitation Code" max-length="12"
       min-length="12"></nut-input>
     <nut-checkbox v-model="isConfirm" class="isConfirmCheckbox" style="text-align: left;" icon-size="24">I understand the
       usage scenario of this
@@ -363,11 +363,12 @@ async function bindAmbCode() {
     });
 }
 
-function bindUserAmbCode() {
+async function bindUserAmbCode() {
   if (!userBindAmbCode.value) {
     showToast.fail('Please enter the invitation code');
     return
   }
+  await initFoggieDate();
   let params = {
     user_uuid: userInfo.value.uuid,
     amb_promo_code: userBindAmbCode.value,
@@ -419,10 +420,7 @@ provide('bindAmbCode', bindAmbCode)
 
 onMounted(async () => {
   if (userStore.getToken) {
-    let res = await user();
-    if (res.data) {
-      userStore.setInfo(res.data);
-    }
+  initFoggieDate()
     // bindUser();
   }
 });

@@ -4,7 +4,9 @@
       <div class="top_back" @click="router.go(-1)">Order_{{ order_id }} Summary </div>
       <span style="text-align: center; width: 100%; display: inline-block" class="my_state">
         <!-- 待共識 -->
-        <nut-tag v-if="orderStatus == 0" class="nut-icon-am-bounce nut-icon-am-infinite" style="padding: 5px 10px;" type="warning">Consensus not reached</nut-tag>
+        <nut-tag v-if="orderStatus == 0" class="nut-icon-am-bounce nut-icon-am-infinite" style="padding: 5px 10px" type="warning"
+          >Consensus not reached</nut-tag
+        >
         <!-- 进行中 -->
         <nut-tag type="success" v-else-if="orderStatus == 1">Consensus reached </nut-tag>
         <!-- 已结束 -->
@@ -25,69 +27,68 @@
         <nut-grid-item text="Profit"
           ><div>
             <IconCions class="top_icon"></IconCions>
-            <p style="color: green; font-weight: bold">{{ cloudBalanceNum?.integerPart }}<span style="font-size: 10px;">.{{cloudBalanceNum?.decimalPart}}</span> </p>
+            <p style="color: green; font-weight: bold"
+              >{{ cloudBalanceNum?.integerPart }}<span style="font-size: 10px">.{{ cloudBalanceNum?.decimalPart }}</span>
+            </p>
           </div>
         </nut-grid-item>
         <nut-grid-item class="top_icon" text="Earnings"
           ><div>
             <IconIncome class="top_icon"></IconIncome>
-            <p style="color: green; font-weight: bold">+ {{ cloudProfitNum?.integerPart }}<span style="font-size: 10px;">.{{cloudProfitNum?.decimalPart}}</span> </p>
+            <p style="color: green; font-weight: bold"
+              >+ {{ cloudProfitNum?.integerPart }}<span style="font-size: 10px">.{{ cloudProfitNum?.decimalPart }}</span>
+            </p>
           </div></nut-grid-item
         >
         <nut-grid-item class="top_icon" text="Expense"
           ><div>
             <IconOutCome class="top_icon"></IconOutCome>
-            <p style="color: red; font-weight: bold">- {{ orderPayoutNum?.integerPart }}<span style="font-size: 10px;">.{{orderPayoutNum?.decimalPart}}</span> </p>
+            <p style="color: red; font-weight: bold"
+              >- {{ orderPayoutNum?.integerPart }}<span style="font-size: 10px">.{{ orderPayoutNum?.decimalPart }}</span>
+            </p>
           </div></nut-grid-item
         >
       </nut-grid>
     </div>
-    <nut-tabs class="type_tabs" v-model="searchType">
-      <nut-tab-pane title="All " pane-key="2"> </nut-tab-pane>
-      <nut-tab-pane title="Earnings " pane-key="0"> </nut-tab-pane>
-      <nut-tab-pane title="Earning" pane-key="1"> </nut-tab-pane>
-    </nut-tabs>
-    <!-- <nut-tabs v-model="timeType" class="time_tabs" direction="horizontal">
-      <nut-tab-pane title="By Day" pane-key="4"></nut-tab-pane>
-      <nut-tab-pane title="By Week" pane-key="3"></nut-tab-pane>
-      <nut-tab-pane title="By Month" pane-key="2"></nut-tab-pane>
-      <nut-tab-pane title="By 3 Months" pane-key="1"></nut-tab-pane>
-      <nut-tab-pane title="All" pane-key="0"></nut-tab-pane>
-    </nut-tabs> -->
+    <nut-collapse v-model="activeNames" class="summary_collapse">
+      <nut-collapse-item :name="1">
+        <template #title> Detail </template>
+        <nut-tabs class="type_tabs" v-model="searchType">
+          <nut-tab-pane title="All " pane-key="2"> </nut-tab-pane>
+          <nut-tab-pane title="Earnings " pane-key="0"> </nut-tab-pane>
+          <nut-tab-pane title="Earning" pane-key="1"> </nut-tab-pane>
+        </nut-tabs>
+        <template v-if="listData.length">
+          <nut-infinite-loading
+            class="list_box"
+            load-more-txt="No more content"
+            v-model="infinityValue"
+            :has-more="hasMore"
+            @load-more="loadMore"
+          >
+            <div class="list_item" v-for="(item, index) in listData" @click="gotoOrder(item)">
+              <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+                <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+                <img src="@/assets/DMC_Token1.png" alt="" />
+              </div>
+              <div>
+                <span>Order:{{ item.order_id }}</span>
+                <span :class="[item.inner_user_trade_type == 'payout' ? 'expense' : 'earnings']">
+                  {{ item.inner_user_trade_type == 'payout' ? '-' : '+' }} {{ formatNumber(item.quantity)?.integerPart
+                  }}<span style="font-size: 13px">.{{ formatNumber(item.quantity)?.decimalPart }}</span> DMC
+                </span>
+              </div>
+              <div>
+                <span class="time">{{ transferUTCTime(item.created_at) }}</span>
 
-    <template v-if="listData.length">
-      <!-- <div class="balance_chart">
-        <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
-      </div> -->
-      <!-- LIST -->
-      <nut-infinite-loading
-        class="list_box"
-        load-more-txt="No more content"
-        v-model="infinityValue"
-        :has-more="hasMore"
-        @load-more="loadMore"
-      >
-        <div class="list_item" v-for="(item, index) in listData" @click="gotoOrder(item)">
-          <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-          <img src="@/assets/DMC_Token1.png" alt="" />
-          </div>
-          <div>
-            <span>Order:{{ item.order_id }}</span>
-            <span :class="[item.inner_user_trade_type == 'payout' ? 'expense' : 'earnings']">
-              {{ item.inner_user_trade_type == 'payout' ? '-' : '+' }} {{ formatNumber(item.quantity)?.integerPart  }}<span style="font-size: 13px;">.{{ formatNumber(item.quantity)?.decimalPart  }}</span> DMC
-            </span>
-          </div>
-          <div>
-            <span class="time">{{ transferUTCTime(item.created_at) }}</span>
-
-            <span>{{ mapTypes[item.trade_type] }}</span>
-  
-          </div>
-        </div>
-      </nut-infinite-loading>
-    </template>
-    <nut-empty v-else description="No data" image="error"></nut-empty>
+                <span>{{ mapTypes[item.trade_type] }}</span>
+              </div>
+            </div>
+          </nut-infinite-loading>
+        </template>
+        <nut-empty v-else description="No data" image="error"></nut-empty>
+      </nut-collapse-item>
+    </nut-collapse>
   </div>
 </template>
 
@@ -99,10 +100,10 @@
   import IconOutCome from '~icons/home/out-come.svg';
   import { reactive, toRefs, onMounted, watch } from 'vue';
   import { barOption } from '@/components/echarts/util';
-  import { useRoute, useRouter,onBeforeRouteLeave } from 'vue-router';
+  import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
   import useTransactionRecords from './useTransactionRecords.ts';
   import useOrderAssets from './useOrderAssets.ts';
-  import { transferUTCTime ,formatNumber} from '@/utils/util';
+  import { transferUTCTime, formatNumber } from '@/utils/util';
   import * as echarts from 'echarts';
   const order_id = ref<any>('');
   const ordertype = ref('');
@@ -119,6 +120,7 @@
     chartOptions: {},
     timeType: '0',
     searchType: '2',
+    activeNames: '',
   });
   const mapTypes = {
     user_delivery_income: 'UserDeliveryIncome',
@@ -136,22 +138,20 @@
     OrderReceiptChallengeArb: 'arbitrate', // 仲裁
     OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
     OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
-    user_cancel_order:'Order Cancellation Refund',
-    user_OrderReceiptDeposit:'Order expired. Deposit refunded.',  
-    OrderRefund:'Order refund', // 订单退款
+    user_cancel_order: 'Order Cancellation Refund',
+    user_OrderReceiptDeposit: 'Order expired. Deposit refunded.',
+    OrderRefund: 'Order refund', // 订单退款
     OrderReceiptEnd: 12,
   };
   const { getUserAssets, cloudBalance, cloudProfit, orderPayout } = useOrderAssets();
 
-const cloudBalanceNum = computed(()=> formatNumber(cloudBalance.value))
-const cloudProfitNum = computed(()=> formatNumber(cloudProfit.value))
-const orderPayoutNum = computed(()=> formatNumber(orderPayout.value))
-
-
+  const cloudBalanceNum = computed(() => formatNumber(cloudBalance.value));
+  const cloudProfitNum = computed(() => formatNumber(cloudProfit.value));
+  const orderPayoutNum = computed(() => formatNumber(orderPayout.value));
 
   const { shortcuts, resetData, loadMore, listData, hasMore, infinityValue } = useTransactionRecords();
 
-  const { searchType, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
+  const { searchType, timeType, chartOptions, queryType, typeShow, queryTypeValue, activeNames } = toRefs(state);
 
   const gotoOrder = (item) => {
     //no function
@@ -189,34 +189,51 @@ const orderPayoutNum = computed(()=> formatNumber(orderPayout.value))
     },
     { deep: true },
   );
-  watch(searchType, (val) => {
-    resetData();
-    order_id.value = route.query.id;
-    const [start, end] = shortcuts[timeType.value]();
-    loadMore(start, end, val, order_id.value);
-  });
+  watch(
+    searchType,
+    (val) => {
+      resetData();
+      order_id.value = route.query.id;
+      const [start, end] = shortcuts[timeType.value]();
+      loadMore(start, end, val, order_id.value);
+    },
+    { deep: true },
+  );
+  watch(
+    activeNames,
+    (val) => {
+      if (val == 1) {
+        const [start, end] = shortcuts[timeType.value]();
+        loadMore(start, end, 2, order_id.value);
+        getBarOptions();
+      }
+    },
+    { deep: true },
+  );
   onMounted(() => {
     console.log(route.query.id, 'route.query.id');
     order_id.value = route.query.id;
     const postData = { order_id: order_id.value };
     getUserAssets(postData);
     // loadMore();
-    const [start, end] = shortcuts[timeType.value]();
-    loadMore(start, end, 2, order_id.value);
-    getBarOptions();
   });
 
-  onBeforeRouteLeave((to, from)=>{
-    if(to.path == '/list'){
-      to.query.searchType = 'History'
-    } 
-
-
-    
-  })
+  onBeforeRouteLeave((to, from) => {
+    if (to.path == '/list') {
+      to.query.searchType = 'History';
+    }
+  });
 </script>
 
 <style lang="scss" scoped>
+  .summary_collapse {
+    :deep {
+      .nut-collapse__item-wrapper__content {
+        padding: 0;
+        background: transparent;
+      }
+    }
+  }
   .my_state {
     .nut-tag {
       //   border-radius: 20px;
