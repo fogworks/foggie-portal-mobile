@@ -298,8 +298,10 @@
   }
 
   function loadMore() {
-    pageNum.value = pageNum.value + 1;
-    searchOrderProfit();
+    if (cloudCodeIsBind.value) {
+      pageNum.value = pageNum.value + 1;
+      searchOrderProfit();
+    }
   }
 
   function searchOrderProfit() {

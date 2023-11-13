@@ -48,16 +48,17 @@
       </div>
       <!-- LIST -->
       <nut-infinite-loading
+        style="min-height: 280px; height: 0px; padding-bottom: 10px"
         class="list_box"
         load-more-txt="No more content"
         v-model="infinityValue"
         :has-more="hasMore"
         @load-more="loadMore"
       >
-        <div class="list_item" v-for="(item, index) in listData" >
+        <div class="list_item" v-for="(item, index) in listData">
           <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-          <img src="@/assets/DMC_Token1.png" alt="" />
+            <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+            <img src="@/assets/DMC_Token1.png" alt="" />
           </div>
           <div>
             <span class="txt_id" @click="goToHash(item.trx_id)">{{ handleID(item.trx_id) }}</span>
@@ -127,7 +128,6 @@
   const goToHash = (transaction_hash) => {
     // window.open(`https://explorer.dmctech.io/transaction/${transaction_hash}`);
     window.open(`http://154:64.7.46:8801/transaction/${transaction_hash}`);
-
   };
   // watch(
   //   listData,

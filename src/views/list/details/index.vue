@@ -102,44 +102,12 @@
       <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
     </div>
 
-    <!-- <Transition name="fade-transform" mode="out-in">
-      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
-        <nut-progress
-          class="upload_progress"
-          :percentage="uploadProgress"
-          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
-          status="icon"
-        >
-          <template #icon-name>
-            <template v-if="uploadStatus == 'uploading'">
-              <div style="display: flex; justify-content: space-between; width: 100%">
-                <div style="margin-left: 25px"> {{ curUploadFileSize }}</div>
-                <div>
-                  <span>{{ uploadProgress }} %</span>
-                  <em style="margin-left: 10px">{{ formatedAverageSpeed }}</em>
-                  <i style="margin-left: 15px">{{ formatedTimeRemaining }}</i>
-                </div>
-              </div>
-            </template>
-            <template v-if="uploadStatus == 'success'">
-              <span>Uploaded successfully</span>
-              <Success style="margin-left: 10px" color="#4CC71E" class="nut-icon-am-bounce nut-icon-am-infinite"></Success>
-            </template>
-            <template v-if="uploadStatus == 'error'">
-              <span>Upload Failed</span>
-              <MaskClose style="margin-left: 10px" color="#FA2C19"></MaskClose>
-            </template>
-          </template>
-        </nut-progress>
-      </div>
-    </Transition> -->
-
     <nut-infinite-loading load-more-txt="No more content" v-if="tableData.length" :has-more="false" class="file_list">
       <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
         <div :class="['left_icon_box']">
           <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
           <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-          <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" />
+          <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
           <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
           <img v-else-if="item.imgUrl" :src="item.imgUrl" alt="" />
           <img v-else src="@/assets/svg/home/file.svg" alt="" />
@@ -279,27 +247,6 @@
       </nut-popup>
     </Teleport>
 
-    <!-- <nut-uploader
-      v-if="isMobileOrder"
-      :url="uploadUri"
-      :timeout="1000 * 60 * 60"
-      :before-upload="beforeupload"
-      :disabled="isDisabled"
-      :data="formData"
-      :headers="formData"
-      :before-xhr-upload="beforeXhrUpload"
-      :xhr-state="successStatus"
-      @success="uploadSuccess"
-      @progress="onProgress"
-      @start="onStart"
-      @failure="onFailure"
-      @change="onChange"
-      ref="uploadRef"
-      class="upload_class"
-    >
-      <nut-button type="success" class="upload_btn" size="small">+</nut-button>
-    </nut-uploader> -->
-    <!-- dialogVisible -->
     <Teleport to="body">
       <nut-dialog
         v-model:visible="dialogVisible"
@@ -341,39 +288,6 @@
       </nut-dialog>
     </Teleport>
   </div>
-  <!-- <Transition name="fade-transform" mode="out-in">
-      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
-        <nut-progress
-          class="upload_progress"
-          :percentage="uploadProgress"
-          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
-          status="icon"
-          :show-text="false"
-        >
-          <template #icon-name>
-            <template v-if="uploadStatus == 'uploading'">
-              <div  style="display: flex; justify-content: space-between;width: 100%;">
-                <div style="margin-left: 25px;"> {{ curUploadFileSize }}</div>
-                <div>
-                  <span>{{ uploadProgress }} %</span>
-                  <em style="margin-left: 10px">{{ formatedAverageSpeed }}</em>
-                  <i style="margin-left: 15px">{{ formatedTimeRemaining }}</i>
-                </div>
-              </div>
-            </template>
-            <template v-if="uploadStatus == 'success'">
-              <span>Uploaded successfully</span>
-              <Success style="margin-left: 10px" color="#4CC71E" class="nut-icon-am-bounce nut-icon-am-infinite"></Success>
-            </template>
-            <template v-if="uploadStatus == 'error'">
-              <span>Upload Failed</span>
-              <MaskClose style="margin-left: 10px" color="#FA2C19"></MaskClose>
-            </template>
-          </template>
-        </nut-progress>
-      </div>
-    </Transition> -->
-
   <uploader
     v-if="isMobileOrder"
     :isMobileOrder="isMobileOrder"
@@ -664,7 +578,7 @@
     if (type == 'pdf') {
       curSelectSrc.value = row.imgUrlLarge;
       curSelectType.value = 'pdf';
-      sheetVisible.value = true;
+      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'pdf' } });
     } else if (type == 'txt') {
       detailRow.value.detailType = 'txt';
       detailShow.value = true;
@@ -675,13 +589,8 @@
         });
     } else if (['xls', 'xlsx'].includes(type)) {
       curSelectSrc.value = row.imgUrlLarge;
-      curSelectType.value = 'excel';
-      sheetVisible.value = true;
+      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'excel' } });
     } else if (['doc', 'docx'].includes(type)) {
-      curSelectSrc.value = row.imgUrlLarge;
-      curSelectType.value = 'docx';
-      sheetVisible.value = true;
-    } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
       detailRow.value.detailType = 'word';
       router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
       // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
@@ -1092,7 +1001,7 @@
     listObject.setPrefix('');
     listObject.setDelimiter('');
     listObject.setEncodingType('');
-    listObject.setMaxKeys(30);
+    listObject.setMaxKeys(5);
     listObject.setStartAfter('');
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
@@ -1196,7 +1105,6 @@
   ) => {
     if (!data) {
       tableLoading.value = false;
-      showToast.hide(1);
       return;
     }
     if (data.err) {
@@ -1314,10 +1222,7 @@
 
       tableData.value.push(item);
     }
-    console.log(data, 'data');
-    console.log(tableData.value, '11111111111111');
     tableLoading.value = false;
-    showToast.hide(1);
   };
 
   const getKeys = () => {

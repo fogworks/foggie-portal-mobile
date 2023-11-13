@@ -111,11 +111,13 @@
           </div>
           <div class="row_box">
             <span class="row_box_title">Deposit</span>
-            <span class="row_box_value">{{ deposit_ratio }} <span>DMC</span></span>
+            <span class="row_box_value">{{ deposit_ratio_Price }} <span>DMC</span></span>
           </div>
           <div class="row_box" style="border-bottom-style: solid">
             <span class="row_box_title">Variation price</span>
-            <span class="row_box_value">{{ (+totalPrice - +base_Price - +deposit_ratio).toFixed(4) }}<span>DMC</span></span>
+            <span class="row_box_value"
+              >{{ ((+base_Price + deposit_ratio_Price) * (shopForm.floating_ratio / 100)).toFixed(4) }}<span>DMC</span></span
+            >
           </div>
           <div class="row_box">
             <span class="row_box_title">Upper limit Total</span>
@@ -233,14 +235,14 @@
       })
       .finally(() => {});
   };
+  const deposit_ratio_Price = computed(() => {
+    return +((curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity).toFixed(4);
+  });
   const totalPrice = computed(() => {
     let baseTotal =
       (curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity +
       (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity;
-    let floatTotal =
-      ((curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity +
-        (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity) *
-      (1 + state.shopForm.floating_ratio / 100);
+    let floatTotal = baseTotal * (1 + state.shopForm.floating_ratio / 100);
     if (+cloudBalance.value >= baseTotal && +cloudBalance.value < floatTotal) {
       state.shopForm.floating_ratio = 0;
       return cloudBalance.value.toFixed(4);
