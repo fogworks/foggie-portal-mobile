@@ -151,7 +151,7 @@
             <template v-else>
               <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
               <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-              <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" />
+              <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
               <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
               <img v-else-if="item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else src="@/assets/svg/home/file.svg" alt="" />
@@ -663,11 +663,13 @@
               .then((text) => {
                 document.getElementById('txtContainer').textContent = text;
               });
-          } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
-            chooseItem.value.detailType = 'word';
-            window.open('https://docs.google.com/viewer?url=' + encodeURIComponent(row.imgUrlLarge));
-            imgUrl.value = row.imgUrlLarge;
-            // detailShow.value = true;
+          } else if (['xls', 'xlsx'].includes(type)) {
+            router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
+          } else if (['doc', 'docx'].includes(type)) {
+            router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'docx' } });
+            // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+            // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+            console.log(row.imgUrlLarge);
           } else if (row.imgUrlLarge) {
             imgUrl.value = row.imgUrlLarge;
             detailShow.value = true;
@@ -1447,8 +1449,8 @@
       prefix.value = route?.query?.prefix?.split('/');
     }
     let category1 = route.query.category || '0';
+    // await getOrderInfo();
     switchType(category1);
-    await getOrderInfo();
   });
 </script>
 <style>

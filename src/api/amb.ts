@@ -121,14 +121,14 @@ export function node_order_buy_assign_bill(ip, data) {
 }
 export function get_user_withdraw(data) {
   return request({
-    url: '/ambmgr/asset/get_user_withdraw',
+    url: `/ambmgr/asset/get_user_withdraw?pn=${data.pn}&ps=${data.ps}`,
     method: 'POST',
     data,
   });
 }
 export function get_user_recharge(data) {
   return request({
-    url: '/ambmgr/asset/get_user_recharge',
+    url: `/ambmgr/asset/get_user_recharge?pn=${data.pn}&ps=${data.ps}`,
     method: 'POST',
     data,
   });
