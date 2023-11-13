@@ -59,12 +59,15 @@ export default function useOrderList() {
     if (!cloudCodeIsBind.value) {
       return false;
     }
-    showToast.loading('Loading', {
-      cover: true,
-      customClass: 'app_loading',
-      icon: loadingImg,
-      loadingRotate: false,
-    });
+    if (!total.value) {
+      showToast.loading('Loading', {
+        cover: true,
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
+      });
+    }
+
     await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result })
       .then((res) => {
         total.value = res?.result?.total;

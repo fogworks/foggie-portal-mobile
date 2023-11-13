@@ -60,7 +60,16 @@
           <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
         </nut-form-item>
         <nut-form-item label="Space(GB) Min:100GB">
-          <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
+          <nut-input-number
+            @focus="buyDisabled = true"
+            @blur="buyDisabled = false"
+            :min="100"
+            decimal-places="0"
+            v-model="shopForm.quantity"
+            step="1"
+            class="nut-input-text"
+            placeholder="Space"
+          />
         </nut-form-item>
         <div style="text-align: center" class="order-tip">
           <strong> Reference price: </strong>
@@ -68,8 +77,8 @@
         </div>
         <!-- <p class="middle_title" v-if="!loading && !curReferenceRate">No eligible orders were found. Please search and try again</p> -->
         <div class="bottom_btn">
-          <nut-button type="warning" plain @click="showTop = false"> Cancel </nut-button>
-          <nut-button type="warning" @click="submit" :loading="loading"> Buy </nut-button>
+          <nut-button type="warning" plain :loading="loading" @click="showTop = false"> Cancel </nut-button>
+          <nut-button type="warning" @click="submit" :disabled="buyDisabled" :loading="loading"> Buy </nut-button>
         </div>
       </nut-form>
     </nut-popup>
@@ -198,13 +207,15 @@
       amb_user_uuid: '',
     },
     priceNode: '',
+    buyDisabled: false,
   });
-  const { priceNode, nodeInfo, showBuy, middle_price, deposit_ratio, showTop, shopForm, curReferenceRate, loading } = toRefs(state);
+  const { buyDisabled, priceNode, nodeInfo, showBuy, middle_price, deposit_ratio, showTop, shopForm, curReferenceRate, loading } =
+    toRefs(state);
   const getAveragePrice = async () => {
     let params = {
       week: state.shopForm.week,
       floating_ratio: state.shopForm.floating_ratio,
-      pst: state.shopForm.quantity.toFixed(0),
+      pst: state.shopForm.quantity,
     };
 
     get_average_price(priceNode.value, {
@@ -231,6 +242,7 @@
         (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity) *
       (1 + state.shopForm.floating_ratio / 100);
     if (+cloudBalance.value >= baseTotal && +cloudBalance.value < floatTotal) {
+      state.shopForm.floating_ratio = 0;
       return cloudBalance.value.toFixed(4);
     } else {
       return floatTotal.toFixed(4);
@@ -250,14 +262,16 @@
   });
 
   async function submit() {
-    loading.value = true;
-
+    if (state.shopForm.quantity < 100) {
+      showToast.text('Minimum number of spaces is 100');
+      return false;
+    }
     let params = {
       week: state.shopForm.week,
       floating_ratio: state.shopForm.floating_ratio / 100,
-      pst: state.shopForm.quantity.toFixed(0),
+      pst: state.shopForm.quantity,
     };
-
+    loading.value = true;
     node_order_search(priceNode.value, {
       week: state.shopForm.week,
       storage: state.shopForm.quantity,
@@ -311,7 +325,7 @@
     let params = {
       week: state.shopForm.week,
       floating_ratio: state.shopForm.floating_ratio / 100,
-      pst: state.shopForm.quantity.toFixed(0),
+      pst: state.shopForm.quantity,
     };
     const nodeRes = await buy_order(params);
     console.log(nodeRes);
@@ -330,7 +344,7 @@
       buyOrderUuid: nodeInfo.value.buyOrderUuid,
       userUuid: nodeInfo.value.amb_user_uuid,
       period: state.shopForm.week.toString(),
-      pst: state.shopForm.quantity.toFixed(0),
+      pst: state.shopForm.quantity,
       totalPrice: totalPrice.value,
       memo: `${nodeInfo.value.buyOrderUuid}_Order_buy`,
       deviceType: 3,
