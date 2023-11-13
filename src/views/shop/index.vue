@@ -366,7 +366,7 @@
               showDialog({
                 title: 'Purchase Successfully',
                 content: str,
-                okText: 'Go List',
+                okText: 'Go Order',
                 cancelText: 'Go Home',
                 customClass: 'BuyOrderClass',
                 onOk: () => {
