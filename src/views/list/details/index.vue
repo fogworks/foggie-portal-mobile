@@ -950,6 +950,7 @@
   };
 
   const createName = async () => {
+    let retrNumber = 0; // 重试次数
     if (!showCreateName.value) {
       showCreateName.value = true;
     } else if (newBucketName.value) {
@@ -972,32 +973,79 @@
         isNameLoading.value = false;
         return;
       }
+
+      showToast.loading('Loading', {
+        cover: true,
+        coverColor: 'rgba(0,0,0,0.45)',
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
+        duration: 0,
+      });
+
+      setOrderName();
+      dialogVisible.value = false;
+    }
+
+    function setOrderName() {
+      retrNumber++;
       let order_data = {
         is_domain: true,
         name: newBucketName.value,
         order_uuid: orderInfo.value.uuid,
       };
-      //   const order_result = await order_name_set(order_data);
-      order_name_set(order_data).then(
-        (order_result) => {
-          isNameLoading.value = false;
+      order_name_set(order_data)
+        .then((order_result) => {
           if (order_result.code == 200) {
             if (!order_result?.data?.result) {
               bucketName.value = newBucketName.value;
               getOrderInfo();
               getSummary();
-              dialogVisible.value = false;
-              return;
+              isNameLoading.value = false;
+              showToast.hide();
             }
+          } else {
+            serOrderNameError(order_result.message);
           }
-        },
-        (err) => {
-          showToast.text(err.message);
-          isNameLoading.value = false;
-        },
-      );
+        })
+        .catch((err) => {
+          serOrderNameError(err);
+        });
+    }
+
+    function serOrderNameError(errMessage) {
+      if (retrNumber >= 5) {
+        showToast.hide();
+        isNameLoading.value = false;
+        dialogVisible.value = false;
+        showDialog({
+          overlayStyle: { background: 'rgba(0,0,0,0)' },
+          title: 'Error',
+          content: `${errMessage}`,
+          cancelText: 'Change',
+          okText: 'Retry',
+          onCancel: () => {
+            dialogVisible.value = true;
+          },
+          onOk: () => {
+            retrNumber = 0;
+            showToast.loading('Loading', {
+              cover: true,
+              coverColor: 'rgba(0,0,0,0.45)',
+              customClass: 'app_loading',
+              icon: loadingImg,
+              loadingRotate: false,
+              duration: 0,
+            });
+            setOrderName();
+          },
+        });
+      } else {
+        setOrderName();
+      }
     }
   };
+
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
     let imgHttpLink = '';
     let imgHttpLarge = '';
@@ -1311,6 +1359,7 @@
       dialogVisible.value = true;
       setDefaultName();
     }
+
     // } else {
     //   getFileList();
     //   getSummary();

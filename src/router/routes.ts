@@ -152,6 +152,16 @@ export const routes = [
         },
       },
       {
+        name: 'orderSumDetail',
+        path: '/orderSumDetail',
+        component: () => import('@/views/orderSummary/orderSumDetail.vue'),
+        meta: {
+          title: 'orderSumDetail',
+          border: false,
+          notKeepAlive: true,
+        },
+      },
+      {
         path: 'rechargeInfo',
         name: 'rechargeInfo',
         component: () => import('@/views/home/rechargeInfo.vue'),

@@ -101,7 +101,7 @@
           </span>
         </div>
         <div
-          ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ transferGMTTime(item.order_created_at) }}</span>
+          ><span>{{ item.pst || '--' }} GB</span> <span class="time">{{ transferGMTTime(item.order_created_at) }}</span>
         </div>
         <div style="color: red">
           <span>Payment:</span>
@@ -211,6 +211,9 @@
             status: item.state,
             createdTime: transferGMTTime(item.order_created_at),
             endTime: transferUTCTime(item.expire),
+            uuid: item.uuid,
+            amb_uuid: item.amb_uuid,
+            domain: item.domain,
           },
         });
       }

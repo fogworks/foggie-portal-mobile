@@ -98,7 +98,7 @@
           </div>
           <div class="base_box1">
             <span class="s1">{{ shopForm.quantity }} GB</span>
-            <span class="s2">X</span>
+            <span class="s2">/</span>
             <span class="s1">{{ shopForm.week }} W</span>
           </div>
         </div>
@@ -384,7 +384,7 @@
               showDialog({
                 title: 'Purchase Successfully',
                 content: str,
-                okText: 'Go List',
+                okText: 'Go Order',
                 cancelText: 'Go Home',
                 customClass: 'BuyOrderClass',
                 onOk: () => {
@@ -473,6 +473,7 @@
         .base_box {
           .span1 {
             color: #c19993;
+            color: #ffac2b;
             font-size: 40px;
             margin-right: 5px;
           }

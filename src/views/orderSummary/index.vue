@@ -1,8 +1,7 @@
 <template>
   <div class="analysis_content">
     <div class="top_box" :class="[ordertype === 'history' ? 'historyOrder' : '']">
-      <div class="top_back" @click="router.go(-1)">Order_{{ order_id }} Summary </div>
-      <div class="time_box">{{ orderCreated }}-{{ orderEnd }} </div>
+      <div class="top_back" @click="router.go(-1)">{{ domain }} Summary </div>
       <span style="text-align: center; width: 100%; display: inline-block" class="my_state">
         <!-- 待共識 -->
         <nut-tag v-if="orderStatus == 0" class="nut-icon-am-bounce nut-icon-am-infinite" style="padding: 5px 10px" type="warning"
@@ -28,7 +27,7 @@
         <nut-grid-item text="Profit"
           ><div>
             <IconCions class="top_icon"></IconCions>
-            <p style="color: green; font-weight: bold"
+            <p style="color: #5154f9; font-weight: bold"
               >{{ cloudBalanceNum?.integerPart }}<span style="font-size: 10px">.{{ cloudBalanceNum?.decimalPart }}</span>
             </p>
           </div>
@@ -51,53 +50,63 @@
         >
       </nut-grid>
     </div>
-    <nut-collapse v-model="activeNames" class="summary_collapse">
-      <nut-collapse-item :name="1">
-        <template #title> Detail </template>
-        <nut-tabs class="type_tabs" v-model="searchType">
-          <nut-tab-pane title="All " pane-key="2"> </nut-tab-pane>
-          <nut-tab-pane title="Earnings " pane-key="0"> </nut-tab-pane>
-          <nut-tab-pane title="Earning" pane-key="1"> </nut-tab-pane>
-        </nut-tabs>
-        <template v-if="listData.length">
-          <nut-infinite-loading
-            class="list_box"
-            load-more-txt="No more content"
-            v-model="infinityValue"
-            :has-more="hasMore"
-            @load-more="loadMore"
-          >
-            <div class="list_item" v-for="(item, index) in listData" @click="gotoOrder(item)">
-              <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-                <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-                <img src="@/assets/DMC_Token1.png" alt="" />
-              </div>
-              <div>
-                <span>Order:{{ item.order_id }}</span>
-                <span :class="[item.inner_user_trade_type == 'payout' ? 'expense' : 'earnings']">
-                  {{ item.inner_user_trade_type == 'payout' ? '-' : '+' }} {{ formatNumber(item.quantity)?.integerPart
-                  }}<span style="font-size: 13px">.{{ formatNumber(item.quantity)?.decimalPart }}</span> DMC
-                </span>
-              </div>
-              <div>
-                <span class="time">{{ transferUTCTime(item.created_at) }}</span>
-
-                <span>{{ mapTypes[item.trade_type] }}</span>
-              </div>
-            </div>
-          </nut-infinite-loading>
-        </template>
-        <nut-empty v-else description="No data" image="error"></nut-empty>
-      </nut-collapse-item>
-    </nut-collapse>
+    <div class="sum_show_more" @click="gotoDetail">Show More ></div>
+    <div class="summary_box">
+      <div class="summary_list">
+        <div class="summary_key">Order</div>
+        <div class="summary_value">{{ order_id }}</div>
+      </div>
+      <!-- <div class="summary_list">
+        <div class="summary_key">Space</div>
+        <div class="summary_value">{{ order_id }}</div>
+      </div> -->
+      <div class="summary_list">
+        <div class="summary_key">Status</div>
+        <div class="summary_value">{{ statusTypes[orderStatus] }}</div>
+      </div>
+      <!-- <div class="summary_list">
+        <div class="summary_key">File Count</div>
+        <div class="summary_value">{{ filesCount }}</div>
+      </div>
+      <div class="summary_list">
+        <div class="summary_key">usedSize</div>
+        <div class="summary_value">{{ usedSize }}</div>
+      </div> -->
+      <div class="summary_list">
+        <div class="summary_key">Make Merkle</div>
+        <div class="summary_value"
+          >{{ MarkListTotal }}
+          <span class="show_more_detail" v-if="MarkListTotal > 0"
+            ><RectRight color="#fff" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })"
+          /></span>
+        </div>
+      </div>
+      <div class="summary_list">
+        <div class="summary_key">Creation Time</div>
+        <div class="summary_value">{{ orderCreated }}</div>
+      </div>
+      <div class="summary_list">
+        <div class="summary_key">End Time</div>
+        <div class="summary_value">{{ orderEnd }}</div>
+      </div>
+      <div class="summary_list">
+        <div class="summary_key">Make Challenge</div>
+        <div class="summary_value"
+          >{{ MarkListTotal }}
+          <span class="show_more_detail" v-if="changeListTotal > 0"
+            ><RectRight color="#fff" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 2 } })"
+          /></span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
-<script setup lang="ts" name="analysis">
-  import IconArrowRight from '~icons/home/arrow-right.svg';
+<script setup lang="ts">
+  import { RectRight } from '@nutui/icons-vue';
   import IconCions from '~icons/home/cions.svg';
   import IconIncome from '~icons/home/earn-income.svg';
-  import IconWithdraw from '~icons/home/earn-withdraw.svg';
+  import { get_merkle_record, get_challenge } from '@/api/index';
   import IconOutCome from '~icons/home/out-come.svg';
   import { reactive, toRefs, onMounted, watch } from 'vue';
   import { barOption } from '@/components/echarts/util';
@@ -105,7 +114,9 @@
   import useTransactionRecords from './useTransactionRecords.ts';
   import useOrderAssets from './useOrderAssets.ts';
   import { transferUTCTime, formatNumber } from '@/utils/util';
-  import * as echarts from 'echarts';
+  //   import * as Prox from '@/pb/prox_pb.js';
+  //   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+  //   import useOrderInfo from '../list/details/useOrderInfo.js';
   const order_id = ref<any>('');
   const ordertype = ref('');
   const route = useRoute();
@@ -113,115 +124,98 @@
   const orderStatus = ref('');
   const orderCreated = ref('');
   const orderEnd = ref('');
+  const MarkListTotal = ref(0);
+  const changeListTotal = ref(0);
+  const domain = ref('');
+  const filesCount = ref(0);
+  const usedSize = ref(0);
   order_id.value = route.query.id;
   ordertype.value = route.query.type;
   orderStatus.value = route.query.status;
   orderCreated.value = route.query.createdTime;
   orderEnd.value = route.query.endTime;
-  const state = reactive({
-    queryType: 'Earnings',
-    queryTypeValue: [],
-    typeShow: false,
-    chartOptions: {},
-    timeType: '0',
-    searchType: '2',
-    activeNames: '',
-  });
-  const mapTypes = {
-    user_delivery_income: 'UserDeliveryIncome',
-    buy_order: 'Purchased Order',
-    challenge: 'Order Challenge',
-    arbitration: 'Order Arbitration',
-    OrderReceiptAddReserve: 'Increase order deposit', // 增加订单预存金
-    OrderReceiptSubReserve: 'Reduce order deposit', // 减少订单预存金
-    OrderReceiptDeposit: 'Order deposit', // 押金
-    OrderReceiptClaim: 'Order deliver', // 交付
-    OrderReceiptReward: 'Order incentive', // 激励
-    OrderReceiptRenew: 'Order Update', // 订单更新
-    OrderReceiptChallengeReq: 'Initiate a Challenge', // 发起挑战
-    OrderReceiptChallengeAns: 'Responding to challenges', // 响应挑战
-    OrderReceiptChallengeArb: 'arbitrate', // 仲裁
-    OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
-    OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
-    user_cancel_order: 'Order Cancellation Refund',
-    user_OrderReceiptDeposit: 'Order expired. Deposit refunded.',
-    OrderRefund: 'Order refund', // 订单退款
-    OrderReceiptEnd: 12,
+  domain.value = route.query.domain;
+  //   const state = reactive({
+  //     queryType: 'Earnings',
+  //     queryTypeValue: [],
+  //     typeShow: false,
+  //     chartOptions: {},
+  //     timeType: '0',
+  //     searchType: '2',
+  //     activeNames: '',
+  //   });
+  const statusTypes = {
+    0: 'Consensus not reached',
+    1: 'Consensus reached',
+    2: 'Insufficient advance deposit to cancel the next cycle',
+    3: 'Sufficient funds in advance',
+    4: 'Order over',
+    5: 'Canceled',
+    6: 'Cancellation of the next cycle',
   };
   const { getUserAssets, cloudBalance, cloudProfit, orderPayout } = useOrderAssets();
-
+  //   const { accessKeyId, secretAccessKey, bucketName, header, metadata, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  //   provide('getOrderInfo', getOrderInfo);
   const cloudBalanceNum = computed(() => formatNumber(cloudBalance.value));
   const cloudProfitNum = computed(() => formatNumber(cloudProfit.value));
   const orderPayoutNum = computed(() => formatNumber(orderPayout.value));
 
   const { shortcuts, resetData, loadMore, listData, hasMore, infinityValue } = useTransactionRecords();
+  //   const { searchType, timeType, chartOptions, queryType, typeShow, queryTypeValue, activeNames } = toRefs(state);
 
-  const { searchType, timeType, chartOptions, queryType, typeShow, queryTypeValue, activeNames } = toRefs(state);
-
-  const gotoOrder = (item) => {
-    //no function
-    // if (ordertype.value !== 'history') {
-    //   router.push({
-    //     name: 'listDetails',
-    //     query: { id: item.order_id, uuid: item.order_info && item.order_info.uuid, amb_uuid: item.amb_uuid },
-    //   });
-    // }
-  };
-  const getBarOptions = () => {
-    const dateList = listData.value.map((el) => transferUTCTime(el.created_at));
-    const valueList = listData.value.map((el) => el.quantity);
-    chartOptions.value = barOption(dateList, valueList, searchType.value == '0' ? 'Earnings' : 'Expense');
-    chartOptions.value.series[0].tooltip = {
-      valueFormatter: function (value) {
-        return value + ' DMC';
+  const gotoDetail = () => {
+    router.push({
+      name: 'orderSumDetail',
+      query: {
+        id: order_id.value,
+        type: ordertype.value,
+        domain: domain.value,
       },
-    };
+    });
   };
-  watch(
-    listData,
-    (val) => {
-      getBarOptions();
-    },
-    { deep: true },
-  );
-  watch(
-    timeType,
-    (val) => {
-      resetData();
-      const [start, end] = shortcuts[val]();
-      order_id.value = route.query.id;
-      loadMore(start, end, searchType.value, order_id.value);
-    },
-    { deep: true },
-  );
-  watch(
-    searchType,
-    (val) => {
-      resetData();
-      order_id.value = route.query.id;
-      const [start, end] = shortcuts[timeType.value]();
-      loadMore(start, end, val, order_id.value);
-    },
-    { deep: true },
-  );
-  watch(
-    activeNames,
-    (val) => {
-      if (val == 1) {
-        const [start, end] = shortcuts[timeType.value]();
-        loadMore(start, end, 2, order_id.value);
-        getBarOptions();
-      }
-    },
-    { deep: true },
-  );
-  onMounted(() => {
-    console.log(route.query.id, 'route.query.id');
+  onMounted(async () => {
+    // await getOrderInfo();
+    // getSummary();
     order_id.value = route.query.id;
     const postData = { order_id: order_id.value };
     getUserAssets(postData);
+    initMarkList();
     // loadMore();
   });
+  const initMarkList = () => {
+    get_merkle_record({ orderId: order_id.value }).then((res) => {
+      MarkListTotal.value = res.data.length;
+    });
+    get_challenge({ order_id: order_id.value }).then((res) => {
+      changeListTotal.value = res.result.total;
+    });
+  };
+  const getSummary = () => {
+    return new Promise((resolve, reject) => {
+      let server = new grpcService.default.ServiceClient(`https://${domain.value}.devus.u2i.net:7007`, null, null);
+      let request = new Prox.default.ProxRequestSummaryIds();
+      request.setHeader(header);
+      request.setIdsList([orderInfo.value.foggie_id]);
+      server.summaryInfo(request, metadata.value, (err: any, res: { array: any }) => {
+        if (err) {
+          console.log('errsummry------:', err);
+          resolve(false);
+        } else {
+          const contentList = res.getContentsList().map((el) => {
+            return {
+              count: el.getCount(),
+              id: el.getId(),
+              total: el.getTotal(),
+            };
+          });
+          console.log(contentList, 'contentListcontentListcontentListcontentList');
+          filesCount.value = contentList?.[0]?.count || 0;
+          usedSize.value = contentList?.[0]?.total || 0;
+          //   resolve(usedSize.value);
+        }
+      });
+    });
+  };
 
   onBeforeRouteLeave((to, from) => {
     if (to.path == '/list') {
@@ -231,6 +225,38 @@
 </script>
 
 <style lang="scss" scoped>
+  .show_more_detail {
+  }
+  .sum_show_more {
+    height: 50px;
+    line-height: 50px;
+    font-size: 30px;
+    text-align: right;
+    font-weight: bold;
+    color: #5460fe;
+    font-size: 4vw;
+    margin: 20px 0;
+    margin-right: 10px;
+  }
+  .summary_box {
+    background: #333;
+    .summary_list {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      height: 30px;
+
+      color: #fff;
+      border-radius: 10px;
+      .summary_key {
+      }
+      .summary_value {
+        font-weight: bold;
+      }
+    }
+  }
+
   .time_box {
     color: #fff;
     text-align: center;

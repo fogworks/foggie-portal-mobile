@@ -809,6 +809,7 @@
       align-items: center;
       color: #333333;
       font-size: 30px;
+      font-weight: bold;
 
       img {
         display: block;
