@@ -222,11 +222,9 @@
     console.log('responseText--------', option?.sourceFile?.size);
     uploadStatus.value = 'success';
 
-    delay(() => {
-      uploadProgressIsShow.value = false;
-    }, 2000);
+   
     // emits('getFileList');
-    emits('uploadComplete');
+    
     let used_space = await getSummary();
     if (!amb_uuid.value) {
       let res = await get_unique_order({ order_uuid: route?.query?.uuid });
@@ -241,10 +239,16 @@
         fileSize: option?.sourceFile?.size,
         usedSpace: used_space,
       };
-      save_upload(d).then((res) => {
+      await save_upload(d).then((res) => {
         console.log('save_upload-----', res);
       });
     }
+
+    delay(() => {
+      uploadProgressIsShow.value = false;
+    }, 2000);
+
+    emits('uploadComplete');
 
     uploadRef.value.clearUploadQueue();
   };

@@ -88,23 +88,28 @@
     <nut-popup position="bottom" pop-class="confirm_pop" round :style="{ height: 'auto' }" v-model:visible="showBuy">
       <h3 class="buyOrderTitle"> Pre-trading information</h3>
       <div class="storagebox">
-        <img src="@/assets/shujuguifan.svg" alt="" srcset="" />
+        <!-- <img src="@/assets/shujuguifan.svg" alt="" srcset="" /> -->
+        <img src="@/assets/VIP.svg" alt="" srcset="" />
         <div class="BaseBox">
-          <div class="base_box">
+          <!-- <div class="base_box">
             <span class="span1">Price:</span>
             <span class="span2">{{ (curReferenceRate / 10000).toFixed(4) }}</span>
             <span class="span2">/GB</span>
             <span class="span2">/Week</span>
-          </div>
+          </div> -->
           <div class="base_box1">
             <span class="s1">{{ shopForm.quantity }} GB</span>
-            <span class="s2">/</span>
+            <span class="s2">+</span>
             <span class="s1">{{ shopForm.week }} W</span>
           </div>
         </div>
       </div>
       <div class="storageDetail">
         <div class="rowBox">
+          <div class="row_box">
+            <span class="row_box_title">Unit Price</span>
+            <span class="row_box_value">{{ (curReferenceRate / 10000).toFixed(4) }} (GB/Week)</span>
+          </div>
           <div class="row_box">
             <span class="row_box_title">Base Price</span>
             <span class="row_box_value">{{ base_Price }} <span>DMC</span></span>
@@ -456,6 +461,7 @@
   .confirm_pop {
     padding-bottom: 20px;
     background-color: #d5d5d5 !important;
+    background: #fff !important;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 
     .storagebox {
@@ -465,6 +471,12 @@
       align-items: center;
       padding: 30px 40px;
       background-color: #ffffff;
+      background-color: #ffae2a;
+      background: var(
+        --nut-button-warning-background-color,
+        linear-gradient(135deg, rgb(255, 158, 13) 0%, rgb(255, 167, 13) 45%, rgb(255, 182, 13) 83%, rgb(255, 190, 13) 100%)
+      );
+      color: #fff;
       margin: 0px 40px;
       border-radius: 10px;
       & > img {
@@ -476,11 +488,13 @@
           .span1 {
             color: #c19993;
             color: #ffac2b;
+            color: #fff;
             font-size: 40px;
             margin-right: 5px;
           }
           .span2 {
             color: #f4b976;
+            color: #fff;
             font-size: 40px;
             margin-left: 3px;
           }
@@ -498,6 +512,7 @@
           font-weight: 600;
           font-size: 70px;
           color: #a52a17;
+          color: #ffffff;
         }
       }
     }
@@ -518,11 +533,14 @@
           border-bottom: 2px dashed #616161;
           .row_box_title,
           .row_box_value {
-            font-weight: 600;
+            // font-weight: 600;
             font-size: 34px;
             color: #5e5e5e;
+            color: #000;
             span {
               font-size: 18px;
+              color: #ffa92a;
+              font-weight: bold;
             }
           }
         }
@@ -869,8 +887,9 @@
     height: 100px;
     line-height: 100px;
     text-align: center;
-    font-size: 40px;
+    font-size: 46px;
     color: #030303;
+    font-weight: normal;
   }
   .buyOrderTips {
     margin: 0px;

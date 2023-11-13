@@ -158,13 +158,23 @@
     v-model="infinityValue"
     @load-more="loadMore"
   >
-    <div class="list_item" v-for="(item, index) in earningsList" @click="gotoOrderPage(item)">
+    <div
+      class="list_item"
+      v-for="(item, index) in earningsList"
+      @click="gotoOrderPage(item)"
+      :class="[isOpen(item.order_info.state) ? '' : 'history_item']"
+    >
+      <div class="order_status_flag open" v-if="isOpen(item.order_info.state)">Open Order</div>
+      <div class="order_status_flag history" v-if="!isOpen(item.order_info.state)">History Order</div>
       <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
         <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
         <img src="@/assets/DMC_Token1.png" alt="" />
       </div>
+      <div style="justify-content: end !important; margin-top: -2px">
+        <span>{{ transferUTCTime(item.created_at) }}</span>
+      </div>
       <div>
-        <span>Order:{{ item.order_id }}</span>
+        <span style="font-weight: bold">Order:{{ item.order_id }}</span>
         <span
           :class="[
             item.inner_user_trade_type == 'payout' ? 'expense' : '',
@@ -179,7 +189,7 @@
       <div>
         <span class="time">{{ item.trx_id }}</span>
         <!-- <span class="time">{{ transferUTCTime(item.created_at) }}</span> -->
-        <span style="text-align: right">{{ mapTypes[item.trade_type] }}</span>
+        <span style="text-align: right" class="my_status">{{ mapTypes[item.trade_type] }}</span>
         <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
       </div>
     </div>
@@ -378,6 +388,13 @@
       } else if (type === 'Order') {
         router.push('/list');
       }
+    }
+  };
+  const isOpen = (state) => {
+    if (state === 4 || state === 5) {
+      return false;
+    } else {
+      return true;
     }
   };
   const toBuyOrder = () => {
@@ -848,16 +865,35 @@
     justify-content: center;
     padding: 12px 30px;
     padding-left: 100px;
-    min-height: 80px;
+    min-height: 100px;
     color: #171414;
     font-size: 24px;
     background: #fff;
 
     border-bottom: 1px solid #eee;
-    margin: 10px 0;
+    margin: 10px 0 20px 0;
     border-radius: 12px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
+    .order_status_flag {
+      width: 180px;
+      height: 40px;
 
+      position: absolute;
+      top: -12px;
+      left: 0px;
+      background: #ccc;
+      color: #fff;
+      text-align: center;
+      justify-content: center;
+      font-weight: bold;
+      &.open {
+        background: #009771;
+      }
+      &.history {
+        background: #999;
+        border: 1px dashed #fff;
+      }
+    }
     .item_img_box {
       position: absolute;
       left: 16px;
@@ -934,10 +970,20 @@
       color: #000000;
       font-weight: 600;
     }
+    .my_status {
+      text-align: right;
+      width: 240px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
 
     &:last-child {
       border-bottom: none;
     }
+  }
+  .history_item {
+    background: #ccc;
   }
 </style>
 
