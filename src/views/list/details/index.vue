@@ -367,7 +367,7 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
   import { getSecondTime } from '@/utils/util';
-  import { update_order_size, closedOrderApi } from '@/api/amb';
+  import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
 
   import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
@@ -1253,6 +1253,15 @@
     console.log(order_id, state, 'order_id, state');
     router.push({ name: 'orderSummary', query: { id: order_id, status: state } });
   };
+
+  const syncChallenge = ()=> {
+    let data = {
+      orderId : orderInfo.value.orderId,
+    }
+    sync_challenge(data).then((res)=> {
+      console.log('------sync challenge', res)
+    })
+  }
   onMounted(async () => {
     await getOrderInfo();
 
@@ -1264,6 +1273,7 @@
       dialogVisible.value = true;
       setDefaultName();
     }
+    syncChallenge();
 
     // } else {
     //   getFileList();
