@@ -127,7 +127,7 @@
         customClass: 'app_loading',
         icon: loadingImg,
         loadingRotate: false,
-        id: 'order_info_id',
+        id: 'img_time_line',
       });
       const getMethod = (date = '') => {
         let interval = 'year';
@@ -159,7 +159,7 @@
               };
             });
             if (!content.length) {
-              showToast.hide('order_info_id');
+              showToast.hide('img_time_line');
             }
             for (let k = content.length - 1; k >= 0; k--) {
               if (content[k].count) {
@@ -353,7 +353,7 @@
     } else {
       continuationToken.value = '';
     }
-    showToast.hide('order_info_id');
+    showToast.hide('img_time_line');
     tableLoading.value = false;
   };
   const init = async () => {
@@ -464,6 +464,8 @@
       }
     }
     .img-item-box {
+      height: calc(100vh - 290px);
+      overflow: auto;
       display: flex;
       justify-content: flex-start;
       align-items: flex-start;

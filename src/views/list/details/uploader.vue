@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, toRefs, defineProps } from 'vue';
+  import { ref, toRefs, defineProps, inject } from 'vue';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute } from 'vue-router';
@@ -46,8 +46,6 @@
   import { update_order_size } from '@/api/amb';
   import { delay, throttle } from 'lodash';
 
-  import { minSize } from '@/setting.json';
-
   const emits = defineEmits(['uploadComplete']);
 
   interface Props {
@@ -56,8 +54,9 @@
     secretAccessKey?: string;
     prefix?: any;
     orderInfo?: any;
+    isMobileOrder?: boolean;
   }
-
+  const getSummary = inject('getSummary');
   const props = defineProps<Props>();
   // const props = defineProps({
   //   bucketName: [String],
@@ -68,7 +67,7 @@
 
   // const { bucketName, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
 
-  const getOrderInfo = inject('getOrderInfo');
+  // const getOrderInfo = inject('getOrderInfo');
 
   const route = useRoute();
 
@@ -217,7 +216,6 @@
     1000,
     { leading: true, trailing: true },
   );
-  const getSummary = inject('getSummary');
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
     // console.log(option, 'option');

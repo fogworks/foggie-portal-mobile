@@ -278,7 +278,7 @@
         </div>
         <nut-infinite-loading
           load-more-txt="No more content"
-          class="file_list"
+          class="file_list file_list_move"
           v-model="infinityValue"
           :has-more="!!continuationToken2"
           @load-more="loadMore"
@@ -552,7 +552,8 @@
     longPress,
     isFirst,
   } = toRefs(state);
-  const { bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
+  const { getSummary, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
+  provide('getSummary', getSummary);
   const {
     shareType,
     isReady,
@@ -992,6 +993,7 @@
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
     console.log('list-object--header', header, metadata.value);
+    console.log('listObjectlistObject', listObject);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
@@ -1466,6 +1468,10 @@
   }
 </style>
 <style lang="scss" scoped>
+  .file_list {
+    height: calc(100vh - 310px);
+    overflow: auto;
+  }
   #txtContainer {
     color: #fff;
     width: 100%;

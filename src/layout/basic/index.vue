@@ -327,7 +327,7 @@ async function bindAmbCode() {
           if (!window.localStorage.hasCloudApproved) {
             window.localStorage.hasCloudApproved = true;
             const onOk = () => {
-              router.push({ name: 'bindDmc', query: { type: 'amb' } });
+              router.push({ name: 'Shop',  });
             };
             let src = require('@/assets/fog-works_w.png');
             let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Welcome to Foggie Mobile! Your application has been approved, and you can now begin placing orders,embarking on your Foggie journey.</p >`;

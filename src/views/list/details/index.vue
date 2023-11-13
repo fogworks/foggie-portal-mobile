@@ -376,6 +376,7 @@
 
   <uploader
     v-if="isMobileOrder"
+    :isMobileOrder="isMobileOrder"
     :bucketName="bucketName"
     :accessKeyId="accessKeyId"
     :secretAccessKey="secretAccessKey"
@@ -405,7 +406,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, watch, createVNode } from 'vue';
+  import { ref, onMounted, watch, createVNode, provide } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
@@ -458,7 +459,19 @@
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
 
-  const { accessKeyId, secretAccessKey, bucketName, header, metadata, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  const {
+    filesCount,
+    getSummary,
+    usedSize,
+    accessKeyId,
+    secretAccessKey,
+    bucketName,
+    header,
+    metadata,
+    deviceType,
+    orderInfo,
+    getOrderInfo,
+  } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
   const {
     shareType,
@@ -515,8 +528,6 @@
   const isDisabled = ref<boolean>(false);
   const btnLoading = ref<boolean>(false);
   const formData = ref<any>({});
-  const filesCount = ref<any>(0);
-  const usedSize = ref<any>(0);
 
   const memo = ref<any>('');
   const order_id = ref<any>('');
@@ -1068,6 +1079,13 @@
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
+    showToast.loading('Loading', {
+      cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+      id: 'file_list',
+    });
     let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
     let listObject = new Prox.default.ProxListObjectsRequest();
@@ -1153,7 +1171,9 @@
           };
 
           initRemoteData(transferData, reset, 0);
+          showToast.hide('file_list');
         } else if (err) {
+          showToast.hide('file_list');
           console.log('err----list', err);
         }
       },
@@ -1345,39 +1365,6 @@
     //   getSummary();
     // }
   });
-  const getSummary = () => {
-    return new Promise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
-      let request = new Prox.default.ProxRequestSummaryIds();
-      request.setHeader(header);
-
-      request.setIdsList([orderInfo.value.foggie_id]);
-
-      console.log(`https://${bucketName.value}.devus.u2i.net:7007`, 'bucketNamebucketNamebucketNamebucketName');
-      console.log(request, 'requestrequestrequestrequest');
-
-      server.summaryInfo(request, metadata.value, (err: any, res: { array: any }) => {
-        if (err) {
-          console.log('errsummry------:', err);
-          // reject(false);
-          resolve(false);
-        } else {
-          const contentList = res.getContentsList().map((el) => {
-            return {
-              count: el.getCount(),
-              id: el.getId(),
-              total: el.getTotal(),
-            };
-          });
-          console.log(contentList, 'contentListcontentListcontentListcontentList');
-
-          filesCount.value = contentList?.[0]?.count || 0;
-          usedSize.value = contentList?.[0]?.total || 0;
-          resolve(usedSize.value);
-        }
-      });
-    });
-  };
   function closedOrder() {
     showDialog({
       title: 'Cancel order',
@@ -1398,7 +1385,6 @@
       },
     });
   }
-  provide('getSummary', getSummary);
   onDeactivated(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });
@@ -1423,6 +1409,7 @@
     },
     { deep: true },
   );
+  provide('getSummary', getSummary);
   provide('isMobileOrder', isMobileOrder);
 </script>
 
