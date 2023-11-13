@@ -211,6 +211,9 @@
             status: item.state,
             createdTime: transferGMTTime(item.order_created_at),
             endTime: transferUTCTime(item.expire),
+            uuid: item.uuid,
+            amb_uuid: item.amb_uuid,
+            domain: item.domain,
           },
         });
       }
