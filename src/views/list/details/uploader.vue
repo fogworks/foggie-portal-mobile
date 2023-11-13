@@ -188,7 +188,7 @@
       return 4;
     } else if (fileName.endsWith('.pdf')) {
       return 4;
-    } else if (fileName.endsWith('.ppt')) {
+    } else if (fileName.endsWith('.ppt') || fileName.endsWith('.pptx')) {
       return 4;
     } else if (fileName.endsWith('.text') || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
       return 4;

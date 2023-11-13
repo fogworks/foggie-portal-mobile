@@ -128,7 +128,7 @@
   import useVariable from './details/useVariable.js';
   import { useOrderStore } from '@/store/modules/order';
   import useOrderList from '../home/useOrderList.ts';
-  import { transferGMTTime } from '@/utils/util';
+  import { transferGMTTime, transferUTCTime } from '@/utils/util';
   import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
 
   import { ref, onMounted } from 'vue';
@@ -203,7 +203,16 @@
       router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } });
     } else if (searchType.value === 'History') {
       if (item.order_id) {
-        router.push({ name: 'orderSummary', query: { id: item.order_id, type: 'history', status: item.state } });
+        router.push({
+          name: 'orderSummary',
+          query: {
+            id: item.order_id,
+            type: 'history',
+            status: item.state,
+            createdTime: transferGMTTime(item.order_created_at),
+            endTime: transferUTCTime(item.expire),
+          },
+        });
       }
     }
   };
