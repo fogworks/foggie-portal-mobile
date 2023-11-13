@@ -47,7 +47,7 @@
     <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
   </div>
   <Teleport to="body">
-    <nut-popup position="top" :style="{ height: '520px' }" v-model:visible="showTop">
+    <nut-popup position="top" :style="{ height: '420px' }" v-model:visible="showTop">
       <nut-form class="query_form" :model-value="shopForm">
         <nut-form-item label="Service Period">
           <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
@@ -58,9 +58,6 @@
         </nut-form-item>
         <nut-form-item label="Custom Cycle">
           <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
-        </nut-form-item>
-        <nut-form-item label="Floating Ratio">
-          <nut-range hidden-range v-model="shopForm.floating_ratio" :max="100" :min="0" />
         </nut-form-item>
         <nut-form-item label="Space(GB) Min:100GB">
           <nut-input-number :min="100" decimal-places="0" v-model="shopForm.quantity" step="1" class="nut-input-text" placeholder="Space" />
@@ -101,7 +98,7 @@
         <div class="rowBox">
           <div class="row_box">
             <span class="row_box_title">Base Price</span>
-            <span class="row_box_value">{{ base_Proce }} <span>DMC</span></span>
+            <span class="row_box_value">{{ base_Price }} <span>DMC</span></span>
           </div>
           <div class="row_box">
             <span class="row_box_title">Deposit</span>
@@ -109,7 +106,7 @@
           </div>
           <div class="row_box" style="border-bottom-style: solid">
             <span class="row_box_title">Variation price</span>
-            <span class="row_box_value">{{ (+totalPrice - +base_Proce - +deposit_ratio).toFixed(4) }}<span>DMC</span></span>
+            <span class="row_box_value">{{ (+totalPrice - +base_Price - +deposit_ratio).toFixed(4) }}<span>DMC</span></span>
           </div>
           <div class="row_box">
             <span class="row_box_title">Upper limit Total</span>
@@ -226,13 +223,20 @@
       .finally(() => {});
   };
   const totalPrice = computed(() => {
-    let total =
+    let baseTotal =
+      (curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity +
+      (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity;
+    let floatTotal =
       ((curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity +
         (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity) *
       (1 + state.shopForm.floating_ratio / 100);
-    return total.toFixed(4);
+    if (+cloudBalance.value >= baseTotal && +cloudBalance.value < floatTotal) {
+      return cloudBalance.value.toFixed(4);
+    } else {
+      return floatTotal.toFixed(4);
+    }
   });
-  const base_Proce = computed(() => {
+  const base_Price = computed(() => {
     let total = (curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity;
     return total.toFixed(4);
   });
@@ -292,7 +296,7 @@
       let src = require('@/assets/DMC_token.png');
       let str = `<img class="bind_img" src=${src} style="height:60px;"/>
       <p style='word-break:break-word;color:#d1cece;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p >
-        
+
         `;
       showDialog({
         title: 'The balance is insufficient',
@@ -358,7 +362,7 @@
             let str = `<img class="bind_img nut-icon-am-jump nut-icon-am-infinite" src=${src} style="height:60px; padding: 20px;"/>
     <div class='buyOrderItem'><span>Order ID:</span> <span>${res.data?.orderId}</span></div >
     <div class='buyOrderItem'><span>Total price:</span> <span>${res.data?.totalPrice} DMC</span></div >
-    <div class='buyOrderItem'><span>Total Space:</span> <span>${res.data?.pst} GB </span></div > 
+    <div class='buyOrderItem'><span>Total Space:</span> <span>${res.data?.pst} GB </span></div >
     <div class='buyOrderItem'><span>Service time:</span> <span>${res.data?.epoch} Week</span></div > `;
             delay(() => {
               showTop.value = false;

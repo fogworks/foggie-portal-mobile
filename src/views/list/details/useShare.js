@@ -139,40 +139,15 @@ export default function useShare(orderInfo, header, deviceType) {
     }
   };
   const copyLink = async (text) => {
-    if (!navigator.clipboard) {
-      // Clipboard API 不可用
-      fallbackCopyTextToClipboard(text);
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast.success('Copy succeeded');
-    } catch (err) {
-      fallbackCopyTextToClipboard(text);
-    }
+    var input = document.createElement('textarea');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('Copy');
+    document.body.removeChild(input);
+    showToast.success('Copy succeeded');
   };
-  function fallbackCopyTextToClipboard(text) {
-    // 1.Create a selectable element
-    let textArea = document.createElement('textarea');
-    textArea.value = text;
 
-    // 2.Use positioning to prevent page scrolling
-    textArea.style.top = '0';
-    textArea.style.left = '0';
-    textArea.style.position = 'fixed';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    try {
-      let successful = document.execCommand('copy');
-      let msg = successful ? 'successful' : 'unsuccessful';
-      showToast.success(msg);
-    } catch (err) {
-      showToast.fail('Copy failed');
-    }
-    // 3.Remove element
-    document.body.removeChild(textArea);
-  }
   const confirmPeriod = ({ selectedValue, selectedOptions }) => {
     desc.value = selectedOptions.map((val) => val.text).join(',');
     periodShow.value = false;

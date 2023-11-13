@@ -2,6 +2,7 @@
   <div class="analysis_content">
     <div class="top_box" :class="[ordertype === 'history' ? 'historyOrder' : '']">
       <div class="top_back" @click="router.go(-1)">Order_{{ order_id }} Summary </div>
+      <div class="time_box">{{ orderCreated }}-{{ orderEnd }} </div>
       <span style="text-align: center; width: 100%; display: inline-block" class="my_state">
         <!-- 待共識 -->
         <nut-tag v-if="orderStatus == 0" class="nut-icon-am-bounce nut-icon-am-infinite" style="padding: 5px 10px" type="warning"
@@ -110,9 +111,13 @@
   const route = useRoute();
   const router = useRouter();
   const orderStatus = ref('');
+  const orderCreated = ref('');
+  const orderEnd = ref('');
   order_id.value = route.query.id;
   ordertype.value = route.query.type;
   orderStatus.value = route.query.status;
+  orderCreated.value = route.query.createdTime;
+  orderEnd.value = route.query.endTime;
   const state = reactive({
     queryType: 'Earnings',
     queryTypeValue: [],
@@ -226,6 +231,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .time_box {
+    color: #fff;
+    text-align: center;
+  }
   .summary_collapse {
     :deep {
       .nut-collapse__item-wrapper__content {
