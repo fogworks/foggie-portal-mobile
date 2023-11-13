@@ -11,9 +11,9 @@
     :show-confirm="false" custom-class="CustomName">
     <template #header>
       <img src="@/assets/DMC_token.png" alt="" srcset="" style="width: 30px; height: 30px" />
-      <div style="color: #9e9e9e;margin-left: 5px;">Add Withdrawal Account</div>
+      <div style="color: rgb(217, 214, 214);margin-left: 5px;">Add Withdrawal Account</div>
     </template>
-    <p class="bucket_tip" style="text-align: left; color: #9e9e9e;padding-bottom: 15px;">
+    <p class="bucket_tip" style="text-align: left; color: rgb(217, 214, 214);padding-bottom: 15px;">
     <div>* This account will become the default withdrawal account</div>
     </p>
 
