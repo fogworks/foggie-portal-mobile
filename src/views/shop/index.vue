@@ -331,8 +331,8 @@
     loading.value = true;
     let params = {
       week: state.shopForm.week,
-      floating_ratio: state.shopForm.floating_ratio / 100,
-      pst: state.shopForm.quantity,
+      floating_ratio: state.shopForm.floating_ratio,
+      pst: state.shopForm.quantity.toFixed(0),
     };
     const nodeRes = await buy_order(params);
     console.log(nodeRes);
