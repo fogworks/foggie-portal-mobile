@@ -163,8 +163,11 @@
         <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
         <img src="@/assets/DMC_Token1.png" alt="" />
       </div>
+      <div style="justify-content: end !important; margin-top: -2px">
+        <span>{{ transferUTCTime(item.created_at) }}</span>
+      </div>
       <div>
-        <span>Order:{{ item.order_id }}</span>
+        <span style="font-weight: bold">Order:{{ item.order_id }}</span>
         <span
           :class="[
             item.inner_user_trade_type == 'payout' ? 'expense' : '',
@@ -179,7 +182,7 @@
       <div>
         <span class="time">{{ item.trx_id }}</span>
         <!-- <span class="time">{{ transferUTCTime(item.created_at) }}</span> -->
-        <span style="text-align: right">{{ mapTypes[item.trade_type] }}</span>
+        <span style="text-align: right" class="my_status">{{ mapTypes[item.trade_type] }}</span>
         <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
       </div>
     </div>
@@ -931,6 +934,13 @@
       font-size: 24px;
       color: #000000;
       font-weight: 600;
+    }
+    .my_status {
+      text-align: right;
+      width: 240px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     &:last-child {

@@ -94,5 +94,6 @@ export default function useOrderList() {
     hasMore,
     infinityValue,
     shortcuts,
+    total,
   };
 }

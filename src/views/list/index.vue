@@ -19,8 +19,9 @@
             <!-- <IconSwitch style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'Open'"></IconSwitch>
             <IconSwitch style="vertical-align: text-top" color="#ffffff" v-else></IconSwitch> -->
           </div>
-          <span>Ongoing</span></div
-        >
+          <span>Ongoing</span>
+          <span class="order_num" v-if="searchType == 'Open'">Count : {{ total }}</span>
+        </div>
       </nut-col>
       <nut-col :span="10">
         <div class="flex-content">
@@ -33,8 +34,9 @@
             <!-- <IconHistory style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistory>
             <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-else></IconHistoryActivate> -->
           </div>
-          <span>History</span></div
-        >
+          <span>History</span>
+          <span class="order_num" v-if="searchType == 'History'">Count : {{ total }}</span>
+        </div>
       </nut-col>
     </nut-row>
   </div>
@@ -139,6 +141,7 @@
   const route = useRoute();
   const searchType = ref(route.query.searchType == 'History' ? 'History' : 'Open');
   console.log(route.query.searchType);
+  const currentTotal = ref(0);
 
   const keyWord = ref('');
   const horseLamp = ref([
@@ -151,7 +154,7 @@
   const cloudSpaceList = ref([]);
   const orderStore = useOrderStore();
   const { bindAmbCode, cloudCodeIsBind } = useUpdateDMC();
-  const { resetData, loadMore, listData, hasMore, infinityValue } = useOrderList();
+  const { resetData, loadMore, listData, hasMore, infinityValue, total } = useOrderList();
 
   let list = computed(() => {
     return listData.value.filter((el) => {
@@ -263,6 +266,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .order_num {
+    margin-top: 10px;
+    font-weight: bold;
+  }
   .top_box {
     padding: 30px 10px;
     border-radius: 0px !important;
