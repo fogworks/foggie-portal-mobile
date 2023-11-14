@@ -36,6 +36,12 @@ export default function useOrderInfo() {
       id: 'order_info_id',
     });
     let res = await get_unique_order({ order_uuid: route?.query?.uuid });
+
+    let param = {
+      order_uuid: route?.query?.uuid,
+    };
+    const signData = await get_order_sign(param);
+
     orderInfo.value = res.result.data;
     orderInfo.value.used_space = 0;
     // orderInfo.value.rpc = '218.2.96.99:6007';
@@ -43,10 +49,6 @@ export default function useOrderInfo() {
     header.setId(orderInfo.value.foggie_id);
     // header.setId('baeqacmjq');
     // header.setToken(orderInfo.value.sign);
-    let param = {
-      order_uuid: route?.query?.uuid,
-    };
-    const signData = await get_order_sign(param);
     // console.log('signData==11:', signData);
     let cur_token = signData?.result?.data?.sign;
     const date = signData?.result?.data?.timestamp;

@@ -274,6 +274,7 @@
       showErrorTips.value = false;
     }
   }
+  let assetsTimeOut = null;
   function confirmWithdraw() {
     if (!amount.value) {
       showToast.fail('Please fill in the amount to be withdrawn');
@@ -297,7 +298,11 @@
             code.value = '';
             showToast.hide();
             showToast.success('Withdraw successfully');
-            getUserAssets();
+            if (!assetsTimeOut) {
+              assetsTimeOut = setInterval(() => {
+                getUserAssets();
+              }, 5000);
+            }
           } else {
             showToast.hide();
             showToast.fail(res.message);
@@ -333,9 +338,6 @@
       if (val) {
         showSkip.value = false;
         nextTick(() => {
-          console.log(document.getElementsByClassName('main-page')[0].scrollHeight, ' document.getElementsByClassName[0].scrollHeight');
-          console.log(document.getElementsByClassName('middle_box')[0].scrollHeight, ' document.getElementsByClassName[0].middle_box');
-
           document.getElementsByClassName('main-page')[0].scroll({
             top: document.getElementsByClassName('main-page')[0].scrollHeight,
             smooth: true,
@@ -351,6 +353,9 @@
     initGoogle();
     getUserAssets();
     getCommissionRate();
+  });
+  onUnmounted(() => {
+    clearInterval(assetsTimeOut);
   });
 </script>
 

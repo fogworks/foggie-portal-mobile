@@ -165,7 +165,6 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
-         
         }
       }
       .nut-dialog__footer .nut-dialog__footer-cancel {
@@ -249,6 +248,10 @@
   }
   .notify_primary {
     height: unset;
+    border-radius: 16px;
+    padding: 20px;
+    // width: 600px;
+    text-align: center;
   }
   .grecaptcha-badge {
     display: none !important;

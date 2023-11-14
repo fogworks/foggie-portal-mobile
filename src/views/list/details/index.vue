@@ -298,7 +298,7 @@
     @uploadComplete="uploadComplete"
   ></uploader>
 
-  <Teleport to="body">
+  <!-- <Teleport to="body">
     <nut-action-sheet v-model:visible="sheetVisible" title="Links">
       <div class="custom-action_sheet">
         <div @click="choose('google')">
@@ -316,7 +316,7 @@
         <div @click="sheetVisible = false"> Cancel </div>
       </div>
     </nut-action-sheet>
-  </Teleport>
+  </Teleport> -->
 </template>
 
 <script setup lang="ts">
@@ -411,7 +411,7 @@
 
   const successStatus = ref<number>(204);
   const isNameLoading = ref(false);
-  const sheetVisible = ref(false);
+  // const sheetVisible = ref(false);
 
   const userStore = useUserStore();
   const uuid = computed(() => userStore.getUserInfo.uuid);
@@ -1313,30 +1313,30 @@
       },
     });
   }
-  onDeactivated(() => {
-    if (merkleTimeOut) clearTimeout(merkleTimeOut);
-  });
+  // onDeactivated(() => {
+  //   if (merkleTimeOut) clearTimeout(merkleTimeOut);
+  // });
   onUnmounted(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });
-  watch(
-    () => route.query,
-    async () => {
-      dialogVisible.value = false;
-      await getOrderInfo();
-      // if (orderInfo.value.electronic_type == '0') {
-      if (bucketName.value) {
-        getFileList();
-      } else {
-        dialogVisible.value = true;
-        setDefaultName();
-      }
-      // } else {
-      //   getFileList();
-      // }
-    },
-    { deep: true },
-  );
+  // watch(
+  //   () => route.query,
+  //   async () => {
+  //     dialogVisible.value = false;
+  //     await getOrderInfo();
+  //     // if (orderInfo.value.electronic_type == '0') {
+  //     if (bucketName.value) {
+  //       getFileList();
+  //     } else {
+  //       dialogVisible.value = true;
+  //       setDefaultName();
+  //     }
+  //     // } else {
+  //     //   getFileList();
+  //     // }
+  //   },
+  //   { deep: true },
+  // );
   provide('getSummary', getSummary);
   provide('isMobileOrder', isMobileOrder);
 </script>
