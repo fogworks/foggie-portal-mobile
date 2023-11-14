@@ -215,7 +215,7 @@ async function bindDmc() {
 
         } else {
           showToast.success(dmcRes.data);
-            return false;
+          return false;
         }
       });
       if (bindRes) {
@@ -283,11 +283,11 @@ async function bindDmc() {
 
 async function bindAmbCode() {
 
-  if (!uuid.value){
+  if (!uuid.value) {
     showToast.fail('Failed to get user id, please refresh the page and try again.');
 
     return false;
-  } 
+  }
   showToast.loading('Loading', {
     cover: true,
     customClass: 'app_loading',
@@ -368,7 +368,7 @@ async function bindUserAmbCode() {
     showToast.fail('Please enter the invitation code');
     return
   }
-  await initFoggieDate();
+
   let params = {
     user_uuid: userInfo.value.uuid,
     amb_promo_code: userBindAmbCode.value,
@@ -381,12 +381,13 @@ async function bindUserAmbCode() {
     if (res.code == 200) {
       bind_promo(params).then((res2) => {
         if (res2.code == 200) {
-          bind_user_promo({ amb_promo_code: userBindAmbCode.value, }).then((res) => {
+          bind_user_promo({ amb_promo_code: userBindAmbCode.value, }).then(async (res) => {
             if (res.code == 200) {
-              bindAmbCode()
-              showToast.success('Bind successfully');
+              showToast.success('Please wait for the successful application to join');
               userBindLoading.value = false
               bindAmbCodeDialogIsShow.value = false
+              await initFoggieDate();
+              bindAmbCode()
             } else {
               userBindLoading.value = false
             }
@@ -420,7 +421,7 @@ provide('bindAmbCode', bindAmbCode)
 
 onMounted(async () => {
   if (userStore.getToken) {
-  initFoggieDate()
+    initFoggieDate()
     // bindUser();
   }
 });
