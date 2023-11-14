@@ -119,13 +119,13 @@
             <span class="row_box_value">{{ deposit_ratio_Price }} <span>DMC</span></span>
           </div>
           <div class="row_box" style="border-bottom-style: solid">
-            <span class="row_box_title">Variation price</span>
+            <span class="row_box_title">Variation Price</span>
             <span class="row_box_value"
               >{{ ((+base_Price + deposit_ratio_Price) * (shopForm.floating_ratio / 100)).toFixed(4) }}<span>DMC</span></span
             >
           </div>
           <div class="row_box">
-            <span class="row_box_title">Upper limit Total</span>
+            <span class="row_box_title">Upper Limit Total</span>
             <span class="row_box_value">{{ totalPrice }} <span>DMC</span></span>
           </div>
         </div>
@@ -332,7 +332,7 @@
     let params = {
       week: state.shopForm.week,
       floating_ratio: state.shopForm.floating_ratio / 100,
-      pst: state.shopForm.quantity,
+      pst: state.shopForm.quantity + '',
     };
     const nodeRes = await buy_order(params);
     console.log(nodeRes);
@@ -399,6 +399,12 @@
                 },
                 onCancel: () => {
                   router.push('/home');
+                },
+                beforeClose: () => {
+                  buyOrderIsSuccess.value = false;
+                  fake.progress = 0;
+                  fake.end();
+                  return true;
                 },
               });
             }, 1000);
