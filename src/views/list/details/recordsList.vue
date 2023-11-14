@@ -129,7 +129,10 @@
     </nut-empty>
     <!-- single action -->
   </div>
-  <div v-if="category == 1 && orderInfo.value.electronic_type == '0'" class="submit-merkle">
+  <div
+    v-if="category == 1 && orderInfo.value.electronic_type == '0' && orderInfo.value.state !== 4 && orderInfo.value.state !== 5"
+    class="submit-merkle"
+  >
     <nut-button block class="buy_btn" type="info" @click="submitMerkle" :loading="merkleLoading"> Submit Merkle </nut-button>
     <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
   </div>
