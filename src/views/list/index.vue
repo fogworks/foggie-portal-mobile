@@ -80,7 +80,8 @@
         </div>
         <div>
           <span>
-            <span>Order:{{ item.order_id }}</span>
+            <span v-if="item.domain" style="font-weight: bold">{{ item.domain }}</span>
+            <span v-if="!item.domain" style="font-weight: bold">Order:{{ item.order_id }}</span>
             <span style="margin-left: 10px">
               <!-- 待共識 -->
               <nut-tag v-if="item.state == 0" type="warning">CNR</nut-tag>
@@ -207,6 +208,8 @@
       router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } });
     } else if (searchType.value === 'History') {
       if (item.order_id) {
+        window.sessionStorage.removeItem('myHistoryOrder');
+        window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(item));
         router.push({
           name: 'orderSummary',
           query: {
