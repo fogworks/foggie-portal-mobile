@@ -220,3 +220,13 @@ export function get_exchange_rate() {
     method: 'GET',
   });
 }
+
+
+
+export function sync_challenge(data) {
+  return request({
+    url: "/order/sync_challenge",
+    method: "POST",
+    data,
+  });
+}
