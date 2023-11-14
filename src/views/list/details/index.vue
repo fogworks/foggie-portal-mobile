@@ -361,7 +361,7 @@
   import useOrderInfo from './useOrderInfo.js';
   import useShare from './useShare.js';
   import { showToast } from '@nutui/nutui';
-  import { transferUTCTime, getfilesize } from '@/utils/util';
+  import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
@@ -1251,17 +1251,30 @@
   };
   const gotoSummary = (order_id, state) => {
     console.log(order_id, state, 'order_id, state');
-    router.push({ name: 'orderSummary', query: { id: order_id, status: state } });
+    router.push({
+      name: 'orderSummary',
+      query: {
+        id: order_id,
+        status: state,
+        createdTime: transferGMTTime(orderInfo.value.order_created_at),
+        endTime: transferUTCTime(orderInfo.value.expire),
+        uuid: orderInfo.value.uuid,
+        amb_uuid: orderInfo.value.amb_uuid,
+        domain: orderInfo.value.domain,
+      },
+    });
+    window.sessionStorage.removeItem('myHistoryOrder');
+    window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(orderInfo.value));
   };
 
-  const syncChallenge = ()=> {
+  const syncChallenge = () => {
     let data = {
-      orderId : orderInfo.value.orderId,
-    }
-    sync_challenge(data).then((res)=> {
-      console.log('------sync challenge', res)
-    })
-  }
+      orderId: orderInfo.value.orderId,
+    };
+    sync_challenge(data).then((res) => {
+      console.log('------sync challenge', res);
+    });
+  };
   onMounted(async () => {
     await getOrderInfo();
 

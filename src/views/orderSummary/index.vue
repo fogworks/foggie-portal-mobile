@@ -51,15 +51,29 @@
       </nut-grid>
     </div>
     <div class="sum_show_more" @click="gotoDetail">Show More ></div>
-    <div class="summary_box">
+    <div class="summary_box" :class="[ordertype !== 'history' ? 'open_box' : 'history_box']">
+      <div class="order_status_flag open" v-if="ordertype !== 'history'">Open Order</div>
+      <div class="order_status_flag history" v-if="ordertype === 'history'">History Order</div>
       <div class="summary_list">
         <div class="summary_key">Order</div>
         <div class="summary_value">{{ order_id }}</div>
       </div>
-      <!-- <div class="summary_list">
+      <div class="summary_list">
+        <div class="summary_key">Order Source</div>
+        <div class="summary_value">{{ myHistoryOrder.electronic_type ? 'Desktop' : 'Mobile' }}</div>
+      </div>
+      <div class="summary_list">
         <div class="summary_key">Space</div>
-        <div class="summary_value">{{ order_id }}</div>
-      </div> -->
+        <div class="summary_value">{{ myHistoryOrder.pst }} GB</div>
+      </div>
+      <div class="summary_list">
+        <div class="summary_key">Time</div>
+        <div class="summary_value">{{ myHistoryOrder.week }} Weeks</div>
+      </div>
+      <div class="summary_list">
+        <div class="summary_key">Price</div>
+        <div class="summary_value">{{ myHistoryOrder.total_price }} DMC</div>
+      </div>
       <div class="summary_list">
         <div class="summary_key">Status</div>
         <div class="summary_value">{{ statusTypes[orderStatus] }}</div>
@@ -85,6 +99,10 @@
         <div class="summary_key">Creation Time</div>
         <div class="summary_value">{{ orderCreated }}</div>
       </div>
+      <div class="summary_list" v-if="MarkListTotal > 0">
+        <div class="summary_key">First Make Merkle</div>
+        <div class="summary_value">{{ transferUTCTime(MarkList[0].create_time) }}</div>
+      </div>
       <div class="summary_list">
         <div class="summary_key">End Time</div>
         <div class="summary_value">{{ orderEnd }}</div>
@@ -92,7 +110,7 @@
       <div class="summary_list">
         <div class="summary_key">Make Challenge</div>
         <div class="summary_value"
-          >{{ MarkListTotal }}
+          >{{ changeListTotal }}
           <span class="show_more_detail" v-if="changeListTotal > 0"
             ><RectRight color="#fff" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 2 } })"
           /></span>
@@ -126,6 +144,7 @@
   const orderEnd = ref('');
   const MarkListTotal = ref(0);
   const changeListTotal = ref(0);
+  const MarkList = ref([]);
   const domain = ref('');
   const filesCount = ref(0);
   const usedSize = ref(0);
@@ -144,6 +163,8 @@
   //     searchType: '2',
   //     activeNames: '',
   //   });
+  const myHistoryOrder = JSON.parse(window.sessionStorage.getItem('myHistoryOrder'));
+  console.log(myHistoryOrder, 'myHistoryOrder');
   const statusTypes = {
     0: 'Consensus not reached',
     1: 'Consensus reached',
@@ -173,6 +194,13 @@
       },
     });
   };
+  const isOpen = (state) => {
+    if (state === 4 || state === 5) {
+      return false;
+    } else {
+      return true;
+    }
+  };
   onMounted(async () => {
     // await getOrderInfo();
     // getSummary();
@@ -183,11 +211,13 @@
     // loadMore();
   });
   const initMarkList = () => {
+    MarkList.value = [];
     get_merkle_record({ orderId: order_id.value }).then((res) => {
       MarkListTotal.value = res.data.length;
+      MarkList.value = res.data;
     });
     get_challenge({ order_id: order_id.value }).then((res) => {
-      changeListTotal.value = res.result.total;
+      changeListTotal.value = res.result.data.length;
     });
   };
   const getSummary = () => {
@@ -239,7 +269,10 @@
     margin-right: 10px;
   }
   .summary_box {
-    background: #333;
+    background-image: linear-gradient(120deg, #185ecf 0%, #0b88c1 100%);
+    background-image: linear-gradient(120deg, #5758a0 0%, #9899d3 100%);
+    height: 980px;
+    position: relative;
     .summary_list {
       display: flex;
       align-items: center;
@@ -254,6 +287,37 @@
       .summary_value {
         font-weight: bold;
       }
+    }
+  }
+  .history_box {
+    background: #333;
+  }
+  .open_box {
+    background-image: linear-gradient(120deg, #185ecf 0%, #0b88c1 100%);
+    background-image: linear-gradient(120deg, #5758a0 0%, #9899d3 100%);
+  }
+  .order_status_flag {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    position: absolute;
+    top: 30px;
+    left: calc(50% - 60px);
+    color: #fff;
+    text-align: center;
+    justify-content: center;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    border: 5px dashed #ccc;
+    transform: rotate(30deg);
+    &.open {
+      background: rgb(87 88 162);
+      border: none;
+    }
+    &.history {
+      background: #999;
+      border: 1px dashed #fff;
     }
   }
 
