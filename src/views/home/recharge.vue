@@ -6,7 +6,7 @@
     <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" />
     <nut-noticebar
       v-if="memo"
-      :text="`Please open the DMC Wallet App, copy the receiving account name and memo for recharging. Make sure to fill in the Memo to ensure a smooth and successful transaction.`"
+      :text="`Please open the DMC Wallet App, copy the receiving account name and memo for recharging. Make sure to fill in the Memo to ensure a smooth and successful transaction.One Memo corresponds to one recharge, if you want to recharge multiple times, please refresh the page to get a new Memo.`"
       wrapable
     ></nut-noticebar>
     <div class="title_item" style="margin-top: 10px" v-if="memo">
@@ -137,7 +137,6 @@
     display: block;
     width: 200px;
     margin: 40px auto;
-
   }
   .middle_box {
     padding: 0 10px;

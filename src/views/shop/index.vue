@@ -384,7 +384,7 @@
     <div class='buyOrderItem'><span>Order ID:</span> <span>${res.data?.orderId}</span></div >
     <div class='buyOrderItem'><span>Total price:</span> <span>${res.data?.totalPrice} DMC</span></div >
     <div class='buyOrderItem'><span>Total Space:</span> <span>${res.data?.pst} GB </span></div >
-    <div class='buyOrderItem'><span>Service time:</span> <span>${res.data?.epoch} Week</span></div > `;
+    <div class='buyOrderItem'><span>Service time:</span> <span>${res.data?.epoch} Weeks</span></div > `;
             delay(() => {
               showTop.value = false;
               showBuy.value = false;

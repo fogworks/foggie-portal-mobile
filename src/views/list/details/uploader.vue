@@ -222,9 +222,8 @@
     console.log('responseText--------', option?.sourceFile?.size);
     uploadStatus.value = 'success';
 
-   
     // emits('getFileList');
-    
+
     let used_space = await getSummary();
     if (!amb_uuid.value) {
       let res = await get_unique_order({ order_uuid: route?.query?.uuid });
@@ -289,6 +288,8 @@
     document.querySelector('.nut-uploader__input')?.addEventListener('click', () => {
       showNotify.primary('Sensitive information is recommended to be encrypted and uploaded', {
         'class-name': 'notify_primary',
+        position: 'bottom',
+        duration: 5000,
       });
     });
   });

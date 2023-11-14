@@ -75,7 +75,8 @@
         <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
           <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-          <img src="@/assets/DMC_Token1.png" alt="" />
+          <img v-if="item.electronic_type == 0" src="@/assets/mobile.svg" alt="" />
+          <img v-else src="@/assets/desktop.svg" alt="" />
         </div>
         <div>
           <span>
@@ -478,22 +479,22 @@
         img {
           width: 36px;
           margin: 0 auto;
-          transform-style: preserve-3d;
-          -webkit-transform-origin: 50%;
-          -webkit-animation: spin 5s infinite;
-          -webkit-animation-timing-function: linear;
-          -webkit-perspective: 1000;
-          -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
-          -webkit-filter: saturate(1.45) hue-rotate(2deg);
+          // transform-style: preserve-3d;
+          // -webkit-transform-origin: 50%;
+          // -webkit-animation: spin 5s infinite;
+          // -webkit-animation-timing-function: linear;
+          // -webkit-perspective: 1000;
+          // -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+          // -webkit-filter: saturate(1.45) hue-rotate(2deg);
         }
-        @keyframes spin {
-          from {
-            -webkit-transform: rotateY(0deg);
-          }
-          to {
-            -webkit-transform: rotateY(360deg);
-          }
-        }
+        // @keyframes spin {
+        //   from {
+        //     -webkit-transform: rotateY(0deg);
+        //   }
+        //   to {
+        //     -webkit-transform: rotateY(360deg);
+        //   }
+        // }
         .cions {
           margin-right: 15px;
         }
