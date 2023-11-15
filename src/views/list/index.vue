@@ -116,7 +116,7 @@
   </nut-infinite-loading>
   <nut-empty v-else description=" " image="error">
     <div style="margin-top: 10px" v-if="!listData.length">
-      <nut-button icon="refresh" type="primary" @click="router.push({ path: '/shop' })">Buy Order</nut-button>
+      <nut-button icon="refresh" type="primary" @click="toBuy">Buy Order</nut-button>
     </div>
   </nut-empty>
 </template>
@@ -155,7 +155,8 @@
   ]);
   const cloudSpaceList = ref([]);
   const orderStore = useOrderStore();
-  const { bindAmbCode, cloudCodeIsBind } = useUpdateDMC();
+  const { cloudCodeIsBind } = useUpdateDMC();
+  const bindAmbCode = inject('bindAmbCode');
   const { resetData, loadMore, listData, hasMore, infinityValue, total } = useOrderList();
 
   let list = computed(() => {
@@ -168,6 +169,13 @@
     // currName: 当前操作的 collapse-item 的 name
     // status: true 打开 false 关闭
     console.log(modelValue, currName, status);
+  };
+  const toBuy = () => {
+    if (!cloudCodeIsBind.value) {
+      bindAmbCode();
+    } else {
+      router.push('/shop');
+    }
   };
 
   const handleProgress = (item: { created_at: string | number | Date; expire: string | number | Date }) => {

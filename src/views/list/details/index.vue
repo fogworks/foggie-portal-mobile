@@ -109,7 +109,7 @@
           <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
           <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
           <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-          <img v-else-if="item.imgUrl" :src="item.imgUrl" alt="" />
+          <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
           <img v-else src="@/assets/svg/home/file.svg" alt="" />
         </div>
         <div class="name_box">
@@ -124,8 +124,7 @@
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
         <HLSVideo v-if="detailRow.value.type && detailRow.value.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
         <pre v-else-if="detailRow.value.detailType == 'txt'" id="txtContainer"></pre>
-        <!-- <div v-else-if="detailRow.value.detailType == 'word'" id="odfContainer"></div> -->
-
+        <MyAudio v-else-if="detailRow.value.category == 3" :audioUrl="detailRow.value.imgUrl"></MyAudio>
         <div v-else-if="imgUrl" class="middle_img">
           <nut-image :src="imgUrl" fit="contain" position="center">
             <template #loading>
@@ -161,7 +160,10 @@
         v-model:visible="showShareDialog"
       >
         <div style="display: flex; align-items: center; justify-content: center; height: 100%" v-if="httpCopyLink">
-          {{ httpCopyLink }}<IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
+          <span>
+            {{ httpCopyLink.substring(0, 30) + '...' }}
+          </span>
+          <IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
         </div>
         <div v-else-if="isReady" class="rename_box move_box">
           <nut-cell style="margin-top: 50px" title="Access Period:">
@@ -326,8 +328,8 @@
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
+  import MyAudio from './myAudio.vue';
   import IconCopy from '~icons/home/copy.svg';
-
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
@@ -980,6 +982,10 @@
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       // console.log('--------imgHttpLarge', imgHttpLarge);
+    } else if (type === 'mp3') {
+      type = 'audio';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);

@@ -87,11 +87,11 @@ const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
 watch(amb_promo_code, (newVal) => {
   userBindAmbCode.value = newVal
 })
-watchEffect(() => {
-  if (uuid.value && !cloudCodeIsBind.value) {
-    bindAmbCode()
-  }
-})
+// watchEffect(() => {
+//   if (uuid.value && !cloudCodeIsBind.value) {
+//     bindAmbCode()
+//   }
+// })
 const bindAmbCodeDialogIsShow = ref(false)
 const userBindAmbCode = ref('')  // 用户想要绑定的ambcode
 const userBindLoading = ref(false)  // 用户绑定ambcode的 loading
@@ -421,7 +421,9 @@ provide('bindAmbCode', bindAmbCode)
 
 onMounted(async () => {
   if (userStore.getToken) {
-    initFoggieDate()
+   await initFoggieDate()
+    bindAmbCode()
+
     // bindUser();
   }
 });
