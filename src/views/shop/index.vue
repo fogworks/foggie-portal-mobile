@@ -121,7 +121,7 @@
           <div class="row_box" style="border-bottom-style: solid" v-if="shopForm.floating_ratio">
             <span class="row_box_title">Variation Price</span>
             <span class="row_box_value"
-              >{{ ((+base_Price + deposit_ratio_Price) * (shopForm.floating_ratio / 100)).toFixed(4) }}<span>DMC</span></span
+              >{{ ((+base_Price + +deposit_ratio_Price) * (shopForm.floating_ratio / 100)).toFixed(4) }}<span>DMC</span></span
             >
           </div>
           <div class="row_box">
