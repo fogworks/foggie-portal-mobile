@@ -11,6 +11,8 @@ declare module 'vue' {
     LoadingImg: typeof import('./../src/components/loadingImg/index.vue')['default']
     MyEcharts: typeof import('./../src/components/echarts/myEcharts.vue')['default']
     NutActionSheet: typeof import('@nutui/nutui')['ActionSheet']
+    NutAudio: typeof import('@nutui/nutui')['Audio']
+    NutAudioOperate: typeof import('@nutui/nutui')['AudioOperate']
     NutBacktop: typeof import('@nutui/nutui')['Backtop']
     NutButton: typeof import('@nutui/nutui')['Button']
     NutCell: typeof import('@nutui/nutui')['Cell']

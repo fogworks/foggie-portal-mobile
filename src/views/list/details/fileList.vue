@@ -153,7 +153,7 @@
               <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
               <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
               <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-              <img v-else-if="item.imgUrl" :src="item.imgUrl" alt="" />
+              <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else src="@/assets/svg/home/file.svg" alt="" />
             </template>
           </div>
@@ -311,7 +311,7 @@
       v-model:visible="showShareDialog"
     >
       <div style="display: flex; align-items: center; justify-content: center; height: 100%" v-if="httpCopyLink">
-        {{ httpCopyLink }}<IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
+        <span> {{ httpCopyLink.substring(0, 30) + '...' }} </span><IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
       </div>
       <div v-else-if="isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period:">
@@ -400,6 +400,7 @@
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
         <HLSVideo v-if="chooseItem.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
         <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
+        <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
         <div v-else-if="imgUrl" class="middle_img">
           <!-- v-if="chooseItem.type.split('/')[0] == 'video'" -->
           <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
@@ -467,6 +468,7 @@
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
   import HLSVideo from './hlsVideo.vue';
+  import MyAudio from './myAudio.vue';
   // import { ProxListObjectsRequest, ProxListObjectsReq, ProxHeader } from '@/pb/prox_pb.js';
   // import Prox from '@/pb/prox_pb.ts';
   import * as Prox from '@/pb/prox_pb.js';
@@ -1097,6 +1099,10 @@
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       // console.log('--------imgHttpLarge', imgHttpLarge);
+    } else if (type === 'mp3') {
+      type = 'audio';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);

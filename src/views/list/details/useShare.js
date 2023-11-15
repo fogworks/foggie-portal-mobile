@@ -6,7 +6,7 @@ import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import { getLink } from '@/api/index.ts';
 import { useUserStore } from '@/store/modules/user';
 import { transferUTCTime } from '@/utils/util.ts';
-
+import { shareUrl } from '@/setting.json';
 import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
 // import { file_pin } from '@/api';
@@ -170,7 +170,7 @@ export default function useShare(orderInfo, header, deviceType) {
           detail: imgDesc.value,
         });
         if (linkRes.data) {
-          coverUrl = 'https://share.dev.u2i.net/img/' + linkRes.data;
+          coverUrl = `${shareUrl}/img/` + linkRes.data;
         }
       }
       return getLink({
@@ -184,8 +184,8 @@ export default function useShare(orderInfo, header, deviceType) {
         detail: imgDesc.value,
       }).then((res) => {
         if (res.code == 200) {
-          imgUrl.value = 'https://share.dev.u2i.net/img/' + res.data;
-          return 'https://share.dev.u2i.net/share/' + res.data;
+          imgUrl.value = `${shareUrl}/img/` + res.data;
+          return `${shareUrl}/share/` + res.data;
         }
       });
     } else {

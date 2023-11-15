@@ -118,7 +118,7 @@
             <span class="row_box_title">Deposit</span>
             <span class="row_box_value">{{ deposit_ratio_Price }} <span>DMC</span></span>
           </div>
-          <div class="row_box" style="border-bottom-style: solid">
+          <div class="row_box" style="border-bottom-style: solid" v-if="shopForm.floating_ratio">
             <span class="row_box_title">Variation Price</span>
             <span class="row_box_value"
               >{{ ((+base_Price + deposit_ratio_Price) * (shopForm.floating_ratio / 100)).toFixed(4) }}<span>DMC</span></span
@@ -241,7 +241,7 @@
       .finally(() => {});
   };
   const deposit_ratio_Price = computed(() => {
-    return +((curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity).toFixed(4);
+    return ((curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity).toFixed(4);
   });
   const totalPrice = computed(() => {
     let baseTotal = (
@@ -274,11 +274,6 @@
       showToast.text('Minimum number of spaces is 100');
       return false;
     }
-    let params = {
-      week: state.shopForm.week,
-      floating_ratio: state.shopForm.floating_ratio / 100,
-      pst: state.shopForm.quantity,
-    };
     loading.value = true;
     node_order_search(priceNode.value, {
       week: state.shopForm.week,
@@ -306,6 +301,7 @@
     console.log(cloudBalance.value < totalPrice.value);
     console.log(cloudBalance.value);
     console.log(totalPrice.value);
+    await getUserAssets();
 
     if (+cloudBalance.value < +totalPrice.value) {
       let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);

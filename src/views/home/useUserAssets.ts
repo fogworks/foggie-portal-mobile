@@ -10,7 +10,7 @@ export default function useUserAssets() {
   const cloudTodayIncome = ref('--');
   const dmc2usdRate = ref(0);
   function getUserAssets() {
-    get_user_dmc().then((res) => {
+    return get_user_dmc().then((res) => {
       if (res?.result?.data) {
         cloudBalance.value = res?.result?.data?.balance.toFixed(4) || 0;
         useStore.setBalance(res.result.data.balance);

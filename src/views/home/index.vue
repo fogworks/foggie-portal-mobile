@@ -32,7 +32,7 @@
     <div class="card_row_1 pst-row">
       <div>
         <p>Space</p>
-        <p class="column_value">{{ getfilesize2(cloudPst) }}</p>
+        <p class="column_value">{{ getfilesize2(cloudPst == '--' ? 0 : cloudPst) }}</p>
       </div>
       <div @click="gotoPage('transactionRecords', '1')">
         <p>Withdrawn</p>
