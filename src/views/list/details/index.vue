@@ -160,7 +160,10 @@
         :style="{ height: '300px' }"
         v-model:visible="showShareDialog"
       >
-        <div v-if="isReady" class="rename_box move_box">
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%" v-if="httpCopyLink">
+          {{ httpCopyLink }}<IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
+        </div>
+        <div v-else-if="isReady" class="rename_box move_box">
           <nut-cell style="margin-top: 50px" title="Access Period:">
             <template #link>
               <span style="display: flex"
@@ -323,6 +326,8 @@
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
+  import IconCopy from '~icons/home/copy.svg';
+
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
@@ -388,6 +393,8 @@
   } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
   const {
+    httpCopyLink,
+    copyLink,
     shareType,
     isReady,
     confirmShare,

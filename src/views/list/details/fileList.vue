@@ -310,7 +310,10 @@
       :style="{ height: '300px' }"
       v-model:visible="showShareDialog"
     >
-      <div v-if="isReady" class="rename_box move_box">
+      <div style="display: flex; align-items: center; justify-content: center; height: 100%" v-if="httpCopyLink">
+        {{ httpCopyLink }}<IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
+      </div>
+      <div v-else-if="isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period:">
           <template #link>
             <span style="display: flex"
@@ -555,6 +558,8 @@
   const { getSummary, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
   provide('getSummary', getSummary);
   const {
+    httpCopyLink,
+    copyLink,
     shareType,
     isReady,
     confirmShare,
@@ -1376,17 +1381,6 @@
       }
     }
   }
-  const copyLink = (text: string) => {
-    var input = document.createElement('input');
-    input.value = text;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('Copy');
-    document.body.removeChild(input);
-    // let str = `Copying  ${type} successful!`;
-    // this.$message.success(str);
-    showToast.success('Copy succeeded');
-  };
   const shareTwitter = (fileLink) => {
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
     let tweetText = checkData[0].name;

@@ -244,15 +244,16 @@
     return +((curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity).toFixed(4);
   });
   const totalPrice = computed(() => {
-    let baseTotal =
+    let baseTotal = (
       (curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity +
-      (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity;
-    let floatTotal = baseTotal * (1 + state.shopForm.floating_ratio / 100);
+      (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity
+    ).toFixed(4);
+    let floatTotal = (+baseTotal * (1 + state.shopForm.floating_ratio / 100)).toFixed(4);
     if (+cloudBalance.value >= baseTotal && +cloudBalance.value < floatTotal) {
       state.shopForm.floating_ratio = 0;
-      return cloudBalance.value.toFixed(4);
+      return cloudBalance.value;
     } else {
-      return floatTotal.toFixed(4);
+      return floatTotal;
     }
   });
   const base_Price = computed(() => {
@@ -404,6 +405,9 @@
                   buyOrderIsSuccess.value = false;
                   fake.progress = 0;
                   fake.end();
+                  setTimeout(() => {
+                    getUserAssets();
+                  }, 2000);
                   return true;
                 },
               });
