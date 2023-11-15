@@ -24,6 +24,7 @@ export default function useShare(orderInfo, header, deviceType) {
   const imgUrl = ref('');
   const imgDesc = ref('');
   const shareType = ref('');
+  const httpCopyLink = ref('');
   const userInfo = computed(() => userStore.getUserInfo);
   const options = ref([
     {
@@ -139,7 +140,7 @@ export default function useShare(orderInfo, header, deviceType) {
     }
   };
   const copyLink = async (text) => {
-    var input = document.createElement('textarea');
+    var input = document.createElement('input');
     input.value = text;
     document.body.appendChild(input);
     input.select();
@@ -219,7 +220,8 @@ export default function useShare(orderInfo, header, deviceType) {
     shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
     if (!type) {
       let link = await createLowLink(shareRefContent.httpStr, shareOption);
-      copyLink(link);
+      httpCopyLink.value = link;
+      // copyLink(link);
     } else if (type == 'twitter') {
       shareTwitter(shareRefContent.httpStr, shareOption);
     } else if (type == 'faceBook') {
@@ -350,8 +352,11 @@ export default function useShare(orderInfo, header, deviceType) {
   watch(showShareDialog, (val) => {
     isReady.value = false;
     shareType.value = '';
+    httpCopyLink.value = '';
   });
   return {
+    httpCopyLink,
+    copyLink,
     createNFT,
     shareType,
     ipfsPin,
