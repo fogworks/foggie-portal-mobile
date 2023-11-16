@@ -7,7 +7,7 @@ export function login(data: object) {
 }
 
 export function Captcha() {
-  return http.get(`/api/accounts/captcha`, {});
+  return http.get(`/api_accounts/accounts/captcha`, {});
 }
 export function transfer_valid(data) {
   return request({
@@ -45,7 +45,7 @@ export const refreshToken = () => {
 };
 
 export const modify_pw = (data) => {
-  const url = `/api/accounts/modify_pw`;
+  const url = `/api_accounts/accounts/modify_pw`;
   return request({
     url: url,
     method: 'POST',
