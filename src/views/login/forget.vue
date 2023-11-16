@@ -57,6 +57,8 @@
   // import { useUserStore } from '@/store/modules/user';
   import { showSuccessToast } from 'vant';
 
+  const bcryptjs = require('bcryptjs');
+
   // import bcryptjs from 'bcryptjs';
   // const userStore = useUserStore();
   const loginForm = reactive({
@@ -153,7 +155,7 @@
       if (valid) {
         loading.value = true;
         const password = loginForm.password;
-        let hashPwd = password;
+        let hashPwd = bcryptjs.hashSync(password, 10);
         // let hashPwd = password;
         let postData = {
           email: loginForm.email,

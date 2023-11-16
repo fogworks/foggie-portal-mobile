@@ -330,6 +330,7 @@
       week: state.shopForm.week,
       floating_ratio: state.shopForm.floating_ratio / 100,
       pst: state.shopForm.quantity + '',
+      total_price: totalPrice.value,
     };
     const nodeRes = await buy_order(params);
     console.log(nodeRes);
