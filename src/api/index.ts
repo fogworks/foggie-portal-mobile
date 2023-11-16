@@ -7,7 +7,7 @@ export function login(data: object) {
 }
 
 export function Captcha() {
-  return http.get(`/api_accounts/accounts/captcha`, {});
+  return http.get(`/api/accounts/captcha`, {});
 }
 export function transfer_valid(data) {
   return request({
