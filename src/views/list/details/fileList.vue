@@ -310,10 +310,10 @@
       :style="{ height: '300px' }"
       v-model:visible="showShareDialog"
     >
-      <div style="display: flex; align-items: center; justify-content: center; height: 100%" v-if="httpCopyLink">
+      <!-- <div style="display: flex; align-items: center; justify-content: center; height: 100%" v-if="httpCopyLink">
         <span> {{ httpCopyLink.substring(0, 30) + '...' }} </span><IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
-      </div>
-      <div v-else-if="isReady" class="rename_box move_box">
+      </div> -->
+      <div v-if="isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period:">
           <template #link>
             <span style="display: flex"
