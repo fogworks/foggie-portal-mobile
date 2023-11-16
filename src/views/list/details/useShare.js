@@ -1,6 +1,6 @@
 import useVariable from './useVariable';
 import { ref } from 'vue';
-import { showToast } from '@nutui/nutui';
+import { showToast, showDialog } from '@nutui/nutui';
 import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import { getLink } from '@/api/index.ts';
@@ -9,6 +9,7 @@ import { transferUTCTime } from '@/utils/util.ts';
 import { shareUrl } from '@/setting.json';
 import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
+import IconHttp2 from '~icons/home/http2.svg';
 // import { file_pin } from '@/api';
 export default function useShare(orderInfo, header, deviceType) {
   const userStore = useUserStore();
@@ -220,7 +221,34 @@ export default function useShare(orderInfo, header, deviceType) {
     shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
     if (!type) {
       let link = await createLowLink(shareRefContent.httpStr, shareOption);
+      showShareDialog.value = false;
       httpCopyLink.value = link;
+      console.log(link, 'link.link');
+      let src = require('@/assets/svg/home/http2.svg');
+
+      // let src = IconHttp2;
+      let str = `<div>
+      <img style="height:60px; padding:0 20px;" src=${src}> 
+      </div> <div  class='http_share_text'>The link has been generated, please copy it.</div>`;
+      showDialog({
+        title: 'Http Link',
+        content: str,
+        okText: 'Copy',
+        noCancelBtn: true,
+        customClass: 'BuyOrderClass',
+        onOk: () => {
+          console.log(httpCopyLink.value, 'httpCopyLink.value');
+          copyLink(httpCopyLink.value);
+          httpCopyLink.value = '';
+          showShareDialog.value = false;
+          // router.push({ name: 'listDetails', query: { id: res.data?.orderId, uuid: res.data?.uuid, amb_uuid: res.data?.ambUuid } });
+        },
+        beforeClose: () => {
+          httpCopyLink.value = '';
+          showShareDialog.value = false;
+          return true;
+        },
+      });
       // copyLink(link);
     } else if (type == 'twitter') {
       shareTwitter(shareRefContent.httpStr, shareOption);
@@ -352,7 +380,7 @@ export default function useShare(orderInfo, header, deviceType) {
   watch(showShareDialog, (val) => {
     isReady.value = false;
     shareType.value = '';
-    httpCopyLink.value = '';
+    // httpCopyLink.value = '';
   });
   return {
     httpCopyLink,

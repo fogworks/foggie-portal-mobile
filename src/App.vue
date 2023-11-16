@@ -256,4 +256,10 @@
   .grecaptcha-badge {
     display: none !important;
   }
+  .http_share_text {
+    text-align: center;
+    font-size: 30px;
+    word-break: break-word;
+    line-height: normal;
+  }
 </style>
