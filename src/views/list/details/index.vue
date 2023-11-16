@@ -280,7 +280,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #fdfdfd;
+            color: #000;
           "
         >
           <span>Bucket Name</span> <span>Required</span>

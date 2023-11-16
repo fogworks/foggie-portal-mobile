@@ -273,6 +273,9 @@
     background-image: linear-gradient(120deg, #5758a0 0%, #9899d3 100%);
     height: 980px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     .summary_list {
       display: flex;
       align-items: center;
