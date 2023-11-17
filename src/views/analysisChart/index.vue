@@ -61,7 +61,7 @@
 
             <span :class="['earnings']">
               <span v-if="item.profit > 0">+{{ item.profit }}</span>
-              <span v-else style="font-size: 12px;">No gain for now</span>
+              <span v-else style="font-size: 12px">No gain for now</span>
               <!-- <IconArrowRight style="vertical-align: text-top" width="1.1rem" height="1.1rem" color="#5F57FF"></IconArrowRight
           > -->
             </span>
@@ -125,12 +125,13 @@
       let params = {
         query_time: [] as { start_time: string; end_time: string }[],
       };
+
       if (newValue == 'All') {
         let year = moment().format('YYYY');
         for (let index = 1; index <= 12; index++) {
-          const nowMonth = new Date().getMonth();
+          const nowMonth = new Date().getMonth() + 1;
           if (index > nowMonth) {
-            return;
+            break;
           }
           // 获取指定年月的第一天
           const firstDayOfMonth = moment(`${year}-${index}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD');
@@ -138,6 +139,7 @@
           const lastDayOfMonth = moment(`${year}-${index}`, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
           params.query_time.push({ start_time: firstDayOfMonth, end_time: lastDayOfMonth });
         }
+        console.log(params.query_time, 'params.query_time');
       } else if (newValue == '3Months') {
         // let year_month = moment().subtract(2, 'month').format('YYYY-MM');
 
@@ -168,8 +170,6 @@
           const endTime = currentDate.clone().subtract(i, 'weeks').endOf('isoWeek').format('YYYY-MM-DD');
           params.query_time.unshift({ start_time: startTime, end_time: endTime });
         }
-
-        
       } else if (newValue == 'Month') {
         let year_month = moment().format('YYYY-MM');
         // 获取指定年月的第一天
@@ -202,12 +202,11 @@
         params.query_time.push({ start_time: today, end_time: yesterday });
       }
 
-
       loadUserDmc();
       loadSearchUserAssetCount(params);
       searchOrderProfit(newValue);
     },
-    { immediate: true },
+    { deep: true, immediate: true },
   );
 
   const cloudBalance = computed(() => {
@@ -334,7 +333,7 @@
             },
             grid: {
               top: '20%',
-              left: '8%',
+              left: '30px',
               right: '8%',
               bottom: '20%',
             },
@@ -360,7 +359,7 @@
               axisLabel: {
                 show: true,
                 inside: true, // 指定刻度显示在右侧,
-                margin: -8,
+                margin: -20,
                 textStyle: {
                   color: '#737373',
                   fontSize: 10,
@@ -480,7 +479,7 @@
     orderChartOption.value = barOption(dateList, valueList, 'Earn Analysis');
     orderChartOption.value.xAxis[0].show = true;
     orderChartOption.value.grid[0] = {
-      left: '10px',
+      left: '30px',
       right: '10px',
       bottom: '30px',
     };

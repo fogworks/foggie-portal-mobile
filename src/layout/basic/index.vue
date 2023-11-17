@@ -173,12 +173,20 @@ const tabSwitch = (_item, index) => {
 
 
 const initFoggieDate = async () => {
+  showToast.loading('Loading', {
+    cover: true,
+    customClass: 'app_loading',
+    icon: loadingImg,
+    loadingRotate: false,
+    id: 'user_info',
+  });
   let data = await user();
   if (data) {
     userStore.setInfo({
       ...data.data,
     });
   }
+  showToast.hide('user_info')
 };
 
 const bindDmcIsShow = ref(false); // 绑定dmc账户钱包弹窗 是否展示

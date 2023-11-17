@@ -106,53 +106,59 @@
     <DouArrowUp width="100" height="50" class="nut-icon-am-jump nut-icon-am-infinite" />
   </div>
   <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
-  <div v-if="!ishaveProfit" class="my_swipe">
-    <nut-swiper :init-page="1" :pagination-visible="true" pagination-color="#426543" auto-play="3000">
-      <nut-swiper-item>
-        <img src="@/assets/banner1.svg" alt="" />
-      </nut-swiper-item>
-      <nut-swiper-item>
-        <img src="@/assets/banner2.svg" alt="" />
-      </nut-swiper-item>
-      <nut-swiper-item>
-        <img src="@/assets/banner3.png" alt="" />
-      </nut-swiper-item>
-      <nut-swiper-item>
-        <img src="@/assets/banner4.svg" alt="" />
-      </nut-swiper-item>
-    </nut-swiper>
-  </div>
-
   <div class="tab_top_title" v-if="ishaveProfit">Last 7 days <span style="font-size: 12px">(DMC)</span></div>
-  <div class="my_steps" ref="my_steps" id="my_steps" v-if="!ishaveProfit">
-    <nut-steps direction="vertical" :current="curStepIndex">
-      <nut-step
-        title="Bind invitation code"
-        @click="gotoBindAmb"
-        content="Please confirm that you have filled out the invitation code before placing your order"
-        >1</nut-step
-      >
-      <nut-step
-        title="Waiting for approval"
-        :content="ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'"
-        >2</nut-step
-      >
-      <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
-      <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
-        >3</nut-step
-      >
-      <nut-step
-        @click="gotoOrderList"
-        title="Ops, you haven't made a profit yet"
-        content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you."
-        >4</nut-step
-      >
-    </nut-steps>
-  </div>
+
+  <ErrorPage v-if="isError && !earningsList.length" @refresh="loadMore"></ErrorPage>
+  <template v-else-if="!ishaveProfit">
+    <div class="my_swipe">
+      <nut-swiper :init-page="1" :pagination-visible="true" pagination-color="#426543" auto-play="3000">
+        <nut-swiper-item>
+          <img src="@/assets/banner1.svg" alt="" />
+        </nut-swiper-item>
+        <nut-swiper-item>
+          <img src="@/assets/banner2.svg" alt="" />
+        </nut-swiper-item>
+        <nut-swiper-item>
+          <img src="@/assets/banner3.png" alt="" />
+        </nut-swiper-item>
+        <nut-swiper-item>
+          <img src="@/assets/banner4.svg" alt="" />
+        </nut-swiper-item>
+      </nut-swiper>
+    </div>
+
+    <div class="my_steps" ref="my_steps" id="my_steps">
+      <nut-steps direction="vertical" :current="curStepIndex">
+        <nut-step
+          title="Bind invitation code"
+          @click="gotoBindAmb"
+          content="Please confirm that you have filled out the invitation code before placing your order"
+          >1</nut-step
+        >
+        <nut-step
+          title="Waiting for approval"
+          :content="
+            ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'
+          "
+          >2</nut-step
+        >
+        <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
+        <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
+          >3</nut-step
+        >
+        <nut-step
+          @click="gotoOrderList"
+          title="Ops, you haven't made a profit yet"
+          content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you."
+          >4</nut-step
+        >
+      </nut-steps>
+    </div>
+  </template>
 
   <nut-infinite-loading
     style="min-height: 280px; height: 600px; padding-bottom: 10px; overflow: auto"
-    v-if="cloudCodeIsBind && earningsList.length"
+    v-else-if="cloudCodeIsBind && earningsList.length"
     load-more-txt="No more content"
     :has-more="hasMore"
     v-model="infinityValue"
@@ -202,6 +208,7 @@
 </template>
 
 <script lang="ts" setup name="HomePage">
+  import ErrorPage from '@/views/errorPage/index.vue';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
   import { Notice, TriangleUp, DouArrowUp, RectUp } from '@nutui/icons-vue';
@@ -218,6 +225,7 @@
   import { transferUTCTime, formatNumber } from '@/utils/util';
   import '@nutui/nutui/dist/packages/toast/style';
   import { useIntersectionObserver } from '@vueuse/core';
+  import { search_order_profit, search_user_asset_detail } from '@/api/amb';
 
   const userInfo = computed(() => userStore.getUserInfo);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
@@ -248,7 +256,6 @@
 
   const userStore = useUserStore();
   const earningsList = ref([] as any);
-  import { search_order_profit, search_user_asset_detail } from '@/api/amb';
   const { getUserAssets, getExchangeRate, dmc2usdRate, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } =
     useUserAssets();
 
@@ -265,6 +272,7 @@
       return false;
     }
   });
+  const isError = ref(false);
   const pageSize = ref(10);
   const pageNum = ref(1);
   const total = ref(0);
@@ -312,6 +320,7 @@
 
   function loadMore() {
     if (cloudCodeIsBind.value) {
+      isError.value = false;
       pageNum.value = pageNum.value + 1;
       searchOrderProfit();
     }
@@ -331,16 +340,24 @@
     search_user_asset_detail(postData)
       .then((res) => {
         infinityValue.value = false;
-
         if (res && res.result && res.result.data.length) {
           for (const item of res.result.data || []) {
             item.trx_id = handleID(item.trx_id);
           }
-          earningsList.value.push(...res.result.data);
+          const newSetCloudList = [...earningsList.value, ...res.result.data];
+          let arr = [];
+          const filterList = newSetCloudList.filter((item) => !arr.includes(item.trx_id) && arr.push(item.trx_id));
+          earningsList.value = filterList;
           total.value = res.result.total;
+        }
+        if (res.code != 200) {
+          pageNum.value = pageNum.value - 1;
+          isError.value = true;
         }
       })
       .catch(() => {
+        isError.value = true;
+        pageNum.value = pageNum.value - 1;
         infinityValue.value = false;
       });
   }
@@ -995,7 +1012,7 @@
     margin-top: 25px;
 
     .nut-checkbox__label {
-      color: rgb(158, 158, 158) !important;
+      // color: rgb(158, 158, 158) !important;
       font-size: 28px;
     }
   }

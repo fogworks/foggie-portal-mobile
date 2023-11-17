@@ -301,6 +301,8 @@
     console.log(cloudBalance.value < totalPrice.value);
     console.log(cloudBalance.value);
     console.log(totalPrice.value);
+    loading.value = true;
+
     await getUserAssets();
 
     if (+cloudBalance.value < +totalPrice.value) {
@@ -325,7 +327,6 @@
       });
       return false;
     }
-    loading.value = true;
     let params = {
       week: state.shopForm.week,
       floating_ratio: state.shopForm.floating_ratio / 100,
