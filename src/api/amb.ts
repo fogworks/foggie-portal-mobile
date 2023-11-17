@@ -221,12 +221,10 @@ export function get_exchange_rate() {
   });
 }
 
-
-
 export function sync_challenge(data) {
   return request({
-    url: "/order/sync_challenge",
-    method: "POST",
+    url: '/order/sync_challenge',
+    method: 'POST',
     data,
   });
 }

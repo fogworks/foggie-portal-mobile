@@ -45,7 +45,13 @@
       </nut-form-item>
 
       <nut-form-item required prop="verifyPw">
-        <input style="width: 70%" v-model.trim="loginForm.verifyPw" class="nut-input-text" @blur="customChangeValidate('verifyPw')" placeholder="Email verification code" />
+        <input
+          style="width: 70%"
+          v-model.trim="loginForm.verifyPw"
+          class="nut-input-text"
+          @blur="customChangeValidate('verifyPw')"
+          placeholder="Email verification code"
+        />
         <nut-button class="get_code" v-if="numCount > 0" disabled>{{ numCount }}s</nut-button>
         <nut-button class="get_code" v-else type="info" @click="getVerifyPw">Get Code</nut-button>
       </nut-form-item>
@@ -95,7 +101,7 @@
       return Promise.reject('Please input the password again');
     } else if (value !== loginForm.password) {
       return Promise.reject("Two inputs don't match!");
-    }else if(value.length >16 || value.length <6){
+    } else if (value.length > 16 || value.length < 6) {
       console.log(123);
       return Promise.reject('Password length needs to be between 6 and 16');
     } else {
@@ -114,7 +120,7 @@
   const validatePassword = (value: string) => {
     if (value === '') {
       return Promise.reject('Please enter password');
-    }else if(value.length >16 || value.length <6){
+    } else if (value.length > 16 || value.length < 6) {
       return Promise.reject('Password length needs to be between 6 and 16');
     } else if (/[a-z]+/.test(value) && /[A-Z]+/.test(value) && /\d+/.test(value) && /[!@#$%^&*+]+/.test(value)) {
       return Promise.resolve();
@@ -197,20 +203,35 @@
         };
         let isUserCode, isAmbCode;
         if (loginForm.amb_promo_code) {
-          const userPromoRes = await check_promo({
-            promo_code: loginForm.amb_promo_code,
-          });
-          if (userPromoRes.code == 200) {
-            isUserCode = true;
-          } else {
+          try {
+            const userPromoRes = await check_promo({
+              promo_code: loginForm.amb_promo_code,
+            });
+            if (userPromoRes.code == 200) {
+              isUserCode = true;
+            } else {
+              isUserCode = false;
+            }
+          } catch {
             isUserCode = false;
+            loading.value = false;
+            showToast.fail('Invitation code verification failed, please try again');
+            return false;
           }
-          const ambPromoRes = await check_amb_promo(loginForm.amb_promo_code);
-          if (ambPromoRes.code == 200) {
-            isAmbCode = true;
-          } else {
+          try {
+            const ambPromoRes = await check_amb_promo(loginForm.amb_promo_code);
+            if (ambPromoRes.code == 200) {
+              isAmbCode = true;
+            } else {
+              isAmbCode = false;
+            }
+          } catch {
+            showToast.fail('Invitation code verification failed, please try again');
             isAmbCode = false;
+            loading.value = false;
+            return false;
           }
+
           if (!isAmbCode && !isUserCode) {
             showToast.fail('Please enter a valid invitation code');
             loading.value = false;
@@ -292,10 +313,10 @@
 
   const customChangeValidate = debounce((prop: string) => {
     console.log(prop);
-    
+
     ruleForm.value.validate(prop).then(({ valid, errors }: any) => {
       if (valid) {
-        console.log('success',);
+        console.log('success');
       } else {
         console.log('error submit!!', errors);
       }

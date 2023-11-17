@@ -213,8 +213,8 @@
       }
       .nut-input .input-text,
       .nut-input__text--readonly {
-        color: #ebebeb !important;
-        color: #999 !important;
+        // color: #ebebeb !important;
+        // color: #999 !important;
       }
 
       .bucket_tip {
