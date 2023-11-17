@@ -331,7 +331,7 @@
       week: state.shopForm.week,
       floating_ratio: state.shopForm.floating_ratio / 100,
       pst: state.shopForm.quantity + '',
-      total_price: totalPrice.value,
+      total_price: (+totalPrice.value).toFixed(4),
     };
     const nodeRes = await buy_order(params);
     console.log(nodeRes);
@@ -351,7 +351,7 @@
       userUuid: nodeInfo.value.amb_user_uuid,
       period: state.shopForm.week.toString(),
       pst: state.shopForm.quantity,
-      totalPrice: totalPrice.value,
+      totalPrice: (+totalPrice.value).toFixed(4),
       memo: `${nodeInfo.value.buyOrderUuid}_Order_buy`,
       deviceType: 3,
       poolType: 'golden', //vofo.*  / golden
