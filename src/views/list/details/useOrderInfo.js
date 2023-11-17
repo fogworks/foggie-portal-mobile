@@ -5,6 +5,7 @@ import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import loadingImg from '@/components/loadingImg/index.vue';
 import { showToast } from '@nutui/nutui';
+import { poolUrl } from '@/setting.js';
 
 export default function useOrderInfo() {
   const store = useUserStore();
@@ -63,7 +64,7 @@ export default function useOrderInfo() {
     orderInfo.value.used_space = 0;
     if (bucketName.value && getKey) {
       return new Promise((resolve, reject) => {
-        let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
+        let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
         let request = new Prox.default.ProxGetCredRequest();
         request.setHeader(header);
         console.log('metadata==11:', request, metadata.value);
@@ -87,13 +88,13 @@ export default function useOrderInfo() {
   };
   const getSummary = () => {
     return new Promise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
+      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
       let request = new Prox.default.ProxRequestSummaryIds();
       request.setHeader(header);
 
       request.setIdsList([orderInfo.value.foggie_id]);
 
-      console.log(`https://${bucketName.value}.devus.u2i.net:7007`, 'bucketNamebucketNamebucketNamebucketName');
+      console.log(`https://${bucketName.value}.${poolUrl}:7007`, 'bucketNamebucketNamebucketNamebucketName');
 
       server.summaryInfo(request, metadata.value, (err, res) => {
         if (err) {

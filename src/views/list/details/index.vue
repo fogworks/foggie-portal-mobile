@@ -379,6 +379,7 @@
   import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
+  import { poolUrl } from '@/setting.js';
 
   const {
     filesCount,
@@ -515,7 +516,7 @@
         reject();
       }
 
-      uploadUri.value = `https://${bucketName.value}.devus.u2i.net:6008/o/`;
+      uploadUri.value = `https://${bucketName.value}.${poolUrl}:6008/o/`;
 
       const policy = {
         expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
@@ -649,7 +650,7 @@
     if (type === 'download') {
       const objectKey = encodeURIComponent(checkData.fullName);
       const headers = getSignHeaders(objectKey);
-      const url = `https://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
+      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
       fetch(url, { method: 'GET', headers })
         .then((response) => {
           if (response.ok) {
@@ -1008,7 +1009,7 @@
       loadingRotate: false,
       id: 'file_list',
     });
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix('');
@@ -1240,7 +1241,7 @@
 
   const getKeys = () => {
     return new Prmise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
+      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
       let request = new Prox.default.ProxGetCredRequest();
       request.setHeader(header);
       server.listCreds(request, {}, (err: any, res: { array: any }) => {

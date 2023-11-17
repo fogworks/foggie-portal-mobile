@@ -480,6 +480,7 @@
 
   import { HmacSHA1, enc } from 'crypto-js';
   import uploader from './uploader.vue';
+  import { poolUrl } from '@/setting.js';
 
   // import { download_url } from '@/api/index';
 
@@ -735,7 +736,7 @@
       }
       // let ip = orderInfo.value.rpc.split(':')[0];
       // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-      let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+      let ip = `https://${bucketName.value}.${poolUrl}:7007`;
       server = new grpcService.default.ServiceClient(ip, null, null);
       let ProxRenameObject = new Prox.default.ProxRenameObject();
       ProxRenameObject.setHeader(header);
@@ -811,7 +812,7 @@
     }
     // let ip = orderInfo.value.rpc.split(':')[0];
     // server = new grpcService.default.ServiceClient(`http://${ip}:7007`);
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     if (isNewFolder.value) {
@@ -876,7 +877,7 @@
 
       const headers = getSignHeaders(objectKey);
 
-      const url = `https://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
+      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
 
       fetch(url, { method: 'GET', headers })
         .then((response) => {
@@ -973,7 +974,7 @@
     // let ip = orderInfo.value.rpc.split(':')[0];
     // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     let listObject = new Prox.default.ProxListObjectsRequest();
@@ -1320,7 +1321,7 @@
         // let ip = orderInfo.value.rpc.split(':')[0];
         // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
-        let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
         server = new grpcService.default.ServiceClient(ip, null, null);
 
         let ProxFindRequest = new Prox.default.ProxFindRequest();

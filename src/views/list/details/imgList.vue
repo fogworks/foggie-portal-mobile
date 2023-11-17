@@ -75,6 +75,8 @@
   import useOrderInfo from './useOrderInfo.js';
   import imgUrl from '@/assets/DMC_token.png';
   import loadingImg from '@/components/loadingImg/index.vue';
+  import { poolUrl } from '@/setting.js';
+
   let server;
   // import { isCloudCanUpload_Api } from '@/api/upload';
   const { header, metadata, deviceType, orderInfo, bucketName, getOrderInfo } = useOrderInfo();
@@ -142,7 +144,7 @@
         tableLoading.value = true;
         // let ip = orderInfo.value.rpc.split(':')[0];
         // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-        let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
         server = new grpcService.default.ServiceClient(ip, null, null);
 
         let ProxTimeLine = new Prox.default.ProxTimeLine();
@@ -218,7 +220,7 @@
     // let ip = orderInfo.value.rpc.split(':')[0];
     // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     let listObject = new Prox.default.ProxListObjectsRequest();
