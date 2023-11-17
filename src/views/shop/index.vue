@@ -315,9 +315,7 @@
       };
       let src = require('@/assets/DMC_token.png');
       let str = `<img class="bind_img" src=${src} style="height:60px;"/>
-      <p style='word-break:break-word;color:red;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p >
-
-        `;
+      <p style='word-break:break-word;color:red;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p>`;
       showDialog({
         title: 'The balance is insufficient',
         content: str,

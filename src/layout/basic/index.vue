@@ -41,9 +41,9 @@
   <nut-dialog v-model:visible="bindAmbCodeDialogIsShow" :close-on-click-overlay="false" :show-cancel="false"
     :show-confirm="false" custom-class="CustomName bindAmbCodeDialog">
     <template #header style="border-bottom: 0px;">
-      <div style="color: #f5f7fb;font-weight: 600;font-size: 17px;">Bind</div>
+      <div style="font-weight: 600;font-size: 17px;">Bind</div>
     </template>
-    <img src="@/assets/fog-works_w.png" style="height: 60px;margin-bottom: 15px;" alt="" srcset="">
+    <img src="@/assets/fog-works_w.png" style="height: 60px" alt="" srcset="">
 
 
     <nut-input v-model="userBindAmbCode" placeholder="Please enter Ambassador Invitation Code" max-length="12"
