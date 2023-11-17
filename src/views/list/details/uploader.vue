@@ -45,6 +45,7 @@
   import { getSecondTime } from '@/utils/util';
   import { update_order_size } from '@/api/amb';
   import { delay, throttle } from 'lodash';
+  import { poolUrl } from '@/setting.js';
 
   const emits = defineEmits(['uploadComplete']);
 
@@ -140,7 +141,7 @@
         return reject();
       }
 
-      uploadUri.value = `https://${bucketName}.devus.u2i.net:6008/o/`;
+      uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
 
       const policy = {
         expiration: new Date(Date.now() + 3600 * 1000),

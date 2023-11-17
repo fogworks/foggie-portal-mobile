@@ -11,7 +11,7 @@
     <p class="key_tips"> You can access S3 clients through a private key. Access address: </p>
     <span class="s3url" @click="copyS3">
       <span>{{ bucketName }}</span
-      >.devpool.u2i.net:9900
+      >.{{ s3Url }}:9900
     </span>
     <nut-form class="key_form" :model-value="dynamicForm.state" ref="dynamicRefForm">
       <!-- <nut-form-item label="Access Key">
@@ -73,6 +73,7 @@
   import { Base64 } from 'js-base64';
   import { get_unique_order, get_order_sign } from '@/api/index';
   import { showToast, showDialog } from '@nutui/nutui';
+  import { s3Url, poolUrl } from '@/setting.js';
 
   import * as pb from '@/pb/prox_grpc_web_pb';
   import * as grpc from '@/pb/prox_pb';
@@ -90,8 +91,8 @@
   bucketName.value = route.query.domain;
   const bucketUrl = ref<any>('');
   const loading = ref(false);
-  bucketUrl.value = `${bucketName.value}.devpool.u2i.net:9900`;
-  ip.value = `https://${bucketName.value}.devus.u2i.net:7007`;
+  bucketUrl.value = `${bucketName.value}.${s3Url}:9900`;
+  ip.value = `https://${bucketName.value}.${poolUrl}:7007`;
   // peer_id.value = '12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp';
   // foggie_id.value = 'baeqagmrygu';
   // token.value = 'SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b';

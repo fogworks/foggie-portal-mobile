@@ -6,6 +6,8 @@ import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import '@nutui/nutui/dist/packages/toast/style';
 import useOrderInfo from './useOrderInfo.js';
+import { poolUrl } from '@/setting.js';
+
 // import { isCloudCanUpload_Api } from '@/api/upload';
 const { bucketName } = useOrderInfo();
 export default function useDelete(tableLoading, refresh, orderInfo, header) {
@@ -37,7 +39,7 @@ export default function useDelete(tableLoading, refresh, orderInfo, header) {
     // let ip = orderInfo.value.rpc.split(':')[0];
     // let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     let server = new grpcService.default.ServiceClient(ip, null, null);
 
     server.deleteObject(ProxDeleteObjectReq, {}, (err, res) => {

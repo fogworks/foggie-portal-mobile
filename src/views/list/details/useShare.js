@@ -10,6 +10,8 @@ import { shareUrl } from '@/setting.json';
 import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
 import IconHttp2 from '~icons/home/http2.svg';
+import { poolUrl } from '@/setting.js';
+
 // import { file_pin } from '@/api';
 export default function useShare(orderInfo, header, deviceType) {
   const userStore = useUserStore();
@@ -112,7 +114,7 @@ export default function useShare(orderInfo, header, deviceType) {
     // let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
     let bucketName = orderInfo.value.domain;
 
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     let server = new grpcService.default.ServiceClient(ip, null, null);
 
     // showToast.text('IPFS link will available later.');
@@ -129,7 +131,7 @@ export default function useShare(orderInfo, header, deviceType) {
     if (key) {
       let foggie_id = orderInfo.value.foggie_id;
       // let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
-      let httpStr = `https://${orderInfo.value.domain}.devus.u2i.net:6008/o/${item.cid}`;
+      let httpStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/o/${item.cid}`;
       let ipfsStr = item.cid ? `ipfs://${item.cid}` : '';
       shareRefContent.ipfsStr = ipfsStr;
       shareRefContent.httpStr = httpStr;
@@ -283,7 +285,7 @@ export default function useShare(orderInfo, header, deviceType) {
     // let ip = `http://${orderInfo.value.rpc.split(':')[0]}:6008`;
     // const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
 
-    let ip = `https://${bucketName}.devus.u2i.net:6008`;
+    let ip = `https://${bucketName}.${poolUrl}:6008`;
     const baseUrl = `${ip}/o/${objectKey}`;
     if (thumb) {
       return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
@@ -317,7 +319,7 @@ export default function useShare(orderInfo, header, deviceType) {
 
     if (key) {
       // let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
-      let httpStr = `https://${orderInfo.value.domain}.devus.u2i.net:6008/o/${shareOption.cid}`;
+      let httpStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/o/${shareOption.cid}`;
       shareRefContent.httpStr = httpStr;
       // if (+pinData.shareOption.originalSize > orderInfo.value.total_space * 0.01) {
       //   shareRefContent.ipfsStr = '';

@@ -132,6 +132,9 @@
   import useTransactionRecords from './useTransactionRecords.ts';
   import useOrderAssets from './useOrderAssets.ts';
   import { transferUTCTime, formatNumber } from '@/utils/util';
+
+  import { poolUrl } from '@/setting.js';
+
   //   import * as Prox from '@/pb/prox_pb.js';
   //   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   //   import useOrderInfo from '../list/details/useOrderInfo.js';
@@ -222,7 +225,7 @@
   };
   const getSummary = () => {
     return new Promise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`https://${domain.value}.devus.u2i.net:7007`, null, null);
+      let server = new grpcService.default.ServiceClient(`https://${domain.value}.${poolUrl}:7007`, null, null);
       let request = new Prox.default.ProxRequestSummaryIds();
       request.setHeader(header);
       request.setIdsList([orderInfo.value.foggie_id]);
