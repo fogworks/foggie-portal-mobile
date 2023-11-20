@@ -8,6 +8,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BasicModal: typeof import('./../src/components/Modal/src/BasicModal.vue')['default']
+    copy: typeof import('./../src/components/loadingImg/index copy.vue')['default']
+    Index2: typeof import('./../src/components/loadingImg/index2.vue')['default']
     LoadingImg: typeof import('./../src/components/loadingImg/index.vue')['default']
     MyEcharts: typeof import('./../src/components/echarts/myEcharts.vue')['default']
     MyTransition: typeof import('./../src/components/myTransition/index.vue')['default']

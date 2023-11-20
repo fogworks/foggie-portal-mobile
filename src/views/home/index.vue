@@ -339,13 +339,13 @@
           for (const item of res.result.data || []) {
             item.trx_id = handleID(item.trx_id);
           }
-          earningsList.value = earningsList.value.concat(res.result.data)
+          earningsList.value = earningsList.value.concat(res.result.data);
           // const newSetCloudList = [...earningsList.value, ...res.result.data];
           // let arr = [];
           // const filterList = newSetCloudList.filter((item) => !arr.includes(item.trx_id) && arr.push(item.trx_id));
           // earningsList.value = filterList;
           // console.log(earningsList.value );
-          
+
           total.value = res.result.total;
         }
         if (res.code != 200) {
@@ -835,9 +835,12 @@
     margin: 0 auto;
     padding: 20px 0;
     border-radius: 16px;
-    border: 1px dashed #ffffff;
+    border: 4px solid transparent;
     background: #fff;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+    // box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+    background:
+      linear-gradient(#fff, #fff) padding-box,
+      linear-gradient(145deg, #e81cff, #40c9ff) border-box;
 
     .action_item {
       display: flex;
