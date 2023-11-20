@@ -57,7 +57,9 @@
   // import { useUserStore } from '@/store/modules/user';
   import { showSuccessToast } from 'vant';
 
-  const bcryptjs = require('bcryptjs');
+  // const bcryptjs = require('bcryptjs');
+
+  import { Base64 } from 'js-base64';
 
   // import bcryptjs from 'bcryptjs';
   // const userStore = useUserStore();
@@ -155,7 +157,8 @@
       if (valid) {
         loading.value = true;
         const password = loginForm.password;
-        let hashPwd = bcryptjs.hashSync(password, 10);
+        // let hashPwd = bcryptjs.hashSync(password, 10);
+        let hashPwd = Base64.encode(password);
         // let hashPwd = password;
         let postData = {
           email: loginForm.email,
