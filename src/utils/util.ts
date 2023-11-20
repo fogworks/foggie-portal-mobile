@@ -166,6 +166,7 @@ function getSecondTime(second_time) {
  * @param {string} type - homePage / login / social  / e-commerce / Buy
  * 
  *  */
+
 const privatekey = '6Lfb1P8oAAAAAOLRpus_iOzdPyWVJZmxqmggXwiC'
 const secret = '6Lfb1P8oAAAAACjGYFUlFaWKOR6NqmYTKLkzRztj'
 const Lower_score_limit = 0
