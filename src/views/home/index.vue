@@ -339,10 +339,13 @@
           for (const item of res.result.data || []) {
             item.trx_id = handleID(item.trx_id);
           }
-          const newSetCloudList = [...earningsList.value, ...res.result.data];
-          let arr = [];
-          const filterList = newSetCloudList.filter((item) => !arr.includes(item.trx_id) && arr.push(item.trx_id));
-          earningsList.value = filterList;
+          earningsList.value = earningsList.value.concat(res.result.data)
+          // const newSetCloudList = [...earningsList.value, ...res.result.data];
+          // let arr = [];
+          // const filterList = newSetCloudList.filter((item) => !arr.includes(item.trx_id) && arr.push(item.trx_id));
+          // earningsList.value = filterList;
+          // console.log(earningsList.value );
+          
           total.value = res.result.total;
         }
         if (res.code != 200) {

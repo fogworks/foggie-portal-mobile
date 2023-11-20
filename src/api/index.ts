@@ -285,7 +285,7 @@ export const get_reCAPTCHA_Score_API = (data) => {
   // let url = `/recaptcha/api/siteverify`;
   // let url = `/recaptcha/api/siteverify`;
   let url = `/reCAPTCHA_verification/recaptcha/api/siteverify`;
-
+  // let url = `https://www.recaptcha.net/recaptcha/api/siteverify`;
   return request({
     url: url,
     method: 'POST',
