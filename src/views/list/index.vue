@@ -1,124 +1,127 @@
 <template>
-  <div class="top_box" :class="[searchType == 'History' ? 'top_history' : 'top_open']">
-    <!-- <div class="top_type">{{ searchType }} </div> -->
-    <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search by order number">
-      <template #left> <Search></Search> </template>
-    </nut-input>
-    <!-- <p>You can search your order here.</p> -->
-    <nut-row type="flex" justify="space-between" class="top_btn_box">
-      <nut-col :span="10">
-        <div class="flex-content">
-          <div
-            class="svg-box"
-            @click="searchType = 'Open'"
-            :class="[searchType == 'Open' ? 'active_svg-box active_svg-boxOpen' : 'svg-box-open']"
-          >
-            <!-- <Shop></Shop> -->
-            <!-- bidian.png -->
-            <img src="@/assets/dingdanhetong.png" style="background-color: transparent" alt="" srcset="" />
-            <!-- <IconSwitch style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'Open'"></IconSwitch>
+  <div>
+    <div class="top_box" :class="[searchType == 'History' ? 'top_history' : 'top_open']">
+      <!-- <div class="top_type">{{ searchType }} </div> -->
+      <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search by order number">
+        <template #left> <Search></Search> </template>
+      </nut-input>
+      <!-- <p>You can search your order here.</p> -->
+      <nut-row type="flex" justify="space-between" class="top_btn_box">
+        <nut-col :span="10">
+          <div class="flex-content">
+            <div
+              class="svg-box"
+              @click="searchType = 'Open'"
+              :class="[searchType == 'Open' ? 'active_svg-box active_svg-boxOpen' : 'svg-box-open']"
+            >
+              <!-- <Shop></Shop> -->
+              <!-- bidian.png -->
+              <img src="@/assets/dingdanhetong.png" style="background-color: transparent" alt="" srcset="" />
+              <!-- <IconSwitch style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'Open'"></IconSwitch>
             <IconSwitch style="vertical-align: text-top" color="#ffffff" v-else></IconSwitch> -->
+            </div>
+            <span>Ongoing</span>
+            <span class="order_num" v-if="searchType == 'Open'">Count : {{ total }}</span>
           </div>
-          <span>Ongoing</span>
-          <span class="order_num" v-if="searchType == 'Open'">Count : {{ total }}</span>
-        </div>
-      </nut-col>
-      <nut-col :span="10">
-        <div class="flex-content">
-          <div
-            class="svg-box"
-            @click="searchType = 'History'"
-            :class="[searchType == 'History' ? 'active_svg-box active_svg-boxHistory' : 'svg-box-history']"
-          >
-            <img src="@/assets/bidian.png" style="background-color: transparent" alt="" srcset="" />
-            <!-- <IconHistory style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistory>
+        </nut-col>
+        <nut-col :span="10">
+          <div class="flex-content">
+            <div
+              class="svg-box"
+              @click="searchType = 'History'"
+              :class="[searchType == 'History' ? 'active_svg-box active_svg-boxHistory' : 'svg-box-history']"
+            >
+              <img src="@/assets/bidian.png" style="background-color: transparent" alt="" srcset="" />
+              <!-- <IconHistory style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistory>
             <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-else></IconHistoryActivate> -->
+            </div>
+            <span>History</span>
+            <span class="order_num" v-if="searchType == 'History'">Count : {{ total }}</span>
           </div>
-          <span>History</span>
-          <span class="order_num" v-if="searchType == 'History'">Count : {{ total }}</span>
-        </div>
-      </nut-col>
-    </nut-row>
-  </div>
+        </nut-col>
+      </nut-row>
+    </div>
 
-  <div style="margin: 15px 0px">
-    <nut-noticebar
-      :background="`rgba(251, 248, 220, 1)`"
-      :color="`#D9500B`"
-      direction="vertical"
-      :list="horseLamp"
-      wrapable
-      :speed="10"
-      :standTime="1000"
-      :close-mode="true"
-    ></nut-noticebar>
-  </div>
-  <nut-infinite-loading
-    v-if="list.length"
-    class="list_box"
-    load-more-txt="No more content"
-    v-model="infinityValue"
-    :has-more="hasMore"
-    @load-more="loadMoreFun"
-  >
-    <template v-for="(item, index) in list">
-      <div
-        class="list_item"
-        v-if="!(item?.income && item?.state == 0)"
-        @click="gotoOrder(item)"
-        :class="[searchType === 'History' ? 'history_item' : '']"
-      >
-        <!-- :style="{ background: randomColor() }" -->
+    <div style="margin: 15px 0px">
+      <nut-noticebar
+        :background="`rgba(251, 248, 220, 1)`"
+        :color="`#D9500B`"
+        direction="vertical"
+        :list="horseLamp"
+        wrapable
+        :speed="10"
+        :standTime="1000"
+        :close-mode="true"
+      ></nut-noticebar>
+    </div>
+    <ErrorPage v-if="isError && !list.length" @refresh="loadMoreFun"></ErrorPage>
+    <nut-infinite-loading
+      v-else-if="list.length"
+      class="list_box"
+      load-more-txt="No more content"
+      v-model="infinityValue"
+      :has-more="hasMore"
+      @load-more="loadMoreFun"
+    >
+      <template v-for="(item, index) in list">
+        <div
+          class="list_item"
+          v-if="!(item?.income && item?.state == 0)"
+          @click="gotoOrder(item)"
+          :class="[searchType === 'History' ? 'history_item' : '']"
+        >
+          <!-- :style="{ background: randomColor() }" -->
 
-        <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-          <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
+          <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+            <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
         <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
         <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
-          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-          <img v-if="item.electronic_type == 0" src="@/assets/mobile.svg" alt="" />
-          <img v-else src="@/assets/desktop.svg" alt="" />
-        </div>
-        <div>
-          <span>
-            <span v-if="item.domain" style="font-weight: bold">{{ item.domain }}</span>
-            <span v-if="!item.domain" style="font-weight: bold">Order:{{ item.order_id }}</span>
-            <span style="margin-left: 10px">
-              <!-- 待共識 -->
-              <nut-tag v-if="item.state == 0" type="warning">CNR</nut-tag>
-              <!-- 进行中 -->
-              <nut-tag type="success" v-else-if="item.state == 1">CR</nut-tag>
-              <!-- 已结束 -->
-              <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Expired</nut-tag>
-              <!-- 已取消 -->
-              <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
-              <!-- 下週期將取消 -->
-              <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
-              <!-- 預存⾦不足 -->
-              <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">IADTCNC</nut-tag>
-              <!-- 預存⾦充足 -->
-              <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">SFIA</nut-tag>
+            <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+            <img v-if="item.electronic_type == 0" src="@/assets/mobile.svg" alt="" />
+            <img v-else src="@/assets/desktop.svg" alt="" />
+          </div>
+          <div>
+            <span>
+              <span v-if="item.domain" style="font-weight: bold">{{ item.domain }}</span>
+              <span v-if="!item.domain" style="font-weight: bold">Order:{{ item.order_id }}</span>
+              <span style="margin-left: 10px">
+                <!-- 待共識 -->
+                <nut-tag v-if="item.state == 0" type="warning">CNR</nut-tag>
+                <!-- 进行中 -->
+                <nut-tag type="success" v-else-if="item.state == 1">CR</nut-tag>
+                <!-- 已结束 -->
+                <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Expired</nut-tag>
+                <!-- 已取消 -->
+                <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
+                <!-- 下週期將取消 -->
+                <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
+                <!-- 預存⾦不足 -->
+                <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">IADTCNC</nut-tag>
+                <!-- 預存⾦充足 -->
+                <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">SFIA</nut-tag>
+              </span>
             </span>
-          </span>
-          <span :class="['earnings']" v-if="item.income" style="font-weight: bold">
-            +{{ item.income }}
-            <!-- <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight> -->
-          </span>
+            <span :class="['earnings']" v-if="item.income" style="font-weight: bold">
+              +{{ item.income }}
+              <!-- <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight> -->
+            </span>
+          </div>
+          <div
+            ><span>{{ item.pst || '--' }} GB</span> <span class="time">{{ transferGMTTime(item.order_created_at) }}</span>
+          </div>
+          <div style="color: red">
+            <span>Payment:</span>
+            <span class="time" style="color: red; font-weight: bold"> - {{ item.total_price }} DMC</span>
+          </div>
         </div>
-        <div
-          ><span>{{ item.pst || '--' }} GB</span> <span class="time">{{ transferGMTTime(item.order_created_at) }}</span>
-        </div>
-        <div style="color: red">
-          <span>Payment:</span>
-          <span class="time" style="color: red; font-weight: bold"> - {{ item.total_price }} DMC</span>
-        </div>
+      </template>
+    </nut-infinite-loading>
+    <nut-empty v-else description=" " image="error">
+      <div style="margin-top: 10px" v-if="!listData.length">
+        <nut-button icon="refresh" type="primary" @click="toBuy">Buy Order</nut-button>
       </div>
-    </template>
-  </nut-infinite-loading>
-  <nut-empty v-else description=" " image="error">
-    <div style="margin-top: 10px" v-if="!listData.length">
-      <nut-button icon="refresh" type="primary" @click="toBuy">Buy Order</nut-button>
-    </div>
-  </nut-empty>
+    </nut-empty>
+  </div>
 </template>
 
 <script lang="ts" setup name="ListPage">
@@ -134,6 +137,7 @@
   import useOrderList from '../home/useOrderList.ts';
   import { transferGMTTime, transferUTCTime } from '@/utils/util';
   import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
+  import ErrorPage from '@/views/errorPage/index.vue';
 
   import { ref, onMounted } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
@@ -157,7 +161,7 @@
   const orderStore = useOrderStore();
   const { cloudCodeIsBind } = useUpdateDMC();
   const bindAmbCode = inject('bindAmbCode');
-  const { resetData, loadMore, listData, hasMore, infinityValue, total } = useOrderList();
+  const { resetData, loadMore, isError, listData, hasMore, infinityValue, total } = useOrderList();
 
   let list = computed(() => {
     return listData.value.filter((el) => {

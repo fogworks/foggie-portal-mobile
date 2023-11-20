@@ -89,7 +89,8 @@
     }
   }
 
-  .dialog_class {
+  .dialog_class,
+  .dialog_class_delete {
     font-size: 30px;
 
     .nut-dialog__header {
@@ -104,6 +105,11 @@
       .withdraw_img {
         margin-bottom: 10px;
       }
+    }
+  }
+  .dialog_class_delete {
+    .nut-dialog__footer-ok {
+      background: #e71313;
     }
   }
 

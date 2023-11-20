@@ -115,7 +115,8 @@
         <span @click="cancelSelect">Cancel</span>
       </div>
     </nut-sticky>
-    <template v-if="category != 1">
+    <ErrorPage v-if="isError" @refresh="() => doSearch('', prefix, true)"></ErrorPage>
+    <template v-else-if="category != 1">
       <nut-infinite-loading
         v-if="tableData.length"
         load-more-txt="No more content"
@@ -421,16 +422,16 @@
         </div>
       </nut-overlay>
     </Teleport>
+    <uploader
+      v-if="isMobileOrder"
+      :bucketName="bucketName"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      :orderInfo="orderInfo"
+      :prefix="prefix"
+      @uploadComplete="uploadComplete"
+    ></uploader>
   </div>
-  <uploader
-    v-if="isMobileOrder"
-    :bucketName="bucketName"
-    :accessKeyId="accessKeyId"
-    :secretAccessKey="secretAccessKey"
-    :orderInfo="orderInfo"
-    :prefix="prefix"
-    @uploadComplete="uploadComplete"
-  ></uploader>
 </template>
 
 <script setup lang="ts">
@@ -521,6 +522,7 @@
       },
     ],
     isFirst: false,
+    isError: false,
   });
   const imgListRef = ref('');
   const isMobileOrder = computed(() => {
@@ -557,6 +559,7 @@
     isNewFolder,
     longPress,
     isFirst,
+    isError,
   } = toRefs(state);
   const { getSummary, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
   provide('getSummary', getSummary);
@@ -913,7 +916,7 @@
         content: 'Are you sure you want to delete?',
         cancelText: 'Cancel',
         okText: 'Confirm',
-        popClass: 'dialog_class',
+        popClass: 'dialog_class_delete',
         onOk,
       });
     } else if (type === 'rename') {
@@ -1072,10 +1075,11 @@
             prefixpins: res.getPrefixpinsList(),
           };
           console.log(transferData, 'transferData,transferData');
-
+          isError.value = false;
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
           showToast.hide('file_list');
+          isError.value = true;
           console.log('err----', err);
         }
       },
@@ -1381,8 +1385,11 @@
                   };
                 },
               );
+            isError.value = false;
+
             initRemoteData({ content: transferData }, true, category.value);
           } else {
+            isError.value = true;
           }
         });
       }

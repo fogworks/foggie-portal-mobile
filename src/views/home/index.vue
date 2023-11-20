@@ -1,210 +1,205 @@
 <template>
-  <!-- <nut-noticebar v-if="!userInfo.dmc" class="my_noticebar">
-    <template #left-icon>
-      <Notice width="20px" left="20px"></Notice>
+  <div>
+    <div class="dmc_account">
+      <div class="img-box">
+        <img src="@/assets/user.png" alt="" />
+      </div>
+      Hello,
+      {{ userInfo.email && userInfo.email.split('@')[0] }}
+    </div>
+    <div inset class="income-card">
+      <img src="@/assets/balance_right.svg" />
+      <div class="card_row_1 card_header">
+        <div class="total_income">
+          <div class="balance_text">
+            <span>{{ cloudBalanceNum?.integerPart }}</span>
+            <span style="font-size: 13px">.{{ cloudBalanceNum?.decimalPart }}</span>
+            <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
+          </div>
+          <div class="usd_text" v-if="dmc2usdRate && cloudBalance && cloudBalance != '--'">
+            ≈ {{ formatNumber(dmc2usdRate * cloudBalance)?.integerPart
+            }}<span style="font-size: 13px">.{{ formatNumber(dmc2usdRate * cloudBalance)?.decimalPart }}</span> USD
+          </div>
+        </div>
+      </div>
+      <div class="card_row_1 pst-row">
+        <div>
+          <p>Space</p>
+          <p class="column_value">{{ getfilesize2(cloudPst == '--' ? 0 : cloudPst) }}</p>
+        </div>
+        <div @click="gotoPage('transactionRecords', '1')">
+          <p>Withdrawn</p>
+          <p class="column_value">{{ cloudWithdraw >= 0 ? cloudWithdraw.toFixed(4) : cloudWithdraw }}</p>
+        </div>
+        <div @click="gotoPage('analysis')">
+          <p>Today's new funds</p>
+          <p class="column_value today_income"
+            >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
+            <TriangleUp color="#fbd116" width="20px"></TriangleUp>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="withdraw-btn" direction="horizontal" align="center">
+      <div class="action_item" @click="toRecharge">
+        <!-- <img src="@/assets/recharge.svg" alt="" /> -->
+        <img src="@/assets/Recharge.png" alt="" />
+
+        Recharge
+      </div>
+      <div class="action_item" @click="showWithdraw">
+        <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
+        <img src="@/assets/Withdraw.png" alt="" />
+
+        Withdraw
+      </div>
+    </div>
+    <div class="middle_btn_box">
+      <div>
+        <div class="flex-content" @click="toBuyOrder">
+          <div class="svg-box">
+            <!-- <Shop></Shop> -->
+            <img src="@/assets/buy.svg" alt="" />
+          </div>
+          <span>Buy</span>
+        </div>
+      </div>
+      <div>
+        <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
+        <div class="flex-content" @click="gotoPage('Order')">
+          <div class="svg-box">
+            <img src="@/assets/orders.svg" alt="" />
+          </div>
+          <span>Orders</span>
+        </div>
+      </div>
+      <div>
+        <!-- <div class="flex-content" @click="router.push('/analysis')"> -->
+        <div class="flex-content" @click="gotoPage('analysisChart')">
+          <div class="svg-box">
+            <img src="@/assets/analysis.svg" alt="" />
+          </div>
+          <span>Charts</span>
+        </div>
+      </div>
+      <div>
+        <div class="flex-content" @click="gotoPage('transactionRecords')">
+          <!-- <div class="flex-content" @click="router.push('/transactionRecords')"> -->
+          <div class="svg-box">
+            <!-- <img src="@/assets/IconTransaction.svg" alt="" /> -->
+            <IconTransaction></IconTransaction>
+          </div>
+          <span>Transaction <br /> </span>
+          <!-- records -->
+        </div>
+      </div>
+    </div>
+
+    <div class="DouArrowDown" v-if="!targetIsVisible && !ishaveProfit" @click="scrollIntoViewTo">
+      <DouArrowUp width="100" height="50" class="nut-icon-am-jump nut-icon-am-infinite" />
+    </div>
+    <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
+    <div class="tab_top_title" v-if="ishaveProfit">Last 7 days <span style="font-size: 12px">(DMC)</span></div>
+
+    <ErrorPage v-if="isError && !earningsList.length" @refresh="loadMore"></ErrorPage>
+    <template v-else-if="!ishaveProfit">
+      <div class="my_swipe">
+        <nut-swiper :init-page="1" :pagination-visible="true" pagination-color="#426543" auto-play="3000">
+          <nut-swiper-item>
+            <img src="@/assets/banner1.svg" alt="" />
+          </nut-swiper-item>
+          <nut-swiper-item>
+            <img src="@/assets/banner2.svg" alt="" />
+          </nut-swiper-item>
+          <nut-swiper-item>
+            <img src="@/assets/banner3.png" alt="" />
+          </nut-swiper-item>
+          <nut-swiper-item>
+            <img src="@/assets/banner4.svg" alt="" />
+          </nut-swiper-item>
+        </nut-swiper>
+      </div>
+
+      <div class="my_steps" ref="my_steps" id="my_steps">
+        <nut-steps direction="vertical" :current="curStepIndex">
+          <nut-step
+            title="Bind invitation code"
+            @click="gotoBindAmb"
+            content="Please confirm that you have filled out the invitation code before placing your order"
+            >1</nut-step
+          >
+          <nut-step
+            title="Waiting for approval"
+            :content="
+              ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'
+            "
+            >2</nut-step
+          >
+          <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
+          <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
+            >3</nut-step
+          >
+          <nut-step
+            @click="gotoOrderList"
+            title="Ops, you haven't made a profit yet"
+            content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you."
+            >4</nut-step
+          >
+        </nut-steps>
+      </div>
     </template>
-    <span>You have not yet bound a DMC account </span>
-    <router-link to="/bindDmc?type=dmc"> Go to Binding.</router-link>
-  </nut-noticebar>
-  <div class="dmc_account" v-else> -->
-  <div class="dmc_account">
-    <div class="img-box">
-      <img src="@/assets/user.png" alt="" />
-    </div>
-    Hello,
-    {{ userInfo.email && userInfo.email.split('@')[0] }}
-  </div>
-  <div inset class="income-card">
-    <img src="@/assets/balance_right.svg" />
-    <div class="card_row_1 card_header">
-      <div class="total_income">
-        <div class="balance_text">
-          <span>{{ cloudBalanceNum?.integerPart }}</span>
-          <span style="font-size: 13px">.{{ cloudBalanceNum?.decimalPart }}</span>
-          <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
-        </div>
-        <div class="usd_text" v-if="dmc2usdRate && cloudBalance && cloudBalance != '--'">
-          ≈ {{ formatNumber(dmc2usdRate * cloudBalance)?.integerPart
-          }}<span style="font-size: 13px">.{{ formatNumber(dmc2usdRate * cloudBalance)?.decimalPart }}</span> USD
-        </div>
-      </div>
-    </div>
-    <div class="card_row_1 pst-row">
-      <div>
-        <p>Space</p>
-        <p class="column_value">{{ getfilesize2(cloudPst == '--' ? 0 : cloudPst) }}</p>
-      </div>
-      <div @click="gotoPage('transactionRecords', '1')">
-        <p>Withdrawn</p>
-        <p class="column_value">{{ cloudWithdraw >= 0 ? cloudWithdraw.toFixed(4) : cloudWithdraw }}</p>
-      </div>
-      <div @click="gotoPage('analysis')">
-        <p>Today's new funds</p>
-        <p class="column_value today_income"
-          >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
-          <TriangleUp color="#fbd116" width="20px"></TriangleUp>
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="withdraw-btn" direction="horizontal" align="center">
-    <div class="action_item" @click="toRecharge">
-      <!-- <img src="@/assets/recharge.svg" alt="" /> -->
-      <img src="@/assets/Recharge.png" alt="" />
 
-      Recharge
-    </div>
-    <div class="action_item" @click="showWithdraw">
-      <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
-      <img src="@/assets/Withdraw.png" alt="" />
-
-      Withdraw
-    </div>
-  </div>
-  <div class="middle_btn_box">
-    <div>
-      <div class="flex-content" @click="toBuyOrder">
-        <div class="svg-box">
-          <!-- <Shop></Shop> -->
-          <img src="@/assets/buy.svg" alt="" />
-        </div>
-        <span>Buy</span>
-      </div>
-    </div>
-    <div>
-      <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
-      <div class="flex-content" @click="gotoPage('Order')">
-        <div class="svg-box">
-          <img src="@/assets/orders.svg" alt="" />
-        </div>
-        <span>Orders</span>
-      </div>
-    </div>
-    <div>
-      <!-- <div class="flex-content" @click="router.push('/analysis')"> -->
-      <div class="flex-content" @click="gotoPage('analysisChart')">
-        <div class="svg-box">
-          <img src="@/assets/analysis.svg" alt="" />
-        </div>
-        <span>Charts</span>
-      </div>
-    </div>
-    <div>
-      <div class="flex-content" @click="gotoPage('transactionRecords')">
-        <!-- <div class="flex-content" @click="router.push('/transactionRecords')"> -->
-        <div class="svg-box">
-          <!-- <img src="@/assets/IconTransaction.svg" alt="" /> -->
-          <IconTransaction></IconTransaction>
-        </div>
-        <span>Transaction <br /> </span>
-        <!-- records -->
-      </div>
-    </div>
-  </div>
-
-  <div class="DouArrowDown" v-if="!targetIsVisible && !ishaveProfit" @click="scrollIntoViewTo">
-    <DouArrowUp width="100" height="50" class="nut-icon-am-jump nut-icon-am-infinite" />
-  </div>
-  <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
-  <div class="tab_top_title" v-if="ishaveProfit">Last 7 days <span style="font-size: 12px">(DMC)</span></div>
-
-  <ErrorPage v-if="isError && !earningsList.length" @refresh="loadMore"></ErrorPage>
-  <template v-else-if="!ishaveProfit">
-    <div class="my_swipe">
-      <nut-swiper :init-page="1" :pagination-visible="true" pagination-color="#426543" auto-play="3000">
-        <nut-swiper-item>
-          <img src="@/assets/banner1.svg" alt="" />
-        </nut-swiper-item>
-        <nut-swiper-item>
-          <img src="@/assets/banner2.svg" alt="" />
-        </nut-swiper-item>
-        <nut-swiper-item>
-          <img src="@/assets/banner3.png" alt="" />
-        </nut-swiper-item>
-        <nut-swiper-item>
-          <img src="@/assets/banner4.svg" alt="" />
-        </nut-swiper-item>
-      </nut-swiper>
-    </div>
-
-    <div class="my_steps" ref="my_steps" id="my_steps">
-      <nut-steps direction="vertical" :current="curStepIndex">
-        <nut-step
-          title="Bind invitation code"
-          @click="gotoBindAmb"
-          content="Please confirm that you have filled out the invitation code before placing your order"
-          >1</nut-step
-        >
-        <nut-step
-          title="Waiting for approval"
-          :content="
-            ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'
-          "
-          >2</nut-step
-        >
-        <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
-        <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
-          >3</nut-step
-        >
-        <nut-step
-          @click="gotoOrderList"
-          title="Ops, you haven't made a profit yet"
-          content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you."
-          >4</nut-step
-        >
-      </nut-steps>
-    </div>
-  </template>
-
-  <nut-infinite-loading
-    style="min-height: 280px; height: 600px; padding-bottom: 10px; overflow: auto"
-    v-else-if="cloudCodeIsBind && earningsList.length"
-    load-more-txt="No more content"
-    :has-more="hasMore"
-    v-model="infinityValue"
-    @load-more="loadMore"
-  >
-    <div
-      class="list_item"
-      v-for="(item, index) in earningsList"
-      @click="gotoOrderPage(item)"
-      :class="[isOpen(item.order_info.state) ? '' : 'history_item']"
+    <nut-infinite-loading
+      style="min-height: 280px; height: 600px; padding-bottom: 10px; overflow: auto"
+      v-else-if="cloudCodeIsBind && earningsList.length"
+      load-more-txt="No more content"
+      :has-more="hasMore"
+      v-model="infinityValue"
+      @load-more="loadMore"
     >
-      <div class="order_status_flag open" v-if="isOpen(item.order_info.state)">Open Order</div>
-      <div class="order_status_flag history" v-if="!isOpen(item.order_info.state)">History Order</div>
-      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-        <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-        <!-- <img src="@/assets/DMC_Token1.png" alt="" /> -->
-        <img v-if="item.order_info.electronic_type == 0" src="@/assets/mobile.svg" alt="" />
-        <img v-else src="@/assets/desktop.svg" alt="" />
+      <div
+        class="list_item"
+        v-for="(item, index) in earningsList"
+        @click="gotoOrderPage(item)"
+        :class="[isOpen(item.order_info.state) ? '' : 'history_item']"
+      >
+        <div class="order_status_flag open" v-if="isOpen(item.order_info.state)">Open Order</div>
+        <div class="order_status_flag history" v-if="!isOpen(item.order_info.state)">History Order</div>
+        <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+          <!-- <img src="@/assets/DMC_Token1.png" alt="" /> -->
+          <img v-if="item.order_info.electronic_type == 0" src="@/assets/mobile.svg" alt="" />
+          <img v-else src="@/assets/desktop.svg" alt="" />
+        </div>
+        <div style="justify-content: end !important; margin-top: -2px">
+          <span>{{ transferUTCTime(item.created_at) }}</span>
+        </div>
+        <div>
+          <span style="font-weight: bold">Order:{{ item.order_id }}</span>
+          <span
+            :class="[
+              item.inner_user_trade_type == 'payout' ? 'expense' : '',
+              item.inner_user_trade_type == 'income' ? 'earnings' : '',
+              'trade_type',
+            ]"
+          >
+            <span v-if="item.inner_user_trade_type == 'payout'">-</span><span v-else-if="item.inner_user_trade_type == 'income'">+</span>
+            {{ formatNumber(item.quantity)?.integerPart
+            }}<span style="font-size: 13px">.{{ formatNumber(item.quantity)?.decimalPart }}</span>
+          </span>
+        </div>
+        <div>
+          <span class="time">{{ item.trx_id }}</span>
+          <!-- <span class="time">{{ transferUTCTime(item.created_at) }}</span> -->
+          <span style="text-align: right" class="my_status">{{ mapTypes[item.trade_type] }}</span>
+          <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
+        </div>
       </div>
-      <div style="justify-content: end !important; margin-top: -2px">
-        <span>{{ transferUTCTime(item.created_at) }}</span>
-      </div>
-      <div>
-        <span style="font-weight: bold">Order:{{ item.order_id }}</span>
-        <span
-          :class="[
-            item.inner_user_trade_type == 'payout' ? 'expense' : '',
-            item.inner_user_trade_type == 'income' ? 'earnings' : '',
-            'trade_type',
-          ]"
-        >
-          <span v-if="item.inner_user_trade_type == 'payout'">-</span><span v-else-if="item.inner_user_trade_type == 'income'">+</span>
-          {{ formatNumber(item.quantity)?.integerPart }}<span style="font-size: 13px">.{{ formatNumber(item.quantity)?.decimalPart }}</span>
-        </span>
-      </div>
-      <div>
-        <span class="time">{{ item.trx_id }}</span>
-        <!-- <span class="time">{{ transferUTCTime(item.created_at) }}</span> -->
-        <span style="text-align: right" class="my_status">{{ mapTypes[item.trade_type] }}</span>
-        <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
-      </div>
-    </div>
-  </nut-infinite-loading>
+    </nut-infinite-loading>
 
-  <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week"></nut-empty>
-  <!-- <nut-backtop el-id="main-page" :z-index="999" :bottom="60"></nut-backtop> -->
+    <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week"></nut-empty>
+    <!-- <nut-backtop el-id="main-page" :z-index="999" :bottom="60"></nut-backtop> -->
+  </div>
 </template>
 
 <script lang="ts" setup name="HomePage">

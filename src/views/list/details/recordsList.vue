@@ -1,95 +1,98 @@
 <template>
-  <div class="fileList_content">
-    <nut-popup
-      class="file_top"
-      position="top"
-      :style="{ height: '100px' }"
-      round
-      pop-class="type_check_pop"
-      v-model:visible="showTypeCheckPop"
-    >
-      <!-- <p class="cate_title">Classifications</p> -->
-      <div class="type_check_box">
-        <div class="type_item" @click="switchType(1)">
-          <div class="svg_box">
-            <IconRiNodeTree color="#34964f"></IconRiNodeTree>
-          </div>
-          <p>Merkle List</p>
-        </div>
-        <div class="type_item" @click="switchType(2)">
-          <div class="svg_box">
-            <IconRiSendToBack color="#fcd116"></IconRiSendToBack>
-          </div>
-          <p>Challenge List</p>
-        </div>
-        <div class="type_item" @click="switchType(3)">
-          <div class="svg_box">
-            <IconRiInputCursorMove color="#5f57ff"></IconRiInputCursorMove>
-          </div>
-          <p>Arbitrate List</p>
-        </div>
-      </div>
-    </nut-popup>
-    <nut-sticky>
-      <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
-        <div style="display: flex">
-          <div class="top_back" @click="router.go(-1)"> </div>
-          <span class="top_title"> {{ fileTypeText[category] }} </span>
-          <TriangleUp
-            @click="showTypeCheckPop = !showTypeCheckPop"
-            :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
-          ></TriangleUp>
-        </div>
-      </div>
-    </nut-sticky>
-    <nut-infinite-loading v-if="tableData.length" load-more-txt="No more content" class="file_list record_list">
-      <div
-        :class="['list_item', item.checked ? 'row_is_checked' : '']"
-        :id="[index == 0 ? 'list_item_1' : '']"
-        v-for="(item, index) in tableData"
-        :key="index"
+  <div>
+    <div class="fileList_content">
+      <nut-popup
+        class="file_top"
+        position="top"
+        :style="{ height: '100px' }"
+        round
+        pop-class="type_check_pop"
+        v-model:visible="showTypeCheckPop"
       >
-        <div :class="['left_icon_box']">
-          <IconRiNodeTree color="#3963eb" v-if="category == 1"></IconRiNodeTree>
-          <IconRiSendToBack color="#3963eb" v-if="category == 2"></IconRiSendToBack>
-          <IconRiInputCursorMove color="#3963eb" v-if="category == 3"></IconRiInputCursorMove>
+        <!-- <p class="cate_title">Classifications</p> -->
+        <div class="type_check_box">
+          <div class="type_item" @click="switchType(1)">
+            <div class="svg_box">
+              <IconRiNodeTree color="#34964f"></IconRiNodeTree>
+            </div>
+            <p>Merkle List</p>
+          </div>
+          <div class="type_item" @click="switchType(2)">
+            <div class="svg_box">
+              <IconRiSendToBack color="#fcd116"></IconRiSendToBack>
+            </div>
+            <p>Challenge List</p>
+          </div>
+          <div class="type_item" @click="switchType(3)">
+            <div class="svg_box">
+              <IconRiInputCursorMove color="#5f57ff"></IconRiInputCursorMove>
+            </div>
+            <p>Arbitrate List</p>
+          </div>
         </div>
-        <div class="name_box record_item" v-if="category == 1">
-          <p class="time">{{ transferUTCTime(item.create_time) }}</p>
-          <p>
-            <span>Version:</span>
-            <span> {{ item.merkle_version }}</span>
-          </p>
-          <p>
-            <span>Block:</span>
-            <span> #{{ item.block_num }}</span>
-          </p>
-
-          <p
-            ><span>Merkle Root:</span>
-            <span>
-              {{
-                item.merkle_root.substring(0, 10) + '...' + item.merkle_root.substring(item.merkle_root.length - 6, item.merkle_root.length)
-              }}</span
-            >
-          </p>
+      </nut-popup>
+      <nut-sticky>
+        <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
+          <div style="display: flex">
+            <div class="top_back" @click="router.go(-1)"> </div>
+            <span class="top_title"> {{ fileTypeText[category] }} </span>
+            <TriangleUp
+              @click="showTypeCheckPop = !showTypeCheckPop"
+              :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
+            ></TriangleUp>
+          </div>
         </div>
-        <div class="name_box record_item" v-if="category == 2">
-          <p class="time">{{ item.create_time && transferUTCTime(item.create_time) }}</p>
-          <p>
-            <span>Version:</span>
-            <span> {{ item.version }}</span>
-          </p>
-          <p>
-            <span>Data ID:</span>
-            <span> {{ item.data_id }}</span>
-          </p>
+      </nut-sticky>
+      <nut-infinite-loading v-if="tableData.length" load-more-txt="No more content" class="file_list record_list">
+        <div
+          :class="['list_item', item.checked ? 'row_is_checked' : '']"
+          :id="[index == 0 ? 'list_item_1' : '']"
+          v-for="(item, index) in tableData"
+          :key="index"
+        >
+          <div :class="['left_icon_box']">
+            <IconRiNodeTree color="#3963eb" v-if="category == 1"></IconRiNodeTree>
+            <IconRiSendToBack color="#3963eb" v-if="category == 2"></IconRiSendToBack>
+            <IconRiInputCursorMove color="#3963eb" v-if="category == 3"></IconRiInputCursorMove>
+          </div>
+          <div class="name_box record_item" v-if="category == 1">
+            <p class="time">{{ transferUTCTime(item.create_time) }}</p>
+            <p>
+              <span>Version:</span>
+              <span> {{ item.merkle_version }}</span>
+            </p>
+            <p>
+              <span>Block:</span>
+              <span> #{{ item.block_num }}</span>
+            </p>
 
-          <p
-            ><span>CID:</span>
-            <span> {{ item.cid.substring(0, 10) + '...' + item.cid.substring(item.cid.length - 6, item.cid.length) }}</span>
-          </p>
-          <!-- <p
+            <p
+              ><span>Merkle Root:</span>
+              <span>
+                {{
+                  item.merkle_root.substring(0, 10) +
+                  '...' +
+                  item.merkle_root.substring(item.merkle_root.length - 6, item.merkle_root.length)
+                }}</span
+              >
+            </p>
+          </div>
+          <div class="name_box record_item" v-if="category == 2">
+            <p class="time">{{ item.create_time && transferUTCTime(item.create_time) }}</p>
+            <p>
+              <span>Version:</span>
+              <span> {{ item.version }}</span>
+            </p>
+            <p>
+              <span>Data ID:</span>
+              <span> {{ item.data_id }}</span>
+            </p>
+
+            <p
+              ><span>CID:</span>
+              <span> {{ item.cid.substring(0, 10) + '...' + item.cid.substring(item.cid.length - 6, item.cid.length) }}</span>
+            </p>
+            <!-- <p
             ><span>Reply Hash:</span>
             <span>
               {{
@@ -97,44 +100,45 @@
               }}</span
             >
           </p> -->
-          <p
-            ><span>Hash Data:</span>
-            <span>
-              {{
-                item.data_hash.substring(0, 10) + '...' + item.data_hash.substring(item.data_hash.length - 6, item.data_hash.length)
-              }}</span
-            >
-          </p>
-        </div>
-        <div class="name_box record_item" v-if="category == 3">
-          <p class="time">{{ item.create_time && transferUTCTime(item.create_time) }}</p>
-          <p>
-            <span>Version:</span>
-            <span> {{ item.versionUser }}</span>
-          </p>
-          <p>
-            <span>Data ID:</span>
-            <span> {{ item.data_id }}</span>
-          </p>
+            <p
+              ><span>Hash Data:</span>
+              <span>
+                {{
+                  item.data_hash.substring(0, 10) + '...' + item.data_hash.substring(item.data_hash.length - 6, item.data_hash.length)
+                }}</span
+              >
+            </p>
+          </div>
+          <div class="name_box record_item" v-if="category == 3">
+            <p class="time">{{ item.create_time && transferUTCTime(item.create_time) }}</p>
+            <p>
+              <span>Version:</span>
+              <span> {{ item.versionUser }}</span>
+            </p>
+            <p>
+              <span>Data ID:</span>
+              <span> {{ item.data_id }}</span>
+            </p>
 
-          <p
-            ><span>Data:</span>
-            <span> {{ item.data }}</span>
-          </p>
+            <p
+              ><span>Data:</span>
+              <span> {{ item.data }}</span>
+            </p>
+          </div>
         </div>
-      </div>
-    </nut-infinite-loading>
-    <nut-empty v-else description="No data" image="error">
-      <div style="margin-top: 10px"> </div>
-    </nut-empty>
-    <!-- single action -->
-  </div>
-  <div
-    v-if="category == 1 && orderInfo.value.electronic_type == '0' && orderInfo.value.state !== 4 && orderInfo.value.state !== 5"
-    class="submit-merkle"
-  >
-    <nut-button block class="buy_btn" type="info" @click="submitMerkle" :loading="merkleLoading"> Submit Merkle </nut-button>
-    <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
+      </nut-infinite-loading>
+      <nut-empty v-else description="No data" image="error">
+        <div style="margin-top: 10px"> </div>
+      </nut-empty>
+      <!-- single action -->
+    </div>
+    <div
+      v-if="category == 1 && orderInfo.value.electronic_type == '0' && orderInfo.value.state !== 4 && orderInfo.value.state !== 5"
+      class="submit-merkle"
+    >
+      <nut-button block class="buy_btn" type="info" @click="submitMerkle" :loading="merkleLoading"> Submit Merkle </nut-button>
+      <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
+    </div>
   </div>
 </template>
 
@@ -150,7 +154,7 @@
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
   import { transferUTCTime } from '@/utils/util';
-  import { minSize } from '@/setting.json';
+  import { minSize } from '@/setting.js';
   import { calc_merkle } from '@/api/index';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';

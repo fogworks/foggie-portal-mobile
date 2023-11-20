@@ -10,6 +10,7 @@ declare module 'vue' {
     BasicModal: typeof import('./../src/components/Modal/src/BasicModal.vue')['default']
     LoadingImg: typeof import('./../src/components/loadingImg/index.vue')['default']
     MyEcharts: typeof import('./../src/components/echarts/myEcharts.vue')['default']
+    MyTransition: typeof import('./../src/components/myTransition/index.vue')['default']
     NutActionSheet: typeof import('@nutui/nutui')['ActionSheet']
     NutAudio: typeof import('@nutui/nutui')['Audio']
     NutAudioOperate: typeof import('@nutui/nutui')['AudioOperate']

@@ -1,135 +1,136 @@
 <template>
-  <div class="out_blue">
-    <div class="inside_blue">
-      <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
-      <p class="title">Buy</p>
-      <p class="total_balance">Total Balance</p>
-      <p class="total_balance_value" v-if="cloudBalance">{{ cloudBalance }} DMC</p>
-      <div class="action_item" v-else>
-        <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px">
-          <img src="@/assets/recharge.svg" alt="" />
-          Recharge
-        </router-link>
-      </div>
-    </div>
-  </div>
-  <div class="middle_content">
-    <p class="middle_title">VIP orders will receive a higher amount of revenue</p>
-    <div class="product_box">
-      <div class="product_card">
-        <p
-          >General Orders <br />
-          (48 Weeks)</p
-        >
-        <p>{{ (perMpPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
-      </div>
-      <!-- <img src="@/assets/arrow-right.svg" alt="" /> -->
-      <span style="font-weight: bold"> VS</span>
-
-      <div class="product_card">
-        <p
-          >VIP Orders <br />
-          (48 Weeks)</p
-        >
-        <p>{{ (perGoldenPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
-      </div>
-    </div>
-  </div>
-  <div class="out_price_box">
-    <p>VIP Order <IconSetting @click="showTop = true"></IconSetting> </p>
-    <div class="price_box">
-      Reference price: <br />
-      <span style="text-align: center" class="price_box_text"> 100GB = {{ middleTotalPrice }} DMC</span>
-    </div>
-  </div>
-  <div style="margin: 0 20px 40px">
-    <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading"> Buy Now </nut-button>
-    <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
-  </div>
-  <Teleport to="body">
-    <nut-popup position="top" :style="{ height: '420px' }" v-model:visible="showTop">
-      <nut-form class="query_form" :model-value="shopForm">
-        <nut-form-item label="Service Period">
-          <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
-            <nut-radio shape="button" :label="52">52 weeks</nut-radio>
-            <nut-radio shape="button" :label="38">38 weeks</nut-radio>
-            <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-          </nut-radio-group>
-        </nut-form-item>
-        <nut-form-item label="Custom Cycle">
-          <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
-        </nut-form-item>
-        <nut-form-item label="Space(GB) Min:100GB">
-          <nut-input-number
-            @focus="buyDisabled = true"
-            @blur="buyDisabled = false"
-            :min="100"
-            decimal-places="0"
-            v-model="shopForm.quantity"
-            step="1"
-            class="nut-input-text"
-            placeholder="Space"
-          />
-        </nut-form-item>
-        <div style="text-align: center" class="order-tip">
-          <strong> Reference price: </strong>
-          <strong class="price"> {{ middleTotalPrice || '--' }} DMC </strong>
+  <div>
+    <div class="out_blue">
+      <div class="inside_blue">
+        <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
+        <p class="title">Buy</p>
+        <p class="total_balance">Total Balance</p>
+        <p class="total_balance_value" v-if="cloudBalance">{{ cloudBalance }} DMC</p>
+        <div class="action_item" v-else>
+          <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px">
+            <img src="@/assets/recharge.svg" alt="" />
+            Recharge
+          </router-link>
         </div>
-        <!-- <p class="middle_title" v-if="!loading && !curReferenceRate">No eligible orders were found. Please search and try again</p> -->
-        <div class="bottom_btn">
-          <nut-button type="warning" plain :loading="loading" @click="showTop = false"> Cancel </nut-button>
-          <nut-button type="warning" @click="submit" :disabled="buyDisabled" :loading="loading"> Buy </nut-button>
+      </div>
+    </div>
+    <div class="middle_content">
+      <p class="middle_title">VIP orders will receive a higher amount of revenue</p>
+      <div class="product_box">
+        <div class="product_card">
+          <p
+            >General Orders <br />
+            (48 Weeks)</p
+          >
+          <p>{{ (perMpPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
         </div>
-      </nut-form>
-    </nut-popup>
-  </Teleport>
+        <!-- <img src="@/assets/arrow-right.svg" alt="" /> -->
+        <span style="font-weight: bold"> VS</span>
 
-  <Teleport to="body">
-    <nut-popup position="bottom" pop-class="confirm_pop" round :style="{ height: 'auto' }" v-model:visible="showBuy">
-      <h3 class="buyOrderTitle"> Pre-trading information</h3>
-      <div class="storagebox">
-        <!-- <img src="@/assets/shujuguifan.svg" alt="" srcset="" /> -->
-        <img src="@/assets/VIP.svg" alt="" srcset="" />
-        <div class="BaseBox">
-          <!-- <div class="base_box">
+        <div class="product_card">
+          <p
+            >VIP Orders <br />
+            (48 Weeks)</p
+          >
+          <p>{{ (perGoldenPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
+        </div>
+      </div>
+    </div>
+    <div class="out_price_box">
+      <p>VIP Order <IconSetting @click="showTop = true"></IconSetting> </p>
+      <div class="price_box">
+        Reference price: <br />
+        <span style="text-align: center" class="price_box_text"> 100GB = {{ middleTotalPrice }} DMC</span>
+      </div>
+    </div>
+    <div style="margin: 0 20px 40px">
+      <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading"> Buy Now </nut-button>
+      <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
+    </div>
+    <Teleport to="body">
+      <nut-popup position="top" :style="{ height: '420px' }" v-model:visible="showTop">
+        <nut-form class="query_form" :model-value="shopForm">
+          <nut-form-item label="Service Period">
+            <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
+              <nut-radio shape="button" :label="52">52 weeks</nut-radio>
+              <nut-radio shape="button" :label="38">38 weeks</nut-radio>
+              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
+            </nut-radio-group>
+          </nut-form-item>
+          <nut-form-item label="Custom Cycle">
+            <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
+          </nut-form-item>
+          <nut-form-item label="Space(GB) Min:100GB">
+            <nut-input-number
+              @focus="buyDisabled = true"
+              @blur="buyDisabled = false"
+              :min="100"
+              decimal-places="0"
+              v-model="shopForm.quantity"
+              step="1"
+              class="nut-input-text"
+              placeholder="Space"
+            />
+          </nut-form-item>
+          <div style="text-align: center" class="order-tip">
+            <strong> Reference price: </strong>
+            <strong class="price"> {{ middleTotalPrice || '--' }} DMC </strong>
+          </div>
+          <!-- <p class="middle_title" v-if="!loading && !curReferenceRate">No eligible orders were found. Please search and try again</p> -->
+          <div class="bottom_btn">
+            <nut-button type="warning" plain :loading="loading" @click="showTop = false"> Cancel </nut-button>
+            <nut-button type="warning" @click="submit" :disabled="buyDisabled" :loading="loading"> Buy </nut-button>
+          </div>
+        </nut-form>
+      </nut-popup>
+    </Teleport>
+
+    <Teleport to="body">
+      <nut-popup position="bottom" pop-class="confirm_pop" round :style="{ height: 'auto' }" v-model:visible="showBuy">
+        <h3 class="buyOrderTitle"> Pre-trading information</h3>
+        <div class="storagebox">
+          <!-- <img src="@/assets/shujuguifan.svg" alt="" srcset="" /> -->
+          <img src="@/assets/VIP.svg" alt="" srcset="" />
+          <div class="BaseBox">
+            <!-- <div class="base_box">
             <span class="span1">Price:</span>
             <span class="span2">{{ (curReferenceRate / 10000).toFixed(4) }}</span>
             <span class="span2">/GB</span>
             <span class="span2">/Week</span>
           </div> -->
-          <div class="base_box1">
-            <span class="s1">{{ shopForm.quantity }} GB</span>
-            <span class="s2">+</span>
-            <span class="s1">{{ shopForm.week }} W</span>
+            <div class="base_box1">
+              <span class="s1">{{ shopForm.quantity }} GB</span>
+              <span class="s2">+</span>
+              <span class="s1">{{ shopForm.week }} W</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="storageDetail">
-        <div class="rowBox">
-          <div class="row_box">
-            <span class="row_box_title">Unit Price</span>
-            <span class="row_box_value">{{ (curReferenceRate / 10000).toFixed(4) }} (GB/Week)</span>
+        <div class="storageDetail">
+          <div class="rowBox">
+            <div class="row_box">
+              <span class="row_box_title">Unit Price</span>
+              <span class="row_box_value">{{ (curReferenceRate / 10000).toFixed(4) }} (GB/Week)</span>
+            </div>
+            <div class="row_box">
+              <span class="row_box_title">Base Price</span>
+              <span class="row_box_value">{{ base_Price }} <span>DMC</span></span>
+            </div>
+            <div class="row_box">
+              <span class="row_box_title">Deposit</span>
+              <span class="row_box_value">{{ deposit_ratio_Price }} <span>DMC</span></span>
+            </div>
+            <div class="row_box" style="border-bottom-style: solid" v-if="shopForm.floating_ratio">
+              <span class="row_box_title">Variation Price</span>
+              <span class="row_box_value"
+                >{{ ((+base_Price + +deposit_ratio_Price) * (shopForm.floating_ratio / 100)).toFixed(4) }}<span>DMC</span></span
+              >
+            </div>
+            <div class="row_box">
+              <span class="row_box_title">Upper Limit Total</span>
+              <span class="row_box_value">{{ totalPrice }} <span>DMC</span></span>
+            </div>
           </div>
-          <div class="row_box">
-            <span class="row_box_title">Base Price</span>
-            <span class="row_box_value">{{ base_Price }} <span>DMC</span></span>
-          </div>
-          <div class="row_box">
-            <span class="row_box_title">Deposit</span>
-            <span class="row_box_value">{{ deposit_ratio_Price }} <span>DMC</span></span>
-          </div>
-          <div class="row_box" style="border-bottom-style: solid" v-if="shopForm.floating_ratio">
-            <span class="row_box_title">Variation Price</span>
-            <span class="row_box_value"
-              >{{ ((+base_Price + +deposit_ratio_Price) * (shopForm.floating_ratio / 100)).toFixed(4) }}<span>DMC</span></span
-            >
-          </div>
-          <div class="row_box">
-            <span class="row_box_title">Upper Limit Total</span>
-            <span class="row_box_value">{{ totalPrice }} <span>DMC</span></span>
-          </div>
-        </div>
-        <!-- <div class="row_tips">
+          <!-- <div class="row_tips">
           <div>* The order book is only partly open during the outcry phase。</div>
           <div>* When orders match such as to enable a transaction to be executed, the indicative auction price is shown。</div>
           <div
@@ -137,22 +138,22 @@
             time。</div
           >
         </div> -->
-      </div>
-      <div class="bottom_btn">
-        <nut-progress
-          v-if="buyOrderIsSuccess"
-          :percentage="progressPercentage"
-          :text-inside="true"
-          size="large"
-          status="active"
-          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
-          style="margin: 30px auto"
-        >
-        </nut-progress>
-        <nut-button block type="warning" :disabled="buyOrderIsSuccess" @click="confirmBuy" :loading="loading"> Confirm Buy </nut-button>
-      </div>
+        </div>
+        <div class="bottom_btn">
+          <nut-progress
+            v-if="buyOrderIsSuccess"
+            :percentage="progressPercentage"
+            :text-inside="true"
+            size="large"
+            status="active"
+            stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+            style="margin: 30px auto"
+          >
+          </nut-progress>
+          <nut-button block type="warning" :disabled="buyOrderIsSuccess" @click="confirmBuy" :loading="loading"> Confirm Buy </nut-button>
+        </div>
 
-      <!-- <ul class="buyOrderTips">
+        <!-- <ul class="buyOrderTips">
         <li>The order book is only partly open during the outcry phase。</li>
         <li>When orders match such as to enable a transaction to be executed, the indicative auction price is shown</li>
         <li>This is the price that would result for the auction if the price determination were to take place at this point in time</li>
@@ -166,8 +167,9 @@
         <nut-cell title="Unit Price" :desc="(curReferenceRate / 10000).toFixed(4) + ' DMC/GB/Week'"></nut-cell>
         <nut-cell class="total_price" title="Total Price" :desc="totalPrice + ' DMC'"></nut-cell>
       </nut-cell-group> -->
-    </nut-popup>
-  </Teleport>
+      </nut-popup>
+    </Teleport>
+  </div>
 </template>
 
 <script setup lang="ts" name="Shop">

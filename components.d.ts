@@ -10,6 +10,7 @@ declare module 'vue' {
     BasicModal: typeof import('./src/components/Modal/src/BasicModal.vue')['default']
     LoadingImg: typeof import('./src/components/loadingImg/index.vue')['default']
     MyEcharts: typeof import('./src/components/echarts/myEcharts.vue')['default']
+    MyTransition: typeof import('./src/components/myTransition/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TopBack: typeof import('./src/components/topBack/index.vue')['default']

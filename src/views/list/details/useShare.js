@@ -6,7 +6,7 @@ import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import { getLink } from '@/api/index.ts';
 import { useUserStore } from '@/store/modules/user';
 import { transferUTCTime } from '@/utils/util.ts';
-import { shareUrl } from '@/setting.json';
+import { shareUrl } from '@/setting.js';
 import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
 import IconHttp2 from '~icons/home/http2.svg';
