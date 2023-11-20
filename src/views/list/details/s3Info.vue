@@ -1,31 +1,35 @@
 <template>
-  <div class="top_box">
-    <div class="top_back" @click="router.go(-1)">How to use S3 Browser?</div>
-  </div>
-  <div class="recharge_info">
-    <div class="h_title h1_title"> We recommend 2 commonly used S3 third-party products for you.namely CloudBerry and S3 Browser. </div>
-    <div class="h_title h1_title"> 1.CloudBerry</div>
-    <div class="title">
-      CloudBerry Explorer is a file browser developed in the industry for accessing and managing object storage directly through CloudBerry
-      Explorer under Windows.
+  <div>
+    <div class="top_box">
+      <div class="top_back" @click="router.go(-1)">How to use S3 Browser?</div>
     </div>
-    <div class="title">
-      The main functions of CloudBerry include: supporting AK/SK login, managing buckets, managing objects, uploading and downloading,
-      external links, synchronization, etc.
-    </div>
-    <div class="h_title">1.1 How to download CloudBerry? </div>
-    <div class="title">Official website address: <span class="title_click" @click="gotoLink('Cdownload')">Click to download</span></div>
-    <div class="title"> Window installation package: <span class="title_click" @click="gotoLink('Cinstall')">click to install </span></div>
-    <div class="h_title"> 1.2 How to use? </div>
-    <img src="@/assets/s3Use2.jpg" />
+    <div class="recharge_info">
+      <div class="h_title h1_title"> We recommend 2 commonly used S3 third-party products for you.namely CloudBerry and S3 Browser. </div>
+      <div class="h_title h1_title"> 1.CloudBerry</div>
+      <div class="title">
+        CloudBerry Explorer is a file browser developed in the industry for accessing and managing object storage directly through
+        CloudBerry Explorer under Windows.
+      </div>
+      <div class="title">
+        The main functions of CloudBerry include: supporting AK/SK login, managing buckets, managing objects, uploading and downloading,
+        external links, synchronization, etc.
+      </div>
+      <div class="h_title">1.1 How to download CloudBerry? </div>
+      <div class="title">Official website address: <span class="title_click" @click="gotoLink('Cdownload')">Click to download</span></div>
+      <div class="title">
+        Window installation package: <span class="title_click" @click="gotoLink('Cinstall')">click to install </span></div
+      >
+      <div class="h_title"> 1.2 How to use? </div>
+      <img src="@/assets/s3Use2.jpg" />
 
-    <div class="h_title h1_title"> 2.S3 Browser</div>
-    <div class="title"> S3 Browser is an easy-to-use and powerful Amazon S3 free client. </div>
-    <div class="h_title"> 2.1 How to download S3 Browser? </div>
-    <div class="title">Official website address: <span class="title_click" @click="gotoLink('download')">Click to download</span></div>
-    <div class="title"> Window installation package: <span class="title_click" @click="gotoLink('install')">click to install </span></div>
-    <div class="h_title"> 2.2 How to use S3 Browser? </div>
-    <img src="@/assets/s3Use1.jpg" />
+      <div class="h_title h1_title"> 2.S3 Browser</div>
+      <div class="title"> S3 Browser is an easy-to-use and powerful Amazon S3 free client. </div>
+      <div class="h_title"> 2.1 How to download S3 Browser? </div>
+      <div class="title">Official website address: <span class="title_click" @click="gotoLink('download')">Click to download</span></div>
+      <div class="title"> Window installation package: <span class="title_click" @click="gotoLink('install')">click to install </span></div>
+      <div class="h_title"> 2.2 How to use S3 Browser? </div>
+      <img src="@/assets/s3Use1.jpg" />
+    </div>
   </div>
 </template>
 

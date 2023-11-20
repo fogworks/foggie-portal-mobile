@@ -1,36 +1,38 @@
 <template>
-  <div class="top_box">
-    <TopBack> Bind</TopBack>
-  </div>
-  <p class="key_tips" v-if="bindType == 'dmc'"> Please bind your DMC account first </p>
-  <p class="key_tips" v-else-if="bindType == 'amb'"> Please bind ambassador invitation code </p>
-  <nut-sticky>
-    <nut-form class="query_form" :model-value="formLine">
-      <nut-form-item
-        v-if="!userInfo.dmc && bindType == 'dmc'"
-        label-width="180px"
-        style="white-space: nowrap; color: #000"
-        label="DMC Account:"
-      >
-        <nut-input v-model="formLine.dmc" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
-      </nut-form-item>
+  <div>
+    <div class="top_box">
+      <TopBack> Bind</TopBack>
+    </div>
+    <p class="key_tips" v-if="bindType == 'dmc'"> Please bind your DMC account first </p>
+    <p class="key_tips" v-else-if="bindType == 'amb'"> Please bind ambassador invitation code </p>
+    <nut-sticky>
+      <nut-form class="query_form" :model-value="formLine">
+        <nut-form-item
+          v-if="!userInfo.dmc && bindType == 'dmc'"
+          label-width="180px"
+          style="white-space: nowrap; color: #000"
+          label="DMC Account:"
+        >
+          <nut-input v-model="formLine.dmc" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
+        </nut-form-item>
 
-      <!-- <nut-form-item v-if="bindType == 'amb'" label-width="180px" label="Ambassador Invitation Code:">
+        <!-- <nut-form-item v-if="bindType == 'amb'" label-width="180px" label="Ambassador Invitation Code:">
         <nut-input v-model="formLine.code" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" /> -->
-      <nut-form-item
-        v-if="bindType == 'amb'"
-        label-width="180px"
-        style="white-space: nowrap; color: #000"
-        label="Ambassador Invitation Code:"
-      >
-        <!-- :disabled="loading || !!userInfo.amb_promo_code" -->
-        <nut-input v-model="formLine.code" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
-      </nut-form-item>
-      <div class="bind_btn">
-        <nut-button block type="info" @click="submit" :loading="loading"> Bind </nut-button>
-      </div>
-    </nut-form>
-  </nut-sticky>
+        <nut-form-item
+          v-if="bindType == 'amb'"
+          label-width="180px"
+          style="white-space: nowrap; color: #000"
+          label="Ambassador Invitation Code:"
+        >
+          <!-- :disabled="loading || !!userInfo.amb_promo_code" -->
+          <nut-input v-model="formLine.code" :disabled="loading" autofocus class="nut-input-text" placeholder="Please Input" />
+        </nut-form-item>
+        <div class="bind_btn">
+          <nut-button block type="info" @click="submit" :loading="loading"> Bind </nut-button>
+        </div>
+      </nut-form>
+    </nut-sticky>
+  </div>
 </template>
 
 <script setup lang="ts" name="bindDmc">

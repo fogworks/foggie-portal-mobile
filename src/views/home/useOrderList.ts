@@ -46,6 +46,7 @@ export default function useOrderList() {
   });
   const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
   const infinityValue = ref(false);
+  const isError = ref(false);
   const pn = ref(1);
   const ps = ref(10);
   const resetData = () => {
@@ -82,15 +83,18 @@ export default function useOrderList() {
         pn.value++;
         listData.value = [...listData.value, ...cloudList];
         infinityValue.value = false;
+        isError.value = false;
       })
       .catch(() => {
-        pn.value--;
+        // pn.value--;
+        if (pn.value == 1) isError.value = true;
       })
       .finally(() => {
         showToast.hide();
       });
   };
   return {
+    isError,
     loadMore,
     listData,
     resetData,

@@ -1,37 +1,39 @@
 <template>
-  <div class="top_box">
-    <div class="top_back" @click="router.go(-1)">Recharge </div>
-  </div>
-  <div :class="['middle_box']">
-    <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" />
-    <nut-noticebar
-      v-if="memo"
-      :text="`Please open the DMC Wallet App, copy the receiving account name and memo for recharging. Make sure to fill in the Memo to ensure a smooth and successful transaction.One Memo corresponds to one recharge, if you want to recharge multiple times, please refresh the page to get a new Memo.`"
-      wrapable
-    ></nut-noticebar>
-    <div class="title_item" style="margin-top: 10px" v-if="memo">
-      <p>Memo: </p>
-      <p class="dmc_account" @click="copySecret(memo)">{{ memo }} <IconCopy color="#246bf7"></IconCopy></p>
+  <div>
+    <div class="top_box">
+      <div class="top_back" @click="router.go(-1)">Recharge </div>
     </div>
-    <div class="title_item">
-      <p>Target account:</p>
-      <p style="color: #246bf7" @click="copySecret(targetAccount)" class="dmc_account"
-        >{{ targetAccount }} <IconCopy color="#246bf7"></IconCopy
-      ></p>
-    </div>
-    <div class="title_item" v-if="dmc">
-      <p>Your Payment Account:</p>
-      <p class="dmc_account">{{ dmc }}</p>
-    </div>
-    <div class="recharge_btn_box" v-if="memo" @click="$router.push({ name: 'rechargeInfo' })">
-      <div class="recharge_btn">
-        <span> How to recharge?</span>
+    <div :class="['middle_box']">
+      <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" />
+      <nut-noticebar
+        v-if="memo"
+        :text="`Please open the DMC Wallet App, copy the receiving account name and memo for recharging. Make sure to fill in the Memo to ensure a smooth and successful transaction.One Memo corresponds to one recharge, if you want to recharge multiple times, please refresh the page to get a new Memo.`"
+        wrapable
+      ></nut-noticebar>
+      <div class="title_item" style="margin-top: 10px" v-if="memo">
+        <p>Memo: </p>
+        <p class="dmc_account" @click="copySecret(memo)">{{ memo }} <IconCopy color="#246bf7"></IconCopy></p>
       </div>
-    </div>
+      <div class="title_item">
+        <p>Target account:</p>
+        <p style="color: #246bf7" @click="copySecret(targetAccount)" class="dmc_account"
+          >{{ targetAccount }} <IconCopy color="#246bf7"></IconCopy
+        ></p>
+      </div>
+      <div class="title_item" v-if="dmc">
+        <p>Your Payment Account:</p>
+        <p class="dmc_account">{{ dmc }}</p>
+      </div>
+      <div class="recharge_btn_box" v-if="memo" @click="$router.push({ name: 'rechargeInfo' })">
+        <div class="recharge_btn">
+          <span> How to recharge?</span>
+        </div>
+      </div>
 
-    <!-- <div style="margin: 40px">
+      <!-- <div style="margin: 40px">
       <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmRecharge"> Confirm </nut-button>
     </div> -->
+    </div>
   </div>
 </template>
 

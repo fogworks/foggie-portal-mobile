@@ -1,6 +1,10 @@
 <template>
   <div class="main-page" :class="{ tabbar: tabbarVisible, border: showBorder }">
-    <RouterView :key="$route.path" />
+    <RouterView v-slot="{Component,route}">
+      <MyTransition>
+          <component  :is="Component" :key="route.path"></component>
+      </MyTransition>
+    </RouterView>
   </div>
   <nut-tabbar unactive-color="#364636" active-color="#1989fa" bottom v-model="activeTab" @tab-switch="tabSwitch">
     <nut-tabbar-item v-for="item in tabItem" :key="item.key" :tab-title="$t(`tabbar.${item.key}`)" :icon="item.icon" />
@@ -68,11 +72,8 @@ import { onMounted, provide } from 'vue';
 import { useUserStore } from '@/store/modules/user';
 import { showToast, showDialog } from '@nutui/nutui';
 // import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
-
+import MyTransition from '@/components/myTransition/index.vue'
 import loadingImg from '@/components/loadingImg/index.vue';
-
-
-
 import '@nutui/nutui/dist/packages/dialog/style';
 import '@nutui/nutui/dist/packages/toast/style';
 
@@ -112,7 +113,6 @@ const activeTab = ref(0);
 const tabbarVisible = ref(true);
 
 const showBorder = ref(true);
-
 watch(
   () => router,
   () => {
@@ -436,7 +436,9 @@ onMounted(async () => {
   }
 });
 </script>
+<style lang="scss">
 
+</style> 
 <style scoped lang="scss">
 .nut-navbar {
   margin-bottom: 0;

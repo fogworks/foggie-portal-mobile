@@ -1,61 +1,63 @@
 <template>
-  <div class="img-content" v-if="isReady">
-    <div v-if="imgData.length" v-for="(item, index) in imgData" class="img-box">
-      <p v-if="item.list.length" class="top-title">
-        <nut-checkbox
-          :indeterminate="item.indeterminate"
-          v-if="isCheckMode"
-          v-model="item.checkAll"
-          @change="(val) => handleCheckAllChange(val, item)"
-        >
-          {{ item.time }}</nut-checkbox
-        >
-        <span v-else>{{ item.time }}</span>
-      </p>
-      <nut-infinite-loading
-        load-more-txt="No more content"
-        v-model="infinityValue"
-        :has-more="!!continuationToken"
-        @load-more="getFileList"
-        class="img-item-box"
-      >
-        <nut-checkbox-group
-          :validate-event="false"
-          v-model="imgCheckedData.value[item.dateId]"
-          @change="(val) => handleCheckedItemsChange(val, item)"
-        >
-          <div
-            :class="['img-item']"
-            v-for="(img, index2) in item.list"
-            @touchstart="emits('touchRow', img)"
-            @touchmove="emits('touchmoveRow', img)"
-            @touchend="emits('touchendRow', img)"
+  <div>
+    <div class="img-content" v-if="isReady">
+      <div v-if="imgData.length" v-for="(item, index) in imgData" class="img-box">
+        <p v-if="item.list.length" class="top-title">
+          <nut-checkbox
+            :indeterminate="item.indeterminate"
+            v-if="isCheckMode"
+            v-model="item.checkAll"
+            @change="(val) => handleCheckAllChange(val, item)"
           >
-            <div :class="['mask', isCheckMode ? 'isChecking' : '']">
-              <nut-checkbox
-                :class="['mask-checkbox', isCheckMode && itemChecked(img.cid, item.dateId) ? 'itemChecked' : '']"
-                :key="img.cid"
-                :label="img.cid"
-              ></nut-checkbox>
-            </div>
-            <nut-image
-              :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
-              fit="cover"
-              :key="img.cid"
-              :src="img.imgUrl"
+            {{ item.time }}</nut-checkbox
+          >
+          <span v-else>{{ item.time }}</span>
+        </p>
+        <nut-infinite-loading
+          load-more-txt="No more content"
+          v-model="infinityValue"
+          :has-more="!!continuationToken"
+          @load-more="getFileList"
+          class="img-item-box"
+        >
+          <nut-checkbox-group
+            :validate-event="false"
+            v-model="imgCheckedData.value[item.dateId]"
+            @change="(val) => handleCheckedItemsChange(val, item)"
+          >
+            <div
+              :class="['img-item']"
+              v-for="(img, index2) in item.list"
+              @touchstart="emits('touchRow', img)"
+              @touchmove="emits('touchmoveRow', img)"
+              @touchend="emits('touchendRow', img)"
             >
-              <template #loading>
-                <Loading width="16px" height="16px" name="loading" />
-              </template>
-            </nut-image>
-          </div>
-        </nut-checkbox-group>
-      </nut-infinite-loading>
+              <div :class="['mask', isCheckMode ? 'isChecking' : '']">
+                <nut-checkbox
+                  :class="['mask-checkbox', isCheckMode && itemChecked(img.cid, item.dateId) ? 'itemChecked' : '']"
+                  :key="img.cid"
+                  :label="img.cid"
+                ></nut-checkbox>
+              </div>
+              <nut-image
+                :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
+                fit="cover"
+                :key="img.cid"
+                :src="img.imgUrl"
+              >
+                <template #loading>
+                  <Loading width="16px" height="16px" name="loading" />
+                </template>
+              </nut-image>
+            </div>
+          </nut-checkbox-group>
+        </nut-infinite-loading>
+      </div>
+      <nut-empty v-else :image-size="200" description="No Data" image="error" />
     </div>
-    <nut-empty v-else :image-size="200" description="No Data" image="error" />
-  </div>
-  <div class="img-content" v-else>
-    <nut-empty :image-size="200" description="No Data" image="error" />
+    <div class="img-content" v-else>
+      <nut-empty :image-size="200" description="No Data" image="error" />
+    </div>
   </div>
 </template>
 <script>
