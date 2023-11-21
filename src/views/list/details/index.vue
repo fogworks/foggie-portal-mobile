@@ -1535,6 +1535,7 @@
         line-height: 4vw;
         font-weight: bold;
         margin: 10px 0;
+        padding: 13px 10px 13px 52px;
       }
 
       svg {

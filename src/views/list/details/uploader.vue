@@ -86,21 +86,23 @@
   memo.value = route.query.uuid;
   order_id.value = route.query.id;
   amb_uuid.value = route.query.amb_uuid;
+  let merkleTimeOut = null;
   const getMerkleState = (timeout = true) => {
     const d = {
       orderId: order_id.value,
     };
-    valid_upload(d).then((res) => {
-      if (res.data?.data) {
+    return valid_upload(d).then((res) => {
+      if (res?.data) {
         // TODO
-        isDisabled.value = true;
+        isDisabled.value = false;
+        clearTimeout(merkleTimeOut);
+      } else {
         if (timeout) {
-          setTimeout(() => {
+          merkleTimeOut = setTimeout(() => {
             getMerkleState(timeout);
           }, 30000);
         }
-      } else {
-        isDisabled.value = false;
+        isDisabled.value = true;
       }
     });
   };
@@ -108,6 +110,7 @@
     return new Promise(async (resolve, reject) => {
       const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
       if (!bucketName || !accessKeyId || !secretAccessKey) {
+        showToast.fail('The data is abnormal, please refresh the page and try again.');
         return reject(false);
       }
 
@@ -137,7 +140,12 @@
         isDisabled.value = false;
       } else {
         isDisabled.value = true;
-        getMerkleState(true);
+        showToast.fail(merkleRes.msg || 'Merkle is being built, not allowed to upload file.');
+        if (!merkleTimeOut) {
+          merkleTimeOut = setTimeout(() => {
+            getMerkleState(true);
+          }, 30000);
+        }
         return reject();
       }
 
@@ -268,6 +276,7 @@
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
     console.log('onFailure', '-----', responseText, '-----', option, '-----', fileItem);
+    showToast.fail('Upload failed, please try again later');
     delay(() => {
       uploadProgressIsShow.value = false;
     }, 3000);
@@ -293,6 +302,9 @@
         duration: 5000,
       });
     });
+  });
+  onUnmounted(() => {
+    clearTimeout(merkleTimeOut);
   });
 </script>
 
