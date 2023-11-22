@@ -73,25 +73,25 @@
         </div>
       </div>
       <div class="type_check_box" style="margin-top: 5px; border-radius: 10px; background-color: #fff">
-        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1 } })">
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1, bucketName } })">
           <div class="svg_box">
             <IconImage></IconImage>
           </div>
           <p>Images</p>
         </div>
-        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3, bucketName } })">
           <div class="svg_box">
             <IconAudio2></IconAudio2>
           </div>
           <p>Audio</p>
         </div>
-        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4 } })">
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4, bucketName } })">
           <div class="svg_box">
             <IconDocument></IconDocument>
           </div>
           <p>Documents</p>
         </div>
-        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 2 } })">
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 2, bucketName } })">
           <div class="svg_box">
             <IconVideo></IconVideo>
           </div>
@@ -605,7 +605,7 @@
 
       router.push({
         name: 'FileList',
-        query: { ...route.query, category: 0, prefix: prefix.join('/') },
+        query: { ...route.query, category: 0, prefix: prefix.join('/'),bucketName:bucketName.value },
       });
     }
   };
@@ -909,11 +909,16 @@
               showToast.hide();
             }
           } else {
-            serOrderNameError(order_result.message);
+            delay(()=>{
+              serOrderNameError(err);
+            },3000)
           }
         })
         .catch((err) => {
-          serOrderNameError(err);
+          delay(()=>{
+            serOrderNameError(err);
+          },3000)
+         
         });
     }
 
@@ -945,7 +950,8 @@
           },
         });
       } else {
-        setOrderName();
+        delay(()=>{ setOrderName()},3000)
+       
       }
     }
   };
