@@ -9,7 +9,7 @@ import useOrderInfo from './useOrderInfo.js';
 import { poolUrl } from '@/setting.js';
 
 // import { isCloudCanUpload_Api } from '@/api/upload';
-const { bucketName } = useOrderInfo();
+const { bucketName, metadata } = useOrderInfo();
 export default function useDelete(tableLoading, refresh, orderInfo, header) {
   const deleteItem = (item) => {
     tableLoading.value = true;
@@ -42,7 +42,7 @@ export default function useDelete(tableLoading, refresh, orderInfo, header) {
     let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     let server = new grpcService.default.ServiceClient(ip, null, null);
 
-    server.deleteObject(ProxDeleteObjectReq, {}, (err, res) => {
+    server.deleteObject(ProxDeleteObjectReq, metadata.value, (err, res) => {
       if (res) {
         showToast.success('Delete succeeded');
         tableLoading.value = false;
