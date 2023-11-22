@@ -15,7 +15,7 @@
         <p class="dmc_account" @click="copySecret(memo)">{{ memo }} <IconCopy color="#246bf7"></IconCopy></p>
       </div>
       <div class="title_item">
-        <p>Target account:</p>
+        <p>Receiving account:</p>
         <p style="color: #246bf7" @click="copySecret(targetAccount)" class="dmc_account"
           >{{ targetAccount }} <IconCopy color="#246bf7"></IconCopy
         ></p>
