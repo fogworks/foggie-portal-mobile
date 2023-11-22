@@ -824,7 +824,7 @@
       ProxFileInfo.setKey(targetObject());
       ProxFileInfo.setContenttype('application/x-directory');
       ProxFileInfo.setSize(0);
-      server.touchFile(ProxFileInfo, {}, (err, data) => {
+      server.touchFile(ProxFileInfo, metadata.value, (err, data) => {
         if (data) {
           showToast.success('Create successful');
           renameShow.value = false;
@@ -842,7 +842,7 @@
       ProxRenameObject.setTargetobject(targetObject());
       ProxRenameObject.setFiletype(checkData[0].fileType);
 
-      server.renameObjects(ProxRenameObject, {}, (err, data) => {
+      server.renameObjects(ProxRenameObject, metadata.value, (err, data) => {
         if (data) {
           showToast.success('Rename successful');
           renameShow.value = false;
@@ -1343,7 +1343,7 @@
         ProxFindRequest.setPrefix(list_prefix);
         console.log(ProxFindRequest, 'ProxFindRequestProxFindRequest');
 
-        server.findObjects(ProxFindRequest, {}, (err: any, res: { getContentsList: () => any[] }) => {
+        server.findObjects(ProxFindRequest, metadata.value, (err: any, res: { getContentsList: () => any[] }) => {
           infinityValue.value = false;
           if (res) {
             const transferData = res
