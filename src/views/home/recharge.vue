@@ -4,35 +4,45 @@
       <div class="top_back" @click="router.go(-1)">Recharge </div>
     </div>
     <div :class="['middle_box']">
-      <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" />
-      <nut-noticebar
-        v-if="memo"
-        :text="`Please open the DMC Wallet App, copy the receiving account name and memo for recharging. Make sure to fill in the Memo to ensure a smooth and successful transaction.One Memo corresponds to one recharge, if you want to recharge multiple times, please refresh the page to get a new Memo.`"
-        wrapable
-      ></nut-noticebar>
-      <div class="title_item" style="margin-top: 10px" v-if="memo">
-        <p>Memo: </p>
-        <p class="dmc_account" @click="copySecret(memo)">{{ memo }} <IconCopy color="#246bf7"></IconCopy></p>
-      </div>
-      <div class="title_item">
-        <p>Receiving account:</p>
-        <p style="color: #246bf7" @click="copySecret(targetAccount)" class="dmc_account"
-          >{{ targetAccount }} <IconCopy color="#246bf7"></IconCopy
-        ></p>
-      </div>
-      <div class="title_item" v-if="dmc">
-        <p>Your Payment Account:</p>
-        <p class="dmc_account">{{ dmc }}</p>
+      <!-- <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" /> -->
+      <div class="recharge_box">
+        <div class="recharge_contact">
+          <div class="dot">
+            <span>{{ dmc }}</span>
+            <span class="small">(Payment Account)</span>
+          </div>
+          <div class="line">{{ memo }}</div>
+          <div class="dot">
+            <span>{{ targetAccount }}</span>
+            <span class="small">(Receiving account)</span>
+          </div>
+        </div>
+
+        <div class="ticket_box">
+          <div class="title_item" style="margin-top: 10px" v-if="memo">
+            <p>Memo: </p>
+            <p class="dmc_account" @click="copySecret(memo)">{{ memo }} <IconCopy color="#246bf7"></IconCopy></p>
+          </div>
+          <div class="title_item">
+            <p>Receiving account:</p>
+            <p @click="copySecret(targetAccount)" class="dmc_account">{{ targetAccount }} <IconCopy color="#246bf7"></IconCopy></p>
+          </div>
+          <div class="title_item" v-if="dmc">
+            <p>Your Payment Account:</p>
+            <p class="dmc_account">{{ dmc }}</p>
+          </div>
+          <div class="tips">
+            Please open the DMC Wallet App, copy the receiving account name and memo for recharging. Make sure to fill in the Memo to ensure
+            a smooth and successful transaction.One Memo corresponds to one recharge, if you want to recharge multiple times, please refresh
+            the page to get a new Memo.
+          </div>
+        </div>
       </div>
       <div class="recharge_btn_box" v-if="memo" @click="$router.push({ name: 'rechargeInfo' })">
         <div class="recharge_btn">
           <span> How to recharge?</span>
         </div>
       </div>
-
-      <!-- <div style="margin: 40px">
-      <nut-button round block type="info" class="withdraw_btn" native-type="submit" @click="confirmRecharge"> Confirm </nut-button>
-    </div> -->
     </div>
   </div>
 </template>
@@ -99,7 +109,10 @@
     display: flex;
     align-items: end;
     justify-content: end;
-    margin-top: -80px;
+    // margin-top: -0px;
+    position: fixed;
+    bottom: 140px;
+    right: 20px;
   }
   .recharge_btn {
     background: #4d5092;
@@ -142,12 +155,17 @@
   }
   .middle_box {
     padding: 0 10px;
+    height: calc(100vh - 450px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .full_height {
     height: 115%;
   }
   .title_item {
     margin-bottom: 50px;
+    display: flex;
     p:first-child {
       // color: #c2c2c2;
       // font-size: 1.2rem;
@@ -207,6 +225,78 @@
       }
       .warning-icon {
         color: #ff9200;
+      }
+    }
+  }
+</style>
+
+<style scoped lang="scss">
+  .recharge_box {
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    color: #fff;
+    padding: 20px;
+    border-radius: 20px;
+    height: auto;
+    font-weight: bold;
+    margin-top: 20px;
+    .recharge_contact {
+      margin-top: 12px;
+      display: flex;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      margin: 36px 0;
+      .dot {
+        width: 300px;
+        border-radius: 50%;
+        // margin: 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        span {
+          white-space: nowrap;
+          font-size: 32px;
+        }
+        .small {
+          font-size: 18px;
+        }
+      }
+      .line {
+        border-top: 6px dashed #fff;
+        width: calc(100% - 400px);
+        height: 100px;
+        border-radius: 50%;
+        font-size: 18px;
+        text-align: center;
+        padding-top: 18px;
+      }
+    }
+    .ticket_box {
+      background: #fff;
+      border-radius: 20px;
+      color: #000;
+      padding: 20px;
+      font-size: 26px !important;
+      font-weight: normal;
+      margin: 20px 0;
+      background:
+        radial-gradient(circle at -6% 50%, transparent 10%, #fff 4%) left,
+        radial-gradient(circle at 106% 50%, transparent 10%, #fff 3.2%) right;
+      background-size: 50% 100%;
+      background-repeat: no-repeat;
+
+      .title_item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .dmc_account {
+        font-size: 26px !important;
+      }
+      .tips {
+        color: #ff8b00;
+        // font-weight: bold;
       }
     }
   }
