@@ -448,10 +448,7 @@
   memo.value = route.query.uuid;
   order_id.value = route.query.id;
   amb_uuid.value = route.query.amb_uuid;
-  // search_bill(memo.value, order_id.value).then((res) => {
-  //   console.log('search_bill', res);
-  //   minerIp.value = res?.data?.mp_ipaddr;
-  // });
+
   let merkleTimeOut;
   const getMerkleState = (timeout = true) => {
     const d = {

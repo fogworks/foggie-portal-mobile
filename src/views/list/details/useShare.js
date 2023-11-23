@@ -12,7 +12,6 @@ import { HmacSHA1, enc } from 'crypto-js';
 import IconHttp2 from '~icons/home/http2.svg';
 import { poolUrl } from '@/setting.js';
 
-// import { file_pin } from '@/api';
 export default function useShare(orderInfo, header, deviceType) {
   const userStore = useUserStore();
   const daySeconds = 86400;

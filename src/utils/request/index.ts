@@ -16,7 +16,6 @@ const service: AxiosInstance = axios.create({
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const userStore = useUserStore();
-
     if (config.url && config.url.indexOf('/api_accounts/login') > -1) {
       config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
       config.data = Qs.stringify(config.data);

@@ -149,7 +149,6 @@
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize } from '@/utils/util';
   import ImgList from './imgList.vue';
-  import { rename_objects } from '@/api';
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
   // import { ProxListObjectsRequest, ProxListObjectsReq, ProxHeader } from '@/pb/prox_pb.js';
@@ -161,7 +160,6 @@
   import '@nutui/nutui/dist/packages/toast/style';
 
   import { HmacSHA1, enc } from 'crypto-js';
-  // import { download_url } from '@/api/index';
 
   let timeOutEvent: string | number | NodeJS.Timeout | undefined;
   let server = null;
