@@ -1467,6 +1467,7 @@
     padding: 30px 10px;
     border-radius: 20px;
     background: $primary-color;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
 
     .order-des {
       //   margin-bottom: 20px;

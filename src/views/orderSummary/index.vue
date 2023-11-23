@@ -317,6 +317,7 @@
     align-items: center;
     border: 5px dashed #ccc;
     transform: rotate(30deg);
+    border-radius: 0 20px 20px 0;
     &.open {
       background: rgb(87 88 162);
       border: none;
@@ -376,6 +377,7 @@
     padding: 50px 10px 30px;
     border-radius: 20px;
     background: $primary-color;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
   }
   .historyOrder {
     background: #2b2929;

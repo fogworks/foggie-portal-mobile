@@ -614,6 +614,7 @@
       background: #5264f9;
       border-radius: 0 0 50px 50px;
       overflow: hidden;
+      background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
 
       .back_img {
         position: absolute;
@@ -636,6 +637,7 @@
         font-size: 1.5rem;
         margin: 20px auto 20px;
         text-align: center;
+        color: #fbcf87;
       }
 
       .total_balance_value {
@@ -703,6 +705,7 @@
       background: #ffcf87;
       overflow: hidden;
       text-align: center;
+      background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
 
       p {
         z-index: 1;
@@ -728,10 +731,29 @@
 
       &:nth-child(3) {
         color: #a73131;
+        color: #fff;
+        font-weight: bold;
         background: #fa8596;
+        background: linear-gradient(263deg, #000000, #f3cf0a);
+        background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+        animation: blink 3s linear infinite; /* 使用动画响应效果 */
 
         &::after {
           background: #ffc1c1;
+          background: #f1d110;
+          background: linear-gradient(168deg, #b48ce0, #7f4ad7);
+        }
+      }
+      /* 定义动画 */
+      @keyframes blink {
+        0% {
+          color: #f8f8f8; /* 定义颜色变化 */
+        }
+        50% {
+          color: #fff;
+        }
+        100% {
+          color: #f9f9f9;
         }
       }
     }
@@ -764,6 +786,7 @@
     width: 90vw;
     left: 50%;
     transform: translateX(-50%);
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
     :deep {
       .nut-button {
         background-color: #2d2e41 !important;
@@ -784,6 +807,7 @@
     background: #5264f9;
     font-size: 1.25rem;
     overflow: hidden;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
 
     &::before {
       content: '';
