@@ -11,6 +11,8 @@ import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
 import IconHttp2 from '~icons/home/http2.svg';
 import { poolUrl } from '@/setting.js';
+import useOrderInfo from './useOrderInfo.js';
+const { metadata } = useOrderInfo();
 
 export default function useShare(orderInfo, header, deviceType) {
   const userStore = useUserStore();
@@ -59,6 +61,8 @@ export default function useShare(orderInfo, header, deviceType) {
     },
   ]);
   const ipfsPin = (item, stype, flag, exp = true) => {
+    console.log(item, 'item');
+    console.log(orderInfo.value, 'orderInfo.value');
     let foggieToken;
     // if (foggieToken && foggieToken.indexOf('bearer ') > -1) {
     //   foggieToken = foggieToken.split('bearer ')[1];
@@ -113,11 +117,11 @@ export default function useShare(orderInfo, header, deviceType) {
     // let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
     let bucketName = orderInfo.value.domain;
 
-    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+    let ip = `https://${bucketName}.${poolUrl}:7007`;
     let server = new grpcService.default.ServiceClient(ip, null, null);
 
     // showToast.text('IPFS link will available later.');
-    server.pin(ProxPinReq, {}, (err, res) => {
+    server.pin(ProxPinReq, metadata.value, (err, res) => {
       if (res) {
       } else if (err) {
       }

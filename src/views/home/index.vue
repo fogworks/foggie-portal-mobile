@@ -696,7 +696,8 @@
     // background-color: var(--van-blue);
     background: $primary-color;
     color: #fff;
-    border-radius: 0;
+    border-radius: 30px;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
 
     > img {
       top: 30px;
@@ -828,6 +829,8 @@
   }
 
   .withdraw-btn {
+    position: relative;
+    overflow: hidden;
     display: flex;
     justify-content: space-around;
     transform: translateY(-80px);
@@ -843,6 +846,7 @@
       linear-gradient(145deg, #e81cff, #40c9ff) border-box;
 
     .action_item {
+      z-index: 88;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -857,6 +861,33 @@
         margin-bottom: 10px;
       }
     }
+  }
+  .withdraw-btn::before {
+    content: '';
+    position: absolute;
+    width: 110%;
+    background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
+    height: 130%;
+    animation: rotBGimg 3s linear infinite;
+    transition: all 0.2s linear;
+  }
+
+  @keyframes rotBGimg {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .withdraw-btn::after {
+    content: '';
+    position: absolute;
+    background: #fff;
+    inset: 3px;
+    border-radius: 15px;
   }
 
   .tab_top_title {
@@ -898,6 +929,7 @@
     .order_status_flag {
       width: 180px;
       height: 40px;
+      border-radius: 0 20px 20px 0;
 
       position: absolute;
       top: -12px;
@@ -909,6 +941,7 @@
       font-weight: bold;
       &.open {
         background: #009771;
+        background: #f88b02;
       }
       &.history {
         background: #999;
