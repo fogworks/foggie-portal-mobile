@@ -6,7 +6,7 @@ export default function typeApi() {
       nodeUrl: 'http://45.207.245.24:28080',
       chainUrl: 'https://scontract.dmctech.io:8361',
       shareUrl: 'https://45.207.245.24:17071',
-      webUrl: 'https://m.fogworks.io',
+      webUrl: 'https://amb.dev.u2i.net',
     };
   } else {
     return {

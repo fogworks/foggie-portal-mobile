@@ -20,6 +20,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
   const isProduction = command === 'build';
   const root = process.cwd();
   const env = loadEnv(mode, root);
+  const buildType = env.VITE_BUILD_TYPE;
   const viteEnv = wrapperEnv(env);
   return {
     root,
@@ -239,7 +240,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
     ],
     build: {
       minify: false,
-      outDir: 'cordova/www',
+      outDir: buildType ? 'cordova/www' : 'dist',
       terserOptions: {
         compress: {
           //生产环境时移除console
