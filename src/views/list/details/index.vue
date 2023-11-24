@@ -920,7 +920,7 @@
             }
           } else {
             delay(() => {
-              serOrderNameError(err);
+              serOrderNameError();
             }, 3000);
           }
         })
@@ -931,7 +931,7 @@
         });
     }
 
-    function serOrderNameError(errMessage) {
+    function serOrderNameError(errMessage = '') {
       if (retrNumber >= 5) {
         showToast.hide();
         isNameLoading.value = false;

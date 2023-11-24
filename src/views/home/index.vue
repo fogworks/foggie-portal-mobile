@@ -877,9 +877,9 @@
   .withdraw-btn::before {
     content: '';
     position: absolute;
-    width: 110%;
+    width: 140%;
     background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
-    height: 130%;
+    height: 80%;
     animation: rotBGimg 3s linear infinite;
     transition: all 0.2s linear;
   }

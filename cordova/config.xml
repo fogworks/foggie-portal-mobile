@@ -9,6 +9,12 @@
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <platform name="android">
+        <!-- <plugin name="cn.inu1255.cordova.proxy" spec="1.0.0" /> -->
+        <!-- <preference name="Hostname" value="amb.dev.u2i.net" />
+        <preference name="Scheme" value="https" />
+        <preference name="ResolveServiceWorkerRequests" value="true" />
+        <preference name="MixedContentMode" value="2" /> -->
+        <!-- <proxy match="www/android_proxy" forward="https://amb.dev.u2i.net" /> -->
         <icon src="res/icons/favicon.png" />
         <!-- <preference name="AutoHideSplashScreen" value="true" /> -->
         <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screens/background.xml" />

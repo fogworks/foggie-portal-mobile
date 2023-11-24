@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cordova build android --debug --buildConfig=build.json",
+    "build": "cordova build android",
     "build:prod": "cordova build android --release --buildConfig=build.json"
   },
   "keywords": [

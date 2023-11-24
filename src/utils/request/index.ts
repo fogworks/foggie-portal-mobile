@@ -6,7 +6,6 @@ import { useUserStore } from '@/store/modules/user';
 import { useRouter } from 'vue-router';
 import { refreshToken, user } from '@/api';
 import ignoreUrl from './ignoreUrl';
-const router = useRouter();
 
 const service: AxiosInstance = axios.create({
   withCredentials: false,
@@ -32,17 +31,22 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
   async (response: AxiosResponse) => {
+    const router = useRouter();
     const userStore = useUserStore();
 
     const res = response.data;
-    const code = res.code;
+    let code = res.code;
+    // const code = 420;
+    if (response.config.url?.indexOf('/order/search') > -1) {
+      code = 420;
+    }
     if (response.config.url?.indexOf('/v1/chain/get_account') > -1) {
       return res;
     }
     if (code !== 200) {
       if (ignoreUrl.indexOf(response.config.url) > -1) {
-      } else {
-        showToast.fail(res.error || res.msg || res.message || 'Network error. Please try again.');
+      } else if (code != 420) {
+        showToast.fail(res.error || res.msg || res.message || response.config.url + 'Network error. Please try again.');
       }
       if (code === 401 || code === 403) {
         userStore.setInfo({});
@@ -52,27 +56,26 @@ service.interceptors.response.use(
         router.push('/login');
         return;
       } else if (code === 420) {
-        let res = await refreshToken();
-        if (res && res.data && res.data.access_token) {
-          let token = res.data.access_token;
-          let type = res.data.token_type;
-          token = type + ' ' + token;
-          userStore.setToken(token);
-          let res2 = await user();
-          if (res2.data) {
-            userStore.setInfo(res2.data);
-          }
-          window.localStorage.setItem('last_refresh_token', token);
-          // setToken(token);
-          return service(response.config);
-        } else {
-          userStore.setInfo({});
-          userStore.setToken('');
-          userStore.setRefreshToken('');
-          userStore.setCloudCodeIsBind(false);
-          router.push('/login');
-          return;
-        }
+        // let res = await refreshToken();
+        // if (res && res.data && res.data.access_token) {
+        //   let token = res.data.access_token;
+        //   let type = res.data.token_type;
+        //   token = type + ' ' + token;
+        //   userStore.setToken(token);
+        //   let res2 = await user();
+        //   if (res2.data) {
+        //     userStore.setInfo(res2.data);
+        //   }
+        //   window.localStorage.setItem('last_refresh_token', token);
+        //   return service(response.config);
+        // } else {
+        userStore.setInfo({});
+        userStore.setToken('');
+        userStore.setRefreshToken('');
+        userStore.setCloudCodeIsBind(false);
+        router.push('/login');
+        return;
+        // }
       } else {
         if (ignoreUrl.indexOf(response.config.url) > -1) {
           return res;
@@ -93,7 +96,7 @@ service.interceptors.response.use(
     if (ignoreUrl.indexOf(error.config.url) > -1) {
       return Promise.reject(error.message);
     }
-    showToast.fail(error.message);
+    showToast.fail(error.config.url, error.message);
     return Promise.reject(error.message);
   },
 );

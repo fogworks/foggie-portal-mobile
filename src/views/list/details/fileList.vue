@@ -1098,6 +1098,8 @@
     let port = orderInfo.value.rpc?.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
+    console.log(bucketName.value, 'bucketName');
+
     if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
       type = 'img';
       console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
@@ -1457,7 +1459,7 @@
       prefix.value = route?.query?.prefix?.split('/');
     }
     let category1 = route.query.category || '0';
-    // await getOrderInfo();
+    await getOrderInfo();
     switchType(category1);
   });
 </script>
