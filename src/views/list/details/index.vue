@@ -113,6 +113,7 @@
             <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
             <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
             <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+         
             <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
             <img v-else src="@/assets/svg/home/file.svg" alt="" />
           </div>
@@ -569,6 +570,8 @@
     detailRow.value = row;
     const type = row.name.substring(row.name.lastIndexOf('.') + 1);
     console.log(row.imgUrlLarge);
+    console.log(type);
+    
     if (type == 'pdf') {
       curSelectSrc.value = row.imgUrlLarge;
       curSelectType.value = 'pdf';
@@ -589,6 +592,14 @@
       router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
       // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
       // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+      console.log(row.imgUrlLarge);
+    } else if (['ppt', 'pptx'].includes(type)) {
+      // detailRow.value.detailType = 'word';
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
+      // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+      // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
+
       console.log(row.imgUrlLarge);
     } else if (row.imgUrlLarge) {
       imgUrl.value = row.imgUrlLarge;
@@ -1120,6 +1131,7 @@
       tableData.value = [];
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
+
       let name = decodeURIComponent(data.commonPrefixes[i]);
       if (data.prefix) {
         // name = name.split(data.prefix)[1];
@@ -1187,12 +1199,12 @@
         name = name.split('/')[name.split('/').length - 2];
       }
       let isPersistent = data.content[j].isPersistent;
-
+      console.log(data.content[j],'data.content[j]');
+      
       let item = {
         isDir: isDir,
         checked: false,
         name,
-        category: data.content[j].category,
         category: data.content[j].category,
         fileType: data.content[j].contentType,
         fullName: decodeURIComponent(data.content[j].key),
@@ -1227,6 +1239,9 @@
 
       tableData.value.push(item);
     }
+
+    console.log(tableData.value,'tableData.value');
+    
     tableLoading.value = false;
   };
 
