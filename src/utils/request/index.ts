@@ -37,9 +37,9 @@ service.interceptors.response.use(
     const res = response.data;
     let code = res.code;
     // const code = 420;
-    if (response.config.url?.indexOf('/order/search') > -1) {
-      code = 420;
-    }
+    // if (response.config.url?.indexOf('/order/search') > -1) {
+    //   code = 420;
+    // }
     if (response.config.url?.indexOf('/v1/chain/get_account') > -1) {
       return res;
     }
