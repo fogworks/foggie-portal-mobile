@@ -8,15 +8,11 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BasicModal: typeof import('./../src/components/Modal/src/BasicModal.vue')['default']
-    copy: typeof import('./../src/components/loadingImg/index copy.vue')['default']
     Index2: typeof import('./../src/components/loadingImg/index2.vue')['default']
     LoadingImg: typeof import('./../src/components/loadingImg/index.vue')['default']
     MyEcharts: typeof import('./../src/components/echarts/myEcharts.vue')['default']
     MyTransition: typeof import('./../src/components/myTransition/index.vue')['default']
     NutActionSheet: typeof import('@nutui/nutui')['ActionSheet']
-    NutAudio: typeof import('@nutui/nutui')['Audio']
-    NutAudioOperate: typeof import('@nutui/nutui')['AudioOperate']
-    NutBacktop: typeof import('@nutui/nutui')['Backtop']
     NutButton: typeof import('@nutui/nutui')['Button']
     NutCell: typeof import('@nutui/nutui')['Cell']
     NutCellGroup: typeof import('@nutui/nutui')['CellGroup']

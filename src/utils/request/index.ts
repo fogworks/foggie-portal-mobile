@@ -16,13 +16,15 @@ const service: AxiosInstance = axios.create({
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const userStore = useUserStore();
-
     if (config.url && config.url.indexOf('/api_accounts/login') > -1) {
       config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
       config.data = Qs.stringify(config.data);
     }
     const refresh_token = userStore.getToken;
     config.headers['Authorization'] = refresh_token;
+    if (config.url && config.url.indexOf('/api_accounts/accounts/refresh_token') > -1) {
+      config.headers['Authorization'] = userStore.getRefreshToken;
+    }
     return config;
   },
   (_error: AxiosError) => {},
@@ -45,6 +47,7 @@ service.interceptors.response.use(
       if (code === 401 || code === 403) {
         userStore.setInfo({});
         userStore.setToken('');
+        userStore.setRefreshToken('');
         userStore.setCloudCodeIsBind(false);
         router.push('/login');
         return;
@@ -54,17 +57,18 @@ service.interceptors.response.use(
           let token = res.data.access_token;
           let type = res.data.token_type;
           token = type + ' ' + token;
-          // userStore.setToken(token);
+          userStore.setToken(token);
           let res2 = await user();
           if (res2.data) {
             userStore.setInfo(res2.data);
           }
-          // window.localStorage.setItem('last_refresh_token', token);
-          userStore.setToken(token);
+          window.localStorage.setItem('last_refresh_token', token);
+          // setToken(token);
           return service(response.config);
         } else {
           userStore.setInfo({});
           userStore.setToken('');
+          userStore.setRefreshToken('');
           userStore.setCloudCodeIsBind(false);
           router.push('/login');
           return;

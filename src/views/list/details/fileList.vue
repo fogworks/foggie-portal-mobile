@@ -465,7 +465,6 @@
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize } from '@/utils/util';
   import ImgList from './imgList.vue';
-  import { rename_objects } from '@/api';
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
   import HLSVideo from './hlsVideo.vue';
@@ -482,8 +481,6 @@
   import { HmacSHA1, enc } from 'crypto-js';
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
-
-  // import { download_url } from '@/api/index';
 
   // const accessKeyId = ref<string>('');
   // const secretAccessKey = ref<string>('');

@@ -14,7 +14,6 @@ import { poolUrl } from '@/setting.js';
 import useOrderInfo from './useOrderInfo.js';
 const { metadata } = useOrderInfo();
 
-// import { file_pin } from '@/api';
 export default function useShare(orderInfo, header, deviceType) {
   const userStore = useUserStore();
   const daySeconds = 86400;

@@ -450,10 +450,7 @@
   memo.value = route.query.uuid;
   order_id.value = route.query.id;
   amb_uuid.value = route.query.amb_uuid;
-  // search_bill(memo.value, order_id.value).then((res) => {
-  //   console.log('search_bill', res);
-  //   minerIp.value = res?.data?.mp_ipaddr;
-  // });
+
   let merkleTimeOut;
   const getMerkleState = (timeout = true) => {
     const d = {
@@ -1469,6 +1466,7 @@
     padding: 30px 10px;
     border-radius: 20px;
     background: $primary-color;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
 
     .order-des {
       //   margin-bottom: 20px;

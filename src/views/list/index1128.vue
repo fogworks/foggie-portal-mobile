@@ -9,9 +9,9 @@
         <template #leftin>
           <Search />
         </template>
-        <!-- <template #rightout>
+        <template #rightout>
           <Category class="my_category_icon" @click="toShowSearch" />
-        </template> -->
+        </template>
       </nut-searchbar>
 
       <!-- <p>You can search your order here.</p> -->
@@ -51,7 +51,7 @@
       </nut-row>
     </div>
 
-    <!-- <div style="margin: 15px 0px">
+    <div style="margin: 15px 0px">
       <nut-noticebar
         :background="`rgba(251, 248, 220, 1)`"
         :color="`#D9500B`"
@@ -62,7 +62,7 @@
         :standTime="1000"
         :close-mode="true"
       ></nut-noticebar>
-    </div> -->
+    </div>
     <ErrorPage v-if="isError && !list.length" @refresh="loadMoreFun"></ErrorPage>
     <nut-infinite-loading
       v-else-if="list.length"
@@ -74,39 +74,54 @@
     >
       <template v-for="(item, index) in list">
         <div
-          class="list_item order_item"
+          class="list_item"
           v-if="!(item?.income && item?.state == 0)"
           @click="gotoOrder(item)"
           :class="[searchType === 'History' ? 'history_item' : '']"
         >
-          <div class="order_time">{{ transferGMTTime(item.order_created_at) }}</div>
-          <div class="order_head">
-            <div class="order_img">
-              <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" />
-              <img v-else src="@/assets/desktop1.svg" alt="" />
-              <div class="order_name">{{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
-            </div>
-            <!-- <img src="@/assets/exprie.svg" alt="" /> -->
-            <div class="order_expTime"> <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ handleExprie(item) }}</div>
+          <!-- :style="{ background: randomColor() }" -->
+
+          <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+            <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
+        <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
+        <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
+            <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+            <img v-if="item.electronic_type == 0" src="@/assets/mobile.svg" alt="" />
+            <img v-else src="@/assets/desktop.svg" alt="" />
           </div>
-          <div class="order_content">
-            <div class="order_content_left">
-              <div class="left_space">
-                <span>{{ item.pst }}GB</span> /
-                <span>{{ item.week }}Weeks</span>
-              </div>
-              <div class="left_price">- {{ item.total_price }} DMC</div>
-            </div>
-            <div class="order_content_right">
-              <div class="right_space">
-                <span>{{ getfilesize(item.used_space, 'B') }}</span> /
-                <span>{{ handleDays(item) }} Days</span>
-              </div>
-              <div class="right_price"> + {{ item.income }} DMC</div>
-              <div class="right_rate" v-if="handleRate(item) > 0">+{{ handleRate(item) }}%<TriangleUp></TriangleUp></div>
-            </div>
+          <div>
+            <span>
+              <span v-if="item.domain" style="font-weight: bold">{{ item.domain }}</span>
+              <span v-if="!item.domain" style="font-weight: bold">Order:{{ item.order_id }}</span>
+              <span style="margin-left: 10px">
+                <!-- 待共識 -->
+                <nut-tag v-if="item.state == 0" type="warning">CNR</nut-tag>
+                <!-- 进行中 -->
+                <nut-tag type="success" v-else-if="item.state == 1">CR</nut-tag>
+                <!-- 已结束 -->
+                <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Expired</nut-tag>
+                <!-- 已取消 -->
+                <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
+                <!-- 下週期將取消 -->
+                <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
+                <!-- 預存⾦不足 -->
+                <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">IADTCNC</nut-tag>
+                <!-- 預存⾦充足 -->
+                <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">SFIA</nut-tag>
+              </span>
+            </span>
+            <span :class="['earnings']" v-if="item.income" style="font-weight: bold">
+              +{{ item.income }}
+              <!-- <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight> -->
+            </span>
           </div>
-          <div class="order_status">{{ statusTypes[item.state] }} </div>
+          <div
+            ><span>{{ item.pst || '--' }} GB</span> <span class="time">{{ transferGMTTime(item.order_created_at) }}</span>
+          </div>
+          <div style="color: red">
+            <span>Payment:</span>
+            <span class="time" style="color: red; font-weight: bold"> - {{ item.total_price }} DMC</span>
+          </div>
         </div>
       </template>
     </nut-infinite-loading>
@@ -154,7 +169,7 @@
           </nut-form-item>
 
           <div class="bottom_btn">
-            <nut-button type="warning" plain :loading="SearchLoading" @click="showTop = false"> Reset </nut-button>
+            <nut-button type="warning" plain :loading="SearchLoading" @click="showTop = false"> Cancel </nut-button>
             <nut-button type="warning" @click="toSearch" :disabled="searchDisabled" :loading="SearchLoading"> Search </nut-button>
           </div>
         </nut-form>
@@ -168,13 +183,13 @@
   import IconSwitch from '~icons/home/switch.svg';
   import IconHistory from '~icons/home/history.svg';
   import IconHistoryActivate from '~icons/home/historyActivate.svg';
-  import { Search, Category, TriangleUp, Clock } from '@nutui/icons-vue';
+  import { Search, Category } from '@nutui/icons-vue';
   import { search_cloud } from '@/api';
   // import { listData } from './data';
   import useVariable from './details/useVariable.js';
   import { useOrderStore } from '@/store/modules/order';
   import useOrderList from '../home/useOrderList.ts';
-  import { transferGMTTime, transferUTCTime, getfilesize, handleDays, handleExprie, handleRate } from '@/utils/util';
+  import { transferGMTTime, transferUTCTime } from '@/utils/util';
   import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
   import ErrorPage from '@/views/errorPage/index.vue';
 
@@ -187,15 +202,7 @@
   const searchType = ref(route.query.searchType == 'History' ? 'History' : 'Open');
   console.log(route.query.searchType);
   const currentTotal = ref(0);
-  const statusTypes = {
-    0: 'Consensus not reached',
-    1: 'Consensus reached',
-    2: 'Insufficient advance deposit to cancel the next cycle',
-    3: 'Sufficient funds in advance',
-    4: 'Order over',
-    5: 'Canceled',
-    6: 'Cancellation of the next cycle',
-  };
+
   const keyWord = ref('');
   const horseLamp = ref([
     'CNR - - Consensus not reached ',
@@ -523,7 +530,7 @@
     }
   }
   .list_box {
-    height: calc(100vh - 500px);
+    height: calc(100vh - 600px);
     overflow: auto;
     // padding: 0 10px;
     .list_item {
@@ -635,95 +642,22 @@
     .bottom_btn {
       display: flex;
       justify-content: space-around;
+      //   position: absolute;
+      //   bottom: 20px;
+      //   width: 100%;
+      //   padding: 20px 40px;
+      //   .nut-button {
+      //     height: 100px;
+      //     background-color: #2d2e41 !important;
+      //     font-size: 40px;
+      //     border: 0px;
+      //     color: #ffffff;
+      //     font-weight: 600px;
+      //   }
       .nut-button--disabled {
         background: #aaa !important;
         opacity: 0.28 !important;
       }
-    }
-  }
-  .list_box .order_item {
-    position: relative;
-    margin: 50px 0;
-    padding: 20px !important;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    // overflow: hidden;
-    // background:
-    //   linear-gradient(#fff, #fff) padding-box,
-    //   linear-gradient(145deg, #e81cff, #40c9ff) border-box;
-    // border: 2px solid transparent;
-    .order_time {
-      position: absolute;
-      right: 0;
-      top: -36px;
-      color: #888;
-      font-weight: bold;
-      font-size: 24px;
-      z-index: 99;
-    }
-    .order_head {
-      display: flex;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      z-index: 99;
-      img {
-        width: 42px;
-        margin: 0 auto;
-        margin-right: 10px;
-      }
-      .order_img,
-      .order_expTime {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        // color: #ff7d24;
-
-        .order_name {
-          font-size: 30px;
-        }
-      }
-    }
-    .order_content {
-      display: flex;
-      z-index: 99;
-      .order_content_left,
-      .order_content_right {
-        width: 50%;
-        // height: 200px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 28px;
-        line-height: 42px;
-        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-        padding: 22px 0;
-      }
-      .order_content_left {
-        .left_price {
-          color: red;
-          margin: 10px 0;
-        }
-      }
-      .right_price {
-        color: green;
-        margin: 10px 0;
-      }
-      .right_rate {
-        color: #ff7d24;
-        font-size: 32px;
-        // margin-top: 10px;
-      }
-    }
-    .order_status {
-      z-index: 99;
-      color: #ff8b00;
-      font-weight: bold;
-      font-size: 28px;
     }
   }
 </style>
