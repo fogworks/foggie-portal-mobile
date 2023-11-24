@@ -184,7 +184,6 @@
     }
     .CustomName {
       //   background-color: #2d2e41 !important;
-
       .nut-dialog__header {
         display: flex;
         justify-content: flex-start;
