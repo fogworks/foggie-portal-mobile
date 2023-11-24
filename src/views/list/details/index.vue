@@ -602,7 +602,7 @@
 
       router.push({
         name: 'FileList',
-        query: { ...route.query, category: 0, prefix: prefix.join('/'),bucketName:bucketName.value },
+        query: { ...route.query, category: 0, prefix: prefix.join('/'), bucketName: bucketName.value },
       });
     }
   };
@@ -906,20 +906,19 @@
               showToast.hide();
             }
           } else {
-            delay(()=>{
-              serOrderNameError(err);
-            },3000)
+            delay(() => {
+              serOrderNameError();
+            }, 3000);
           }
         })
         .catch((err) => {
-          delay(()=>{
+          delay(() => {
             serOrderNameError(err);
-          },3000)
-         
+          }, 3000);
         });
     }
 
-    function serOrderNameError(errMessage) {
+    function serOrderNameError(errMessage = '') {
       if (retrNumber >= 5) {
         showToast.hide();
         isNameLoading.value = false;
@@ -947,8 +946,9 @@
           },
         });
       } else {
-        delay(()=>{ setOrderName()},3000)
-       
+        delay(() => {
+          setOrderName();
+        }, 3000);
       }
     }
   };
@@ -1227,7 +1227,6 @@
     }
     tableLoading.value = false;
   };
-
 
   const setDefaultName = () => {
     let orderName = route.query.id;

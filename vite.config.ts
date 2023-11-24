@@ -239,7 +239,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
       }),
     ],
     build: {
-      minify: false,
+      minify: buildType ? false : 'terser',
       outDir: buildType ? 'cordova/www' : 'dist',
       terserOptions: {
         compress: {
