@@ -862,7 +862,8 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: #333333;
+      // color: #333333;
+      color: #5758a0;
       font-size: 30px;
       font-weight: bold;
 

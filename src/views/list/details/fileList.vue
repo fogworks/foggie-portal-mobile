@@ -678,6 +678,9 @@
             // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
             // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
             console.log(row.imgUrlLarge);
+          } else if (['ppt', 'pptx'].includes(type)) {
+            window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+            console.log(row.imgUrlLarge);
           } else if (row.imgUrlLarge) {
             imgUrl.value = row.imgUrlLarge;
             detailShow.value = true;
