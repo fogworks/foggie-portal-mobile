@@ -4,7 +4,6 @@
       <div class="top_back" @click="router.go(-1)">Withdraw DMC to your wallet</div>
     </div>
     <div v-if="canWithDraw && !loading" :class="['middle_box', showKeyboard ? 'full_height' : '']">
-      <!-- <img class="top_img" src="@/assets/withdraw-cion.png" alt="" /> -->
       <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" />
       <div class="title_item">
         <p>Withdrawal account:</p>

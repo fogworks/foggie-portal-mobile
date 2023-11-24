@@ -59,7 +59,7 @@
         <div class="flex-content" @click="toBuyOrder">
           <div class="svg-box">
             <!-- <Shop></Shop> -->
-            <img src="@/assets/buy.svg" alt="" />
+            <img src="@/assets/newIcon/buyOrder.png" alt="" />
           </div>
           <span>Buy</span>
         </div>
@@ -68,7 +68,7 @@
         <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
         <div class="flex-content" @click="gotoPage('Order')">
           <div class="svg-box">
-            <img src="@/assets/orders.svg" alt="" />
+            <img src="@/assets/newIcon/orders.png" alt="" />
           </div>
           <span>Orders</span>
         </div>
@@ -77,7 +77,7 @@
         <!-- <div class="flex-content" @click="router.push('/analysis')"> -->
         <div class="flex-content" @click="gotoPage('analysisChart')">
           <div class="svg-box">
-            <img src="@/assets/analysis.svg" alt="" />
+            <img src="@/assets/newIcon/analysis.png" alt="" />
           </div>
           <span>Charts</span>
         </div>
@@ -86,8 +86,9 @@
         <div class="flex-content" @click="gotoPage('transactionRecords')">
           <!-- <div class="flex-content" @click="router.push('/transactionRecords')"> -->
           <div class="svg-box">
-            <!-- <img src="@/assets/IconTransaction.svg" alt="" /> -->
-            <IconTransaction></IconTransaction>
+            <img src="@/assets/newIcon/transaction.png" alt="" />
+            <!-- <img src="@/assets/IconTransaction.svg" alt="" />
+            <IconTransaction></IconTransaction> -->
           </div>
           <span>Transaction <br /> </span>
           <!-- records -->
@@ -631,19 +632,24 @@
 
       &:nth-child(2) {
         .svg-box {
-          background: #34964f;
+          // background: #34964f;
+          // background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+          background-image: linear-gradient(to top, #e0e1e2  0%, #e7f0fd 100%);
         }
       }
 
       &:nth-child(3) {
         .svg-box {
-          background: #fcd116;
+          // background: #fcd116;
+          background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
       }
 
       &:nth-child(4) {
         .svg-box {
-          background: #5f57ff;
+          // background: #5f57ff;
+          // background-image: linear-gradient(to top, #5ee7df 0%, #b490ca 100%);
+          background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
         }
       }
     }
@@ -669,14 +675,19 @@
         width: 100px;
         height: 100px;
         margin-bottom: 15px;
-        background: #ff8b00;
+        // background: #ff8b00;
+        background: linear-gradient(to bottom, #d5dee7 0%, #e8ebf2 50%, #e2e7ed 100%),
+          linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 50%, rgba(255, 255, 255, 0.02) 61%, rgba(0, 0, 0, 0.02) 73%),
+          linear-gradient(33deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
+        background-blend-mode: normal, color-burn;
+
         // box-shadow: 0px 1px 2px 2px #ccc;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
         svg,
         img {
-          width: 55px;
-          height: 55px;
+          width: 70px;
+          height: 70px;
           color: #fff;
         }
       }

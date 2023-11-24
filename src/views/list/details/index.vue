@@ -47,7 +47,8 @@
         <div class="type_check">
           <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
             <div class="svg_box svg_box2 order-icon-node-tree">
-              <IconRiNodeTree color="#fff" />
+              <!-- <IconRiNodeTree color="#fff" /> -->
+              <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 60%;height: 60%;vertical-align:middle;">
             </div>
             <p>Merkle</p>
           </div>
@@ -112,6 +113,7 @@
             <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
             <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
             <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+         
             <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
             <img v-else src="@/assets/svg/home/file.svg" alt="" />
           </div>
@@ -262,12 +264,13 @@
           :close-on-click-overlay="false"
           :show-cancel="false"
           :show-confirm="false"
-          custom-class="CustomName"
+          custom-class="CustomName BucketName"
           overlayClass="CustomOverlay"
         >
           <template #header>
             <span class="icon" style="margin-right: 5px">
               <IconBucket color="#000"></IconBucket>
+              <!-- <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%;height: 100%;"> -->
             </span>
             Create a Bucket
           </template>
@@ -567,6 +570,8 @@
     detailRow.value = row;
     const type = row.name.substring(row.name.lastIndexOf('.') + 1);
     console.log(row.imgUrlLarge);
+    console.log(type);
+    
     if (type == 'pdf') {
       curSelectSrc.value = row.imgUrlLarge;
       curSelectType.value = 'pdf';
@@ -587,6 +592,14 @@
       router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
       // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
       // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+      console.log(row.imgUrlLarge);
+    } else if (['ppt', 'pptx'].includes(type)) {
+      // detailRow.value.detailType = 'word';
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
+      // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+      // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
+
       console.log(row.imgUrlLarge);
     } else if (row.imgUrlLarge) {
       imgUrl.value = row.imgUrlLarge;
@@ -1118,6 +1131,7 @@
       tableData.value = [];
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
+
       let name = decodeURIComponent(data.commonPrefixes[i]);
       if (data.prefix) {
         // name = name.split(data.prefix)[1];
@@ -1185,12 +1199,12 @@
         name = name.split('/')[name.split('/').length - 2];
       }
       let isPersistent = data.content[j].isPersistent;
-
+      console.log(data.content[j],'data.content[j]');
+      
       let item = {
         isDir: isDir,
         checked: false,
         name,
-        category: data.content[j].category,
         category: data.content[j].category,
         fileType: data.content[j].contentType,
         fullName: decodeURIComponent(data.content[j].key),
@@ -1225,6 +1239,9 @@
 
       tableData.value.push(item);
     }
+
+    console.log(tableData.value,'tableData.value');
+    
     tableLoading.value = false;
   };
 
@@ -1559,7 +1576,7 @@
           text-align: center;
           border-radius: 20px;
 
-          svg {
+          svg  {
             width: 100%;
             height: 100%;
             vertical-align: middle;
@@ -1569,10 +1586,11 @@
         &:nth-child(3),
         &:nth-child(4) {
           .svg_box {
-            svg {
+            svg{
               width: 60px;
               height: 60px;
             }
+
           }
         }
 
@@ -1985,6 +2003,14 @@
         font-size: 35px;
       }
     }
+  }
+  .BucketName{
+    background: url('@/assets/newIcon/Bucketname.png');
+      // background-size: 100% 100%;
+      background-size: 30%;
+      background-repeat: no-repeat;
+
+      background-position: calc(100% + 0.5rem) top;
   }
 </style>
 <style lang="scss">
