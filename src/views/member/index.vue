@@ -4,10 +4,10 @@
       <div class="title">UserInfo</div>
       <div class="user_header_box">
         <div class="content">
-          <img src="@/assets/1698057212519.jpg" alt="" srcset="">
+          <img src="@/assets/user.png" alt="" srcset="">
           <!-- <img src="@/assets/user.png" alt="" srcset=""> -->
 
-          
+
 
         </div>
         <div>
@@ -56,27 +56,33 @@
 
         <nut-col :span="6" @click="gotoDetail('/personalInfo')">
           <div class="customBtn">
-            <My2 color="#505056" />
+            <!-- <My2 color="#505056" /> -->
+            <img src="@/assets/newIcon/userInfo.png" style="width: 45px; height: 45px; display: inline-block" />
+            
           </div>
           <div>Profile</div>
         </nut-col>
         <nut-col :span="6" @click="visible = true">
           <div class="customBtn">
             <!-- <Location color="#505056" /> -->
-            <Link color="#505056" />
+            <!-- <Link color="#505056" /> -->
+            <img src="@/assets/newIcon/links.png" style="width: 45px; height: 45px; display: inline-block" />
+
           </div>
           <div>Links</div>
         </nut-col>
         <nut-col :span="6" @click="contactUs">
           <div class="customBtn">
-            <Service color="#505056" />
+            <!-- <Service color="#505056" /> -->
+            <img src="@/assets/newIcon/ContactUs.png" style="width: 45px; height: 45px; display: inline-block" />
+
           </div>
           <div>Contact Us</div>
         </nut-col>
         <nut-col :span="6" @click="goToPrivacy">
           <div class="customBtn">
             <!-- <Link color="#505056" /> -->
-            <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; display: inline-block" />
+            <img src="@/assets/newIcon/AboutUs.png" style="width: 45px; height: 45px; display: inline-block" />
           </div>
           <div>About
             <div>Fog Works</div>
@@ -301,15 +307,23 @@ onMounted(() => {
 
       .content {
         width: var(--w);
-        height: calc(var(--w) * 1.1547);
-        clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+        // height: calc(var(--w) * 1.1547);
+        height: var(--w);
+
+        // clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
         background-color: #f4f5f9;
         display: grid;
         place-items: center;
+        border-radius: 50%;
+        box-shadow: rgb(24 32 79 / 25%) 0px 40px 80px,
+          rgb(255 255 255 / 50%) 0px 0px 0px 0.5px inset;
+        // background:linear-gradient(#fff, #fff) padding-box,  linear-gradient(145deg, #e81cff, #40c9ff) border-box;
+
         img {
           width: 90% !important;
           height: 91% !important;
-          clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+          border-radius: 50%;
+          // clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
         }
 
       }

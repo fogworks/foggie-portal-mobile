@@ -47,7 +47,8 @@
         <div class="type_check">
           <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
             <div class="svg_box svg_box2 order-icon-node-tree">
-              <IconRiNodeTree color="#fff" />
+              <!-- <IconRiNodeTree color="#fff" /> -->
+              <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 60%;height: 60%;vertical-align:middle;">
             </div>
             <p>Merkle</p>
           </div>
@@ -262,12 +263,13 @@
           :close-on-click-overlay="false"
           :show-cancel="false"
           :show-confirm="false"
-          custom-class="CustomName"
+          custom-class="CustomName BucketName"
           overlayClass="CustomOverlay"
         >
           <template #header>
             <span class="icon" style="margin-right: 5px">
               <IconBucket color="#000"></IconBucket>
+              <!-- <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%;height: 100%;"> -->
             </span>
             Create a Bucket
           </template>
@@ -1562,7 +1564,7 @@
           text-align: center;
           border-radius: 20px;
 
-          svg {
+          svg  {
             width: 100%;
             height: 100%;
             vertical-align: middle;
@@ -1572,10 +1574,11 @@
         &:nth-child(3),
         &:nth-child(4) {
           .svg_box {
-            svg {
+            svg{
               width: 60px;
               height: 60px;
             }
+
           }
         }
 
@@ -1988,6 +1991,14 @@
         font-size: 35px;
       }
     }
+  }
+  .BucketName{
+    background: url('@/assets/newIcon/Bucketname.png');
+      // background-size: 100% 100%;
+      background-size: 30%;
+      background-repeat: no-repeat;
+
+      background-position: calc(100% + 0.5rem) top;
   }
 </style>
 <style lang="scss">

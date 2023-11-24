@@ -16,7 +16,10 @@
       ref="uploadRef"
       class="upload_class"
     >
-      <nut-button type="success" class="upload_btn" size="small">+</nut-button>
+      <nut-button    type="info" class="upload_btn" size="small">
+        <!-- + -->
+        <img src="@/assets/newIcon/upload.png" alt="" srcset=""/>
+      </nut-button>
     </nut-uploader>
   </div>
   <Transition name="fade-transform" mode="out-in">
@@ -319,6 +322,13 @@
     width: 80px;
     height: 80px;
     cursor: pointer;
+    display: grid;
+    place-items: center;
+    img{
+      width: 100%;
+      height: 100%;
+
+    }
   }
 
   .upload_class {
