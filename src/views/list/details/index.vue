@@ -123,7 +123,7 @@
           </div>
         </div>
       </nut-infinite-loading>
-      <nut-empty v-else description="No data,Go ahead and upload it." image="error"> </nut-empty>
+      <nut-empty v-else style="padding: 10px 0 50px 0" description="No data,Go ahead and upload it." image="error"> </nut-empty>
       <Teleport to="body">
         <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
           <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
@@ -597,7 +597,7 @@
       curSelectSrc.value = row.imgUrlLarge;
       curSelectType.value = 'ppt';
       // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
-      window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+      window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
       // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
 
       console.log(row.imgUrlLarge);
@@ -1131,7 +1131,7 @@
       tableData.value = [];
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
-      let name = decodeURIComponent(data.commonPrefixes[i]);
+      let name = data.commonPrefixes[i];
       if (data.prefix) {
         // name = name.split(data.prefix)[1];
         name = name.split('/')[name.split('/').length - 2] + '/';
@@ -1151,7 +1151,7 @@
         category: 1,
         fileType: 1,
 
-        fullName: decodeURIComponent(data.commonPrefixes[i]),
+        fullName: data.commonPrefixes[i],
         key: data.commonPrefixes[i],
         idList: [
           {
@@ -1188,7 +1188,7 @@
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
-      let name = decodeURIComponent(data.content[j].key);
+      let name = data.content[j].key;
       if (data.prefix) {
         name = name.split(data.prefix)[1];
       }
@@ -1206,7 +1206,7 @@
         name,
         category: data.content[j].category,
         fileType: data.content[j].contentType,
-        fullName: decodeURIComponent(data.content[j].key),
+        fullName: data.content[j].key,
         key: data.content[j].key,
         idList: [
           {

@@ -36,11 +36,10 @@ service.interceptors.response.use(
 
     const res = response.data;
     let code = res.code;
-    // const code = 420;
-    // if (response.config.url?.indexOf('/order/search') > -1) {
-    //   code = 420;
-    // }
-    if (response.config.url?.indexOf('/v1/chain/get_account') > -1) {
+    if (
+      response.config.url?.indexOf('/v1/chain/get_account') > -1 ||
+      response.config.url?.indexOf('/reCAPTCHA_verification/recaptcha/api/siteverify') > -1
+    ) {
       return res;
     }
     if (code !== 200) {
@@ -56,33 +55,27 @@ service.interceptors.response.use(
         router.push('/login');
         return;
       } else if (code === 420) {
-        // let res = await refreshToken();
-        // if (res && res.data && res.data.access_token) {
-        //   let token = res.data.access_token;
-        //   let type = res.data.token_type;
-        //   token = type + ' ' + token;
-        //   userStore.setToken(token);
-        //   let res2 = await user();
-        //   if (res2.data) {
-        //     userStore.setInfo(res2.data);
-        //   }
-        //   window.localStorage.setItem('last_refresh_token', token);
-        //   return service(response.config);
-        // } else {
-        userStore.setInfo({});
-        userStore.setToken('');
-        userStore.setRefreshToken('');
-        userStore.setCloudCodeIsBind(false);
-        router.push('/login');
-        return;
-        // }
-      } else {
-        if (ignoreUrl.indexOf(response.config.url) > -1) {
-          return res;
+        let res = await refreshToken();
+        if (res && res.data && res.data.access_token) {
+          let token = res.data.access_token;
+          let type = res.data.token_type;
+          token = type + ' ' + token;
+          userStore.setToken(token);
+          let res2 = await user();
+          if (res2.data) {
+            userStore.setInfo(res2.data);
+          }
+          window.localStorage.setItem('last_refresh_token', token);
+          return service(response.config);
+        } else {
+          userStore.setInfo({});
+          userStore.setToken('');
+          userStore.setRefreshToken('');
+          userStore.setCloudCodeIsBind(false);
+          router.push('/login');
+          return;
         }
-        // showToast.fail(res.message);
-        // return Promise.reject(res);
-        return res;
+      } else {
       }
     } else {
       return res;

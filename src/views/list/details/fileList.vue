@@ -743,9 +743,10 @@
       server = new grpcService.default.ServiceClient(ip, null, null);
       let ProxRenameObject = new Prox.default.ProxRenameObject();
       ProxRenameObject.setHeader(header);
-      ProxRenameObject.setSourceobject(checkData[index].fullName);
-      ProxRenameObject.setTargetobject(targetObject(checkData[index]));
+      ProxRenameObject.setSourceobject(encodeURIComponent(checkData[index].fullName));
+      ProxRenameObject.setTargetobject(encodeURIComponent(targetObject(checkData[index])));
       ProxRenameObject.setFiletype(checkData[index].fileType);
+      console.log(ProxRenameObject, 'ProxRenameObject');
 
       server.renameObjects(ProxRenameObject, {}, (err, data) => {
         if (data) {
@@ -790,9 +791,9 @@
     const targetObject = () => {
       if (isNewFolder.value) {
         if (prefix.value.length) {
-          return prefix.value.join('/') + '/' + newName.value + '/';
+          return encodeURIComponent(prefix.value.join('/') + '/' + newName.value) + '/';
         } else {
-          return newName.value + '/';
+          return encodeURIComponent(newName.value) + '/';
         }
       } else {
         const arr = checkData?.[0]?.fullName.split('/');
@@ -824,6 +825,8 @@
       ProxFileInfo.setKey(targetObject());
       ProxFileInfo.setContenttype('application/x-directory');
       ProxFileInfo.setSize(0);
+      console.log(ProxFileInfo, 'ProxFileInfo');
+
       server.touchFile(ProxFileInfo, metadata.value, (err, data) => {
         if (data) {
           showToast.success('Create successful');
@@ -838,9 +841,10 @@
     } else {
       let ProxRenameObject = new Prox.default.ProxRenameObject();
       ProxRenameObject.setHeader(header);
-      ProxRenameObject.setSourceobject(checkData[0].fullName);
+      ProxRenameObject.setSourceobject(encodeURIComponent(checkData[0].fullName));
       ProxRenameObject.setTargetobject(targetObject());
       ProxRenameObject.setFiletype(checkData[0].fileType);
+      console.log(ProxRenameObject, 'ProxRenameObject');
 
       server.renameObjects(ProxRenameObject, metadata.value, (err, data) => {
         if (data) {
@@ -971,7 +975,7 @@
     if (prefix?.length) {
       list_prefix = prefix.join('/');
       if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
-        list_prefix = list_prefix + '/';
+        list_prefix = encodeURIComponent(list_prefix) + '/';
       }
     }
     // let ip = orderInfo.value.rpc.split(':')[0];
@@ -1159,7 +1163,7 @@
       await getOrderInfo();
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
-      let name = decodeURIComponent(data.commonPrefixes[i]);
+      let name = data.commonPrefixes[i];
       if (data.prefix) {
         // name = name.split(data.prefix)[1];
         name = name.split('/')[name.split('/').length - 2] + '/';
@@ -1179,7 +1183,7 @@
         category: 1,
         fileType: 1,
 
-        fullName: decodeURIComponent(data.commonPrefixes[i]),
+        fullName: data.commonPrefixes[i],
         key: data.commonPrefixes[i],
         idList: [
           {
@@ -1226,7 +1230,9 @@
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
-      let name = decodeURIComponent(data.content[j].key);
+      let name = data.content[j].key;
+      console.log(data.prefix, 'data.prefix');
+
       if (data.prefix) {
         name = name.split(data.prefix)[1];
       }
@@ -1245,7 +1251,7 @@
         name,
         category: data.content[j].category,
         fileType: 2,
-        fullName: decodeURIComponent(data.content[j].key),
+        fullName: data.content[j].key,
         key: data.content[j].key,
         idList: [
           {
@@ -1295,8 +1301,10 @@
         document.getElementsByClassName('main-page')[0].style.overflow = '';
         isFirst.value = false;
       } else {
-        document.getElementsByClassName('main-page')[0].style.overflow = 'hidden';
-        isFirst.value = true;
+        setTimeout(() => {
+          document.getElementsByClassName('main-page')[0].style.overflow = 'hidden';
+          isFirst.value = true;
+        }, 1000);
       }
     });
   };
