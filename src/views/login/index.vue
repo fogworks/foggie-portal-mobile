@@ -95,12 +95,14 @@
     }
   }
   const submit = async () => {
-    let isPass = false;
-    try {
-      loading.value = true;
-      isPass = await load_gpa_token();
-    } catch (error) {
-      loading.value = false;
+    let isPass = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? true : false;
+    if (!isPass) {
+      try {
+        loading.value = true;
+        isPass = await load_gpa_token();
+      } catch (error) {
+        loading.value = false;
+      }
     }
 
     console.log(isPass);

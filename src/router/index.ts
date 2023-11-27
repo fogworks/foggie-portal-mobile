@@ -3,21 +3,24 @@ import routes from './routes';
 import { useUserStore } from '@/store/modules/user';
 import { useOrderStore } from '@/store/modules/order';
 import { showToast } from '@nutui/nutui';
-
+const isAndroid = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? true : false;
 const router: Router = createRouter({
   history: createWebHashHistory(),
   routes: routes,
 });
 router.afterEach(() => {
-  showToast.hide('router_loading');
+ if (!isAndroid) showToast.hide('router_loading');
 });
 router.beforeEach((to, from, next) => {
-  showToast.loading('', {
-    cover: true,
-    id: 'router_loading',
-    customClass: 'app_loading',
-    icon: '',
-  });
+  if (!isAndroid) {
+    showToast.loading('', {
+      cover: true,
+      id: 'router_loading',
+      customClass: 'app_loading',
+      icon: '',
+    });
+  }
+
   const userStore = useUserStore();
   const orderStore = useOrderStore();
   // orderStore.setOrderList([]);
