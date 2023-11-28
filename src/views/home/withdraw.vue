@@ -158,7 +158,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { showToast, showDialog } from '@nutui/nutui';
   import useUserAssets from './useUserAssets.ts';
-  import { get_otp, verify_otp_token, withdraw_otp, check_bind_otp, get_commission_rate, user_withdraw } from '@/api/amb';
+  import { get_otp, verify_otp_token, withdraw_otp, check_bind_otp, get_commission_rate, user_withdraw, getIsVerifiedAPI } from '@/api/amb';
   const userStore = useUserStore();
   const dmc = computed(() => userStore.getUserInfo.dmc);
   const email = computed(() => userStore.getUserInfo.email);
@@ -234,11 +234,19 @@
       loadingRotate: false,
     });
     let res = await check_bind_otp();
+    let response = {}
+    if(!res.result.bind_secret){
+      response = await getIsVerifiedAPI();
+    }
     if (res.result.bind_secret) {
       isBind.value = true;
       canWithDraw.value = true;
       loading.value = false;
-
+      showToast.hide();
+    } else if (!response.result.set_otp) {
+      isBind.value = false;
+      canWithDraw.value = true;
+      loading.value = false;
       showToast.hide();
     } else {
       get_otp()
@@ -347,7 +355,7 @@
         });
     };
     let src = require('@/assets/fog-works_w.png');
-    let str = `<img class="withdraw_img" src=${src} style="height:60px;width:120px;"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>The final amount is ${realAmount.value} DMC. Are you sure you want to withdraw it?</p >`;
+    let str = `<img class="withdraw_img" src=${src} style="height:60px;width:120px;"/><p style='word-break:break-word;color:#535353;text-align:left;'>The final amount is ${realAmount.value} DMC. Are you sure you want to withdraw it?</p >`;
     showDialog({
       title: 'Notice',
       content: str,

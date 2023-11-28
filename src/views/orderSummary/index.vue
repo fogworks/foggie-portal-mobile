@@ -64,15 +64,15 @@
       </div>
       <div class="summary_list">
         <div class="summary_key">Space</div>
-        <div class="summary_value">{{ myHistoryOrder.pst }} GB</div>
+        <div class="summary_value">{{ myHistoryOrder?.pst }} GB</div>
       </div>
       <div class="summary_list">
         <div class="summary_key">Time</div>
-        <div class="summary_value">{{ myHistoryOrder.week }} Weeks</div>
+        <div class="summary_value">{{ myHistoryOrder?.week }} Weeks</div>
       </div>
       <div class="summary_list">
         <div class="summary_key">Price</div>
-        <div class="summary_value">{{ myHistoryOrder.total_price }} DMC</div>
+        <div class="summary_value">{{ myHistoryOrder?.total_price }} DMC</div>
       </div>
       <div class="summary_list">
         <div class="summary_key">Status</div>

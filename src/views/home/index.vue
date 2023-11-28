@@ -2,7 +2,7 @@
   <div>
     <div class="dmc_account">
       <div class="img-box">
-        <img src="@/assets/user.png" alt="" />
+        <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
       </div>
       Hello,
       {{ userInfo.email && userInfo.email.split('@')[0] }}
@@ -216,14 +216,14 @@
   //   import { search_cloud } from '@/api';
   import { search_cloud } from '@/api';
   import useUserAssets from './useUserAssets.ts';
-
   import { transferUTCTimeDay, getfilesize2 } from '@/utils/util';
-  import { transferUTCTime, formatNumber } from '@/utils/util';
+  import { transferUTCTime, formatNumber,transferGMTTime } from '@/utils/util';
   import '@nutui/nutui/dist/packages/toast/style';
   import { useIntersectionObserver } from '@vueuse/core';
   import { search_order_profit, search_user_asset_detail } from '@/api/amb';
 
   const userInfo = computed(() => userStore.getUserInfo);
+  const userAvatar = computed(() => userStore.getUserInfo?.image_path);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
 
   const router = useRouter();
@@ -481,9 +481,23 @@
   function gotoOrderPage(row) {
     console.log(row);
     if (row.order_info.state == 5 || row.order_info.state == 4) {
+      window.sessionStorage.removeItem('myHistoryOrder');
+      window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(row));
       router.push({
         name: 'orderSummary',
         query: {
+          id: row.order_id,
+          type: 'history',
+          status: row.order_info.state,
+          createdTime: transferGMTTime(row.order_created_at),
+          endTime: row.expire ? transferUTCTime(row.expire) :'- -',
+          uuid: row.order_info.uuid,  
+        },
+      });
+
+      router.push({
+        name: 'orderSummary',
+        query: {  
           id: row.order_id,
           status: row.order_info.state,
           type: 'history',
@@ -594,13 +608,14 @@
       margin-right: 10px;
       //   background: #5758a0;
       box-sizing: border-box;
-      border-radius: 10px;
+      overflow: hidden;
       border-radius: 50%;
 
       img {
         width: 45px;
         margin: 0 auto;
         vertical-align: middle;
+        border-radius: 10px;
       }
     }
 
