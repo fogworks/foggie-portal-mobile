@@ -195,6 +195,12 @@
   import { debounce, delay } from 'lodash';
   import FakeProgress from 'fake-progress';
 
+
+  import { useUserStore } from '@/store/modules/user';
+  const userStore = useUserStore();
+  const dmc = computed(() => userStore.getUserInfo.dmc);
+
+
   // import useUpdateDMC from './useUpdateDMC';
   // const { getAmbDmc, targetAccount } = useUpdateDMC();
 
@@ -367,6 +373,7 @@
       deviceType: 3,
       poolType: 'golden', //vofo.*  / golden
       terminalType: 2,
+      userAddress: dmc.value,
     })
       .then((res) => {
         loading.value = false;
