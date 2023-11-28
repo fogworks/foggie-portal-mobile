@@ -179,6 +179,7 @@ export default function useShare(orderInfo, header, deviceType) {
           coverUrl = `${shareUrl}/img/` + linkRes.data;
         }
       }
+      console.log(periodValue.value[0], 'periodValue.value[0]');
       return getLink({
         url: fileLink,
         coverUrl: category == 2 ? coverUrl : '',
@@ -344,8 +345,9 @@ export default function useShare(orderInfo, header, deviceType) {
         options.value = options.value.filter((el) => {
           return el.value < (expireTimeStamp - startTimeStamp) / 1000;
         });
-        periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
         desc.value = transferUTCTime(orderInfo.value.expire);
+        options.value.unshift({ text: desc.value, value: +((expireTimeStamp - startTimeStamp) / 1000).toFixed(0) });
+        periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
       } else {
         options.value = [
           {
@@ -378,6 +380,13 @@ export default function useShare(orderInfo, header, deviceType) {
           },
         ];
       }
+    },
+    { deep: true },
+  );
+  watch(
+    periodValue,
+    (val) => {
+      console.log(val, 'val');
     },
     { deep: true },
   );

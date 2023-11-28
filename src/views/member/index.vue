@@ -262,7 +262,7 @@
         userStore.setCloudCodeIsBind(false);
 
         // localStorage.removeItem('refresh_token');
-        router.push('/login');
+        router.push('/guide');
         // console.log('确定');
       },
     });

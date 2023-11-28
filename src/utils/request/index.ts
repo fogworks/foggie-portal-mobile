@@ -6,7 +6,6 @@ import { useUserStore } from '@/store/modules/user';
 import { useRouter } from 'vue-router';
 import { refreshToken, user } from '@/api';
 import ignoreUrl from './ignoreUrl';
-const router = useRouter();
 
 const service: AxiosInstance = axios.create({
   withCredentials: false,
@@ -32,17 +31,21 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
   async (response: AxiosResponse) => {
+    const router = useRouter();
     const userStore = useUserStore();
 
     const res = response.data;
-    const code = res.code;
-    if (response.config.url?.indexOf('/v1/chain/get_account') > -1) {
+    let code = res.code;
+    if (
+      response.config.url?.indexOf('/v1/chain/get_account') > -1 ||
+      response.config.url?.indexOf('/reCAPTCHA_verification/recaptcha/api/siteverify') > -1
+    ) {
       return res;
     }
     if (code !== 200) {
       if (ignoreUrl.indexOf(response.config.url) > -1) {
-      } else {
-        showToast.fail(res.error || res.msg || res.message || 'Network error. Please try again.');
+      } else if (code != 420) {
+        showToast.fail(res.error || res.msg || res.message || response.config.url + 'Network error. Please try again.');
       }
       if (code === 401 || code === 403) {
         userStore.setInfo({});
@@ -63,7 +66,6 @@ service.interceptors.response.use(
             userStore.setInfo(res2.data);
           }
           window.localStorage.setItem('last_refresh_token', token);
-          // setToken(token);
           return service(response.config);
         } else {
           userStore.setInfo({});
@@ -74,12 +76,6 @@ service.interceptors.response.use(
           return;
         }
       } else {
-        if (ignoreUrl.indexOf(response.config.url) > -1) {
-          return res;
-        }
-        // showToast.fail(res.message);
-        // return Promise.reject(res);
-        return res;
       }
     } else {
       return res;
@@ -93,7 +89,7 @@ service.interceptors.response.use(
     if (ignoreUrl.indexOf(error.config.url) > -1) {
       return Promise.reject(error.message);
     }
-    showToast.fail(error.message);
+    showToast.fail(error.config.url, error.message);
     return Promise.reject(error.message);
   },
 );

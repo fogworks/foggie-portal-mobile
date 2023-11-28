@@ -172,7 +172,7 @@
           <img v-if="item.order_info.electronic_type == 0" src="@/assets/mobile.svg" alt="" />
           <img v-else src="@/assets/desktop.svg" alt="" />
         </div>
-        <div style="justify-content: end !important; margin-top: -2px">
+        <div style="width: 100%; justify-content: flex-end !important; margin-top: -2px">
           <span>{{ transferUTCTime(item.created_at) }}</span>
         </div>
         <div>

@@ -267,11 +267,11 @@
                   } else if (res && res.data) {
                     let data = res.data;
                     let token = data.token_type + ' ' + data.access_token;
-                    // let refresh_token = data.token_type + ' ' + data.refresh_token;
+                    let refresh_token = data.token_type + ' ' + data.refresh_token;
                     let user_id = data.user_id;
                     window.localStorage.setItem('user_id', user_id);
-
                     userStore.setToken(token);
+                    userStore.setRefreshToken(refresh_token);
                     router.push('/home');
                     // getUserInfo();
                     loading.value = false;
