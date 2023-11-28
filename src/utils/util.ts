@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { get_reCAPTCHA_Score_API } from '@/api/index'
+import { get_reCAPTCHA_Score_API } from '@/api/index';
 function transferTime(utc_datetime) {
   let new_datetime = utc_datetime.split('T')[0] + ' ' + utc_datetime.split('T')[1].split('.')[0];
 
@@ -160,60 +160,82 @@ function getSecondTime(second_time) {
   }
   return time;
 }
-
+function handleDays(item) {
+  let created = new Date(item.order_created_at).getTime();
+  let now = new Date().getTime();
+  let dateDiff = now - created;
+  var dayDiff = Math.ceil(dateDiff / (24 * 3600 * 1000)); //计算出相差天数
+  return dayDiff;
+}
+function handleExprie(item) {
+  let created = new Date(item.order_created_at).getTime();
+  let week = item.week;
+  week = week * 7 * 24 * 3600 * 1000;
+  let exprie = created + week;
+  exprie = transferGMTTime(exprie);
+  return exprie;
+}
+function handleRate(item) {
+  let old = Number(item.total_price);
+  let now = item.income;
+  let rate = 0;
+  if (now > old) {
+    let diff = Number(now) - Number(old);
+    rate = (Number(diff) / Number(old)) * 100;
+  }
+  return rate;
+}
 
 /**
  * @param {string} type - homePage / login / social  / e-commerce / Buy
- * 
+ *
  *  */
-const privatekey = '6Lfb1P8oAAAAAOLRpus_iOzdPyWVJZmxqmggXwiC'
-const secret = '6Lfb1P8oAAAAACjGYFUlFaWKOR6NqmYTKLkzRztj'
-const Lower_score_limit = 0
+
+const privatekey = '6Lfb1P8oAAAAAOLRpus_iOzdPyWVJZmxqmggXwiC';
+const secret = '6Lfb1P8oAAAAACjGYFUlFaWKOR6NqmYTKLkzRztj';
+const Lower_score_limit = 0.3;
 function load_gpa_token(type = 'LOGIN') {
   return new Promise(async (resolve, inject) => {
-   const grecaptcha = window.grecaptcha  || {}
+    const grecaptcha = window.grecaptcha || {};
     if (grecaptcha.enterprise) {
       grecaptcha.enterprise.ready(async () => {
         const token = await grecaptcha.enterprise.execute(privatekey, { action: type });
         console.log(token);
-        let isPass = await reCAPTCHA_verification(token)
-        resolve(isPass)
+        let isPass = await reCAPTCHA_verification(token);
+        resolve(isPass);
       });
     } else {
       grecaptcha.ready(async () => {
         const token = await grecaptcha.execute(privatekey, { action: type });
-        let isPass = await reCAPTCHA_verification(token, type)
-        resolve(isPass)
+        let isPass = await reCAPTCHA_verification(token, type);
+        resolve(isPass);
       });
     }
-  })
+  });
 }
-
 
 async function reCAPTCHA_verification(token) {
   let params = {
     secret: secret,
     response: token,
-  }  
-  let res = await get_reCAPTCHA_Score_API(params)
+  };
+  let res = await get_reCAPTCHA_Score_API(params);
   console.log(res);
   if (res.success) {
-    if (res.score > Lower_score_limit) {
-      return true
+    if (res.score >= Lower_score_limit) {
+      return true;
     } else {
-      return false
+      return false;
     }
   } else {
-    return false
+    return false;
   }
 }
 
-
- function formatNumber(number) {
-  
+function formatNumber(number) {
   // 先判断输入是否是有效数字
   if (isNaN(number)) {
-    return { integerPart:0, decimalPart:0 };
+    return { integerPart: 0, decimalPart: 0 };
   }
 
   // 将数字切分为整数和小数部分
@@ -222,10 +244,10 @@ async function reCAPTCHA_verification(token) {
   // 整数部分
   let integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   // 小数部分，保留4位小数
-  let decimalPart = parts[1] ? parseFloat(`0.${parts[1]}`).toFixed(4).substring(2) : "0000";
+  let decimalPart = parts[1] ? parseFloat(`0.${parts[1]}`).toFixed(4).substring(2) : '0000';
 
   // 返回整数和小数部分的组合
-  return { integerPart, decimalPart }
+  return { integerPart, decimalPart };
 }
 
 export {
@@ -241,5 +263,8 @@ export {
   transferUTCTimeDay,
   transferGMTTime,
   load_gpa_token,
-  formatNumber
+  formatNumber,
+  handleDays,
+  handleExprie,
+  handleRate,
 };

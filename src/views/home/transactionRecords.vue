@@ -48,16 +48,17 @@
       </div>
       <!-- LIST -->
       <nut-infinite-loading
+        style="min-height: 280px; height: 0px; padding-bottom: 10px"
         class="list_box"
         load-more-txt="No more content"
         v-model="infinityValue"
         :has-more="hasMore"
         @load-more="loadMore"
       >
-        <div class="list_item" v-for="(item, index) in listData" >
+        <div class="list_item" v-for="(item, index) in listData">
           <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-          <img src="@/assets/DMC_Token1.png" alt="" />
+            <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+            <img src="@/assets/DMC_Token1.png" alt="" />
           </div>
           <div>
             <span class="txt_id" @click="goToHash(item.trx_id)">{{ handleID(item.trx_id) }}</span>
@@ -92,7 +93,10 @@
   import { transferUTCTime, transferGMTTime, formatNumber } from '@/utils/util';
   import { get_user_recharge } from '@/api/amb';
   import * as echarts from 'echarts';
+  const DMC_ADRESS = import.meta.env.VITE_USE_DMC_ADRESS;
 
+
+  
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
@@ -125,8 +129,10 @@
     }
   };
   const goToHash = (transaction_hash) => {
+    
     // window.open(`https://explorer.dmctech.io/transaction/${transaction_hash}`);
-    window.open(`http://154:64.7.46:8801/transaction/${transaction_hash}`);
+    // window.open(`http://154.64.7.46:8801/transaction/${transaction_hash}`);
+    window.open(`${DMC_ADRESS}/transaction/${transaction_hash}`);
 
   };
   // watch(
@@ -205,6 +211,7 @@
     padding: 50px 10px 30px;
     border-radius: 20px;
     background: $primary-color;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
   }
   .top_grid {
     border: none;

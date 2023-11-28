@@ -5,6 +5,7 @@ import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import loadingImg from '@/components/loadingImg/index.vue';
 import { showToast } from '@nutui/nutui';
+import { poolUrl } from '@/setting.js';
 
 export default function useOrderInfo() {
   const store = useUserStore();
@@ -14,6 +15,8 @@ export default function useOrderInfo() {
   const bucketName = ref('');
   const accessKeyId = ref('');
   const secretAccessKey = ref('');
+  const filesCount = ref(0);
+  const usedSize = ref(0);
   let header = new Prox.default.ProxHeader();
   let metadata = ref({});
   const deviceType = computed(() => orderInfo.value.device_type);
@@ -34,6 +37,12 @@ export default function useOrderInfo() {
       id: 'order_info_id',
     });
     let res = await get_unique_order({ order_uuid: route?.query?.uuid });
+
+    let param = {
+      order_uuid: route?.query?.uuid,
+    };
+    const signData = await get_order_sign(param);
+
     orderInfo.value = res.result.data;
     orderInfo.value.used_space = 0;
     // orderInfo.value.rpc = '218.2.96.99:6007';
@@ -41,16 +50,12 @@ export default function useOrderInfo() {
     header.setId(orderInfo.value.foggie_id);
     // header.setId('baeqacmjq');
     // header.setToken(orderInfo.value.sign);
-    let param = {
-      order_uuid: route?.query?.uuid,
-    }
-    const signData = await get_order_sign(param);
     // console.log('signData==11:', signData);
     let cur_token = signData?.result?.data?.sign;
     const date = signData?.result?.data?.timestamp;
     metadata.value = {
       'X-Custom-Date': date,
-    }
+    };
 
     // console.log('cur_token==11:', cur_token);
     header.setToken(cur_token);
@@ -59,7 +64,7 @@ export default function useOrderInfo() {
     orderInfo.value.used_space = 0;
     if (bucketName.value && getKey) {
       return new Promise((resolve, reject) => {
-        let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
+        let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
         let request = new Prox.default.ProxGetCredRequest();
         request.setHeader(header);
         console.log('metadata==11:', request, metadata.value);
@@ -81,12 +86,45 @@ export default function useOrderInfo() {
       return true;
     }
   };
+  const getSummary = () => {
+    return new Promise((resolve, reject) => {
+      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
+      let request = new Prox.default.ProxRequestSummaryIds();
+      request.setHeader(header);
+
+      request.setIdsList([orderInfo.value.foggie_id]);
+
+      console.log(`https://${bucketName.value}.${poolUrl}:7007`, 'bucketNamebucketNamebucketNamebucketName');
+
+      server.summaryInfo(request, metadata.value, (err, res) => {
+        if (err) {
+          console.log('errsummry------:', err);
+          // reject(false);
+          resolve(false);
+        } else {
+          const contentList = res.getContentsList().map((el) => {
+            return {
+              count: el.getCount(),
+              id: el.getId(),
+              total: el.getTotal(),
+            };
+          });
+          filesCount.value = contentList?.[0]?.count || 0;
+          usedSize.value = contentList?.[0]?.total || 0;
+          resolve(contentList?.[0]?.total || 0);
+        }
+      });
+    });
+  };
 
   return {
+    getSummary,
     bucketName,
     orderInfo,
     deviceType,
     getOrderInfo,
+    filesCount,
+    usedSize,
     token,
     header,
     metadata,

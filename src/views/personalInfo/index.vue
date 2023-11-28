@@ -6,15 +6,16 @@
     <nut-cell-group title="My Account" class="info_title">
       <nut-cell title="Account Name" :desc="userInfo.email"></nut-cell>
     </nut-cell-group>
+
     <nut-cell-group title="Binding Information" class="info_title">
-      <nut-cell v-if="!userInfo.dmc" title="DMC Account" desc="Unbound" to="/bindDmc?type=dmc"></nut-cell>
+      <nut-cell v-if="!userInfo.dmc" title="DMC Account" desc="Unbound" @click="openBindDMCDiaolg"></nut-cell>
       <nut-cell v-else title="DMC Account" :desc="userInfo.dmc"></nut-cell>
       <nut-cell
         class="not_amb"
         v-if="!userInfo.amb_promo_code || !cloudCodeIsBind"
         title="Ambassador Invitation Code"
         desc="Unbound"
-        to="/bindDmc?type=amb"
+        @click="bindAmbCode"
       ></nut-cell>
       <nut-cell v-else class="not_amb" title="Ambassador Invitation Code" :desc="userInfo.amb_promo_code"></nut-cell>
     </nut-cell-group>
@@ -22,12 +23,15 @@
 </template>
 
 <script setup>
+  import { inject } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { useRouter } from 'vue-router';
   const router = useRouter();
   const useStore = useUserStore();
   const userInfo = computed(() => useStore.getUserInfo);
   const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
+  const bindAmbCode = inject('bindAmbCode');
+  const openBindDMCDiaolg = inject('openBindDMCDiaolg');
 </script>
 
 <style lang="scss" scoped>

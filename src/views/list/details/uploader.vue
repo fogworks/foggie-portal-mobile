@@ -16,7 +16,10 @@
       ref="uploadRef"
       class="upload_class"
     >
-      <nut-button type="success" class="upload_btn" size="small">+</nut-button>
+      <nut-button    type="info" class="upload_btn" size="small">
+        <!-- + -->
+        <img src="@/assets/newIcon/upload.png" alt="" srcset=""/>
+      </nut-button>
     </nut-uploader>
   </div>
   <Transition name="fade-transform" mode="out-in">
@@ -34,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, toRefs, defineProps } from 'vue';
+  import { ref, toRefs, defineProps, inject } from 'vue';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute } from 'vue-router';
@@ -45,8 +48,7 @@
   import { getSecondTime } from '@/utils/util';
   import { update_order_size } from '@/api/amb';
   import { delay, throttle } from 'lodash';
-
-  import { minSize } from '@/setting.json';
+  import { poolUrl } from '@/setting.js';
 
   const emits = defineEmits(['uploadComplete']);
 
@@ -56,8 +58,9 @@
     secretAccessKey?: string;
     prefix?: any;
     orderInfo?: any;
+    isMobileOrder?: boolean;
   }
-
+  const getSummary = inject('getSummary');
   const props = defineProps<Props>();
   // const props = defineProps({
   //   bucketName: [String],
@@ -68,7 +71,7 @@
 
   // const { bucketName, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
 
-  const getOrderInfo = inject('getOrderInfo');
+  // const getOrderInfo = inject('getOrderInfo');
 
   const route = useRoute();
 
@@ -86,21 +89,23 @@
   memo.value = route.query.uuid;
   order_id.value = route.query.id;
   amb_uuid.value = route.query.amb_uuid;
+  let merkleTimeOut = null;
   const getMerkleState = (timeout = true) => {
     const d = {
       orderId: order_id.value,
     };
-    valid_upload(d).then((res) => {
-      if (res.data?.data) {
+    return valid_upload(d).then((res) => {
+      if (res?.data) {
         // TODO
-        isDisabled.value = true;
+        isDisabled.value = false;
+        clearTimeout(merkleTimeOut);
+      } else {
         if (timeout) {
-          setTimeout(() => {
+          merkleTimeOut = setTimeout(() => {
             getMerkleState(timeout);
           }, 30000);
         }
-      } else {
-        isDisabled.value = false;
+        isDisabled.value = true;
       }
     });
   };
@@ -108,6 +113,7 @@
     return new Promise(async (resolve, reject) => {
       const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
       if (!bucketName || !accessKeyId || !secretAccessKey) {
+        showToast.fail('The data is abnormal, please refresh the page and try again.');
         return reject(false);
       }
 
@@ -137,11 +143,16 @@
         isDisabled.value = false;
       } else {
         isDisabled.value = true;
-        getMerkleState(true);
+        showToast.fail(merkleRes.msg || 'Merkle is being built, not allowed to upload file.');
+        if (!merkleTimeOut) {
+          merkleTimeOut = setTimeout(() => {
+            getMerkleState(true);
+          }, 30000);
+        }
         return reject();
       }
 
-      uploadUri.value = `https://${bucketName}.devus.u2i.net:6008/o/`;
+      uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
 
       const policy = {
         expiration: new Date(Date.now() + 3600 * 1000),
@@ -188,7 +199,7 @@
       return 4;
     } else if (fileName.endsWith('.pdf')) {
       return 4;
-    } else if (fileName.endsWith('.ppt')) {
+    } else if (fileName.endsWith('.ppt') || fileName.endsWith('.pptx')) {
       return 4;
     } else if (fileName.endsWith('.text') || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
       return 4;
@@ -217,18 +228,14 @@
     1000,
     { leading: true, trailing: true },
   );
-  const getSummary = inject('getSummary');
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess', responseText, option, fileItem);
     // console.log(option, 'option');
     console.log('responseText--------', option?.sourceFile?.size);
     uploadStatus.value = 'success';
 
-    delay(() => {
-      uploadProgressIsShow.value = false;
-    }, 2000);
     // emits('getFileList');
-    emits('uploadComplete');
+
     let used_space = await getSummary();
     if (!amb_uuid.value) {
       let res = await get_unique_order({ order_uuid: route?.query?.uuid });
@@ -243,10 +250,16 @@
         fileSize: option?.sourceFile?.size,
         usedSpace: used_space,
       };
-      save_upload(d).then((res) => {
+      await save_upload(d).then((res) => {
         console.log('save_upload-----', res);
       });
     }
+
+    delay(() => {
+      uploadProgressIsShow.value = false;
+    }, 2000);
+
+    emits('uploadComplete');
 
     uploadRef.value.clearUploadQueue();
   };
@@ -266,6 +279,7 @@
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
     console.log('onFailure', '-----', responseText, '-----', option, '-----', fileItem);
+    showToast.fail('Upload failed, please try again later');
     delay(() => {
       uploadProgressIsShow.value = false;
     }, 3000);
@@ -287,8 +301,13 @@
     document.querySelector('.nut-uploader__input')?.addEventListener('click', () => {
       showNotify.primary('Sensitive information is recommended to be encrypted and uploaded', {
         'class-name': 'notify_primary',
+        position: 'bottom',
+        duration: 5000,
       });
     });
+  });
+  onUnmounted(() => {
+    clearTimeout(merkleTimeOut);
   });
 </script>
 
@@ -303,6 +322,13 @@
     width: 80px;
     height: 80px;
     cursor: pointer;
+    display: grid;
+    place-items: center;
+    img{
+      width: 100%;
+      height: 100%;
+
+    }
   }
 
   .upload_class {

@@ -115,7 +115,8 @@
         <span @click="cancelSelect">Cancel</span>
       </div>
     </nut-sticky>
-    <template v-if="category != 1">
+    <ErrorPage v-if="isError" @refresh="() => doSearch('', prefix, true)"></ErrorPage>
+    <template v-else-if="category != 1">
       <nut-infinite-loading
         v-if="tableData.length"
         load-more-txt="No more content"
@@ -151,9 +152,9 @@
             <template v-else>
               <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
               <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-              <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" />
+              <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
               <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-              <img v-else-if="item.imgUrl" :src="item.imgUrl" alt="" />
+              <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else src="@/assets/svg/home/file.svg" alt="" />
             </template>
           </div>
@@ -278,7 +279,7 @@
         </div>
         <nut-infinite-loading
           load-more-txt="No more content"
-          class="file_list"
+          class="file_list file_list_move"
           v-model="infinityValue"
           :has-more="!!continuationToken2"
           @load-more="loadMore"
@@ -310,6 +311,9 @@
       :style="{ height: '300px' }"
       v-model:visible="showShareDialog"
     >
+      <!-- <div style="display: flex; align-items: center; justify-content: center; height: 100%" v-if="httpCopyLink">
+        <span> {{ httpCopyLink.substring(0, 30) + '...' }} </span><IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
+      </div> -->
       <div v-if="isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period:">
           <template #link>
@@ -397,6 +401,7 @@
         <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
         <HLSVideo v-if="chooseItem.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
         <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
+        <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
         <div v-else-if="imgUrl" class="middle_img">
           <!-- v-if="chooseItem.type.split('/')[0] == 'video'" -->
           <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
@@ -417,16 +422,16 @@
         </div>
       </nut-overlay>
     </Teleport>
+    <uploader
+      v-if="isMobileOrder"
+      :bucketName="bucketName"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      :orderInfo="orderInfo"
+      :prefix="prefix"
+      @uploadComplete="uploadComplete"
+    ></uploader>
   </div>
-  <uploader
-    v-if="isMobileOrder"
-    :bucketName="bucketName"
-    :accessKeyId="accessKeyId"
-    :secretAccessKey="secretAccessKey"
-    :orderInfo="orderInfo"
-    :prefix="prefix"
-    @uploadComplete="uploadComplete"
-  ></uploader>
 </template>
 
 <script setup lang="ts">
@@ -460,10 +465,10 @@
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize } from '@/utils/util';
   import ImgList from './imgList.vue';
-  import { rename_objects } from '@/api';
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
   import HLSVideo from './hlsVideo.vue';
+  import MyAudio from './myAudio.vue';
   // import { ProxListObjectsRequest, ProxListObjectsReq, ProxHeader } from '@/pb/prox_pb.js';
   // import Prox from '@/pb/prox_pb.ts';
   import * as Prox from '@/pb/prox_pb.js';
@@ -475,8 +480,7 @@
 
   import { HmacSHA1, enc } from 'crypto-js';
   import uploader from './uploader.vue';
-
-  // import { download_url } from '@/api/index';
+  import { poolUrl } from '@/setting.js';
 
   // const accessKeyId = ref<string>('');
   // const secretAccessKey = ref<string>('');
@@ -515,6 +519,7 @@
       },
     ],
     isFirst: false,
+    isError: false,
   });
   const imgListRef = ref('');
   const isMobileOrder = computed(() => {
@@ -551,9 +556,13 @@
     isNewFolder,
     longPress,
     isFirst,
+    isError,
   } = toRefs(state);
-  const { bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
+  const { getSummary, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
+  provide('getSummary', getSummary);
   const {
+    httpCopyLink,
+    copyLink,
     shareType,
     isReady,
     confirmShare,
@@ -662,11 +671,16 @@
               .then((text) => {
                 document.getElementById('txtContainer').textContent = text;
               });
-          } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
-            chooseItem.value.detailType = 'word';
-            window.open('https://docs.google.com/viewer?url=' + encodeURIComponent(row.imgUrlLarge));
-            imgUrl.value = row.imgUrlLarge;
-            // detailShow.value = true;
+          } else if (['xls', 'xlsx'].includes(type)) {
+            router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
+          } else if (['doc', 'docx'].includes(type)) {
+            router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'docx' } });
+            // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+            // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+            console.log(row.imgUrlLarge);
+          } else if (['ppt', 'pptx'].includes(type)) {
+            window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+            console.log(row.imgUrlLarge);
           } else if (row.imgUrlLarge) {
             imgUrl.value = row.imgUrlLarge;
             detailShow.value = true;
@@ -725,13 +739,14 @@
       }
       // let ip = orderInfo.value.rpc.split(':')[0];
       // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-      let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+      let ip = `https://${bucketName.value}.${poolUrl}:7007`;
       server = new grpcService.default.ServiceClient(ip, null, null);
       let ProxRenameObject = new Prox.default.ProxRenameObject();
       ProxRenameObject.setHeader(header);
-      ProxRenameObject.setSourceobject(checkData[index].fullName);
-      ProxRenameObject.setTargetobject(targetObject(checkData[index]));
+      ProxRenameObject.setSourceobject(encodeURIComponent(checkData[index].fullName));
+      ProxRenameObject.setTargetobject(encodeURIComponent(targetObject(checkData[index])));
       ProxRenameObject.setFiletype(checkData[index].fileType);
+      console.log(ProxRenameObject, 'ProxRenameObject');
 
       server.renameObjects(ProxRenameObject, {}, (err, data) => {
         if (data) {
@@ -776,9 +791,9 @@
     const targetObject = () => {
       if (isNewFolder.value) {
         if (prefix.value.length) {
-          return prefix.value.join('/') + '/' + newName.value + '/';
+          return encodeURIComponent(prefix.value.join('/') + '/' + newName.value) + '/';
         } else {
-          return newName.value + '/';
+          return encodeURIComponent(newName.value) + '/';
         }
       } else {
         const arr = checkData?.[0]?.fullName.split('/');
@@ -801,7 +816,7 @@
     }
     // let ip = orderInfo.value.rpc.split(':')[0];
     // server = new grpcService.default.ServiceClient(`http://${ip}:7007`);
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     if (isNewFolder.value) {
@@ -810,7 +825,9 @@
       ProxFileInfo.setKey(targetObject());
       ProxFileInfo.setContenttype('application/x-directory');
       ProxFileInfo.setSize(0);
-      server.touchFile(ProxFileInfo, {}, (err, data) => {
+      console.log(ProxFileInfo, 'ProxFileInfo');
+
+      server.touchFile(ProxFileInfo, metadata.value, (err, data) => {
         if (data) {
           showToast.success('Create successful');
           renameShow.value = false;
@@ -824,11 +841,12 @@
     } else {
       let ProxRenameObject = new Prox.default.ProxRenameObject();
       ProxRenameObject.setHeader(header);
-      ProxRenameObject.setSourceobject(checkData[0].fullName);
+      ProxRenameObject.setSourceobject(encodeURIComponent(checkData[0].fullName));
       ProxRenameObject.setTargetobject(targetObject());
       ProxRenameObject.setFiletype(checkData[0].fileType);
+      console.log(ProxRenameObject, 'ProxRenameObject');
 
-      server.renameObjects(ProxRenameObject, {}, (err, data) => {
+      server.renameObjects(ProxRenameObject, metadata.value, (err, data) => {
         if (data) {
           showToast.success('Rename successful');
           renameShow.value = false;
@@ -866,7 +884,7 @@
 
       const headers = getSignHeaders(objectKey);
 
-      const url = `https://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
+      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
 
       fetch(url, { method: 'GET', headers })
         .then((response) => {
@@ -902,7 +920,7 @@
         content: 'Are you sure you want to delete?',
         cancelText: 'Cancel',
         okText: 'Confirm',
-        popClass: 'dialog_class',
+        popClass: 'dialog_class_delete',
         onOk,
       });
     } else if (type === 'rename') {
@@ -957,13 +975,13 @@
     if (prefix?.length) {
       list_prefix = prefix.join('/');
       if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
-        list_prefix = list_prefix + '/';
+        list_prefix = encodeURIComponent(list_prefix) + '/';
       }
     }
     // let ip = orderInfo.value.rpc.split(':')[0];
     // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     let listObject = new Prox.default.ProxListObjectsRequest();
@@ -992,6 +1010,7 @@
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
     console.log('list-object--header', header, metadata.value);
+    console.log('listObjectlistObject', listObject);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
@@ -1060,10 +1079,11 @@
             prefixpins: res.getPrefixpinsList(),
           };
           console.log(transferData, 'transferData,transferData');
-
+          isError.value = false;
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
           showToast.hide('file_list');
+          isError.value = true;
           console.log('err----', err);
         }
       },
@@ -1082,12 +1102,18 @@
     let port = orderInfo.value.rpc?.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
+    console.log(bucketName.value, 'bucketName');
+
     if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
       type = 'img';
       console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       // console.log('--------imgHttpLarge', imgHttpLarge);
+    } else if (type === 'mp3') {
+      type = 'audio';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
@@ -1137,7 +1163,7 @@
       await getOrderInfo();
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
-      let name = decodeURIComponent(data.commonPrefixes[i]);
+      let name = data.commonPrefixes[i];
       if (data.prefix) {
         // name = name.split(data.prefix)[1];
         name = name.split('/')[name.split('/').length - 2] + '/';
@@ -1145,7 +1171,7 @@
 
       let cur_cid = '';
       for (let i = 0; i < data.prefixpins?.length; i++) {
-        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
+        if (data.prefixpins[i]?.prefix === name && data.prefixpins[i]?.cid) {
           cur_cid = data.prefixpins[i].cid;
         }
       }
@@ -1157,7 +1183,7 @@
         category: 1,
         fileType: 1,
 
-        fullName: decodeURIComponent(data.commonPrefixes[i]),
+        fullName: data.commonPrefixes[i],
         key: data.commonPrefixes[i],
         idList: [
           {
@@ -1204,7 +1230,9 @@
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
-      let name = decodeURIComponent(data.content[j].key);
+      let name = data.content[j].key;
+      console.log(data.prefix, 'data.prefix');
+
       if (data.prefix) {
         name = name.split(data.prefix)[1];
       }
@@ -1223,7 +1251,7 @@
         name,
         category: data.content[j].category,
         fileType: 2,
-        fullName: decodeURIComponent(data.content[j].key),
+        fullName: data.content[j].key,
         key: data.content[j].key,
         idList: [
           {
@@ -1273,8 +1301,10 @@
         document.getElementsByClassName('main-page')[0].style.overflow = '';
         isFirst.value = false;
       } else {
-        document.getElementsByClassName('main-page')[0].style.overflow = 'hidden';
-        isFirst.value = true;
+        setTimeout(() => {
+          document.getElementsByClassName('main-page')[0].style.overflow = 'hidden';
+          isFirst.value = true;
+        }, 1000);
       }
     });
   };
@@ -1305,7 +1335,7 @@
         // let ip = orderInfo.value.rpc.split(':')[0];
         // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
-        let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
         server = new grpcService.default.ServiceClient(ip, null, null);
 
         let ProxFindRequest = new Prox.default.ProxFindRequest();
@@ -1323,7 +1353,7 @@
         ProxFindRequest.setPrefix(list_prefix);
         console.log(ProxFindRequest, 'ProxFindRequestProxFindRequest');
 
-        server.findObjects(ProxFindRequest, {}, (err: any, res: { getContentsList: () => any[] }) => {
+        server.findObjects(ProxFindRequest, metadata.value, (err: any, res: { getContentsList: () => any[] }) => {
           infinityValue.value = false;
           if (res) {
             const transferData = res
@@ -1365,24 +1395,16 @@
                   };
                 },
               );
+            isError.value = false;
+
             initRemoteData({ content: transferData }, true, category.value);
           } else {
+            isError.value = true;
           }
         });
       }
     }
   }
-  const copyLink = (text: string) => {
-    var input = document.createElement('input');
-    input.value = text;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('Copy');
-    document.body.removeChild(input);
-    // let str = `Copying  ${type} successful!`;
-    // this.$message.success(str);
-    showToast.success('Copy succeeded');
-  };
   const shareTwitter = (fileLink) => {
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
     let tweetText = checkData[0].name;
@@ -1445,8 +1467,8 @@
       prefix.value = route?.query?.prefix?.split('/');
     }
     let category1 = route.query.category || '0';
-    switchType(category1);
     await getOrderInfo();
+    switchType(category1);
   });
 </script>
 <style>
@@ -1466,6 +1488,10 @@
   }
 </style>
 <style lang="scss" scoped>
+  .file_list {
+    height: calc(100vh - 310px);
+    overflow: auto;
+  }
   #txtContainer {
     color: #fff;
     width: 100%;

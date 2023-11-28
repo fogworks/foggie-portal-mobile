@@ -42,10 +42,11 @@ export default function useOrderList() {
   const listData = ref([] as any);
   const total = ref(0);
   const hasMore = computed(() => {
-    return total.value > pn.value * ps.value;
+    return total.value > (pn.value - 1) * ps.value;
   });
   const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
   const infinityValue = ref(false);
+  const isError = ref(false);
   const pn = ref(1);
   const ps = ref(10);
   const resetData = () => {
@@ -53,19 +54,25 @@ export default function useOrderList() {
     total.value = 0;
     listData.value = [];
   };
-  const loadMore = async (order_state = null, start_time = '', end_time = '', buy_result = 'success') => {
+  const loadMore = async (order_state = null, start_time = '', end_time = '', buy_result = 'success', postData = {}, type) => {
     console.log(cloudCodeIsBind.value, 'cloudCodeIsBindcloudCodeIsBindcloudCodeIsBind');
 
     if (!cloudCodeIsBind.value) {
       return false;
     }
-    showToast.loading('Loading', {
-      cover: true,
-      customClass: 'app_loading',
-      icon: loadingImg,
-      loadingRotate: false,
-    });
-    await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result })
+    if (!total.value) {
+      showToast.loading('Loading', {
+        cover: true,
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
+      });
+    }
+    if (type === 'search') {
+      pn.value = 1;
+      listData.value = [];
+    }
+    await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result, ...postData })
       .then((res) => {
         total.value = res?.result?.total;
         const cloudList =
@@ -78,17 +85,25 @@ export default function useOrderList() {
           }) || [];
         pn.value++;
         listData.value = [...listData.value, ...cloudList];
+        infinityValue.value = false;
+        isError.value = false;
+      })
+      .catch(() => {
+        // pn.value--;
+        if (pn.value == 1) isError.value = true;
       })
       .finally(() => {
         showToast.hide();
       });
   };
   return {
+    isError,
     loadMore,
     listData,
     resetData,
     hasMore,
     infinityValue,
     shortcuts,
+    total,
   };
 }

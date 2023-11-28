@@ -1,64 +1,66 @@
 <template>
-  <div class="top_box">
-    <TopBack>Generate Access keys</TopBack>
-  </div>
-  <div class="generateKey">
-    <div class="bucket_svg_box">
-      <img src="@/assets/bucket.svg" class="bucket_svg" />
+  <div>
+    <div class="top_box">
+      <TopBack>Generate Access keys</TopBack>
     </div>
-    <span class="how" @click="s3To">How to use S3 Browser?</span>
-    <p class="key_tips"> Amazon S3 Object storage built specifically for retrieving any amount of data from any location. </p>
-    <p class="key_tips"> You can access S3 clients through a private key. Access address: </p>
-    <span class="s3url" @click="copyS3">
-      <span>{{ bucketName }}</span
-      >.devpool.u2i.net:9900
-    </span>
-    <nut-form class="key_form" :model-value="dynamicForm.state" ref="dynamicRefForm">
-      <!-- <nut-form-item label="Access Key">
+    <div class="generateKey">
+      <div class="bucket_svg_box">
+        <img src="@/assets/bucket.svg" class="bucket_svg" />
+      </div>
+      <span class="how" @click="s3To">How to use S3 Browser?</span>
+      <p class="key_tips"> Amazon S3 Object storage built specifically for retrieving any amount of data from any location. </p>
+      <p class="key_tips"> You can access S3 clients through a private key. Access address: </p>
+      <span class="s3url" @click="copyS3">
+        <span>{{ bucketName }}</span
+        >.{{ s3Url }}:9900
+      </span>
+      <nut-form class="key_form" :model-value="dynamicForm.state" ref="dynamicRefForm">
+        <!-- <nut-form-item label="Access Key">
         <span>Secret Key</span>
       </nut-form-item> -->
-      <nut-form-item
-        :label="item.accessKey"
-        :prop="'tels.' + index + '.value'"
-        :key="item.key"
-        v-for="(item, index) in dynamicForm.state.tels"
-        class="key_form_item"
-      >
-        <template #label>
-          <div class="left_img">
-            <keySolid></keySolid>
-          </div>
-        </template>
-        <p>
-          Access Key:
-          <span>{{ item.accessKey }}</span>
-        </p>
-        <p class="secret_key">
-          Secret Key:
-          <!-- <span v-if="item.eyeState" class="open_key">{{ item.secretKey }}</span> -->
-          <span v-if="item.eyeState" class="open_key">{{ item.secretKey.substring(0, 15) + '...' }}</span>
-          <span v-if="!item.eyeState">xxxxx</span>
-          <span class="right_action">
-            <IconCopy @click="copyKey(item)"></IconCopy>
-            <eyeOffIon v-if="item.eyeState" @click="dynamicForm.state.tels[index].eyeState = false" />
-            <eyeIon v-if="!item.eyeState" @click="dynamicForm.state.tels[index].eyeState = true" />
-            <IconDelete @click="deleteKey(index)" />
-          </span>
-        </p>
-      </nut-form-item>
-    </nut-form>
-    <nut-empty description="" v-if="!dynamicForm.state.tels.length && !loading"> </nut-empty>
-    <p class="key_tips add_tips" v-if="!dynamicForm.state.tels.length">
-      Click the Add button to automatically generate Access Key and Secret Key for you.
-    </p>
-    <p class="key_tips s3_tips" v-if="!dynamicForm.state.tels.length"> Click to learn more about AWS S3. </p>
+        <nut-form-item
+          :label="item.accessKey"
+          :prop="'tels.' + index + '.value'"
+          :key="item.key"
+          v-for="(item, index) in dynamicForm.state.tels"
+          class="key_form_item"
+        >
+          <template #label>
+            <div class="left_img">
+              <keySolid></keySolid>
+            </div>
+          </template>
+          <p>
+            Access Key:
+            <span>{{ item.accessKey }}</span>
+          </p>
+          <p class="secret_key">
+            Secret Key:
+            <!-- <span v-if="item.eyeState" class="open_key">{{ item.secretKey }}</span> -->
+            <span v-if="item.eyeState" class="open_key">{{ item.secretKey.substring(0, 15) + '...' }}</span>
+            <span v-if="!item.eyeState">xxxxx</span>
+            <span class="right_action">
+              <IconCopy @click="copyKey(item)"></IconCopy>
+              <eyeOffIon v-if="item.eyeState" @click="dynamicForm.state.tels[index].eyeState = false" />
+              <eyeIon v-if="!item.eyeState" @click="dynamicForm.state.tels[index].eyeState = true" />
+              <IconDelete @click="deleteKey(index)" />
+            </span>
+          </p>
+        </nut-form-item>
+      </nut-form>
+      <nut-empty description="" v-if="!dynamicForm.state.tels.length && !loading"> </nut-empty>
+      <p class="key_tips add_tips" v-if="!dynamicForm.state.tels.length">
+        Click the Add button to automatically generate Access Key and Secret Key for you.
+      </p>
+      <p class="key_tips s3_tips" v-if="!dynamicForm.state.tels.length"> Click to learn more about AWS S3. </p>
+    </div>
+    <nut-button type="primary" class="add_key" @click="dynamicForm.methods.add">+</nut-button>
+    <nut-button type="primary" class="s3_key" @click="s3To">
+      <template #icon>
+        <img src="@/assets/bucketIcon.svg" class="bucket_svg_smal" />
+      </template>
+    </nut-button>
   </div>
-  <nut-button type="primary" class="add_key" @click="dynamicForm.methods.add">+</nut-button>
-  <nut-button type="primary" class="s3_key" @click="s3To">
-    <template #icon>
-      <img src="@/assets/bucketIcon.svg" class="bucket_svg_smal" />
-    </template>
-  </nut-button>
 </template>
 
 <script setup lang="ts">
@@ -73,12 +75,12 @@
   import { Base64 } from 'js-base64';
   import { get_unique_order, get_order_sign } from '@/api/index';
   import { showToast, showDialog } from '@nutui/nutui';
+  import { s3Url, poolUrl } from '@/setting.js';
 
   import * as pb from '@/pb/prox_grpc_web_pb';
   import * as grpc from '@/pb/prox_pb';
 
   // import * as grpcWeb from 'grpc-web';
-
 
   const router = useRouter();
   const route = useRoute();
@@ -90,8 +92,8 @@
   bucketName.value = route.query.domain;
   const bucketUrl = ref<any>('');
   const loading = ref(false);
-  bucketUrl.value = `${bucketName.value}.devpool.u2i.net:9900`;
-  ip.value = `https://${bucketName.value}.devus.u2i.net:7007`;
+  bucketUrl.value = `${bucketName.value}.${s3Url}:9900`;
+  ip.value = `https://${bucketName.value}.${poolUrl}:7007`;
   // peer_id.value = '12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp';
   // foggie_id.value = 'baeqagmrygu';
   // token.value = 'SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b';
@@ -156,17 +158,16 @@
         const accessKeyBytes = generateRandomBytes(20);
         const ak = cleanString(encodeBase64(accessKeyBytes), 20);
 
-
         let param = {
           order_uuid: route?.query?.uuid,
-        }
+        };
         const signData = await get_order_sign(param);
         console.log('signData==:', signData);
         token.value = signData?.result?.data?.sign;
         const date = signData?.result?.data?.timestamp;
         let metadata = {
           'X-Custom-Date': date,
-        }
+        };
 
         // let ip = 'http://154.31.3.222:7007'
         let server = new pb.default.ServiceClient(ip.value, null, null);
@@ -238,14 +239,12 @@
       token.value = res.result.data.sign;
       let param = {
         order_uuid: route?.query?.uuid,
-      }
+      };
 
       const signData = await get_order_sign(param);
       console.log('signData==:', signData);
       token.value = signData?.result?.data?.sign;
       const date = signData?.result?.data?.timestamp;
-
-      
 
       let server = new pb.default.ServiceClient(ip.value, null, null);
       let header = new grpc.default.ProxHeader();
@@ -259,8 +258,8 @@
       // metadata.add('Date', date);
       let metadata = {
         'X-Custom-Date': date,
-      }
-      console.log('metadata==:', metadata)
+      };
+      console.log('metadata==:', metadata);
       server.listCreds(request, metadata, (err: any, res: { array: any }) => {
         loading.value = false;
         if (err) {
@@ -288,14 +287,14 @@
 
     let param = {
       order_uuid: route?.query?.uuid,
-    }
+    };
     const signData = await get_order_sign(param);
     console.log('signData==:', signData);
     token.value = signData?.result?.data?.sign;
     const date = signData?.result?.data?.timestamp;
     let metadata = {
       'X-Custom-Date': date,
-    }
+    };
 
     let server = new pb.default.ServiceClient(ip.value, null, null);
 
@@ -324,7 +323,7 @@
     showDialog({
       title: 'Delete Confirmation',
       content: `Are you sure you want to delete ?`,
-      popClass: 'dialog_class',
+      popClass: 'dialog_class_delete',
       cancelText: 'Cancel',
       okText: 'OK',
       onCancel: () => {

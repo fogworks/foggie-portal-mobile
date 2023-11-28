@@ -52,15 +52,16 @@
             <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
           <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
           <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
-          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-          <img src="@/assets/DMC_Token1.png" alt="" />
+            <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+            <img src="@/assets/DMC_Token1.png" alt="" />
           </div>
 
           <div>
             <span>Order:{{ item.order_id }}</span>
 
             <span :class="['earnings']">
-              +{{ item.profit }}
+              <span v-if="item.profit > 0">+{{ item.profit }}</span>
+              <span v-else style="font-size: 12px">No gain for now</span>
               <!-- <IconArrowRight style="vertical-align: text-top" width="1.1rem" height="1.1rem" color="#5F57FF"></IconArrowRight
           > -->
             </span>
@@ -124,12 +125,13 @@
       let params = {
         query_time: [] as { start_time: string; end_time: string }[],
       };
+
       if (newValue == 'All') {
         let year = moment().format('YYYY');
         for (let index = 1; index <= 12; index++) {
-          const nowMonth = new Date().getMonth();
+          const nowMonth = new Date().getMonth() + 1;
           if (index > nowMonth) {
-            return;
+            break;
           }
           // 获取指定年月的第一天
           const firstDayOfMonth = moment(`${year}-${index}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD');
@@ -137,26 +139,36 @@
           const lastDayOfMonth = moment(`${year}-${index}`, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
           params.query_time.push({ start_time: firstDayOfMonth, end_time: lastDayOfMonth });
         }
+        console.log(params.query_time, 'params.query_time');
       } else if (newValue == '3Months') {
-        let year_month = moment().subtract(2, 'month').format('YYYY-MM');
+        // let year_month = moment().subtract(2, 'month').format('YYYY-MM');
 
-        // 获取三月前的第一天
-        const firstDayOfMonth = moment(`${year_month}-01`, 'YYYY-MM-DD');
-        // 获取当前月的最后一天
-        const lastDayOfMonth = moment().endOf('month');
-        // 获取第一天所在周的周一
-        const firstMonday = firstDayOfMonth.clone().startOf('isoWeek');
+        // // 获取三月前的第一天
+        // const firstDayOfMonth = moment(`${year_month}-01`, 'YYYY-MM-DD');
+        // console.log(firstDayOfMonth.format('YYYY-MM-DD'));
 
-        // 从第一个周一开始，逐周增加
-        let currentMonday = firstMonday.clone();
-        while (currentMonday.isBefore(lastDayOfMonth)) {
-          // 获取当前周的开始和结束日期
-          const weekStart = currentMonday.format('YYYY-MM-DD');
-          const weekEnd = currentMonday.clone().endOf('isoWeek').add(1, 'days').format('YYYY-MM-DD');
-          // 将当前周的日期范围添加到数组中
-          params.query_time.push({ start_time: weekStart, end_time: weekEnd });
-          // 增加一周
-          currentMonday.add(1, 'week');
+        // // 获取当前月的最后一天
+        // const lastDayOfMonth = moment().endOf('month');
+        // // 获取第一天所在周的周一
+        // const firstMonday = firstDayOfMonth.clone().startOf('isoWeek');
+
+        // // 从第一个周一开始，逐周增加
+        // let currentMonday = firstMonday.clone();
+
+        // while (currentMonday.isBefore(lastDayOfMonth)) {
+        //   // 获取当前周的开始和结束日期
+        //   const weekStart = currentMonday.format('YYYY-MM-DD');
+        //   const weekEnd = currentMonday.clone().endOf('isoWeek').add(1, 'days').format('YYYY-MM-DD');
+        //   // 将当前周的日期范围添加到数组中
+        //   params.query_time.push({ start_time: weekStart, end_time: weekEnd });
+        //   // 增加一周
+        //   currentMonday.add(1, 'week');
+        // }
+        const currentDate = moment(); // 获取当前时间
+        for (let i = 0; i < 14; i++) {
+          const startTime = currentDate.clone().subtract(i, 'weeks').startOf('isoWeek').format('YYYY-MM-DD');
+          const endTime = currentDate.clone().subtract(i, 'weeks').endOf('isoWeek').format('YYYY-MM-DD');
+          params.query_time.unshift({ start_time: startTime, end_time: endTime });
         }
       } else if (newValue == 'Month') {
         let year_month = moment().format('YYYY-MM');
@@ -189,11 +201,12 @@
         const yesterday = moment().add(1, 'days').format('YYYY-MM-DD');
         params.query_time.push({ start_time: today, end_time: yesterday });
       }
+
       loadUserDmc();
       loadSearchUserAssetCount(params);
       searchOrderProfit(newValue);
     },
-    { immediate: true },
+    { deep: true, immediate: true },
   );
 
   const cloudBalance = computed(() => {
@@ -320,7 +333,7 @@
             },
             grid: {
               top: '20%',
-              left: '8%',
+              left: '30px',
               right: '8%',
               bottom: '20%',
             },
@@ -346,7 +359,7 @@
               axisLabel: {
                 show: true,
                 inside: true, // 指定刻度显示在右侧,
-                margin: -8,
+                margin: -20,
                 textStyle: {
                   color: '#737373',
                   fontSize: 10,
@@ -466,7 +479,7 @@
     orderChartOption.value = barOption(dateList, valueList, 'Earn Analysis');
     orderChartOption.value.xAxis[0].show = true;
     orderChartOption.value.grid[0] = {
-      left: '10px',
+      left: '30px',
       right: '10px',
       bottom: '30px',
     };
@@ -503,6 +516,7 @@
     padding: 50px 10px 30px;
     border-radius: 20px;
     background: $primary-color;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
 
     .top_assets {
       display: flex;

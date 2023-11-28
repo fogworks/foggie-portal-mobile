@@ -1,6 +1,10 @@
 <template>
   <div class="main-page" :class="{ tabbar: tabbarVisible, border: showBorder }">
-    <RouterView :key="$route.path" />
+    <RouterView v-slot="{Component,route}">
+      <MyTransition>
+          <component  :is="Component" :key="route.path"></component>
+      </MyTransition>
+    </RouterView>
   </div>
   <nut-tabbar unactive-color="#364636" active-color="#1989fa" bottom v-model="activeTab" @tab-switch="tabSwitch">
     <nut-tabbar-item v-for="item in tabItem" :key="item.key" :tab-title="$t(`tabbar.${item.key}`)" :icon="item.icon" />
@@ -11,9 +15,9 @@
     :show-confirm="false" custom-class="CustomName">
     <template #header>
       <img src="@/assets/DMC_token.png" alt="" srcset="" style="width: 30px; height: 30px" />
-      <div style="color: #9e9e9e;margin-left: 5px;">Add Withdrawal Account</div>
+      <div style="color: rgb(72 72 72);margin-left: 5px;font-size: 15px;">Add Withdrawal Account</div>
     </template>
-    <p class="bucket_tip" style="text-align: left; color: #9e9e9e;padding-bottom: 15px;">
+    <p class="bucket_tip" style="text-align: left; color: rgb(72 72 72);padding-bottom: 15px;">
     <div>* This account will become the default withdrawal account</div>
     </p>
 
@@ -25,7 +29,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        color: #d9d6d6;
+        color: rgb(72 72 72);
       ">
       <span>Wallet account</span> <span>Required</span>
     </p>
@@ -41,9 +45,9 @@
   <nut-dialog v-model:visible="bindAmbCodeDialogIsShow" :close-on-click-overlay="false" :show-cancel="false"
     :show-confirm="false" custom-class="CustomName bindAmbCodeDialog">
     <template #header style="border-bottom: 0px;">
-      <div style="color: #f5f7fb;font-weight: 600;font-size: 17px;">Bind</div>
+      <div style="font-weight: 600;font-size: 17px;">Bind</div>
     </template>
-    <img src="@/assets/fog-works_w.png" style="height: 60px;margin-bottom: 15px;" alt="" srcset="">
+    <img src="@/assets/fog-works_w.png" style="height: 60px" alt="" srcset="">
 
 
     <nut-input v-model="userBindAmbCode" placeholder="Please enter Ambassador Invitation Code" max-length="12"
@@ -68,11 +72,8 @@ import { onMounted, provide } from 'vue';
 import { useUserStore } from '@/store/modules/user';
 import { showToast, showDialog } from '@nutui/nutui';
 // import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
-
+import MyTransition from '@/components/myTransition/index.vue'
 import loadingImg from '@/components/loadingImg/index.vue';
-
-
-
 import '@nutui/nutui/dist/packages/dialog/style';
 import '@nutui/nutui/dist/packages/toast/style';
 
@@ -87,11 +88,11 @@ const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
 watch(amb_promo_code, (newVal) => {
   userBindAmbCode.value = newVal
 })
-watchEffect(() => {
-  if (uuid.value && !cloudCodeIsBind.value) {
-    bindAmbCode()
-  }
-})
+// watchEffect(() => {
+//   if (uuid.value && !cloudCodeIsBind.value) {
+//     bindAmbCode()
+//   }
+// })
 const bindAmbCodeDialogIsShow = ref(false)
 const userBindAmbCode = ref('')  // 用户想要绑定的ambcode
 const userBindLoading = ref(false)  // 用户绑定ambcode的 loading
@@ -112,7 +113,6 @@ const activeTab = ref(0);
 const tabbarVisible = ref(true);
 
 const showBorder = ref(true);
-
 watch(
   () => router,
   () => {
@@ -173,12 +173,20 @@ const tabSwitch = (_item, index) => {
 
 
 const initFoggieDate = async () => {
+  showToast.loading('Loading', {
+    cover: true,
+    customClass: 'app_loading',
+    icon: loadingImg,
+    loadingRotate: false,
+    id: 'user_info',
+  });
   let data = await user();
   if (data) {
     userStore.setInfo({
       ...data.data,
     });
   }
+  showToast.hide('user_info')
 };
 
 const bindDmcIsShow = ref(false); // 绑定dmc账户钱包弹窗 是否展示
@@ -215,7 +223,7 @@ async function bindDmc() {
 
         } else {
           showToast.success(dmcRes.data);
-            return false;
+          return false;
         }
       });
       if (bindRes) {
@@ -283,11 +291,11 @@ async function bindDmc() {
 
 async function bindAmbCode() {
 
-  if (!uuid.value){
+  if (!uuid.value) {
     showToast.fail('Failed to get user id, please refresh the page and try again.');
 
     return false;
-  } 
+  }
   showToast.loading('Loading', {
     cover: true,
     customClass: 'app_loading',
@@ -327,10 +335,10 @@ async function bindAmbCode() {
           if (!window.localStorage.hasCloudApproved) {
             window.localStorage.hasCloudApproved = true;
             const onOk = () => {
-              router.push({ name: 'bindDmc', query: { type: 'amb' } });
+              router.push({ name: 'Shop',  });
             };
             let src = require('@/assets/fog-works_w.png');
-            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Welcome to Foggie Mobile! Your application has been approved, and you can now begin placing orders,embarking on your Foggie journey.</p >`;
+            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#000000;text-align:left;'>Welcome to Foggie Mobile! Your application has been approved, and you can now begin placing orders,embarking on your Foggie journey.</p >`;
             showDialog({
               title: 'Notice',
               content: str,
@@ -343,7 +351,7 @@ async function bindAmbCode() {
         } else {
           userStore.setcurStepIndex(2)
           let src = require('@/assets/fog-works_w.png');
-          let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Awaiting approval from the Ambassador, please be patient until the approval is complete</p >`;
+          let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#535353;text-align:left;'>Awaiting approval from the Ambassador, please be patient until the approval is complete</p >`;
           showDialog({
             title: 'Ambassador Invitation Code',
             content: str,
@@ -368,7 +376,7 @@ async function bindUserAmbCode() {
     showToast.fail('Please enter the invitation code');
     return
   }
-  await initFoggieDate();
+
   let params = {
     user_uuid: userInfo.value.uuid,
     amb_promo_code: userBindAmbCode.value,
@@ -381,12 +389,13 @@ async function bindUserAmbCode() {
     if (res.code == 200) {
       bind_promo(params).then((res2) => {
         if (res2.code == 200) {
-          bind_user_promo({ amb_promo_code: userBindAmbCode.value, }).then((res) => {
+          bind_user_promo({ amb_promo_code: userBindAmbCode.value, }).then(async (res) => {
             if (res.code == 200) {
-              bindAmbCode()
-              showToast.success('Bind successfully');
+              showToast.success('Please wait for the successful application to join');
               userBindLoading.value = false
               bindAmbCodeDialogIsShow.value = false
+              await initFoggieDate();
+              bindAmbCode()
             } else {
               userBindLoading.value = false
             }
@@ -420,12 +429,16 @@ provide('bindAmbCode', bindAmbCode)
 
 onMounted(async () => {
   if (userStore.getToken) {
-  initFoggieDate()
+   await initFoggieDate()
+    bindAmbCode()
+
     // bindUser();
   }
 });
 </script>
+<style lang="scss">
 
+</style> 
 <style scoped lang="scss">
 .nut-navbar {
   margin-bottom: 0;

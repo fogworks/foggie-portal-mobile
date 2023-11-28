@@ -1,61 +1,63 @@
 <template>
-  <div class="img-content" v-if="isReady">
-    <div v-if="imgData.length" v-for="(item, index) in imgData" class="img-box">
-      <p v-if="item.list.length" class="top-title">
-        <nut-checkbox
-          :indeterminate="item.indeterminate"
-          v-if="isCheckMode"
-          v-model="item.checkAll"
-          @change="(val) => handleCheckAllChange(val, item)"
-        >
-          {{ item.time }}</nut-checkbox
-        >
-        <span v-else>{{ item.time }}</span>
-      </p>
-      <nut-infinite-loading
-        load-more-txt="No more content"
-        v-model="infinityValue"
-        :has-more="!!continuationToken"
-        @load-more="getFileList"
-        class="img-item-box"
-      >
-        <nut-checkbox-group
-          :validate-event="false"
-          v-model="imgCheckedData.value[item.dateId]"
-          @change="(val) => handleCheckedItemsChange(val, item)"
-        >
-          <div
-            :class="['img-item']"
-            v-for="(img, index2) in item.list"
-            @touchstart="emits('touchRow', img)"
-            @touchmove="emits('touchmoveRow', img)"
-            @touchend="emits('touchendRow', img)"
+  <div>
+    <div class="img-content" v-if="isReady">
+      <div v-if="imgData.length" v-for="(item, index) in imgData" class="img-box">
+        <p v-if="item.list.length" class="top-title">
+          <nut-checkbox
+            :indeterminate="item.indeterminate"
+            v-if="isCheckMode"
+            v-model="item.checkAll"
+            @change="(val) => handleCheckAllChange(val, item)"
           >
-            <div :class="['mask', isCheckMode ? 'isChecking' : '']">
-              <nut-checkbox
-                :class="['mask-checkbox', isCheckMode && itemChecked(img.cid, item.dateId) ? 'itemChecked' : '']"
-                :key="img.cid"
-                :label="img.cid"
-              ></nut-checkbox>
-            </div>
-            <nut-image
-              :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
-              fit="cover"
-              :key="img.cid"
-              :src="img.imgUrl"
+            {{ item.time }}</nut-checkbox
+          >
+          <span v-else>{{ item.time }}</span>
+        </p>
+        <nut-infinite-loading
+          load-more-txt="No more content"
+          v-model="infinityValue"
+          :has-more="!!continuationToken"
+          @load-more="getFileList"
+          class="img-item-box"
+        >
+          <nut-checkbox-group
+            :validate-event="false"
+            v-model="imgCheckedData.value[item.dateId]"
+            @change="(val) => handleCheckedItemsChange(val, item)"
+          >
+            <div
+              :class="['img-item']"
+              v-for="(img, index2) in item.list"
+              @touchstart="emits('touchRow', img)"
+              @touchmove="emits('touchmoveRow', img)"
+              @touchend="emits('touchendRow', img)"
             >
-              <template #loading>
-                <Loading width="16px" height="16px" name="loading" />
-              </template>
-            </nut-image>
-          </div>
-        </nut-checkbox-group>
-      </nut-infinite-loading>
+              <div :class="['mask', isCheckMode ? 'isChecking' : '']">
+                <nut-checkbox
+                  :class="['mask-checkbox', isCheckMode && itemChecked(img.cid, item.dateId) ? 'itemChecked' : '']"
+                  :key="img.cid"
+                  :label="img.cid"
+                ></nut-checkbox>
+              </div>
+              <nut-image
+                :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
+                fit="cover"
+                :key="img.cid"
+                :src="img.imgUrl"
+              >
+                <template #loading>
+                  <Loading width="16px" height="16px" name="loading" />
+                </template>
+              </nut-image>
+            </div>
+          </nut-checkbox-group>
+        </nut-infinite-loading>
+      </div>
+      <nut-empty v-else :image-size="200" description="No Data" image="error" />
     </div>
-    <nut-empty v-else :image-size="200" description="No Data" image="error" />
-  </div>
-  <div class="img-content" v-else>
-    <nut-empty :image-size="200" description="No Data" image="error" />
+    <div class="img-content" v-else>
+      <nut-empty :image-size="200" description="No Data" image="error" />
+    </div>
   </div>
 </template>
 <script>
@@ -66,15 +68,15 @@
 <script setup>
   import { toRefs, ref, reactive, nextTick, watch, onMounted, computed, inject } from 'vue';
   import { useUserStore } from '@/store/modules/user';
-  import { get_timeline } from '@/api';
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
-  import { oodFileList, GetFileListAll, GetCloudFileListAll } from '@/api/myFiles';
   import { showToast } from '@nutui/nutui';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   import useOrderInfo from './useOrderInfo.js';
   import imgUrl from '@/assets/DMC_token.png';
   import loadingImg from '@/components/loadingImg/index.vue';
+  import { poolUrl } from '@/setting.js';
+
   let server;
   // import { isCloudCanUpload_Api } from '@/api/upload';
   const { header, metadata, deviceType, orderInfo, bucketName, getOrderInfo } = useOrderInfo();
@@ -127,7 +129,7 @@
         customClass: 'app_loading',
         icon: loadingImg,
         loadingRotate: false,
-        id: 'order_info_id',
+        id: 'img_time_line',
       });
       const getMethod = (date = '') => {
         let interval = 'year';
@@ -142,7 +144,7 @@
         tableLoading.value = true;
         // let ip = orderInfo.value.rpc.split(':')[0];
         // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-        let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
         server = new grpcService.default.ServiceClient(ip, null, null);
 
         let ProxTimeLine = new Prox.default.ProxTimeLine();
@@ -159,7 +161,7 @@
               };
             });
             if (!content.length) {
-              showToast.hide('order_info_id');
+              showToast.hide('img_time_line');
             }
             for (let k = content.length - 1; k >= 0; k--) {
               if (content[k].count) {
@@ -218,14 +220,14 @@
     // let ip = orderInfo.value.rpc.split(':')[0];
     // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix('');
     listObject.setDelimiter('');
     listObject.setEncodingType('');
-    listObject.setMaxKeys(30);
+    listObject.setMaxKeys(100);
     listObject.setStartAfter('');
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
@@ -353,7 +355,7 @@
     } else {
       continuationToken.value = '';
     }
-    showToast.hide('order_info_id');
+    showToast.hide('img_time_line');
     tableLoading.value = false;
   };
   const init = async () => {
@@ -464,6 +466,8 @@
       }
     }
     .img-item-box {
+      height: calc(100vh - 290px);
+      overflow: auto;
       display: flex;
       justify-content: flex-start;
       align-items: flex-start;

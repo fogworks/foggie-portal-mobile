@@ -1,413 +1,355 @@
 <template>
-  <div class="top_box">
-    <TopBack class="detail_top">
-      <div v-if="bucketName">
-        <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
-        {{ bucketName }}
-        <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
-      </div>
-      <div v-else> Order:{{ order_id }} </div>
-      <span class="benefit_analysis" v-if="orderInfo.value.state == '0'" @click="closedOrder">
-        <img src="@/assets/orderclosed.svg" class="bucket_detail_smal" />
-      </span>
-      <span class="benefit_analysis" v-else @click="gotoSummary(order_id, orderInfo.value.state)">
-        <img src="@/assets/analysis.svg" class="bucket_detail_smal" />
-      </span>
-    </TopBack>
-    <nut-row class="order-detail">
-      <nut-col :span="24" class="order-des">
-        <span class="span1">ID: {{ orderInfo.value?.foggie_id }}</span>
-
-        <span class="span2">Expiration: {{ transferUTCTime(orderInfo.value.expire) }}</span>
-      </nut-col>
-      <nut-col :span="24" class="order-circle">
-        <nut-circle-progress :progress="((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100" radius="60" color="#5460FE">
-          Used: {{ Math.round((usedSize / orderInfo.value.total_space) * 10000) / 100 }} %
-        </nut-circle-progress>
-      </nut-col>
-      <nut-col :span="24" class="order-count">
-        <nut-cell>
-          <IconMdiF color="#9F9BEF" />
-          File:{{ filesCount }}
-        </nut-cell>
-        <nut-cell>
-          <IconSpace color="#7F7AE9" />
-          Space: {{ getfilesize(orderInfo.value.total_space, 'B') }}
-        </nut-cell>
-        <nut-cell>
-          <IconRiPie color="#7F7AE9" />
-          Used: {{ getfilesize(usedSize, 'B') }}
-        </nut-cell>
-      </nut-col>
-    </nut-row>
-  </div>
-  <div class="detail_box">
-    <div class="type_check_box type_check_box1">
-      <div class="type_check">
-        <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
-          <div class="svg_box svg_box2 order-icon-node-tree">
-            <IconRiNodeTree color="#fff" />
+  <div>
+    <div class="top_box">
+      <TopBack class="detail_top">
+        <div v-if="bucketName">
+          <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
+          {{ bucketName }}
+          <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
+        </div>
+        <div v-else> Order:{{ order_id }} </div>
+        <span class="benefit_analysis" v-if="orderInfo.value.state == '0'" @click="closedOrder">
+          <img src="@/assets/cancel.svg" class="bucket_detail_smal cancel_svg" />
+        </span>
+        <span class="benefit_analysis" v-else @click="gotoSummary(order_id, orderInfo.value.state)">
+          <img src="@/assets/analysis.svg" class="bucket_detail_smal" />
+        </span>
+      </TopBack>
+      <nut-row class="order-detail">
+        <div class="main_detail_box">
+          <div class="profit_box">
+            <div class="title">Profit</div>
+            <div class="value">+ {{ income }} DMC</div>
           </div>
-          <p>Merkle</p>
-        </div>
-        <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 2 } })">
-          <div class="svg_box svg_box2 order-icon-send-to-back">
-            <IconRiSendToBack color="#fff" />
+          <div class="progress_box">
+            <div class="text">Used</div>
+            <div class="user_circle"> {{ Number(((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100).toFixed(2) }}% </div>
           </div>
-          <p>Challenge</p>
         </div>
-        <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 3 } })">
-          <div class="svg_box svg_box2 order-icon-input-cursor-move">
-            <IconRiInputCursorMove color="#fff" />
+
+        <!-- <nut-menu-item v-model="state.value1" :options="state.options1" /> -->
+        <nut-col :span="24" class="order-content_wrap" :class="[showText ? 'showHight' : 'hideHight']">
+          <TriangleDown v-if="!showText" @click="showText = true" class="my_svg_icon show_avg" color="#fff"></TriangleDown>
+          <TriangleUp v-if="showText" @click="showText = false" class="my_svg_icon" color="#fff"></TriangleUp>
+          <nut-col :span="12" class="order-count left_count">
+            <nut-cell>
+              <IconMdiF color="#9F9BEF" />
+              File:{{ filesCount }}
+            </nut-cell>
+            <nut-cell>
+              <IconSpace color="#7F7AE9" />
+              Space: {{ getfilesize(orderInfo.value.total_space, 'B') }}
+            </nut-cell>
+            <nut-cell>
+              <IconRiPie color="#7F7AE9" />
+              Used: {{ getfilesize(usedSize, 'B') }}
+            </nut-cell>
+            <nut-cell>
+              <Order />
+              ID:{{ orderInfo.value?.foggie_id }}
+            </nut-cell>
+            <nut-cell>
+              <Clock />
+              Expiration: {{ transferUTCTime(orderInfo.value.expire) }}
+            </nut-cell>
+            <nut-cell>
+              <Refresh />
+              Status: {{ statusTypes[orderInfo.value.state] }}
+            </nut-cell>
+          </nut-col>
+        </nut-col>
+
+        <!-- <nut-col :span="12" class="order-count">
+            <nut-cell>
+              <IconMdiF color="#9F9BEF" />
+              File:{{ filesCount }}
+            </nut-cell>
+            <nut-cell>
+              <IconSpace color="#7F7AE9" />
+              Space: {{ getfilesize(orderInfo.value.total_space, 'B') }}
+            </nut-cell>
+            <nut-cell>
+              <IconRiPie color="#7F7AE9" />
+              Used: {{ getfilesize(usedSize, 'B') }}
+            </nut-cell>
+          </nut-col> -->
+      </nut-row>
+    </div>
+    <div class="detail_box">
+      <div class="type_check_box type_check_box1">
+        <div class="type_check">
+          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
+            <div class="svg_box svg_box2 order-icon-node-tree">
+              <!-- <IconRiNodeTree color="#fff" /> -->
+              <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 60%; height: 60%; vertical-align: middle" />
+            </div>
+            <p>Merkle</p>
           </div>
-          <p>Arbitrate</p>
+          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 2 } })">
+            <div class="svg_box svg_box2 order-icon-send-to-back">
+              <IconRiSendToBack color="#fff" />
+            </div>
+            <p>Challenge</p>
+          </div>
+          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 3 } })">
+            <div class="svg_box svg_box2 order-icon-input-cursor-move">
+              <IconRiInputCursorMove color="#fff" />
+            </div>
+            <p>Arbitrate</p>
+          </div>
         </div>
-      </div>
 
-      <div :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' ? 'router_disabled' : '']" @click="getKey">
-        <div class="svg_box svg_box2 order-icon-recycle">
-          <keySolid color="#fff" />
+        <div :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' ? 'router_disabled' : '']" @click="getKey">
+          <div class="svg_box svg_box2 order-icon-recycle">
+            <keySolid color="#fff" />
+          </div>
+          <p>S3 Access</p>
         </div>
-        <p>S3 Access</p>
       </div>
-    </div>
-    <div class="type_check_box" style="margin-top: 5px; border-radius: 10px; background-color: #fff">
-      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1 } })">
-        <div class="svg_box">
-          <IconImage></IconImage>
+      <div class="type_check_box" style="margin-top: 5px; border-radius: 10px; background-color: #fff">
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1, bucketName } })">
+          <div class="svg_box">
+            <IconImage></IconImage>
+          </div>
+          <p>Images</p>
         </div>
-        <p>Images</p>
-      </div>
-      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
-        <div class="svg_box">
-          <IconAudio2></IconAudio2>
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3, bucketName } })">
+          <div class="svg_box">
+            <IconAudio2></IconAudio2>
+          </div>
+          <p>Audio</p>
         </div>
-        <p>Audio</p>
-      </div>
-      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4 } })">
-        <div class="svg_box">
-          <IconDocument></IconDocument>
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4, bucketName } })">
+          <div class="svg_box">
+            <IconDocument></IconDocument>
+          </div>
+          <p>Documents</p>
         </div>
-        <p>Documents</p>
-      </div>
-      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 2 } })">
-        <div class="svg_box">
-          <IconVideo></IconVideo>
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 2, bucketName } })">
+          <div class="svg_box">
+            <IconVideo></IconVideo>
+          </div>
+          <p>Video</p>
         </div>
-        <p>Video</p>
       </div>
-    </div>
-    <div class="today_file">
-      <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
-      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
-    </div>
-
-    <!-- <Transition name="fade-transform" mode="out-in">
-      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
-        <nut-progress
-          class="upload_progress"
-          :percentage="uploadProgress"
-          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
-          status="icon"
+      <div class="today_file">
+        <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
+        <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })"
+          >See All ></span
         >
-          <template #icon-name>
-            <template v-if="uploadStatus == 'uploading'">
-              <div style="display: flex; justify-content: space-between; width: 100%">
-                <div style="margin-left: 25px"> {{ curUploadFileSize }}</div>
-                <div>
-                  <span>{{ uploadProgress }} %</span>
-                  <em style="margin-left: 10px">{{ formatedAverageSpeed }}</em>
-                  <i style="margin-left: 15px">{{ formatedTimeRemaining }}</i>
-                </div>
-              </div>
-            </template>
-            <template v-if="uploadStatus == 'success'">
-              <span>Uploaded successfully</span>
-              <Success style="margin-left: 10px" color="#4CC71E" class="nut-icon-am-bounce nut-icon-am-infinite"></Success>
-            </template>
-            <template v-if="uploadStatus == 'error'">
-              <span>Upload Failed</span>
-              <MaskClose style="margin-left: 10px" color="#FA2C19"></MaskClose>
-            </template>
-          </template>
-        </nut-progress>
       </div>
-    </Transition> -->
+      <ErrorPage v-if="isError" @refresh="getFileList"></ErrorPage>
+      <nut-infinite-loading load-more-txt="No more content" v-else-if="tableData.length" :has-more="false" class="file_list">
+        <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
+          <div :class="['left_icon_box']">
+            <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+            <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+            <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
+            <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
 
-    <nut-infinite-loading load-more-txt="No more content" v-if="tableData.length" :has-more="false" class="file_list">
-      <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
-        <div :class="['left_icon_box']">
-          <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
-          <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-          <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" />
-          <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-          <img v-else-if="item.imgUrl" :src="item.imgUrl" alt="" />
-          <img v-else src="@/assets/svg/home/file.svg" alt="" />
+            <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
+            <img v-else src="@/assets/svg/home/file.svg" alt="" />
+          </div>
+          <div class="name_box">
+            <p>{{ item.name }}</p>
+            <p>{{ item.date || '' }}</p>
+          </div>
         </div>
-        <div class="name_box">
-          <p>{{ item.name }}</p>
-          <p>{{ item.date || '' }}</p>
-        </div>
-      </div>
-    </nut-infinite-loading>
-    <nut-empty v-else description="No data,Go ahead and upload it." image="error"> </nut-empty>
-    <Teleport to="body">
-      <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
-        <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-        <HLSVideo v-if="detailRow.value.type && detailRow.value.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
-        <pre v-else-if="detailRow.value.detailType == 'txt'" id="txtContainer"></pre>
-        <!-- <div v-else-if="detailRow.value.detailType == 'word'" id="odfContainer"></div> -->
+      </nut-infinite-loading>
+      <nut-empty v-else style="padding: 10px 0 50px 0" description="No data,Go ahead and upload it." image="error"> </nut-empty>
+      <Teleport to="body">
+        <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
+          <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+          <HLSVideo v-if="detailRow.value.type && detailRow.value.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
+          <pre v-else-if="detailRow.value.detailType == 'txt'" id="txtContainer"></pre>
+          <MyAudio v-else-if="detailRow.value.category == 3" :audioUrl="detailRow.value.imgUrl"></MyAudio>
+          <div v-else-if="imgUrl" class="middle_img">
+            <nut-image :src="imgUrl" fit="contain" position="center">
+              <template #loading>
+                <Loading width="16px" height="16px" name="loading" />
+              </template>
+            </nut-image>
+          </div>
+          <div class="bottom_action">
+            <div>
+              <IconShare @click="handlerClick('share')"></IconShare>
+              <p>Share</p>
+            </div>
+            <div>
+              <IconDownload @click="handlerClick('download')"></IconDownload>
+              <p>Download</p>
+            </div>
+          </div>
+        </nut-overlay>
+      </Teleport>
 
-        <div v-else-if="imgUrl" class="middle_img">
-          <nut-image :src="imgUrl" fit="contain" position="center">
-            <template #loading>
-              <Loading width="16px" height="16px" name="loading" />
-            </template>
-          </nut-image>
-        </div>
-        <div class="bottom_action">
-          <div>
-            <IconShare @click="handlerClick('share')"></IconShare>
-            <p>Share</p>
-          </div>
-          <div>
-            <IconDownload @click="handlerClick('download')"></IconDownload>
-            <p>Download</p>
-          </div>
-        </div>
-      </nut-overlay>
-    </Teleport>
-
-    <!-- share -->
-    <Teleport to="body">
-      <nut-popup
-        v-if="showShareDialog"
-        @closed="
-          isReady = false;
-          shareType = '';
-        "
-        position="bottom"
-        closeable
-        round
-        :style="{ height: '300px' }"
-        v-model:visible="showShareDialog"
-      >
-        <div v-if="isReady" class="rename_box move_box">
-          <nut-cell style="margin-top: 50px" title="Access Period:">
-            <template #link>
-              <span style="display: flex"
-                >{{ desc }} <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
-              ></span>
-            </template>
-          </nut-cell>
-          <template v-if="shareType">
-            <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
-            <nut-textarea rows="3" v-model="imgDesc" />
-          </template>
-          <nut-popup position="bottom" v-model:visible="periodShow">
-            <nut-picker
-              v-model="periodValue"
-              :columns="options"
-              title="Select expiration time"
-              @confirm="confirmPeriod"
-              @cancel="periodShow = false"
-            >
-            </nut-picker>
-          </nut-popup>
-          <nut-button
-            type="info"
-            block
-            @click="() => confirmHttpShare(shareType, detailRow.value, accessKeyId, secretAccessKey, bucketName)"
-            >Confirm</nut-button
-          >
-        </div>
-        <div class="share_info_box" v-else>
-          <div v-if="shareRefContent.ipfsStr && +detailRow.value.originalSize <= orderInfo.value.total_space * 0.01">
-            <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
-            IPFS Link
-            <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
-          </div>
-          <div v-if="shareRefContent.httpStr">
-            <IconHttp
-              @click="
-                shareType = '';
-                isReady = true;
-              "
-            ></IconHttp>
-            HTTP Link
-            <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-          </div>
-          <div v-if="shareRefContent.httpStr">
-            <IconTwitter
-              @click="
-                shareType = 'twitter';
-                isReady = true;
-              "
-            ></IconTwitter>
-            Twitter
-            <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-          </div>
-          <div v-if="shareRefContent.httpStr">
-            <IconFacebook
-              @click="
-                shareType = 'faceBook';
-                isReady = true;
-              "
-            ></IconFacebook>
-            Facebook
-            <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-          </div>
-          <div v-if="shareRefContent.httpStr">
-            <IconSlack
-              @click="
-                shareType = 'slack';
-                isReady = true;
-              "
-            ></IconSlack>
-            Slack
-          </div>
-          <div v-if="shareRefContent.httpStr">
-            <IconPinterest
-              @click="
-                shareType = 'pinterest';
-                isReady = true;
-              "
-            ></IconPinterest>
-            Pinterest
-          </div>
-        </div>
-      </nut-popup>
-    </Teleport>
-
-    <!-- <nut-uploader
-      v-if="isMobileOrder"
-      :url="uploadUri"
-      :timeout="1000 * 60 * 60"
-      :before-upload="beforeupload"
-      :disabled="isDisabled"
-      :data="formData"
-      :headers="formData"
-      :before-xhr-upload="beforeXhrUpload"
-      :xhr-state="successStatus"
-      @success="uploadSuccess"
-      @progress="onProgress"
-      @start="onStart"
-      @failure="onFailure"
-      @change="onChange"
-      ref="uploadRef"
-      class="upload_class"
-    >
-      <nut-button type="success" class="upload_btn" size="small">+</nut-button>
-    </nut-uploader> -->
-    <!-- dialogVisible -->
-    <Teleport to="body">
-      <nut-dialog
-        v-model:visible="dialogVisible"
-        title="Bucket Name"
-        :close-on-click-overlay="false"
-        :show-cancel="false"
-        :show-confirm="false"
-        custom-class="CustomName"
-        overlayClass="CustomOverlay"
-      >
-        <template #header>
-          <span class="icon" style="margin-right: 5px">
-            <IconBucket color="#000"></IconBucket>
-          </span>
-          Create a Bucket
-        </template>
-        <p class="bucket_tip" style="text-align: left; word-break: break-word"
-          >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
-          (-), and must start and end with lowercase letters or numbers</p
-        >
-        <p
-          style="
-            margin-top: 10px;
-            margin-bottom: 5px;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #fdfdfd;
+      <!-- share -->
+      <Teleport to="body">
+        <nut-popup
+          v-if="showShareDialog"
+          @closed="
+            isReady = false;
+            shareType = '';
           "
+          position="bottom"
+          closeable
+          round
+          :style="{ height: httpCopyLink ? '150px' : '300px' }"
+          v-model:visible="showShareDialog"
         >
-          <span>Bucket Name</span> <span>Required</span>
-        </p>
-        <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
-        <template #footer>
-          <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button>
-          <nut-button type="primary"  @click="createName" :loading="isNameLoading">Confirm</nut-button>
-        </template>
-      </nut-dialog>
-    </Teleport>
-  </div>
-  <!-- <Transition name="fade-transform" mode="out-in">
-      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
-        <nut-progress
-          class="upload_progress"
-          :percentage="uploadProgress"
-          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
-          status="icon"
-          :show-text="false"
+          <!-- <div style="display: flex; align-items: center; justify-content: center; height: 100%" v-if="httpCopyLink">
+          <span>
+            {{ httpCopyLink.substring(0, 30) + '...' }}
+          </span>
+          <IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
+        </div> -->
+          <div v-if="isReady" class="rename_box move_box">
+            <nut-cell style="margin-top: 50px" title="Access Period:">
+              <template #link>
+                <span style="display: flex"
+                  >{{ desc }} <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
+                ></span>
+              </template>
+            </nut-cell>
+            <template v-if="shareType">
+              <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
+              <nut-textarea rows="3" v-model="imgDesc" />
+            </template>
+            <nut-popup position="bottom" v-model:visible="periodShow">
+              <nut-picker
+                v-model="periodValue"
+                :columns="options"
+                title="Select expiration time"
+                @confirm="confirmPeriod"
+                @cancel="periodShow = false"
+              >
+              </nut-picker>
+            </nut-popup>
+            <nut-button
+              type="info"
+              block
+              @click="() => confirmHttpShare(shareType, detailRow.value, accessKeyId, secretAccessKey, bucketName)"
+              >Confirm</nut-button
+            >
+          </div>
+          <div class="share_info_box" v-else>
+            <div v-if="shareRefContent.ipfsStr && +detailRow.value.originalSize <= orderInfo.value.total_space * 0.01">
+              <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
+              IPFS Link
+              <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
+            </div>
+            <div v-if="shareRefContent.httpStr">
+              <IconHttp
+                @click="
+                  shareType = '';
+                  isReady = true;
+                "
+              ></IconHttp>
+              HTTP Link
+              <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+            </div>
+            <div v-if="shareRefContent.httpStr">
+              <IconTwitter
+                @click="
+                  shareType = 'twitter';
+                  isReady = true;
+                "
+              ></IconTwitter>
+              Twitter
+              <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+            </div>
+            <div v-if="shareRefContent.httpStr">
+              <IconFacebook
+                @click="
+                  shareType = 'faceBook';
+                  isReady = true;
+                "
+              ></IconFacebook>
+              Facebook
+              <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
+            </div>
+            <div v-if="shareRefContent.httpStr">
+              <IconSlack
+                @click="
+                  shareType = 'slack';
+                  isReady = true;
+                "
+              ></IconSlack>
+              Slack
+            </div>
+            <div v-if="shareRefContent.httpStr">
+              <IconPinterest
+                @click="
+                  shareType = 'pinterest';
+                  isReady = true;
+                "
+              ></IconPinterest>
+              Pinterest
+            </div>
+          </div>
+        </nut-popup>
+      </Teleport>
+
+      <Teleport to="body">
+        <nut-dialog
+          v-model:visible="dialogVisible"
+          title="Bucket Name"
+          :close-on-click-overlay="false"
+          :show-cancel="false"
+          :show-confirm="false"
+          custom-class="CustomName BucketName"
+          overlayClass="CustomOverlay"
         >
-          <template #icon-name>
-            <template v-if="uploadStatus == 'uploading'">
-              <div  style="display: flex; justify-content: space-between;width: 100%;">
-                <div style="margin-left: 25px;"> {{ curUploadFileSize }}</div>
-                <div>
-                  <span>{{ uploadProgress }} %</span>
-                  <em style="margin-left: 10px">{{ formatedAverageSpeed }}</em>
-                  <i style="margin-left: 15px">{{ formatedTimeRemaining }}</i>
-                </div>
-              </div>
-            </template>
-            <template v-if="uploadStatus == 'success'">
-              <span>Uploaded successfully</span>
-              <Success style="margin-left: 10px" color="#4CC71E" class="nut-icon-am-bounce nut-icon-am-infinite"></Success>
-            </template>
-            <template v-if="uploadStatus == 'error'">
-              <span>Upload Failed</span>
-              <MaskClose style="margin-left: 10px" color="#FA2C19"></MaskClose>
-            </template>
+          <template #header>
+            <span class="icon" style="margin-right: 5px">
+              <IconBucket color="#000"></IconBucket>
+              <!-- <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%;height: 100%;"> -->
+            </span>
+            Create a Bucket
           </template>
-        </nut-progress>
-      </div>
-    </Transition> -->
-
-  <uploader
-    v-if="isMobileOrder"
-    :bucketName="bucketName"
-    :accessKeyId="accessKeyId"
-    :secretAccessKey="secretAccessKey"
-    :orderInfo="orderInfo"
-    @uploadComplete="uploadComplete"
-  ></uploader>
-
-  <Teleport to="body">
-    <nut-action-sheet v-model:visible="sheetVisible" title="Links">
-      <div class="custom-action_sheet">
-        <div @click="choose('google')">
-          <img src="@/assets/googlelogo_preview.png" style="width: 80px; height: 25px" />
-        </div>
-        <div @click="choose('Microsoft')">
-          <img src="@/assets/removebg-preview.png" style="width: 80px; height: 25px" />
-        </div>
-
-        <div @click="choose('other')">
-          <img src="@/assets/otherplugins.png" style="width: 30px; height: 30px" />
-          <div style="font-size: 18px; margin-left: 5px">Other</div>
-        </div>
-
-        <div @click="sheetVisible = false"> Cancel </div>
-      </div>
-    </nut-action-sheet>
-  </Teleport>
+          <p class="bucket_tip" style="text-align: left; word-break: break-word"
+            >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
+            (-), and must start and end with lowercase letters or numbers</p
+          >
+          <p
+            style="
+              margin-top: 10px;
+              margin-bottom: 5px;
+              font-weight: 600;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              color: #000;
+            "
+          >
+            <span>Bucket Name</span> <span>Required</span>
+          </p>
+          <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
+          <template #footer>
+            <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button>
+            <nut-button type="primary" @click="createName" :loading="isNameLoading">Confirm</nut-button>
+          </template>
+        </nut-dialog>
+      </Teleport>
+    </div>
+    <uploader
+      v-if="isMobileOrder"
+      :isMobileOrder="isMobileOrder"
+      :bucketName="bucketName"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      :orderInfo="orderInfo"
+      @uploadComplete="uploadComplete"
+    ></uploader>
+  </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, watch, createVNode } from 'vue';
+  import { ref, onMounted, watch, createVNode, provide } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
+  import MyAudio from './myAudio.vue';
+  import IconCopy from '~icons/home/copy.svg';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
@@ -437,7 +379,7 @@
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   // import AESHelper from './AESHelper';
   // import { Image } from '@nutui/icons-vue';
-  import { HeartFill, Success, MaskClose } from '@nutui/icons-vue';
+  import { HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
   import { showDialog } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { HmacSHA1, enc } from 'crypto-js';
@@ -446,21 +388,46 @@
   import useOrderInfo from './useOrderInfo.js';
   import useShare from './useShare.js';
   import { showToast } from '@nutui/nutui';
-  import { transferUTCTime, getfilesize } from '@/utils/util';
+  import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
   import { getSecondTime } from '@/utils/util';
-  import { update_order_size, closedOrderApi } from '@/api/amb';
+  import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
+  import ErrorPage from '@/views/errorPage/index.vue';
 
   import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
-
-  const { accessKeyId, secretAccessKey, bucketName, header, metadata, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  import { poolUrl } from '@/setting.js';
+  const showText = ref(true);
+  const statusTypes = {
+    0: 'Consensus not reached',
+    1: 'Consensus reached',
+    2: 'Insufficient advance deposit to cancel the next cycle',
+    3: 'Sufficient funds in advance',
+    4: 'Order over',
+    5: 'Canceled',
+    6: 'Cancellation of the next cycle',
+  };
+  const {
+    filesCount,
+    getSummary,
+    usedSize,
+    accessKeyId,
+    secretAccessKey,
+    bucketName,
+    header,
+    metadata,
+    deviceType,
+    orderInfo,
+    getOrderInfo,
+  } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
   const {
+    httpCopyLink,
+    copyLink,
     shareType,
     isReady,
     confirmShare,
@@ -484,7 +451,7 @@
 
   const successStatus = ref<number>(204);
   const isNameLoading = ref(false);
-  const sheetVisible = ref(false);
+  // const sheetVisible = ref(false);
 
   const userStore = useUserStore();
   const uuid = computed(() => userStore.getUserInfo.uuid);
@@ -515,23 +482,20 @@
   const isDisabled = ref<boolean>(false);
   const btnLoading = ref<boolean>(false);
   const formData = ref<any>({});
-  const filesCount = ref<any>(0);
-  const usedSize = ref<any>(0);
 
   const memo = ref<any>('');
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
   const minerIp = ref<string>('');
-
+  const isError = ref(false);
+  const income = ref(0);
   // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
   // order_id.value = '1281';
   memo.value = route.query.uuid;
   order_id.value = route.query.id;
   amb_uuid.value = route.query.amb_uuid;
-  // search_bill(memo.value, order_id.value).then((res) => {
-  //   console.log('search_bill', res);
-  //   minerIp.value = res?.data?.mp_ipaddr;
-  // });
+  income.value = route.query.income;
+
   let merkleTimeOut;
   const getMerkleState = (timeout = true) => {
     const d = {
@@ -581,7 +545,7 @@
         reject();
       }
 
-      uploadUri.value = `https://${bucketName.value}.devus.u2i.net:6008/o/`;
+      uploadUri.value = `https://${bucketName.value}.${poolUrl}:6008/o/`;
 
       const policy = {
         expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
@@ -650,10 +614,12 @@
     detailRow.value = row;
     const type = row.name.substring(row.name.lastIndexOf('.') + 1);
     console.log(row.imgUrlLarge);
+    console.log(type);
+
     if (type == 'pdf') {
       curSelectSrc.value = row.imgUrlLarge;
       curSelectType.value = 'pdf';
-      sheetVisible.value = true;
+      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'pdf' } });
     } else if (type == 'txt') {
       detailRow.value.detailType = 'txt';
       detailShow.value = true;
@@ -664,17 +630,20 @@
         });
     } else if (['xls', 'xlsx'].includes(type)) {
       curSelectSrc.value = row.imgUrlLarge;
-      curSelectType.value = 'excel';
-      sheetVisible.value = true;
+      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'excel' } });
     } else if (['doc', 'docx'].includes(type)) {
-      curSelectSrc.value = row.imgUrlLarge;
-      curSelectType.value = 'docx';
-      sheetVisible.value = true;
-    } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
       detailRow.value.detailType = 'word';
       router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
       // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
       // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+      console.log(row.imgUrlLarge);
+    } else if (['ppt', 'pptx'].includes(type)) {
+      curSelectSrc.value = row.imgUrlLarge;
+      curSelectType.value = 'ppt';
+      // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+      // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
+
       console.log(row.imgUrlLarge);
     } else if (row.imgUrlLarge) {
       imgUrl.value = row.imgUrlLarge;
@@ -690,7 +659,7 @@
 
       router.push({
         name: 'FileList',
-        query: { ...route.query, category: 0, prefix: prefix.join('/') },
+        query: { ...route.query, category: 0, prefix: prefix.join('/'), bucketName: bucketName.value },
       });
     }
   };
@@ -720,7 +689,7 @@
     if (type === 'download') {
       const objectKey = encodeURIComponent(checkData.fullName);
       const headers = getSignHeaders(objectKey);
-      const url = `https://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
+      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
       fetch(url, { method: 'GET', headers })
         .then((response) => {
           if (response.ok) {
@@ -939,6 +908,7 @@
   };
 
   const createName = async () => {
+    let retrNumber = 0; // 重试次数
     if (!showCreateName.value) {
       showCreateName.value = true;
     } else if (newBucketName.value) {
@@ -961,32 +931,85 @@
         isNameLoading.value = false;
         return;
       }
+
+      showToast.loading('Loading', {
+        cover: true,
+        coverColor: 'rgba(0,0,0,0.45)',
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
+        duration: 0,
+      });
+
+      setOrderName();
+      dialogVisible.value = false;
+    }
+
+    function setOrderName() {
+      retrNumber++;
       let order_data = {
         is_domain: true,
         name: newBucketName.value,
         order_uuid: orderInfo.value.uuid,
       };
-      //   const order_result = await order_name_set(order_data);
-      order_name_set(order_data).then(
-        (order_result) => {
-          isNameLoading.value = false;
+      order_name_set(order_data)
+        .then((order_result) => {
           if (order_result.code == 200) {
             if (!order_result?.data?.result) {
               bucketName.value = newBucketName.value;
               getOrderInfo();
               getSummary();
-              dialogVisible.value = false;
-              return;
+              isNameLoading.value = false;
+              showToast.hide();
             }
+          } else {
+            delay(() => {
+              serOrderNameError();
+            }, 3000);
           }
-        },
-        (err) => {
-          showToast.text(err.message);
-          isNameLoading.value = false;
-        },
-      );
+        })
+        .catch((err) => {
+          delay(() => {
+            serOrderNameError(err);
+          }, 3000);
+        });
+    }
+
+    function serOrderNameError(errMessage = '') {
+      if (retrNumber >= 5) {
+        showToast.hide();
+        isNameLoading.value = false;
+        dialogVisible.value = false;
+        showDialog({
+          overlayStyle: { background: 'rgba(0,0,0,0)' },
+          title: 'Error',
+          content: `${errMessage}`,
+          cancelText: 'Change',
+          okText: 'Retry',
+          onCancel: () => {
+            dialogVisible.value = true;
+          },
+          onOk: () => {
+            retrNumber = 0;
+            showToast.loading('Loading', {
+              cover: true,
+              coverColor: 'rgba(0,0,0,0.45)',
+              customClass: 'app_loading',
+              icon: loadingImg,
+              loadingRotate: false,
+              duration: 0,
+            });
+            setOrderName();
+          },
+        });
+      } else {
+        delay(() => {
+          setOrderName();
+        }, 3000);
+      }
     }
   };
+
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
     let imgHttpLink = '';
     let imgHttpLarge = '';
@@ -1005,6 +1028,10 @@
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       // console.log('--------imgHttpLarge', imgHttpLarge);
+    } else if (type === 'mp3') {
+      type = 'audio';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
@@ -1020,13 +1047,20 @@
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    showToast.loading('Loading', {
+      cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+      id: 'file_list',
+    });
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix('');
     listObject.setDelimiter('');
     listObject.setEncodingType('');
-    listObject.setMaxKeys(30);
+    listObject.setMaxKeys(5);
     listObject.setStartAfter('');
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
@@ -1103,9 +1137,12 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
-
+          isError.value = false;
           initRemoteData(transferData, reset, 0);
+          showToast.hide('file_list');
         } else if (err) {
+          isError.value = true;
+          showToast.hide('file_list');
           console.log('err----list', err);
         }
       },
@@ -1128,7 +1165,6 @@
   ) => {
     if (!data) {
       tableLoading.value = false;
-      showToast.hide(1);
       return;
     }
     if (data.err) {
@@ -1139,7 +1175,7 @@
       tableData.value = [];
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
-      let name = decodeURIComponent(data.commonPrefixes[i]);
+      let name = data.commonPrefixes[i];
       if (data.prefix) {
         // name = name.split(data.prefix)[1];
         name = name.split('/')[name.split('/').length - 2] + '/';
@@ -1159,7 +1195,7 @@
         category: 1,
         fileType: 1,
 
-        fullName: decodeURIComponent(data.commonPrefixes[i]),
+        fullName: data.commonPrefixes[i],
         key: data.commonPrefixes[i],
         idList: [
           {
@@ -1196,7 +1232,7 @@
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
-      let name = decodeURIComponent(data.content[j].key);
+      let name = data.content[j].key;
       if (data.prefix) {
         name = name.split(data.prefix)[1];
       }
@@ -1206,15 +1242,15 @@
         name = name.split('/')[name.split('/').length - 2];
       }
       let isPersistent = data.content[j].isPersistent;
+      console.log(data.content[j], 'data.content[j]');
 
       let item = {
         isDir: isDir,
         checked: false,
         name,
         category: data.content[j].category,
-        category: data.content[j].category,
         fileType: data.content[j].contentType,
-        fullName: decodeURIComponent(data.content[j].key),
+        fullName: data.content[j].key,
         key: data.content[j].key,
         idList: [
           {
@@ -1246,29 +1282,12 @@
 
       tableData.value.push(item);
     }
-    console.log(data, 'data');
-    console.log(tableData.value, '11111111111111');
+
+    console.log(tableData.value, 'tableData.value');
+
     tableLoading.value = false;
-    showToast.hide(1);
   };
 
-  const getKeys = () => {
-    return new Prmise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
-      let request = new Prox.default.ProxGetCredRequest();
-      request.setHeader(header);
-      server.listCreds(request, {}, (err: any, res: { array: any }) => {
-        if (err) {
-          console.log('err------:', err);
-          reject(false);
-        } else if (res.array.length > 0) {
-          accessKeyId.value = res.array[0][0][0];
-          secretAccessKey.value = res.array[0][0][1];
-          reject(true);
-        }
-      });
-    });
-  };
   const setDefaultName = () => {
     let orderName = route.query.id;
     let length = 10 - orderName.toString().length;
@@ -1278,7 +1297,29 @@
   };
   const gotoSummary = (order_id, state) => {
     console.log(order_id, state, 'order_id, state');
-    router.push({ name: 'orderSummary', query: { id: order_id, status: state } });
+    router.push({
+      name: 'orderSummary',
+      query: {
+        id: order_id,
+        status: state,
+        createdTime: transferGMTTime(orderInfo.value.order_created_at),
+        endTime: transferUTCTime(orderInfo.value.expire),
+        uuid: orderInfo.value.uuid,
+        amb_uuid: orderInfo.value.amb_uuid,
+        domain: orderInfo.value.domain,
+      },
+    });
+    window.sessionStorage.removeItem('myHistoryOrder');
+    window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(orderInfo.value));
+  };
+
+  const syncChallenge = () => {
+    let data = {
+      orderId: orderInfo.value.orderId,
+    };
+    sync_challenge(data).then((res) => {
+      console.log('------sync challenge', res);
+    });
   };
   onMounted(async () => {
     await getOrderInfo();
@@ -1291,44 +1332,13 @@
       dialogVisible.value = true;
       setDefaultName();
     }
+    syncChallenge();
+
     // } else {
     //   getFileList();
     //   getSummary();
     // }
   });
-  const getSummary = () => {
-    return new Promise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
-      let request = new Prox.default.ProxRequestSummaryIds();
-      request.setHeader(header);
-
-      request.setIdsList([orderInfo.value.foggie_id]);
-
-      console.log(`https://${bucketName.value}.devus.u2i.net:7007`, 'bucketNamebucketNamebucketNamebucketName');
-      console.log(request, 'requestrequestrequestrequest');
-
-      server.summaryInfo(request, metadata.value, (err: any, res: { array: any }) => {
-        if (err) {
-          console.log('errsummry------:', err);
-          // reject(false);
-          resolve(false);
-        } else {
-          const contentList = res.getContentsList().map((el) => {
-            return {
-              count: el.getCount(),
-              id: el.getId(),
-              total: el.getTotal(),
-            };
-          });
-          console.log(contentList, 'contentListcontentListcontentListcontentList');
-
-          filesCount.value = contentList?.[0]?.count || 0;
-          usedSize.value = contentList?.[0]?.total || 0;
-          resolve(usedSize.value);
-        }
-      });
-    });
-  };
   function closedOrder() {
     showDialog({
       title: 'Cancel order',
@@ -1349,31 +1359,31 @@
       },
     });
   }
-  provide('getSummary', getSummary);
-  onDeactivated(() => {
-    if (merkleTimeOut) clearTimeout(merkleTimeOut);
-  });
+  // onDeactivated(() => {
+  //   if (merkleTimeOut) clearTimeout(merkleTimeOut);
+  // });
   onUnmounted(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });
-  watch(
-    () => route.query,
-    async () => {
-      dialogVisible.value = false;
-      await getOrderInfo();
-      // if (orderInfo.value.electronic_type == '0') {
-      if (bucketName.value) {
-        getFileList();
-      } else {
-        dialogVisible.value = true;
-        setDefaultName();
-      }
-      // } else {
-      //   getFileList();
-      // }
-    },
-    { deep: true },
-  );
+  // watch(
+  //   () => route.query,
+  //   async () => {
+  //     dialogVisible.value = false;
+  //     await getOrderInfo();
+  //     // if (orderInfo.value.electronic_type == '0') {
+  //     if (bucketName.value) {
+  //       getFileList();
+  //     } else {
+  //       dialogVisible.value = true;
+  //       setDefaultName();
+  //     }
+  //     // } else {
+  //     //   getFileList();
+  //     // }
+  //   },
+  //   { deep: true },
+  // );
+  provide('getSummary', getSummary);
   provide('isMobileOrder', isMobileOrder);
 </script>
 
@@ -1435,6 +1445,10 @@
     width: 36px;
     height: 36px;
   }
+  .cancel_svg {
+    height: 30px !important;
+    width: 30px !important;
+  }
 
   .bucket_name_tip {
     word-break: break-word;
@@ -1448,20 +1462,23 @@
     padding: 30px 10px;
     background: #000;
     box-sizing: border-box;
-
     .middle_img {
-    }
+      max-height: calc(100vh - 500px);
 
+      .nut-image {
+        width: 100%;
+        height: 100%;
+      }
+    }
     .bottom_action {
       display: flex;
       justify-content: space-evenly;
       height: 200px;
-
+      margin-top: 20px;
       div {
         text-align: center;
         color: #fff;
       }
-
       svg {
         color: #fff;
         width: 80px;
@@ -1477,6 +1494,49 @@
 
   .order-detail {
     margin-top: 30px;
+  }
+  .main_detail_box {
+    display: flex;
+    height: auto;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+    padding: 36px 0;
+    .profit_box {
+      color: #fff;
+      width: 70%;
+      .title {
+      }
+      .value {
+        font-size: 50px;
+        font-weight: bold;
+      }
+    }
+    .progress_box {
+      color: #fff;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: #4d5092;
+      background: #9597c212;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow:
+        rgb(204, 219, 232) 0.4vw 0.4vw 0.8vw 0px inset,
+        rgba(255, 255, 255, 0.5) -0.4vw -0.4vw 0.8vw 1px inset;
+      position: relative;
+      flex-direction: column;
+      .text {
+        font-size: 18px;
+        font-weight: normal;
+      }
+
+      .user_circle {
+      }
+    }
   }
 
   .upload_btn {
@@ -1508,25 +1568,73 @@
   .top_box {
     // margin: 0 30px;
     padding: 30px 10px;
-    border-radius: 20px;
+    border-radius: 20px !important;
     background: $primary-color;
-
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    padding-bottom: 50px;
+    .order-content_wrap {
+      display: flex;
+      margin-top: 10px;
+      position: relative;
+      transition: all 0.5s linear;
+      height: 0;
+      border-top: 1px dashed #ccc;
+      opacity: 1;
+      max-height: 500px;
+    }
+    .showHight {
+      height: 360px;
+      max-height: 500px;
+    }
+    .hideHight {
+      height: 0;
+      border: none;
+      max-height: 0;
+    }
+    .my_svg_icon {
+      position: absolute;
+      top: -16px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+    }
+    .show_avg {
+      top: -36px;
+    }
     .order-des {
       //   margin-bottom: 20px;
+      display: flex;
+      align-items: start;
       color: #fff;
+      height: 60px;
+      justify-content: start;
+      flex-direction: column;
       //   border-bottom: 1px dashed #fff;
 
       .span1 {
         float: left;
-        font-size: 24px;
         font-weight: bold;
+        display: flex;
+        align-items: center;
+        padding: 13px 0;
+        font-weight: bold;
+        font-size: 24px;
+        svg {
+          margin-right: 8px;
+        }
       }
 
       .span2 {
-        // margin-right: 5vw;
         float: right;
         font-size: 20px;
         font-weight: bold;
+        display: flex;
+        align-items: center;
+        padding: 13px 0;
+        font-weight: bold;
+        svg {
+          margin-right: 8px;
+        }
       }
     }
 
@@ -1552,6 +1660,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      justify-content: space-between;
+      //   width: 100%;
+      justify-content: end;
+      flex-direction: column;
+      align-items: end;
+      //   justify-content: start;
+      //   align-items: start;
+      //   background: #4a17a0 !important;
+      //   padding: 20px 0;
 
       .nut-cell {
         width: auto;
@@ -1561,13 +1678,16 @@
         padding-left: 8vw;
         // border-bottom: 1px solid #fff;
         border-radius: 0;
-        background: $primary-color;
+        background: transparent !important;
         box-shadow: none;
         color: #fff;
         font-size: 24px;
         line-height: 4vw;
         font-weight: bold;
-        margin: 10px 0;
+        margin: 0px 0;
+        padding: 13px 10px 13px 52px;
+        display: flex;
+        flex-direction: column;
       }
 
       svg {
@@ -1577,12 +1697,24 @@
         height: 4vw;
       }
     }
+    .left_count {
+      justify-content: start;
+      align-items: start;
+      //   border-right: 2px solid #fff;
+      width: auto;
+      padding-right: 10px !important;
+    }
   }
 
   .detail_box {
     box-sizing: border-box;
     height: 100%;
     padding: 20px;
+    margin-top: -40px;
+    background: #fff;
+    border-radius: 40px 40px 0 0;
+    z-index: 99;
+    position: relative;
 
     .type_check_box {
       display: flex;
@@ -1623,6 +1755,7 @@
 
         .order-icon-recycle {
           background-color: #ff8b00;
+          background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
           border-radius: 50%;
 
           svg {
@@ -1634,6 +1767,7 @@
 
         .order-icon-node-tree {
           background-color: #34964f;
+          background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
@@ -1645,6 +1779,7 @@
 
         .order-icon-send-to-back {
           background-color: #fcd116;
+          background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
@@ -1656,6 +1791,7 @@
 
         .order-icon-input-cursor-move {
           background-color: #5f57ff;
+          background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
@@ -1862,6 +1998,7 @@
 
       .order-icon-recycle {
         background-color: #ff8b00;
+        background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
       }
 
       .order-icon-node-tree {
@@ -2030,6 +2167,14 @@
         font-size: 35px;
       }
     }
+  }
+  .BucketName {
+    background: url('@/assets/newIcon/Bucketname.png');
+    // background-size: 100% 100%;
+    background-size: 30%;
+    background-repeat: no-repeat;
+
+    background-position: calc(100% + 0.5rem) top;
   }
 </style>
 <style lang="scss">

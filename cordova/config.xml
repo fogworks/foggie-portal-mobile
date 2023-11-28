@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="io.cordova.hellocordova" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Cloud Storage</name>
+    <!-- <description>Sample Apache Cordova App</description> -->
+    <!-- <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        Apache Cordova Team
+    </author> -->
+    <content src="index.html" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <platform name="android">
+        <plugin name="cordova-plugin-android-permissions" spec="1.1.5" />
+        <!-- <config-file parent="/*" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        </config-file> -->
+        <!-- <plugin name="cordova-plugin-proxy" spec="1.7.0" /> -->
+        <!-- <preference name="Hostname" value="amb.dev.u2i.net" />
+        <preference name="Scheme" value="https" />
+        <preference name="ResolveServiceWorkerRequests" value="true" />
+        <preference name="MixedContentMode" value="2" /> -->
+        <!-- <proxy match="/android_proxy/*" forward="https://amb.dev.u2i.net" /> -->
+        <icon src="res/icons/favicon.png" />
+        <!-- <preference name="AutoHideSplashScreen" value="true" /> -->
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screens/background.xml" />
+        <preference name="AndroidWindowSplashScreenAnimationDuration" value="2000" />
+        <!-- <preference name="SplashScreen" value="res/screens/welcome.png" />
+        <preference name="AutoHideSplashScreen" value="true" /> 
+        <preference name="SplashScreenDelay" value="3000" />
+        <preference name="ShowSplashScreen" value="false" /> -->
+    </platform>
+</widget>

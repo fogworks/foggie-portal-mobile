@@ -95,12 +95,14 @@
     }
   }
   const submit = async () => {
-    let isPass = false;
-    try {
-      loading.value = true;
-      isPass = await load_gpa_token();
-    } catch (error) {
-      loading.value = false;
+    let isPass = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? true : false;
+    if (!isPass) {
+      try {
+        loading.value = true;
+        isPass = await load_gpa_token();
+      } catch (error) {
+        loading.value = false;
+      }
     }
 
     console.log(isPass);
@@ -144,7 +146,7 @@
                       } else if (res && res.data) {
                         let data = res.data;
                         let token = data.token_type + ' ' + data.access_token;
-                        // let refresh_token = data.token_type + ' ' + data.refresh_token;
+                        let refresh_token = data.token_type + ' ' + data.refresh_token;
                         let user_id = data.user_id;
                         window.localStorage.setItem('user_id', user_id);
                         // window.localStorage.setItem('refresh_token', refresh_token);
@@ -160,6 +162,7 @@
                         // store.dispatch('token/login', userInfo);
                         // userStore.setInfo(userInfo);
                         userStore.setToken(token);
+                        userStore.setRefreshToken(refresh_token);
                         // getUserInfo();
                         loading.value = false;
 

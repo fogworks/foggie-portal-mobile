@@ -1,15 +1,19 @@
 import useVariable from './useVariable';
 import { ref } from 'vue';
-import { showToast } from '@nutui/nutui';
+import { showToast, showDialog } from '@nutui/nutui';
 import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import { getLink } from '@/api/index.ts';
 import { useUserStore } from '@/store/modules/user';
 import { transferUTCTime } from '@/utils/util.ts';
-
+import { shareUrl } from '@/setting.js';
 import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
-// import { file_pin } from '@/api';
+import IconHttp2 from '~icons/home/http2.svg';
+import { poolUrl } from '@/setting.js';
+import useOrderInfo from './useOrderInfo.js';
+const { metadata } = useOrderInfo();
+
 export default function useShare(orderInfo, header, deviceType) {
   const userStore = useUserStore();
   const daySeconds = 86400;
@@ -24,6 +28,7 @@ export default function useShare(orderInfo, header, deviceType) {
   const imgUrl = ref('');
   const imgDesc = ref('');
   const shareType = ref('');
+  const httpCopyLink = ref('');
   const userInfo = computed(() => userStore.getUserInfo);
   const options = ref([
     {
@@ -56,6 +61,8 @@ export default function useShare(orderInfo, header, deviceType) {
     },
   ]);
   const ipfsPin = (item, stype, flag, exp = true) => {
+    console.log(item, 'item');
+    console.log(orderInfo.value, 'orderInfo.value');
     let foggieToken;
     // if (foggieToken && foggieToken.indexOf('bearer ') > -1) {
     //   foggieToken = foggieToken.split('bearer ')[1];
@@ -110,11 +117,11 @@ export default function useShare(orderInfo, header, deviceType) {
     // let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
     let bucketName = orderInfo.value.domain;
 
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName}.${poolUrl}:7007`;
     let server = new grpcService.default.ServiceClient(ip, null, null);
 
     // showToast.text('IPFS link will available later.');
-    server.pin(ProxPinReq, {}, (err, res) => {
+    server.pin(ProxPinReq, metadata.value, (err, res) => {
       if (res) {
       } else if (err) {
       }
@@ -127,7 +134,7 @@ export default function useShare(orderInfo, header, deviceType) {
     if (key) {
       let foggie_id = orderInfo.value.foggie_id;
       // let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
-      let httpStr = `https://${orderInfo.value.domain}.devus.u2i.net:6008/o/${item.cid}`;
+      let httpStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/o/${item.cid}`;
       let ipfsStr = item.cid ? `ipfs://${item.cid}` : '';
       shareRefContent.ipfsStr = ipfsStr;
       shareRefContent.httpStr = httpStr;
@@ -139,40 +146,15 @@ export default function useShare(orderInfo, header, deviceType) {
     }
   };
   const copyLink = async (text) => {
-    if (!navigator.clipboard) {
-      // Clipboard API 不可用
-      fallbackCopyTextToClipboard(text);
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast.success('Copy succeeded');
-    } catch (err) {
-      showToast.fail('Copy failed');
-    }
+    var input = document.createElement('input');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('Copy');
+    document.body.removeChild(input);
+    showToast.success('Copy succeeded');
   };
-  function fallbackCopyTextToClipboard(text) {
-    // 1.Create a selectable element
-    let textArea = document.createElement('textarea');
-    textArea.value = text;
 
-    // 2.Use positioning to prevent page scrolling
-    textArea.style.top = '0';
-    textArea.style.left = '0';
-    textArea.style.position = 'fixed';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    try {
-      let successful = document.execCommand('copy');
-      let msg = successful ? 'successful' : 'unsuccessful';
-      showToast.success(msg);
-    } catch (err) {
-      showToast.fail('unsuccessful');
-    }
-    // 3.Remove element
-    document.body.removeChild(textArea);
-  }
   const confirmPeriod = ({ selectedValue, selectedOptions }) => {
     desc.value = selectedOptions.map((val) => val.text).join(',');
     periodShow.value = false;
@@ -194,9 +176,10 @@ export default function useShare(orderInfo, header, deviceType) {
           detail: imgDesc.value,
         });
         if (linkRes.data) {
-          coverUrl = 'https://share.dev.u2i.net/img/' + linkRes.data;
+          coverUrl = `${shareUrl}/img/` + linkRes.data;
         }
       }
+      console.log(periodValue.value[0], 'periodValue.value[0]');
       return getLink({
         url: fileLink,
         coverUrl: category == 2 ? coverUrl : '',
@@ -208,8 +191,8 @@ export default function useShare(orderInfo, header, deviceType) {
         detail: imgDesc.value,
       }).then((res) => {
         if (res.code == 200) {
-          imgUrl.value = 'https://share.dev.u2i.net/img/' + res.data;
-          return 'https://share.dev.u2i.net/share/' + res.data;
+          imgUrl.value = `${shareUrl}/img/` + res.data;
+          return `${shareUrl}/share/` + res.data;
         }
       });
     } else {
@@ -244,7 +227,35 @@ export default function useShare(orderInfo, header, deviceType) {
     shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
     if (!type) {
       let link = await createLowLink(shareRefContent.httpStr, shareOption);
-      copyLink(link);
+      showShareDialog.value = false;
+      httpCopyLink.value = link;
+      console.log(link, 'link.link');
+      let src = require('@/assets/svg/home/http2.svg');
+
+      // let src = IconHttp2;
+      let str = `<div>
+      <img style="height:60px; padding:0 20px;" src=${src}> 
+      </div> <div  class='http_share_text'>The link has been generated, please copy it.</div>`;
+      showDialog({
+        title: 'Http Link',
+        content: str,
+        okText: 'Copy',
+        noCancelBtn: true,
+        customClass: 'BuyOrderClass',
+        onOk: () => {
+          console.log(httpCopyLink.value, 'httpCopyLink.value');
+          copyLink(httpCopyLink.value);
+          httpCopyLink.value = '';
+          showShareDialog.value = false;
+          // router.push({ name: 'listDetails', query: { id: res.data?.orderId, uuid: res.data?.uuid, amb_uuid: res.data?.ambUuid } });
+        },
+        beforeClose: () => {
+          httpCopyLink.value = '';
+          showShareDialog.value = false;
+          return true;
+        },
+      });
+      // copyLink(link);
     } else if (type == 'twitter') {
       shareTwitter(shareRefContent.httpStr, shareOption);
     } else if (type == 'faceBook') {
@@ -278,7 +289,7 @@ export default function useShare(orderInfo, header, deviceType) {
     // let ip = `http://${orderInfo.value.rpc.split(':')[0]}:6008`;
     // const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
 
-    let ip = `https://${bucketName}.devus.u2i.net:6008`;
+    let ip = `https://${bucketName}.${poolUrl}:6008`;
     const baseUrl = `${ip}/o/${objectKey}`;
     if (thumb) {
       return `${baseUrl}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${encodeURIComponent(
@@ -312,7 +323,7 @@ export default function useShare(orderInfo, header, deviceType) {
 
     if (key) {
       // let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
-      let httpStr = `https://${orderInfo.value.domain}.devus.u2i.net:6008/o/${shareOption.cid}`;
+      let httpStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/o/${shareOption.cid}`;
       shareRefContent.httpStr = httpStr;
       // if (+pinData.shareOption.originalSize > orderInfo.value.total_space * 0.01) {
       //   shareRefContent.ipfsStr = '';
@@ -334,8 +345,9 @@ export default function useShare(orderInfo, header, deviceType) {
         options.value = options.value.filter((el) => {
           return el.value < (expireTimeStamp - startTimeStamp) / 1000;
         });
-        periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
         desc.value = transferUTCTime(orderInfo.value.expire);
+        options.value.unshift({ text: desc.value, value: +((expireTimeStamp - startTimeStamp) / 1000).toFixed(0) });
+        periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
       } else {
         options.value = [
           {
@@ -371,12 +383,22 @@ export default function useShare(orderInfo, header, deviceType) {
     },
     { deep: true },
   );
+  watch(
+    periodValue,
+    (val) => {
+      console.log(val, 'val');
+    },
+    { deep: true },
+  );
 
   watch(showShareDialog, (val) => {
     isReady.value = false;
     shareType.value = '';
+    // httpCopyLink.value = '';
   });
   return {
+    httpCopyLink,
+    copyLink,
     createNFT,
     shareType,
     ipfsPin,

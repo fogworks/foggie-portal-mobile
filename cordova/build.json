@@ -1,0 +1,15 @@
+{
+  "android": {
+    "release": {
+      "outputFile": "CloudStorage.apk",
+      "keystore": "./my-release-key.keystore",
+      "storePassword": "megaops@2023",
+      "alias": "alias_name",
+      "password": "megaops@2023",
+      "keystoreType": ""
+    },
+    "debug": {
+      "outputFile": "CloudStorage.apk"
+    }
+  }
+}

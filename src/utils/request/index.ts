@@ -6,7 +6,6 @@ import { useUserStore } from '@/store/modules/user';
 import { useRouter } from 'vue-router';
 import { refreshToken, user } from '@/api';
 import ignoreUrl from './ignoreUrl';
-const router = useRouter();
 
 const service: AxiosInstance = axios.create({
   withCredentials: false,
@@ -16,13 +15,15 @@ const service: AxiosInstance = axios.create({
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const userStore = useUserStore();
-
-    if (config.url && config.url.indexOf('/api/accounts/login') > -1) {
+    if (config.url && config.url.indexOf('/api_accounts/login') > -1) {
       config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
       config.data = Qs.stringify(config.data);
     }
     const refresh_token = userStore.getToken;
     config.headers['Authorization'] = refresh_token;
+    if (config.url && config.url.indexOf('/api_accounts/accounts/refresh_token') > -1) {
+      config.headers['Authorization'] = userStore.getRefreshToken;
+    }
     return config;
   },
   (_error: AxiosError) => {},
@@ -30,52 +31,51 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
   async (response: AxiosResponse) => {
+    const router = useRouter();
     const userStore = useUserStore();
 
     const res = response.data;
-    const code = res.code;
-    if (response.config.url?.indexOf('/v1/chain/get_account') > -1) {
+    let code = res.code;
+    if (
+      response.config.url?.indexOf('/v1/chain/get_account') > -1 ||
+      response.config.url?.indexOf('/reCAPTCHA_verification/recaptcha/api/siteverify') > -1
+    ) {
       return res;
     }
     if (code !== 200) {
       if (ignoreUrl.indexOf(response.config.url) > -1) {
-      } else {
-        showToast.fail(res.error || res.msg || res.message || 'Network error. Please try again.');
+      } else if (code != 420) {
+        showToast.fail(res.error || res.msg || res.message || response.config.url + 'Network error. Please try again.');
       }
       if (code === 401 || code === 403) {
         userStore.setInfo({});
         userStore.setToken('');
+        userStore.setRefreshToken('');
         userStore.setCloudCodeIsBind(false);
         router.push('/login');
         return;
       } else if (code === 420) {
-        // let res = await refreshToken();
-        // if (res && res.data && res.data.access_token) {
-        //   let token = res.data.access_token;
-        //   let type = res.data.token_type;
-        //   token = type + ' ' + token;
-        //   userStore.setToken(token);
-        //   let res2 = await user();
-        //   if (res2.data) {
-        //     userStore.setInfo(res2.data);
-        //   }
-        //   window.localStorage.setItem('last_refresh_token', token);
-        //   // setToken(token);
-        //   return service(response.config);
-        // } else {
-        userStore.setInfo({});
-        userStore.setToken('');
-        userStore.setCloudCodeIsBind(false);
-        router.push('/login');
-        return;
-        // }
-      } else {
-        if (ignoreUrl.indexOf(response.config.url) > -1) {
-          return res;
+        let res = await refreshToken();
+        if (res && res.data && res.data.access_token) {
+          let token = res.data.access_token;
+          let type = res.data.token_type;
+          token = type + ' ' + token;
+          userStore.setToken(token);
+          let res2 = await user();
+          if (res2.data) {
+            userStore.setInfo(res2.data);
+          }
+          window.localStorage.setItem('last_refresh_token', token);
+          return service(response.config);
+        } else {
+          userStore.setInfo({});
+          userStore.setToken('');
+          userStore.setRefreshToken('');
+          userStore.setCloudCodeIsBind(false);
+          router.push('/login');
+          return;
         }
-        // showToast.fail(res.message);
-        // return Promise.reject(res);
-        return res;
+      } else {
       }
     } else {
       return res;
@@ -89,7 +89,7 @@ service.interceptors.response.use(
     if (ignoreUrl.indexOf(error.config.url) > -1) {
       return Promise.reject(error.message);
     }
-    showToast.fail(error.message);
+    showToast.fail(error.config.url, error.message);
     return Promise.reject(error.message);
   },
 );

@@ -44,17 +44,17 @@ export const routes = [
         },
       },
 
-      {
-        path: 'demo',
-        component: () => import('@/views/demo/index.vue'),
-        meta: {
-          title: 'tabbar.demo',
-          notKeepAlive: true,
-        },
-      },
+      // {
+      //   path: 'demo',
+      //   component: () => import('@/views/demo/index.vue'),
+      //   meta: {
+      //     title: 'tabbar.demo',
+      //     notKeepAlive: true,
+      //   },
+      // },
       {
         name: 'listDetails',
-        path: '/details',
+        path: 'details',
         component: () => import('@/views/list/details/index.vue'),
         meta: {
           title: 'list.details',
@@ -64,7 +64,7 @@ export const routes = [
       },
       {
         name: 'filePreview',
-        path: '/filePreview',
+        path: 'filePreview',
         component: () => import('@/views/list/details/filePreview.vue'),
         meta: {
           title: 'list.filePreview',
@@ -73,7 +73,7 @@ export const routes = [
       },
       {
         name: 'getKey',
-        path: '/getKey',
+        path: 'getKey',
         component: () => import('@/views/list/details/getKey.vue'),
         meta: {
           title: 'list.getKey',
@@ -143,10 +143,20 @@ export const routes = [
       },
       {
         name: 'orderSummary',
-        path: '/orderSummary',
+        path: 'orderSummary',
         component: () => import('@/views/orderSummary/index.vue'),
         meta: {
           title: 'orderSummary',
+          border: false,
+          notKeepAlive: true,
+        },
+      },
+      {
+        name: 'orderSumDetail',
+        path: 'orderSumDetail',
+        component: () => import('@/views/orderSummary/orderSumDetail.vue'),
+        meta: {
+          title: 'orderSumDetail',
           border: false,
           notKeepAlive: true,
         },
@@ -164,6 +174,14 @@ export const routes = [
         meta: {},
       },
     ],
+  },
+  {
+    name: 'Guide',
+    path: '/guide',
+    component: () => import('@/views/login/first.vue'),
+    meta: {
+      notKeepAlive: true,
+    },
   },
   {
     name: 'Login',

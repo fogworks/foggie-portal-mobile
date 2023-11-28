@@ -4,26 +4,28 @@ import { defineStore } from 'pinia';
 
 const { VITE_TOKEN_KEY } = import.meta.env;
 const token = useCookies().get(VITE_TOKEN_KEY as string);
+const refreshToken = useCookies().get('refresh_token');
 
 interface StoreUser {
   token: string;
+  refreshToken: string;
   info: Record<any, any>;
   balance: any;
   cloudCodeIsBind: boolean;
   ambRefuse: boolean;
-  curStepIndex:any,
-
+  curStepIndex: any;
 }
 
 export const useUserStore = defineStore({
   id: 'app-user',
   state: (): StoreUser => ({
     token: token,
+    refreshToken: refreshToken,
     info: {},
     balance: 0,
     cloudCodeIsBind: false,
     ambRefuse: false, //
-    curStepIndex:'1',
+    curStepIndex: '1',
   }),
   getters: {
     getUserInfo(): any {
@@ -32,6 +34,10 @@ export const useUserStore = defineStore({
     getToken(): any {
       return this.token || '';
     },
+    getRefreshToken(): any {
+      return this.refreshToken || '';
+    },
+
     getBalance(): any {
       return this.balance || 0;
     },
@@ -40,7 +46,7 @@ export const useUserStore = defineStore({
     },
     getambRefuse(): any {
       return this.ambRefuse;
-    },    
+    },
     getCurStepIndex(): any {
       return this.curStepIndex;
     },
@@ -51,7 +57,7 @@ export const useUserStore = defineStore({
     },
     setambRefuse(bool: boolean) {
       this.ambRefuse = bool;
-    },  
+    },
     setcurStepIndex(num: any) {
       this.curStepIndex = num;
     },
@@ -64,10 +70,13 @@ export const useUserStore = defineStore({
     setBalance(balance: any) {
       this.balance = balance;
     },
-    
+    setRefreshToken(refreshToken: any) {
+      this.refreshToken = refreshToken;
+    },
     logout() {
       this.token = '';
       this.info = {};
+      this.cloudCodeIsBind = false;
     },
     login(data) {
       return new Promise((resolve) => {
@@ -81,6 +90,6 @@ export const useUserStore = defineStore({
   persist: {
     key: 'token',
     storage: localStorage,
-    paths: ['token'],
+    paths: ['token', 'refreshToken'],
   },
 });

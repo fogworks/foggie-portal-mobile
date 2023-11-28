@@ -89,7 +89,8 @@
     }
   }
 
-  .dialog_class {
+  .dialog_class,
+  .dialog_class_delete {
     font-size: 30px;
 
     .nut-dialog__header {
@@ -106,15 +107,21 @@
       }
     }
   }
+  .dialog_class_delete {
+    .nut-dialog__footer-ok {
+      background: #e71313;
+    }
+  }
 
   .nut-popup {
     .nut-dialog:not(.CustomName) {
-      background-color: #2d2e41 !important;
+      //   background-color: #2d2e41 !important;
       box-shadow: inset 0 0 0 0.5px hsl(0deg 0% 100% / 30%);
 
       .nut-dialog__header,
       .nut-dialog__content {
         color: #f5f7fb;
+        color: #000;
       }
 
       .nut-button--primary {
@@ -125,13 +132,13 @@
       }
 
       .nut-dialog__footer-ok {
-        background-image: linear-gradient(135deg, #5b6954 0%, #9cb77d 100%);
+        // background-image: linear-gradient(135deg, #5b6954 0%, #9cb77d 100%);
         margin-left: 10px !important;
       }
 
       .nut-dialog__footer-cancel {
-        color: rgb(248, 248, 248);
-        background-image: linear-gradient(135deg, #712b42 15%, #a94858 100%);
+        // color: rgb(248, 248, 248);
+        // background-image: linear-gradient(135deg, #712b42 15%, #a94858 100%);
         margin-right: 10px !important;
       }
 
@@ -158,24 +165,25 @@
       .nut-dialog__content {
         .buyOrderItem {
           word-break: break-word;
-          color: #d1cece;
+          // color: #d1cece;
+          color: #000;
           text-align: left;
           border-bottom: 2px solid #f5f7fb;
           padding: 10px 10px;
           display: flex;
           justify-content: space-between;
           align-items: center;
-         
         }
       }
       .nut-dialog__footer .nut-dialog__footer-cancel {
         background-image: linear-gradient(135deg, #5b6954 0%, #9cb77d 100%);
+        background-image: linear-gradient(135deg, #82797c 15%, #7e7a7a 100%);
         margin-left: 10px !important;
+        color: #fff;
       }
     }
     .CustomName {
-      background-color: #2d2e41 !important;
-
+      //   background-color: #2d2e41 !important;
       .nut-dialog__header {
         display: flex;
         justify-content: flex-start;
@@ -185,7 +193,7 @@
         color: #000;
         padding-bottom: 20px;
         border-bottom: 0.5px solid #e2ecff;
-        color: #f5f7fb;
+        // color: #f5f7fb;
         span.icon {
           display: flex;
           justify-content: center;
@@ -205,17 +213,19 @@
       }
 
       .nut-input {
-        background-color: rgb(128 128 128 / 39%);
+        // background-color: rgb(128 128 128 / 39%);
+        padding-left: 10px !important ;
       }
       .nut-input .input-text,
       .nut-input__text--readonly {
-        color: #ebebeb !important;
+        // color: #ebebeb !important;
+        // color: #999 !important;
       }
 
       .bucket_tip {
         padding-bottom: 10px;
         border-bottom: 0.5px solid #e2ecff;
-        color: #ebebeb;
+        // color: #ebebeb;
       }
 
       .nut-input--border {
@@ -234,23 +244,35 @@
         .nut-button:first-child {
           color: rgb(248, 248, 248);
           background-image: linear-gradient(135deg, #712b42 15%, #a94858 100%);
+          background-image: linear-gradient(135deg, #82797c 15%, #7e7a7a 100%);
         }
 
         .nut-button:last-child {
           background-image: linear-gradient(135deg, #5b6954 0%, #9cb77d 100%);
+          background-image: linear-gradient(135deg, #4c5093 0%, #5758a0 100%);
           margin-left: 10px !important;
         }
 
         .nut-button--disabled {
-          background-image: linear-gradient(135deg, #5b6954 0%, #1e4735 100%) !important;
+          //   background-image: linear-gradient(135deg, #5b6954 0%, #1e4735 100%) !important;
         }
       }
     }
   }
   .notify_primary {
     height: unset;
+    border-radius: 16px;
+    padding: 20px;
+    // width: 600px;
+    text-align: center;
   }
   .grecaptcha-badge {
     display: none !important;
+  }
+  .http_share_text {
+    text-align: center;
+    font-size: 30px;
+    word-break: break-word;
+    line-height: normal;
   }
 </style>

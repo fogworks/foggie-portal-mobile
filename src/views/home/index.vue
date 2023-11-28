@@ -1,198 +1,219 @@
 <template>
-  <!-- <nut-noticebar v-if="!userInfo.dmc" class="my_noticebar">
-    <template #left-icon>
-      <Notice width="20px" left="20px"></Notice>
+  <div>
+    <div class="dmc_account">
+      <div class="dmc_account_box">
+        <div class="img-box">
+          <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
+        </div>
+        Hello,
+        {{ userInfo.email && userInfo.email.split('@')[0] }}
+      </div>
+      <div class="Notice" @click="openGoogleSetting" v-if="!bindOtp&&!withdrawalIsVerified">
+        <Notice color="" class="nut-icon-am-breathe nut-icon-am-infinite"> </Notice>
+      </div>
+    </div>
+    <div inset class="income-card">
+      <img src="@/assets/balance_right.svg" />
+      <div class="card_row_1 card_header">
+        <div class="total_income">
+          <div class="balance_text">
+            <span>{{ cloudBalanceNum?.integerPart }}</span>
+            <span style="font-size: 13px">.{{ cloudBalanceNum?.decimalPart }}</span>
+            <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
+          </div>
+          <div class="usd_text" v-if="dmc2usdRate && cloudBalance && cloudBalance != '--'">
+            ≈ {{ formatNumber(dmc2usdRate * cloudBalance)?.integerPart
+            }}<span style="font-size: 13px">.{{ formatNumber(dmc2usdRate * cloudBalance)?.decimalPart }}</span> USD
+          </div>
+        </div>
+      </div>
+      <div class="card_row_1 pst-row">
+        <div>
+          <p>Space</p>
+          <p class="column_value">{{ getfilesize2(cloudPst == '--' ? 0 : cloudPst) }}</p>
+        </div>
+        <div @click="gotoPage('transactionRecords', '1')">
+          <p>Withdrawn</p>
+          <p class="column_value">{{ cloudWithdraw >= 0 ? cloudWithdraw.toFixed(4) : cloudWithdraw }}</p>
+        </div>
+        <div @click="gotoPage('analysis')">
+          <p>Today's new funds</p>
+          <p class="column_value today_income"
+            >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
+            <TriangleUp color="#fbd116" width="20px"></TriangleUp>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="withdraw-btn" direction="horizontal" align="center">
+      <div class="action_item" @click="toRecharge">
+        <!-- <img src="@/assets/recharge.svg" alt="" /> -->
+        <img src="@/assets/Recharge.png" alt="" />
+
+        Recharge
+      </div>
+      <div class="action_item" @click="showWithdraw">
+        <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
+        <img src="@/assets/Withdraw.png" alt="" />
+
+        Withdraw
+      </div>
+    </div>
+    <div class="middle_btn_box">
+      <div>
+        <div class="flex-content" @click="toBuyOrder">
+          <div class="svg-box">
+            <!-- <Shop></Shop> -->
+            <img src="@/assets/newIcon/buyOrder.png" alt="" />
+          </div>
+          <span>Buy</span>
+        </div>
+      </div>
+      <div>
+        <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
+        <div class="flex-content" @click="gotoPage('Order')">
+          <div class="svg-box">
+            <img src="@/assets/newIcon/orders.png" alt="" />
+          </div>
+          <span>Orders</span>
+        </div>
+      </div>
+      <div>
+        <!-- <div class="flex-content" @click="router.push('/analysis')"> -->
+        <div class="flex-content" @click="gotoPage('analysisChart')">
+          <div class="svg-box">
+            <img src="@/assets/newIcon/analysis.png" alt="" />
+          </div>
+          <span>Charts</span>
+        </div>
+      </div>
+      <div>
+        <div class="flex-content" @click="gotoPage('transactionRecords')">
+          <!-- <div class="flex-content" @click="router.push('/transactionRecords')"> -->
+          <div class="svg-box">
+            <img src="@/assets/newIcon/transaction.png" alt="" />
+            <!-- <img src="@/assets/IconTransaction.svg" alt="" />
+            <IconTransaction></IconTransaction> -->
+          </div>
+          <span>Transaction <br /> </span>
+          <!-- records -->
+        </div>
+      </div>
+    </div>
+
+    <div class="DouArrowDown" v-if="!targetIsVisible && !ishaveProfit" @click="scrollIntoViewTo">
+      <DouArrowUp width="100" height="50" class="nut-icon-am-jump nut-icon-am-infinite" />
+    </div>
+    <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
+    <div class="tab_top_title" v-if="ishaveProfit">Last 7 days <span style="font-size: 12px">(DMC)</span></div>
+
+    <ErrorPage v-if="isError && !earningsList.length" @refresh="loadMore"></ErrorPage>
+    <template v-else-if="!ishaveProfit">
+      <div class="my_swipe">
+        <nut-swiper :init-page="1" :pagination-visible="true" pagination-color="#426543" auto-play="3000">
+          <nut-swiper-item>
+            <img src="@/assets/banner1.svg" alt="" />
+          </nut-swiper-item>
+          <nut-swiper-item>
+            <img src="@/assets/banner2.svg" alt="" />
+          </nut-swiper-item>
+          <nut-swiper-item>
+            <img src="@/assets/banner3.png" alt="" />
+          </nut-swiper-item>
+          <nut-swiper-item>
+            <img src="@/assets/banner4.svg" alt="" />
+          </nut-swiper-item>
+        </nut-swiper>
+      </div>
+
+      <div class="my_steps" ref="my_steps" id="my_steps">
+        <nut-steps direction="vertical" :current="curStepIndex">
+          <nut-step
+            title="Bind invitation code"
+            @click="gotoBindAmb"
+            content="Please confirm that you have filled out the invitation code before placing your order"
+            >1</nut-step
+          >
+          <nut-step
+            title="Waiting for approval"
+            :content="
+              ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'
+            "
+            >2</nut-step
+          >
+          <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
+          <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
+            >3</nut-step
+          >
+          <nut-step
+            @click="gotoOrderList"
+            title="Ops, you haven't made a profit yet"
+            content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you."
+            >4</nut-step
+          >
+        </nut-steps>
+      </div>
     </template>
-    <span>You have not yet bound a DMC account </span>
-    <router-link to="/bindDmc?type=dmc"> Go to Binding.</router-link>
-  </nut-noticebar>
-  <div class="dmc_account" v-else> -->
-  <div class="dmc_account">
-    <div class="img-box">
-      <img src="@/assets/user.png" alt="" />
-    </div>
-    Hello,
-    {{ userInfo.email && userInfo.email.split('@')[0] }}
-  </div>
-  <div inset class="income-card">
-    <img src="@/assets/balance_right.svg" />
-    <div class="card_row_1 card_header">
-      <div class="total_income">
-        <div class="balance_text">
-          <span>{{ cloudBalanceNum?.integerPart }}</span>
-          <span style="font-size: 13px">.{{ cloudBalanceNum?.decimalPart }}</span>
-          <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
-        </div>
-        <div class="usd_text" v-if="dmc2usdRate && cloudBalance && cloudBalance != '--'">
-          ≈ {{ formatNumber(dmc2usdRate * cloudBalance)?.integerPart
-          }}<span style="font-size: 13px">.{{ formatNumber(dmc2usdRate * cloudBalance)?.decimalPart }}</span> USD
-        </div>
-      </div>
-    </div>
-    <div class="card_row_1 pst-row">
-      <div>
-        <p>Space(GB)</p>
-        <p class="column_value">{{ cloudPst }}</p>
-      </div>
-      <div @click="gotoPage('transactionRecords', '1')">
-        <p>Withdrawn</p>
-        <p class="column_value">{{ cloudWithdraw }}</p>
-      </div>
-      <div @click="gotoPage('analysis')">
-        <p>Today's new funds</p>
-        <p class="column_value today_income"
-          >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
-          <TriangleUp color="#fbd116" width="20px"></TriangleUp>
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="withdraw-btn" direction="horizontal" align="center">
-    <div class="action_item" @click="toRecharge">
-      <!-- <img src="@/assets/recharge.svg" alt="" /> -->
-      <img src="@/assets/Recharge.png" alt="" />
 
-      Recharge
-    </div>
-    <div class="action_item" @click="showWithdraw">
-      <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
-      <img src="@/assets/Withdraw.png" alt="" />
-
-      Withdraw
-    </div>
-  </div>
-  <div class="middle_btn_box">
-    <div>
-      <div class="flex-content" @click="toBuyOrder">
-        <div class="svg-box">
-          <!-- <Shop></Shop> -->
-          <img src="@/assets/buy.svg" alt="" />
-        </div>
-        <span>Buy</span>
-      </div>
-    </div>
-    <div>
-      <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
-      <div class="flex-content" @click="gotoPage('Order')">
-        <div class="svg-box">
-          <img src="@/assets/orders.svg" alt="" />
-        </div>
-        <span>Orders</span>
-      </div>
-    </div>
-    <div>
-      <!-- <div class="flex-content" @click="router.push('/analysis')"> -->
-      <div class="flex-content" @click="gotoPage('analysisChart')">
-        <div class="svg-box">
-          <img src="@/assets/analysis.svg" alt="" />
-        </div>
-        <span>Charts</span>
-      </div>
-    </div>
-    <div>
-      <div class="flex-content" @click="gotoPage('transactionRecords')">
-        <!-- <div class="flex-content" @click="router.push('/transactionRecords')"> -->
-        <div class="svg-box">
-          <!-- <img src="@/assets/IconTransaction.svg" alt="" /> -->
-          <IconTransaction></IconTransaction>
-        </div>
-        <span>Transaction <br /> </span>
-        <!-- records -->
-      </div>
-    </div>
-  </div>
-
-  <div class="DouArrowDown" v-if="!targetIsVisible && !ishaveProfit" @click="scrollIntoViewTo">
-    <DouArrowUp width="100" height="50" class="nut-icon-am-jump nut-icon-am-infinite" />
-  </div>
-  <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
-  <div v-if="!ishaveProfit" class="my_swipe">
-    <nut-swiper :init-page="1" :pagination-visible="true" pagination-color="#426543" auto-play="3000">
-      <nut-swiper-item>
-        <img src="@/assets/banner1.svg" alt="" />
-      </nut-swiper-item>
-      <nut-swiper-item>
-        <img src="@/assets/banner2.svg" alt="" />
-      </nut-swiper-item>
-      <nut-swiper-item>
-        <img src="@/assets/banner3.png" alt="" />
-      </nut-swiper-item>
-      <nut-swiper-item>
-        <img src="@/assets/banner4.svg" alt="" />
-      </nut-swiper-item>
-    </nut-swiper>
-  </div>
-
-  <div class="tab_top_title" v-if="ishaveProfit">Last 7 days <span style="font-size: 12px">(DMC)</span></div>
-  <div class="my_steps" ref="my_steps" id="my_steps" v-if="!ishaveProfit">
-    <nut-steps direction="vertical" :current="curStepIndex">
-      <nut-step
-        title="Bind invitation code"
-        @click="gotoBindAmb"
-        content="Please confirm that you have filled out the invitation code before placing your order"
-        >1</nut-step
+    <nut-infinite-loading
+      style="min-height: 280px; height: 600px; padding-bottom: 10px; overflow: auto"
+      v-else-if="cloudCodeIsBind && earningsList.length"
+      load-more-txt="No more content"
+      :has-more="hasMore"
+      v-model="infinityValue"
+      @load-more="loadMore"
+    >
+      <div
+        class="list_item"
+        v-for="(item, index) in earningsList"
+        @click="gotoOrderPage(item)"
+        :class="[isOpen(item.order_info.state) ? '' : 'history_item']"
       >
-      <nut-step
-        title="Waiting for approval"
-        :content="ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'"
-        >2</nut-step
-      >
-      <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
-      <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
-        >3</nut-step
-      >
-      <nut-step
-        @click="gotoOrderList"
-        title="Ops, you haven't made a profit yet"
-        content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you."
-        >4</nut-step
-      >
-    </nut-steps>
+        <div class="order_status_flag open" v-if="isOpen(item.order_info.state)">Open Order</div>
+        <div class="order_status_flag history" v-if="!isOpen(item.order_info.state)">History Order</div>
+        <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+          <!-- <img src="@/assets/DMC_Token1.png" alt="" /> -->
+          <img v-if="item.order_info.electronic_type == 0" src="@/assets/mobile.svg" alt="" />
+          <img v-else src="@/assets/desktop.svg" alt="" />
+        </div>
+        <div style="width: 100%; justify-content: flex-end !important; margin-top: -2px">
+          <span>{{ transferUTCTime(item.created_at) }}</span>
+        </div>
+        <div>
+          <span style="font-weight: bold">Order:{{ item.order_id }}</span>
+          <span
+            :class="[
+              item.inner_user_trade_type == 'payout' ? 'expense' : '',
+              item.inner_user_trade_type == 'income' ? 'earnings' : '',
+              'trade_type',
+            ]"
+          >
+            <span v-if="item.inner_user_trade_type == 'payout'">-</span><span v-else-if="item.inner_user_trade_type == 'income'">+</span>
+            {{ formatNumber(item.quantity)?.integerPart
+            }}<span style="font-size: 13px">.{{ formatNumber(item.quantity)?.decimalPart }}</span>
+          </span>
+        </div>
+        <div>
+          <span class="time">{{ item.trx_id }}</span>
+          <!-- <span class="time">{{ transferUTCTime(item.created_at) }}</span> -->
+          <span style="text-align: right" class="my_status">{{ mapTypes[item.trade_type] }}</span>
+          <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
+        </div>
+      </div>
+    </nut-infinite-loading>
+
+    <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week"></nut-empty>
+    <!-- <nut-backtop el-id="main-page" :z-index="999" :bottom="60"></nut-backtop> -->
   </div>
-
-  <nut-infinite-loading
-    style="min-height: 280px; height: 0px; padding-bottom: 10px"
-    v-if="cloudCodeIsBind && earningsList.length"
-    load-more-txt="No more content"
-    :has-more="hasMore"
-    v-model="infinityValue"
-    @load-more="loadMore"
-  >
-    <div class="list_item" v-for="(item, index) in earningsList" @click="gotoOrderPage(item)">
-      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-        <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-        <img src="@/assets/DMC_Token1.png" alt="" />
-      </div>
-      <div>
-        <span>Order:{{ item.order_id }}</span>
-        <span
-          :class="[
-            item.inner_user_trade_type == 'payout' ? 'expense' : '',
-            item.inner_user_trade_type == 'income' ? 'earnings' : '',
-            'trade_type',
-          ]"
-        >
-          <span v-if="item.inner_user_trade_type == 'payout'">-</span><span v-else-if="item.inner_user_trade_type == 'income'">+</span>
-          {{ formatNumber(item.quantity)?.integerPart }}<span style="font-size: 13px">.{{ formatNumber(item.quantity)?.decimalPart }}</span>
-        </span>
-      </div>
-      <div>
-        <span class="time">{{ item.trx_id }}</span>
-        <!-- <span class="time">{{ transferUTCTime(item.created_at) }}</span> -->
-        <span style="text-align: right">{{ mapTypes[item.trade_type] }}</span>
-        <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
-      </div>
-    </div>
-  </nut-infinite-loading>
-
-  <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week"></nut-empty>
 </template>
 
 <script lang="ts" setup name="HomePage">
+  import ErrorPage from '@/views/errorPage/index.vue';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
-  import { Notice, TriangleUp, DouArrowUp, RectUp } from '@nutui/icons-vue';
-  import { toRefs, computed, reactive, ref, watch, watchEffect } from 'vue';
+  import { Notice, TriangleUp, DouArrowUp, RectUp, Setting } from '@nutui/icons-vue';
+  import { toRefs, computed, reactive, ref, watch, watchEffect, createVNode } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
 
@@ -200,13 +221,17 @@
   //   import { search_cloud } from '@/api';
   import { search_cloud } from '@/api';
   import useUserAssets from './useUserAssets.ts';
-
-  import { transferUTCTimeDay } from '@/utils/util';
-  import { transferUTCTime, formatNumber } from '@/utils/util';
+  import { transferUTCTimeDay, getfilesize2 } from '@/utils/util';
+  import { transferUTCTime, formatNumber, transferGMTTime } from '@/utils/util';
   import '@nutui/nutui/dist/packages/toast/style';
   import { useIntersectionObserver } from '@vueuse/core';
+  import { search_order_profit, search_user_asset_detail, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
+  import googleVerificationHook from './googleVerificationHook.ts';
 
+
+  const {bindOtp,openGoogleSetting,withdrawalIsVerified } = googleVerificationHook()
   const userInfo = computed(() => userStore.getUserInfo);
+  const userAvatar = computed(() => userStore.getUserInfo?.image_path);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
 
   const router = useRouter();
@@ -235,7 +260,6 @@
 
   const userStore = useUserStore();
   const earningsList = ref([] as any);
-  import { search_order_profit, search_user_asset_detail } from '@/api/amb';
   const { getUserAssets, getExchangeRate, dmc2usdRate, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } =
     useUserAssets();
 
@@ -252,6 +276,7 @@
       return false;
     }
   });
+  const isError = ref(false);
   const pageSize = ref(10);
   const pageNum = ref(1);
   const total = ref(0);
@@ -298,8 +323,11 @@
   }
 
   function loadMore() {
-    pageNum.value = pageNum.value + 1;
-    searchOrderProfit();
+    if (cloudCodeIsBind.value) {
+      isError.value = false;
+      pageNum.value = pageNum.value + 1;
+      searchOrderProfit();
+    }
   }
 
   function searchOrderProfit() {
@@ -316,16 +344,27 @@
     search_user_asset_detail(postData)
       .then((res) => {
         infinityValue.value = false;
-
         if (res && res.result && res.result.data.length) {
           for (const item of res.result.data || []) {
             item.trx_id = handleID(item.trx_id);
           }
-          earningsList.value.push(...res.result.data);
+          earningsList.value = earningsList.value.concat(res.result.data);
+          // const newSetCloudList = [...earningsList.value, ...res.result.data];
+          // let arr = [];
+          // const filterList = newSetCloudList.filter((item) => !arr.includes(item.trx_id) && arr.push(item.trx_id));
+          // earningsList.value = filterList;
+          // console.log(earningsList.value );
+
           total.value = res.result.total;
+        }
+        if (res.code != 200) {
+          pageNum.value = pageNum.value - 1;
+          isError.value = true;
         }
       })
       .catch(() => {
+        isError.value = true;
+        pageNum.value = pageNum.value - 1;
         infinityValue.value = false;
       });
   }
@@ -376,6 +415,13 @@
       } else if (type === 'Order') {
         router.push('/list');
       }
+    }
+  };
+  const isOpen = (state) => {
+    if (state === 4 || state === 5) {
+      return false;
+    } else {
+      return true;
     }
   };
   const toBuyOrder = () => {
@@ -443,12 +489,17 @@
   function gotoOrderPage(row) {
     console.log(row);
     if (row.order_info.state == 5 || row.order_info.state == 4) {
+      window.sessionStorage.removeItem('myHistoryOrder');
+      window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(row));
       router.push({
         name: 'orderSummary',
         query: {
           id: row.order_id,
-          status: row.order_info.state,
           type: 'history',
+          status: row.order_info.state,
+          createdTime: transferGMTTime(row.order_created_at),
+          endTime: row.expire ? transferUTCTime(row.expire) : '- -',
+          uuid: row.order_info.uuid,
         },
       });
     } else {
@@ -533,18 +584,31 @@
   .dmc_account {
     // background: #5758a0;
     margin: 0 -4vw;
-    display: flex;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: auto 60px;
+    gap: 30px;
     align-items: center;
-    // margin-top: 5px;
-    font-size: 40px;
-    color: #5758a0;
     height: 100px;
-    // color: #fff;
-    font-weight: bold;
     padding: 10px 0 0 10px;
+    .dmc_account_box {
+      font-weight: bold;
 
-    // box-shadow: $main-shadow;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+
+      font-size: 40px;
+      color: #5758a0;
+    }
+    .Notice {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      background-color: #ececec;
+      border-radius: 50%;
+    }
     .img-box {
       display: flex;
       justify-content: center;
@@ -556,13 +620,14 @@
       margin-right: 10px;
       //   background: #5758a0;
       box-sizing: border-box;
-      border-radius: 10px;
+      overflow: hidden;
       border-radius: 50%;
 
       img {
         width: 45px;
         margin: 0 auto;
         vertical-align: middle;
+        border-radius: 10px;
       }
     }
 
@@ -594,19 +659,24 @@
 
       &:nth-child(2) {
         .svg-box {
-          background: #34964f;
+          // background: #34964f;
+          // background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+          background-image: linear-gradient(to top, #e0e1e2 0%, #e7f0fd 100%);
         }
       }
 
       &:nth-child(3) {
         .svg-box {
-          background: #fcd116;
+          // background: #fcd116;
+          background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
       }
 
       &:nth-child(4) {
         .svg-box {
-          background: #5f57ff;
+          // background: #5f57ff;
+          // background-image: linear-gradient(to top, #5ee7df 0%, #b490ca 100%);
+          background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
         }
       }
     }
@@ -632,14 +702,19 @@
         width: 100px;
         height: 100px;
         margin-bottom: 15px;
-        background: #ff8b00;
+        // background: #ff8b00;
+        background: linear-gradient(to bottom, #d5dee7 0%, #e8ebf2 50%, #e2e7ed 100%),
+          linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 50%, rgba(255, 255, 255, 0.02) 61%, rgba(0, 0, 0, 0.02) 73%),
+          linear-gradient(33deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
+        background-blend-mode: normal, color-burn;
+
         // box-shadow: 0px 1px 2px 2px #ccc;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
         svg,
         img {
-          width: 55px;
-          height: 55px;
+          width: 70px;
+          height: 70px;
           color: #fff;
         }
       }
@@ -659,7 +734,8 @@
     // background-color: var(--van-blue);
     background: $primary-color;
     color: #fff;
-    border-radius: 0;
+    border-radius: 30px;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
 
     > img {
       top: 30px;
@@ -791,6 +867,8 @@
   }
 
   .withdraw-btn {
+    position: relative;
+    overflow: hidden;
     display: flex;
     justify-content: space-around;
     transform: translateY(-80px);
@@ -798,17 +876,23 @@
     margin: 0 auto;
     padding: 20px 0;
     border-radius: 16px;
-    border: 1px dashed #ffffff;
+    border: 4px solid transparent;
     background: #fff;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+    // box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+    background:
+      linear-gradient(#fff, #fff) padding-box,
+      linear-gradient(145deg, #e81cff, #40c9ff) border-box;
 
     .action_item {
+      z-index: 88;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: #333333;
+      // color: #333333;
+      color: #5758a0;
       font-size: 30px;
+      font-weight: bold;
 
       img {
         display: block;
@@ -816,6 +900,33 @@
         margin-bottom: 10px;
       }
     }
+  }
+  .withdraw-btn::before {
+    content: '';
+    position: absolute;
+    width: 140%;
+    background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
+    height: 80%;
+    animation: rotBGimg 3s linear infinite;
+    transition: all 0.2s linear;
+  }
+
+  @keyframes rotBGimg {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .withdraw-btn::after {
+    content: '';
+    position: absolute;
+    background: #fff;
+    inset: 3px;
+    border-radius: 15px;
   }
 
   .tab_top_title {
@@ -845,16 +956,37 @@
     justify-content: center;
     padding: 12px 30px;
     padding-left: 100px;
-    min-height: 80px;
+    min-height: 100px;
     color: #171414;
     font-size: 24px;
     background: #fff;
 
     border-bottom: 1px solid #eee;
-    margin: 10px 0;
+    margin: 10px 0 20px 0;
     border-radius: 12px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
+    .order_status_flag {
+      width: 180px;
+      height: 40px;
+      border-radius: 0 20px 20px 0;
 
+      position: absolute;
+      top: -12px;
+      left: 0px;
+      background: #ccc;
+      color: #fff;
+      text-align: center;
+      justify-content: center;
+      font-weight: bold;
+      &.open {
+        background: #009771;
+        background: #f88b02;
+      }
+      &.history {
+        background: #999;
+        border: 1px dashed #fff;
+      }
+    }
     .item_img_box {
       position: absolute;
       left: 16px;
@@ -868,24 +1000,24 @@
       img {
         width: 36px;
         margin: 0 auto;
-        transform-style: preserve-3d;
-        -webkit-transform-origin: 50%;
-        -webkit-animation: spin 5s infinite;
-        -webkit-animation-timing-function: linear;
-        -webkit-perspective: 1000;
-        -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
-        -webkit-filter: saturate(1.45) hue-rotate(2deg);
+        // transform-style: preserve-3d;
+        // -webkit-transform-origin: 50%;
+        // -webkit-animation: spin 5s infinite;
+        // -webkit-animation-timing-function: linear;
+        // -webkit-perspective: 1000;
+        // -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+        // -webkit-filter: saturate(1.45) hue-rotate(2deg);
       }
 
-      @keyframes spin {
-        from {
-          -webkit-transform: rotateY(0deg);
-        }
+      // @keyframes spin {
+      //   from {
+      //     -webkit-transform: rotateY(0deg);
+      //   }
 
-        to {
-          -webkit-transform: rotateY(360deg);
-        }
-      }
+      //   to {
+      //     -webkit-transform: rotateY(360deg);
+      //   }
+      // }
 
       .cions {
         margin-right: 15px;
@@ -931,10 +1063,20 @@
       color: #000000;
       font-weight: 600;
     }
+    .my_status {
+      text-align: right;
+      width: 240px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
 
     &:last-child {
       border-bottom: none;
     }
+  }
+  .history_item {
+    background: #ccc;
   }
 </style>
 
@@ -943,7 +1085,7 @@
     margin-top: 25px;
 
     .nut-checkbox__label {
-      color: rgb(158, 158, 158) !important;
+      // color: rgb(158, 158, 158) !important;
       font-size: 28px;
     }
   }

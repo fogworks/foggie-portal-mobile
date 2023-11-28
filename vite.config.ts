@@ -20,6 +20,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
   const isProduction = command === 'build';
   const root = process.cwd();
   const env = loadEnv(mode, root);
+  const buildType = env.VITE_BUILD_TYPE;
   const viteEnv = wrapperEnv(env);
   return {
     root,
@@ -99,32 +100,20 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
-        '^/2.1': {
-          target: 'https://explorer.dmctech.io',
-          changeOrigin: true,
-          secure: false,
-          // rewrite: (path) => path.replace(/^\/api/, ""),
-        },
-        '^/dmcscan': {
-          target: 'https://www.dmcscan.xyz',
-          changeOrigin: true,
-          secure: false,
-          rewrite: (path) => path.replace(/^\/dmcscan/, ''),
-        },
-        '^/fog': {
-          target: 'http://218.2.96.99:6008',
-          // target: 'http://192.168.1.119:6008',
-          changeOrigin: true,
-          secure: false,
-          // rewrite: (path) => path.replace(/^\/api/, ""),
-        },
-        '^/bcmgr/bill/search_bill': {
-          target: 'http://154.31.34.194:9098',
-          // target: 'http://192.168.1.119:6008',
-          changeOrigin: true,
-          secure: false,
-          // rewrite: (path) => path.replace(/^\/api/, ""),
-        },
+        // '^/fog': {
+        //   target: 'http://218.2.96.99:6008',
+        //   // target: 'http://192.168.1.119:6008',
+        //   changeOrigin: true,
+        //   secure: false,
+        //   // rewrite: (path) => path.replace(/^\/api/, ""),
+        // },
+        // '^/bcmgr/bill/search_bill': {
+        //   target: 'http://154.31.34.194:9098',
+        //   // target: 'http://192.168.1.119:6008',
+        //   changeOrigin: true,
+        //   secure: false,
+        //   // rewrite: (path) => path.replace(/^\/api/, ""),
+        // },
         // '^/foggiebucket': {
         //   target: 'http://218.2.96.99:6008',
         //   // target: 'http://192.168.1.119:6008',
@@ -189,12 +178,12 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
           // rewrite: (path) => path.replace(/^\/api/, ""),
         },
-        '^/o': {
-          target: 'https://h5chen-397.devus.u2i.net:6008',
-          // target: 'http://192.168.1.119:6008',
-          changeOrigin: true,
-          secure: false,
-        },
+        // '^/o': {
+        //   target: 'https://h5chen-397.devus.u2i.net:6008',
+        //   // target: 'http://192.168.1.119:6008',
+        //   changeOrigin: true,
+        //   secure: false,
+        // },
         '^/link/get': {
           target: 'https://45.207.245.24:17071',
           // target: 'http://192.168.1.119:6008',
@@ -250,7 +239,8 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
       }),
     ],
     build: {
-      minify: 'terser',
+      minify: buildType ? false : 'terser',
+      outDir: buildType ? 'cordova/www' : 'dist',
       terserOptions: {
         compress: {
           //生产环境时移除console

@@ -80,7 +80,7 @@ export default function() {
                 router.push({ name: 'bindDmc', query: { type: 'amb' } });
               };
               let src = require('@/assets/fog-works_w.png');
-              let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Welcome to Foggie Mobile! Your application has been approved, and you can now begin placing orders,embarking on your Foggie journey.</p >`;
+              let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#535353;text-align:left;'>Welcome to Foggie Mobile! Your application has been approved, and you can now begin placing orders,embarking on your Foggie journey.</p >`;
               showDialog({
                 title: 'Notice',
                 content: str,
@@ -98,7 +98,7 @@ export default function() {
 
 
             let src = require('@/assets/fog-works_w.png');
-            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Awaiting approval from the Ambassador, please be patient until the approval is complete</p >`;
+            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#535353;text-align:left;'>Awaiting approval from the Ambassador, please be patient until the approval is complete</p >`;
             showDialog({
               title: 'Ambassador Invitation Code',
               content: str,
@@ -124,7 +124,7 @@ export default function() {
             //   router.push({ name: 'BindDmc', query: { type: 'amb' } });
             // };
             // let src = require('@/assets/fog-works_w.png');
-            // let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Please confirm that you have filled out the invitation code before placing your order</p >`;
+            // let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#535353;text-align:left;'>Please confirm that you have filled out the invitation code before placing your order</p >`;
             // showDialog({
             //   title: 'Bind',
             //   content: str,
@@ -174,7 +174,7 @@ export default function() {
               await promoFunction();
             };
             let src = require('@/assets/fog-works_w.png');
-            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Your current Ambassador Invitation Code is ${amb_promo_code.value}, are you sure you want to bind?</p >`;
+            let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#535353;text-align:left;'>Your current Ambassador Invitation Code is ${amb_promo_code.value}, are you sure you want to bind?</p >`;
             showDialog({
               title: 'Bind',
               content: str,
