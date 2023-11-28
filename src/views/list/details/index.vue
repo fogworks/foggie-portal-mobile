@@ -9,37 +9,70 @@
         </div>
         <div v-else> Order:{{ order_id }} </div>
         <span class="benefit_analysis" v-if="orderInfo.value.state == '0'" @click="closedOrder">
-          <img src="@/assets/orderclosed.svg" class="bucket_detail_smal" />
+          <img src="@/assets/cancel.svg" class="bucket_detail_smal cancel_svg" />
         </span>
         <span class="benefit_analysis" v-else @click="gotoSummary(order_id, orderInfo.value.state)">
           <img src="@/assets/analysis.svg" class="bucket_detail_smal" />
         </span>
       </TopBack>
       <nut-row class="order-detail">
-        <nut-col :span="24" class="order-des">
-          <span class="span1">ID: {{ orderInfo.value?.foggie_id }}</span>
+        <div class="main_detail_box">
+          <div class="profit_box">
+            <div class="title">Profit</div>
+            <div class="value">+ {{ income }} DMC</div>
+          </div>
+          <div class="progress_box">
+            <div class="text">Used</div>
+            <div class="user_circle"> {{ Number(((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100).toFixed(2) }}% </div>
+          </div>
+        </div>
 
-          <span class="span2">Expiration: {{ transferUTCTime(orderInfo.value.expire) }}</span>
+        <!-- <nut-menu-item v-model="state.value1" :options="state.options1" /> -->
+        <nut-col :span="24" class="order-content_wrap" :class="[showText ? 'showHight' : 'hideHight']">
+          <TriangleDown v-if="!showText" @click="showText = true" class="my_svg_icon show_avg" color="#fff"></TriangleDown>
+          <TriangleUp v-if="showText" @click="showText = false" class="my_svg_icon" color="#fff"></TriangleUp>
+          <nut-col :span="12" class="order-count left_count">
+            <nut-cell>
+              <IconMdiF color="#9F9BEF" />
+              File:{{ filesCount }}
+            </nut-cell>
+            <nut-cell>
+              <IconSpace color="#7F7AE9" />
+              Space: {{ getfilesize(orderInfo.value.total_space, 'B') }}
+            </nut-cell>
+            <nut-cell>
+              <IconRiPie color="#7F7AE9" />
+              Used: {{ getfilesize(usedSize, 'B') }}
+            </nut-cell>
+            <nut-cell>
+              <Order />
+              ID:{{ orderInfo.value?.foggie_id }}
+            </nut-cell>
+            <nut-cell>
+              <Clock />
+              Expiration: {{ transferUTCTime(orderInfo.value.expire) }}
+            </nut-cell>
+            <nut-cell>
+              <Refresh />
+              Status: {{ statusTypes[orderInfo.value.state] }}
+            </nut-cell>
+          </nut-col>
         </nut-col>
-        <nut-col :span="24" class="order-circle">
-          <nut-circle-progress :progress="((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100" radius="60" color="#5460FE">
-            Used: {{ Math.round((usedSize / orderInfo.value.total_space) * 10000) / 100 }} %
-          </nut-circle-progress>
-        </nut-col>
-        <nut-col :span="24" class="order-count">
-          <nut-cell>
-            <IconMdiF color="#9F9BEF" />
-            File:{{ filesCount }}
-          </nut-cell>
-          <nut-cell>
-            <IconSpace color="#7F7AE9" />
-            Space: {{ getfilesize(orderInfo.value.total_space, 'B') }}
-          </nut-cell>
-          <nut-cell>
-            <IconRiPie color="#7F7AE9" />
-            Used: {{ getfilesize(usedSize, 'B') }}
-          </nut-cell>
-        </nut-col>
+
+        <!-- <nut-col :span="12" class="order-count">
+            <nut-cell>
+              <IconMdiF color="#9F9BEF" />
+              File:{{ filesCount }}
+            </nut-cell>
+            <nut-cell>
+              <IconSpace color="#7F7AE9" />
+              Space: {{ getfilesize(orderInfo.value.total_space, 'B') }}
+            </nut-cell>
+            <nut-cell>
+              <IconRiPie color="#7F7AE9" />
+              Used: {{ getfilesize(usedSize, 'B') }}
+            </nut-cell>
+          </nut-col> -->
       </nut-row>
     </div>
     <div class="detail_box">
@@ -346,7 +379,7 @@
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   // import AESHelper from './AESHelper';
   // import { Image } from '@nutui/icons-vue';
-  import { HeartFill, Success, MaskClose } from '@nutui/icons-vue';
+  import { HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
   import { showDialog } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { HmacSHA1, enc } from 'crypto-js';
@@ -368,7 +401,16 @@
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
-
+  const showText = ref(true);
+  const statusTypes = {
+    0: 'Consensus not reached',
+    1: 'Consensus reached',
+    2: 'Insufficient advance deposit to cancel the next cycle',
+    3: 'Sufficient funds in advance',
+    4: 'Order over',
+    5: 'Canceled',
+    6: 'Cancellation of the next cycle',
+  };
   const {
     filesCount,
     getSummary,
@@ -446,11 +488,13 @@
   const amb_uuid = ref<any>('');
   const minerIp = ref<string>('');
   const isError = ref(false);
+  const income = ref(0);
   // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
   // order_id.value = '1281';
   memo.value = route.query.uuid;
   order_id.value = route.query.id;
   amb_uuid.value = route.query.amb_uuid;
+  income.value = route.query.income;
 
   let merkleTimeOut;
   const getMerkleState = (timeout = true) => {
@@ -1401,6 +1445,10 @@
     width: 36px;
     height: 36px;
   }
+  .cancel_svg {
+    height: 30px !important;
+    width: 30px !important;
+  }
 
   .bucket_name_tip {
     word-break: break-word;
@@ -1447,6 +1495,49 @@
   .order-detail {
     margin-top: 30px;
   }
+  .main_detail_box {
+    display: flex;
+    height: auto;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+    padding: 36px 0;
+    .profit_box {
+      color: #fff;
+      width: 70%;
+      .title {
+      }
+      .value {
+        font-size: 50px;
+        font-weight: bold;
+      }
+    }
+    .progress_box {
+      color: #fff;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: #4d5092;
+      background: #9597c212;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow:
+        rgb(204, 219, 232) 0.4vw 0.4vw 0.8vw 0px inset,
+        rgba(255, 255, 255, 0.5) -0.4vw -0.4vw 0.8vw 1px inset;
+      position: relative;
+      flex-direction: column;
+      .text {
+        font-size: 18px;
+        font-weight: normal;
+      }
+
+      .user_circle {
+      }
+    }
+  }
 
   .upload_btn {
     position: fixed;
@@ -1477,26 +1568,73 @@
   .top_box {
     // margin: 0 30px;
     padding: 30px 10px;
-    border-radius: 20px;
+    border-radius: 20px !important;
     background: $primary-color;
     background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
-
+    padding-bottom: 50px;
+    .order-content_wrap {
+      display: flex;
+      margin-top: 10px;
+      position: relative;
+      transition: all 0.5s linear;
+      height: 0;
+      border-top: 1px dashed #ccc;
+      opacity: 1;
+      max-height: 500px;
+    }
+    .showHight {
+      height: 360px;
+      max-height: 500px;
+    }
+    .hideHight {
+      height: 0;
+      border: none;
+      max-height: 0;
+    }
+    .my_svg_icon {
+      position: absolute;
+      top: -16px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+    }
+    .show_avg {
+      top: -36px;
+    }
     .order-des {
       //   margin-bottom: 20px;
+      display: flex;
+      align-items: start;
       color: #fff;
+      height: 60px;
+      justify-content: start;
+      flex-direction: column;
       //   border-bottom: 1px dashed #fff;
 
       .span1 {
         float: left;
-        font-size: 24px;
         font-weight: bold;
+        display: flex;
+        align-items: center;
+        padding: 13px 0;
+        font-weight: bold;
+        font-size: 24px;
+        svg {
+          margin-right: 8px;
+        }
       }
 
       .span2 {
-        // margin-right: 5vw;
         float: right;
         font-size: 20px;
         font-weight: bold;
+        display: flex;
+        align-items: center;
+        padding: 13px 0;
+        font-weight: bold;
+        svg {
+          margin-right: 8px;
+        }
       }
     }
 
@@ -1522,6 +1660,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      justify-content: space-between;
+      //   width: 100%;
+      justify-content: end;
+      flex-direction: column;
+      align-items: end;
+      //   justify-content: start;
+      //   align-items: start;
+      //   background: #4a17a0 !important;
+      //   padding: 20px 0;
 
       .nut-cell {
         width: auto;
@@ -1531,14 +1678,16 @@
         padding-left: 8vw;
         // border-bottom: 1px solid #fff;
         border-radius: 0;
-        background: $primary-color;
+        background: transparent !important;
         box-shadow: none;
         color: #fff;
         font-size: 24px;
         line-height: 4vw;
         font-weight: bold;
-        margin: 10px 0;
+        margin: 0px 0;
         padding: 13px 10px 13px 52px;
+        display: flex;
+        flex-direction: column;
       }
 
       svg {
@@ -1548,12 +1697,24 @@
         height: 4vw;
       }
     }
+    .left_count {
+      justify-content: start;
+      align-items: start;
+      //   border-right: 2px solid #fff;
+      width: auto;
+      padding-right: 10px !important;
+    }
   }
 
   .detail_box {
     box-sizing: border-box;
     height: 100%;
     padding: 20px;
+    margin-top: -40px;
+    background: #fff;
+    border-radius: 40px 40px 0 0;
+    z-index: 99;
+    position: relative;
 
     .type_check_box {
       display: flex;
@@ -1594,6 +1755,7 @@
 
         .order-icon-recycle {
           background-color: #ff8b00;
+          background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
           border-radius: 50%;
 
           svg {
@@ -1605,6 +1767,7 @@
 
         .order-icon-node-tree {
           background-color: #34964f;
+          background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
@@ -1616,6 +1779,7 @@
 
         .order-icon-send-to-back {
           background-color: #fcd116;
+          background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
@@ -1627,6 +1791,7 @@
 
         .order-icon-input-cursor-move {
           background-color: #5f57ff;
+          background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
@@ -1833,6 +1998,7 @@
 
       .order-icon-recycle {
         background-color: #ff8b00;
+        background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
       }
 
       .order-icon-node-tree {

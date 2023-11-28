@@ -176,6 +176,14 @@ export const routes = [
     ],
   },
   {
+    name: 'Guide',
+    path: '/guide',
+    component: () => import('@/views/login/first.vue'),
+    meta: {
+      notKeepAlive: true,
+    },
+  },
+  {
     name: 'Login',
     path: '/login',
     component: () => import('@/views/login/index.vue'),

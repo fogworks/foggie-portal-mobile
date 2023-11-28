@@ -32,12 +32,10 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     userStore.setCloudCodeIsBind(false);
-    if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget') {
+    if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget' || to.name == 'Guide') {
       next();
     } else {
-      next({
-        name: 'Login',
-      });
+      next({ name: 'Guide' });
     }
   }
 });
