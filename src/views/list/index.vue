@@ -30,7 +30,7 @@
             <IconSwitch style="vertical-align: text-top" color="#ffffff" v-else></IconSwitch> -->
             </div>
             <span>Ongoing</span>
-            <span class="order_num" v-if="searchType == 'Open'">Count : {{ total }}</span>
+            <!-- <span class="order_num" v-if="searchType == 'Open'">Count : {{ total }}</span> -->
           </div>
         </nut-col>
         <nut-col :span="10">
@@ -45,7 +45,7 @@
             <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-else></IconHistoryActivate> -->
             </div>
             <span>History</span>
-            <span class="order_num" v-if="searchType == 'History'">Count : {{ total }}</span>
+            <!-- <span class="order_num" v-if="searchType == 'History'">Count : {{ total }}</span> -->
           </div>
         </nut-col>
       </nut-row>
@@ -92,6 +92,7 @@
         :close-mode="true"
       ></nut-noticebar>
     </div> -->
+    <div class="find_tips">Based on your search criteria,We found {{ total }} items for you.</div>
     <ErrorPage v-if="isError && !list.length" @refresh="loadMoreFun"></ErrorPage>
     <nut-infinite-loading
       v-else-if="list.length"
@@ -577,6 +578,21 @@
           font-weight: 600;
         }
       }
+
+      @keyframes maxshow {
+        0% {
+          // transform: rotate(0deg);
+          transform: scale(1);
+        }
+        50% {
+          // transform: rotate(0deg);
+          transform: scale(1.1);
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
       .flex-content {
         display: flex;
         flex-direction: column;
@@ -585,6 +601,7 @@
         // height: 120px;
         text-align: center;
         word-break: break-word;
+        animation: maxshow 3s linear infinite;
         span {
           font-size: 0.8rem;
         }
@@ -592,7 +609,7 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          border-radius: 50px;
+          border-radius: 50%;
           width: 100px;
           height: 100px;
           margin-bottom: 15px;
@@ -638,8 +655,9 @@
         //   }
         // }
         .active_svg-boxHistory {
-          border: 5px solid orange;
+          border: 8px solid orange;
           background-color: #aeaeae;
+          -webkit-box-reflect: below 0 linear-gradient(hsla(0deg, 0%, 100%, 0), hsla(0deg, 0%, 100%, 0) 45%, hsla(0deg, 0%, 100%, 0.5));
 
           svg,
           img {
@@ -649,8 +667,9 @@
           }
         }
         .active_svg-boxOpen {
-          border: 5px solid orange;
+          border: 8px solid orange;
           background: #fff;
+          -webkit-box-reflect: below 0 linear-gradient(hsla(0deg, 0%, 100%, 0), hsla(0deg, 0%, 100%, 0) 45%, hsla(0deg, 0%, 100%, 0.5));
           svg,
           img {
             color: #ffe879;
@@ -994,5 +1013,11 @@
         transform: scale(1);
       }
     }
+  }
+  .find_tips {
+    font-size: 24px;
+    color: #ff8b00;
+    font-weight: bold;
+    margin-top: 10px;
   }
 </style>
