@@ -1,11 +1,16 @@
 <template>
   <div>
     <div class="dmc_account">
-      <div class="img-box">
-        <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
+      <div class="dmc_account_box">
+        <div class="img-box">
+          <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
+        </div>
+        Hello,
+        {{ userInfo.email && userInfo.email.split('@')[0] }}
       </div>
-      Hello,
-      {{ userInfo.email && userInfo.email.split('@')[0] }}
+      <div class="Notice" @click="openGoogleSetting" v-if="!bindOtp&&!withdrawalIsVerified">
+        <Notice color="" class="nut-icon-am-breathe nut-icon-am-infinite"> </Notice>
+      </div>
     </div>
     <div inset class="income-card">
       <img src="@/assets/balance_right.svg" />
@@ -207,8 +212,8 @@
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
-  import { Notice, TriangleUp, DouArrowUp, RectUp } from '@nutui/icons-vue';
-  import { toRefs, computed, reactive, ref, watch, watchEffect } from 'vue';
+  import { Notice, TriangleUp, DouArrowUp, RectUp, Setting } from '@nutui/icons-vue';
+  import { toRefs, computed, reactive, ref, watch, watchEffect, createVNode } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
 
@@ -217,11 +222,14 @@
   import { search_cloud } from '@/api';
   import useUserAssets from './useUserAssets.ts';
   import { transferUTCTimeDay, getfilesize2 } from '@/utils/util';
-  import { transferUTCTime, formatNumber,transferGMTTime } from '@/utils/util';
+  import { transferUTCTime, formatNumber, transferGMTTime } from '@/utils/util';
   import '@nutui/nutui/dist/packages/toast/style';
   import { useIntersectionObserver } from '@vueuse/core';
-  import { search_order_profit, search_user_asset_detail } from '@/api/amb';
+  import { search_order_profit, search_user_asset_detail, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
+  import googleVerificationHook from './googleVerificationHook.ts';
 
+
+  const {bindOtp,openGoogleSetting,withdrawalIsVerified } = googleVerificationHook()
   const userInfo = computed(() => userStore.getUserInfo);
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
@@ -490,8 +498,8 @@
           type: 'history',
           status: row.order_info.state,
           createdTime: transferGMTTime(row.order_created_at),
-          endTime: row.expire ? transferUTCTime(row.expire) :'- -',
-          uuid: row.order_info.uuid,  
+          endTime: row.expire ? transferUTCTime(row.expire) : '- -',
+          uuid: row.order_info.uuid,
         },
       });
     } else {
@@ -576,18 +584,31 @@
   .dmc_account {
     // background: #5758a0;
     margin: 0 -4vw;
-    display: flex;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: auto 60px;
+    gap: 30px;
     align-items: center;
-    // margin-top: 5px;
-    font-size: 40px;
-    color: #5758a0;
     height: 100px;
-    // color: #fff;
-    font-weight: bold;
     padding: 10px 0 0 10px;
+    .dmc_account_box {
+      font-weight: bold;
 
-    // box-shadow: $main-shadow;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+
+      font-size: 40px;
+      color: #5758a0;
+    }
+    .Notice {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      background-color: #ececec;
+      border-radius: 50%;
+    }
     .img-box {
       display: flex;
       justify-content: center;
