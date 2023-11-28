@@ -401,7 +401,7 @@
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
-  const showText = ref(true);
+  const showText = ref(false);
   const statusTypes = {
     0: 'Consensus not reached',
     1: 'Consensus reached',

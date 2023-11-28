@@ -332,6 +332,7 @@
   }
 
   .upload_class {
+    z-index: 100;
     :deep {
       .nut-uploader__input {
         position: fixed !important;
