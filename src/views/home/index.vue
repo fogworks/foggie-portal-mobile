@@ -494,15 +494,6 @@
           uuid: row.order_info.uuid,  
         },
       });
-
-      router.push({
-        name: 'orderSummary',
-        query: {  
-          id: row.order_id,
-          status: row.order_info.state,
-          type: 'history',
-        },
-      });
     } else {
       router.push({
         name: 'listDetails',
