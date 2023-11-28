@@ -6,7 +6,7 @@
           <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" @click="clickInput" />
           <input type="file" name="" accept="image/*," ref="uploadRef" @change="uploadFile" id="" style="display: none" />
           <div class="uploadIcon">
-            <Uploader color="#90B3EF" width="15px" height="15px"></Uploader>
+            <Photograph color="#90B3EF" width="15px" height="15px"></Photograph>
           </div>
         </div>
 
@@ -41,21 +41,20 @@
       </div>
     </div>
     <div class="userBox">
-      <div class="title">
+      <!-- <div class="title">
         <div>
           <Issue color="#90B3EF" width="12px" height="12px" style="margin-right: 5px" />
-          Is Google verification enabled when making withdrawals? If you successfully bind, you will not be able to close it!
+          Is multi factor authentication enabled when withdrawing? If you successfully bind, you will not be able to close it!
         </div>
 
         <nut-switch
-          :loading="verifiedloading"
           :model-value="withdrawalIsVerified"
           active-text="Yes"
           inactive-text="No"
           @change="changeIsVerified"
         >
         </nut-switch>
-      </div>
+      </div> -->
 
       <nut-row class="buttonContent">
         <!-- <nut-col :span="6" @click="gotoDetail('/withdraw')">
@@ -140,13 +139,12 @@
 
 <script lang="ts" setup name="MemberPage">
   import { useUserStore } from '@/store/modules/user';
-  import { My2, Service, Link, ArrowRight2, Uploader, Issue } from '@nutui/icons-vue';
+  import { My2, Service, Link, ArrowRight2, Photograph, Issue } from '@nutui/icons-vue';
   import { showDialog } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
-  import { showNotify } from '@nutui/nutui';
-  import '@nutui/nutui/dist/packages/notify/style';
+ 
   import loadingImg from '@/components/loadingImg/index.vue';
   import { createVNode } from 'vue';
   import { useRouter } from 'vue-router';
@@ -164,51 +162,7 @@
   const dmcAccount = computed(() => userStore.getUserInfo?.dmc);
   const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
   const visible = ref<boolean>(false);
-  const withdrawalIsVerified = ref<boolean>(true); // 是否开启校验
-  const verifiedloading = ref(false); // 切换提现是否google校验 loading
-  /*切换是否开启绑定google校验 */
-  function changeIsVerified(value, event) {
-    if (!event) return;
 
-    if (bindOtp.value) {
-      showNotify.text(`You can't turn off checksums if you're already bound.`, { color: '#ad0000', background: '#ffe1e1' });
-      return;
-    }
-    setIsVerifiedAPI({ set_otp: value })
-      .then((res) => {
-        if (res.code == 200) {
-          withdrawalIsVerified.value = value;
-          showToast.success(res.result);
-        }
-      })
-      .finally(() => {
-        verifiedloading.value = false;
-      });
-  }
-
-  /* 获取当前提现是否开启校验 */
-  function loadIsVerified() {
-    verifiedloading.value = true;
-    getIsVerifiedAPI()
-      .then((res) => {
-        if (res.code == 200) {
-          withdrawalIsVerified.value = res.result.set_otp;
-        }
-      })
-      .finally(() => {
-        verifiedloading.value = false;
-      });
-  }
-
-  /* 获取是否已经绑定过Otp 如果已经绑定则不能跳过校验 */
-  const bindOtp = ref(true); //是否已经绑定过Otp
-  async function loadCheckBindOtp() {
-    await check_bind_otp().then((res) => {
-      if (res.code == 200) {
-        bindOtp.value = res.result.bind_secret;
-      }
-    });
-  }
 
   /* 获取用户身份信息 */
   function loadUserInfo() {
@@ -346,8 +300,6 @@
   onMounted(async () => {
     loadUserInfo();
     loadUserDmc();
-    await loadCheckBindOtp();
-    loadIsVerified();
   });
 </script>
 
@@ -391,13 +343,13 @@
         }
         .uploadIcon {
           border-radius: 50%;
-          width: 30px;
-          height: 30px;
+          width: 40px;
+          height: 40px;
           display: grid;
           place-items: center;
           background: #f4f5f9;
           position: absolute;
-          top: 15px;
+          bottom: 15px;
           right: 3px;
         }
 
