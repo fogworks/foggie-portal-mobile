@@ -15,9 +15,9 @@
     :show-confirm="false" custom-class="CustomName">
     <template #header>
       <img src="@/assets/DMC_token.png" alt="" srcset="" style="width: 30px; height: 30px" />
-      <div style="color: rgb(217, 214, 214);margin-left: 5px;">Add Withdrawal Account</div>
+      <div style="color: rgb(72 72 72);margin-left: 5px;font-size: 15px;">Add Withdrawal Account</div>
     </template>
-    <p class="bucket_tip" style="text-align: left; color: rgb(217, 214, 214);padding-bottom: 15px;">
+    <p class="bucket_tip" style="text-align: left; color: rgb(72 72 72);padding-bottom: 15px;">
     <div>* This account will become the default withdrawal account</div>
     </p>
 
@@ -29,7 +29,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        color: #d9d6d6;
+        color: rgb(72 72 72);
       ">
       <span>Wallet account</span> <span>Required</span>
     </p>
@@ -351,7 +351,7 @@ async function bindAmbCode() {
         } else {
           userStore.setcurStepIndex(2)
           let src = require('@/assets/fog-works_w.png');
-          let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#d1cece;text-align:left;'>Awaiting approval from the Ambassador, please be patient until the approval is complete</p >`;
+          let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#535353;text-align:left;'>Awaiting approval from the Ambassador, please be patient until the approval is complete</p >`;
           showDialog({
             title: 'Ambassador Invitation Code',
             content: str,

@@ -216,9 +216,8 @@
   //   import { search_cloud } from '@/api';
   import { search_cloud } from '@/api';
   import useUserAssets from './useUserAssets.ts';
-
   import { transferUTCTimeDay, getfilesize2 } from '@/utils/util';
-  import { transferUTCTime, formatNumber } from '@/utils/util';
+  import { transferUTCTime, formatNumber,transferGMTTime } from '@/utils/util';
   import '@nutui/nutui/dist/packages/toast/style';
   import { useIntersectionObserver } from '@vueuse/core';
   import { search_order_profit, search_user_asset_detail } from '@/api/amb';
@@ -482,9 +481,23 @@
   function gotoOrderPage(row) {
     console.log(row);
     if (row.order_info.state == 5 || row.order_info.state == 4) {
+      window.sessionStorage.removeItem('myHistoryOrder');
+      window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(row));
       router.push({
         name: 'orderSummary',
         query: {
+          id: row.order_id,
+          type: 'history',
+          status: row.order_info.state,
+          createdTime: transferGMTTime(row.order_created_at),
+          endTime: row.expire ? transferUTCTime(row.expire) :'- -',
+          uuid: row.order_info.uuid,  
+        },
+      });
+
+      router.push({
+        name: 'orderSummary',
+        query: {  
           id: row.order_id,
           status: row.order_info.state,
           type: 'history',

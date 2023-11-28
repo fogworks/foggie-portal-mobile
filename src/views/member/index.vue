@@ -44,7 +44,7 @@
       <div class="title">
         <div>
           <Issue color="#90B3EF" width="12px" height="12px" style="margin-right: 5px" />
-          Should I turn off the withdrawals google check? If you're successfully bound you won't be able to turn off this option!
+          Is Google verification enabled when making withdrawals? If you successfully bind, you will not be able to close it!
         </div>
 
         <nut-switch
@@ -151,7 +151,7 @@
   import { createVNode } from 'vue';
   import { useRouter } from 'vue-router';
   import { user, setUserAvatarApi } from '@/api/index';
-  import { get_user_dmc, check_bind_otp } from '@/api/amb';
+  import { get_user_dmc, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
   import { onMounted, reactive, ref } from 'vue';
   import { formatNumber } from '@/utils/util';
   import { delay } from 'lodash';
@@ -165,21 +165,45 @@
   const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
   const visible = ref<boolean>(false);
   const withdrawalIsVerified = ref<boolean>(true); // 是否开启校验
-  const verifiedloading = ref(true); // 切换提现是否google校验 loading
+  const verifiedloading = ref(false); // 切换提现是否google校验 loading
   /*切换是否开启绑定google校验 */
   function changeIsVerified(value, event) {
-    console.log(value, event);
+    if (!event) return;
+
     if (bindOtp.value) {
       showNotify.text(`You can't turn off checksums if you're already bound.`, { color: '#ad0000', background: '#ffe1e1' });
       return;
     }
-    withdrawalIsVerified.value = value;
-    verifiedloading.value = false;
+    setIsVerifiedAPI({ set_otp: value })
+      .then((res) => {
+        if (res.code == 200) {
+          withdrawalIsVerified.value = value;
+          showToast.success(res.result);
+        }
+      })
+      .finally(() => {
+        verifiedloading.value = false;
+      });
   }
+
+  /* 获取当前提现是否开启校验 */
+  function loadIsVerified() {
+    verifiedloading.value = true;
+    getIsVerifiedAPI()
+      .then((res) => {
+        if (res.code == 200) {
+          withdrawalIsVerified.value = res.result.set_otp;
+        }
+      })
+      .finally(() => {
+        verifiedloading.value = false;
+      });
+  }
+
   /* 获取是否已经绑定过Otp 如果已经绑定则不能跳过校验 */
   const bindOtp = ref(true); //是否已经绑定过Otp
-  function loadCheckBindOtp() {
-    check_bind_otp().then((res) => {
+  async function loadCheckBindOtp() {
+    await check_bind_otp().then((res) => {
       if (res.code == 200) {
         bindOtp.value = res.result.bind_secret;
       }
@@ -250,7 +274,7 @@
       content: createVNode('div', null, [
         createVNode(
           'span',
-          { style: { color: '#d1cece', fontSize: '16px' } },
+          { style: { color: '#535353', fontSize: '16px' } },
           'We sincerely welcome you to contact us for more information!',
         ),
       ]),
@@ -319,10 +343,11 @@
   //#endregion
   /* 上传 EEEEEEEEEEEEEEEEEEEEEEEEEEEEEE */
 
-  onMounted(() => {
+  onMounted(async () => {
     loadUserInfo();
     loadUserDmc();
-    loadCheckBindOtp();
+    await loadCheckBindOtp();
+    loadIsVerified();
   });
 </script>
 
@@ -372,8 +397,8 @@
           place-items: center;
           background: #f4f5f9;
           position: absolute;
-          top: 5px;
-          right: 0px;
+          top: 15px;
+          right: 3px;
         }
 
         & > .user_header_box_content {
