@@ -4,54 +4,79 @@
       <div class="top_back" @click="router.go(-1)">Withdraw DMC to your wallet</div>
     </div>
     <div v-if="canWithDraw && !loading" :class="['middle_box', showKeyboard ? 'full_height' : '']">
-      <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" />
-      <div class="title_item">
-        <p>Withdrawal account:</p>
-        <p class="dmc_account">{{ dmc }}</p>
-      </div>
-      <div class="title_item">
-        <p>Please enter the withdrawal amount:</p>
-        <div class="amount_input_box">
-          <nut-input
-            class="amount_input"
-            format-trigger="onBlur"
-            :formatter="formatAmount"
-            placeholder="Amount"
-            v-model="amount"
-            type="number"
-          >
-            <template #right>
-              <div style="display: flex; align-items: center">
-                <p style="color: #000"> DMC </p>
-                <van-button style="margin-left: 10px" size="small" type="primary" @click="getAll">All Amount</van-button>
-              </div></template
-            >
-          </nut-input>
+      <!-- <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" /> -->
+      <div class="recharge_box">
+        <div class="recharge_contact">
+          <div class="dot">
+            <img class="top_img" src="@/assets/DMC_Token1.png" alt="" />
+            <span>DMC Account</span>
+            <span class="small">(Payment Account)</span>
+          </div>
+          <div class="line"
+            >{{ amount }}
+            <!-- <img class="top_img" src="@/assets/DMC_Token1.png" alt="" /> -->
+          </div>
+          <div class="dot">
+            <img class="top_img" src="@/assets/DMC_Token1.png" alt="" />
+            <span>{{ dmc }}</span>
+            <span class="small">(Receiving account)</span>
+          </div>
+        </div>
+        <div class="ticket_box">
+          <div class="title_item">
+            <p>Withdrawal Account:</p>
+            <p class="dmc_account">{{ dmc }}</p>
+          </div>
+          <div class="title_item">
+            <!-- <p>Please enter the withdrawal amount:</p> -->
+            <p>Amount:</p>
+            <div class="amount_input_box">
+              <nut-input
+                class="amount_input"
+                format-trigger="onBlur"
+                :formatter="formatAmount"
+                placeholder="Amount"
+                v-model="amount"
+                type="number"
+              >
+                <template #right>
+                  <div style="display: flex; align-items: center">
+                    <p style="color: #000"> DMC </p>
+                    <van-button style="margin-left: 10px" size="small" type="primary" @click="getAll">All Amount</van-button>
+                  </div></template
+                >
+              </nut-input>
+            </div>
+          </div>
+          <div class="title_item" v-if="isBind">
+            <p>Please enter the Google captcha:</p>
+            <van-password-input
+              :mask="false"
+              class="google_input"
+              :value="code"
+              :gutter="10"
+              :focused="showKeyboard"
+              @focus="showKeyboard = true"
+            />
+            <Teleport to="body">
+              <van-number-keyboard v-model="code" :show="showKeyboard" @blur="showKeyboard = false" />
+            </Teleport>
+          </div>
+          <div class="real_amount balance"> Balance: {{ cloudBalance }} DMC </div>
+          <div v-if="realAmount != '--'" class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
+          <div v-else class="real_amount">Failed to get ambassador pumping rate, please retry </div>
+          <div class="tips">
+            Please be aware that withdrawals incur a handling fee of {{ (commissionRate * 100).toFixed(2) }}% for ambassadors and 2% for DMC
+            Foundation
+          </div>
         </div>
       </div>
-      <div class="title_item" v-if="isBind">
-        <p>Please enter the Google captcha:</p>
-        <van-password-input
-          :mask="false"
-          class="google_input"
-          :value="code"
-          :gutter="10"
-          :focused="showKeyboard"
-          @focus="showKeyboard = true"
-        />
-        <Teleport to="body">
-          <van-number-keyboard v-model="code" :show="showKeyboard" @blur="showKeyboard = false" />
-        </Teleport>
-      </div>
-      <div class="real_amount balance"> Balance: {{ cloudBalance }} DMC </div>
-      <div v-if="realAmount != '--'" class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
-      <div v-else class="real_amount">Failed to get ambassador pumping rate, please retry </div>
-      <nut-noticebar
+      <!-- <nut-noticebar
         :text="`Please be aware that withdrawals incur a handling fee of  ${(commissionRate * 100).toFixed(
           2,
         )}% for ambassadors and 2% for DMC Foundation`"
         wrapable
-      ></nut-noticebar>
+      ></nut-noticebar> -->
 
       <div style="margin: 40px; margin-bottom: 150px">
         <nut-button
@@ -87,7 +112,7 @@
           Please save your Google verification key in time. This key is generated only once and will not be retained after refreshing.</span
         >
       </div>
-      <div style="margin-top: 50px" class="title_item" v-if="scret_key && !canWithDraw">
+      <div style="margin-top: 10px" class="title_item" v-if="scret_key && !canWithDraw">
         <p>Please enter the Google verification</p>
         <van-password-input
           :mask="false"
@@ -374,8 +399,7 @@
   }
   .top_img {
     display: block;
-    width: 200px;
-    margin: 40px auto;
+    width: 60px;
   }
   .middle_box {
     padding: 0 10px;
@@ -385,12 +409,14 @@
   }
   .title_item {
     margin-bottom: 50px;
-    p:first-child {
-      color: #000;
-      font-size: 1.2rem;
-    }
+    // p:first-child {
+    //   color: #000;
+    //   font-size: 1.2rem;
+    // }
     .dmc_account {
       color: #666666;
+      color: #8532e6;
+      font-weight: bold;
       font-size: 2rem;
       text-align: center;
     }
@@ -403,7 +429,7 @@
     }
   }
   .amount_input_box {
-    margin: 10px 40px;
+    margin: 10px;
   }
   .amount_input {
     background: #f9f8f8;
@@ -428,7 +454,7 @@
     .google-tips {
       margin-top: 16px;
       margin-bottom: 20px;
-      font-size: 30px;
+      font-size: 26px;
       color: #000;
     }
     .auth_input {
@@ -436,7 +462,7 @@
       align-items: center;
       margin-top: 30px;
       color: #000;
-      font-size: 30px;
+      font-size: 26px;
       span {
         display: inline-block;
         width: 100%;
@@ -454,6 +480,82 @@
     .van-number-keyboard {
       padding-bottom: 0;
       z-index: 999;
+    }
+  }
+</style>
+
+<style scoped lang="scss">
+  .recharge_box {
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    color: #fff;
+    padding: 20px;
+    border-radius: 20px;
+    height: auto;
+    font-weight: bold;
+    margin-top: 50px;
+    .recharge_contact {
+      margin-top: 12px;
+      display: flex;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      margin: 36px 0;
+      .dot {
+        width: 300px;
+        border-radius: 50%;
+        // margin: 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        span {
+          white-space: nowrap;
+          font-size: 32px;
+        }
+        .small {
+          font-size: 18px;
+        }
+      }
+      .line {
+        border-top: 6px dashed #fff;
+        width: calc(100% - 400px);
+        height: 100px;
+        border-radius: 50%;
+        font-size: 18px;
+        text-align: center;
+        padding-top: 18px;
+        // display: flex;
+        // align-items: center;
+        // flex-direction: column;
+        // justify-content: center;
+      }
+    }
+    .ticket_box {
+      background: #fff;
+      border-radius: 20px;
+      color: #000;
+      padding: 20px;
+      font-size: 26px !important;
+      font-weight: normal;
+      margin: 20px 0;
+      background:
+        radial-gradient(circle at -6% 50%, transparent 10%, #fff 4%) left,
+        radial-gradient(circle at 106% 50%, transparent 10%, #fff 3.2%) right;
+      background-size: 50% 100%;
+      background-repeat: no-repeat;
+
+      .title_item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .dmc_account {
+        font-size: 26px !important;
+      }
+      .tips {
+        color: #ff8b00;
+        // font-weight: bold;
+      }
     }
   }
 </style>

@@ -8,11 +8,16 @@
       <div class="recharge_box">
         <div class="recharge_contact">
           <div class="dot">
+            <img class="top_img" src="@/assets/DMC_Token1.png" alt="" />
             <span>{{ dmc }}</span>
             <span class="small">(Payment Account)</span>
           </div>
-          <div class="line">{{ memo }}</div>
+          <div class="line"
+            >{{ memo }}
+            <!-- <img class="top_img" src="@/assets/DMC_Token1.png" alt="" /> -->
+          </div>
           <div class="dot">
+            <img class="top_img" src="@/assets/DMC_Token1.png" alt="" />
             <span>{{ targetAccount }}</span>
             <span class="small">(Receiving account)</span>
           </div>
@@ -54,6 +59,7 @@
   import { showToast } from '@nutui/nutui';
   import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
   import { user_recharge } from '@/api/amb';
+  import { My } from '@nutui/icons-vue';
   const { getAmbDmc, targetAccount } = useUpdateDMC();
   const userStore = useUserStore();
   const dmc = computed(() => userStore.getUserInfo.dmc);
@@ -150,8 +156,8 @@
   }
   .top_img {
     display: block;
-    width: 200px;
-    margin: 40px auto;
+    width: 60px;
+    // margin: 40px auto;
   }
   .middle_box {
     padding: 0 10px;
@@ -270,6 +276,10 @@
         font-size: 18px;
         text-align: center;
         padding-top: 18px;
+        // display: flex;
+        // align-items: center;
+        // flex-direction: column;
+        // justify-content: center;
       }
     }
     .ticket_box {
