@@ -2,7 +2,7 @@
   <div>
     <div class="dmc_account">
       <div class="img-box">
-        <img src="@/assets/user.png" alt="" />
+        <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
       </div>
       Hello,
       {{ userInfo.email && userInfo.email.split('@')[0] }}
@@ -224,6 +224,7 @@
   import { search_order_profit, search_user_asset_detail } from '@/api/amb';
 
   const userInfo = computed(() => userStore.getUserInfo);
+  const userAvatar = computed(() => userStore.getUserInfo?.image_path);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
 
   const router = useRouter();
@@ -594,13 +595,14 @@
       margin-right: 10px;
       //   background: #5758a0;
       box-sizing: border-box;
-      border-radius: 10px;
+      overflow: hidden;
       border-radius: 50%;
 
       img {
         width: 45px;
         margin: 0 auto;
         vertical-align: middle;
+        border-radius: 10px;
       }
     }
 
@@ -634,7 +636,7 @@
         .svg-box {
           // background: #34964f;
           // background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
-          background-image: linear-gradient(to top, #e0e1e2  0%, #e7f0fd 100%);
+          background-image: linear-gradient(to top, #e0e1e2 0%, #e7f0fd 100%);
         }
       }
 
@@ -877,9 +879,9 @@
   .withdraw-btn::before {
     content: '';
     position: absolute;
-    width: 110%;
+    width: 140%;
     background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
-    height: 130%;
+    height: 80%;
     animation: rotBGimg 3s linear infinite;
     transition: all 0.2s linear;
   }

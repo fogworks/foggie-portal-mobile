@@ -209,6 +209,8 @@
       loadingRotate: false,
     });
     let res = await check_bind_otp();
+    // Todo list
+
     if (res.result.bind_secret) {
       isBind.value = true;
       canWithDraw.value = true;

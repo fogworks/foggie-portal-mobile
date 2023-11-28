@@ -208,3 +208,13 @@ export const get_order_sign = (data) => {
     params: data,
   });
 };
+export function setUserAvatarApi(data) {
+  return request({
+    url:  `${apiUrl}/api_accounts/accounts/upload_user_image`,
+    method: 'POST',
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    data,
+  });
+}

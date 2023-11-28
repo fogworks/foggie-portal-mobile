@@ -1,13 +1,16 @@
 <template>
   <div class="userInfo">
     <div class="userHeader">
-      <div class="title">UserInfo</div>
       <div class="user_header_box">
-        <div class="content">
-          <img src="@/assets/user.png" alt="" srcset="" />
-          <!-- <img src="@/assets/user.png" alt="" srcset=""> -->
+        <div style="position: relative">
+          <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" @click="clickInput" />
+          <input type="file" name="" accept="image/*," ref="uploadRef" @change="uploadFile" id="" style="display: none" />
+          <div class="uploadIcon">
+            <Uploader color="#90B3EF" width="15px" height="15px"></Uploader>
+          </div>
         </div>
-        <div>
+
+        <div class="user_header_box_content">
           <div class="accTitle">{{ dmcAccount }}</div>
           <div class="email">{{ email }}</div>
           <div class="email" v-if="promo_code">{{ promo_code }}</div>
@@ -38,7 +41,21 @@
       </div>
     </div>
     <div class="userBox">
-      <div class="title">My list</div>
+      <div class="title">
+        <div>
+          <Issue color="#90B3EF" width="12px" height="12px" style="margin-right: 5px" />
+          Should I turn off the withdrawals google check? If you're successfully bound you won't be able to turn off this option!
+        </div>
+
+        <nut-switch
+          :loading="verifiedloading"
+          :model-value="withdrawalIsVerified"
+          active-text="Yes"
+          inactive-text="No"
+          @change="changeIsVerified"
+        >
+        </nut-switch>
+      </div>
 
       <nut-row class="buttonContent">
         <!-- <nut-col :span="6" @click="gotoDetail('/withdraw')">
@@ -123,34 +140,58 @@
 
 <script lang="ts" setup name="MemberPage">
   import { useUserStore } from '@/store/modules/user';
-  import { My2, Service, Link, ArrowRight2 } from '@nutui/icons-vue';
+  import { My2, Service, Link, ArrowRight2, Uploader, Issue } from '@nutui/icons-vue';
   import { showDialog } from '@nutui/nutui';
-
   import '@nutui/nutui/dist/packages/dialog/style';
-
+  import { showToast } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/toast/style';
+  import { showNotify } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/notify/style';
+  import loadingImg from '@/components/loadingImg/index.vue';
   import { createVNode } from 'vue';
   import { useRouter } from 'vue-router';
-  import { user } from '@/api';
-  import { get_user_dmc } from '@/api/amb';
+  import { user, setUserAvatarApi } from '@/api/index';
+  import { get_user_dmc, check_bind_otp } from '@/api/amb';
   import { onMounted, reactive, ref } from 'vue';
   import { formatNumber } from '@/utils/util';
+  import { delay } from 'lodash';
+  const uploadRef = ref();
+  const userAvatar = computed(() => userStore.getUserInfo?.image_path);
+
   const userStore = useUserStore();
   const router = useRouter();
-  const email = ref<string>('');
-  const dmcAccount = ref<string>('');
-
-  const promo_code = ref<string>('');
+  const email = computed(() => userStore.getUserInfo?.email);
+  const dmcAccount = computed(() => userStore.getUserInfo?.dmc);
+  const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
   const visible = ref<boolean>(false);
+  const withdrawalIsVerified = ref<boolean>(true); // 是否开启校验
+  const verifiedloading = ref(true); // 切换提现是否google校验 loading
+  /*切换是否开启绑定google校验 */
+  function changeIsVerified(value, event) {
+    console.log(value, event);
+    if (bindOtp.value) {
+      showNotify.text(`You can't turn off checksums if you're already bound.`, { color: '#ad0000', background: '#ffe1e1' });
+      return;
+    }
+    withdrawalIsVerified.value = value;
+    verifiedloading.value = false;
+  }
+  /* 获取是否已经绑定过Otp 如果已经绑定则不能跳过校验 */
+  const bindOtp = ref(true); //是否已经绑定过Otp
+  function loadCheckBindOtp() {
+    check_bind_otp().then((res) => {
+      if (res.code == 200) {
+        bindOtp.value = res.result.bind_secret;
+      }
+    });
+  }
 
   /* 获取用户身份信息 */
   function loadUserInfo() {
     user()
       .then((res) => {
         if (res && res.data && res.data.email) {
-          console.log(res);
-          promo_code.value = res.data.amb_promo_code;
-          email.value = res.data.email;
-          dmcAccount.value = res.data.dmc;
+          userStore.setInfo(res.data);
         }
       })
       .catch(() => {
@@ -212,28 +253,11 @@
           { style: { color: '#d1cece', fontSize: '16px' } },
           'We sincerely welcome you to contact us for more information!',
         ),
-        // createVNode(
-        //   'div',
-        //   { style: { color: '#606060', marginTop: '14px', fontSize: '16px' } },
-        //   'https://discord.com/channels/1046683342025789541/1070536042677030973/1070584672066752573',
-        // ),
       ]),
       noCancelBtn: true,
       okText: 'Contact',
       onOk: () => {
         window.open('https://discord.com/channels/1046683342025789541/1070536042677030973/1070584672066752573');
-        // if (!navigator.clipboard) {
-        //   fallbackCopyTextToClipboard('https://discord.com/channels/1046683342025789541/1070536042677030973/1070584672066752573');
-        //   return;
-        // }
-        // navigator.clipboard.writeText('https://discord.com/channels/1046683342025789541/1070536042677030973/1070584672066752573').then(
-        //   function () {
-        //     showToast.success('Copying  successful!');
-        //   },
-        //   function () {
-        //     showToast.fail('Copying  unsuccessful!');
-        //   },
-        // );
       },
     });
   };
@@ -251,11 +275,54 @@
     }
     visible.value = false;
   }
-  const canvasref = ref();
+
+  /* 上传 SSSSSSSSSSSSSSSSSSSSS */
+  //#region
+  function clickInput() {
+    uploadRef.value.click();
+  }
+
+  function uploadFile(event) {
+    const file = event.target.files[0];
+
+    const imageRegex = /\.(jpg|jpeg|png|gif|bmp)$/i;
+    const isValidImage = imageRegex.test(file.name);
+    if (!isValidImage) {
+      showToast.text('Please select image to upload');
+      return;
+    }
+
+    const uploadForm = new FormData();
+    uploadForm.append('file', file);
+
+    showToast.loading('Loading', {
+      cover: true,
+      coverColor: 'rgba(0,0,0,0.45)',
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+      duration: 0,
+      id: 'loading',
+    });
+
+    setUserAvatarApi(uploadForm)
+      .then((res) => {
+        if (res.code == 200) {
+          showToast.success(res.data);
+          loadUserInfo();
+        }
+      })
+      .finally(() => {
+        showToast.hide('loading');
+      });
+  }
+  //#endregion
+  /* 上传 EEEEEEEEEEEEEEEEEEEEEEEEEEEEEE */
 
   onMounted(() => {
     loadUserInfo();
     loadUserDmc();
+    loadCheckBindOtp();
   });
 </script>
 
@@ -278,38 +345,38 @@
       }
 
       .user_header_box {
-        --w: 150px;
+        $content-width: 150px;
+        $w: $content-width * 0.9;
         display: grid;
-        grid-template-columns: var(--w) auto;
+        grid-template-columns: $content-width auto;
         column-gap: 30px;
         height: 200px;
         padding-top: 50px;
         align-items: center;
 
-        .content {
-          width: var(--w);
-          // height: calc(var(--w) * 1.1547);
-          height: var(--w);
-
-          // clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-          background-color: #f4f5f9;
-          display: grid;
-          place-items: center;
+        img {
+          margin-top: 6px;
+          width: $w !important;
+          height: $w !important;
           border-radius: 50%;
+          border: 7px solid #fff;
           box-shadow:
             rgb(24 32 79 / 25%) 0px 40px 80px,
             rgb(255 255 255 / 50%) 0px 0px 0px 0.5px inset;
-          // background:linear-gradient(#fff, #fff) padding-box,  linear-gradient(145deg, #e81cff, #40c9ff) border-box;
-
-          img {
-            width: 90% !important;
-            height: 91% !important;
-            border-radius: 50%;
-            // clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-          }
+        }
+        .uploadIcon {
+          border-radius: 50%;
+          width: 30px;
+          height: 30px;
+          display: grid;
+          place-items: center;
+          background: #f4f5f9;
+          position: absolute;
+          top: 5px;
+          right: 0px;
         }
 
-        & > div:nth-of-type(2) {
+        & > .user_header_box_content {
           .accTitle {
             color: #fff;
             font-size: 32px;
@@ -365,8 +432,13 @@
 
       // min-height: 300px;
       .title {
-        font-size: 40px;
+        font-size: 26px;
         color: #000;
+        display: grid;
+        grid-template-columns: auto 80px;
+        font-style: italic;
+        gap: 40px;
+        align-items: center;
       }
 
       .buttonContent {
