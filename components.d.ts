@@ -15,6 +15,7 @@ declare module 'vue' {
     MyTransition: typeof import('./src/components/myTransition/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Tabbar: typeof import('./src/components/tabbar/index.vue')['default']
     TopBack: typeof import('./src/components/topBack/index.vue')['default']
   }
 }
