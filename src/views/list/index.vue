@@ -148,7 +148,7 @@
     <Teleport to="body">
       <nut-popup position="top" :style="{ height: 'auto' }" v-model:visible="showTop" class="top_search_wrap">
         <nut-form class="top_search_wrap" :model-value="searchForm">
-          <div class="search_title">条件筛选</div>
+          <div class="search_title">Conditional Filtering</div>
           <div class="search_title left_title">Status Filtering</div>
           <nut-form-item label="">
             <nut-checkbox-group class="status_radio" v-model="searchForm.statusArr" direction="horizontal">
