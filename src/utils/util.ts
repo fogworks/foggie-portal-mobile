@@ -178,10 +178,10 @@ function handleExprie(item) {
 function handleRate(item) {
   let old = Number(item.total_price);
   let now = item.income;
-  let rate = 0;
+  let rate = '';
   if (now > old) {
     let diff = Number(now) - Number(old);
-    rate = (Number(diff) / Number(old)) * 100;
+    rate = Number(Number(diff) / Number(old)).toFixed(0) * 100;
   }
   return rate;
 }
