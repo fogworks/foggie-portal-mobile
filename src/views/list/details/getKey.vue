@@ -14,6 +14,7 @@
         <span>{{ bucketName }}</span
         >.{{ s3Url }}:9900
       </span>
+      <p class="key_tips">After using the S3 tool to operate the data, it is necessary to manually submit a merkle once.</p>
       <nut-form class="key_form" :model-value="dynamicForm.state" ref="dynamicRefForm">
         <!-- <nut-form-item label="Access Key">
         <span>Secret Key</span>
