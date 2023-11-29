@@ -103,18 +103,19 @@
       @load-more="loadMoreFun"
     >
       <template v-for="(item, index) in list">
+        <!-- :class="[searchType === 'History' ? 'history_item' : '']" -->
         <div
           class="list_item order_item"
           v-if="!(item?.income && item?.state == 0)"
           @click="gotoOrder(item)"
-          :class="[searchType === 'History' ? 'history_item' : '']"
+          :class="[isOpen(item.state) ? '' : 'history_item']"
         >
           <div class="order_time">{{ transferGMTTime(item.order_created_at) }}</div>
           <div class="order_head">
             <div class="order_img">
               <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" />
               <img v-else src="@/assets/desktop1.svg" alt="" />
-              <div class="order_name">{{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
+              <div class="order_name">{{ index + 1 }}-{{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
             </div>
             <!-- <img src="@/assets/exprie.svg" alt="" /> -->
             <div class="order_expTime"> <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ handleExprie(item) }}</div>
@@ -425,10 +426,17 @@
     let b = createNumber(150, 255);
     return `rgb(${r} ${g} ${b})`;
   };
+  const isOpen = (state) => {
+    if (state === 4 || state === 5) {
+      return false;
+    } else {
+      return true;
+    }
+  };
   const gotoOrder = (item) => {
-    if (searchType.value === 'Open') {
+    if (isOpen(item.state)) {
       router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });
-    } else if (searchType.value === 'History') {
+    } else if (!isOpen(item.state)) {
       if (item.order_id) {
         window.sessionStorage.removeItem('myHistoryOrder');
         window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(item));
