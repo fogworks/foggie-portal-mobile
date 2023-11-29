@@ -48,7 +48,7 @@
               </nut-input>
             </div>
           </div>
-          <div class="title_item" v-if="isBind">
+          <div class="title_item google_item" v-if="isBind">
             <p>Please enter the Google captcha:</p>
             <van-password-input
               :mask="false"
@@ -234,8 +234,8 @@
       loadingRotate: false,
     });
     let res = await check_bind_otp();
-    let response = {}
-    if(!res.result.bind_secret){
+    let response = {};
+    if (!res.result.bind_secret) {
       response = await getIsVerifiedAPI();
     }
     if (res.result.bind_secret) {
@@ -556,6 +556,13 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+      }
+      .google_item {
+        flex-direction: column;
+        .google_input {
+          width: 90%;
+          border-bottom: 1px solid #ccc;
+        }
       }
       .dmc_account {
         font-size: 26px !important;
