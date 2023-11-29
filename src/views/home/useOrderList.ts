@@ -55,7 +55,7 @@ export default function useOrderList() {
     listData.value = [];
   };
   const loadMore = async (order_state = null, start_time = '', end_time = '', buy_result = 'success', postData = {}, type) => {
-    console.log(cloudCodeIsBind.value, 'cloudCodeIsBindcloudCodeIsBindcloudCodeIsBind');
+    // console.log(cloudCodeIsBind.value, 'cloudCodeIsBindcloudCodeIsBindcloudCodeIsBind');
 
     if (!cloudCodeIsBind.value) {
       return false;

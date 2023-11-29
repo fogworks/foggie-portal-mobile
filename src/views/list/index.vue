@@ -103,21 +103,23 @@
       @load-more="loadMoreFun"
     >
       <template v-for="(item, index) in list">
+        <!-- :class="[searchType === 'History' ? 'history_item' : '']" -->
         <div
           class="list_item order_item"
           v-if="!(item?.income && item?.state == 0)"
           @click="gotoOrder(item)"
-          :class="[searchType === 'History' ? 'history_item' : '']"
+          :class="[isOpen(item.state) ? '' : 'history_item']"
         >
           <div class="order_time">{{ transferGMTTime(item.order_created_at) }}</div>
           <div class="order_head">
             <div class="order_img">
               <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" />
               <img v-else src="@/assets/desktop1.svg" alt="" />
-              <div class="order_name">{{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
+              <div class="order_name">{{ index + 1 }}-{{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
             </div>
             <!-- <img src="@/assets/exprie.svg" alt="" /> -->
-            <div class="order_expTime"> <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ handleExprie(item) }}</div>
+            <!-- {{ handleExprie(item) }} -->
+            <div class="order_expTime"> <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferGMTTime(item.expire) }}</div>
           </div>
           <div class="order_content">
             <div class="order_content_left">
@@ -238,7 +240,6 @@
   const router = useRouter();
   const route = useRoute();
   const searchType = ref(route.query.searchType == 'History' ? 'History' : 'Open');
-  console.log(route.query.searchType);
   const currentTotal = ref(0);
   const statusTypes = {
     0: 'Consensus not reached',
@@ -275,7 +276,7 @@
   const searchParam = reactive({
     searchForm: {
       status: 0,
-      statusArr: [0],
+      statusArr: [],
       createDate: [],
       timeType: 'create',
       min: '',
@@ -296,7 +297,15 @@
       More: 'More',
     },
   });
+
   const { searchForm } = toRefs(searchParam);
+  if (searchType.value === 'Open') {
+    searchForm.value.statusArr = [0, 1, 2, 3, 6];
+  } else if (searchType.value === 'History') {
+    searchForm.value.statusArr = [4, 5];
+  } else {
+    searchForm.value.statusArr = [0];
+  }
   const setCTimeChooseValue = (param) => {
     searchForm.value.createDate = [...[param[0][3], param[1][3]]];
   };
@@ -354,6 +363,9 @@
       sort_type,
     };
     showTop.value = false;
+    if (order_state.length > 0) {
+      searchType.value = 'filter';
+    }
     loadMore(order_state, start_time, end_time, '', postData, 'search');
   };
   const toReset = () => {
@@ -365,6 +377,7 @@
     searchForm.value.priceType = 'purchase';
     searchForm.value.min = '';
     searchForm.value.max = '';
+    searchType.value = 'Open';
   };
 
   const showTop = ref(false);
@@ -425,10 +438,17 @@
     let b = createNumber(150, 255);
     return `rgb(${r} ${g} ${b})`;
   };
+  const isOpen = (state) => {
+    if (state === 4 || state === 5) {
+      return false;
+    } else {
+      return true;
+    }
+  };
   const gotoOrder = (item) => {
-    if (searchType.value === 'Open') {
+    if (isOpen(item.state)) {
       router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });
-    } else if (searchType.value === 'History') {
+    } else if (!isOpen(item.state)) {
       if (item.order_id) {
         window.sessionStorage.removeItem('myHistoryOrder');
         window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(item));
@@ -453,16 +473,31 @@
   // });
   const loadMoreFun = () => {
     if (cloudCodeIsBind.value) {
+      console.log('loadMoreFun', searchForm.value.statusArr);
       let ascending = searchForm.value.sortValue === 'ascending';
       let sort_type = searchForm.value.sortType;
+      let statusArr = searchForm.value.statusArr;
       let postData = {
         ascending,
         sort_type,
       };
       if (searchType.value == 'Open') {
-        loadMore([0, 1, 2, 3, 6], '', '', '', postData);
+        let arr = [0, 1, 2, 3, 6];
+        if (statusArr.length > 0) {
+          arr = arr.concat(statusArr);
+        }
+        const uniqueArray = [...new Set(arr)];
+        loadMore(uniqueArray, '', '', '', postData);
+      } else if (searchType.value == 'History') {
+        let arr = [4, 5];
+        if (statusArr.length > 0) {
+          arr = arr.concat(statusArr);
+        }
+        const uniqueArray = [...new Set(arr)];
+        loadMore(uniqueArray, '', '', '', postData);
       } else {
-        loadMore([4, 5], '', '', '', postData);
+        let arr = statusArr;
+        loadMore(arr, '', '', '', postData);
       }
       //   if (searchType.value == 'Open') {
       //     loadMore([0, 1, 2, 3, 6]);
@@ -477,14 +512,28 @@
       if (val) {
         let ascending = searchForm.value.sortValue === 'ascending';
         let sort_type = searchForm.value.sortType;
+        let statusArr = searchForm.value.statusArr;
         let postData = {
           ascending,
           sort_type,
         };
         if (searchType.value == 'Open') {
-          loadMore([0, 1, 2, 3, 6], '', '', '', postData);
+          let arr = [0, 1, 2, 3, 6];
+          if (statusArr.length > 0) {
+            arr = arr.concat(statusArr);
+          }
+          const uniqueArray = [...new Set(arr)];
+          loadMore(uniqueArray, '', '', '', postData);
+        } else if (searchType.value == 'History') {
+          let arr = [4, 5];
+          if (statusArr.length > 0) {
+            arr = arr.concat(statusArr);
+          }
+          const uniqueArray = [...new Set(arr)];
+          loadMore(uniqueArray, '', '', '', postData);
         } else {
-          loadMore([4, 5], '', '', '', postData);
+          let arr = statusArr;
+          loadMore(arr, '', '', '', postData);
         }
         // if (searchType.value == 'Open') {
         //   loadMore([0, 1, 2, 3, 6]);
@@ -500,7 +549,6 @@
     (val) => {
       resetData();
       if (cloudCodeIsBind.value) {
-        console.log(val, '12222222222222222222');
         let ascending = searchForm.value.sortValue === 'ascending';
         let sort_type = searchForm.value.sortType;
         let postData = {
@@ -508,11 +556,16 @@
           sort_type,
         };
         if (val == 'Open') {
-          loadMore([0, 1, 2, 3, 6], '', '', '', postData);
+          let arr = [0, 1, 2, 3, 6];
+          searchForm.value.statusArr = [0, 1, 2, 3, 6];
+          loadMore(arr, '', '', '', postData);
         } else if (val == 'History') {
-          loadMore([4, 5], '', '', '', postData);
+          let arr = [4, 5];
+          searchForm.value.statusArr = arr;
+          loadMore(arr, '', '', '', postData);
         } else {
-          loadMore();
+          let statusArr = searchForm.value.statusArr;
+          loadMore(statusArr, '', '', '', postData);
         }
         // if (val == 'Open') {
         //   loadMore([0, 1, 2, 3, 6]);
@@ -892,7 +945,7 @@
     // border: 2px solid transparent;
     .order_time {
       position: absolute;
-      right: 0;
+      right: 20px;
       top: -36px;
       color: #888;
       font-weight: bold;
