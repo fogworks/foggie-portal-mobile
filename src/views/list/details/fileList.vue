@@ -88,7 +88,7 @@
                 prefixChange();
               "
             >
-              <TopBack> </TopBack>
+              <!-- <TopBack> </TopBack> -->
             </div>
             <span class="top_title">
               {{ prefix.at(-1) || '' }}
@@ -1175,7 +1175,7 @@
 
       let cur_cid = '';
       for (let i = 0; i < data.prefixpins?.length; i++) {
-        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
+        if (data.prefixpins[i]?.prefix === name && data.prefixpins[i]?.cid) {
           cur_cid = data.prefixpins[i].cid;
         }
       }

@@ -171,7 +171,7 @@
       .nut-dialog__content {
         .buyOrderItem {
           word-break: break-word;
-          color: #d1cece;
+          // color: #d1cece;
           color: #000;
           text-align: left;
           border-bottom: 2px solid #f5f7fb;

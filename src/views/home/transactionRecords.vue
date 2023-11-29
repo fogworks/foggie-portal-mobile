@@ -93,7 +93,10 @@
   import { transferUTCTime, transferGMTTime, formatNumber } from '@/utils/util';
   import { get_user_recharge } from '@/api/amb';
   import * as echarts from 'echarts';
+  const DMC_ADRESS = import.meta.env.VITE_USE_DMC_ADRESS;
 
+
+  
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
@@ -126,8 +129,11 @@
     }
   };
   const goToHash = (transaction_hash) => {
+    
     // window.open(`https://explorer.dmctech.io/transaction/${transaction_hash}`);
-    window.open(`http://154:64.7.46:8801/transaction/${transaction_hash}`);
+    // window.open(`http://154.64.7.46:8801/transaction/${transaction_hash}`);
+    window.open(`${DMC_ADRESS}/transaction/${transaction_hash}`);
+
   };
   // watch(
   //   listData,

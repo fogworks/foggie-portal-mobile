@@ -16,11 +16,13 @@ function transferTime(utc_datetime) {
   let ss = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
   return YY + MM + DD + ' ' + hh + mm + ss;
 }
+
 function transferGMTTime(time) {
   return moment(time).format('YYYY-MM-DD HH:mm:ss');
 }
 const transferUTCTime = (time, type = 'YYYY-MM-DD HH:mm:ss') => {
-  return moment.utc(time).local().format(type);
+  time = new Date(time);
+  return moment.utc(time).format(type);
 };
 const transferUTCTimeDay = (time, type = 'YYYY-MM-DD') => {
   time = time.getTime() + 24 * 60 * 60 * 1000;
@@ -178,10 +180,10 @@ function handleExprie(item) {
 function handleRate(item) {
   let old = Number(item.total_price);
   let now = item.income;
-  let rate = 0;
+  let rate = '';
   if (now > old) {
     let diff = Number(now) - Number(old);
-    rate = (Number(diff) / Number(old)) * 100;
+    rate = Number(Number(diff) / Number(old)).toFixed(0) * 100;
   }
   return rate;
 }
@@ -193,7 +195,7 @@ function handleRate(item) {
 
 const privatekey = '6Lfb1P8oAAAAAOLRpus_iOzdPyWVJZmxqmggXwiC';
 const secret = '6Lfb1P8oAAAAACjGYFUlFaWKOR6NqmYTKLkzRztj';
-const Lower_score_limit = 0;
+const Lower_score_limit = 0.3;
 function load_gpa_token(type = 'LOGIN') {
   return new Promise(async (resolve, inject) => {
     const grecaptcha = window.grecaptcha || {};
@@ -222,7 +224,7 @@ async function reCAPTCHA_verification(token) {
   let res = await get_reCAPTCHA_Score_API(params);
   console.log(res);
   if (res.success) {
-    if (res.score > Lower_score_limit) {
+    if (res.score >= Lower_score_limit) {
       return true;
     } else {
       return false;
@@ -267,4 +269,5 @@ export {
   handleDays,
   handleExprie,
   handleRate,
+  FormatUtcDate,
 };

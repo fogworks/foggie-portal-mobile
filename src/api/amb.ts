@@ -176,6 +176,25 @@ export function check_bind_otp() {
     method: 'GET',
   });
 }
+/* 设置提现时是否开启google验证 */
+export function setIsVerifiedAPI(data) {
+  return request({
+    url: `${apiUrl}/ambmgr/asset/update_set_otp `,
+    method: 'POST',
+    data,
+  });
+}
+
+/* 获取提现时是否开启google校验 */
+export function getIsVerifiedAPI() {
+  return request({
+    url: `${apiUrl}/ambmgr/asset/query_set_otp`,
+    method: 'GET',
+  });
+}
+
+
+
 export function get_commission_rate() {
   return request({
     url: `${apiUrl}/ambmgr/ambuser/get_commission_rate`,

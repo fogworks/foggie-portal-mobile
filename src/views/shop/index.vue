@@ -4,18 +4,26 @@
       <div class="inside_blue">
         <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
         <p class="title">Buy</p>
-        <p class="total_balance">Total Balance</p>
+        <!-- <p class="total_balance">Total Balance</p> -->
         <p class="total_balance_value" v-if="cloudBalance">{{ cloudBalance }} DMC</p>
-        <div class="action_item" v-else>
+        <div class="balance_options">
+          <div class="action_item">
+            <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px"> Recharge </router-link>
+          </div>
+          <div class="action_item">
+            <router-link to="/withdraw" style="color: #b9d4ff; font-size: 14px"> Withdraw </router-link>
+          </div>
+        </div>
+        <!-- <div class="action_item">
           <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px">
             <img src="@/assets/recharge.svg" alt="" />
             Recharge
           </router-link>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="middle_content">
-      <p class="middle_title">VIP orders will receive a higher amount of revenue</p>
+      <!-- <p class="middle_title">VIP orders will receive a higher amount of revenue</p> -->
       <div class="product_box">
         <div class="product_card">
           <p
@@ -35,6 +43,7 @@
           <p>{{ (perGoldenPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
         </div>
       </div>
+      <div class="title">VIP orders will receive a higher amount of revenue.</div>
     </div>
     <div class="out_price_box">
       <p>VIP Order <IconSetting @click="showTop = true"></IconSetting> </p>
@@ -44,7 +53,7 @@
       </div>
     </div>
     <div style="margin: 0 20px 40px">
-      <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading"> Buy Now </nut-button>
+      <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading">Check VIP Details </nut-button>
       <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
     </div>
     <Teleport to="body">
@@ -139,6 +148,7 @@
           >
         </div> -->
         </div>
+        <!-- stroke-color="linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%)" -->
         <div class="bottom_btn">
           <nut-progress
             v-if="buyOrderIsSuccess"
@@ -148,6 +158,7 @@
             status="active"
             stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
             style="margin: 30px auto"
+            class="confirmBuy_btn"
           >
           </nut-progress>
           <nut-button block type="warning" :disabled="buyOrderIsSuccess" @click="confirmBuy" :loading="loading"> Confirm Buy </nut-button>
@@ -183,6 +194,14 @@
   import useUserAssets from '../home/useUserAssets.ts';
   import { debounce, delay } from 'lodash';
   import FakeProgress from 'fake-progress';
+
+
+  import { useUserStore } from '@/store/modules/user';
+  const userStore = useUserStore();
+  const dmc = computed(() => userStore.getUserInfo.dmc);
+  const email = computed(() => userStore.getUserInfo.email);
+  const uuid = computed(() => userStore.getUserInfo.uuid);
+
 
   // import useUpdateDMC from './useUpdateDMC';
   // const { getAmbDmc, targetAccount } = useUpdateDMC();
@@ -356,6 +375,9 @@
       deviceType: 3,
       poolType: 'golden', //vofo.*  / golden
       terminalType: 2,
+      foggieUserAddress: dmc.value,
+      foggieEmail: email.value,
+      foggieUserUuid: uuid.value,
     })
       .then((res) => {
         loading.value = false;
@@ -484,6 +506,10 @@
         --nut-button-warning-background-color,
         linear-gradient(135deg, rgb(255, 158, 13) 0%, rgb(255, 167, 13) 45%, rgb(255, 182, 13) 83%, rgb(255, 190, 13) 100%)
       );
+      //   background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+      //   background: var(--nut-button-warning-background-color, linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%));
+      background: linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%);
+
       color: #fff;
       margin: 0px 40px;
       border-radius: 10px;
@@ -548,6 +574,10 @@
             span {
               font-size: 18px;
               color: #ffa92a;
+              background: linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%);
+              color: transparent;
+              -webkit-background-clip: text;
+
               font-weight: bold;
             }
           }
@@ -571,7 +601,8 @@
       padding: 20px 40px;
       .nut-button {
         height: 100px;
-        background-color: #2d2e41 !important;
+        // background-color: #2d2e41 !important;
+        background: linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%);
         font-size: 40px;
         border: 0px;
         color: #ffffff;
@@ -671,6 +702,7 @@
 
   .middle_content {
     padding: 20px;
+    margin-top: 50px;
 
     .middle_title {
       text-align: center;
@@ -678,6 +710,12 @@
       margin-top: 40px;
       margin-bottom: 20px;
       color: #000;
+    }
+    .title {
+      text-align: center;
+      font-size: 24px;
+      font-style: italic;
+      margin-top: 7px;
     }
 
     .product_box {
@@ -764,7 +802,7 @@
 
     p {
       padding: 0 20px;
-      color: #999999;
+      //   color: #999999;
       font-size: 1.1rem;
       font-weight: bold;
 
@@ -901,12 +939,26 @@
     }
   }
 
+  .balance_options {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 20px;
+  }
   .action_item {
+    width: 50%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: end;
+    align-items: start;
     font-size: 24px;
+    text-decoration: none;
+    padding: 0 20px;
+    &:first-child {
+      border-right: 1px solid #ccc;
+      align-items: end;
+    }
 
     img {
       display: block;

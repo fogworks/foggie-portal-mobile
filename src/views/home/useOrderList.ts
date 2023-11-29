@@ -54,8 +54,8 @@ export default function useOrderList() {
     total.value = 0;
     listData.value = [];
   };
-  const loadMore = async (order_state = null, start_time = '', end_time = '', buy_result = 'success') => {
-    console.log(cloudCodeIsBind.value, 'cloudCodeIsBindcloudCodeIsBindcloudCodeIsBind');
+  const loadMore = async (order_state = null, start_time = '', end_time = '', buy_result = 'success', postData = {}, type) => {
+    // console.log(cloudCodeIsBind.value, 'cloudCodeIsBindcloudCodeIsBindcloudCodeIsBind');
 
     if (!cloudCodeIsBind.value) {
       return false;
@@ -68,8 +68,11 @@ export default function useOrderList() {
         loadingRotate: false,
       });
     }
-
-    await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result })
+    if (type === 'search') {
+      pn.value = 1;
+      listData.value = [];
+    }
+    await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result, ...postData })
       .then((res) => {
         total.value = res?.result?.total;
         const cloudList =

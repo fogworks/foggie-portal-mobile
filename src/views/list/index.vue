@@ -30,7 +30,7 @@
             <IconSwitch style="vertical-align: text-top" color="#ffffff" v-else></IconSwitch> -->
             </div>
             <span>Ongoing</span>
-            <span class="order_num" v-if="searchType == 'Open'">Count : {{ total }}</span>
+            <!-- <span class="order_num" v-if="searchType == 'Open'">Count : {{ total }}</span> -->
           </div>
         </nut-col>
         <nut-col :span="10">
@@ -45,10 +45,39 @@
             <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-else></IconHistoryActivate> -->
             </div>
             <span>History</span>
-            <span class="order_num" v-if="searchType == 'History'">Count : {{ total }}</span>
+            <!-- <span class="order_num" v-if="searchType == 'History'">Count : {{ total }}</span> -->
           </div>
         </nut-col>
       </nut-row>
+    </div>
+
+    <div class="top_filter">
+      <nut-menu active-color="#4524a3">
+        <nut-menu-item
+          v-model="searchForm.sortType"
+          :options="searchForm.sortTypeOptions"
+          @change="sortChange(searchForm.sortType, 'sortType')"
+        >
+          <template #icon> <Checked></Checked> </template>
+        </nut-menu-item>
+        <nut-menu-item
+          v-model="searchForm.sortValue"
+          @change="sortChange(searchForm.sortValue, 'sortValue')"
+          :options="searchForm.sortTypeOptions1"
+        >
+          <template #icon> <Checked></Checked> </template>
+        </nut-menu-item>
+        <!-- <nut-menu-item title="More" @open="MoreChange"> </nut-menu-item> -->
+      </nut-menu>
+      <div class="my_category_icon_box">
+        <Category class="my_category_icon" @click="toShowSearch" :class="[isFilter ? 'my_category_icon_active' : '']" v-if="!isFilter" />
+        <nut-badge v-if="isFilter" color="red" dot>
+          <!-- <template #icon>
+            <Check color="red" width="24px" height="24px"></Check>
+          </template> -->
+          <Category class="my_category_icon" @click="toShowSearch" :class="[isFilter ? 'my_category_icon_active' : '']" />
+        </nut-badge>
+      </div>
     </div>
 
     <!-- <div style="margin: 15px 0px">
@@ -63,6 +92,7 @@
         :close-mode="true"
       ></nut-noticebar>
     </div> -->
+    <div class="find_tips">Based on your search criteria,We found {{ total }} items for you.</div>
     <ErrorPage v-if="isError && !list.length" @refresh="loadMoreFun"></ErrorPage>
     <nut-infinite-loading
       v-else-if="list.length"
@@ -73,21 +103,23 @@
       @load-more="loadMoreFun"
     >
       <template v-for="(item, index) in list">
+        <!-- :class="[searchType === 'History' ? 'history_item' : '']" -->
         <div
           class="list_item order_item"
           v-if="!(item?.income && item?.state == 0)"
           @click="gotoOrder(item)"
-          :class="[searchType === 'History' ? 'history_item' : '']"
+          :class="[isOpen(item.state) ? '' : 'history_item']"
         >
-          <div class="order_time">{{ transferGMTTime(item.order_created_at) }}</div>
+          <div class="order_time">{{ transferUTCTime(item.order_created_at) }}</div>
           <div class="order_head">
             <div class="order_img">
               <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" />
               <img v-else src="@/assets/desktop1.svg" alt="" />
-              <div class="order_name">{{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
+              <div class="order_name">{{ index + 1 }}-{{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
             </div>
             <!-- <img src="@/assets/exprie.svg" alt="" /> -->
-            <div class="order_expTime"> <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ handleExprie(item) }}</div>
+            <!-- {{ handleExprie(item) }} -->
+            <div class="order_expTime"> <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferUTCTime(item.expire) }}</div>
           </div>
           <div class="order_content">
             <div class="order_content_left">
@@ -118,43 +150,66 @@
     <Teleport to="body">
       <nut-popup position="top" :style="{ height: 'auto' }" v-model:visible="showTop" class="top_search_wrap">
         <nut-form class="top_search_wrap" :model-value="searchForm">
-          <div class="search_title">条件筛选</div>
-          <div class="search_title left_title">状态选择</div>
+          <div class="search_title">Conditional Filtering</div>
+          <div class="search_title left_title">Status Filtering</div>
           <nut-form-item label="">
-            <nut-radio-group class="week_radio" v-model="searchForm.time" direction="horizontal">
-              <nut-radio shape="button" :label="52">52 weeks</nut-radio>
-              <nut-radio shape="button" :label="38">38 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
+            <nut-checkbox-group class="status_radio" v-model="searchForm.statusArr" direction="horizontal">
+              <nut-checkbox
+                shape="button"
+                :label="item.value"
+                v-for="(item, index) in typeArr"
+                :key="index"
+                :class="[searchForm.statusArr.indexOf(item.value) > -1 ? 'activeStatus' : '']"
+                >{{ item.text }}</nut-checkbox
+              >
+            </nut-checkbox-group>
+          </nut-form-item>
+          <div class="search_title left_title">Filter by time</div>
+          <nut-form-item label="">
+            <nut-radio-group direction="horizontal" v-model="searchForm.timeType" @change="changeTime">
+              <nut-radio label="create">Purchase Time</nut-radio>
+              <nut-radio label="expiration">Expiration Time</nut-radio>
             </nut-radio-group>
           </nut-form-item>
-          <div class="search_title left_title">订单排序</div>
           <nut-form-item label="">
-            <nut-radio-group class="week_radio" v-model="searchForm.time" direction="horizontal">
-              <nut-radio shape="button" :label="52">52 weeks</nut-radio>
-              <nut-radio shape="button" :label="38">38 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
+            <nut-cell
+              :showIcon="true"
+              title="Please select"
+              :desc="
+                searchForm.createDate && searchForm.createDate[0]
+                  ? `${searchForm.createDate[0]}-${searchForm.createDate[1]}`
+                  : 'Please select a time'
+              "
+              @click="searchForm.isVisible = true"
+            >
+            </nut-cell>
+            <nut-calendar
+              v-model:visible="searchForm.isVisible"
+              :default-value="searchForm.createDate"
+              type="range"
+              :start-date="`2023-01-01`"
+              :end-date="`2030-01-01`"
+              @close="searchForm.isVisible = false"
+              @choose="setCTimeChooseValue"
+              @select="setCTime"
+            >
+            </nut-calendar>
+          </nut-form-item>
+          <div class="search_title left_title">Filter by purchase price</div>
+          <nut-form-item label="">
+            <nut-radio-group direction="horizontal" v-model="searchForm.priceType" @change="changePrice">
+              <nut-radio label="purchase">Purchase Price Range</nut-radio>
+              <nut-radio label="income">Income Range</nut-radio>
             </nut-radio-group>
           </nut-form-item>
-          <div class="search_title left_title">订单过滤</div>
-          <nut-form-item label="">
-            <nut-radio-group class="week_radio" v-model="searchForm.time" direction="horizontal">
-              <nut-radio shape="button" :label="52">52 weeks</nut-radio>
-              <nut-radio shape="button" :label="38">38 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-            </nut-radio-group>
+          <nut-form-item label="" direction="horizontal" class="range_number">
+            <nut-input placeholder="Min Price" v-model="searchForm.min" type="number" />
+            -
+            <nut-input placeholder="Max Price" v-model="searchForm.max" type="number" />
           </nut-form-item>
 
           <div class="bottom_btn">
-            <nut-button type="warning" plain :loading="SearchLoading" @click="showTop = false"> Reset </nut-button>
+            <nut-button type="warning" plain :loading="SearchLoading" @click="toReset"> Reset </nut-button>
             <nut-button type="warning" @click="toSearch" :disabled="searchDisabled" :loading="SearchLoading"> Search </nut-button>
           </div>
         </nut-form>
@@ -168,7 +223,7 @@
   import IconSwitch from '~icons/home/switch.svg';
   import IconHistory from '~icons/home/history.svg';
   import IconHistoryActivate from '~icons/home/historyActivate.svg';
-  import { Search, Category, TriangleUp, Clock } from '@nutui/icons-vue';
+  import { Search, Category, TriangleUp, Clock, Checked } from '@nutui/icons-vue';
   import { search_cloud } from '@/api';
   // import { listData } from './data';
   import useVariable from './details/useVariable.js';
@@ -185,7 +240,6 @@
   const router = useRouter();
   const route = useRoute();
   const searchType = ref(route.query.searchType == 'History' ? 'History' : 'Open');
-  console.log(route.query.searchType);
   const currentTotal = ref(0);
   const statusTypes = {
     0: 'Consensus not reached',
@@ -196,6 +250,15 @@
     5: 'Canceled',
     6: 'Cancellation of the next cycle',
   };
+  const typeArr = [
+    { text: 'Consensus not reached', value: 0 },
+    { text: 'Consensus reached', value: 1 },
+    { text: 'Insufficient advance deposit to cancel the next cycle', value: 2 },
+    { text: 'Sufficient funds in advance', value: 3 },
+    { text: 'Order over', value: 4 },
+    { text: 'Canceled', value: 5 },
+    { text: 'Cancellation of the next cycle', value: 6 },
+  ];
   const keyWord = ref('');
   const horseLamp = ref([
     'CNR - - Consensus not reached ',
@@ -209,19 +272,120 @@
   const { cloudCodeIsBind } = useUpdateDMC();
   const bindAmbCode = inject('bindAmbCode');
   const { resetData, loadMore, isError, listData, hasMore, infinityValue, total } = useOrderList();
+  const isFilter = ref(false);
   const searchParam = reactive({
     searchForm: {
-      time: 24,
+      status: 0,
+      statusArr: [],
+      createDate: [],
+      timeType: 'create',
+      min: '',
+      max: '',
+      priceType: 'purchase',
+      sortTypeOptions: [
+        { text: 'Payment Time', value: 'created_at' },
+        { text: 'Expiration Time', value: 'expire' },
+        { text: 'Revenue Price', value: 'profit' },
+        { text: 'Purchase Price', value: 'total_price' },
+      ],
+      sortTypeOptions1: [
+        { text: 'Descending', value: 'descending' },
+        { text: 'Ascending', value: 'ascending' },
+      ],
+      sortType: 'created_at',
+      sortValue: 'descending',
+      More: 'More',
     },
   });
+
+  const { searchForm } = toRefs(searchParam);
+  if (searchType.value === 'Open') {
+    searchForm.value.statusArr = [0, 1, 2, 3, 6];
+  } else if (searchType.value === 'History') {
+    searchForm.value.statusArr = [4, 5];
+  } else {
+    searchForm.value.statusArr = [0];
+  }
+  const setCTimeChooseValue = (param) => {
+    searchForm.value.createDate = [...[param[0][3], param[1][3]]];
+  };
+  const setCTime = (param) => {
+    console.log(param);
+  };
+  const changeTime = () => {
+    console.log(searchForm.value.timeType, 'changeTime');
+  };
+  const changePrice = () => {
+    console.log(searchForm.value.priceType, 'changePrice');
+  };
+  const sortChange = (value, type) => {
+    let ascending = searchForm.value.sortValue === 'ascending';
+    let sort_type = searchForm.value.sortType;
+    let postData = {
+      ascending,
+      sort_type,
+    };
+    console.log(postData, 'postData');
+    if (searchType.value == 'Open') {
+      loadMore([0, 1, 2, 3, 6], '', '', '', postData, 'search');
+    } else {
+      loadMore([4, 5], '', '', '', postData, 'search');
+    }
+  };
+  const toSearch = () => {
+    isFilter.value = true;
+    let start_time = searchForm.value.createDate[0];
+    let end_time = searchForm.value.createDate[1];
+    let max_price = '';
+    let min_price = '';
+    let max_profit = '';
+    let min_profit = '';
+    let priceType = searchForm.value.priceType;
+    if (priceType === 'purchase') {
+      max_price = searchForm.value.max;
+      min_price = searchForm.value.min;
+    } else {
+      max_profit = searchForm.value.max;
+      min_profit = searchForm.value.min;
+    }
+    let order_state = searchForm.value.statusArr;
+    let ascending = searchForm.value.sortValue === 'ascending';
+    let sort_type = searchForm.value.sortType;
+    let postData = {
+      //   start_time,
+      //   end_time,
+      max_price,
+      min_price,
+      max_profit,
+      min_profit,
+      //   order_state,
+      ascending,
+      sort_type,
+    };
+    showTop.value = false;
+    if (order_state.length > 0) {
+      searchType.value = 'filter';
+    }
+    loadMore(order_state, start_time, end_time, '', postData, 'search');
+  };
+  const toReset = () => {
+    isFilter.value = false;
+    showTop.value = false;
+    searchForm.value.createDate = [];
+    searchForm.value.statusArr = [0];
+    searchForm.value.timeType = 'create';
+    searchForm.value.priceType = 'purchase';
+    searchForm.value.min = '';
+    searchForm.value.max = '';
+    searchType.value = 'Open';
+  };
+
   const showTop = ref(false);
   const SearchLoading = ref(false);
   const searchDisabled = ref(false);
-  const { searchForm } = toRefs(searchParam);
   const toShowSearch = () => {
     showTop.value = true;
   };
-  const toSearch = () => {};
   let list = computed(() => {
     return listData.value.filter((el) => {
       return el.order_id.indexOf(keyWord.value) > -1 || el.pst == keyWord.value;
@@ -274,10 +438,17 @@
     let b = createNumber(150, 255);
     return `rgb(${r} ${g} ${b})`;
   };
+  const isOpen = (state) => {
+    if (state === 4 || state === 5) {
+      return false;
+    } else {
+      return true;
+    }
+  };
   const gotoOrder = (item) => {
-    if (searchType.value === 'Open') {
-      router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } });
-    } else if (searchType.value === 'History') {
+    if (isOpen(item.state)) {
+      router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });
+    } else if (!isOpen(item.state)) {
       if (item.order_id) {
         window.sessionStorage.removeItem('myHistoryOrder');
         window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(item));
@@ -302,22 +473,73 @@
   // });
   const loadMoreFun = () => {
     if (cloudCodeIsBind.value) {
+      console.log('loadMoreFun', searchForm.value.statusArr);
+      let ascending = searchForm.value.sortValue === 'ascending';
+      let sort_type = searchForm.value.sortType;
+      let statusArr = searchForm.value.statusArr;
+      let postData = {
+        ascending,
+        sort_type,
+      };
       if (searchType.value == 'Open') {
-        loadMore([0, 1, 2, 3, 6]);
+        let arr = [0, 1, 2, 3, 6];
+        if (statusArr.length > 0) {
+          arr = arr.concat(statusArr);
+        }
+        const uniqueArray = [...new Set(arr)];
+        loadMore(uniqueArray, '', '', '', postData);
+      } else if (searchType.value == 'History') {
+        let arr = [4, 5];
+        if (statusArr.length > 0) {
+          arr = arr.concat(statusArr);
+        }
+        const uniqueArray = [...new Set(arr)];
+        loadMore(uniqueArray, '', '', '', postData);
       } else {
-        loadMore([4, 5]);
+        let arr = statusArr;
+        loadMore(arr, '', '', '', postData);
       }
+      //   if (searchType.value == 'Open') {
+      //     loadMore([0, 1, 2, 3, 6]);
+      //   } else {
+      //     loadMore([4, 5]);
+      //   }
     }
   };
   watch(
     cloudCodeIsBind,
     (val) => {
       if (val) {
+        let ascending = searchForm.value.sortValue === 'ascending';
+        let sort_type = searchForm.value.sortType;
+        let statusArr = searchForm.value.statusArr;
+        let postData = {
+          ascending,
+          sort_type,
+        };
         if (searchType.value == 'Open') {
-          loadMore([0, 1, 2, 3, 6]);
+          let arr = [0, 1, 2, 3, 6];
+          if (statusArr.length > 0) {
+            arr = arr.concat(statusArr);
+          }
+          const uniqueArray = [...new Set(arr)];
+          loadMore(uniqueArray, '', '', '', postData);
+        } else if (searchType.value == 'History') {
+          let arr = [4, 5];
+          if (statusArr.length > 0) {
+            arr = arr.concat(statusArr);
+          }
+          const uniqueArray = [...new Set(arr)];
+          loadMore(uniqueArray, '', '', '', postData);
         } else {
-          loadMore([4, 5]);
+          let arr = statusArr;
+          loadMore(arr, '', '', '', postData);
         }
+        // if (searchType.value == 'Open') {
+        //   loadMore([0, 1, 2, 3, 6]);
+        // } else {
+        //   loadMore([4, 5]);
+        // }
       }
     },
     { deep: true, immediate: true },
@@ -327,15 +549,31 @@
     (val) => {
       resetData();
       if (cloudCodeIsBind.value) {
-        console.log(val, '12222222222222222222');
-
+        let ascending = searchForm.value.sortValue === 'ascending';
+        let sort_type = searchForm.value.sortType;
+        let postData = {
+          ascending,
+          sort_type,
+        };
         if (val == 'Open') {
-          loadMore([0, 1, 2, 3, 6]);
+          let arr = [0, 1, 2, 3, 6];
+          searchForm.value.statusArr = [0, 1, 2, 3, 6];
+          loadMore(arr, '', '', '', postData);
         } else if (val == 'History') {
-          loadMore([4, 5]);
+          let arr = [4, 5];
+          searchForm.value.statusArr = arr;
+          loadMore(arr, '', '', '', postData);
         } else {
-          loadMore();
+          let statusArr = searchForm.value.statusArr;
+          loadMore(statusArr, '', '', '', postData);
         }
+        // if (val == 'Open') {
+        //   loadMore([0, 1, 2, 3, 6]);
+        // } else if (val == 'History') {
+        //   loadMore([4, 5]);
+        // } else {
+        //   loadMore();
+        // }
       }
     },
     { deep: true },
@@ -393,6 +631,21 @@
           font-weight: 600;
         }
       }
+
+      @keyframes maxshow {
+        0% {
+          // transform: rotate(0deg);
+          transform: scale(1);
+        }
+        50% {
+          // transform: rotate(0deg);
+          transform: scale(1.1);
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
       .flex-content {
         display: flex;
         flex-direction: column;
@@ -401,6 +654,7 @@
         // height: 120px;
         text-align: center;
         word-break: break-word;
+        animation: maxshow 3s linear infinite;
         span {
           font-size: 0.8rem;
         }
@@ -408,7 +662,7 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          border-radius: 50px;
+          border-radius: 50%;
           width: 100px;
           height: 100px;
           margin-bottom: 15px;
@@ -454,8 +708,9 @@
         //   }
         // }
         .active_svg-boxHistory {
-          border: 5px solid orange;
+          border: 8px solid orange;
           background-color: #aeaeae;
+          -webkit-box-reflect: below 0 linear-gradient(hsla(0deg, 0%, 100%, 0), hsla(0deg, 0%, 100%, 0) 45%, hsla(0deg, 0%, 100%, 0.5));
 
           svg,
           img {
@@ -465,8 +720,9 @@
           }
         }
         .active_svg-boxOpen {
-          border: 5px solid orange;
+          border: 8px solid orange;
           background: #fff;
+          -webkit-box-reflect: below 0 linear-gradient(hsla(0deg, 0%, 100%, 0), hsla(0deg, 0%, 100%, 0) 45%, hsla(0deg, 0%, 100%, 0.5));
           svg,
           img {
             color: #ffe879;
@@ -523,7 +779,7 @@
     }
   }
   .list_box {
-    height: calc(100vh - 500px);
+    height: calc(100vh - 550px);
     overflow: auto;
     // padding: 0 10px;
     .list_item {
@@ -539,7 +795,7 @@
       background: #fff;
       border-radius: 5px;
       border-bottom: 1px solid #eee;
-      margin: 10px 0;
+      //   margin: 10px 0;
       border-radius: 20px;
       // box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
       .item_img_box {
@@ -614,7 +870,7 @@
   }
 </style>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .my_top_search {
     background: transparent;
     .my_category_icon {
@@ -635,15 +891,51 @@
     .bottom_btn {
       display: flex;
       justify-content: space-around;
+      margin: 30px 0;
       .nut-button--disabled {
         background: #aaa !important;
         opacity: 0.28 !important;
       }
     }
+    .status_radio {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .activeStatus {
+      .nut-checkbox__button {
+        background: #fab20c;
+        background: #5758a0;
+        color: #fff;
+        border: 1px solid #fff !important;
+      }
+    }
+    .nut-checkbox__button {
+      margin: 10px 0;
+    }
+    .range_number {
+      .nut-form-item__body__slots {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nut-input {
+        width: 44%;
+        border: 1px solid #ccc;
+        border-radius: 40px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 60px;
+        .input-text {
+          text-align: center !important;
+        }
+      }
+    }
   }
   .list_box .order_item {
     position: relative;
-    margin: 50px 0;
+    margin: 50px 0 !important;
     padding: 20px !important;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     // overflow: hidden;
@@ -653,7 +945,7 @@
     // border: 2px solid transparent;
     .order_time {
       position: absolute;
-      right: 0;
+      right: 20px;
       top: -36px;
       color: #888;
       font-weight: bold;
@@ -700,10 +992,11 @@
         font-weight: bold;
         font-size: 28px;
         line-height: 42px;
-        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        // box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
         padding: 22px 0;
       }
       .order_content_left {
+        border-right: 1px solid #ccc;
         .left_price {
           color: red;
           margin: 10px 0;
@@ -725,5 +1018,59 @@
       font-weight: bold;
       font-size: 28px;
     }
+  }
+  .top_filter {
+    display: flex;
+    // width: calc(100% + 100px);
+    width: calc(100% + 8vw);
+    margin: 0 -4vw;
+    // width: 100%;
+    // margin: 20px 0;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .nut-menu {
+      width: calc(100% - 100px);
+      width: 100%;
+    }
+    .my_category_icon_box {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .my_category_icon {
+      color: #000;
+      cursor: pointer;
+    }
+    .my_category_icon_active {
+      color: #4916a1;
+      color: #ff8b00;
+      font-weight: bold;
+      animation: max 3s linear infinite;
+    }
+
+    @keyframes max {
+      0% {
+        // transform: rotate(0deg);
+        transform: scale(1);
+      }
+      50% {
+        // transform: rotate(0deg);
+        transform: scale(1.3);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+  }
+  .find_tips {
+    font-size: 24px;
+    color: #ff8b00;
+    font-weight: bold;
+    margin-top: 10px;
   }
 </style>
