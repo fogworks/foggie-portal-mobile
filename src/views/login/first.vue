@@ -12,19 +12,19 @@
       :is-stop-propagation="false"
     >
       <nut-swiper-item>
-        <img src="@/assets/guide1.svg" alt="" />
+        <img src="@/assets/guide1.png" alt="" />
       </nut-swiper-item>
       <nut-swiper-item>
-        <img src="@/assets/guide2.svg" alt="" />
+        <img src="@/assets/guide2.png" alt="" />
       </nut-swiper-item>
       <nut-swiper-item>
-        <img src="@/assets/guide3.svg" alt="" />
+        <img src="@/assets/guide3.png" alt="" />
       </nut-swiper-item>
       <nut-swiper-item>
-        <img src="@/assets/guide4.svg" alt="" />
+        <img src="@/assets/guide4.png" alt="" />
       </nut-swiper-item>
       <nut-swiper-item @click="router.push({ path: '/login' })">
-        <img src="@/assets/guide.svg" alt="" />
+        <img src="@/assets/guide.png" alt="" />
       </nut-swiper-item>
     </nut-swiper>
   </div>
