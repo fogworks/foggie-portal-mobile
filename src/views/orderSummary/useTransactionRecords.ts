@@ -36,7 +36,7 @@ export default function useOrderList() {
   const listData = ref([] as any);
   const total = ref(0);
   const hasMore = computed(() => {
-    return total.value > pn.value * ps.value;
+    return total.value > (pn.value - 1) * ps.value;
   });
   const infinityValue = ref(false);
   const pn = ref(1);
@@ -55,34 +55,37 @@ export default function useOrderList() {
       loadingRotate: false,
     });
     if (type == 0) {
-      await search_user_asset_detail({ start_time, end_time, trade_type: 'income', order_id })
+      await search_user_asset_detail({ start_time, end_time, trade_type: 'income', order_id, pn: pn.value, ps: ps.value })
         .then((res) => {
           total.value = res.result.total;
           const cloudList = res.result.data;
           pn.value++;
           listData.value = [...listData.value, ...cloudList];
+          infinityValue.value = false;
         })
         .finally(() => {
           showToast.hide();
         });
     } else if (type == 1) {
-      await search_user_asset_detail({ start_time, end_time, trade_type: 'payout', order_id })
+      await search_user_asset_detail({ start_time, end_time, trade_type: 'payout', order_id, pn: pn.value, ps: ps.value })
         .then((res) => {
           total.value = res.result.total;
           const cloudList = res.result.data;
           pn.value++;
           listData.value = [...listData.value, ...cloudList];
+          infinityValue.value = false;
         })
         .finally(() => {
           showToast.hide();
         });
     } else {
-      await search_user_asset_detail({ start_time, end_time, trade_type: '', order_id })
+      await search_user_asset_detail({ start_time, end_time, trade_type: '', order_id, pn: pn.value, ps: ps.value })
         .then((res) => {
           total.value = res.result.total;
           const cloudList = res.result.data;
           pn.value++;
           listData.value = [...listData.value, ...cloudList];
+          infinityValue.value = false;
         })
         .finally(() => {
           showToast.hide();
