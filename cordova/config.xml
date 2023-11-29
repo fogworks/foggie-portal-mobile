@@ -6,10 +6,17 @@
         Apache Cordova Team
     </author> -->
     <content src="index.html" />
+    <access origin="https://*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <platform name="android">
-        <plugin name="cordova-plugin-android-permissions" spec="1.1.5" />
+      
+      
+        <!-- <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+        </config-file> -->
         <!-- <config-file parent="/*" target="AndroidManifest.xml">
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         </config-file> -->
@@ -20,12 +27,16 @@
         <preference name="MixedContentMode" value="2" /> -->
         <!-- <proxy match="/android_proxy/*" forward="https://amb.dev.u2i.net" /> -->
         <icon src="res/icons/favicon.png" />
-        <!-- <preference name="AutoHideSplashScreen" value="true" /> -->
+        <preference name="AndroidXEnabled" value="true" />
+        <preference name="AndroidPersistentFileLocation" value="Compatibility" />
         <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/screens/background.xml" />
         <preference name="AndroidWindowSplashScreenAnimationDuration" value="2000" />
-        <!-- <preference name="SplashScreen" value="res/screens/welcome.png" />
-        <preference name="AutoHideSplashScreen" value="true" /> 
-        <preference name="SplashScreenDelay" value="3000" />
-        <preference name="ShowSplashScreen" value="false" /> -->
     </platform>
+    <plugin name="cordova-plugin-android-permissions" spec="^1.1.5" />
+    <plugin name="cordova-plugin-device" spec="2.1.0" />
+    <plugin name="cordova-plugin-file-opener2" spec="4.0.0" />
+    <plugin name="cordova-plugin-file-transfer" spec="2.0.0" />
+    <plugin name="cordova-plugin-file" spec="8.0.1" />
+    <plugin name="cordova-plugin-filechooser" spec="1.2.0" />
+    <plugin name="cordova.plugins.diagnostic" spec="7.1.4" />
 </widget>
