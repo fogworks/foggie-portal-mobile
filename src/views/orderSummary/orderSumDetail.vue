@@ -6,7 +6,7 @@
     <nut-tabs class="type_tabs" v-model="searchType">
       <nut-tab-pane title="All " pane-key="2"> </nut-tab-pane>
       <nut-tab-pane title="Earnings " pane-key="0"> </nut-tab-pane>
-      <nut-tab-pane title="Earning" pane-key="1"> </nut-tab-pane>
+      <nut-tab-pane title="Expense" pane-key="1"> </nut-tab-pane>
     </nut-tabs>
     <template v-if="listData.length">
       <nut-infinite-loading
@@ -14,7 +14,7 @@
         load-more-txt="No more content"
         v-model="infinityValue"
         :has-more="hasMore"
-        @load-more="loadMore"
+        @load-more="loadMoreFun"
       >
         <div class="list_item" v-for="(item, index) in listData" @click="gotoOrder(item)">
           <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
@@ -114,9 +114,15 @@
     },
     { deep: true },
   );
+  const loadMoreFun = () => {
+    const [start, end] = shortcuts[timeType.value]();
+    loadMore(start, end, searchType.value, order_id.value);
+  };
   onMounted(() => {
     order_id.value = route.query.id;
-    const postData = { order_id: order_id.value };
+    // const postData = { order_id: order_id.value };
+    const [start, end] = shortcuts[timeType.value]();
+    loadMore(start, end, searchType.value, order_id.value);
     // getUserAssets(postData);
   });
 </script>
