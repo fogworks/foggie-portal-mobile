@@ -199,6 +199,8 @@
   import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
   const dmc = computed(() => userStore.getUserInfo.dmc);
+  const email = computed(() => userStore.getUserInfo.email);
+  const uuid = computed(() => userStore.getUserInfo.uuid);
 
 
   // import useUpdateDMC from './useUpdateDMC';
@@ -373,7 +375,9 @@
       deviceType: 3,
       poolType: 'golden', //vofo.*  / golden
       terminalType: 2,
-      userAddress: dmc.value,
+      foggieUserAddress: dmc.value,
+      foggieEmail: email.value,
+      foggieUserUuid: uuid.value,
     })
       .then((res) => {
         loading.value = false;
