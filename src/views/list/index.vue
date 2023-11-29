@@ -110,7 +110,7 @@
           @click="gotoOrder(item)"
           :class="[isOpen(item.state) ? '' : 'history_item']"
         >
-          <div class="order_time">{{ transferGMTTime(item.order_created_at) }}</div>
+          <div class="order_time">{{ transferUTCTime(item.order_created_at) }}</div>
           <div class="order_head">
             <div class="order_img">
               <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" />
@@ -119,7 +119,7 @@
             </div>
             <!-- <img src="@/assets/exprie.svg" alt="" /> -->
             <!-- {{ handleExprie(item) }} -->
-            <div class="order_expTime"> <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferGMTTime(item.expire) }}</div>
+            <div class="order_expTime"> <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferUTCTime(item.expire) }}</div>
           </div>
           <div class="order_content">
             <div class="order_content_left">
