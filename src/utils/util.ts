@@ -16,11 +16,13 @@ function transferTime(utc_datetime) {
   let ss = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
   return YY + MM + DD + ' ' + hh + mm + ss;
 }
+
 function transferGMTTime(time) {
   return moment(time).format('YYYY-MM-DD HH:mm:ss');
 }
 const transferUTCTime = (time, type = 'YYYY-MM-DD HH:mm:ss') => {
-  return moment.utc(time).local().format(type);
+  time = new Date(time);
+  return moment.utc(time).format(type);
 };
 const transferUTCTimeDay = (time, type = 'YYYY-MM-DD') => {
   time = time.getTime() + 24 * 60 * 60 * 1000;
@@ -267,4 +269,5 @@ export {
   handleDays,
   handleExprie,
   handleRate,
+  FormatUtcDate,
 };
