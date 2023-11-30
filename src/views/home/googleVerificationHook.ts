@@ -11,14 +11,23 @@ import '@nutui/nutui/dist/packages/toast/style';
 const userStore = useUserStore();
 export default function googleVerificationHook() {
     const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+    const userInfo = computed(() => userStore.getUserInfo);
 
-    watch(() => cloudCodeIsBind.value, async (newValue) => {
-        if (newValue) {
+    // watch(() => cloudCodeIsBind.value, async (newValue) => {
+    //     if (newValue) {
+    //         await loadCheckBindOtp();
+    //         loadIsVerified();
+    //     }
+    // }, { immediate: true })
+
+
+
+    watchEffect(async () => {
+        if (cloudCodeIsBind.value && userInfo.value.dmc) {
             await loadCheckBindOtp();
             loadIsVerified();
         }
-    }, { immediate: true })
-
+    })
 
 
 
@@ -28,7 +37,8 @@ export default function googleVerificationHook() {
     const withdrawalIsVerifiedLoadding = ref<boolean>(false); // 是否开启校验 swtich
 
     /*切换是否开启绑定google校验 */
-    function changeIsVerified(value) {
+    function changeIsVerified(value, event) {
+        if (!event) return
         if (bindOtp.value) {
             showNotify.text(`You can't turn off checksums if you're already bound.`, { color: '#ad0000', background: '#ffe1e1' });
             return;
@@ -60,21 +70,6 @@ export default function googleVerificationHook() {
             if (withdrawalIsVerified.value) {
                 loadOTPImg()
             }
-
-            // showDialog({
-            //     title: 'Multi factor authentication',
-            //     content: createVNode('span', { style: {} }, 'Is multi factor authentication enabled when withdrawing? If you successfully bind, you will not be able to close it!'),
-            //     cancelText: 'Close',
-            //     okText: 'Enable',
-            //     onCancel: () => {
-            //         changeIsVerified(false)
-            //     },
-            //     onOk: () => {
-            //         changeIsVerified(true)
-            //     },
-
-
-            // });
         }
 
 
@@ -153,7 +148,7 @@ export default function googleVerificationHook() {
     async function loadCheckBindOtp() {
         await check_bind_otp().then((res) => {
             if (res.code == 200) {
-                bindOtp.value = res.result.bind_secret;
+                bindOtp.value = res.result.bind_secret;                
             }
         });
     }
