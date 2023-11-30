@@ -8,7 +8,7 @@
         Hello,
         {{ userInfo.email && userInfo.email.split('@')[0] }}
       </div>
-      <div class="Notice" @click="openGoogleSetting">
+      <div class="Notice" @click="openGoogleSetting" v-if="userInfo.dmc">
         <img src="@/assets/enableProtection.svg" alt="" srcset="" v-if="bindOtp">
         <img v-else-if="!withdrawalIsVerified" src="@/assets/yinhuanzhenggai.svg" alt="" srcset="">
         <img v-else-if="withdrawalIsVerified" class="nut-icon-am-blink nut-icon-am-infinite" src="@/assets/wTips.svg"
@@ -188,7 +188,7 @@
     <!-- <nut-backtop el-id="main-page" :z-index="999" :bottom="60"></nut-backtop> -->
 
 
-    <nut-popup position="bottom" closeable round :style="{ height:  withdrawalIsVerified ? 'auto':'35%'}"
+    <nut-popup position="bottom" teleport="body" :safe-area-inset-bottom="true" :lock-scroll="true" closeable round :style="{ height:  withdrawalIsVerified ? 'auto':'60%'}"
       v-model:visible="googleVerificationVisible">
       <div class="googleVerificationBox" id="googleVerificationBox">
         <div class="title">Multi factor authentication</div>
@@ -1145,7 +1145,7 @@ onMounted(async () => {
 
 .googleVerificationBox {
   padding: 60px 40px;
-
+  padding-bottom: 160px;
   .title {
     font-size: 36px;
     font-weight: 600;
@@ -1243,6 +1243,10 @@ onMounted(async () => {
 
   .auth_qrcode {
     text-align: center;
+    img{
+      width: 400px;
+      height: 400px;
+    }
   }
 
   .title_item {
