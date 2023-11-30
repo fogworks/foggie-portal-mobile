@@ -216,7 +216,8 @@
         userStore.setCloudCodeIsBind(false);
 
         // localStorage.removeItem('refresh_token');
-        router.push('/guide');
+        // router.push('/guide');
+        router.push('/login');
         // console.log('确定');
       },
     });
