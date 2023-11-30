@@ -424,6 +424,7 @@
     </Teleport>
     <uploader
       v-if="isMobileOrder"
+      :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
       :secretAccessKey="secretAccessKey"

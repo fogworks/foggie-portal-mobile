@@ -4,14 +4,20 @@ import { save_upload, valid_upload, get_unique_order } from '@/api/index';
 import { poolUrl } from '@/setting.js';
 import { useRoute } from 'vue-router';
 export default function useSyncPhotos(props) {
-  console.log(JSON.stringify(props), 'props');
   const $cordovaPlugins = inject('$cordovaPlugins');
-  console.log($cordovaPlugins, 'cordovaPlugins');
   let merkleTimeOut = null;
-  const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix = [] } = toRefs(props);
-  console.log(bucketName.value, 'bucketName');
-  console.log(orderInfo.value, 'orderInfo');
-
+  const {
+    isDisabled,
+    bucketName,
+    accessKeyId,
+    secretAccessKey,
+    orderInfo,
+    prefix = [],
+    onStart,
+    uploadSuccess,
+    onFailure,
+    onProgress,
+  } = props;
   const order_id = ref('');
   const route = useRoute();
   order_id.value = route.query.id;
@@ -22,6 +28,7 @@ export default function useSyncPhotos(props) {
     return valid_upload(d).then((res) => {
       if (res?.data) {
         // TODO
+        isDisabled.value = false;
         clearTimeout(merkleTimeOut);
       } else {
         if (timeout) {
@@ -29,10 +36,15 @@ export default function useSyncPhotos(props) {
             getMerkleState(timeout);
           }, 30000);
         }
+        isDisabled.value = true;
       }
     });
   };
   const startUpload = async () => {
+    if (isDisabled.value) {
+      return false;
+    }
+    console.log(bucketName, accessKeyId, secretAccessKey);
     console.log('进入上传方法');
     if (!bucketName.value || !accessKeyId.value || !secretAccessKey.value) {
       showToast.fail('The data is abnormal, please refresh the page and try again.');
@@ -57,7 +69,9 @@ export default function useSyncPhotos(props) {
     const d = { orderId: order_id.value };
     let merkleRes = await valid_upload(d);
     if (merkleRes?.data) {
+      isDisabled.value = false;
     } else {
+      isDisabled.value = true;
       showToast.fail(merkleRes.msg || 'Merkle is being built, not allowed to upload file.');
       if (!merkleTimeOut) {
         merkleTimeOut = setTimeout(() => {
@@ -74,6 +88,10 @@ export default function useSyncPhotos(props) {
       accessKeyId: accessKeyId.value,
       secretAccessKey: secretAccessKey.value,
       prefixStr,
+      onStart,
+      uploadSuccess,
+      onFailure,
+      onProgress,
     });
   };
   return {

@@ -333,8 +333,8 @@
         </nut-dialog>
       </Teleport>
     </div>
-    <!-- v-if="isMobileOrder && !isAndroid" -->
     <uploader
+      v-if="isMobileOrder"
       :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
@@ -342,16 +342,6 @@
       :orderInfo="orderInfo"
       @uploadComplete="uploadComplete"
     ></uploader>
-    <!-- <nut-button
-      style="z-index: 999"
-      v-else-if="isMobileOrder && isAndroid"
-      @click="startUpload"
-      type="info"
-      class="upload_btn"
-      size="small"
-    >
-      <img src="@/assets/newIcon/upload.png" alt="" srcset="" />
-    </nut-button> -->
   </div>
 </template>
 
@@ -407,7 +397,6 @@
   import { getSecondTime } from '@/utils/util';
   import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
   import ErrorPage from '@/views/errorPage/index.vue';
-  import useSyncPhotos from './useSyncPhotos.js';
   import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
@@ -435,7 +424,6 @@
     orderInfo,
     getOrderInfo,
   } = useOrderInfo();
-  const { startUpload } = useSyncPhotos({ bucketName, accessKeyId, secretAccessKey, orderInfo });
   provide('getOrderInfo', getOrderInfo);
   const {
     httpCopyLink,
@@ -460,10 +448,6 @@
   let server;
   const route = useRoute();
   const router = useRouter();
-  const isAndroid = computed(() => {
-    return import.meta.env.VITE_BUILD_TYPE == 'ANDROID';
-  });
-
   const successStatus = ref<number>(204);
   const isNameLoading = ref(false);
   // const sheetVisible = ref(false);
@@ -1078,6 +1062,8 @@
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
+    console.log(11111);
+
     showToast.loading('Loading', {
       cover: true,
       customClass: 'app_loading',
@@ -1086,6 +1072,10 @@
       id: 'file_list',
     });
     let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+    console.log('ip:', ip);
+    console.log('metadata.value:', metadata.value);
+    console.log('metadata.value:', JSON.stringify(metadata.value));
+
     server = new grpcService.default.ServiceClient(ip, null, null);
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix('');
@@ -1175,6 +1165,7 @@
           isError.value = true;
           showToast.hide('file_list');
           console.log('err----list', err);
+          console.log('err----list', JSON.stringify(err));
         }
       },
     );
