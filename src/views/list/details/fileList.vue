@@ -424,6 +424,7 @@
     </Teleport>
     <uploader
       v-if="isMobileOrder"
+      :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
       :secretAccessKey="secretAccessKey"
@@ -867,6 +868,7 @@
     movePrefix.value = long_name.split('/').slice(0, -1);
     getFileList('', movePrefix.value, true);
   };
+  const $cordovaPlugins = inject('$cordovaPlugins');
 
   const handlerClick = async (type: string) => {
     showActionPop.value = false;
@@ -885,32 +887,35 @@
       const headers = getSignHeaders(objectKey);
 
       const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
+      if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+        $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
+      } else {
+        fetch(url, { method: 'GET', headers })
+          .then((response) => {
+            if (response.ok) {
+              // 创建一个 Blob 对象，并将响应数据写入其中
+              return response.blob();
+            } else {
+              // 处理错误响应
+              console.error('Error:', response.status, response.statusText);
+            }
+          })
+          .then((blob) => {
+            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = checkData[0].fullName;
 
-      fetch(url, { method: 'GET', headers })
-        .then((response) => {
-          if (response.ok) {
-            // 创建一个 Blob 对象，并将响应数据写入其中
-            return response.blob();
-          } else {
-            // 处理错误响应
-            console.error('Error:', response.status, response.statusText);
-          }
-        })
-        .then((blob) => {
-          // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = checkData[0].fullName;
-
-          // 将 <a> 元素添加到文档中，并模拟点击
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        })
-        .catch((error) => {
-          // 处理网络错误
-          console.error('Network Error:', error);
-        });
+            // 将 <a> 元素添加到文档中，并模拟点击
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          })
+          .catch((error) => {
+            // 处理网络错误
+            console.error('Network Error:', error);
+          });
+      }
     } else if (type === 'delete') {
       const onOk = async () => {
         deleteItem(checkData);

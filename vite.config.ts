@@ -241,6 +241,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
     build: {
       minify: buildType ? false : 'terser',
       outDir: buildType ? 'cordova/www' : 'dist',
+      reportCompressedSize: false,
       terserOptions: {
         compress: {
           //生产环境时移除console
