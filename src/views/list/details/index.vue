@@ -389,7 +389,7 @@
   import useOrderInfo from './useOrderInfo.js';
   import useShare from './useShare.js';
   import { showToast } from '@nutui/nutui';
-  import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
+  import { transferUTCTime, getfilesize } from '@/utils/util';
   import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
@@ -1324,7 +1324,7 @@
       query: {
         id: order_id,
         status: state,
-        createdTime: transferGMTTime(orderInfo.value.order_created_at),
+        createdTime: transferUTCTime(orderInfo.value.order_created_at),
         endTime: transferUTCTime(orderInfo.value.expire),
         uuid: orderInfo.value.uuid,
         amb_uuid: orderInfo.value.amb_uuid,

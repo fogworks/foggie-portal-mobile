@@ -389,5 +389,6 @@
   .upload_progress {
     position: fixed;
     bottom: 14vw;
+    z-index: 999;
   }
 </style>

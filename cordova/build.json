@@ -6,7 +6,8 @@
       "storePassword": "megaops@2023",
       "alias": "alias_name",
       "password": "megaops@2023",
-      "keystoreType": ""
+      "keystoreType": "",
+      "packageType": "apk"
     },
     "debug": {
       "outputFile": "CloudStorage.apk"
