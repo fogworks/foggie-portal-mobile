@@ -9,7 +9,7 @@ const router: Router = createRouter({
   routes: routes,
 });
 router.afterEach(() => {
- if (!isAndroid) showToast.hide('router_loading');
+  if (!isAndroid) showToast.hide('router_loading');
 });
 router.beforeEach((to, from, next) => {
   if (!isAndroid) {
@@ -35,7 +35,12 @@ router.beforeEach((to, from, next) => {
     if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget' || to.name == 'Guide') {
       next();
     } else {
-      next({ name: 'Guide' });
+      if (localStorage.getItem('ByBootstrapping')) {
+        next({ name: 'Login' });
+      } else {
+        next({ name: 'Guide' });
+      }
+
     }
   }
 });
