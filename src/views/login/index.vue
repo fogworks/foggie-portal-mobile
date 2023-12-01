@@ -95,23 +95,20 @@
     }
   }
   const submit = async () => {
-    let isPass = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? true : false;
-    if (!isPass) {
-      try {
-        loading.value = true;
-        isPass = await load_gpa_token();
-      } catch (error) {
-        loading.value = false;
-      }
-    }
-
-    console.log(isPass);
-
     // let isPass = true
 
-    if (isPass) {
-      ruleForm.value.validate().then(async ({ valid, errors }: any) => {
-        if (valid) {
+    ruleForm.value.validate().then(async ({ valid, errors }: any) => {
+      if (valid) {
+        let isPass = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? true : false;
+        if (!isPass) {
+          try {
+            loading.value = true;
+            isPass = await load_gpa_token();
+          } catch (error) {
+            loading.value = false;
+          }
+        }
+        if (isPass) {
           loading.value = true;
           const password = loginForm.password;
           let hashPwd = bcryptjs.hashSync(password, 10);
@@ -201,13 +198,13 @@
           // }
         } else {
           loading.value = false;
-          console.log('error submit!!', errors);
+          showToast.fail('The current identity is suspicious, you can try switching networks and retry.');
         }
-      });
-    } else {
-      loading.value = false;
-      showToast.fail('The current identity is suspicious, you can try switching networks and retry.');
-    }
+      } else {
+        loading.value = false;
+        console.log('error submit!!', errors);
+      }
+    });
   };
 </script>
 
