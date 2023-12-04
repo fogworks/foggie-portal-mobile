@@ -144,7 +144,7 @@
   import '@nutui/nutui/dist/packages/dialog/style';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
- 
+
   import loadingImg from '@/components/loadingImg/index.vue';
   import { createVNode } from 'vue';
   import { useRouter } from 'vue-router';
@@ -163,6 +163,15 @@
   const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
   const visible = ref<boolean>(false);
 
+  watch(
+    () => promo_code.value,
+    (newValue) => {
+      if (newValue) {
+        loadUserDmc();
+      }
+    },
+    { immediate: true },
+  );
 
   /* 获取用户身份信息 */
   function loadUserInfo() {
@@ -216,7 +225,8 @@
         userStore.setCloudCodeIsBind(false);
 
         // localStorage.removeItem('refresh_token');
-        router.push('/guide');
+        // router.push('/guide');
+        router.push('/login');
         // console.log('确定');
       },
     });
@@ -299,7 +309,6 @@
 
   onMounted(async () => {
     loadUserInfo();
-    loadUserDmc();
   });
 </script>
 
@@ -341,6 +350,7 @@
             rgb(24 32 79 / 25%) 0px 40px 80px,
             rgb(255 255 255 / 50%) 0px 0px 0px 0.5px inset;
         }
+
         .uploadIcon {
           border-radius: 50%;
           width: 40px;
