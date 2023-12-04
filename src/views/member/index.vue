@@ -122,10 +122,10 @@
             <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
             <div>Fog Works</div>
           </div>
-          <div @click="choose('pool')">
+          <!-- <div @click="choose('pool')">
             <img src="@/assets/user.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
             <div>Premium Agent</div>
-          </div>
+          </div> -->
           <!-- <div @click="choose('client')">
           <Shop></Shop>
           <div>Cloud Mining Pool Client</div>
