@@ -1,6 +1,7 @@
 <template>
   <div class="">
     <nut-uploader
+      v-if="isMobileOrder && !isAndroid"
       :url="uploadUri"
       :timeout="1000 * 60 * 60"
       :before-upload="beforeupload"
@@ -16,11 +17,21 @@
       ref="uploadRef"
       class="upload_class"
     >
-      <nut-button    type="info" class="upload_btn" size="small">
+      <nut-button type="info" class="upload_btn" size="small">
         <!-- + -->
-        <img src="@/assets/newIcon/upload.png" alt="" srcset=""/>
+        <img src="@/assets/newIcon/upload.png" alt="" srcset="" />
       </nut-button>
     </nut-uploader>
+    <nut-button
+      style="z-index: 999"
+      v-else-if="isMobileOrder && isAndroid"
+      @click="startUpload"
+      type="info"
+      class="upload_btn"
+      size="small"
+    >
+      <img src="@/assets/newIcon/upload.png" alt="" srcset="" />
+    </nut-button>
   </div>
   <Transition name="fade-transform" mode="out-in">
     <div v-if="uploadProgressIsShow" style="margin-top: 30px">
@@ -49,7 +60,10 @@
   import { update_order_size } from '@/api/amb';
   import { delay, throttle } from 'lodash';
   import { poolUrl } from '@/setting.js';
-
+  import useSyncPhotos from './useSyncPhotos.js';
+  const isAndroid = computed(() => {
+    return import.meta.env.VITE_BUILD_TYPE == 'ANDROID';
+  });
   const emits = defineEmits(['uploadComplete']);
 
   interface Props {
@@ -62,6 +76,8 @@
   }
   const getSummary = inject('getSummary');
   const props = defineProps<Props>();
+  const { bucketName, prefix, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
+
   // const props = defineProps({
   //   bucketName: [String],
   //   accessKeyId: [String],
@@ -229,9 +245,9 @@
     { leading: true, trailing: true },
   );
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
+    isDisabled.value = false;
     console.log('uploadSuccess', responseText, option, fileItem);
     // console.log(option, 'option');
-    console.log('responseText--------', option?.sourceFile?.size);
     uploadStatus.value = 'success';
 
     // emits('getFileList');
@@ -261,7 +277,7 @@
 
     emits('uploadComplete');
 
-    uploadRef.value.clearUploadQueue();
+    if (!isAndroid.value) uploadRef.value.clearUploadQueue();
   };
 
   const onProgress = ({ event, options, percentage }: any) => {
@@ -275,16 +291,17 @@
     uploadProgressIsShow.value = true;
     uploadStatus.value = 'uploading';
     console.log('onStart', options);
+    isDisabled.value = true;
   };
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
-    console.log('onFailure', '-----', responseText, '-----', option, '-----', fileItem);
     showToast.fail('Upload failed, please try again later');
     delay(() => {
       uploadProgressIsShow.value = false;
     }, 3000);
     uploadStatus.value = 'error';
-    uploadRef.value.clearUploadQueue();
+    isDisabled.value = false;
+    if (!isAndroid.value) uploadRef.value.clearUploadQueue();
   };
 
   const onChange = ({ fileList, event }: any) => {
@@ -297,6 +314,18 @@
     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
     xhr.send(options.formData);
   };
+  const { startUpload } = useSyncPhotos({
+    bucketName,
+    accessKeyId,
+    secretAccessKey,
+    orderInfo,
+    prefix,
+    onStart,
+    uploadSuccess,
+    onFailure,
+    onProgress,
+    isDisabled,
+  });
   onMounted(() => {
     document.querySelector('.nut-uploader__input')?.addEventListener('click', () => {
       showNotify.primary('Sensitive information is recommended to be encrypted and uploaded', {
@@ -324,10 +353,9 @@
     cursor: pointer;
     display: grid;
     place-items: center;
-    img{
+    img {
       width: 100%;
       height: 100%;
-
     }
   }
 
@@ -361,5 +389,6 @@
   .upload_progress {
     position: fixed;
     bottom: 14vw;
+    z-index: 999;
   }
 </style>

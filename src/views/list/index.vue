@@ -119,7 +119,9 @@
             </div>
             <!-- <img src="@/assets/exprie.svg" alt="" /> -->
             <!-- {{ handleExprie(item) }} -->
-            <div class="order_expTime"> <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferUTCTime(item.expire) }}</div>
+            <div v-if="item.expire" class="order_expTime">
+              <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferUTCTime(item.expire) }}</div
+            >
           </div>
           <div class="order_content">
             <div class="order_content_left">
@@ -229,7 +231,7 @@
   import useVariable from './details/useVariable.js';
   import { useOrderStore } from '@/store/modules/order';
   import useOrderList from '../home/useOrderList.ts';
-  import { transferGMTTime, transferUTCTime, getfilesize, handleDays, handleExprie, handleRate } from '@/utils/util';
+  import { transferUTCTime, getfilesize, handleDays, handleExprie, handleRate } from '@/utils/util';
   import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
   import ErrorPage from '@/views/errorPage/index.vue';
 
@@ -458,7 +460,7 @@
             id: item.order_id,
             type: 'history',
             status: item.state,
-            createdTime: transferGMTTime(item.order_created_at),
+            createdTime: transferUTCTime(item.order_created_at),
             endTime: transferUTCTime(item.expire),
             uuid: item.uuid,
             amb_uuid: item.amb_uuid,

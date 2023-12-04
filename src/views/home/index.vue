@@ -9,11 +9,9 @@
         {{ userInfo.email && userInfo.email.split('@')[0] }}
       </div>
       <div class="Notice" @click="openGoogleSetting" v-if="userInfo.dmc">
-        <img src="@/assets/enableProtection.svg" alt="" srcset="" v-if="bindOtp">
-        <img v-else-if="!withdrawalIsVerified" src="@/assets/yinhuanzhenggai.svg" alt="" srcset="">
-        <img v-else-if="withdrawalIsVerified" class="nut-icon-am-blink nut-icon-am-infinite" src="@/assets/wTips.svg"
-          alt="" srcset="">
-
+        <img src="@/assets/enableProtection.svg" alt="" srcset="" v-if="bindOtp" />
+        <img v-else-if="!withdrawalIsVerified" src="@/assets/yinhuanzhenggai.svg" alt="" srcset="" />
+        <img v-else-if="withdrawalIsVerified" class="nut-icon-am-blink nut-icon-am-infinite" src="@/assets/wTips.svg" alt="" srcset="" />
       </div>
     </div>
     <div inset class="income-card">
@@ -42,8 +40,8 @@
         </div>
         <div @click="gotoPage('analysis')">
           <p>Today's new funds</p>
-          <p class="column_value today_income">+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{
-            cloudTodayIncomeNum?.decimalPart }}</span> DMC
+          <p class="column_value today_income"
+            >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
             <TriangleUp color="#fbd116" width="20px"></TriangleUp>
           </p>
         </div>
@@ -132,24 +130,47 @@
 
       <div class="my_steps" ref="my_steps" id="my_steps">
         <nut-steps direction="vertical" :current="curStepIndex">
-          <nut-step title="Bind invitation code" @click="gotoBindAmb"
-            content="Please confirm that you have filled out the invitation code before placing your order">1</nut-step>
-          <nut-step title="Waiting for approval" :content="ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'
-            ">2</nut-step>
+          <nut-step
+            title="Bind invitation code"
+            @click="gotoBindAmb"
+            content="Please confirm that you have filled out the invitation code before placing your order"
+            >1</nut-step
+          >
+          <nut-step
+            title="Waiting for approval"
+            :content="
+              ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'
+            "
+            >2</nut-step
+          >
           <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
-          <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase"
-            @click="toBuyOrder">3</nut-step>
-          <nut-step @click="gotoOrderList" title="Ops, you haven't made a profit yet"
-            content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you.">4</nut-step>
+          <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
+            >3</nut-step
+          >
+          <nut-step
+            @click="gotoOrderList"
+            title="Ops, you haven't made a profit yet"
+            content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you."
+            >4</nut-step
+          >
         </nut-steps>
       </div>
     </template>
 
-    <nut-infinite-loading style="min-height: 280px; height: 600px; padding-bottom: 10px; overflow: auto"
-      v-else-if="cloudCodeIsBind && earningsList.length" load-more-txt="No more content" :has-more="hasMore"
-      v-model="infinityValue" @load-more="loadMore">
-      <div class="list_item" v-for="(item, index) in earningsList" @click="gotoOrderPage(item)"
-        :class="[isOpen(item.order_info.state) ? '' : 'history_item']">
+    <nut-infinite-loading
+      style="min-height: 280px; height: 600px; padding-bottom: 10px; overflow: auto"
+      v-else-if="cloudCodeIsBind && earningsList.length"
+      load-more-txt="No more content"
+      :has-more="hasMore"
+      v-model="infinityValue"
+      @load-more="loadMore"
+    >
+      <div
+        class="list_item"
+        v-for="(item, index) in earningsList"
+        @click="gotoOrderPage(item)"
+        :class="[isOpen(item.order_info.state) ? '' : 'history_item']"
+      >
         <div class="order_status_flag open" v-if="isOpen(item.order_info.state)">Open Order</div>
         <div class="order_status_flag history" v-if="!isOpen(item.order_info.state)">History Order</div>
         <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
@@ -163,13 +184,14 @@
         </div>
         <div>
           <span style="font-weight: bold">Order:{{ item.order_id }}</span>
-          <span :class="[
-            item.inner_user_trade_type == 'payout' ? 'expense' : '',
-            item.inner_user_trade_type == 'income' ? 'earnings' : '',
-            'trade_type',
-          ]">
-            <span v-if="item.inner_user_trade_type == 'payout'">-</span><span
-              v-else-if="item.inner_user_trade_type == 'income'">+</span>
+          <span
+            :class="[
+              item.inner_user_trade_type == 'payout' ? 'expense' : '',
+              item.inner_user_trade_type == 'income' ? 'earnings' : '',
+              'trade_type',
+            ]"
+          >
+            <span v-if="item.inner_user_trade_type == 'payout'">-</span><span v-else-if="item.inner_user_trade_type == 'income'">+</span>
             {{ formatNumber(item.quantity)?.integerPart
             }}<span style="font-size: 13px">.{{ formatNumber(item.quantity)?.decimalPart }}</span>
           </span>
@@ -183,34 +205,47 @@
       </div>
     </nut-infinite-loading>
 
-    <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit"
-      description="There are currently no returns this week"></nut-empty>
+    <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week"></nut-empty>
     <!-- <nut-backtop el-id="main-page" :z-index="999" :bottom="60"></nut-backtop> -->
 
-
-    <nut-popup position="bottom" teleport="body" :safe-area-inset-bottom="true" :lock-scroll="true" closeable round :style="{ height:  withdrawalIsVerified ? 'auto':'60%'}"
-      v-model:visible="googleVerificationVisible">
+    <nut-popup
+      position="bottom"
+      teleport="body"
+      :safe-area-inset-bottom="true"
+      :lock-scroll="true"
+      closeable
+      round
+      :style="{ height: withdrawalIsVerified ? 'auto' : '60%' }"
+      v-model:visible="googleVerificationVisible"
+    >
       <div class="googleVerificationBox" id="googleVerificationBox">
         <div class="title">Multi factor authentication</div>
 
         <div class="content">
-
-          <div style="padding: 10px;">
+          <div style="padding: 10px">
             <div class="content_title">Warning</div>
-            <div class="content_tips">{{ withdrawalIsVerified ?'You have enabled dual factor authentication, please bind OTP.':`You have turned off the two factor validation, which may pose risks. Do you want to
-              turn it on?` }}</div>
-
+            <div class="content_tips">{{
+              withdrawalIsVerified
+                ? 'You have enabled dual factor authentication, please bind OTP.'
+                : `You have turned off the two factor validation, which may pose risks. Do you want to
+              turn it on?`
+            }}</div>
           </div>
-          <img v-if="withdrawalIsVerified" src="@/assets/googleSrc/DM_20231129144005_001.png" alt="" srcset="">
-          <img v-else src="@/assets/googleSrc/DM_20231129143906_001.png" alt="" srcset="" style="height: 100%;">
+          <img v-if="withdrawalIsVerified" src="@/assets/googleSrc/DM_20231129144005_001.png" alt="" srcset="" />
+          <img v-else src="@/assets/googleSrc/DM_20231129143906_001.png" alt="" srcset="" style="height: 100%" />
         </div>
         <div class="switchButton">
-          <div>Is double factor verification enabled： <span style="font-style: italic;font-weight: 600;" :style="{
-            color:withdrawalIsVerified?'#5758A0':'red'
-          }">{{
-            withdrawalIsVerified ? 'YES' : 'NO' }} </span> </div>
-          <nut-switch :model-value="withdrawalIsVerified" :loading="withdrawalIsVerifiedLoadding"
-            @change="changeIsVerified">
+          <div
+            >Is double factor verification enabled：
+            <span
+              style="font-style: italic; font-weight: 600"
+              :style="{
+                color: withdrawalIsVerified ? '#5758A0' : 'red',
+              }"
+              >{{ withdrawalIsVerified ? 'YES' : 'NO' }}
+            </span>
+          </div>
+          <nut-switch :model-value="withdrawalIsVerified" :loading="withdrawalIsVerifiedLoadding" @change="changeIsVerified">
             <template #icon>
               <Loading name="loading" />
             </template>
@@ -219,9 +254,8 @@
 
         <template v-if="withdrawalIsVerified">
           <div class="google-tips">
-            Please use Google Authenticator or other compatible programs on your phone to scan the QR code below, or
-            manually enter a manually
-            enter a 16-digit key key.
+            Please use Google Authenticator or other compatible programs on your phone to scan the QR code below, or manually enter a
+            manually enter a 16-digit key key.
           </div>
           <div class="auth_qrcode" v-if="authQrcode">
             <img :src="authQrcode" />
@@ -229,1067 +263,1067 @@
 
           <div class="title_item">
             <p>Please enter the Google verification </p>
-            <div class="keyWordBox" @click="shortPasswordIsShow = true"
-              style="text-align: center;font-size: 24px;margin-top: 20px;">{{ code }}</div>
-            <nut-short-password v-model="code" v-model:visible="shortPasswordIsShow"
-              tips="Password length, ranging from 6" desc="Please enter the verification code"
-              title="two-factor authentication">
+            <div class="keyWordBox" @click="shortPasswordIsShow = true" style="text-align: center; font-size: 24px; margin-top: 20px">{{
+              code
+            }}</div>
+            <nut-short-password
+              v-model="code"
+              v-model:visible="shortPasswordIsShow"
+              tips="Password length, ranging from 6"
+              desc="Please enter the verification code"
+              title="two-factor authentication"
+            >
             </nut-short-password>
 
-            <nut-number-keyboard v-model="code" v-model:visible="shortPasswordIsShow">
-            </nut-number-keyboard>
-            <nut-button :loading="isLoading" style="margin-top: 20px;" block type="primary" @click="ConfirmBindOtp">Confirm</nut-button>
+            <nut-number-keyboard v-model="code" v-model:visible="shortPasswordIsShow"> </nut-number-keyboard>
+            <nut-button :loading="isLoading" style="margin-top: 20px" block type="primary" @click="ConfirmBindOtp">Confirm</nut-button>
           </div>
         </template>
-
-
-
-
-
-
       </div>
-
     </nut-popup>
-
   </div>
 </template>
 
 <script lang="ts" setup name="HomePage">
-import ErrorPage from '@/views/errorPage/index.vue';
-import IconArrowRight from '~icons/home/arrow-right.svg';
-import IconTransaction from '~icons/home/transaction.svg';
-import { Notice, TriangleUp, DouArrowUp, RectUp, Setting, Loading } from '@nutui/icons-vue';
-import { toRefs, computed, reactive, ref, watch, watchEffect, createVNode } from 'vue';
-import { useRouter } from 'vue-router';
-import { useUserStore } from '@/store/modules/user';
+  import ErrorPage from '@/views/errorPage/index.vue';
+  import IconArrowRight from '~icons/home/arrow-right.svg';
+  import IconTransaction from '~icons/home/transaction.svg';
+  import { Notice, TriangleUp, DouArrowUp, RectUp, Setting, Loading } from '@nutui/icons-vue';
+  import { toRefs, computed, reactive, ref, watch, watchEffect, createVNode } from 'vue';
+  import { useRouter } from 'vue-router';
+  import { useUserStore } from '@/store/modules/user';
 
-import { showToast, showDialog } from '@nutui/nutui';
-//   import { search_cloud } from '@/api';
-import { search_cloud } from '@/api';
-import useUserAssets from './useUserAssets.ts';
-import { transferUTCTimeDay, getfilesize2 } from '@/utils/util';
-import { transferUTCTime, formatNumber, transferGMTTime } from '@/utils/util';
-import '@nutui/nutui/dist/packages/toast/style';
-import { useIntersectionObserver } from '@vueuse/core';
-import { search_order_profit, search_user_asset_detail, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
-import googleVerificationHook from './googleVerificationHook.ts';
+  import { showToast, showDialog } from '@nutui/nutui';
+  //   import { search_cloud } from '@/api';
+  import { search_cloud } from '@/api';
+  import useUserAssets from './useUserAssets.ts';
+  import { transferUTCTimeDay, getfilesize2 } from '@/utils/util';
+  import { transferUTCTime, formatNumber } from '@/utils/util';
+  import '@nutui/nutui/dist/packages/toast/style';
+  import { useIntersectionObserver } from '@vueuse/core';
+  import { search_order_profit, search_user_asset_detail, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
+  import googleVerificationHook from './googleVerificationHook.ts';
 
+  const {
+    bindOtp,
+    openGoogleSetting,
+    changeIsVerified,
+    isLoading,
+    withdrawalIsVerified,
+    googleVerificationVisible,
+    withdrawalIsVerifiedLoadding,
+    authQrcode,
+    code,
+    shortPasswordIsShow,
+    ConfirmBindOtp,
+  } = googleVerificationHook();
 
-const { bindOtp, openGoogleSetting, changeIsVerified, isLoading,withdrawalIsVerified, googleVerificationVisible, withdrawalIsVerifiedLoadding, authQrcode, code, shortPasswordIsShow, ConfirmBindOtp, } = googleVerificationHook()
+  const userInfo = computed(() => userStore.getUserInfo);
+  const userAvatar = computed(() => userStore.getUserInfo?.image_path);
+  const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
 
+  const router = useRouter();
 
-const userInfo = computed(() => userStore.getUserInfo);
-const userAvatar = computed(() => userStore.getUserInfo?.image_path);
-const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+  const mapTypes = {
+    user_delivery_income: 'UserDeliveryIncome',
+    buy_order: 'Purchased Order',
+    challenge: 'Order Challenge',
+    arbitration: 'Order Arbitration',
+    OrderReceiptAddReserve: 'Increase order deposit', // 增加订单预存金
+    OrderReceiptSubReserve: 'Reduce order deposit', // 减少订单预存金
+    OrderReceiptDeposit: 'Order deposit', // 押金
+    OrderReceiptClaim: 'Order deliver', // 交付
+    OrderReceiptReward: 'Order incentive', // 激励
+    OrderReceiptRenew: 'Order Update', // 订单更新
+    OrderReceiptChallengeReq: 'Initiate a Challenge', // 发起挑战
+    OrderReceiptChallengeAns: 'Responding to challenges', // 响应挑战
+    OrderReceiptChallengeArb: 'arbitrate', // 仲裁
+    OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
+    OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
+    user_cancel_order: 'Order Cancellation Refund', // 订单取消
+    user_OrderReceiptDeposit: 'Order expires. Deposit refunded', // 订单到期退还押金
+    OrderRefund: 'Order refund', // 订单退款
+    OrderReceiptEnd: 12,
+  };
 
-const router = useRouter();
+  const userStore = useUserStore();
+  const earningsList = ref([] as any);
+  const { getUserAssets, getExchangeRate, dmc2usdRate, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } =
+    useUserAssets();
 
-const mapTypes = {
-  user_delivery_income: 'UserDeliveryIncome',
-  buy_order: 'Purchased Order',
-  challenge: 'Order Challenge',
-  arbitration: 'Order Arbitration',
-  OrderReceiptAddReserve: 'Increase order deposit', // 增加订单预存金
-  OrderReceiptSubReserve: 'Reduce order deposit', // 减少订单预存金
-  OrderReceiptDeposit: 'Order deposit', // 押金
-  OrderReceiptClaim: 'Order deliver', // 交付
-  OrderReceiptReward: 'Order incentive', // 激励
-  OrderReceiptRenew: 'Order Update', // 订单更新
-  OrderReceiptChallengeReq: 'Initiate a Challenge', // 发起挑战
-  OrderReceiptChallengeAns: 'Responding to challenges', // 响应挑战
-  OrderReceiptChallengeArb: 'arbitrate', // 仲裁
-  OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
-  OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
-  user_cancel_order: 'Order Cancellation Refund', // 订单取消
-  user_OrderReceiptDeposit: 'Order expires. Deposit refunded', // 订单到期退还押金
-  OrderRefund: 'Order refund', // 订单退款
-  OrderReceiptEnd: 12,
-};
+  const ambRefuse = computed(() => userStore.getambRefuse); //大使是否拒绝  true 拒绝  false 同意
+  const curStepIndex = computed(() => userStore.getCurStepIndex); // 1 绑定大使邀请码
+  const bindAmbCode = inject('bindAmbCode');
+  const openBindDMCDiaolg = inject('openBindDMCDiaolg');
 
-const userStore = useUserStore();
-const earningsList = ref([] as any);
-const { getUserAssets, getExchangeRate, dmc2usdRate, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } =
-  useUserAssets();
-
-const ambRefuse = computed(() => userStore.getambRefuse); //大使是否拒绝  true 拒绝  false 同意
-const curStepIndex = computed(() => userStore.getCurStepIndex); // 1 绑定大使邀请码
-const bindAmbCode = inject('bindAmbCode');
-const openBindDMCDiaolg = inject('openBindDMCDiaolg');
-
-const infinityValue = ref(false);
-const hasMore = computed(() => {
-  if (total.value > earningsList.value.length) {
-    return true;
-  } else {
-    return false;
-  }
-});
-const isError = ref(false);
-const pageSize = ref(10);
-const pageNum = ref(1);
-const total = ref(0);
-
-const pn = ref(1);
-const ps = ref(10);
-
-async function getOrder() {
-  const order_state = null;
-  const start_time = '';
-  const end_time = '';
-  const buy_result = 'success';
-  await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result }).then((res) => {
-    let total = res?.result?.total;
-    if (total > 0) {
-      userStore.setcurStepIndex(4);
+  const infinityValue = ref(false);
+  const hasMore = computed(() => {
+    if (total.value > earningsList.value.length) {
+      return true;
     } else {
-      userStore.setcurStepIndex(3);
+      return false;
     }
   });
-}
+  const isError = ref(false);
+  const pageSize = ref(10);
+  const pageNum = ref(1);
+  const total = ref(0);
 
-watch(
-  curStepIndex,
-  (val) => {
-    if (val === 4) {
-      searchOrderProfit();
-      searchAllOrderProfit();
-    }
-  },
-  { deep: true, immediate: true },
-);
-const cloudBalanceNum = computed(() => {
-  return formatNumber(cloudBalance.value);
-});
-const cloudTodayIncomeNum = computed(() => {
-  return formatNumber(cloudTodayIncome.value);
-});
+  const pn = ref(1);
+  const ps = ref(10);
 
-function handleID(id) {
-  if (id) {
-    return id.substring(0, 8) + '...' + id.substring(id.length - 8, id.length);
-  }
-}
-
-function loadMore() {
-  if (cloudCodeIsBind.value) {
-    isError.value = false;
-    pageNum.value = pageNum.value + 1;
-    searchOrderProfit();
-  }
-}
-
-function searchOrderProfit() {
-  const end = new Date();
-  const start = new Date();
-  start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-  const postData = {
-    start_time: transferUTCTimeDay(start),
-    end_time: transferUTCTimeDay(end),
-    ps: pageSize.value,
-    pn: pageNum.value,
-  };
-  infinityValue.value = true;
-  search_user_asset_detail(postData)
-    .then((res) => {
-      infinityValue.value = false;
-      if (res && res.result && res.result.data.length) {
-        for (const item of res.result.data || []) {
-          item.trx_id = handleID(item.trx_id);
-        }
-        earningsList.value = earningsList.value.concat(res.result.data);
-        // const newSetCloudList = [...earningsList.value, ...res.result.data];
-        // let arr = [];
-        // const filterList = newSetCloudList.filter((item) => !arr.includes(item.trx_id) && arr.push(item.trx_id));
-        // earningsList.value = filterList;
-        // console.log(earningsList.value );
-
-        total.value = res.result.total;
+  async function getOrder() {
+    const order_state = null;
+    const start_time = '';
+    const end_time = '';
+    const buy_result = 'success';
+    await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result }).then((res) => {
+      let total = res?.result?.total;
+      if (total > 0) {
+        userStore.setcurStepIndex(4);
+      } else {
+        userStore.setcurStepIndex(3);
       }
-      if (res.code != 200) {
-        pageNum.value = pageNum.value - 1;
-        isError.value = true;
-      }
-    })
-    .catch(() => {
-      isError.value = true;
-      pageNum.value = pageNum.value - 1;
-      infinityValue.value = false;
     });
-}
-
-const ishaveProfit = ref(false); //是否订单已经产生过收益 如果有收益不展示引导页
-function searchAllOrderProfit() {
-  const postData = { start_time: '', end_time: '' };
-  search_user_asset_detail(postData)
-    .then((res) => {
-      if (res.code == 200) {
-        if (res.result.data.length > 0) {
-          ishaveProfit.value = true;
-        } else {
-          ishaveProfit.value = false;
-        }
-      }
-    })
-    .finally(() => { });
-}
-
-const showWithdraw = () => {
-  if (!userInfo.value.dmc) {
-    openBindDMCDiaolg();
-
-    return false;
-  } else if (!cloudCodeIsBind.value) {
-    bindAmbCode();
-  } else {
-    router.push({ name: 'Withdraw' });
   }
-};
 
-const gotoPage = (type, query = '') => {
-  if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
-    bindAmbCode();
-    return false;
-  } else {
-    if (type === 'analysisCate') {
-      router.push('/analysisCate?type=1');
-    } else if (type === 'analysis') {
-      router.push('/analysis');
-    } else if (type === 'transactionRecords') {
-      router.push(`/transactionRecords${query ? `?type=${query}` : ''}`);
-    } else if (type === 'shop') {
-      router.push({ name: 'Shop' });
-    } else if (type === 'analysisChart') {
-      router.push('/analysisChart');
-    } else if (type === 'Order') {
-      router.push('/list');
+  watch(
+    curStepIndex,
+    (val) => {
+      if (val === 4) {
+        searchOrderProfit();
+        searchAllOrderProfit();
+      }
+    },
+    { deep: true, immediate: true },
+  );
+  const cloudBalanceNum = computed(() => {
+    return formatNumber(cloudBalance.value);
+  });
+  const cloudTodayIncomeNum = computed(() => {
+    return formatNumber(cloudTodayIncome.value);
+  });
+
+  function handleID(id) {
+    if (id) {
+      return id.substring(0, 8) + '...' + id.substring(id.length - 8, id.length);
     }
   }
-};
-const isOpen = (state) => {
-  if (state === 4 || state === 5) {
-    return false;
-  } else {
-    return true;
+
+  function loadMore() {
+    if (cloudCodeIsBind.value) {
+      isError.value = false;
+      pageNum.value = pageNum.value + 1;
+      searchOrderProfit();
+    }
   }
-};
-const toBuyOrder = () => {
-  gotoPage('shop');
-};
-const toRecharge = () => {
-  if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+
+  function searchOrderProfit() {
+    const end = new Date();
+    const start = new Date();
+    start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+    const postData = {
+      start_time: transferUTCTimeDay(start),
+      end_time: transferUTCTimeDay(end),
+      ps: pageSize.value,
+      pn: pageNum.value,
+    };
+    infinityValue.value = true;
+    search_user_asset_detail(postData)
+      .then((res) => {
+        infinityValue.value = false;
+        if (res && res.result && res.result.data.length) {
+          for (const item of res.result.data || []) {
+            item.trx_id = handleID(item.trx_id);
+          }
+          earningsList.value = earningsList.value.concat(res.result.data);
+          // const newSetCloudList = [...earningsList.value, ...res.result.data];
+          // let arr = [];
+          // const filterList = newSetCloudList.filter((item) => !arr.includes(item.trx_id) && arr.push(item.trx_id));
+          // earningsList.value = filterList;
+          // console.log(earningsList.value );
+
+          total.value = res.result.total;
+        }
+        if (res.code != 200) {
+          pageNum.value = pageNum.value - 1;
+          isError.value = true;
+        }
+      })
+      .catch(() => {
+        isError.value = true;
+        pageNum.value = pageNum.value - 1;
+        infinityValue.value = false;
+      });
+  }
+
+  const ishaveProfit = ref(false); //是否订单已经产生过收益 如果有收益不展示引导页
+  function searchAllOrderProfit() {
+    const postData = { start_time: '', end_time: '' };
+    search_user_asset_detail(postData)
+      .then((res) => {
+        if (res.code == 200) {
+          if (res.result.data.length > 0) {
+            ishaveProfit.value = true;
+          } else {
+            ishaveProfit.value = false;
+          }
+        }
+      })
+      .finally(() => {});
+  }
+
+  const showWithdraw = () => {
+    if (!userInfo.value.dmc) {
+      openBindDMCDiaolg();
+
+      return false;
+    } else if (!cloudCodeIsBind.value) {
+      bindAmbCode();
+    } else {
+      router.push({ name: 'Withdraw' });
+    }
+  };
+
+  const gotoPage = (type, query = '') => {
+    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+      bindAmbCode();
+      return false;
+    } else {
+      if (type === 'analysisCate') {
+        router.push('/analysisCate?type=1');
+      } else if (type === 'analysis') {
+        router.push('/analysis');
+      } else if (type === 'transactionRecords') {
+        router.push(`/transactionRecords${query ? `?type=${query}` : ''}`);
+      } else if (type === 'shop') {
+        router.push({ name: 'Shop' });
+      } else if (type === 'analysisChart') {
+        router.push('/analysisChart');
+      } else if (type === 'Order') {
+        router.push('/list');
+      }
+    }
+  };
+  const isOpen = (state) => {
+    if (state === 4 || state === 5) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+  const toBuyOrder = () => {
+    gotoPage('shop');
+  };
+  const toRecharge = () => {
+    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+      bindAmbCode();
+      return false;
+    } else {
+      router.push({ name: 'Recharge' });
+    }
+  };
+
+  function gotoBindAmb() {
+    if (curStepIndex.value !== 1) {
+      showToast.text('You have already bound an invitation code');
+      return;
+    }
     bindAmbCode();
-    return false;
-  } else {
-    router.push({ name: 'Recharge' });
   }
-};
 
-function gotoBindAmb() {
-  if (curStepIndex.value !== 1) {
-    showToast.text('You have already bound an invitation code');
-    return;
+  function gotoOrderList() {
+    if (curStepIndex.value !== 4) {
+      showToast.text('You do not have any available order records yet');
+      return;
+    }
+    router.push('/list');
   }
-  bindAmbCode();
-}
 
-function gotoOrderList() {
-  if (curStepIndex.value !== 4) {
-    showToast.text('You do not have any available order records yet');
-    return;
-  }
-  router.push('/list');
-}
-
-onBeforeMount(() => {
-  if (cloudCodeIsBind.value) {
-    getOrder();
-  }
-});
-
-watch(
-  cloudCodeIsBind,
-  async (newVal) => {
-    if (newVal) {
-      userStore.setambRefuse(false);
+  onBeforeMount(() => {
+    if (cloudCodeIsBind.value) {
       getOrder();
+    }
+  });
+
+  watch(
+    cloudCodeIsBind,
+    async (newVal) => {
+      if (newVal) {
+        userStore.setambRefuse(false);
+        getOrder();
+        getUserAssets();
+        getExchangeRate();
+      }
+    },
+    { deep: true, immediate: true },
+  );
+
+  const targetIsVisible = ref(false);
+  const my_steps = ref(null);
+  function loadMySwipeDom() {
+    const { stop } = useIntersectionObserver(my_steps, ([{ isIntersecting }]) => {
+      targetIsVisible.value = isIntersecting;
+    });
+  }
+
+  function scrollIntoViewTo() {
+    let my_steps = document.getElementById('my_steps');
+    if (my_steps) {
+      my_steps?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function gotoOrderPage(row) {
+    console.log(row);
+    if (row.order_info.state == 5 || row.order_info.state == 4) {
+      window.sessionStorage.removeItem('myHistoryOrder');
+      window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(row));
+      router.push({
+        name: 'orderSummary',
+        query: {
+          id: row.order_id,
+          type: 'history',
+          status: row.order_info.state,
+          createdTime: transferUTCTime(row.order_created_at),
+          endTime: row.expire ? transferUTCTime(row.expire) : '- -',
+          uuid: row.order_info.uuid,
+        },
+      });
+    } else {
+      router.push({
+        name: 'listDetails',
+        query: {
+          id: row.order_id,
+          uuid: row.order_info && row.order_info.uuid,
+          amb_uuid: row.amb_uuid,
+        },
+      });
+    }
+  }
+
+  onMounted(async () => {
+    loadMySwipeDom();
+    if (cloudCodeIsBind.value) {
       getUserAssets();
       getExchangeRate();
     }
-  },
-  { deep: true, immediate: true },
-);
-
-const targetIsVisible = ref(false);
-const my_steps = ref(null);
-function loadMySwipeDom() {
-  const { stop } = useIntersectionObserver(my_steps, ([{ isIntersecting }]) => {
-    targetIsVisible.value = isIntersecting;
   });
-}
-
-function scrollIntoViewTo() {
-  let my_steps = document.getElementById('my_steps');
-  if (my_steps) {
-    my_steps?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-}
-
-function gotoOrderPage(row) {
-  console.log(row);
-  if (row.order_info.state == 5 || row.order_info.state == 4) {
-    window.sessionStorage.removeItem('myHistoryOrder');
-    window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(row));
-    router.push({
-      name: 'orderSummary',
-      query: {
-        id: row.order_id,
-        type: 'history',
-        status: row.order_info.state,
-        createdTime: transferGMTTime(row.order_created_at),
-        endTime: row.expire ? transferUTCTime(row.expire) : '- -',
-        uuid: row.order_info.uuid,
-      },
-    });
-  } else {
-    router.push({
-      name: 'listDetails',
-      query: {
-        id: row.order_id,
-        uuid: row.order_info && row.order_info.uuid,
-        amb_uuid: row.amb_uuid,
-      },
-    });
-  }
-}
-
-onMounted(async () => {
-  loadMySwipeDom();
-  if (cloudCodeIsBind.value) {
-    getUserAssets();
-    getExchangeRate();
-  }
-});
 </script>
 
 <style lang="scss" scoped>
-::v-deep {
-  .nut-step-main {
-    padding-bottom: 30px !important;
-  }
-}
-
-.DouArrowDown {
-  // transform: rotate(180deg);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-.my_swipe {
-  margin-top: 30px;
-
-  .nut-swiper {
-    height: 300px;
-  }
-
-  .nut-swiper-item {
-    line-height: 150px;
-    height: 300px;
-
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
-}
-
-.my_steps {
-  margin: 40px auto;
-  width: calc(100% - 80px);
-  background: #fff;
-  height: 820px;
-  border-radius: 20px;
-  padding: 20px;
-}
-
-.my_noticebar {
-  margin: 0 -4vw;
-  display: inline-block;
-  width: 120%;
-
-  :deep {
-    .nut-noticebar__page {
-      padding: 0;
-    }
-
-    .nut-noticebar__page-lefticon {
-      margin: 0 8px;
-    }
-  }
-}
-
-.dmc_account {
-  // background: #5758a0;
-  margin: 0 -4vw;
-  display: grid;
-  grid-template-columns: auto 60px;
-  gap: 30px;
-  align-items: center;
-  height: 100px;
-  padding: 10px 0 0 10px;
-
-  .dmc_account_box {
-    font-weight: bold;
-
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-
-    font-size: 40px;
-    color: #5758a0;
-  }
-
-  .Notice {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    height: 60px;
-    background-color: #ececec;
-    border-radius: 50%;
-
-    img {
-      height: 70%;
-      width: 70%;
+  ::v-deep {
+    .nut-step-main {
+      padding-bottom: 30px !important;
     }
   }
 
-  .img-box {
+  .DouArrowDown {
+    // transform: rotate(180deg);
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
+  }
 
-    width: 58px;
-    height: 58px;
-    padding: 15px;
-    margin-right: 10px;
-    //   background: #5758a0;
-    box-sizing: border-box;
-    overflow: hidden;
-    border-radius: 50%;
+  .my_swipe {
+    margin-top: 30px;
 
-    img {
-      width: 45px;
-      margin: 0 auto;
-      vertical-align: middle;
-      border-radius: 10px;
+    .nut-swiper {
+      height: 300px;
+    }
+
+    .nut-swiper-item {
+      line-height: 150px;
+      height: 300px;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 
-  h2 {
-    font-size: 35px;
+  .my_steps {
+    margin: 40px auto;
+    width: calc(100% - 80px);
+    background: #fff;
+    height: 820px;
+    border-radius: 20px;
+    padding: 20px;
   }
-}
 
-.middle_btn_box {
-  // display: flex;
-  // justify-content: flex-start;
-  // align-items: flex-start;
-  margin-top: -60px;
-  border-radius: 10px;
-  padding: 10px 0px;
-  box-sizing: border-box;
-  overflow-x: auto;
-  white-space: nowrap;
-  width: 100%;
-
-  // background: #fff;
-  >div {
+  .my_noticebar {
+    margin: 0 -4vw;
     display: inline-block;
-    color: #1e0a0a;
-    font-size: 28px;
-    font-weight: 600;
-    width: 150px;
-    width: 25%;
+    width: 120%;
 
-    &:nth-child(2) {
-      .svg-box {
-        // background: #34964f;
-        // background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
-        background-image: linear-gradient(to top, #e0e1e2 0%, #e7f0fd 100%);
+    :deep {
+      .nut-noticebar__page {
+        padding: 0;
       }
-    }
 
-    &:nth-child(3) {
-      .svg-box {
-        // background: #fcd116;
-        background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      }
-    }
-
-    &:nth-child(4) {
-      .svg-box {
-        // background: #5f57ff;
-        // background-image: linear-gradient(to top, #5ee7df 0%, #b490ca 100%);
-        background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
+      .nut-noticebar__page-lefticon {
+        margin: 0 8px;
       }
     }
   }
 
-  .flex-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  .dmc_account {
+    // background: #5758a0;
+    margin: 0 -4vw;
+    display: grid;
+    grid-template-columns: auto 60px;
+    gap: 30px;
     align-items: center;
-    // height: 120px;
-    text-align: center;
-    word-break: break-word;
+    height: 100px;
+    padding: 10px 0 0 10px;
 
-    span {
-      font-size: 0.8rem;
+    .dmc_account_box {
+      font-weight: bold;
+
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+
+      font-size: 40px;
+      color: #5758a0;
     }
 
-    .svg-box {
+    .Notice {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      background-color: #ececec;
+      border-radius: 50%;
+
+      img {
+        height: 70%;
+        width: 70%;
+      }
+    }
+
+    .img-box {
       display: flex;
       justify-content: center;
       align-items: center;
-      border-radius: 50px;
-      width: 100px;
-      height: 100px;
-      margin-bottom: 15px;
-      // background: #ff8b00;
-      background: linear-gradient(to bottom, #d5dee7 0%, #e8ebf2 50%, #e2e7ed 100%),
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 50%, rgba(255, 255, 255, 0.02) 61%, rgba(0, 0, 0, 0.02) 73%),
-        linear-gradient(33deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
-      background-blend-mode: normal, color-burn;
 
-      // box-shadow: 0px 1px 2px 2px #ccc;
-      box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+      width: 58px;
+      height: 58px;
+      padding: 15px;
+      margin-right: 10px;
+      //   background: #5758a0;
+      box-sizing: border-box;
+      overflow: hidden;
+      border-radius: 50%;
 
-      svg,
       img {
-        width: 70px;
-        height: 70px;
-        color: #fff;
+        width: 45px;
+        margin: 0 auto;
+        vertical-align: middle;
+        border-radius: 10px;
       }
     }
-  }
-}
 
-.income-card {
-  position: relative;
-  padding: 40px;
-  height: 410px;
-  box-sizing: border-box;
-  margin: 0;
-  // margin-top: 20px;
-  margin-left: -4vw;
-  margin-right: -4vw;
-  //   box-shadow: 0px 0px 4px 1px #ccc;
-  // background-color: var(--van-blue);
-  background: $primary-color;
-  color: #fff;
-  border-radius: 30px;
-  background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
-
-  >img {
-    top: 30px;
-    position: absolute;
-    right: 40px;
-    width: 100px;
-  }
-
-  >div {
-    min-height: 60px;
-    line-height: 60px;
-    text-align: center;
-  }
-
-  .card_row_1 {
-    display: flex;
-    justify-content: space-between;
-
-    &.card_header {
-      display: grid;
-      grid-template-columns: 1fr;
-      justify-content: space-between;
-      // margin-right: 100px;
-
-      span {
-        text-align: left;
-      }
-
-      .total_income {
-        >div {
-          font-size: 30px;
-          text-align: left;
-        }
-
-        .balance_text {
-          font-size: 60px;
-
-          img {
-            height: 50px;
-            width: 100px;
-            vertical-align: sub;
-          }
-        }
-
-        .usd_text {
-          color: #ccc;
-        }
-      }
-    }
-  }
-
-  .card_row_top {
-    font-weight: bold;
-    font-size: 32px;
-  }
-
-  .pst-row {
-    margin-top: 20px;
-    font-size: 28px;
-    text-align: left;
-    font-weight: bold;
-
-    .column_value {
-      font-size: 28px;
-    }
-
-    .today_income {
-      color: #ff8b00;
-      color: #fbd116;
-
-      svg {
-        vertical-align: sub;
-      }
-    }
-  }
-
-  .total_income {
-    font-size: 55px;
-    font-weight: 700;
-
-    .about_income {
+    h2 {
       font-size: 35px;
     }
   }
 
-  :deep {
-    .van-grid-item {
+  .middle_btn_box {
+    // display: flex;
+    // justify-content: flex-start;
+    // align-items: flex-start;
+    margin-top: -60px;
+    border-radius: 10px;
+    padding: 10px 0px;
+    box-sizing: border-box;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+
+    // background: #fff;
+    > div {
+      display: inline-block;
+      color: #1e0a0a;
+      font-size: 28px;
+      font-weight: 600;
+      width: 150px;
+      width: 25%;
+
       &:nth-child(2) {
-
-        // border: 1px solid #fff;
-        // border-width: 0 1px 0 1px;
-        &::before,
-        &::after {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 60px;
-          display: block;
-          width: 1px;
-          height: 60px;
-          background-color: #ffffff5c;
+        .svg-box {
+          // background: #34964f;
+          // background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+          background-image: linear-gradient(to top, #e0e1e2 0%, #e7f0fd 100%);
         }
+      }
 
-        &::after {
-          left: unset;
-          right: 0;
+      &:nth-child(3) {
+        .svg-box {
+          // background: #fcd116;
+          background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+      }
+
+      &:nth-child(4) {
+        .svg-box {
+          // background: #5f57ff;
+          // background-image: linear-gradient(to top, #5ee7df 0%, #b490ca 100%);
+          background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
         }
       }
     }
 
-    .van-grid-item__content {
-      background: transparent;
+    .flex-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      // height: 120px;
+      text-align: center;
+      word-break: break-word;
 
-      div:first-child {
-        font-size: 40px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+      span {
+        font-size: 0.8rem;
       }
 
-      div:nth-child(2) {
-        font-size: 30px;
-      }
-    }
+      .svg-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50px;
+        width: 100px;
+        height: 100px;
+        margin-bottom: 15px;
+        // background: #ff8b00;
+        background: linear-gradient(to bottom, #d5dee7 0%, #e8ebf2 50%, #e2e7ed 100%),
+          linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 50%, rgba(255, 255, 255, 0.02) 61%, rgba(0, 0, 0, 0.02) 73%),
+          linear-gradient(33deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
+        background-blend-mode: normal, color-burn;
 
-    .van-button {
-      height: 60px;
+        // box-shadow: 0px 1px 2px 2px #ccc;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+        svg,
+        img {
+          width: 70px;
+          height: 70px;
+          color: #fff;
+        }
+      }
     }
   }
-}
 
-.withdraw-btn {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  justify-content: space-around;
-  transform: translateY(-80px);
-  width: 90%;
-  margin: 0 auto;
-  padding: 20px 0;
-  border-radius: 16px;
-  border: 4px solid transparent;
-  background: #fff;
-  // box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-  background:
-    linear-gradient(#fff, #fff) padding-box,
-    linear-gradient(145deg, #e81cff, #40c9ff) border-box;
+  .income-card {
+    position: relative;
+    padding: 40px;
+    height: 410px;
+    box-sizing: border-box;
+    margin: 0;
+    // margin-top: 20px;
+    margin-left: -4vw;
+    margin-right: -4vw;
+    //   box-shadow: 0px 0px 4px 1px #ccc;
+    // background-color: var(--van-blue);
+    background: $primary-color;
+    color: #fff;
+    border-radius: 30px;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
 
-  .action_item {
-    z-index: 88;
+    > img {
+      top: 30px;
+      position: absolute;
+      right: 40px;
+      width: 100px;
+    }
+
+    > div {
+      min-height: 60px;
+      line-height: 60px;
+      text-align: center;
+    }
+
+    .card_row_1 {
+      display: flex;
+      justify-content: space-between;
+
+      &.card_header {
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-content: space-between;
+        // margin-right: 100px;
+
+        span {
+          text-align: left;
+        }
+
+        .total_income {
+          > div {
+            font-size: 30px;
+            text-align: left;
+          }
+
+          .balance_text {
+            font-size: 60px;
+
+            img {
+              height: 50px;
+              width: 100px;
+              vertical-align: sub;
+            }
+          }
+
+          .usd_text {
+            color: #ccc;
+          }
+        }
+      }
+    }
+
+    .card_row_top {
+      font-weight: bold;
+      font-size: 32px;
+    }
+
+    .pst-row {
+      margin-top: 20px;
+      font-size: 28px;
+      text-align: left;
+      font-weight: bold;
+
+      .column_value {
+        font-size: 28px;
+      }
+
+      .today_income {
+        color: #ff8b00;
+        color: #fbd116;
+
+        svg {
+          vertical-align: sub;
+        }
+      }
+    }
+
+    .total_income {
+      font-size: 55px;
+      font-weight: 700;
+
+      .about_income {
+        font-size: 35px;
+      }
+    }
+
+    :deep {
+      .van-grid-item {
+        &:nth-child(2) {
+          // border: 1px solid #fff;
+          // border-width: 0 1px 0 1px;
+          &::before,
+          &::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 60px;
+            display: block;
+            width: 1px;
+            height: 60px;
+            background-color: #ffffff5c;
+          }
+
+          &::after {
+            left: unset;
+            right: 0;
+          }
+        }
+      }
+
+      .van-grid-item__content {
+        background: transparent;
+
+        div:first-child {
+          font-size: 40px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        div:nth-child(2) {
+          font-size: 30px;
+        }
+      }
+
+      .van-button {
+        height: 60px;
+      }
+    }
+  }
+
+  .withdraw-btn {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-around;
+    transform: translateY(-80px);
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px 0;
+    border-radius: 16px;
+    border: 4px solid transparent;
+    background: #fff;
+    // box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+    background:
+      linear-gradient(#fff, #fff) padding-box,
+      linear-gradient(145deg, #e81cff, #40c9ff) border-box;
+
+    .action_item {
+      z-index: 88;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      // color: #333333;
+      color: #5758a0;
+      font-size: 30px;
+      font-weight: bold;
+
+      img {
+        display: block;
+        width: 160px;
+        margin-bottom: 10px;
+      }
+    }
+  }
+
+  .withdraw-btn::before {
+    content: '';
+    position: absolute;
+    width: 140%;
+    background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
+    height: 80%;
+    animation: rotBGimg 3s linear infinite;
+    transition: all 0.2s linear;
+  }
+
+  @keyframes rotBGimg {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .withdraw-btn::after {
+    content: '';
+    position: absolute;
+    background: #fff;
+    inset: 3px;
+    border-radius: 15px;
+  }
+
+  .tab_top_title {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    // font-style: italic;
+    font-size: 35px;
+    font-weight: 600;
+  }
+
+  .time_tabs {
+    :deep {
+      .nut-tabs__titles {
+        // background: transparent;
+      }
+
+      .nut-tabs__content {
+        display: none;
+      }
+    }
+  }
+
+  .list_item {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    // color: #333333;
-    color: #5758a0;
-    font-size: 30px;
-    font-weight: bold;
-
-    img {
-      display: block;
-      width: 160px;
-      margin-bottom: 10px;
-    }
-  }
-}
-
-.withdraw-btn::before {
-  content: '';
-  position: absolute;
-  width: 140%;
-  background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
-  height: 80%;
-  animation: rotBGimg 3s linear infinite;
-  transition: all 0.2s linear;
-}
-
-@keyframes rotBGimg {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.withdraw-btn::after {
-  content: '';
-  position: absolute;
-  background: #fff;
-  inset: 3px;
-  border-radius: 15px;
-}
-
-.tab_top_title {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  // font-style: italic;
-  font-size: 35px;
-  font-weight: 600;
-}
-
-.time_tabs {
-  :deep {
-    .nut-tabs__titles {
-      // background: transparent;
-    }
-
-    .nut-tabs__content {
-      display: none;
-    }
-  }
-}
-
-.list_item {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 12px 30px;
-  padding-left: 100px;
-  min-height: 100px;
-  color: #171414;
-  font-size: 24px;
-  background: #fff;
-
-  border-bottom: 1px solid #eee;
-  margin: 10px 0 20px 0;
-  border-radius: 12px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
-
-  .order_status_flag {
-    width: 180px;
-    height: 40px;
-    border-radius: 0 20px 20px 0;
-
-    position: absolute;
-    top: -12px;
-    left: 0px;
-    background: #ccc;
-    color: #fff;
-    text-align: center;
-    justify-content: center;
-    font-weight: bold;
-
-    &.open {
-      background: #009771;
-      background: #f88b02;
-    }
-
-    &.history {
-      background: #999;
-      border: 1px dashed #fff;
-    }
-  }
-
-  .item_img_box {
-    position: absolute;
-    left: 16px;
-    width: 70px;
-    height: 70px;
-    padding: 5px;
-    box-sizing: border-box;
-    border-radius: 50px;
-    background: #ff8b00;
-
-    img {
-      width: 36px;
-      margin: 0 auto;
-      // transform-style: preserve-3d;
-      // -webkit-transform-origin: 50%;
-      // -webkit-animation: spin 5s infinite;
-      // -webkit-animation-timing-function: linear;
-      // -webkit-perspective: 1000;
-      // -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
-      // -webkit-filter: saturate(1.45) hue-rotate(2deg);
-    }
-
-    // @keyframes spin {
-    //   from {
-    //     -webkit-transform: rotateY(0deg);
-    //   }
-
-    //   to {
-    //     -webkit-transform: rotateY(360deg);
-    //   }
-    // }
-
-    .cions {
-      margin-right: 15px;
-    }
-  }
-
-  .item_2 {
-    background: #5f57ff;
-    background: #ffc933;
-  }
-
-  .item_3 {
-    background: #1ba27a;
-  }
-
-  >div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 5px 0;
-  }
-
-  .earnings {
-    display: inline-block;
-    color: $main_green;
-
-    font-size: 30px;
-  }
-
-  .expense {
-    display: inline-block;
-    color: red;
-    font-size: 30px;
-  }
-
-  .trade_type {
-    display: inline-block;
-    font-size: 30px;
-  }
-
-  .time {
+    padding: 12px 30px;
+    padding-left: 100px;
+    min-height: 100px;
+    color: #171414;
     font-size: 24px;
-    color: #000000;
-    font-weight: 600;
-  }
+    background: #fff;
 
-  .my_status {
-    text-align: right;
-    width: 240px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
+    border-bottom: 1px solid #eee;
+    margin: 10px 0 20px 0;
+    border-radius: 12px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
 
-  &:last-child {
-    border-bottom: none;
-  }
-}
+    .order_status_flag {
+      width: 180px;
+      height: 40px;
+      border-radius: 0 20px 20px 0;
 
-.history_item {
-  background: #ccc;
-}
+      position: absolute;
+      top: -12px;
+      left: 0px;
+      background: #ccc;
+      color: #fff;
+      text-align: center;
+      justify-content: center;
+      font-weight: bold;
 
-.googleVerificationBox {
-  padding: 60px 40px;
-  padding-bottom: 160px;
-  .title {
-    font-size: 36px;
-    font-weight: 600;
-    text-align: center;
-    color: #334557;
-  }
+      &.open {
+        background: #009771;
+        background: #f88b02;
+      }
 
-  .content {
-    display: grid;
-    grid-template-columns: auto 200px;
-    background-color: #d8d8d8;
-    border-radius: 20px 20px 0 0;
-    border: 2px solid #e1e3e1;
-    border-bottom: 0px;
-    box-sizing: border-box;
-    overflow: hidden;
-    margin-top: 60px;
-    padding: 20px;
-
-    // align-items: center;
-    // justify-items: center;
-    .content_title {
-      font-family: "Google Sans", Roboto, Arial, sans-serif;
-
-      font-size: 36px;
-      line-height: 40px;
-      letter-spacing: 0;
-      font-weight: 400;
-      hyphens: auto;
-      word-break: break-word;
-      word-wrap: break-word;
-      color: #1f1f1f;
+      &.history {
+        background: #999;
+        border: 1px dashed #fff;
+      }
     }
 
-    .content_tips {
-      margin-top: 20px;
-      font-size: 24px;
-      letter-spacing: 0;
-      font-weight: 400;
-      hyphens: auto;
-      word-break: break-word;
-      word-wrap: break-word;
-      color: #1f1f1f;
+    .item_img_box {
+      position: absolute;
+      left: 16px;
+      width: 70px;
+      height: 70px;
+      padding: 5px;
+      box-sizing: border-box;
+      border-radius: 50px;
+      background: #ff8b00;
 
+      img {
+        width: 36px;
+        margin: 0 auto;
+        // transform-style: preserve-3d;
+        // -webkit-transform-origin: 50%;
+        // -webkit-animation: spin 5s infinite;
+        // -webkit-animation-timing-function: linear;
+        // -webkit-perspective: 1000;
+        // -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+        // -webkit-filter: saturate(1.45) hue-rotate(2deg);
+      }
+
+      // @keyframes spin {
+      //   from {
+      //     -webkit-transform: rotateY(0deg);
+      //   }
+
+      //   to {
+      //     -webkit-transform: rotateY(360deg);
+      //   }
+      // }
+
+      .cions {
+        margin-right: 15px;
+      }
     }
 
-
-
-    &>img {
-      width: 100%;
-      height: auto;
-      object-fit: contain;
+    .item_2 {
+      background: #5f57ff;
+      background: #ffc933;
     }
-  }
 
-  .switchButton {
-    border: 2px solid #e1e3e1;
-    padding: 20px;
-    border-radius: 0 0 20px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 24px;
-  }
+    .item_3 {
+      background: #1ba27a;
+    }
 
-  .google-tips {
-    margin-top: 20px;
-    margin-top: 16px;
-    margin-bottom: 20px;
-    font-size: 26px;
-    color: #000;
-  }
+    > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5px 0;
+    }
 
-  .auth_input {
-    display: flex;
-    align-items: center;
-    margin-top: 30px;
-    color: #000;
-    font-size: 26px;
-
-    span {
+    .earnings {
       display: inline-block;
-      width: 100%;
+      color: $main_green;
+
+      font-size: 30px;
     }
 
-    .copy-icon {
-      cursor: pointer;
-      color: $main_blue;
+    .expense {
+      display: inline-block;
+      color: red;
+      font-size: 30px;
     }
 
-    .warning-icon {
-      color: #ff9200;
+    .trade_type {
+      display: inline-block;
+      font-size: 30px;
+    }
+
+    .time {
+      font-size: 24px;
+      color: #000000;
+      font-weight: 600;
+    }
+
+    .my_status {
+      text-align: right;
+      width: 240px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    &:last-child {
+      border-bottom: none;
     }
   }
 
-  .auth_qrcode {
-    text-align: center;
-    img{
-      width: 400px;
-      height: 400px;
-    }
+  .history_item {
+    background: #ccc;
   }
 
-  .title_item {
-    text-align: center;
-    font-size: 24px;
+  .googleVerificationBox {
+    padding: 60px 40px;
+    padding-bottom: 160px;
+    .title {
+      font-size: 36px;
+      font-weight: 600;
+      text-align: center;
+      color: #334557;
+    }
 
-    .keyWordBox {
-      background-color: #edf2f7;
-      border-radius: 30px;
-      border: 2px solid darkgray;
-      width: 90%;
-      height: 100px;
-      margin: 0px auto;
+    .content {
+      display: grid;
+      grid-template-columns: auto 200px;
+      background-color: #d8d8d8;
+      border-radius: 20px 20px 0 0;
+      border: 2px solid #e1e3e1;
+      border-bottom: 0px;
+      box-sizing: border-box;
+      overflow: hidden;
+      margin-top: 60px;
+      padding: 20px;
+
+      // align-items: center;
+      // justify-items: center;
+      .content_title {
+        font-family: 'Google Sans', Roboto, Arial, sans-serif;
+
+        font-size: 36px;
+        line-height: 40px;
+        letter-spacing: 0;
+        font-weight: 400;
+        hyphens: auto;
+        word-break: break-word;
+        word-wrap: break-word;
+        color: #1f1f1f;
+      }
+
+      .content_tips {
+        margin-top: 20px;
+        font-size: 24px;
+        letter-spacing: 0;
+        font-weight: 400;
+        hyphens: auto;
+        word-break: break-word;
+        word-wrap: break-word;
+        color: #1f1f1f;
+      }
+
+      & > img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+      }
+    }
+
+    .switchButton {
+      border: 2px solid #e1e3e1;
+      padding: 20px;
+      border-radius: 0 0 20px 20px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
+      font-size: 24px;
+    }
+
+    .google-tips {
+      margin-top: 20px;
+      margin-top: 16px;
+      margin-bottom: 20px;
+      font-size: 26px;
+      color: #000;
+    }
+
+    .auth_input {
+      display: flex;
+      align-items: center;
+      margin-top: 30px;
+      color: #000;
+      font-size: 26px;
+
+      span {
+        display: inline-block;
+        width: 100%;
+      }
+
+      .copy-icon {
+        cursor: pointer;
+        color: $main_blue;
+      }
+
+      .warning-icon {
+        color: #ff9200;
+      }
+    }
+
+    .auth_qrcode {
+      text-align: center;
+      img {
+        width: 400px;
+        height: 400px;
+      }
+    }
+
+    .title_item {
+      text-align: center;
+      font-size: 24px;
+
+      .keyWordBox {
+        background-color: #edf2f7;
+        border-radius: 30px;
+        border: 2px solid darkgray;
+        width: 90%;
+        height: 100px;
+        margin: 0px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     }
   }
-
-
-}
 </style>
 
 <style lang="scss">
-.isConfirmCheckbox {
-  margin-top: 25px;
+  .isConfirmCheckbox {
+    margin-top: 25px;
 
-  .nut-checkbox__label {
-    // color: rgb(158, 158, 158) !important;
-    font-size: 28px;
-  }
-}
-
-.bindAmbCodeDialog {
-  .nut-dialog__header {
-    border-bottom: 0px !important;
-    justify-content: center !important;
-    margin-bottom: 0px !important;
+    .nut-checkbox__label {
+      // color: rgb(158, 158, 158) !important;
+      font-size: 28px;
+    }
   }
 
-  .nut-dialog__content {
-    padding-top: 0px !important;
-    margin-top: 0px !important;
+  .bindAmbCodeDialog {
+    .nut-dialog__header {
+      border-bottom: 0px !important;
+      justify-content: center !important;
+      margin-bottom: 0px !important;
+    }
+
+    .nut-dialog__content {
+      padding-top: 0px !important;
+      margin-top: 0px !important;
+    }
   }
-}
 </style>
