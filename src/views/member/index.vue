@@ -153,6 +153,10 @@
   import { onMounted, reactive, ref } from 'vue';
   import { formatNumber } from '@/utils/util';
   import { delay } from 'lodash';
+  import {ambAddress} from '@/setting'
+  
+
+  
   const uploadRef = ref();
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
 
@@ -259,7 +263,7 @@
     } else if (type === 'foggie') {
       window.open('https://fogworks.io/');
     } else if (type === 'pool') {
-      window.open('http://154.31.41.124:8086/');
+      window.open(ambAddress);
     }
     visible.value = false;
   }
