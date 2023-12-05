@@ -10,23 +10,31 @@
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <platform name="android">
+            <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> -->
       
       
         <!-- <config-file target="AndroidManifest.xml" parent="/manifest">
-            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+            <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+            <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
             <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
         </config-file> -->
-        <!-- <config-file parent="/*" target="AndroidManifest.xml">
-            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-        </config-file> -->
+      
         <!-- <plugin name="cordova-plugin-proxy" spec="1.7.0" /> -->
         <!-- <preference name="Hostname" value="amb.dev.u2i.net" />
         <preference name="Scheme" value="https" />
         <preference name="ResolveServiceWorkerRequests" value="true" />
         <preference name="MixedContentMode" value="2" /> -->
         <!-- <proxy match="/android_proxy/*" forward="https://amb.dev.u2i.net" /> -->
-        <icon src="res/icons/favicon.png" />
+        <icon src="res/icons/android/ldpi.png" density="ldpi" />
+        <icon src="res/icons/android/mdpi.png" density="mdpi" />
+        <icon src="res/icons/android/hdpi.png" density="hdpi" />
+        <icon src="res/icons/android/xhdpi.png" density="xhdpi" />
+        <icon src="res/icons/android/xxhdpi.png" density="xxhdpi" />
+        <icon src="res/icons/android/xxxhdpi.png" density="xxxhdpi" />
+
         <preference name="AndroidXEnabled" value="true" />
         <preference name="AndroidPersistentFileLocation" value="Internal" />
         <preference name="AndroidPersistentFileLocation" value="Compatibility" />

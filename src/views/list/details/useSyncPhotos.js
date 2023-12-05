@@ -66,6 +66,11 @@ export default function useSyncPhotos(props) {
       showToast.fail(content);
       return false;
     }
+    showNotify.primary('Sensitive information is recommended to be encrypted and uploaded', {
+      'class-name': 'notify_primary',
+      position: 'bottom',
+      duration: 5000,
+    });
     const d = { orderId: order_id.value };
     let merkleRes = await valid_upload(d);
     if (merkleRes?.data) {

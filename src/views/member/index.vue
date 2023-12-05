@@ -153,10 +153,8 @@
   import { onMounted, reactive, ref } from 'vue';
   import { formatNumber } from '@/utils/util';
   import { delay } from 'lodash';
-  import {ambAddress} from '@/setting'
-  
+  import { ambAddress } from '@/setting';
 
-  
   const uploadRef = ref();
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
 
@@ -165,10 +163,12 @@
   const email = computed(() => userStore.getUserInfo?.email);
   const dmcAccount = computed(() => userStore.getUserInfo?.dmc);
   const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
+  const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+
   const visible = ref<boolean>(false);
 
   watch(
-    () => promo_code.value,
+    () => cloudCodeIsBind.value,
     (newValue) => {
       if (newValue) {
         loadUserDmc();
