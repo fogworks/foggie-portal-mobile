@@ -1380,7 +1380,9 @@
                endTime:'- -',
                uuid:orderInfo.value.uuid,
                amb_uuid:orderInfo.value.amb_uuid,
-               domain:orderInfo.value.domain,} });
+               domain:orderInfo.value.domain,
+               electronic_type:orderInfo.value.electronic_type,
+              } });
           } else {
             showToast.fail('Cancel failed please try again');
           }
