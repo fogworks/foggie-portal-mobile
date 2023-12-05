@@ -136,7 +136,7 @@
           block
           type="info"
           style="margin-top: 20px"
-          v-if="showSkip && !isBind && !loading"
+          v-if="showSkip && !isBind && !loading && canWithDraw"
           @click="
             canWithDraw = true;
             code = '';
@@ -238,7 +238,7 @@
     if (!res.result.bind_secret) {
       response = await getIsVerifiedAPI();
     }
-    if (res.result.bind_secret) {
+    if (res.result.bind_secret ) {
       isBind.value = true;
       canWithDraw.value = true;
       loading.value = false;
