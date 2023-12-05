@@ -1373,7 +1373,14 @@
       onOk: () => {
         closedOrderApi({ uuid: orderInfo.value.amb_uuid, orderId: orderInfo.value.orderId }).then((res) => {
           if (res.code == 200) {
-            router.replace({ name: 'orderSummary', query: { id: orderInfo.value.orderId, type: 'history', status: 5 } });
+            router.replace({ name: 'orderSummary', query: { id: orderInfo.value.orderId,
+               type: 'history', 
+               status: 5 ,
+               createdTime:orderInfo.value.created_at,
+               endTime:'- -',
+               uuid:orderInfo.value.uuid,
+               amb_uuid:orderInfo.value.amb_uuid,
+               domain:orderInfo.value.domain,} });
           } else {
             showToast.fail('Cancel failed please try again');
           }

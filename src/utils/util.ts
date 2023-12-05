@@ -195,7 +195,7 @@ function handleRate(item) {
 
 const privatekey = '6Lfb1P8oAAAAAOLRpus_iOzdPyWVJZmxqmggXwiC';
 const secret = '6Lfb1P8oAAAAACjGYFUlFaWKOR6NqmYTKLkzRztj';
-const Lower_score_limit = 0.3;
+const Lower_score_limit = 0.1;
 function load_gpa_token(type = 'LOGIN') {
   return new Promise(async (resolve, inject) => {
     const grecaptcha = window.grecaptcha || {};
