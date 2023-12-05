@@ -22,11 +22,10 @@ function transferGMTTime(time) {
 }
 const transferUTCTime = (time, type = 'YYYY-MM-DD HH:mm:ss') => {
   time = new Date(time);
-  return moment.utc(time).format(type);
+  return moment.utc(time).local().format(type);
 };
 const transferUTCTimeDay = (time, type = 'YYYY-MM-DD') => {
   time = time.getTime() + 24 * 60 * 60 * 1000;
-  transferUTCTimeDay;
   return moment.utc(time).local().format(type);
 };
 function handleTimeStamp(timestamp) {
@@ -269,5 +268,4 @@ export {
   handleDays,
   handleExprie,
   handleRate,
-  FormatUtcDate,
 };
