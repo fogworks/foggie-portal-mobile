@@ -1,5 +1,6 @@
 import { HmacSHA1, enc } from 'crypto-js';
 import { Buffer } from 'buffer';
+import getExtensionByMimeType from './mimeTransfer.js';
 
 function appGetLocation(result) {
   cordovaDevice();
@@ -30,7 +31,7 @@ function appGetLocation(result) {
 function downloadFileHH(URL, NAME, headers) {
   //   // 下载路径
   let url = URL;
-  url = encodeURI(url);
+  // url = encodeURI(url);
   let filename = NAME; // 文件名
   fetch(url, { method: 'GET', headers })
     .then((response) => {
@@ -54,8 +55,9 @@ function downloadFileHH(URL, NAME, headers) {
 function saveBlobToFile(blob, filePath) {
   // 获取文件所在目录和文件名
   var directoryPath = filePath.substring(0, filePath.lastIndexOf('/') + 1);
-  var fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
-
+  var fileName = encodeURIComponent(filePath.substring(filePath.lastIndexOf('/') + 1));
+  console.log('directoryPath:', directoryPath);
+  console.log('fileName:', fileName);
   window.resolveLocalFileSystemURL(
     directoryPath,
     function (directoryEntry) {
@@ -74,7 +76,7 @@ function saveBlobToFile(blob, filePath) {
           );
         },
         function (error) {
-          console.error('Error getting file:', error);
+          console.error('Error getting file:', JSON.stringify(error));
         },
       );
     },
@@ -98,10 +100,11 @@ function redirectToAppSettings() {
 // 检查权限
 function checkedPermiss(url, name, headers) {
   var permissions = cordova.plugins.permissions;
-
   function requestManageExternalStoragePermission() {
-    // Android 11 及以上版本的处理逻辑
-    if (device.platform === 'Android' && parseFloat(device.version) >= 11) {
+    if (device.platform === 'Android' && parseFloat(device.version) >= 13) {
+      downloadFileHH(url, name, headers);
+    } else if (device.platform === 'Android' && parseFloat(device.version) >= 11 && parseFloat(device.version) < 13) {
+      // Android 11 及以上版本的处理逻辑
       cordova.plugins.permissions.requestPermission(
         permissions.MANAGE_EXTERNAL_STORAGE,
         function (status) {
@@ -141,12 +144,15 @@ function checkedPermiss(url, name, headers) {
     permissions.WRITE_EXTERNAL_STORAGE,
     function (status) {
       if (!status.hasPermission) {
+        console.error('检测无权限');
         requestManageExternalStoragePermission();
       } else {
+        console.error('检测有权限');
         downloadFileHH(url, name, headers);
       }
     },
     function (error) {
+      console.error('检测失败');
       console.error('Permission check error: ' + error);
       requestManageExternalStoragePermission();
     },
@@ -220,12 +226,23 @@ const getType = (fileName) => {
     return 5;
   }
 };
+
 function getFileDetails(fileURI, paramData) {
-  function errorHandler() {
-    alert('Failed to get file information');
+  function errorHandler(error) {
+    console.log('Error accessing file: ' + JSON.stringify(error));
+    alert('Failed to get file information: ' + error.code);
+  }
+
+  function errorHandler2(error) {
+    console.log('Error accessing file on second attempt: ' + JSON.stringify(error));
+    alert('Failed to get file information on second attempt: ' + error.code);
+  }
+  function errorHandler3(error) {
+    console.log('Error3 accessing file on second attempt: ' + JSON.stringify(error));
+    alert('Failed to get file information on second attempt: ' + error.code);
   }
   let fileName = fileURI.substr(fileURI.lastIndexOf('/') + 1);
-  if (fileName.split('.')[fileName.split('.').length - 1]) {
+  if (parseFloat(device.version) >= 13) {
     window.resolveLocalFileSystemURL(
       fileURI,
       function (fileEntry) {
@@ -237,105 +254,137 @@ function getFileDetails(fileURI, paramData) {
           console.log('Last Modified: ' + file.lastModifiedDate);
           console.log('fileEntry.toURL(): ' + fileEntry.toURL());
           console.log('fileURI: ' + fileURI);
-          file.name = decodeURIComponent(fileName);
+          file.name = decodeURIComponent(fileName + getExtensionByMimeType(file.type));
           file.localURL = decodeURIComponent(file.localURL);
           uploadFile(fileURI, file, paramData);
 
           // 如果需要上传文件，可以在这里调用上传函数
-        }, errorHandler);
+        }, errorHandler2);
       },
       errorHandler,
     );
-    // 现在可以使用 cordova-plugin-file 的 API 来处理这个路径
   } else {
-    // 无后缀命
-    window.FilePath.resolveNativePath(
-      fileURI,
-      function (nativePath) {
-        console.log('Native path: ' + nativePath);
-        window.resolveLocalFileSystemURL(
-          nativePath,
-          function (fileEntry) {
-            fileEntry.file(function (file) {
-              console.log('File: ' + JSON.stringify(file));
-              console.log('File Name: ' + file.name);
-              console.log('File Size: ' + file.size);
-              console.log('File Type: ' + file.type);
-              console.log('Last Modified: ' + file.lastModifiedDate);
-              console.log('fileEntry.toURL(): ' + fileEntry.toURL());
-              console.log('nativePath: ' + nativePath);
-              console.log('fileURI: ' + fileURI);
-              uploadFile(nativePath, file, paramData);
+    if (fileName.split('.').length > 1 && fileName.split('.')[fileName.split('.').length - 1]) {
+      window.resolveLocalFileSystemURL(
+        fileURI,
+        function (fileEntry) {
+          fileEntry.file(function (file) {
+            console.log('File: ' + JSON.stringify(file));
+            console.log('File Name: ' + file.name);
+            console.log('File Size: ' + file.size);
+            console.log('File Type: ' + file.type);
+            console.log('Last Modified: ' + file.lastModifiedDate);
+            console.log('fileEntry.toURL(): ' + fileEntry.toURL());
+            console.log('fileURI: ' + fileURI);
+            file.name = decodeURIComponent(fileName);
+            file.localURL = decodeURIComponent(file.localURL);
+            uploadFile(fileURI, file, paramData);
 
-              // 如果需要上传文件，可以在这里调用上传函数
-            }, errorHandler);
-          },
-          errorHandler,
-        );
-        // 现在可以使用 cordova-plugin-file 的 API 来处理这个路径
-      },
-      errorHandler,
-    );
+            // 如果需要上传文件，可以在这里调用上传函数
+          }, errorHandler);
+        },
+        errorHandler,
+      );
+      // 现在可以使用 cordova-plugin-file 的 API 来处理这个路径
+    } else {
+      // 无后缀命
+      window.FilePath.resolveNativePath(
+        fileURI,
+        function (nativePath) {
+          console.log('Native path: ' + nativePath);
+          window.resolveLocalFileSystemURL(
+            nativePath,
+            function (fileEntry) {
+              fileEntry.file(function (file) {
+                console.log('File: ' + JSON.stringify(file));
+                console.log('File Name: ' + file.name);
+                console.log('File Size: ' + file.size);
+                console.log('File Type: ' + file.type);
+                console.log('Last Modified: ' + file.lastModifiedDate);
+                console.log('fileEntry.toURL(): ' + fileEntry.toURL());
+                console.log('nativePath: ' + nativePath);
+                console.log('fileURI: ' + fileURI);
+                uploadFile(nativePath, file, paramData);
+
+                // 如果需要上传文件，可以在这里调用上传函数
+              }, errorHandler);
+            },
+            errorHandler,
+          );
+          // 现在可以使用 cordova-plugin-file 的 API 来处理这个路径
+        },
+        errorHandler,
+      );
+    }
   }
 }
 function chooseFile(paramData) {
   var permissions = cordova.plugins.permissions;
-  var permission = permissions.READ_EXTERNAL_STORAGE;
+  let permissionsList;
+  if (parseFloat(device.version) >= 13) {
+    permissionsList = [permissions.READ_MEDIA_IMAGES, permissions.READ_MEDIA_AUDIO, permissions.READ_MEDIA_VIDEO];
+  } else {
+    permissionsList = [permissions.READ_EXTERNAL_STORAGE];
+  }
 
-  permissions.checkPermission(
-    permission,
-    function (status) {
-      if (!status.hasPermission) {
-        permissions.requestPermission(
-          permission,
-          function (status) {
-            if (status.hasPermission) {
-              // 权限被授予，继续文件读取操作
-              fileChooser.open(
-                function (uri) {
-                  // uri 是所选文件的 URI
-                  console.log(uri);
-                  // 接下来可以使用 fileTransfer 上传文件
-                  getFileDetails(uri, paramData);
-                },
-                function (e) {
-                  console.log(e);
-                },
-              );
-            }
-          },
-          function () {
-            // 权限请求被拒绝
-          },
-        );
-      } else {
-        fileChooser.open(
-          function (uri) {
-            // uri 是所选文件的 URI
-            console.log(uri);
-            // 接下来可以使用 fileTransfer 上传文件
-            getFileDetails(uri, paramData);
-          },
-          function (e) {
-            console.log(e);
-          },
-        );
-      }
-    },
-    function () {
-      console.log('error,checkPermission');
+  function requestPermissions(permissionsList, callback) {
+    if (permissionsList.length === 0) {
+      return callback(true); // 所有权限都已处理
+    }
 
-      // 检查权限时出错
-    },
-  );
+    var permission = permissionsList.pop();
+
+    permissions.checkPermission(
+      permission,
+      function (status) {
+        if (!status.hasPermission) {
+          permissions.requestPermission(
+            permission,
+            function (status) {
+              if (status.hasPermission) {
+                requestPermissions(permissionsList, callback); // 继续检查下一个权限
+              } else {
+                callback(false); // 权限被拒绝
+              }
+            },
+            function () {
+              callback(false); // 请求权限时出错
+            },
+          );
+        } else {
+          requestPermissions(permissionsList, callback); // 权限已授予，继续检查下一个
+        }
+      },
+      function () {
+        callback(false); // 检查权限时出错
+      },
+    );
+  }
+
+  function openFileChooser() {
+    fileChooser.open(
+      { mine: '*/*' },
+      function (uri) {
+        console.log(uri); // 处理所选文件的 URI
+        getFileDetails(uri, paramData);
+      },
+      function (e) {
+        console.log(e);
+      },
+    );
+  }
+
+  requestPermissions(permissionsList.slice(), function (allGranted) {
+    if (allGranted) {
+      console.log('所有必要的权限已授予');
+      openFileChooser();
+    } else {
+      console.log('至少一个权限被拒绝或请求失败');
+    }
+  });
 }
 function uploadFile(nativePath, file, paramData) {
   const { serviceUrl, bucketName, prefixStr, secretAccessKey, accessKeyId } = paramData;
-  console.log(serviceUrl, 'serviceUrl');
-  console.log(bucketName, 'bucketName');
-  console.log(prefixStr, 'prefixStr');
-  console.log(secretAccessKey, 'secretAccessKey');
-  console.log(accessKeyId, 'accessKeyId');
   var fileTransfer = new FileTransfer();
   var options = new FileUploadOptions();
   options.fileKey = 'file';
