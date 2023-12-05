@@ -688,6 +688,7 @@
     if (type === 'download') {
       const objectKey = encodeURIComponent(checkData.fullName);
       const headers = getSignHeaders(objectKey);
+      console.log('headers:', headers);
       const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
         $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
