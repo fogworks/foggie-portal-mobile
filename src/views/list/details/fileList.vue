@@ -436,6 +436,7 @@
 </template>
 
 <script setup lang="ts">
+  import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNFT from '~icons/material-symbols/cast';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
