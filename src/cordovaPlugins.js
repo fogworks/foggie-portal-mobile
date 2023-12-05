@@ -242,7 +242,7 @@ function getFileDetails(fileURI, paramData) {
     alert('Failed to get file information on second attempt: ' + error.code);
   }
   let fileName = fileURI.substr(fileURI.lastIndexOf('/') + 1);
-  if (parseFloat(device.version) <= 13) {
+  if (parseFloat(device.version) >= 13) {
     window.resolveLocalFileSystemURL(
       fileURI,
       function (fileEntry) {

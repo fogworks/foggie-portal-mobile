@@ -268,5 +268,4 @@ export {
   handleDays,
   handleExprie,
   handleRate,
-  FormatUtcDate,
 };
