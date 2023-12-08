@@ -75,6 +75,7 @@ export const useUserStore = defineStore({
     },
     logout() {
       this.token = '';
+      this.refreshToken = '';
       this.info = {};
       this.cloudCodeIsBind = false;
     },
