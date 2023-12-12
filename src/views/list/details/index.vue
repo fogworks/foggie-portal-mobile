@@ -78,20 +78,20 @@
     <div class="detail_box">
       <div class="type_check_box type_check_box1">
         <div class="type_check">
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
+          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 1 } })">
             <div class="svg_box svg_box2 order-icon-node-tree">
               <!-- <IconRiNodeTree color="#fff" /> -->
               <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 60%; height: 60%; vertical-align: middle" />
             </div>
             <p>Merkle</p>
           </div>
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 2 } })">
+          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 2 } })">
             <div class="svg_box svg_box2 order-icon-send-to-back">
               <IconRiSendToBack color="#fff" />
             </div>
             <p>Challenge</p>
           </div>
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 3 } })">
+          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 3 } })">
             <div class="svg_box svg_box2 order-icon-input-cursor-move">
               <IconRiInputCursorMove color="#fff" />
             </div>
@@ -1381,7 +1381,9 @@
                endTime:'- -',
                uuid:orderInfo.value.uuid,
                amb_uuid:orderInfo.value.amb_uuid,
-               domain:orderInfo.value.domain,} });
+               domain:orderInfo.value.domain,
+               electronic_type:orderInfo.value.electronic_type,
+              } });
           } else {
             showToast.fail('Cancel failed please try again');
           }
