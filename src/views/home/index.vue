@@ -671,7 +671,7 @@
 
   .dmc_account {
     // background: #5758a0;
-    margin: 0 -4vw;
+    // margin: 0 -4vw;
     display: grid;
     grid-template-columns: auto 60px;
     gap: 30px;

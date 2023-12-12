@@ -78,20 +78,29 @@
     <div class="detail_box">
       <div class="type_check_box type_check_box1">
         <div class="type_check">
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 1 } })">
+          <div
+            class="type_item"
+            @click="router.push({ name: 'RecordsList', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })"
+          >
             <div class="svg_box svg_box2 order-icon-node-tree">
               <!-- <IconRiNodeTree color="#fff" /> -->
               <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 60%; height: 60%; vertical-align: middle" />
             </div>
             <p>Merkle</p>
           </div>
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 2 } })">
+          <div
+            class="type_item"
+            @click="router.push({ name: 'RecordsList', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 2 } })"
+          >
             <div class="svg_box svg_box2 order-icon-send-to-back">
               <IconRiSendToBack color="#fff" />
             </div>
             <p>Challenge</p>
           </div>
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 3 } })">
+          <div
+            class="type_item"
+            @click="router.push({ name: 'RecordsList', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 3 } })"
+          >
             <div class="svg_box svg_box2 order-icon-input-cursor-move">
               <IconRiInputCursorMove color="#fff" />
             </div>
@@ -693,6 +702,7 @@
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
         $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
       } else {
+        showToast.text('Coming soon for your download');
         fetch(url, { method: 'GET', headers })
           .then((response) => {
             if (response.ok) {
@@ -700,6 +710,7 @@
               console.log('Success', response);
               return response.blob();
             } else {
+              showToast.fail('Download failed, please try again');
               // 处理错误响应
               console.error('Error:', response.status, response.statusText);
             }
@@ -727,6 +738,7 @@
             document.body.removeChild(a);
           })
           .catch((error) => {
+            showToast.fail('Download failed, please try again');
             // 处理网络错误
             console.error('Network Error:', error);
           });
@@ -1368,22 +1380,28 @@
       content: createVNode('span', { style: {} }, 'Are you sure you want to cancel this order?'),
       cancelText: 'Cancel',
       okText: 'Yes',
+      popClass: 'dialog_class',
+
       onCancel: () => {
         // console.log('取消');
       },
       onOk: () => {
         closedOrderApi({ uuid: orderInfo.value.amb_uuid, orderId: orderInfo.value.orderId }).then((res) => {
           if (res.code == 200) {
-            router.replace({ name: 'orderSummary', query: { id: orderInfo.value.orderId,
-               type: 'history', 
-               status: 5 ,
-               createdTime:orderInfo.value.created_at,
-               endTime:'- -',
-               uuid:orderInfo.value.uuid,
-               amb_uuid:orderInfo.value.amb_uuid,
-               domain:orderInfo.value.domain,
-               electronic_type:orderInfo.value.electronic_type,
-              } });
+            router.replace({
+              name: 'orderSummary',
+              query: {
+                id: orderInfo.value.orderId,
+                type: 'history',
+                status: 5,
+                createdTime: orderInfo.value.created_at,
+                endTime: '- -',
+                uuid: orderInfo.value.uuid,
+                amb_uuid: orderInfo.value.amb_uuid,
+                domain: orderInfo.value.domain,
+                electronic_type: orderInfo.value.electronic_type,
+              },
+            });
           } else {
             showToast.fail('Cancel failed please try again');
           }

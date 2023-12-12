@@ -329,11 +329,17 @@ export default function useShare(orderInfo, header, deviceType) {
       //   shareRefContent.ipfsStr = '';
       // }
     }
-    let expireTimeStamp = new Date(orderInfo.value.expire).getTime();
-    let startTimeStamp = new Date(orderInfo.value.created_at).getTime();
-    periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
-    shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
-    window.open(`https://drops.fogworks.io/personal/#/create/${encodeURIComponent(shareRefContent.httpStr)}`);
+    if (orderInfo.value.expire) {
+      let expireTimeStamp = new Date(orderInfo.value.expire).getTime();
+      let startTimeStamp = new Date(orderInfo.value.created_at).getTime();
+      periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
+      shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
+      window.open(`https://drops.fogworks.io/personal/#/create/${encodeURIComponent(shareRefContent.httpStr)}`);
+    } else {
+      periodValue.value = [daySeconds * 7];
+      shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
+      window.open(`https://drops.fogworks.io/personal/#/create/${encodeURIComponent(shareRefContent.httpStr)}`);
+    }
   };
   watch(
     isReady,
@@ -399,6 +405,9 @@ export default function useShare(orderInfo, header, deviceType) {
   watch(showShareDialog, (val) => {
     isReady.value = false;
     shareType.value = '';
+    if (!val) {
+      periodValue.value = [3600];
+    }
     // httpCopyLink.value = '';
   });
   return {

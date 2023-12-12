@@ -1063,7 +1063,6 @@
         // transform: rotate(0deg);
         transform: scale(1.3);
       }
-
       100% {
         transform: scale(1);
       }
