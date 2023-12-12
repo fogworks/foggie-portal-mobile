@@ -66,9 +66,10 @@
 <script lang="ts" setup name="BasicLayoutPage">
 import { useRouter, useRoute } from 'vue-router';
 import { Home, Horizontal, My } from '@nutui/icons-vue';
-import { user, check_promo, bind_user_promo, checkDmcAccount, updateUser, } from '@/api';
+import { user, search_cloud,check_promo, bind_user_promo, checkDmcAccount, updateUser, } from '@/api';
 import { bind_promo, check_promo as check_amb_promo, check_user_bind } from '@/api/amb';
 import { onMounted, provide } from 'vue';
+
 import { useUserStore } from '@/store/modules/user';
 import { showToast, showDialog } from '@nutui/nutui';
 // import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
@@ -109,6 +110,7 @@ const router = useRouter();
 const route = useRoute();
 
 const activeTab = ref(0);
+const orderTotal=ref(0)
 
 const tabbarVisible = ref(true);
 
@@ -288,6 +290,20 @@ async function bindDmc() {
   }
 }
 
+  async function getOrder() {
+    const order_state = null;
+    const start_time = '';
+    const end_time = '';
+    const buy_result = 'success';
+    await search_cloud({ ps: 2, pn: 1, order_state, start_time, end_time, buy_result }).then((res) => {
+      orderTotal.value = res?.result?.total;
+       if (orderTotal.value > 0) {
+        userStore.setcurStepIndex(4);
+      } else {
+        userStore.setcurStepIndex(3);
+      }
+    });
+  }
 
 async function bindAmbCode() {
 
@@ -304,7 +320,7 @@ async function bindAmbCode() {
     id: 'amb-code',
   });
   await check_user_bind(uuid.value)
-    .then((res2) => {
+    .then(async(res2) => {
       if (res2.result.bind) {
 
         if (res2.result.approved && res2.result.refuse) {
@@ -331,9 +347,8 @@ async function bindAmbCode() {
           userStore.setcurStepIndex(3)
 
           // approved
-
-          if (!window.localStorage.hasCloudApproved) {
-            window.localStorage.hasCloudApproved = true;
+          await getOrder()
+          if (!orderTotal.value) {
             const onOk = () => {
               router.push({ name: 'Shop',  });
             };

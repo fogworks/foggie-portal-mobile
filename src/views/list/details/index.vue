@@ -1380,6 +1380,8 @@
       content: createVNode('span', { style: {} }, 'Are you sure you want to cancel this order?'),
       cancelText: 'Cancel',
       okText: 'Yes',
+      popClass: 'dialog_class',
+
       onCancel: () => {
         // console.log('取消');
       },

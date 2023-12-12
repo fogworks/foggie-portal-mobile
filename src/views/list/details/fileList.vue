@@ -213,11 +213,6 @@
             <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
           </template>
         </nut-tabbar-item>
-        <!-- <nut-tabbar-item tab-title="Delete">
-          <template #icon="props">
-            <IconDelete :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDelete>
-          </template>
-        </nut-tabbar-item> -->
       </nut-tabbar>
     </Teleport>
 
@@ -234,7 +229,6 @@
             <li v-if="isMobileOrder" @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
             <li v-if="isMobileOrder" @click="handlerClick('move')"><IconMove></IconMove> Move</li>
             <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
-            <!-- <li @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li> -->
           </ul>
           <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
         </div>
@@ -311,9 +305,6 @@
       :style="{ height: '300px' }"
       v-model:visible="showShareDialog"
     >
-      <!-- <div style="display: flex; align-items: center; justify-content: center; height: 100%" v-if="httpCopyLink">
-        <span> {{ httpCopyLink.substring(0, 30) + '...' }} </span><IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
-      </div> -->
       <div v-if="isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period:">
           <template #link>
@@ -344,7 +335,6 @@
         <div v-if="shareRefContent.ipfsStr && isMobileOrder">
           <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
           IPFS Link
-          <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
         </div>
         <div v-if="shareRefContent.httpStr">
           <IconHttp
@@ -354,7 +344,6 @@
             "
           ></IconHttp>
           HTTP Link
-          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
         <div v-if="shareRefContent.httpStr">
           <IconTwitter
@@ -364,7 +353,6 @@
             "
           ></IconTwitter>
           Twitter
-          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
         <div v-if="shareRefContent.httpStr">
           <IconFacebook
@@ -374,7 +362,6 @@
             "
           ></IconFacebook>
           Facebook
-          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
         </div>
         <div v-if="shareRefContent.httpStr">
           <IconSlack
@@ -436,12 +423,12 @@
 </template>
 
 <script setup lang="ts">
+  import ErrorPage from '@/views/errorPage/index.vue';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNFT from '~icons/material-symbols/cast';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
   import IconTwitter from '~icons/home/twitter.svg';
-  import IconFile from '~icons/bxs/file.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';
   import IconNewFolder from '~icons/home/new_folder.svg';
   import IconAllCate from '~icons/home/all-cate.svg';
@@ -449,17 +436,13 @@
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
   import IconVideo from '~icons/home/video.svg';
-  import IconOk from '~icons/home/ok.svg';
   import IconFolder from '~icons/home/folder.svg';
   import IconShare from '~icons/home/share.svg';
   import IconRename from '~icons/home/rename.svg';
   import IconMove from '~icons/home/move.svg';
   import IconDownload from '~icons/home/download.svg';
-  import IconDelete from '~icons/home/delete.svg';
-  import IconSwitch from '~icons/home/switch.svg';
   import IconMore from '~icons/home/more.svg';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
-  import IconCopy from '~icons/home/copy.svg';
   import IconHttp from '~icons/home/http.svg';
   import { reactive, toRefs, watch, onMounted } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
@@ -891,6 +874,7 @@
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
         $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
       } else {
+        showToast.text('Coming soon for your download');
         fetch(url, { method: 'GET', headers })
           .then((response) => {
             if (response.ok) {
