@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100%">
     <div class="out_blue">
       <div class="inside_blue">
         <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
@@ -52,10 +52,8 @@
         <span style="text-align: center" class="price_box_text"> 100GB = {{ middleTotalPrice }} DMC</span>
       </div>
     </div>
-    <div style="margin: 0 20px 40px">
-      <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading">Check VIP Details </nut-button>
-      <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
-    </div>
+    <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading">Check VIP Details </nut-button>
+    <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
     <Teleport to="body">
       <nut-popup position="top" :style="{ height: '420px' }" v-model:visible="showTop">
         <nut-form class="query_form" :model-value="shopForm">
@@ -195,13 +193,11 @@
   import { debounce, delay } from 'lodash';
   import FakeProgress from 'fake-progress';
 
-
   import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
   const dmc = computed(() => userStore.getUserInfo.dmc);
   const email = computed(() => userStore.getUserInfo.email);
   const uuid = computed(() => userStore.getUserInfo.uuid);
-
 
   // import useUpdateDMC from './useUpdateDMC';
   // const { getAmbDmc, targetAccount } = useUpdateDMC();

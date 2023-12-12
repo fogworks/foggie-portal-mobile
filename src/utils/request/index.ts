@@ -90,7 +90,6 @@ service.interceptors.response.use(
     if (ignoreUrl.indexOf(error.config.url) > -1) {
       return Promise.reject(error.message);
     }
-    showToast.fail(error.config.url, error.message);
     return Promise.reject(error.message);
   },
 );

@@ -693,6 +693,7 @@
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
         $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
       } else {
+        showToast.text('Coming soon for your download');
         fetch(url, { method: 'GET', headers })
           .then((response) => {
             if (response.ok) {
@@ -700,6 +701,7 @@
               console.log('Success', response);
               return response.blob();
             } else {
+              showToast.fail('Download failed, please try again');
               // 处理错误响应
               console.error('Error:', response.status, response.statusText);
             }
@@ -727,6 +729,7 @@
             document.body.removeChild(a);
           })
           .catch((error) => {
+            showToast.fail('Download failed, please try again');
             // 处理网络错误
             console.error('Network Error:', error);
           });
@@ -1374,14 +1377,19 @@
       onOk: () => {
         closedOrderApi({ uuid: orderInfo.value.amb_uuid, orderId: orderInfo.value.orderId }).then((res) => {
           if (res.code == 200) {
-            router.replace({ name: 'orderSummary', query: { id: orderInfo.value.orderId,
-               type: 'history', 
-               status: 5 ,
-               createdTime:orderInfo.value.created_at,
-               endTime:'- -',
-               uuid:orderInfo.value.uuid,
-               amb_uuid:orderInfo.value.amb_uuid,
-               domain:orderInfo.value.domain,} });
+            router.replace({
+              name: 'orderSummary',
+              query: {
+                id: orderInfo.value.orderId,
+                type: 'history',
+                status: 5,
+                createdTime: orderInfo.value.created_at,
+                endTime: '- -',
+                uuid: orderInfo.value.uuid,
+                amb_uuid: orderInfo.value.amb_uuid,
+                domain: orderInfo.value.domain,
+              },
+            });
           } else {
             showToast.fail('Cancel failed please try again');
           }

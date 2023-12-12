@@ -24,13 +24,15 @@
         </div>
 
         <div class="ticket_box">
-          <div class="title_item" style="margin-top: 10px" v-if="memo">
+          <div class="title_item" style="margin-top: 10px">
             <p>Memo: </p>
-            <p class="dmc_account" @click="copySecret(memo)">{{ memo }} <IconCopy color="#246bf7"></IconCopy></p>
+            <p class="dmc_account" v-if="memo" @click="copySecret(memo)">{{ memo }} <IconCopy color="#246bf7"></IconCopy></p>
           </div>
           <div class="title_item">
             <p>Receiving account:</p>
-            <p @click="copySecret(targetAccount)" class="dmc_account">{{ targetAccount }} <IconCopy color="#246bf7"></IconCopy></p>
+            <p v-if="targetAccount" @click="copySecret(targetAccount)" class="dmc_account"
+              >{{ targetAccount }} <IconCopy color="#246bf7"></IconCopy
+            ></p>
           </div>
           <div class="title_item" v-if="dmc">
             <p>Your Payment Account:</p>
@@ -135,7 +137,7 @@
       rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
     transform-style: preserve-3d;
     -webkit-transform-origin: 50%;
-    -webkit-animation: sizeChange 5s infinite;
+    -webkit-animation: sizeChange 3s infinite;
     -webkit-animation-timing-function: linear;
     -webkit-perspective: 1000;
     -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
@@ -147,11 +149,20 @@
     }
   }
   @keyframes sizeChange {
-    from {
+    0% {
       -webkit-transform: rotateY(0deg);
     }
-    to {
-      -webkit-transform: rotateY(360deg);
+    25% {
+      -webkit-transform: rotateY(-30deg);
+    }
+    50% {
+      -webkit-transform: rotateY(0deg);
+    }
+    75% {
+      -webkit-transform: rotateY(30deg);
+    }
+    100% {
+      -webkit-transform: rotateY(0deg);
     }
   }
   .top_img {
@@ -160,7 +171,7 @@
     // margin: 40px auto;
   }
   .middle_box {
-    padding: 0 10px;
+    // padding: 0 10px;
     height: calc(100vh - 450px);
     display: flex;
     flex-direction: column;
@@ -286,7 +297,7 @@
       background: #fff;
       border-radius: 20px;
       color: #000;
-      padding: 20px;
+      padding: 20px 25px;
       font-size: 26px !important;
       font-weight: normal;
       margin: 20px 0;
