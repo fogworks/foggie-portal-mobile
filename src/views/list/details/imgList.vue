@@ -1,25 +1,27 @@
 <template>
   <div>
     <div class="img-content" v-if="isReady">
-      <div v-if="imgData.length" v-for="(item, index) in imgData" class="img-box">
-        <p v-if="item.list.length" class="top-title">
-          <nut-checkbox
-            :indeterminate="item.indeterminate"
-            v-if="isCheckMode"
-            v-model="item.checkAll"
-            @change="(val) => handleCheckAllChange(val, item)"
-          >
-            {{ item.time }}</nut-checkbox
-          >
-          <span v-else>{{ item.time }}</span>
-        </p>
-        <nut-infinite-loading
-          load-more-txt="No more content"
-          v-model="infinityValue"
-          :has-more="!!continuationToken"
-          @load-more="getFileList"
-          class="img-item-box"
-        >
+      <nut-infinite-loading
+        ref="listRef"
+        load-more-txt="No more content"
+        v-model="infinityValue"
+        :has-more="!isEnd"
+        @load-more="getFileList"
+        class="img-item-box"
+      >
+        <div v-if="imgData.length" v-for="(item, index) in imgData" class="img-box">
+          <p v-if="item.list.length" class="top-title">
+            <nut-checkbox
+              :indeterminate="item.indeterminate"
+              v-if="isCheckMode"
+              v-model="item.checkAll"
+              @change="(val) => handleCheckAllChange(val, item)"
+            >
+              {{ item.time }}</nut-checkbox
+            >
+            <span v-else>{{ item.time }}</span>
+          </p>
+
           <nut-checkbox-group
             :validate-event="false"
             v-model="imgCheckedData.value[item.dateId]"
@@ -51,9 +53,9 @@
               </nut-image>
             </div>
           </nut-checkbox-group>
-        </nut-infinite-loading>
-      </div>
-      <nut-empty v-else :image-size="200" description="No Data" image="error" />
+        </div>
+        <nut-empty v-else :image-size="200" description="No Data" image="error" />
+      </nut-infinite-loading>
     </div>
     <div class="img-content" v-else>
       <nut-empty :image-size="200" description="No Data" image="error" />
@@ -76,6 +78,7 @@
   import imgUrl from '@/assets/DMC_token.png';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { poolUrl } from '@/setting.js';
+  import { list } from 'postcss';
 
   let server;
   // import { isCloudCanUpload_Api } from '@/api/upload';
@@ -101,6 +104,8 @@
   });
   const tableLoading = ref(false);
   const isReady = ref(false);
+  const isEnd = ref(false);
+  const listRef = ref('');
   const imgIndex = ref(0);
   const store = useUserStore();
   const uuid = computed(() => store.getUserInfo?.uuid || '');
@@ -174,6 +179,7 @@
                     date: content[k].date,
                     count: content[k].count,
                   });
+                  console.log(dateTimeLine.value, 'dateTimeLine');
                   tableLoading.value = false;
                   resolve(true);
                 }
@@ -187,10 +193,12 @@
       getMethod();
     });
   };
+
   const getFileList = function (scroll, prefix, reset = false, date = '') {
     let target = '';
     let max_keys = '';
     target = imgData.value.find((el) => el.time == date);
+    console.log(imgIndex.value, 'imgIndex');
     if (target) return false;
     if (dateTimeLine.value[imgIndex.value]) {
       date = dateTimeLine.value[imgIndex.value].date;
@@ -350,6 +358,7 @@
       tableData.value = [...tableData.value, ...content];
     }
     console.log(tableData.value, 'tableDatatableData');
+    isEnd.value = dateTimeLine.value.findIndex((el) => el.date == dateKey) == dateTimeLine.value.length - 1;
     if (data.isTruncated) {
       continuationToken.value = data.continuationToken;
     } else {
@@ -357,6 +366,12 @@
     }
     showToast.hide('img_time_line');
     tableLoading.value = false;
+    infinityValue.value = false;
+    nextTick(() => {
+      if (!isEnd.value && listRef.value.$el.clientHeight >= listRef.value.$el.scrollHeight) {
+        getFileList();
+      }
+    });
   };
   const init = async () => {
     await getOrderInfo();
@@ -466,7 +481,8 @@
       }
     }
     .img-item-box {
-      height: calc(100vh - 290px);
+      // min-height: 100px;
+      height: calc(100vh - 270px);
       overflow: auto;
       display: flex;
       justify-content: flex-start;

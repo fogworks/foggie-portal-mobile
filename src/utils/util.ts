@@ -22,11 +22,10 @@ function transferGMTTime(time) {
 }
 const transferUTCTime = (time, type = 'YYYY-MM-DD HH:mm:ss') => {
   time = new Date(time);
-  return moment.utc(time).format(type);
+  return moment.utc(time).local().format(type);
 };
 const transferUTCTimeDay = (time, type = 'YYYY-MM-DD') => {
   time = time.getTime() + 24 * 60 * 60 * 1000;
-  transferUTCTimeDay;
   return moment.utc(time).local().format(type);
 };
 function handleTimeStamp(timestamp) {
@@ -195,7 +194,7 @@ function handleRate(item) {
 
 const privatekey = '6Lfb1P8oAAAAAOLRpus_iOzdPyWVJZmxqmggXwiC';
 const secret = '6Lfb1P8oAAAAACjGYFUlFaWKOR6NqmYTKLkzRztj';
-const Lower_score_limit = 0.3;
+const Lower_score_limit = 0.1;
 function load_gpa_token(type = 'LOGIN') {
   return new Promise(async (resolve, inject) => {
     const grecaptcha = window.grecaptcha || {};
@@ -269,5 +268,4 @@ export {
   handleDays,
   handleExprie,
   handleRate,
-  FormatUtcDate,
 };

@@ -1,6 +1,7 @@
 export default function typeApi() {
   const buildType = import.meta.env.VITE_BUILD_TYPE;
   if (buildType == 'ANDROID') {
+    // 测试
     return {
       apiUrl: 'https://devlop.fogworks.io',
       nodeUrl: 'https://45.207.245.24:28081',
@@ -8,6 +9,14 @@ export default function typeApi() {
       shareUrl: 'https://45.207.245.24:17071',
       webUrl: 'https://amb.dev.u2i.net',
     };
+    // 线上
+    // return {
+    //   apiUrl: 'https://pool.fogworks.io',
+    //   nodeUrl: 'http://45.201.245.229:28080',
+    //   chainUrl: 'https://scontract.dmctech.io:8361',
+    //   shareUrl: 'https://45.207.245.24:17071',
+    //   webUrl: 'https://m.fogworks.io',
+    // };
     // return {
     //   apiUrl: 'https://amb.dev.u2i.net',
     //   nodeUrl: 'https://amb.dev.u2i.net',

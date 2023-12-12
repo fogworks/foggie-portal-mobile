@@ -339,15 +339,20 @@ export default function useShare(orderInfo, header, deviceType) {
     isReady,
     (val) => {
       if (val) {
-        imgDesc.value = '';
-        let expireTimeStamp = new Date(orderInfo.value.expire).getTime();
-        let startTimeStamp = new Date(orderInfo.value.created_at).getTime();
-        options.value = options.value.filter((el) => {
-          return el.value < (expireTimeStamp - startTimeStamp) / 1000;
-        });
-        desc.value = transferUTCTime(orderInfo.value.expire);
-        options.value.unshift({ text: desc.value, value: +((expireTimeStamp - startTimeStamp) / 1000).toFixed(0) });
-        periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
+        if (orderInfo.value.expire) {
+          imgDesc.value = '';
+          let expireTimeStamp = new Date(orderInfo.value.expire).getTime();
+          let startTimeStamp = new Date(orderInfo.value.created_at).getTime();
+          options.value = options.value.filter((el) => {
+            return el.value < (expireTimeStamp - startTimeStamp) / 1000;
+          });
+          desc.value = transferUTCTime(orderInfo.value.expire);
+          options.value.unshift({ text: desc.value, value: +((expireTimeStamp - startTimeStamp) / 1000).toFixed(0) });
+          periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
+        } else {
+          desc.value = '1 hour';
+          periodValue.value = [3600];
+        }
       } else {
         options.value = [
           {

@@ -78,20 +78,20 @@
     <div class="detail_box">
       <div class="type_check_box type_check_box1">
         <div class="type_check">
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
+          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 1 } })">
             <div class="svg_box svg_box2 order-icon-node-tree">
               <!-- <IconRiNodeTree color="#fff" /> -->
               <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 60%; height: 60%; vertical-align: middle" />
             </div>
             <p>Merkle</p>
           </div>
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 2 } })">
+          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 2 } })">
             <div class="svg_box svg_box2 order-icon-send-to-back">
               <IconRiSendToBack color="#fff" />
             </div>
             <p>Challenge</p>
           </div>
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 3 } })">
+          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 3 } })">
             <div class="svg_box svg_box2 order-icon-input-cursor-move">
               <IconRiInputCursorMove color="#fff" />
             </div>
@@ -134,6 +134,7 @@
       </div>
       <div class="today_file">
         <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
+        <!-- <span class="see_all" @click="syncPhotos">Sync Photos</span> -->
         <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })"
           >See All ></span
         >
@@ -388,7 +389,7 @@
   import useOrderInfo from './useOrderInfo.js';
   import useShare from './useShare.js';
   import { showToast } from '@nutui/nutui';
-  import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
+  import { transferUTCTime, getfilesize } from '@/utils/util';
   import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
@@ -396,7 +397,6 @@
   import { getSecondTime } from '@/utils/util';
   import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
   import ErrorPage from '@/views/errorPage/index.vue';
-
   import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
@@ -448,7 +448,6 @@
   let server;
   const route = useRoute();
   const router = useRouter();
-
   const successStatus = ref<number>(204);
   const isNameLoading = ref(false);
   // const sheetVisible = ref(false);
@@ -681,7 +680,7 @@
         break;
     }
   }
-
+  const $cordovaPlugins = inject('$cordovaPlugins');
   const handlerClick = async (type: string) => {
     const checkData = JSON.parse(JSON.stringify(detailRow.value));
     console.log(checkData, 'checkData');
@@ -689,38 +688,55 @@
     if (type === 'download') {
       const objectKey = encodeURIComponent(checkData.fullName);
       const headers = getSignHeaders(objectKey);
+      console.log('headers:', headers);
       const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
-      fetch(url, { method: 'GET', headers })
-        .then((response) => {
-          if (response.ok) {
-            // 创建一个 Blob 对象，并将响应数据写入其中
-            console.log('Success', response);
-            return response.blob();
-          } else {
-            // 处理错误响应
-            console.error('Error:', response.status, response.statusText);
-          }
-        })
-        .then((blob) => {
-          console.log(blob, 'blob');
+      if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+        $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
+      } else {
+        fetch(url, { method: 'GET', headers })
+          .then((response) => {
+            if (response.ok) {
+              // 创建一个 Blob 对象，并将响应数据写入其中
+              console.log('Success', response);
+              return response.blob();
+            } else {
+              // 处理错误响应
+              console.error('Error:', response.status, response.statusText);
+            }
+          })
+          .then((blob) => {
+            console.log(blob, 'blob');
+            console.log('Blob type:', blob.type);
 
-          // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = checkData.fullName;
+            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+            const a = document.createElement('a');
+            console.log("document.createElement('a')");
 
-          // 将 <a> 元素添加到文档中，并模拟点击
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        })
-        .catch((error) => {
-          // 处理网络错误
-          console.error('Network Error:', error);
-        });
+            a.href = URL.createObjectURL(blob);
+            console.log(a.href);
+
+            a.download = checkData.fullName;
+            console.log(a.download);
+
+            // 将 <a> 元素添加到文档中，并模拟点击
+            document.body.appendChild(a);
+            console.log('添加');
+            a.click();
+            console.log('点击');
+
+            document.body.removeChild(a);
+          })
+          .catch((error) => {
+            // 处理网络错误
+            console.error('Network Error:', error);
+          });
+      }
     } else if (type === 'share') {
       await doShare(checkData);
     }
+  };
+  const syncPhotos = () => {
+    $cordovaPlugins.syncPhotos();
   };
   const getSignHeaders = (objectKey) => {
     // const objectKey = encodeURIComponent(checkData[0].fullName);
@@ -1047,6 +1063,8 @@
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
+    console.log(11111);
+
     showToast.loading('Loading', {
       cover: true,
       customClass: 'app_loading',
@@ -1055,6 +1073,10 @@
       id: 'file_list',
     });
     let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+    console.log('ip:', ip);
+    console.log('metadata.value:', metadata.value);
+    console.log('metadata.value:', JSON.stringify(metadata.value));
+
     server = new grpcService.default.ServiceClient(ip, null, null);
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix('');
@@ -1144,6 +1166,7 @@
           isError.value = true;
           showToast.hide('file_list');
           console.log('err----list', err);
+          console.log('err----list', JSON.stringify(err));
         }
       },
     );
@@ -1302,7 +1325,7 @@
       query: {
         id: order_id,
         status: state,
-        createdTime: transferGMTTime(orderInfo.value.order_created_at),
+        createdTime: transferUTCTime(orderInfo.value.order_created_at),
         endTime: transferUTCTime(orderInfo.value.expire),
         uuid: orderInfo.value.uuid,
         amb_uuid: orderInfo.value.amb_uuid,
@@ -1351,7 +1374,16 @@
       onOk: () => {
         closedOrderApi({ uuid: orderInfo.value.amb_uuid, orderId: orderInfo.value.orderId }).then((res) => {
           if (res.code == 200) {
-            router.replace({ name: 'orderSummary', query: { id: orderInfo.value.orderId, type: 'history', status: 5 } });
+            router.replace({ name: 'orderSummary', query: { id: orderInfo.value.orderId,
+               type: 'history', 
+               status: 5 ,
+               createdTime:orderInfo.value.created_at,
+               endTime:'- -',
+               uuid:orderInfo.value.uuid,
+               amb_uuid:orderInfo.value.amb_uuid,
+               domain:orderInfo.value.domain,
+               electronic_type:orderInfo.value.electronic_type,
+              } });
           } else {
             showToast.fail('Cancel failed please try again');
           }
@@ -1388,6 +1420,23 @@
 </script>
 
 <style lang="scss" scoped>
+  .upload_btn {
+    position: fixed;
+    bottom: 150px;
+    right: 50px;
+    font-size: 80px;
+    border-radius: 50%;
+    padding: 10px;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
   #txtContainer {
     color: #fff;
     width: 100%;

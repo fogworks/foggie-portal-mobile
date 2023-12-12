@@ -122,10 +122,10 @@
             <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
             <div>Fog Works</div>
           </div>
-          <div @click="choose('pool')">
+          <!-- <div @click="choose('pool')">
             <img src="@/assets/user.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
             <div>Premium Agent</div>
-          </div>
+          </div> -->
           <!-- <div @click="choose('client')">
           <Shop></Shop>
           <div>Cloud Mining Pool Client</div>
@@ -144,7 +144,7 @@
   import '@nutui/nutui/dist/packages/dialog/style';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
- 
+
   import loadingImg from '@/components/loadingImg/index.vue';
   import { createVNode } from 'vue';
   import { useRouter } from 'vue-router';
@@ -153,6 +153,8 @@
   import { onMounted, reactive, ref } from 'vue';
   import { formatNumber } from '@/utils/util';
   import { delay } from 'lodash';
+  import { ambAddress } from '@/setting';
+
   const uploadRef = ref();
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
 
@@ -161,8 +163,19 @@
   const email = computed(() => userStore.getUserInfo?.email);
   const dmcAccount = computed(() => userStore.getUserInfo?.dmc);
   const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
+  const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+
   const visible = ref<boolean>(false);
 
+  watch(
+    () => cloudCodeIsBind.value,
+    (newValue) => {
+      if (newValue) {
+        loadUserDmc();
+      }
+    },
+    { immediate: true },
+  );
 
   /* 获取用户身份信息 */
   function loadUserInfo() {
@@ -216,7 +229,8 @@
         userStore.setCloudCodeIsBind(false);
 
         // localStorage.removeItem('refresh_token');
-        router.push('/guide');
+        // router.push('/guide');
+        router.push('/login');
         // console.log('确定');
       },
     });
@@ -249,7 +263,7 @@
     } else if (type === 'foggie') {
       window.open('https://fogworks.io/');
     } else if (type === 'pool') {
-      window.open('http://154.31.41.124:8086/');
+      window.open(ambAddress);
     }
     visible.value = false;
   }
@@ -299,7 +313,6 @@
 
   onMounted(async () => {
     loadUserInfo();
-    loadUserDmc();
   });
 </script>
 
@@ -341,6 +354,7 @@
             rgb(24 32 79 / 25%) 0px 40px 80px,
             rgb(255 255 255 / 50%) 0px 0px 0px 0.5px inset;
         }
+
         .uploadIcon {
           border-radius: 50%;
           width: 40px;

@@ -20,6 +20,12 @@
   let vh = window.innerHeight * 0.01;
 
   onMounted(async () => {
+    if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+      let script = document.createElement('script');
+      script.src = 'cordova.js';
+      document.body.appendChild(script);
+    }
+
     document.documentElement.style.setProperty('--vh', `${vh}px`);
   });
 </script>
