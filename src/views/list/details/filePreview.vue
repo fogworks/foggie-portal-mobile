@@ -25,7 +25,8 @@ console.log(fileType.value);
   function rendered() {
     console.log('渲染完成');
   }
-  function errorHandler() {
+  function errorHandler(error) {
+    console.log(error)
     console.log('渲染失败');
   }
 </script>

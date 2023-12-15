@@ -149,7 +149,9 @@
     const [start, end] = shortcuts[timeType.value]();
     const postData = !start && !end ? {} : { start_time: start, end_time: end };
     search_order_profit(postData).then((res) => {
-      earnListData.value = res.result.map((el) => {
+    console.log(res,'11111111');
+    
+      earnListData.value = (res.result ?? []).map((el) => {
         return {
           quantity: el.profit,
           order_id: el.order_id,

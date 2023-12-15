@@ -41,29 +41,22 @@
       </div>
     </div>
     <div class="userBox">
-      <!-- <div class="title">
-        <div>
-          <Issue color="#90B3EF" width="12px" height="12px" style="margin-right: 5px" />
-          Is multi factor authentication enabled when withdrawing? If you successfully bind, you will not be able to close it!
-        </div>
+      <div class="withdraw-btn" direction="horizontal" align="center">
+        <div class="action_item" @click="toRecharge">
+          <!-- <img src="@/assets/recharge.svg" alt="" /> -->
+          <img src="@/assets/Recharge.png" alt="" />
 
-        <nut-switch
-          :model-value="withdrawalIsVerified"
-          active-text="Yes"
-          inactive-text="No"
-          @change="changeIsVerified"
-        >
-        </nut-switch>
-      </div> -->
+          Recharge
+        </div>
+        <div class="action_item" @click="showWithdraw">
+          <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
+          <img src="@/assets/Withdraw.png" alt="" />
+
+          Withdraw
+        </div>
+      </div>
 
       <nut-row class="buttonContent">
-        <!-- <nut-col :span="6" @click="gotoDetail('/withdraw')">
-        <div class="customBtn">
-          <Retweet color="#505056" />
-        </div>
-        <div>Payment Security</div>
-      </nut-col> -->
-
         <nut-col :span="6" @click="gotoDetail('/personalInfo')">
           <div class="customBtn">
             <!-- <My2 color="#505056" /> -->
@@ -139,14 +132,14 @@
 
 <script lang="ts" setup name="MemberPage">
   import { useUserStore } from '@/store/modules/user';
-  import { My2, Service, Link, ArrowRight2, Photograph, Issue } from '@nutui/icons-vue';
+  import { ArrowRight2, Photograph } from '@nutui/icons-vue';
   import { showDialog } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
 
   import loadingImg from '@/components/loadingImg/index.vue';
-  import { createVNode } from 'vue';
+  import { createVNode, inject } from 'vue';
   import { useRouter } from 'vue-router';
   import { user, setUserAvatarApi } from '@/api/index';
   import { get_user_dmc, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
@@ -164,9 +157,10 @@
   const dmcAccount = computed(() => userStore.getUserInfo?.dmc);
   const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
-
   const visible = ref<boolean>(false);
 
+  const bindAmbCode = inject('bindAmbCode');
+  const openBindDMCDiaolg = inject('openBindDMCDiaolg');
   watch(
     () => cloudCodeIsBind.value,
     (newValue) => {
@@ -268,6 +262,29 @@
     visible.value = false;
   }
 
+  // 提现
+  const showWithdraw = () => {
+    if (!dmcAccount.value) {
+      openBindDMCDiaolg();
+
+      return false;
+    } else if (!cloudCodeIsBind.value) {
+      bindAmbCode();
+    } else {
+      router.push({ name: 'Withdraw' });
+    }
+  };
+
+  //充值
+  const toRecharge = () => {
+    if (!promo_code.value || !cloudCodeIsBind.value) {
+      bindAmbCode();
+      return false;
+    } else {
+      router.push({ name: 'Recharge' });
+    }
+  };
+
   /* 上传 SSSSSSSSSSSSSSSSSSSSS */
   //#region
   function clickInput() {
@@ -326,7 +343,7 @@
     .userHeader {
       padding: 20px 60px;
       background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding-bottom: 150px;
+      padding-bottom: 250px;
 
       .title {
         color: azure;
@@ -421,7 +438,70 @@
       border-radius: 80px 80px 0 0;
       padding: 50px 60px;
 
-      // min-height: 300px;
+      .withdraw-btn {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: space-around;
+        transform: translateY(-80px);
+        width: 95%;
+        margin: 0 auto;
+        padding: 20px 0;
+        border-radius: 16px;
+        border: 4px solid transparent;
+        background: #fff;
+        // box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+        background:
+          linear-gradient(#fff, #fff) padding-box,
+          linear-gradient(145deg, #e81cff, #40c9ff) border-box;
+        top: -50px;
+        .action_item {
+          z-index: 88;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          // color: #333333;
+          color: #5758a0;
+          font-size: 30px;
+          font-weight: bold;
+
+          img {
+            display: block;
+            width: 160px;
+            margin-bottom: 10px;
+          }
+        }
+      }
+
+      .withdraw-btn::before {
+        content: '';
+        position: absolute;
+        width: 140%;
+        background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
+        height: 80%;
+        animation: rotBGimg 3s linear infinite;
+        transition: all 0.2s linear;
+      }
+
+      @keyframes rotBGimg {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .withdraw-btn::after {
+        content: '';
+        position: absolute;
+        background: #fff;
+        inset: 3px;
+        border-radius: 15px;
+      }
+
       .title {
         font-size: 26px;
         color: #000;
@@ -434,7 +514,6 @@
 
       .buttonContent {
         .customBtn {
-          margin-top: 100px;
           width: 100px;
           height: 100px;
           background: #f4f5f9;

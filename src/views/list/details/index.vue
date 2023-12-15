@@ -112,7 +112,7 @@
           <div class="svg_box svg_box2 order-icon-recycle">
             <keySolid color="#fff" />
           </div>
-          <p>S3 Access</p>
+          <p>S3 endpoint</p>
         </div>
       </div>
       <div class="type_check_box" style="margin-top: 5px; border-radius: 10px; background-color: #fff">
