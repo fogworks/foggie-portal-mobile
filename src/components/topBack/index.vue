@@ -1,9 +1,10 @@
 <template>
-  <div class="top_back">
+  <div class="top_back" @click.capture="">
     <div class="img_box">
       <img @click="router.go(-1)" src="@/assets/arrow-left.svg" alt="" />
     </div>
     <slot></slot>
+    <slot name='right'></slot>
   </div>
 </template>
 
@@ -32,4 +33,5 @@
     font-family: Hellofont FangHuaTi;
     border-radius: 16px;
   }
+
 </style>

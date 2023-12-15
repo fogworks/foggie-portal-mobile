@@ -3,7 +3,9 @@
     <div class="dmc_account">
       <div class="dmc_account_box">
         <div class="img-box">
-          <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
+          <router-link to="/member">
+            <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
+          </router-link>
         </div>
         Hello,
         {{ userInfo.email && userInfo.email.split('@')[0] }}
@@ -48,17 +50,15 @@
       </div>
     </div>
     <div class="withdraw-btn" direction="horizontal" align="center">
-      <div class="action_item" @click="toRecharge">
+      <div class="action_item" @click="gotoPage('Bucket')">
         <!-- <img src="@/assets/recharge.svg" alt="" /> -->
-        <img src="@/assets/Recharge.png" alt="" />
-
-        Recharge
+        <img src="@/assets/home_bucket.png" alt="" />
+        Bucket 
       </div>
-      <div class="action_item" @click="showWithdraw">
+      <div class="action_item" @click="gotoPage('NFT')">
         <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
-        <img src="@/assets/Withdraw.png" alt="" />
-
-        Withdraw
+        <img src="@/assets/home_NFT.png" alt="" />
+        NFT
       </div>
     </div>
     <div class="middle_btn_box">
@@ -473,17 +473,17 @@
       .finally(() => {});
   }
 
-  const showWithdraw = () => {
-    if (!userInfo.value.dmc) {
-      openBindDMCDiaolg();
+  // const showWithdraw = () => {
+  //   if (!userInfo.value.dmc) {
+  //     openBindDMCDiaolg();
 
-      return false;
-    } else if (!cloudCodeIsBind.value) {
-      bindAmbCode();
-    } else {
-      router.push({ name: 'Withdraw' });
-    }
-  };
+  //     return false;
+  //   } else if (!cloudCodeIsBind.value) {
+  //     bindAmbCode();
+  //   } else {
+  //     router.push({ name: 'Withdraw' });
+  //   }
+  // };
 
   const gotoPage = (type, query = '') => {
     if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
@@ -502,6 +502,10 @@
         router.push('/analysisChart');
       } else if (type === 'Order') {
         router.push('/list');
+      }else if(type == 'Bucket'){
+        router.push('/bucketList');
+      }else if(type == 'NFT'){
+        router.push('/nft');
       }
     }
   };
@@ -515,14 +519,14 @@
   const toBuyOrder = () => {
     gotoPage('shop');
   };
-  const toRecharge = () => {
-    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
-      bindAmbCode();
-      return false;
-    } else {
-      router.push({ name: 'Recharge' });
-    }
-  };
+  // const toRecharge = () => {
+  //   if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+  //     bindAmbCode();
+  //     return false;
+  //   } else {
+  //     router.push({ name: 'Recharge' });
+  //   }
+  // };
 
   function gotoBindAmb() {
     if (curStepIndex.value !== 1) {
@@ -992,7 +996,7 @@
 
       img {
         display: block;
-        width: 160px;
+        width: 140px;
         margin-bottom: 10px;
       }
     }
@@ -1185,6 +1189,7 @@
   .googleVerificationBox {
     padding: 60px 40px;
     padding-bottom: 160px;
+
     .title {
       font-size: 36px;
       font-weight: 600;
@@ -1279,6 +1284,7 @@
 
     .auth_qrcode {
       text-align: center;
+
       img {
         width: 400px;
         height: 400px;

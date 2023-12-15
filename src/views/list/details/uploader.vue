@@ -18,8 +18,8 @@
       class="upload_class"
     >
       <nut-button type="info" class="upload_btn" size="small">
-        <!-- + -->
-        <img src="@/assets/newIcon/upload.png" alt="" srcset="" />
+        +
+        <!-- <img src="@/assets/newIcon/upload.png" alt="" srcset="" /> -->
       </nut-button>
     </nut-uploader>
     <nut-button
