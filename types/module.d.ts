@@ -14,3 +14,6 @@ declare module 'virtual:*' {
   const result: any;
   export default result;
 }
+
+declare module '@metamask/sdk';
+declare module '@metamask/detect-provider';

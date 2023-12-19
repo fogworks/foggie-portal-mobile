@@ -143,7 +143,7 @@
       </div>
       <div class="today_file">
         <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
-        <!-- <span class="see_all" @click="syncPhotos">Sync Photos</span> -->
+        <!-- <span class="see_all" @click="syncPhotos">Sync Photos {{ syncImgList.length }}</span> -->
         <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })"
           >See All ></span
         >
@@ -747,8 +747,31 @@
       await doShare(checkData);
     }
   };
+  const syncImgList = ref([]);
+  const syncIndex = ref(0);
   const syncPhotos = () => {
-    $cordovaPlugins.syncPhotos();
+    let nowTime = Date.now();
+    let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
+    let time = Math.round((endTime - nowTime) / 1000);
+    if (time > 6 * 60) {
+      time -= 60 * 60;
+    }
+    if (time > 0) {
+      const content = `Upload files after ${getSecondTime(time)}`;
+      showToast.fail(content);
+      return false;
+    }
+    const uploadUrl = `https://${bucketName.value}.${poolUrl}:6008/o/`;
+    const options = {
+      serviceUrl: uploadUrl,
+      syncImgList,
+      syncIndex,
+      bucketName: bucketName.value,
+      accessKeyId: accessKeyId.value,
+      secretAccessKey: secretAccessKey.value,
+      prefixStr: '',
+    };
+    $cordovaPlugins.syncPhotos(options);
   };
   const getSignHeaders = (objectKey) => {
     // const objectKey = encodeURIComponent(checkData[0].fullName);

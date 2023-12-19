@@ -143,7 +143,7 @@
       let nowTime = Date.now();
       let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
       let time = Math.round((endTime - nowTime) / 1000);
-      if (time > 4 * 60) {
+      if (time > 6 * 60) {
         time -= 60 * 60;
       }
       if (time > 0) {
