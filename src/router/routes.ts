@@ -27,6 +27,22 @@ export const routes = [
         },
       },
       {
+        path: 'bucketList',
+        component: () => import('@/views/list/bucketList.vue'),
+        meta: {
+          title: 'tabbar.list',
+          // keepAlive: true,
+        },
+      },
+      {
+        path: 'nft',
+        component: () => import('@/views/nft/index.vue'),
+        meta: {
+          title: 'tabbar.list',
+          // keepAlive: true,
+        },
+      },
+      {
         path: 'filePreview',
         name: 'filePreview',
         component: () => import('@/views/list/index.vue'),
@@ -135,11 +151,6 @@ export const routes = [
         name: 'PersonalInfo',
         component: () => import('@/views/personalInfo/index.vue'),
         meta: {},
-      },
-      {
-        path: 'bindDmc',
-        name: 'BindDmc',
-        component: () => import('@/views/bindDmc/index.vue'),
       },
       {
         name: 'orderSummary',

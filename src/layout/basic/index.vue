@@ -72,14 +72,12 @@ import { onMounted, provide } from 'vue';
 
 import { useUserStore } from '@/store/modules/user';
 import { showToast, showDialog } from '@nutui/nutui';
-// import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
 import MyTransition from '@/components/myTransition/index.vue'
 import loadingImg from '@/components/loadingImg/index.vue';
 import '@nutui/nutui/dist/packages/dialog/style';
 import '@nutui/nutui/dist/packages/toast/style';
 
 const userStore = useUserStore();
-// const { bindAmbCode } = useUpdateDMC();
 const amb_promo_code = computed(() => userStore.getUserInfo?.amb_promo_code || '');
 const uuid = computed(() => userStore.getUserInfo?.uuid);
 const userInfo = computed(() => userStore.getUserInfo);
@@ -348,8 +346,10 @@ async function bindAmbCode() {
 
           // approved
           await getOrder()
-          if (!orderTotal.value) {
-            const onOk = () => {
+          if (orderTotal.value == 0 ) {
+            if(!window.localStorage.getItem('hasCloudApproved')){
+              window.localStorage.hasCloudApproved = true
+              const onOk = () => {
               router.push({ name: 'Shop',  });
             };
             let src = require('@/assets/fog-works_w.png');
@@ -362,6 +362,9 @@ async function bindAmbCode() {
               popClass: 'dialog_class',
               onOk,
             });
+            } 
+          
+       
           }
         } else {
           userStore.setcurStepIndex(2)

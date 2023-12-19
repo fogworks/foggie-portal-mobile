@@ -6,14 +6,18 @@
         <p class="title">Buy</p>
         <!-- <p class="total_balance">Total Balance</p> -->
         <p class="total_balance_value" v-if="cloudBalance">{{ cloudBalance }} DMC</p>
-        <div class="balance_options">
+
+        <div class="action_item" v-if="cloudBalance == 0">
+          <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px"> Recharge </router-link>
+        </div>
+        <!-- <div class="balance_options">
           <div class="action_item">
             <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px"> Recharge </router-link>
           </div>
           <div class="action_item">
             <router-link to="/withdraw" style="color: #b9d4ff; font-size: 14px"> Withdraw </router-link>
           </div>
-        </div>
+        </div> -->
         <!-- <div class="action_item">
           <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px">
             <img src="@/assets/recharge.svg" alt="" />
@@ -30,29 +34,29 @@
             >General Orders <br />
             (48 Weeks)</p
           >
-          <p>{{ (perMpPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
+          <p>{{ (perMpPSTIncome * 100).toFixed(4) }} DMC/100 GB</p>
         </div>
         <!-- <img src="@/assets/arrow-right.svg" alt="" /> -->
         <span style="font-weight: bold"> VS</span>
 
         <div class="product_card">
-          <p
-            >VIP Orders <br />
+          <p>
+            Your earnings <br />
             (48 Weeks)</p
           >
-          <p>{{ (perGoldenPSTIncome * 100).toFixed(4) }} DMC/100GB</p>
+          <p>{{ (perGoldenPSTIncome * 100).toFixed(4) }} DMC/100 GB</p>
         </div>
       </div>
       <div class="title">VIP orders will receive a higher amount of revenue.</div>
     </div>
     <div class="out_price_box">
-      <p>VIP Order <IconSetting @click="showTop = true"></IconSetting> </p>
+      <p><IconSetting @click="showTop = true"></IconSetting> </p>
       <div class="price_box">
         Reference price: <br />
-        <span style="text-align: center" class="price_box_text"> 100GB = {{ middleTotalPrice }} DMC</span>
+        <span style="text-align: center" class="price_box_text"> 100 GB = {{ middleTotalPrice }} DMC</span>
       </div>
     </div>
-    <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading">Check VIP Details </nut-button>
+    <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading">Buy</nut-button>
     <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
     <Teleport to="body">
       <nut-popup position="top" :style="{ height: '420px' }" v-model:visible="showTop">
@@ -67,7 +71,7 @@
           <nut-form-item label="Custom Cycle">
             <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
           </nut-form-item>
-          <nut-form-item label="Space(GB) Min:100GB">
+          <nut-form-item label="Space(GB) Min: 100 GB">
             <nut-input-number
               @focus="buyDisabled = true"
               @blur="buyDisabled = false"
@@ -81,7 +85,7 @@
           </nut-form-item>
           <div style="text-align: center" class="order-tip">
             <strong> Reference price: </strong>
-            <strong class="price"> {{ middleTotalPrice || '--' }} DMC </strong>
+            <strong class="price"> {{ middleTotalPrice || '--' }} DMC -- {{ shopForm.week }} weeks </strong>
           </div>
           <!-- <p class="middle_title" v-if="!loading && !curReferenceRate">No eligible orders were found. Please search and try again</p> -->
           <div class="bottom_btn">
@@ -801,9 +805,10 @@
       //   color: #999999;
       font-size: 1.1rem;
       font-weight: bold;
+      display: flex;
+      justify-content: flex-end;
 
       svg {
-        float: right;
         width: 40px;
         height: 40px;
         color: #5264f9;
@@ -815,7 +820,7 @@
     height: 100px;
     font-size: 40px;
     // margin: 40px 0;
-    position: absolute;
+    position: fixed;
     bottom: 150px;
     width: 90vw;
     left: 50%;
@@ -913,7 +918,7 @@
       }
 
       .price {
-        font-size: 50px;
+        font-size: 32px;
       }
     }
 
@@ -943,18 +948,19 @@
     margin-top: 20px;
   }
   .action_item {
-    width: 50%;
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    justify-content: end;
+
+    justify-content: center;
     align-items: start;
     font-size: 24px;
     text-decoration: none;
     padding: 0 20px;
-    &:first-child {
-      border-right: 1px solid #ccc;
-      align-items: end;
-    }
+    margin-top: 50px;
+    // &:first-child {
+    //   border-right: 1px solid #ccc;
+    //   align-items: end;
+    // }
 
     img {
       display: block;
