@@ -36,19 +36,27 @@
         <span class="password_login" @click="router.push('/forget')"> Forgot password?</span>
         <span class="password_login" @click="router.push('/register')">create an account?</span>
       </div>
+      <nut-divider :style="{ color: '#fff' }">Sign in with</nut-divider>
+      <div class="login-img">
+        <img src="@/assets/github.png" @click="githubLogin" />
+        <img src="@/assets/google-logo.png" class="img-google" @click="googleLogin" />
+      </div>
     </nut-form>
   </div>
 </template>
 
 <script lang="ts" setup name="LoginPage">
-  import { login, Captcha, check_email_register, user } from '@/api';
+  import { login, Captcha, check_email_register, user, oauth_url } from '@/api';
   // import router from '@/router';
   import { useRouter } from 'vue-router';
-  import { reactive, ref } from 'vue';
+  import { reactive, ref, onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
   import { load_gpa_token } from '@/utils/util.ts';
+  import { redirectUrl } from '@/setting.js';
+  import Cookies from "js-cookie";
+
   const router = useRouter();
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
@@ -206,6 +214,49 @@
       }
     });
   };
+
+  const githubLogin = () => {
+    const data = {
+      redirect: redirectUrl,
+      state: {},
+      device_type: 1,
+      login_type: 0, 
+    }
+    oauth_url(data).then((res) => {
+      if (res?.data.redirect_url) {
+        window.location.href = res.data.redirect_url;
+      }
+    });
+  };
+  const googleLogin = () => {
+    const data = {
+      redirect: redirectUrl,
+      state: {},   
+      device_type: 1,
+      login_type: 1, 
+    }
+    oauth_url(data).then((res) => {
+      if (res?.data.redirect_url) {
+        console.log('-------google', res.data.redirect_url);
+        window.location.href = res.data.redirect_url;
+      }
+    });
+  };
+
+  onMounted(() => {
+    setTimeout(()=> {
+      const access_token = Cookies.get('access_token');
+      const refresh_token = Cookies.get('refresh_token');
+      console.log('-----acc-ref', access_token, refresh_token)
+      if (access_token || refresh_token) {
+        const token = access_token || refresh_token;
+        userStore.setToken(`Bearer ${token}`);
+        userStore.setRefreshToken(`Bearer ${refresh_token}`);
+        router.push({ path: '/home' });
+      }
+    }, 100)
+  });
+  
 </script>
 
 <style lang="scss">
@@ -215,5 +266,21 @@
   .login {
     justify-content: center;
     height: 100vh;
+  }
+  .login-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      margin: .5rem 1rem;
+      width: 2.5rem;
+      cursor: pointer;
+    }
+    .img-google {
+      box-sizing: border-box;
+      padding: .5rem;
+      background: #fff;
+      border-radius: 50%;
+    }
   }
 </style>
