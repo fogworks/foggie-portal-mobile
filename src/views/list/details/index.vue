@@ -76,7 +76,7 @@
       </nut-row>
     </div>
     <div class="detail_box">
-      <div class="type_check_box type_check_box1">
+      <div class="type_check_box type_check_box1" v-if="!mintType || mintType == 0">
         <div class="type_check">
           <div
             class="type_item"
@@ -457,6 +457,7 @@
   let server;
   const route = useRoute();
   const router = useRouter();
+  const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const successStatus = ref<number>(204);
   const isNameLoading = ref(false);
   // const sheetVisible = ref(false);

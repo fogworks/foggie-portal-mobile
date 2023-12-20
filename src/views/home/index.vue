@@ -53,7 +53,7 @@
       <div class="action_item" @click="gotoPage('Bucket')">
         <!-- <img src="@/assets/recharge.svg" alt="" /> -->
         <img src="@/assets/home_bucket.png" alt="" />
-        Bucket 
+        Bucket
       </div>
       <div class="action_item" @click="gotoPage('NFT')">
         <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
@@ -502,9 +502,9 @@
         router.push('/analysisChart');
       } else if (type === 'Order') {
         router.push('/list');
-      }else if(type == 'Bucket'){
+      } else if (type == 'Bucket') {
         router.push('/bucketList');
-      }else if(type == 'NFT'){
+      } else if (type == 'NFT') {
         router.push('/nft');
       }
     }
@@ -828,8 +828,6 @@
     box-sizing: border-box;
     margin: 0;
     // margin-top: 20px;
-    margin-left: -4vw;
-    margin-right: -4vw;
     //   box-shadow: 0px 0px 4px 1px #ccc;
     // background-color: var(--van-blue);
     background: $primary-color;
