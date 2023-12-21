@@ -106,9 +106,12 @@
     grid-template-columns: repeat(2, 1fr);
     justify-items: center;
     grid-gap: 20px;
+    height: calc(100vh - 400px);
+    overflow: auto;
     // margin: 0 30px;
     .img_item {
       width: 300px;
+      height: 400px;
       padding: 10px;
       border-radius: 20px;
       overflow: hidden;
