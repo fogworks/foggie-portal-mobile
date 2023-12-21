@@ -485,4 +485,19 @@ onMounted(async () => {
   padding-bottom: 100px;
   // background: #f5f7fb;
 }
+@media screen and (min-width: 500px){
+  :deep{
+    .nut-tabbar{
+      --nut-tabbar-height:60px;
+      .nut-popover-item-img{
+        width: 20px;
+        height: 20px;
+        font-size:1rem
+      }
+      .nut-tabbar-item_icon-box_nav-word{
+        font-size:1rem
+      }
+    }
+  }
+}
 </style>

@@ -8,7 +8,7 @@
           <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
         </div>
         <div v-else> Order:{{ order_id }} </div>
-        <span class="benefit_analysis" v-if="orderInfo.value.state == '0'" @click="closedOrder">
+        <span class="benefit_analysis" v-if="orderInfo.value.state == '0' && mintType == 0" @click="closedOrder">
           <img src="@/assets/cancel.svg" class="bucket_detail_smal cancel_svg" />
         </span>
         <span class="benefit_analysis" v-else @click="gotoSummary(order_id, orderInfo.value.state)">

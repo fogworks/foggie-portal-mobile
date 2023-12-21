@@ -68,4 +68,24 @@
       opacity: 1;
     }
   }
+  @media screen and (min-width: 500px) {
+    .box-1 {
+      width: 150px;
+      height: 150px;
+      box-shadow:
+        rgba(17, 17, 26, 0.1) 0px 1px 0px,
+        rgba(17, 17, 26, 0.1) 0px 8px 24px,
+        rgba(17, 17, 26, 0.1) 0px 16px 48px;
+    }
+    .box-1::before {
+      content: '';
+      position: absolute;
+      inset: 15px;
+      background: #f5f5f5;
+      border-radius: 50%;
+      box-shadow:
+        rgb(204, 219, 232) 3px 3px 6px 0px inset,
+        rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+    }
+  }
 </style>

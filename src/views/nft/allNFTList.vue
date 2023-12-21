@@ -126,4 +126,54 @@
       }
     }
   }
+
+  @media screen and (min-width: 500px) {
+    .top_img {
+      position: relative;
+      // display: flex;
+      // justify-content: center;
+      // align-items: center;
+      height: 300px;
+      img {
+        object-fit: contain;
+      }
+    }
+    .avatar {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -80px;
+      width: 200px;
+      height: 200px;
+      padding: 20px;
+      box-sizing: border-box;
+      border-radius: 50%;
+      background: #fff;
+      overflow: hidden;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+    }
+    .top_info {
+      margin-top: 70px;
+
+      .info_box {
+        .info_item {
+          p {
+            & + p {
+              margin-top: 5px;
+            }
+          }
+        }
+      }
+    }
+    :deep {
+      .img_list_box {
+        height: unset;
+      }
+    }
+  }
 </style>

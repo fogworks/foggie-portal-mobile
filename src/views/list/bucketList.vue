@@ -134,4 +134,64 @@
       }
     }
   }
+  @media screen and (min-width: 500px) {
+    .my_top_search {
+      --nut-searchbar-input-height: 50px;
+      --nut-searchbar-padding: 10px;
+      :deep {
+        .nut-searchbar__search-input .nut-searchbar__iptleft-search-icon {
+          width: 30px;
+          height: 30px;
+        }
+        .nut-searchbar__search-input .nut-searchbar__input-bar {
+          font-size: 1.5rem;
+        }
+        .nut-icon {
+          --nut-icon-width: 30px;
+          --nut-icon-height: 30px;
+          --nut-icon-line-height: 30px;
+        }
+      }
+    }
+    .total_tag {
+      --nut-tag-height: 20px;
+      --nut-tag-font-size: 1rem;
+      :deep {
+        .nut-tag {
+          vertical-align: baseline;
+        }
+      }
+    }
+    .bucket_box {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-gap: 20px;
+      height: calc(100vh - 300px);
+      :deep {
+        .nut-infinite__container {
+          display: flex;
+          justify-content: flex-start;
+          align-items: flex-start;
+          flex-wrap: wrap;
+        }
+      }
+      .bucket_item {
+        width: 200px;
+        height: 150px;
+        margin: 15px;
+        padding: 10px 0;
+        border-radius: 30px;
+        background-color: #71ea6f;
+        text-align: center;
+        font-size: 40px;
+        box-sizing: border-box;
+        img {
+          width: 80px;
+          margin: 0px 0 10px 0;
+        }
+        p {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
 </style>

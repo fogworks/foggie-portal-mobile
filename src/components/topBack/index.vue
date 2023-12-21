@@ -73,5 +73,11 @@
       border-radius: 50%;
       background-color: #e6e6e6;
     }
+    img {
+      width: 40px;
+      height: 40px;
+      font-size: 50px;
+      border-radius: 16px;
+    }
   }
 </style>

@@ -46,6 +46,12 @@
     overflow: auto;
   }
 
+  @media screen and (min-width: 500px) {
+    #app {
+      height: unset;
+    }
+  }
+
   ::-webkit-scrollbar {
     width: 0px;
     height: 0px;
