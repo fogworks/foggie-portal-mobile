@@ -172,6 +172,7 @@
     <ImgList
       ref="imgListRef"
       :orderId="route.query.id"
+      :mintType="mintType"
       v-model:isCheckMode="isCheckMode"
       v-model:checkedData="imgCheckedData"
       @cancelSelect="cancelSelect"
@@ -474,6 +475,7 @@
   let server = null;
   const route = useRoute();
   const router = useRouter();
+  const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const state = reactive({
     category: 0,
     keyWord: '',
@@ -610,7 +612,7 @@
   const touchRow = (row: any, event: any) => {
     timeOutEvent = setTimeout(function () {
       timeOutEvent = 0;
-      if (isMobileOrder.value) {
+      if (isMobileOrder.value && (mintType.value != 1 || category.value == 1)) {
         isCheckMode.value = true;
       }
     }, 1000);

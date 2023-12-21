@@ -36,11 +36,20 @@
         <span class="password_login" @click="router.push('/forget')"> Forgot password?</span>
         <span class="password_login" @click="router.push('/register')">create an account?</span>
       </div>
+      <!-- <div class="other_login_box" @click="loginWithMeta">
+        <MetaMask></MetaMask>
+        Sign In with MetaMask
+      </div>
+      <div class="other_login_box" @click="loginWithUniSat">
+        <img src="@/assets/svg/home/unisat.svg" alt="" />
+        Sign In with UniSat
+      </div> -->
     </nut-form>
   </div>
 </template>
 
 <script lang="ts" setup name="LoginPage">
+  // import { MetaMaskSDK } from '@metamask/sdk';
   import { login, Captcha, check_email_register, user } from '@/api';
   // import router from '@/router';
   import { useRouter } from 'vue-router';
@@ -49,6 +58,8 @@
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
   import { load_gpa_token } from '@/utils/util.ts';
+  // import MetaMask from '~icons/home/metamask.svg';
+
   const router = useRouter();
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
@@ -65,6 +76,7 @@
   const loading = ref<boolean>(false);
   const showCaptcha = ref<boolean>(false);
   const ruleForm = ref<any>(null);
+
   function getCaptcha() {
     Captcha().then((res) => {
       codeSrc.value = res.data.image;
@@ -94,6 +106,7 @@
       router.push({ path: '/home' });
     }
   }
+
   const submit = async () => {
     // let isPass = true
 
@@ -206,6 +219,11 @@
       }
     });
   };
+  onMounted(async () => {
+    if (window.ethereum) {
+      loginWithMeta();
+    }
+  });
 </script>
 
 <style lang="scss">

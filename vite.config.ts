@@ -8,6 +8,7 @@ import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 import Components from 'unplugin-vue-components/vite';
 import commonjs from 'vite-plugin-commonjs';
+import nodePolyfills from 'rollup-plugin-polyfill-node';
 
 const { FileSystemIconLoader } = require('unplugin-icons/loaders');
 
@@ -237,8 +238,20 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           home: FileSystemIconLoader('src/assets/svg/home', (svg: string) => svg.replace(/^<svg /, '<svg fill="currentColor" ')),
         },
       }),
+      mode == 'development' &&
+        nodePolyfills({
+          include: ['node_modules/**/*.js', new RegExp('node_modules/.vite/.*js')],
+          http: true,
+          crypto: true,
+        }),
     ],
     build: {
+      rollupOptions: {
+        plugins: [nodePolyfills({ crypto: true, http: true })],
+      },
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
       minify: buildType ? false : 'terser',
       outDir: buildType ? 'cordova/www' : 'dist',
       reportCompressedSize: false,

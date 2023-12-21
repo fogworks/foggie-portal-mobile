@@ -10,7 +10,7 @@
         class="img-item-box"
       >
         <div v-if="imgData.length" v-for="(item, index) in imgData" class="img-box">
-          <p v-if="item.list.length" class="top-title">
+          <p v-if="item.list.length && mintType != 1" class="top-title">
             <nut-checkbox
               :indeterminate="item.indeterminate"
               v-if="isCheckMode"
@@ -91,9 +91,10 @@
   const props = defineProps({
     orderId: [String, Number],
     isCheckMode: Boolean,
+    mintType: String,
   });
   const handleImg = inject('handleImg');
-  const { orderId } = toRefs(props);
+  const { orderId, mintType } = toRefs(props);
   const resetChecked = () => {
     imgCheckedData.value = {};
     refCheckAll();
