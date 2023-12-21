@@ -110,7 +110,8 @@
 
         <div :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' ? 'router_disabled' : '']" @click="getKey">
           <div class="svg_box svg_box2 order-icon-recycle">
-            <keySolid color="#fff" />
+            <!-- <keySolid color="#fff" /> -->
+            <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 90%; height: 90%; vertical-align: middle" />
           </div>
           <p>S3 endpoint</p>
         </div>
@@ -1413,6 +1414,7 @@
   //   if (merkleTimeOut) clearTimeout(merkleTimeOut);
   // });
   onUnmounted(() => {
+    
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });
   // watch(
@@ -1573,6 +1575,7 @@
       color: #fff;
       width: 70%;
       .title {
+        color: #fff;
       }
       .value {
         font-size: 50px;
@@ -1822,7 +1825,8 @@
 
         .order-icon-recycle {
           background-color: #ff8b00;
-          background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
+          // background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
+          background-image: linear-gradient(120deg, #8ae9d7 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
