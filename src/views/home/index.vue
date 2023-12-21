@@ -989,12 +989,12 @@
       align-items: center;
       // color: #333333;
       color: #5758a0;
-      font-size: 30px;
+      font-size: 24px;
       font-weight: bold;
 
       img {
         display: block;
-        width: 140px;
+        width: 100px;
         margin-bottom: 10px;
       }
     }
@@ -1004,7 +1004,7 @@
     content: '';
     position: absolute;
     width: 140%;
-    background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
+    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
     height: 80%;
     animation: rotBGimg 3s linear infinite;
     transition: all 0.2s linear;

@@ -59,7 +59,7 @@
     <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading">Buy</nut-button>
     <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
     <Teleport to="body">
-      <nut-popup position="top" :style="{ height: '420px' }" v-model:visible="showTop">
+      <nut-popup position="top" :style="{ height: '480px' }" round v-model:visible="showTop">
         <nut-form class="query_form" :model-value="shopForm">
           <nut-form-item label="Service Period">
             <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
@@ -83,6 +83,9 @@
               placeholder="Space"
             />
           </nut-form-item>
+          <div style="padding: 10px 20px;font-size: 11px;font-style: italic;">
+            The maximum data security guarantee for the chain is only 52 weeks
+          </div>
           <div style="text-align: center" class="order-tip">
             <strong> Reference price: </strong>
             <strong class="price"> {{ middleTotalPrice || '--' }} DMC -- {{ shopForm.week }} weeks </strong>
@@ -283,6 +286,8 @@
   });
 
   const middleTotalPrice = computed(() => {
+  console.log(middle_price.value);
+  
     let total =
       ((middle_price.value / 10000) * state.shopForm.week * state.shopForm.quantity +
         (middle_price.value / 10000) * 1 * state.shopForm.quantity) *
