@@ -20,9 +20,6 @@
       <nut-swiper-item>
         <img src="@/assets/guide3.png" alt="" />
       </nut-swiper-item>
-      <nut-swiper-item>
-        <img src="@/assets/guide4.png" alt="" />
-      </nut-swiper-item>
       <nut-swiper-item @click="gotoLogin">
         <img src="@/assets/guide.png" alt="" />
       </nut-swiper-item>
@@ -53,7 +50,7 @@
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      // object-fit: cover;
       background-repeat: no-repeat;
     }
   }
