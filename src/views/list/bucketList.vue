@@ -57,7 +57,7 @@
     };
     await loadMore([0, 1, 2, 3, 6], '', '', '', postData);
     nextTick(() => {
-      if (hasMore.value && listRef.value.$el.clientHeight >= listRef.value.$el.scrollHeight) {
+      if (hasMore.value && listRef?.value?.$el?.clientHeight >= listRef?.value?.$el?.scrollHeight) {
         loadMoreFun();
       }
     });
@@ -121,7 +121,7 @@
     }
     .bucket_item {
       width: 45%;
-      margin: 15px auto;
+      margin: 15px;
       padding: 10px 0;
       border-radius: 30px;
       background-color: #71ea6f;
@@ -158,6 +158,7 @@
       --nut-tag-font-size: 1rem;
       :deep {
         .nut-tag {
+          padding: 2px 10px;
           vertical-align: baseline;
         }
       }

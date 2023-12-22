@@ -373,6 +373,31 @@
       }
     }
   }
+  @media screen and (min-width: 500px) {
+    .upload_btn {
+      bottom: 100px;
+      right: 30px;
+      font-size: 50px;
+      padding: 0px;
+      width: 60px;
+      height: 60px;
+      --nut-button-small-line-height: 60px;
+    }
+    .upload_class {
+      z-index: 100;
+      :deep {
+        .nut-uploader__input {
+          position: fixed !important;
+          top: unset !important;
+          left: unset !important;
+          bottom: 100px !important;
+          right: 30px !important;
+          width: 60px !important;
+          height: 60px !important;
+        }
+      }
+    }
+  }
 </style>
 <style lang="scss">
   .upload_progress.nut-progress {
@@ -390,5 +415,10 @@
     position: fixed;
     bottom: 14vw;
     z-index: 999;
+  }
+  @media screen and (min-width: 500px) {
+    .upload_progress {
+      bottom: 60px;
+    }
   }
 </style>

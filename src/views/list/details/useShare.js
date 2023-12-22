@@ -33,30 +33,37 @@ export default function useShare(orderInfo, header, deviceType) {
   const options = ref([
     {
       text: '1 hour',
+      name: '1 hour',
       value: 3600,
     },
     {
       text: '1 day',
+      name: '1 day',
       value: 3600 * 24,
     },
     {
       text: '7 days',
+      name: '7 days',
       value: daySeconds * 7,
     },
     {
       text: '1 month',
+      name: '1 month',
       value: monthSeconds,
     },
     {
       text: '3 months',
+      name: '3 months',
       value: monthSeconds * 3,
     },
     {
       text: '6 months',
+      name: '6 months',
       value: monthSeconds * 6,
     },
     {
       text: '1 year',
+      name: '1 year',
       value: monthSeconds * 12,
     },
   ]);

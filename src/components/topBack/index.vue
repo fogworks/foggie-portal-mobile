@@ -58,25 +58,25 @@
   }
   @media screen and (min-width: 500px) {
     .top_back2 {
-      height: 50px;
+      height: 40px;
       margin-bottom: 20px;
-      font-size: 50px;
+      font-size: 40px;
     }
     .img_box {
       left: 10px;
-      width: 60px;
-      height: 60px;
+      width: 40px;
+      height: 40px;
       background-color: #fff;
-      border-radius: 16px;
+      border-radius: 10px;
     }
     .img_box2 {
       border-radius: 50%;
       background-color: #e6e6e6;
     }
     img {
-      width: 40px;
-      height: 40px;
-      font-size: 50px;
+      width: 30px;
+      height: 30px;
+      font-size: 40px;
       border-radius: 16px;
     }
   }

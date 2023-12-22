@@ -32,6 +32,8 @@
 
 <script setup>
   import { useRouter } from 'vue-router';
+  import { showToast } from '@nutui/nutui';
+
   const router = useRouter();
   const props = defineProps({
     tabList: {
@@ -61,6 +63,10 @@
     value: {},
   });
   const updateTab = (index) => {
+    if (tabList.value[index] == 'Inscription List') {
+      showToast.text('Coming Soon');
+      return false;
+    }
     emits('update:activeTab', index + 1);
   };
   const itemClick = (item) => {

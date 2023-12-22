@@ -185,8 +185,16 @@ export const routes = [
           title: 'tabbar.list',
           // keepAlive: true,
         },
-        redirect: 'WalletConnect',
+        redirect: 'Welcome',
         children: [
+          {
+            path: '/welcome',
+            name: 'Welcome',
+            component: () => import('@/views/nft/welcome.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
           {
             path: '/walletConnect',
             name: 'WalletConnect',
