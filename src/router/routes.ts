@@ -10,6 +10,11 @@ export const routes = [
         component: () => import('@/views/home/index.vue'),
       },
       {
+        path: 'assetsInfo',
+        name: 'AssetsInfo',
+        component: () => import('@/views/home/assetsInfo.vue'),
+      },
+      {
         path: 'transactionRecords',
         name: 'TransactionRecords',
         component: () => import('@/views/home/transactionRecords.vue'),
