@@ -214,7 +214,7 @@
   const initchallengeList = () => {
     tableData.value = [];
     get_challenge({ order_id: order_id.value }).then((res) => {
-      tableData.value = res.data.map((el) => {
+      tableData.value = res.result.data.map((el) => {
         return {
           ...el,
           versionUser: el.nonce ? el.nonce.split('#').slice(-1)[0] : '',

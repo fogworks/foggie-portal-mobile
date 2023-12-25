@@ -12,62 +12,73 @@
 
         <div class="user_header_box_content">
           <div class="accTitle">{{ dmcAccount }}</div>
-          <div class="email">{{ email }}</div>
-          <div class="email" v-if="promo_code">{{ promo_code }}</div>
+          <div class="email">Email: {{ email }}</div>
+          <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div>
+          <!-- <div class="email" v-if="promo_code">{{ promo_code }}</div> -->
         </div>
       </div>
-      <div class="money">
+      <!-- <div class="money">
         <div>
+          <div class="key">Balance</div>
           <div class="value">
             <span style="font-size: 18px">{{ money.Balance.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.Balance.decimalPart }}</span>
           </div>
-          <div class="key">Balance</div>
         </div>
         <div>
+          <div class="key">Recharge</div>
           <div class="value">
             <span style="font-size: 18px">{{ money.Recharge.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.Recharge.decimalPart }}</span>
           </div>
-          <div class="key">Recharge</div>
         </div>
         <div>
+          <div class="key">withdraw</div>
           <div class="value">
             <span style="font-size: 18px">{{ money.withdraw.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.withdraw.decimalPart }}</span>
           </div>
-          <div class="key">withdraw</div>
+        </div>
+      </div> -->
+      <div class="bottom_btn">
+        <!-- <div class="bottom_btn_item">
+          <img src="@/assets/shop.svg" alt="" />
+          <div class="bottom_btn_itemText"> Buy</div>
+        </div> -->
+        <div class="bottom_btn_item" @click="toRecharge">
+          <img src="@/assets/Recharge.png" alt="" />
+          <div class="bottom_btn_itemText"> Recharge</div>
+        </div>
+        <div class="bottom_btn_item" @click="showWithdraw">
+          <img src="@/assets/Withdraw.png" alt="" />
+          <div class="bottom_btn_itemText"> Withdraw</div>
         </div>
       </div>
     </div>
+    <div class="my_assets_card"> </div>
     <div class="userBox">
-      <div class="withdraw-btn" direction="horizontal" align="center">
+      <!-- <div class="withdraw-btn" direction="horizontal" align="center">
         <div class="action_item" @click="toRecharge">
-          <!-- <img src="@/assets/recharge.svg" alt="" /> -->
           <img src="@/assets/Recharge.png" alt="" />
 
           Recharge
         </div>
         <div class="action_item" @click="showWithdraw">
-          <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
           <img src="@/assets/Withdraw.png" alt="" />
 
           Withdraw
         </div>
-      </div>
+      </div> -->
 
       <nut-row class="buttonContent">
         <nut-col :span="6" @click="gotoDetail('/personalInfo')">
           <div class="customBtn">
-            <!-- <My2 color="#505056" /> -->
             <img src="@/assets/newIcon/userInfo.png" style="width: 45px; height: 45px; display: inline-block" />
           </div>
           <div>Profile</div>
         </nut-col>
         <nut-col :span="6" @click="visible = true">
           <div class="customBtn">
-            <!-- <Location color="#505056" /> -->
-            <!-- <Link color="#505056" /> -->
             <img src="@/assets/newIcon/links.png" style="width: 45px; height: 45px; display: inline-block" />
           </div>
           <div>Links</div>
@@ -343,7 +354,7 @@
     .userHeader {
       padding: 20px 60px;
       background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding-bottom: 250px;
+      padding-bottom: 120px;
 
       .title {
         color: azure;
@@ -357,9 +368,11 @@
         display: grid;
         grid-template-columns: $content-width auto;
         column-gap: 30px;
-        height: 200px;
+        // height: 200px;
         padding-top: 50px;
         align-items: center;
+        display: flex;
+        flex-direction: column;
 
         img {
           margin-top: 6px;
@@ -385,9 +398,10 @@
         }
 
         & > .user_header_box_content {
+          text-align: center;
           .accTitle {
             color: #fff;
-            font-size: 32px;
+            font-size: 40px;
             font-weight: 600;
             font-family: 'Times New Roman', Times, serif;
             line-height: 40px;
@@ -400,14 +414,27 @@
             font-weight: 500;
             font-size: 25px;
           }
+          .balance {
+            font-weight: bold;
+            font-size: 30px;
+            color: #f2b70a;
+            // margin-top: 10px;
+            span {
+              color: #fff;
+            }
+          }
         }
       }
 
       .money {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 20px;
-        margin-top: 50px;
+        // display: grid;
+        // grid-template-columns: 1fr 1fr 1fr;
+        // gap: 20px;
+        padding-top: 30px;
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+        border-top: 1px solid #fff;
 
         & > div {
           display: flex;
@@ -425,6 +452,41 @@
             color: #fff;
             font-weight: 500px;
             line-height: 40px;
+            margin-bottom: 10px;
+          }
+        }
+      }
+      .bottom_btn {
+        margin-top: 20px;
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
+        .bottom_btn_item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          &:hover {
+            transform: scale(1.1);
+          }
+          img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow:
+              rgba(0, 0, 0, 0.25) 0px 54px 55px,
+              rgba(0, 0, 0, 0.12) 0px -12px 30px,
+              rgba(0, 0, 0, 0.12) 0px 4px 6px,
+              rgba(0, 0, 0, 0.17) 0px 12px 13px,
+              rgba(0, 0, 0, 0.09) 0px -3px 5px;
+          }
+          .bottom_btn_itemText {
+            color: #fff;
+            font-weight: bold;
+            font-size: 24px;
+            margin-top: 10px;
           }
         }
       }
@@ -435,7 +497,7 @@
       top: -100px;
       height: auto;
       background-color: #fff;
-      border-radius: 80px 80px 0 0;
+      border-radius: 60px 60px 0 0;
       padding: 50px 60px;
 
       .withdraw-btn {
@@ -468,7 +530,8 @@
 
           img {
             display: block;
-            width: 160px;
+            width: 100px;
+            height: auto;
             margin-bottom: 10px;
           }
         }
@@ -572,6 +635,7 @@
         justify-content: space-between;
         transition: transform 0.3s ease-in-out;
         height: 100px;
+        background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
         .outBnt {
           width: 60px;

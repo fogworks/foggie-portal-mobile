@@ -236,7 +236,7 @@
           let data = res.result.data || {};
           chartOptions.value = {
             title: {
-              text: 'Assets Analysis',
+              text: 'Miner Profit',
               textStyle: {
                 fontSize: '14px',
                 color: '#4c5093',
@@ -250,7 +250,7 @@
             },
             series: [
               {
-                name: 'Assets Analysis',
+                name: 'Miner Profit',
                 type: 'pie',
                 radius: [10, 50],
                 center: ['50%', '50%'],

@@ -31,8 +31,8 @@
   import { useRouter } from 'vue-router';
   const router = useRouter();
   console.log('aaa-----------');
-  function gotoLogin() {   
-    window.localStorage.setItem('ByBootstrapping','yes')
+  function gotoLogin() {
+    window.localStorage.setItem('ByBootstrapping', 'yes');
     router.push({ path: '/login' });
   }
 </script>
@@ -50,7 +50,7 @@
     img {
       width: 100%;
       height: 100%;
-      // object-fit: cover;
+      object-fit: cover;
       background-repeat: no-repeat;
     }
   }
