@@ -41,7 +41,7 @@
 
         <div class="product_card">
           <p>
-            Your earnings <br />
+            Your Orders <br />
             (48 Weeks)</p
           >
           <p>{{ (perGoldenPSTIncome * 100).toFixed(4) }} DMC/100 GB</p>
@@ -83,12 +83,14 @@
               placeholder="Space"
             />
           </nut-form-item>
-          <div style="padding: 10px 20px;font-size: 11px;font-style: italic;">
+          <div style="padding: 10px 20px; font-size: 11px; font-style: italic">
             The maximum data security guarantee for the chain is only 52 weeks
           </div>
           <div style="text-align: center" class="order-tip">
             <strong> Reference price: </strong>
-            <strong class="price"> {{ middleTotalPrice || '--' }} DMC -- {{ shopForm.week }} weeks </strong>
+            <strong class="price">
+              {{ middleTotalPrice || '--' }} DMC <span style="font-size: 12px">({{ shopForm.quantity }}GB/{{ shopForm.week }} Weeks)</span>
+            </strong>
           </div>
           <!-- <p class="middle_title" v-if="!loading && !curReferenceRate">No eligible orders were found. Please search and try again</p> -->
           <div class="bottom_btn">
@@ -286,8 +288,8 @@
   });
 
   const middleTotalPrice = computed(() => {
-  console.log(middle_price.value);
-  
+    console.log(middle_price.value);
+
     let total =
       ((middle_price.value / 10000) * state.shopForm.week * state.shopForm.quantity +
         (middle_price.value / 10000) * 1 * state.shopForm.quantity) *

@@ -3,12 +3,12 @@
     <div class="top_box">
       <TopBack class="detail_top">
         <div v-if="bucketName">
-          <!-- <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" /> -->
+          <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
           {{ bucketName }}
-          <!-- <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" /> -->
+          <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
         </div>
         <div v-else> Order:{{ order_id }} </div>
-        <span class="benefit_analysis" v-if="orderInfo.value.state == '0' && mintType == 0" @click="closedOrder">
+        <span class="benefit_analysis" v-if="orderInfo.value.state == '0'" @click="closedOrder">
           <img src="@/assets/cancel.svg" class="bucket_detail_smal cancel_svg" />
         </span>
         <span class="benefit_analysis" v-else @click="gotoSummary(order_id, orderInfo.value.state)">
@@ -18,7 +18,7 @@
       <nut-row class="order-detail">
         <div class="main_detail_box">
           <div class="profit_box">
-            <div class="title">Miner Profit</div>
+            <div class="title">Profit</div>
             <div class="value">+ {{ income }} DMC</div>
           </div>
           <div class="progress_box">
@@ -31,7 +31,7 @@
         <nut-col :span="24" class="order-content_wrap" :class="[showText ? 'showHight' : 'hideHight']">
           <TriangleDown v-if="!showText" @click="showText = true" class="my_svg_icon show_avg" color="#fff"></TriangleDown>
           <TriangleUp v-if="showText" @click="showText = false" class="my_svg_icon" color="#fff"></TriangleUp>
-          <nut-col :span="12" class="order-count left_count" v-if="showText">
+          <nut-col :span="12" class="order-count left_count">
             <nut-cell>
               <IconMdiF color="#9F9BEF" />
               File:{{ filesCount }}
@@ -58,57 +58,89 @@
             </nut-cell>
           </nut-col>
         </nut-col>
+
+        <!-- <nut-col :span="12" class="order-count">
+            <nut-cell>
+              <IconMdiF color="#9F9BEF" />
+              File:{{ filesCount }}
+            </nut-cell>
+            <nut-cell>
+              <IconSpace color="#7F7AE9" />
+              Space: {{ getfilesize(orderInfo.value.total_space, 'B') }}
+            </nut-cell>
+            <nut-cell>
+              <IconRiPie color="#7F7AE9" />
+              Used: {{ getfilesize(usedSize, 'B') }}
+            </nut-cell>
+          </nut-col> -->
       </nut-row>
     </div>
     <div class="detail_box">
-      <div class="detail_box_toolbox">
-        <div class="type_check_box type_check_box1" v-if="!mintType || mintType == 0">
+      <div class="type_check_box type_check_box1" v-if="!mintType || mintType == 0">
+        <div class="type_check">
           <div
             class="type_item"
-            @click="router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })"
+            @click="router.push({ name: 'RecordsList', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })"
           >
             <div class="svg_box svg_box2 order-icon-node-tree">
-              <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
+              <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 60%; height: 60%; vertical-align: middle" />
             </div>
-            <p>Miner Tool</p>
+            <p>Merkle</p>
           </div>
-
-          <div :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' ? 'router_disabled' : '']" @click="getKey">
-            <div class="svg_box svg_box2 order-icon-recycle">
-              <!-- <keySolid color="#fff" /> -->
-              <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+          <div
+            class="type_item"
+            @click="router.push({ name: 'RecordsList', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 2 } })"
+          >
+            <div class="svg_box svg_box2 order-icon-send-to-back">
+              <IconRiSendToBack color="#fff" />
             </div>
-            <p>S3 Endpoint</p>
+            <p>Challenge</p>
+          </div>
+          <div
+            class="type_item"
+            @click="router.push({ name: 'RecordsList', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 3 } })"
+          >
+            <div class="svg_box svg_box2 order-icon-input-cursor-move">
+              <IconRiInputCursorMove color="#fff" />
+            </div>
+            <p>Arbitrate</p>
           </div>
         </div>
-        <div class="type_check_box right_check_box">
-          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1, bucketName } })">
-            <div class="svg_box">
-              <IconImage></IconImage>
-            </div>
-            <p>Images</p>
+
+        <div :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' ? 'router_disabled' : '']" @click="getKey">
+          <div class="svg_box svg_box2 order-icon-recycle">
+            <!-- <keySolid color="#fff" /> -->
+            <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 90%; height: 90%; vertical-align: middle" />
           </div>
-          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3, bucketName } })">
-            <div class="svg_box">
-              <IconAudio2></IconAudio2>
-            </div>
-            <p>Audio</p>
-          </div>
-          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4, bucketName } })">
-            <div class="svg_box">
-              <IconDocument></IconDocument>
-            </div>
-            <p>Documents</p>
-          </div>
-          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 2, bucketName } })">
-            <div class="svg_box">
-              <IconVideo></IconVideo>
-            </div>
-            <p>Video</p>
-          </div>
+          <p>S3 endpoint</p>
         </div>
       </div>
-
+      <div class="type_check_box" style="margin-top: 5px; border-radius: 10px; background-color: #fff">
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1, bucketName } })">
+          <div class="svg_box">
+            <IconImage></IconImage>
+          </div>
+          <p>Images</p>
+        </div>
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3, bucketName } })">
+          <div class="svg_box">
+            <IconAudio2></IconAudio2>
+          </div>
+          <p>Audio</p>
+        </div>
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4, bucketName } })">
+          <div class="svg_box">
+            <IconDocument></IconDocument>
+          </div>
+          <p>Documents</p>
+        </div>
+        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 2, bucketName } })">
+          <div class="svg_box">
+            <IconVideo></IconVideo>
+          </div>
+          <p>Video</p>
+        </div>
+      </div>
       <div class="today_file">
         <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
         <!-- <span class="see_all" @click="syncPhotos">Sync Photos {{ syncImgList.length }}</span> -->
@@ -184,19 +216,16 @@
           <div v-if="isReady" class="rename_box move_box">
             <nut-cell style="margin-top: 50px" title="Access Period:">
               <template #link>
-                <span style="display: flex" v-if="isMobileDevice"
-                  >{{ desc }} <IconEdit id="editIcon" style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
+                <span style="display: flex"
+                  >{{ desc }} <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
                 ></span>
-                <van-dropdown-menu class="" direction="up" v-else>
-                  <van-dropdown-item class="timeSelect" v-model="periodValue" :options="options" />
-                </van-dropdown-menu>
               </template>
             </nut-cell>
             <template v-if="shareType">
               <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
               <nut-textarea rows="3" v-model="imgDesc" />
             </template>
-            <nut-popup position="bottom" v-if="isMobileDevice" v-model:visible="periodShow">
+            <nut-popup position="bottom" v-model:visible="periodShow">
               <nut-picker
                 v-model="periodValue"
                 :columns="options"
@@ -206,15 +235,6 @@
               >
               </nut-picker>
             </nut-popup>
-            <nut-popover
-              v-else
-              v-model:visible="periodShow"
-              :list="options"
-              location="top-start"
-              targetId="editIcon"
-              @choose="confirmPeriod"
-            >
-            </nut-popover>
             <nut-button
               type="info"
               block
@@ -484,12 +504,6 @@
   order_id.value = route.query.id;
   amb_uuid.value = route.query.amb_uuid;
   income.value = route.query.income;
-  const isMobileDevice = computed(() => {
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
-    // 此正则表达式涵盖了大多数使用的手机和平板设备
-    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
-  });
 
   let merkleTimeOut;
   const getMerkleState = (timeout = true) => {
@@ -1448,6 +1462,23 @@
 </script>
 
 <style lang="scss" scoped>
+  .upload_btn {
+    position: fixed;
+    bottom: 150px;
+    right: 50px;
+    font-size: 80px;
+    border-radius: 50%;
+    padding: 10px;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
   #txtContainer {
     color: #fff;
     width: 100%;
@@ -1567,7 +1598,6 @@
       width: 70%;
       .title {
         color: #fff;
-        font-weight: bold;
       }
       .value {
         font-size: 50px;
@@ -1597,6 +1627,32 @@
       }
 
       .user_circle {
+      }
+    }
+  }
+
+  .upload_btn {
+    position: fixed;
+    bottom: 150px;
+    right: 50px;
+    font-size: 80px;
+    border-radius: 50%;
+    padding: 10px;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+  }
+
+  .upload_class {
+    :deep {
+      .nut-uploader__input {
+        position: fixed !important;
+        top: unset !important;
+        left: unset !important;
+        bottom: 150px !important;
+        right: 50px !important;
+        width: 80px !important;
+        height: 80px !important;
       }
     }
   }
@@ -1739,7 +1795,6 @@
       //   border-right: 2px solid #fff;
       width: auto;
       padding-right: 10px !important;
-      //   transition: all 0.3s;
     }
   }
 
@@ -1747,8 +1802,8 @@
     box-sizing: border-box;
     height: 100%;
     padding: 20px;
-    margin-top: -60px;
-    // background: #fff;
+    margin-top: -40px;
+    background: #fff;
     border-radius: 40px 40px 0 0;
     z-index: 99;
     position: relative;
@@ -1759,16 +1814,11 @@
       align-items: center;
       flex-wrap: wrap;
       padding: 10px;
-      background: #fff;
-      border-radius: 20px;
-      width: 40%;
 
       .type_item {
-        width: 50%;
+        width: 25%;
         text-align: center;
         height: 150px;
-        cursor: pointer;
-        font-weight: bold;
 
         .svg_box {
           width: 80px;
@@ -1796,26 +1846,26 @@
         }
 
         .order-icon-recycle {
-          //   background-color: #ff8b00;
+          background-color: #ff8b00;
           // background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
-          //   background-image: linear-gradient(120deg, #8ae9d7 0%, #483bb5 100%);
+          background-image: linear-gradient(120deg, #8ae9d7 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
-            width: 80% !important;
-            height: 80% !important;
+            width: 60% !important;
+            height: 60% !important;
             vertical-align: middle;
           }
         }
 
         .order-icon-node-tree {
-          //   background-color: #34964f;
-          //   background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
+          background-color: #34964f;
+          background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
-            width: 100%;
-            height: 100%;
+            width: 60%;
+            height: 60%;
             vertical-align: middle;
           }
         }
@@ -1846,7 +1896,6 @@
 
         p {
           color: #051e56;
-          white-space: nowrap;
         }
 
         // &:nth-child(1) {
@@ -1873,19 +1922,10 @@
         // }
       }
     }
-    .right_check_box {
-      width: 60%;
-      background: #e9e9f8;
-      margin-left: 40px;
-      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-      background: #fff;
-    }
 
     .type_check_box1 {
-      flex-direction: column;
-      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-      //   display: grid;
-      //   grid-template-columns: 3fr 1fr;
+      display: grid;
+      grid-template-columns: 3fr 1fr;
 
       .type_check {
         display: flex;
@@ -1934,7 +1974,6 @@
       .see_all {
         color: #5460fe;
         font-size: 30px;
-        cursor: pointer;
         // text-decoration: underline;
       }
     }
@@ -1954,6 +1993,32 @@
 
       &:active {
         background: #cde3f5;
+      }
+
+      .left_checkMode {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        height: 80px;
+        background: #f1f1f1;
+        border-radius: 50%;
+
+        img {
+          width: 50px !important;
+          height: 50px !important;
+        }
+
+        &.is_checked {
+          width: 60px;
+          height: 60px;
+          margin: 10px;
+          background: #2e70ff;
+        }
+
+        .ok_icon {
+          color: #fff;
+        }
       }
 
       .type_icon {
@@ -2041,9 +2106,6 @@
         background-color: #5f57ff;
       }
     }
-  }
-  .detail_box_toolbox {
-    display: flex;
   }
 
   .creat-name {
@@ -2145,510 +2207,6 @@
         margin: 0 auto;
         width: 80px;
         height: 80px;
-      }
-    }
-  }
-
-  @media screen and (min-width: 500px) {
-    #txtContainer {
-      color: #fff;
-      width: 100%;
-      padding: 0 20px;
-      max-height: calc(100% - 300px);
-    }
-    .benefit_analysis {
-      // font-size: 16px;
-      right: 10px;
-      width: 60px;
-      height: 60px;
-
-      box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
-      box-shadow:
-        rgb(204, 219, 232) 3px 3px 6px 0px inset,
-        rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
-
-      img {
-        width: 42px;
-        height: 42px;
-      }
-    }
-    .bucket_detail_smal {
-      width: 36px;
-      height: 36px;
-    }
-    .cancel_svg {
-      height: 30px !important;
-      width: 30px !important;
-    }
-    .bucket_name_tip {
-      font-size: 30px;
-    }
-    .detail_over {
-      padding: 30px 10px;
-      .middle_img {
-        max-height: calc(100vh - 500px);
-      }
-      .bottom_action {
-        height: 200px;
-        margin-top: 20px;
-
-        svg {
-          width: 80px;
-          height: 80px;
-        }
-      }
-    }
-    .detail_back {
-      width: 60px;
-      height: 60px;
-    }
-    .order-detail {
-      margin-top: 30px;
-    }
-    .main_detail_box {
-      height: auto;
-      width: 100%;
-      padding: 5px 0;
-      .profit_box {
-        width: 70%;
-        .title {
-        }
-        .value {
-          font-size: 28px;
-        }
-      }
-      .progress_box {
-        width: 90px;
-        height: 90px;
-        font-size: 18px;
-        box-shadow:
-          rgb(204, 219, 232) 0.4vw 0.4vw 0.8vw 0px inset,
-          rgba(255, 255, 255, 0.5) -0.4vw -0.4vw 0.8vw 1px inset;
-        .text {
-          font-size: 18px;
-        }
-      }
-    }
-    .top_box {
-      // margin: 0 30px;
-      padding: 20px 10px;
-      border-radius: 0px !important;
-      padding-bottom: 50px;
-      .order-content_wrap {
-        margin-top: 10px;
-        height: 0;
-        border-top: 1px dashed #ccc;
-        opacity: 1;
-        max-height: 500px;
-      }
-      .showHight {
-        height: unset;
-        max-height: 140px;
-      }
-      .hideHight {
-        height: 0;
-        max-height: 0;
-      }
-      .my_svg_icon {
-        position: absolute;
-        top: -16px;
-        right: 10px;
-        width: 40px;
-        height: 40px;
-      }
-      .show_avg {
-        top: -36px;
-      }
-      .order-des {
-        height: 60px;
-
-        .span1 {
-          float: left;
-          padding: 13px 0;
-          font-size: 24px;
-          svg {
-            margin-right: 8px;
-          }
-        }
-
-        .span2 {
-          float: right;
-          font-size: 20px;
-          padding: 13px 0;
-          svg {
-            margin-right: 8px;
-          }
-        }
-      }
-
-      .order-circle {
-        //   padding: 2vw;
-        margin-top: 10px;
-
-        .nut-circle-progress {
-          margin-left: 3vw;
-          border: 30px solid #7f7ae9;
-          border-radius: 50%;
-          font-size: 12px;
-          box-shadow:
-            rgba(0, 0, 0, 0.3) 0px 19px 38px,
-            rgba(0, 0, 0, 0.22) 0px 15px 12px;
-        }
-      }
-
-      .order-count {
-        .nut-cell {
-          width: auto;
-          // height: vw;
-          // margin-left: 10%;
-          // border-bottom: 1px solid #fff;
-          border-radius: 0;
-          font-size: 24px;
-          line-height: 32px;
-          margin: 0px 0;
-          padding: 13px 10px 13px 52px;
-        }
-
-        svg {
-          position: absolute;
-          left: 15px;
-          width: 30px;
-          height: 30px;
-        }
-      }
-      .left_count {
-        padding-right: 10px !important;
-        flex-direction: row;
-        flex-wrap: wrap;
-      }
-    }
-    .detail_box {
-      height: 100%;
-      padding: 20px;
-      margin-top: -40px;
-      border-radius: 40px 40px 0 0;
-
-      .type_check_box {
-        float: left;
-        display: flex;
-        margin-top: 0 !important;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        padding: 10px 5px;
-        border-radius: 0 !important;
-        // border-right: 1px solid #e2e2e2;
-        .type_item {
-          width: 80px;
-          height: 100px;
-
-          .svg_box {
-            width: 60px;
-            height: 60px;
-            line-height: 60px;
-            margin: 10px auto;
-            border-radius: 20px;
-
-            svg {
-              width: 100%;
-              height: 100%;
-            }
-          }
-
-          &:nth-child(3),
-          &:nth-child(4) {
-            .svg_box {
-              svg {
-                width: 60px;
-                height: 60px;
-              }
-            }
-          }
-        }
-      }
-
-      .type_check_box1 {
-        border: none;
-        .type_check {
-          flex-direction: column;
-          margin-right: 0;
-          border-radius: 10px;
-
-          .type_item {
-            width: 80px;
-          }
-        }
-
-        .s3key {
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-start;
-          align-items: center;
-          width: 80px;
-          border-radius: 10px;
-          margin-left: 0;
-        }
-      }
-
-      .today_file {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 10px 0;
-        padding: 0 10px;
-        font-size: 24px;
-
-        .see_all {
-          font-size: 24px;
-          // text-decoration: underline;
-        }
-      }
-
-      .file_list {
-        width: unset;
-        // margin-left: 190px;
-        margin-top: 20px;
-        border-radius: 16px;
-      }
-
-      .list_item {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        padding: 20px;
-        border-top: 1px solid #eee;
-
-        .type_icon {
-          width: 80px;
-          height: 80px;
-        }
-
-        .left_icon_box {
-          width: 80px;
-          height: 80px;
-
-          img {
-            width: 80px;
-            height: 80px;
-          }
-        }
-
-        .name_box {
-          width: calc(100% - 180px);
-          margin-left: 30px;
-
-          p:first-child {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-
-          p:last-child {
-            margin-top: 5px;
-            color: #a7a7a7;
-            font-size: 20px;
-          }
-        }
-
-        .right_more {
-          width: 50px;
-          height: 50px;
-          color: #ccc;
-        }
-      }
-
-      .top_grid {
-        :deep {
-          .nut-grid-item__content {
-            height: unset;
-            margin: 20px;
-            padding: 20px;
-            border-radius: 40px;
-
-            img {
-              width: 100px;
-            }
-          }
-        }
-      }
-
-      .order-icons {
-        .nut-col {
-          width: 13vw;
-          height: 13vw;
-          margin: 5vw;
-          border-radius: 50%;
-
-          svg {
-            width: 7vw;
-            height: 7vw;
-            margin: 3vw;
-          }
-        }
-      }
-    }
-
-    :deep {
-      .nut-popup {
-        .nut-icon {
-          min-height: 20px;
-        }
-      }
-    }
-    .rename_box {
-      margin-top: 40px;
-      padding: 0 40px;
-      :deep {
-        .nut-cell {
-          padding-left: 0;
-          padding-right: 0;
-          box-shadow: none;
-        }
-        .nut-textarea {
-          padding-left: 0;
-          padding-right: 0;
-        }
-      }
-      p {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-      svg {
-        display: block;
-        margin: 0 auto;
-      }
-      :deep {
-        .nut-searchbar {
-          margin: 0 auto;
-          padding: 20px 0;
-          --nut-searchbar-width: 600px;
-          --nut-searchbar-input-height: 70px;
-        }
-        .nut-button {
-          width: 300px;
-          margin: 0 auto;
-          margin-top: 40px;
-          --nut-button-default-height: 70px;
-          --nut-button-default-font-size: 1.5rem;
-        }
-        .nut-searchbar__search-input .nut-searchbar__input-bar {
-          font-size: 1.5rem;
-        }
-        .nut-icon {
-          --nut-icon-width: 30px;
-          --nut-icon-height: 30px;
-          --nut-icon-line-height: 30px;
-        }
-      }
-    }
-    .move_box {
-      :deep {
-        .nut-cell {
-          padding: 10px;
-          --nut-cell-title-font: 1.5rem;
-        }
-      }
-      .top_back {
-        margin-bottom: 10px;
-        p {
-          margin: 0 5px;
-          font-size: 2rem;
-        }
-      }
-      .file_list {
-        height: 600px;
-        overflow-y: auto;
-        .list_item {
-          width: 100%;
-          box-sizing: border-box;
-        }
-        .left_icon_box {
-          width: 80px;
-          height: 80px;
-          svg {
-            width: 80px;
-            height: 80px;
-          }
-        }
-        .name_box {
-          p {
-            text-align: right;
-            margin: 0;
-            font-size: 30px;
-          }
-        }
-      }
-      .nut-button {
-        --nut-button-default-font-size: 1rem;
-      }
-    }
-    .share_info_box {
-      margin-top: 30px;
-      margin: 30px 120px 0;
-      justify-content: space-around;
-      div {
-        min-width: 150px;
-        margin-top: 20px;
-
-        img,
-        svg {
-          width: 80px;
-          height: 80px;
-        }
-      }
-    }
-    .custom-content {
-      p {
-        padding: 10px 20px;
-        color: #909090;
-        border-bottom: 1px solid #eee;
-        svg {
-          width: 60px;
-          height: 60px;
-          margin-right: 20px;
-          vertical-align: middle;
-        }
-      }
-      ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        li {
-          padding: 10px 20px;
-          svg {
-            width: 40px;
-            height: 40px;
-            margin-right: 15px;
-            vertical-align: middle;
-          }
-          &:active,
-          &:hover {
-            background: #cde3f5;
-          }
-        }
-      }
-      .cancel_btn {
-        padding: 10px;
-        font-size: 24px;
-      }
-    }
-    .timeSelect {
-      z-index: 9999;
-    }
-    :deep {
-      .van-dropdown-menu__bar {
-        background-color: transparent;
-        box-shadow: none;
-      }
-      .van-dropdown-menu__title:after {
-        transform: rotate(-45deg) scale(0.8);
-      }
-      .van-dropdown-menu__title--down:after {
-        transform: rotate(135deg) scale(0.8);
-      }
-      .van-dropdown-item__option {
-        padding: 20px;
       }
     }
   }

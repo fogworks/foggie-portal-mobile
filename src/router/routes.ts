@@ -101,6 +101,15 @@ export const routes = [
         },
       },
       {
+        path: 'recordsListGuid',
+        name: 'RecordsListGuid',
+        component: () => import('@/views/list/details/recordListGuid.vue'),
+        meta: {
+          notBar: true,
+          notKeepAlive: true,
+        },
+      },
+      {
         path: 'withdraw',
         name: 'Withdraw',
         component: () => import('@/views/home/withdraw.vue'),

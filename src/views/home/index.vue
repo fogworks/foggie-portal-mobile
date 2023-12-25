@@ -36,10 +36,10 @@
           <p>Space</p>
           <p class="column_value">{{ getfilesize2(cloudPst == '--' ? 0 : cloudPst) }}</p>
         </div>
-        <div @click="gotoPage('transactionRecords', '1')">
+        <!-- <div @click="gotoPage('transactionRecords', '1')">
           <p>Withdrawn</p>
           <p class="column_value">{{ cloudWithdraw >= 0 ? cloudWithdraw.toFixed(4) : cloudWithdraw }}</p>
-        </div>
+        </div> -->
         <div @click="gotoPage('analysis')">
           <p>Today's new funds</p>
           <p class="column_value today_income"
@@ -64,9 +64,10 @@
     <div class="middle_btn_box">
       <div>
         <div class="flex-content" @click="toBuyOrder">
-          <div class="svg-box">
+          <div class="svg-box shop_svg">
             <!-- <Shop></Shop> -->
-            <img src="@/assets/newIcon/buyOrder.png" alt="" />
+            <!-- <img src="@/assets/newIcon/buyOrder.png" alt="" /> -->
+            <img src="@/assets/shop.svg" alt="" />
           </div>
           <span>Buy</span>
         </div>
@@ -74,8 +75,9 @@
       <div>
         <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
         <div class="flex-content" @click="gotoPage('Order')">
-          <div class="svg-box">
-            <img src="@/assets/newIcon/orders.png" alt="" />
+          <div class="svg-box order_svg">
+            <!-- <img src="@/assets/newIcon/orders.png" alt="" /> -->
+            <img src="@/assets/homeOrder.svg" alt="" />
           </div>
           <span>Orders</span>
         </div>
@@ -83,8 +85,9 @@
       <div>
         <!-- <div class="flex-content" @click="router.push('/analysis')"> -->
         <div class="flex-content" @click="gotoPage('analysisChart')">
-          <div class="svg-box">
-            <img src="@/assets/newIcon/analysis.png" alt="" />
+          <div class="svg-box chart_svg">
+            <!-- <img src="@/assets/newIcon/analysis.png" alt="" /> -->
+            <img src="@/assets/homeChart.svg" alt="" />
           </div>
           <span>Charts</span>
         </div>
@@ -92,8 +95,9 @@
       <div>
         <div class="flex-content" @click="gotoPage('transactionRecords')">
           <!-- <div class="flex-content" @click="router.push('/transactionRecords')"> -->
-          <div class="svg-box">
-            <img src="@/assets/newIcon/transaction.png" alt="" />
+          <div class="svg-box transaction_svg">
+            <!-- <img src="@/assets/newIcon/transaction.png" alt="" /> -->
+            <img src="@/assets/homeTran.svg" alt="" />
             <!-- <img src="@/assets/IconTransaction.svg" alt="" />
             <IconTransaction></IconTransaction> -->
           </div>
@@ -747,6 +751,7 @@
     overflow-x: auto;
     white-space: nowrap;
     width: 100%;
+    background: #fff;
 
     // background: #fff;
     > div {
@@ -801,20 +806,22 @@
         border-radius: 50px;
         width: 100px;
         height: 100px;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         // background: #ff8b00;
-        background: linear-gradient(to bottom, #d5dee7 0%, #e8ebf2 50%, #e2e7ed 100%),
-          linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 50%, rgba(255, 255, 255, 0.02) 61%, rgba(0, 0, 0, 0.02) 73%),
-          linear-gradient(33deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
-        background-blend-mode: normal, color-burn;
+        // background: linear-gradient(to bottom, #d5dee7 0%, #e8ebf2 50%, #e2e7ed 100%),
+        //   linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 50%, rgba(255, 255, 255, 0.02) 61%, rgba(0, 0, 0, 0.02) 73%),
+        //   linear-gradient(33deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
+        // background-blend-mode: normal, color-burn;
 
         // box-shadow: 0px 1px 2px 2px #ccc;
-        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        // box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        // background: #ff656d;
+        // background-image: linear-gradient(to top, #3551ad 0%, #fff 100%) !important;
 
         svg,
         img {
-          width: 70px;
-          height: 70px;
+          width: 90px;
+          height: 90px;
           color: #fff;
         }
       }
