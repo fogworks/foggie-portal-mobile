@@ -30,9 +30,9 @@
             <div
               :class="['img-item']"
               v-for="(img, index2) in item.list"
-              @touchstart="emits('touchRow', img)"
-              @touchmove="emits('touchmoveRow', img)"
-              @touchend="emits('touchendRow', img)"
+              @pointerdown="emits('touchRow', img)"
+              @pointermove="emits('touchmoveRow', img)"
+              @pointerup="emits('touchendRow', img)"
             >
               <div :class="['mask', isCheckMode ? 'isChecking' : '']">
                 <nut-checkbox
@@ -455,35 +455,15 @@
     // height: calc(100% - 320px);
     padding: 10px;
     overflow-y: auto;
-    :deep {
-      .nut-checkbox__icon {
-        color: $main_blue;
-        path {
-          fill-opacity: 1;
-        }
-      }
-    }
     .img-box {
-      .top-title {
-        position: sticky;
-        top: 0;
-        z-index: 999;
-        background-color: var(--bg-color);
-        text-align: left;
-      }
       .img-name {
-        width: 80%;
-        display: inline-block;
         font-size: 12px;
         line-height: 15px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
       }
     }
     .img-item-box {
       // min-height: 100px;
-      height: calc(100vh - 270px);
+      height: calc(100vh - 210px);
       overflow: auto;
       display: flex;
       justify-content: flex-start;
@@ -559,6 +539,140 @@
           height: 100%;
           padding: 10px;
           box-sizing: border-box;
+        }
+      }
+    }
+  }
+  @media screen and (min-width: 500px) {
+    .img-content {
+      // height: calc(100% - 320px);
+      padding: 10px;
+      overflow-y: auto;
+      :deep {
+        .nut-checkbox__icon {
+          color: $main_blue;
+          path {
+            fill-opacity: 1;
+          }
+        }
+      }
+      .img-box {
+        .top-title {
+          position: sticky;
+          top: 0;
+          z-index: 999;
+          background-color: var(--bg-color);
+          text-align: left;
+          :deep {
+            .nut-checkbox {
+              .nut-icon {
+                --nut-icon-width: 30px;
+                --nut-icon-height: 30px;
+                --nut-icon-line-height: 30px;
+              }
+              .nut-checkbox__label {
+                --nut-checkbox-label-font-size: 1.5rem;
+                margin-left: 10px;
+              }
+            }
+          }
+        }
+        .img-name {
+          width: 80%;
+          display: inline-block;
+          font-size: 12px;
+          line-height: 15px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+      .img-item-box {
+        // min-height: 100px;
+        height: calc(100vh - 270px);
+        overflow: auto;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin-top: 10px;
+        :deep {
+          .nut-infinite__container {
+            width: 100%;
+          }
+          .nut-checkbox-group {
+            display: grid;
+            grid-gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+
+            justify-items: center;
+            width: 100%;
+          }
+        }
+        .img-item {
+          position: relative;
+          width: 150px;
+          height: 150px;
+          // margin: 0 10px 10px 0;
+          .mask {
+            display: none;
+            position: absolute;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+
+            .itemChecked {
+              display: block;
+            }
+            &.isChecking {
+              display: block;
+              height: 100%;
+              cursor: pointer;
+              :deep {
+                .nut-checkbox {
+                  width: 100%;
+                  height: 100%;
+                  display: block;
+                }
+                .nut-icon {
+                  padding: 10px;
+                }
+              }
+            }
+
+            :deep {
+              .nut-checkbox {
+                position: absolute;
+                left: 0;
+                .nut-icon {
+                  --nut-icon-width: 30px;
+                  --nut-icon-height: 30px;
+                  --nut-icon-line-height: 30px;
+                }
+              }
+
+              .nut-checkbox__input {
+                position: absolute;
+                left: 5px;
+                top: 10px;
+              }
+              .nut-checkbox__label {
+                display: none;
+              }
+            }
+          }
+          .imageItemChecked {
+            padding: 20px;
+            background: #74c6ff8c;
+          }
+        }
+        :deep {
+          .nut-image {
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+          }
         }
       }
     }

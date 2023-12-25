@@ -34,7 +34,7 @@
     </nut-button>
   </div>
   <Transition name="fade-transform" mode="out-in">
-    <div v-if="uploadProgressIsShow">
+    <div v-if="uploadProgressIsShow" style="margin-top: 30px">
       <nut-progress
         class="upload_progress"
         :percentage="uploadProgress"
@@ -52,7 +52,7 @@
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute } from 'vue-router';
-  import useOrderInfo from './useOrderInfo.js';
+  import useOrderInfo from '@/views/list/details/useOrderInfo.js';
   import { showToast, showNotify } from '@nutui/nutui';
   import { save_upload, valid_upload, get_unique_order } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
@@ -60,7 +60,7 @@
   import { update_order_size } from '@/api/amb';
   import { delay, throttle } from 'lodash';
   import { poolUrl } from '@/setting.js';
-  import useSyncPhotos from './useSyncPhotos.js';
+  import useSyncPhotos from '@/views/list/details/useSyncPhotos.js';
   const isAndroid = computed(() => {
     return import.meta.env.VITE_BUILD_TYPE == 'ANDROID';
   });
@@ -418,7 +418,7 @@
   }
   @media screen and (min-width: 500px) {
     .upload_progress {
-      bottom: 60px !important;
+      bottom: 60px;
     }
   }
 </style>

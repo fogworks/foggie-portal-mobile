@@ -23,4 +23,10 @@
       -webkit-transform: rotateY(360deg);
     }
   }
+  @media screen and (min-width: 500px) {
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
 </style>

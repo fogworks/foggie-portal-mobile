@@ -32,6 +32,8 @@
 
 <script setup>
   import { useRouter } from 'vue-router';
+  import { showToast } from '@nutui/nutui';
+
   const router = useRouter();
   const props = defineProps({
     tabList: {
@@ -61,6 +63,10 @@
     value: {},
   });
   const updateTab = (index) => {
+    if (tabList.value[index] == 'Inscription List') {
+      showToast.text('Coming Soon');
+      return false;
+    }
     emits('update:activeTab', index + 1);
   };
   const itemClick = (item) => {
@@ -105,6 +111,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     justify-items: center;
+    align-content: flex-start;
     grid-gap: 20px;
     height: calc(100vh - 400px);
     overflow: auto;
@@ -148,19 +155,16 @@
     }
   }
   .bottom_btn {
-    position: fixed;
-    bottom: 120px;
+    // position: fixed;
+    // bottom: 120px;
     width: calc(100% - 60px);
+    margin: 0 auto;
   }
   @media screen and (min-width: 500px) {
     .top_tab_box {
-      display: flex;
-      justify-content: center;
-      align-items: center;
       margin: 10px auto;
       width: 400px;
       padding: 5px;
-      background: #e4ebf3;
       border-radius: 99px;
       .tab_item {
         width: 50%;
@@ -169,21 +173,21 @@
     }
     .show_more {
       margin: 10px 30px;
-      text-align: right;
-      color: #007bff;
-      cursor: pointer;
     }
     .img_list_box {
-      display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      justify-items: center;
       grid-gap: 20px;
+      height: calc(100vh - 300px);
+      overflow: auto;
+
       // margin: 0 30px;
       .img_item {
         width: 200px;
+        height: 260px;
         padding: 10px;
         border-radius: 20px;
         overflow: hidden;
+        cursor: pointer;
         &.isChecked {
           // background: #007bff;
           box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -194,32 +198,23 @@
           margin: 0 auto;
           border-radius: 30px;
           overflow: hidden;
-          img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
         }
         .item_name {
           margin: 10px 0;
-          font-weight: 600;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-        }
-        .price_time {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 0.9rem;
-          font-weight: 600;
         }
       }
     }
     .bottom_btn {
-      position: fixed;
-      bottom: 120px;
-      width: calc(100% - 60px);
+      // position: fixed;
+      // bottom: 120px;
+
+      width: 300px;
+      :deep {
+        .nut-button {
+          --nut-button-default-height: 70px;
+          --nut-button-default-font-size: 1.5rem;
+        }
+      }
     }
   }
 </style>

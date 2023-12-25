@@ -53,6 +53,22 @@ p {
   background-color: #fff;
   background-position: center;
 }
+@media screen and (min-width: 500px){
+  .top_back{
+    height: 30px;
+    cursor: pointer;
+  }
+  .top_back::before {
+      content: '';
+      width: 30px;
+      height: 30px;
+      margin-right: 40px;
+     
+      border-radius: 16px;
+      background-size: 30px;
+
+    }
+}
 .top_box {
   /* margin: 20px; */
   padding: 50px 10px 30px;
