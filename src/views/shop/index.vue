@@ -4,7 +4,7 @@
       <div class="inside_blue">
         <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
         <p class="title">Buy</p>
-        <!-- <p class="total_balance">Total Balance</p> -->
+        <p class="total_balance">Available Amount</p>
         <p class="total_balance_value" v-if="cloudBalance">{{ cloudBalance }} DMC</p>
 
         <div class="action_item" v-if="cloudBalance == 0">
@@ -27,7 +27,6 @@
       </div>
     </div>
     <div class="middle_content">
-      <!-- <p class="middle_title">VIP orders will receive a higher amount of revenue</p> -->
       <div class="product_box">
         <div class="product_card">
           <p
@@ -36,7 +35,6 @@
           >
           <p>{{ (perMpPSTIncome * 100).toFixed(4) }} DMC/100 GB</p>
         </div>
-        <!-- <img src="@/assets/arrow-right.svg" alt="" /> -->
         <span style="font-weight: bold"> VS</span>
 
         <div class="product_card">
@@ -44,16 +42,21 @@
             Your Orders <br />
             (48 Weeks)</p
           >
-          <p>{{ (perGoldenPSTIncome * 100).toFixed(4) }} DMC/100 GB</p>
+          <p>{{ (perGoldenPSTIncome * 100).toFixed(0) }} DMC/100 GB</p>
         </div>
       </div>
-      <div class="title">VIP orders will receive a higher amount of revenue.</div>
+      <div class="title">Your orders will receive a higher amount of revenue.</div>
     </div>
     <div class="out_price_box">
+      <!-- <span>Custom order</span> -->
       <p><IconSetting @click="showTop = true"></IconSetting> </p>
       <div class="price_box">
-        Reference price: <br />
-        <span style="text-align: center" class="price_box_text"> 100 GB = {{ middleTotalPrice }} DMC</span>
+        Reference Price(48 Weeks): <br />
+        <span style="text-align: center; margin-bottom: 10px" class="price_box_text"> 100 GB = {{ middleTotalPrice }} DMC</span>
+        Estimated Revenue(48 Weeks): <br />
+        <span style="text-align: center" class="price_box_text">
+          + {{ (perGoldenPSTIncome * 100).toFixed(0) }} DMC/<span>100 GB </span></span
+        >
       </div>
     </div>
     <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading">Buy</nut-button>
@@ -683,7 +686,7 @@
         color: #fff;
         font-size: 1.75rem;
         text-align: center;
-        margin-top: 30px;
+        margin-top: 0px;
       }
 
       &::before,
@@ -723,6 +726,8 @@
       font-size: 24px;
       font-style: italic;
       margin-top: 7px;
+      color: orange;
+      font-weight: bold;
     }
 
     .product_box {
@@ -806,7 +811,11 @@
 
   .out_price_box {
     padding: 20px;
-
+    // span {
+    //   font-size: 16px;
+    //   color: #666;
+    //   display: none;
+    // }
     p {
       padding: 0 20px;
       //   color: #999999;
@@ -814,6 +823,7 @@
       font-weight: bold;
       display: flex;
       justify-content: flex-end;
+      align-items: center;
 
       svg {
         width: 40px;
@@ -851,7 +861,8 @@
     color: #fff;
     border-radius: 50px;
     background: #5264f9;
-    font-size: 1.25rem;
+    font-size: 34px;
+    font-weight: bold;
     overflow: hidden;
     background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
 

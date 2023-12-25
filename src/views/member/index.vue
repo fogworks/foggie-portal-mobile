@@ -13,8 +13,8 @@
         <div class="user_header_box_content">
           <div class="accTitle">{{ dmcAccount }}</div>
           <div class="email">Email: {{ email }}</div>
-          <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div>
-          <!-- <div class="email" v-if="promo_code">{{ promo_code }}</div> -->
+          <!-- <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div> -->
+          <div class="email" v-if="promo_code">promoCode: {{ promo_code }}</div>
         </div>
       </div>
       <!-- <div class="money">
@@ -40,11 +40,11 @@
           </div>
         </div>
       </div> -->
-      <div class="bottom_btn">
-        <!-- <div class="bottom_btn_item">
+      <!-- <div class="bottom_btn">
+        <div class="bottom_btn_item">
           <img src="@/assets/shop.svg" alt="" />
           <div class="bottom_btn_itemText"> Buy</div>
-        </div> -->
+        </div>
         <div class="bottom_btn_item" @click="toRecharge">
           <img src="@/assets/Recharge.png" alt="" />
           <div class="bottom_btn_itemText"> Recharge</div>
@@ -53,7 +53,7 @@
           <img src="@/assets/Withdraw.png" alt="" />
           <div class="bottom_btn_itemText"> Withdraw</div>
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="my_assets_card"> </div>
     <div class="userBox">
@@ -371,8 +371,8 @@
         // height: 200px;
         padding-top: 50px;
         align-items: center;
-        display: flex;
-        flex-direction: column;
+        // display: flex;
+        // flex-direction: column;
 
         img {
           margin-top: 6px;
@@ -398,7 +398,7 @@
         }
 
         & > .user_header_box_content {
-          text-align: center;
+          //   text-align: center;
           .accTitle {
             color: #fff;
             font-size: 40px;

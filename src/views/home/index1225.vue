@@ -1026,7 +1026,7 @@
   }
 
   .tab_top_title {
-    // margin-top: 20px;
+    margin-top: 20px;
     margin-bottom: 20px;
     // font-style: italic;
     font-size: 35px;

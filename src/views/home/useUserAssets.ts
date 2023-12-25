@@ -9,6 +9,7 @@ export default function useUserAssets() {
   const cloudWithdraw = ref('--');
   const cloudTodayIncome = ref('--');
   const dmc2usdRate = ref(0);
+  const cloudRecharge = ref('--');
   function getUserAssets() {
     return get_user_dmc().then((res) => {
       if (res?.result?.data) {
@@ -18,6 +19,7 @@ export default function useUserAssets() {
         cloudIncome.value = res.result.data.income;
         cloudWithdraw.value = res.result.data.withdraw;
         cloudTodayIncome.value = res.result.data.today_income;
+        cloudRecharge.value = res.result.data.Recharge;
       }
     });
   }
@@ -36,5 +38,6 @@ export default function useUserAssets() {
     cloudIncome,
     cloudWithdraw,
     cloudTodayIncome,
+    cloudRecharge,
   };
 }
