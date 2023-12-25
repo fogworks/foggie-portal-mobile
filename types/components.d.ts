@@ -57,5 +57,8 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Tabbar: typeof import('./../src/components/tabbar/index.vue')['default']
     TopBack: typeof import('./../src/components/topBack/index.vue')['default']
+    VanDropdownItem: typeof import('vant/es')['DropdownItem']
+    VanDropdownMenu: typeof import('vant/es')['DropdownMenu']
+    VanPicker: typeof import('vant/es')['Picker']
   }
 }

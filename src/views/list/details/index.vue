@@ -217,9 +217,12 @@
           <div v-if="isReady" class="rename_box move_box">
             <nut-cell style="margin-top: 50px" title="Access Period:">
               <template #link>
-                <span style="display: flex"
+                <span style="display: flex" v-if="isMobileDevice"
                   >{{ desc }} <IconEdit id="editIcon" style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
                 ></span>
+                <van-dropdown-menu class="" direction="up" v-else>
+                  <van-dropdown-item class="timeSelect" v-model="periodValue" :options="options" />
+                </van-dropdown-menu>
               </template>
             </nut-cell>
             <template v-if="shareType">
@@ -2349,7 +2352,7 @@
         flex-wrap: wrap;
         padding: 10px 5px;
         border-radius: 0 !important;
-        border-right: 1px solid #e2e2e2;
+        // border-right: 1px solid #e2e2e2;
         .type_item {
           width: 80px;
           height: 100px;
@@ -2417,8 +2420,8 @@
       }
 
       .file_list {
-        width: calc(100% - 190px);
-        margin-left: 190px;
+        width: unset;
+        // margin-left: 190px;
         margin-top: 20px;
         border-radius: 16px;
       }
@@ -2497,6 +2500,169 @@
             margin: 3vw;
           }
         }
+      }
+    }
+
+    :deep {
+      .nut-popup {
+        .nut-icon {
+          min-height: 20px;
+        }
+      }
+    }
+    .rename_box {
+      margin-top: 40px;
+      padding: 0 40px;
+      :deep {
+        .nut-cell {
+          padding-left: 0;
+          padding-right: 0;
+          box-shadow: none;
+        }
+        .nut-textarea {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+      p {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      svg {
+        display: block;
+        margin: 0 auto;
+      }
+      :deep {
+        .nut-searchbar {
+          margin: 0 auto;
+          padding: 20px 0;
+          --nut-searchbar-width: 600px;
+          --nut-searchbar-input-height: 70px;
+        }
+        .nut-button {
+          width: 300px;
+          margin: 0 auto;
+          margin-top: 40px;
+          --nut-button-default-height: 70px;
+          --nut-button-default-font-size: 1.5rem;
+        }
+        .nut-searchbar__search-input .nut-searchbar__input-bar {
+          font-size: 1.5rem;
+        }
+        .nut-icon {
+          --nut-icon-width: 30px;
+          --nut-icon-height: 30px;
+          --nut-icon-line-height: 30px;
+        }
+      }
+    }
+    .move_box {
+      :deep {
+        .nut-cell {
+          padding: 10px;
+          --nut-cell-title-font: 1.5rem;
+        }
+      }
+      .top_back {
+        margin-bottom: 10px;
+        p {
+          margin: 0 5px;
+          font-size: 2rem;
+        }
+      }
+      .file_list {
+        height: 600px;
+        overflow-y: auto;
+        .list_item {
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .left_icon_box {
+          width: 80px;
+          height: 80px;
+          svg {
+            width: 80px;
+            height: 80px;
+          }
+        }
+        .name_box {
+          p {
+            text-align: right;
+            margin: 0;
+            font-size: 30px;
+          }
+        }
+      }
+      .nut-button {
+        --nut-button-default-font-size: 1rem;
+      }
+    }
+    .share_info_box {
+      margin-top: 30px;
+      margin: 30px 120px 0;
+      justify-content: space-around;
+      div {
+        min-width: 150px;
+        margin-top: 20px;
+
+        img,
+        svg {
+          width: 80px;
+          height: 80px;
+        }
+      }
+    }
+    .custom-content {
+      p {
+        padding: 10px 20px;
+        color: #909090;
+        border-bottom: 1px solid #eee;
+        svg {
+          width: 60px;
+          height: 60px;
+          margin-right: 20px;
+          vertical-align: middle;
+        }
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        li {
+          padding: 10px 20px;
+          svg {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            vertical-align: middle;
+          }
+          &:active,
+          &:hover {
+            background: #cde3f5;
+          }
+        }
+      }
+      .cancel_btn {
+        padding: 10px;
+        font-size: 24px;
+      }
+    }
+    .timeSelect {
+      z-index: 9999;
+    }
+    :deep {
+      .van-dropdown-menu__bar {
+        background-color: transparent;
+        box-shadow: none;
+      }
+      .van-dropdown-menu__title:after {
+        transform: rotate(-45deg) scale(0.8);
+      }
+      .van-dropdown-menu__title--down:after {
+        transform: rotate(135deg) scale(0.8);
+      }
+      .van-dropdown-item__option {
+        padding: 20px;
       }
     }
   }

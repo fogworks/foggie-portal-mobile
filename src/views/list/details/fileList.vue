@@ -309,16 +309,13 @@
       <div v-if="isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period:">
           <template #link>
-            <span style="display: flex; align-items: center"
+            <span v-if="isMobileDevice" style="display: flex; align-items: center"
               >{{ desc }}
-
-              <IconEdit v-if="isMobileDevice" style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit>
-              <nut-popover v-else v-model:visible="periodShow" :list="options" location="top-start" @choose="confirmPeriod">
-                <template #reference>
-                  <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit>
-                </template>
-              </nut-popover>
+              <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit>
             </span>
+            <van-dropdown-menu direction="up" v-else>
+              <van-dropdown-item v-model="periodValue" :options="options" />
+            </van-dropdown-menu>
           </template>
         </nut-cell>
         <template v-if="shareType">
@@ -2297,6 +2294,21 @@
       .cancel_btn {
         padding: 10px;
         font-size: 24px;
+      }
+    }
+    :deep {
+      .van-dropdown-menu__bar {
+        background-color: transparent;
+        box-shadow: none;
+      }
+      .van-dropdown-menu__title:after {
+        transform: rotate(-45deg) scale(0.8);
+      }
+      .van-dropdown-menu__title--down:after {
+        transform: rotate(135deg) scale(0.8);
+      }
+      .van-dropdown-item__option {
+        padding: 20px;
       }
     }
   }

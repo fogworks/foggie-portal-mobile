@@ -311,14 +311,16 @@
       width: 30px !important;
       height: 30px !important;
       line-height: 30px !important;
-      --nut-popup-close-icon-margin: 40px;
+      --nut-popup-close-icon-margin: 25px;
     }
     .nut-toast-inner {
+      --nut-toast-inner-padding: 40px;
       box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.6);
       font-size: 1rem;
 
       .nut-toast-text {
         word-break: break-word;
+        font-size: 1.5rem;
       }
     }
 
@@ -354,6 +356,8 @@
     }
 
     .nut-popup {
+      padding: 0 20px;
+      box-sizing: border-box;
       .nut-dialog:not(.CustomName) {
         --nut-dialog-width: 500px;
         padding: 20px;

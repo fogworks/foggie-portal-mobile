@@ -16,6 +16,12 @@ const { metadata } = useOrderInfo();
 
 export default function useShare(orderInfo, header, deviceType) {
   const userStore = useUserStore();
+    const isMobileDevice = computed(() => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+      // 此正则表达式涵盖了大多数使用的手机和平板设备
+      return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+    });
   const daySeconds = 86400;
   const monthSeconds = 2592000;
   const { shareRefContent, copyContent, pinData, ipfsDialogShow } = useVariable();
@@ -24,7 +30,7 @@ export default function useShare(orderInfo, header, deviceType) {
   const loading = ref(false);
   const isReady = ref(false);
   const desc = ref('1 hour');
-  const periodValue = ref([3600]);
+  const periodValue = ref(isMobileDevice.value ? [3600] : 3600);
   const imgUrl = ref('');
   const imgDesc = ref('');
   const shareType = ref('');
@@ -67,6 +73,7 @@ export default function useShare(orderInfo, header, deviceType) {
       value: monthSeconds * 12,
     },
   ]);
+
   const ipfsPin = (item, stype, flag, exp = true) => {
     console.log(item, 'item');
     console.log(orderInfo.value, 'orderInfo.value');
@@ -177,7 +184,7 @@ export default function useShare(orderInfo, header, deviceType) {
           coverUrl: fileLink + '&thumb=true',
           username: userInfo.value.email,
           userUuid: userInfo.value.uuid,
-          period: periodValue.value[0],
+          period: isMobileDevice.value ? periodValue.value[0] : periodValue.value,
           imageName: shareOption.name,
           title: shareOption.name,
           detail: imgDesc.value,
@@ -186,13 +193,13 @@ export default function useShare(orderInfo, header, deviceType) {
           coverUrl = `${shareUrl}/img/` + linkRes.data;
         }
       }
-      console.log(periodValue.value[0], 'periodValue.value[0]');
+      console.log(isMobileDevice.value ? periodValue.value[0] : periodValue.value, 'periodValue.value[0]');
       return getLink({
         url: fileLink,
         coverUrl: category == 2 ? coverUrl : '',
         username: userInfo.value.email,
         userUuid: userInfo.value.uuid,
-        period: periodValue.value[0],
+        period: isMobileDevice.value ? periodValue.value[0] : periodValue.value,
         imageName: shareOption.name,
         title: shareOption.name,
         detail: imgDesc.value,
@@ -280,7 +287,7 @@ export default function useShare(orderInfo, header, deviceType) {
     // awsSecretAccessKey = 'TgKOPvlv3MSQhYjuyNN0MKVBw9mZChtT7E0GVh2h'
     const objectKey = encodeURIComponent(keyName);
     // const expirationInSeconds = periodValue.value[0]
-    const expirationTime = Math.floor(Date.now() / 1000) + periodValue.value[0];
+    const expirationTime = Math.floor(Date.now() / 1000) + (isMobileDevice.value ? periodValue.value[0] : periodValue.value);
 
     const httpMethod = 'GET';
     const contentType = '';
@@ -313,13 +320,13 @@ export default function useShare(orderInfo, header, deviceType) {
         showToast.fail('File size exceeds 1% of the order space size, sharing is not supported');
       } else {
         if (!pinData.item.isPin) {
-          ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+          ipfsPin(pinData.item, 'ipfs', '', isMobileDevice.value ? periodValue.value[0] : periodValue.value);
           copyLink(shareRefContent.ipfsStr);
         }
       }
     } else {
       if (!pinData.item.isPin) {
-        ipfsPin(pinData.item, 'ipfs', '', periodValue.value[0]);
+        ipfsPin(pinData.item, 'ipfs', '', isMobileDevice.value ? periodValue.value[0] : periodValue.value);
         copyLink(shareRefContent.ipfsStr);
       }
     }
@@ -339,11 +346,14 @@ export default function useShare(orderInfo, header, deviceType) {
     if (orderInfo.value.expire) {
       let expireTimeStamp = new Date(orderInfo.value.expire).getTime();
       let startTimeStamp = new Date(orderInfo.value.created_at).getTime();
-      periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
+
+      periodValue.value = isMobileDevice.value
+        ? [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)]
+        : +((expireTimeStamp - startTimeStamp) / 1000).toFixed(0);
       shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
       window.open(`https://drops.fogworks.io/personal/#/create/${encodeURIComponent(shareRefContent.httpStr)}`);
     } else {
-      periodValue.value = [daySeconds * 7];
+      periodValue.value = isMobileDevice.value ? [daySeconds * 7] : daySeconds * 7;
       shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
       window.open(`https://drops.fogworks.io/personal/#/create/${encodeURIComponent(shareRefContent.httpStr)}`);
     }
@@ -361,10 +371,13 @@ export default function useShare(orderInfo, header, deviceType) {
           });
           desc.value = transferUTCTime(orderInfo.value.expire);
           options.value.unshift({ text: desc.value, value: +((expireTimeStamp - startTimeStamp) / 1000).toFixed(0) });
-          periodValue.value = [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)];
+          periodValue.value = isMobileDevice.value
+            ? [+((expireTimeStamp - startTimeStamp) / 1000).toFixed(0)]
+            : +((expireTimeStamp - startTimeStamp) / 1000).toFixed(0);
         } else {
           desc.value = '1 hour';
           periodValue.value = [3600];
+          periodValue.value = isMobileDevice.value ? [3600] : 3600;
         }
       } else {
         options.value = [
@@ -413,7 +426,7 @@ export default function useShare(orderInfo, header, deviceType) {
     isReady.value = false;
     shareType.value = '';
     if (!val) {
-      periodValue.value = [3600];
+      periodValue.value = isMobileDevice.value ? [3600] : 3600;
     }
     // httpCopyLink.value = '';
   });

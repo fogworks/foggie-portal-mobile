@@ -28,11 +28,13 @@
         </div>
       </nut-infinite-loading>
     </div>
+    <FastUploader></FastUploader>
   </div>
 </template>
 
 <script setup lang="ts" name="bucketList">
   import { computed } from 'vue';
+  import FastUploader from '@/views/nft/fastUploader.vue';
   import { useUserStore } from '@/store/modules/user';
   import { useRouter, useRoute } from 'vue-router';
   import { Search, Category, TriangleUp, Clock, Checked } from '@nutui/icons-vue';

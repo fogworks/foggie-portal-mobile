@@ -196,6 +196,27 @@
           }
         }
       }
+      .check_account {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        --nut-switch-inside-height: 1.5rem;
+        --nut-switch-inside-width: 1.5rem;
+        --nut-switch-close-bg-color: green;
+        --nut-switch-width: 6rem;
+        --nut-switch-height: 2rem;
+        --nut-switch-inside-open-transform: translateX(280%);
+        --nut-switch-inside-close-transform: translateX(34%);
+        --nut-font-size-1: 1rem;
+        :deep {
+          .nut-switch-button .nut-switch-label.open {
+            transform: translateX(-46px);
+          }
+          .nut-switch-button .nut-switch-label.close {
+            transform: translateX(2rem);
+          }
+        }
+      }
     }
     :deep {
       .img_list_box {
