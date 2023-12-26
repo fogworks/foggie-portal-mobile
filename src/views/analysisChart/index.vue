@@ -3,32 +3,36 @@
     <div style="background: #fff; margin-bottom: 10px">
       <div class="top_box">
         <TopBack> Data Analysis</TopBack>
-
+        <div class="Analysis_title">Data Analysis By {{ timeType }}</div>
         <div class="top_assets">
           <div class="right_img"><img src="@/assets/Trading.svg" alt="" /> </div>
           <nut-grid class="top_grid" :column-num="3">
             <nut-grid-item text="Balance">
-              <div>
+              <div class="top_grid_item">
                 <IconCions class="top_icon"></IconCions>
                 <p class="banlance_text">{{ cloudBalance }}</p>
+                <div class="question_tips" @click="dialogShow = true"><img src="@/assets/tips.svg" /></div>
               </div>
             </nut-grid-item>
             <nut-grid-item class="top_icon" text="Earnings" @click="router.push('/analysisCate?type=1')">
-              <div>
+              <div class="top_grid_item">
                 <IconIncome class="top_icon"></IconIncome>
                 <p class="banlance_text">{{ cloudIncome }}<Search2></Search2> </p>
+                <div class="question_tips" @click="dialogShow = true"><img src="@/assets/tips.svg" /></div>
               </div>
             </nut-grid-item>
             <nut-grid-item class="top_icon" text="Expenses" @click="router.push('/analysisCate?type=3')">
-              <div>
+              <div class="top_grid_item">
                 <IconOutCome class="top_icon"></IconOutCome>
                 <p class="banlance_text1">{{ cloudExpense > 0 ? '-' : '' }}{{ cloudExpense }}<Search2></Search2> </p>
+                <div class="question_tips" @click="dialogShow = true"><img src="@/assets/tips.svg" /></div>
               </div>
             </nut-grid-item>
           </nut-grid>
         </div>
       </div>
     </div>
+    <div class="analysis_assets_tab"> </div>
     <div class="analysis_content">
       <nut-tabs v-model="timeType" class="time_tabs" direction="horizontal">
         <nut-tab-pane title="By Day" pane-key="Day"></nut-tab-pane>
@@ -76,10 +80,21 @@
         <MyEcharts style="width: 100%; height: 200px" :options=""></MyEcharts>
       </div> -->
     </div>
+    <BasicModal :show="dialogShow" @update:show="dialogShow = false">
+      <div class="my_dialog_content">
+        <div class="my_dialog_title">what is Data Analysis By {{ timeType }}?</div>
+        <div class="my_dialog_content">
+          <div class="my_dialog_content_p"> 1.xxxxxxxx </div>
+          <div class="my_dialog_content_p"> 2.xxxxx</div>
+        </div>
+      </div>
+    </BasicModal>
   </div>
 </template>
 
 <script setup lang="ts" name="analysis">
+  import BasicModal from '@/components/Modal/src/BasicModal.vue';
+  const dialogShow = ref(false);
   import moment from 'moment';
   import { reactive, toRefs, onMounted, watch, computed } from 'vue';
   import { barOption } from '@/components/echarts/util';
@@ -517,14 +532,22 @@
     border-radius: 20px;
     background: $primary-color;
     background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
-
+    .Analysis_title {
+      color: #fff;
+      font-weight: bold;
+      height: 50px;
+      line-height: 50px;
+      padding-left: 10px;
+      margin: 30px 0 0px 0;
+    }
     .top_assets {
       display: flex;
       width: 100%;
       justify-content: flex-end;
       align-items: flex-end;
+      align-items: center;
       color: #fff;
-      height: 250px;
+      //   height: 250px;
 
       .top_grid {
         border: none;
@@ -540,6 +563,7 @@
           //   max-width: 25%;
           // }
           .nut-grid-item__content {
+            position: relative;
             border-radius: 16px;
             margin: 5px;
             padding: 10px 12px;
@@ -584,6 +608,22 @@
             .banlance_text1 {
               text-decoration: none;
               color: #dfa1a1;
+            }
+          }
+        }
+        .top_grid_item {
+          .question_tips {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: #000;
+            cursor: pointer;
+            &:hover {
+              transform: scale(1.1);
+            }
+            img {
+              width: 40px;
+              height: 40px;
             }
           }
         }

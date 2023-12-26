@@ -740,6 +740,7 @@
         font-size: 1.5rem;
         text-align: center;
         margin-top: 40px;
+        width: 100%;
       }
 
       .total_balance {

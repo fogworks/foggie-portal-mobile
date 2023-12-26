@@ -214,12 +214,13 @@
             padding: 10px;
             height: 100px;
             border-radius: 50%;
-            background: #fff;
-            background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+            background: #eee;
+            // background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
           }
         }
         .service_item_title {
           font-size: 24px;
+          font-weight: bold;
         }
       }
     }
