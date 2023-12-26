@@ -5,6 +5,7 @@
   width: 650px;
   background-repeat: no-repeat;
   background-size: cover;
+  position: relative;
 
   &.normal {
     height: 604px;
@@ -14,6 +15,16 @@
   &.large {
     height: 754px;
     background-image: url('@/assets/baseModal/modal-bg-large.png');
+  }
+  .modal-close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background-image: url('@/assets/baseModal/btn-close.png');
+    width: 80px;
+    height: 80px;
+    background-size: 100% 100%;
+    cursor: pointer;
   }
 
   .content {
@@ -42,7 +53,6 @@
     }
   }
 }
-
 .btn-common {
   @include center();
 
