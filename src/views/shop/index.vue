@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%">
+  <div style="height: auto; padding-bottom: 50px">
     <div class="out_blue">
       <div class="inside_blue">
         <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
@@ -7,26 +7,82 @@
         <p class="total_balance">Available Amount</p>
         <p class="total_balance_value" v-if="cloudBalance">{{ cloudBalance }} DMC</p>
 
-        <div class="action_item" v-if="cloudBalance == 0">
-          <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px"> Recharge </router-link>
-        </div>
-        <!-- <div class="balance_options">
+        <div class="balance_options">
           <div class="action_item">
             <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px"> Recharge </router-link>
           </div>
-          <div class="action_item">
-            <router-link to="/withdraw" style="color: #b9d4ff; font-size: 14px"> Withdraw </router-link>
+          <div class="action_item recharge_item">
+            <a style="color: #b9d4ff; font-size: 14px" @click="dialogShow = true"> why Recharge? </a>
           </div>
-        </div> -->
-        <!-- <div class="action_item">
-          <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px">
-            <img src="@/assets/recharge.svg" alt="" />
-            Recharge
-          </router-link>
-        </div> -->
+        </div>
       </div>
     </div>
-    <div class="middle_content">
+    <div class="vip_order_choose">
+      <div class="vip_title">Choose Exclusive Product</div>
+      <div class="img_list">
+        <img src="@/assets/vipOrder.svg" @click="submit" />
+        <img src="@/assets/customOrder.svg" class="customOrder" @click="showTop = true" />
+      </div>
+    </div>
+    <div class="out_price_box">
+      <!-- <p> -->
+      <div class="vip_title">Exclusive Order </div>
+      <!-- <IconSetting @click="showTop = true"></IconSetting> -->
+      <!-- </p> -->
+      <div class="price_box">
+        Annual Purchase Price: <br />
+        <span style="text-align: center; margin-bottom: 10px; color: #e5960f" class="price_box_text">
+          100 GB = {{ middleTotalPrice }} DMC</span
+        >
+        Estimated Annual Revenue: <br />
+        <span style="text-align: center; color: #e5960f" class="price_box_text">
+          + {{ (perGoldenPSTIncome * 100).toFixed(0) }} DMC/<span>100 GB </span></span
+        >
+      </div>
+    </div>
+    <div class="vip_right">
+      <div class="vip_title">Exclusive Rights</div>
+      <div class="vip_list">
+        <div class="vip_list_item">
+          <div class="vip_list_img">
+            <img src="@/assets/shopCloud.svg" style="width: 80px; height: 40px" />
+          </div>
+          <div class="vip_list_text">
+            <div class="vip_list_title">More Space</div>
+            <div class="vip_list_sub_title">Min 100GB space provided</div>
+          </div>
+        </div>
+        <div class="vip_list_item">
+          <div class="vip_list_img">
+            <img src="@/assets/shopTicket.svg" />
+          </div>
+          <div class="vip_list_text">
+            <div class="vip_list_title">Bigger Discount</div>
+            <div class="vip_list_sub_title">lowest purchase price</div>
+          </div>
+        </div>
+        <div class="vip_list_item">
+          <div class="vip_list_img">
+            <img src="@/assets/shopPeople.svg" />
+          </div>
+          <div class="vip_list_text">
+            <div class="vip_list_title">Higher Revenue</div>
+            <div class="vip_list_sub_title">Greater profit than before</div>
+          </div>
+        </div>
+        <div class="vip_list_item">
+          <div class="vip_list_img">
+            <img src="@/assets/shopVip.svg" />
+          </div>
+          <div class="vip_list_text">
+            <div class="vip_list_title">Gold Mining Pool</div>
+            <div class="vip_list_sub_title">Gold mining pool selection</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="middle_content">
       <div class="product_box">
         <div class="product_card">
           <p
@@ -46,24 +102,14 @@
         </div>
       </div>
       <div class="title">Your orders will receive a higher amount of revenue.</div>
-    </div>
-    <div class="out_price_box">
-      <!-- <span>Custom order</span> -->
-      <p><IconSetting @click="showTop = true"></IconSetting> </p>
-      <div class="price_box">
-        Reference Price(48 Weeks): <br />
-        <span style="text-align: center; margin-bottom: 10px" class="price_box_text"> 100 GB = {{ middleTotalPrice }} DMC</span>
-        Estimated Revenue(48 Weeks): <br />
-        <span style="text-align: center" class="price_box_text">
-          + {{ (perGoldenPSTIncome * 100).toFixed(0) }} DMC/<span>100 GB </span></span
-        >
-      </div>
-    </div>
-    <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading">Buy</nut-button>
+    </div> -->
+
+    <!-- <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading">Buy</nut-button> -->
     <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
     <Teleport to="body">
       <nut-popup position="top" :style="{ height: '480px' }" round v-model:visible="showTop">
         <nut-form class="query_form" :model-value="shopForm">
+          <div class="custom_order">Custom order</div>
           <nut-form-item label="Service Period">
             <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
               <nut-radio shape="button" :label="52">52 weeks</nut-radio>
@@ -190,10 +236,26 @@
       </nut-cell-group> -->
       </nut-popup>
     </Teleport>
+    <BasicModal :show="dialogShow" @update:show="dialogShow = false">
+      <div class="my_dialog_content">
+        <div class="my_dialog_title">why Recharge?</div>
+        <div class="my_dialog_content">
+          <div class="my_dialog_content_p">
+            In order to improve the efficiency of buying orders, we have set up an agent account for you. When paying orders, you can
+            directly deduct money from the agent account.
+          </div>
+          <div class="my_dialog_content_p"
+            >Therefore, we recommend that you recharge a certain amount of money into your agent account before purchasing. This will
+            greatly improve the efficiency of buying orders.</div
+          >
+        </div>
+      </div>
+    </BasicModal>
   </div>
 </template>
 
 <script setup lang="ts" name="Shop">
+  import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
   import IconSetting from '~icons/home/setting.svg';
   import { toRefs, reactive, onMounted } from 'vue';
@@ -204,6 +266,7 @@
   import useUserAssets from '../home/useUserAssets.ts';
   import { debounce, delay } from 'lodash';
   import FakeProgress from 'fake-progress';
+  const dialogShow = ref(false);
 
   import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
@@ -497,6 +560,7 @@
     getUserAssets();
   });
 </script>
+
 <style lang="scss">
   .confirm_pop {
     padding-bottom: 20px;
@@ -518,7 +582,9 @@
       );
       //   background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
       //   background: var(--nut-button-warning-background-color, linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%));
-      background: linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%);
+      background: linear-gradient(135deg, #1d2027 0%, #f1bc23 45%, rgb(255, 158, 13) 83%, #4062bb 100%);
+      background: linear-gradient(135deg, #1d2027 0%, #f1bc23 45%, rgb(31 28 23) 83%, #eaeef9 100%);
+      background: linear-gradient(135deg, #18191b 0%, #eeb40a 45%, rgb(113 99 76) 83%, #eaeef9 100%);
 
       color: #fff;
       margin: 0px 40px;
@@ -584,8 +650,8 @@
             span {
               font-size: 18px;
               color: #ffa92a;
-              background: linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%);
-              color: transparent;
+              //   background: linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%);
+              //   color: transparent;
               -webkit-background-clip: text;
 
               font-weight: bold;
@@ -613,6 +679,8 @@
         height: 100px;
         // background-color: #2d2e41 !important;
         background: linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%);
+        background: linear-gradient(135deg, #1d2027 0%, #f1bc23 45%, rgb(31 28 23) 83%, #eaeef9 100%);
+        background: linear-gradient(135deg, #18191b 0%, #eeb40a 45%, rgb(113 99 76) 83%, #eaeef9 100%);
         font-size: 40px;
         border: 0px;
         color: #ffffff;
@@ -656,6 +724,7 @@
       border-radius: 0 0 50px 50px;
       overflow: hidden;
       background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+      background-image: linear-gradient(260deg, #98660b 0%, #0f0e0d 74%);
 
       .back_img {
         position: absolute;
@@ -676,7 +745,7 @@
       .total_balance {
         color: #b9d4ff;
         font-size: 1.5rem;
-        margin: 20px auto 20px;
+        // margin: 20px auto 0px;
         text-align: center;
         color: #fbcf87;
       }
@@ -701,18 +770,20 @@
         height: 350px;
         border-radius: 60px;
         border: 5px solid #c72ff8;
+        border: 0.666667vw solid #be8120;
       }
 
       &::after {
         transform: rotate(39deg);
         border: 5px solid #3eb9ff;
+        border: 0.666667vw solid #9c8f7b;
       }
     }
   }
 
   .middle_content {
     padding: 20px;
-    margin-top: 50px;
+    // margin-top: 50px;
 
     .middle_title {
       text-align: center;
@@ -811,6 +882,12 @@
 
   .out_price_box {
     padding: 20px;
+    background: #fff;
+    // border: 5px solid #f3d1a2;
+    margin: 20px;
+    // margin-top: 70px;
+    border-radius: 10px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     // span {
     //   font-size: 16px;
     //   color: #666;
@@ -822,7 +899,7 @@
       font-size: 1.1rem;
       font-weight: bold;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
 
       svg {
@@ -830,6 +907,13 @@
         height: 40px;
         color: #5264f9;
       }
+    }
+    .vip_title {
+      font-weight: bold;
+      margin-left: -30px;
+      font-size: 32px;
+      color: #000;
+      padding-left: 20px;
     }
   }
 
@@ -862,9 +946,10 @@
     border-radius: 50px;
     background: #5264f9;
     font-size: 34px;
-    font-weight: bold;
+    // font-weight: bold;
     overflow: hidden;
     background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    background-image: linear-gradient(260deg, #1d2027 0%, #1a181c 74%);
 
     &::before {
       content: '';
@@ -878,6 +963,7 @@
       border-radius: 50%;
       transform: rotate(-129.95deg);
       background: linear-gradient(154deg, #c72ff8 -2%, #c72ff8 11%, rgba(198, 48, 248, 0) 91%);
+      background: linear-gradient(154deg, #32323b -2%, #f9e1ba 11%, rgba(198, 48, 248, 0) 91%);
       z-index: 1;
     }
 
@@ -893,12 +979,16 @@
       opacity: 0.75;
       border-radius: 50%;
       background: linear-gradient(149deg, #5264f9 0%, #3af9ef 98%);
+      background: linear-gradient(149deg, #eb7c0f 0%, #f1bc23 98%);
     }
   }
 
   .query_form {
     padding: 0 20px 20px 20px;
-
+    .custom_order {
+      text-align: center;
+      font-size: 36px;
+    }
     :deep {
       .nut-form-item {
         flex-direction: column;
@@ -960,21 +1050,33 @@
 
   .balance_options {
     display: flex;
-    align-items: center;
-    justify-content: space-around;
+    align-items: end;
+    justify-content: end;
     width: 100%;
     margin-top: 20px;
   }
   .action_item {
     width: 100%;
     display: flex;
-
     justify-content: center;
-    align-items: start;
+    align-items: center;
     font-size: 24px;
     text-decoration: none;
-    padding: 0 20px;
-    margin-top: 50px;
+    padding: 4px 20px;
+    background: yellow;
+    width: auto;
+    border-radius: 20px;
+    // margin: 0 auto;
+    // margin-top: 20px;
+    margin-right: 60px;
+    background: #f3d2a6;
+
+    a {
+      text-decoration: none;
+      color: #000 !important;
+      font-weight: bold;
+    }
+    // margin-top: 50px;
     // &:first-child {
     //   border-right: 1px solid #ccc;
     //   align-items: end;
@@ -984,6 +1086,14 @@
       display: block;
       width: 100px;
       margin-bottom: 10px;
+    }
+  }
+  .recharge_item {
+    background: none;
+    a {
+      color: #fff !important;
+      text-decoration: underline;
+      font-size: 20px !important;
     }
   }
 
@@ -1002,6 +1112,85 @@
       text-indent: 35px;
       font-size: 24px;
       color: #999999;
+    }
+  }
+</style>
+<style lang="scss" scoped>
+  .vip_right {
+    // border: 5px solid #f3d1a2;
+    margin: 20px;
+    border-radius: 10px;
+    background: #fff;
+    padding: 20px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    .vip_title {
+      font-size: 34px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .vip_list {
+      display: flex;
+      flex-wrap: wrap;
+      .vip_list_item {
+        margin-bottom: 20px;
+        width: 50%;
+        display: flex;
+        align-items: center;
+        // justify-content: center;
+        .vip_list_img {
+          width: 100px;
+          height: 100px;
+          // background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+          background: #32323b;
+          border-radius: 50%;
+          margin-right: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          img {
+            width: 50px;
+            height: 50px;
+          }
+        }
+        .vip_list_title {
+          font-weight: bold;
+          font-size: 26px;
+        }
+        .vip_list_sub_title {
+          font-size: 18px;
+          color: #333;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+  .vip_order_choose {
+    border: 5px solid #f3d1a2;
+    margin: 20px;
+    border-radius: 10px;
+    background: #fff;
+    padding: 20px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    margin-top: 70px;
+    .vip_title {
+      font-size: 34px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    padding-bottom: 20px;
+    .img_list {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    img {
+      cursor: pointer;
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+    .customOrder {
+      margin-top: 10px;
     }
   }
 </style>
