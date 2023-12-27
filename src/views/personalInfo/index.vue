@@ -19,6 +19,10 @@
       ></nut-cell>
       <nut-cell v-else class="not_amb" title="Ambassador Invitation Code" :desc="userInfo.amb_promo_code"></nut-cell>
     </nut-cell-group>
+    <nut-cell-group title="Link Wallet" class="info_title">
+      <nut-cell title="Address" :desc="userInfo.email"></nut-cell>
+      <div class="add_link_wallet" @click="showAllWalletList">Add</div>
+    </nut-cell-group>
   </div>
 </template>
 
@@ -26,10 +30,12 @@
   import { inject } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { useRouter } from 'vue-router';
+  import useLinkAccounts from '@/views/login/useLinkAccount.ts';
   const router = useRouter();
   const useStore = useUserStore();
   const userInfo = computed(() => useStore.getUserInfo);
   const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
+  const { showAllWalletList } = useLinkAccounts();
   const bindAmbCode = inject('bindAmbCode');
   const openBindDMCDiaolg = inject('openBindDMCDiaolg');
 </script>
@@ -67,5 +73,11 @@
         font-weight: bold;
       }
     }
+  }
+  .add_link_wallet {
+    padding: 20px 0;
+    text-align: center;
+    color: $main-blue;
+    cursor: pointer;
   }
 </style>

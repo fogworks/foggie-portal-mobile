@@ -186,7 +186,7 @@ export const routes = [
       {
         path: 'bucketList',
         name: 'BucketList',
-        component: () => import('@/views/list/bucketList.vue'),
+        component: () => import('@/views/nft/bucketList.vue'),
         meta: {
           title: 'tabbar.list',
           // keepAlive: true,
@@ -199,24 +199,8 @@ export const routes = [
           title: 'tabbar.list',
           // keepAlive: true,
         },
-        redirect: 'Welcome',
+        redirect: 'AllNFTList',
         children: [
-          {
-            path: '/welcome',
-            name: 'Welcome',
-            component: () => import('@/views/nft/welcome.vue'),
-            meta: {
-              notBar: true,
-            },
-          },
-          {
-            path: '/walletConnect',
-            name: 'WalletConnect',
-            component: () => import('@/views/nft/walletConnect.vue'),
-            meta: {
-              notBar: true,
-            },
-          },
           {
             path: '/allNFTList',
             name: 'AllNFTList',
@@ -229,6 +213,22 @@ export const routes = [
             path: '/nftList',
             name: 'NFTList',
             component: () => import('@/views/nft/nftList.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+          {
+            path: '/welcome',
+            name: 'Welcome',
+            component: () => import('@/views/nft/welcome.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+          {
+            path: '/walletConnect',
+            name: 'WalletConnect',
+            component: () => import('@/views/nft/walletConnect.vue'),
             meta: {
               notBar: true,
             },
@@ -257,6 +257,14 @@ export const routes = [
     path: '/register',
     name: 'Register',
     component: () => import('@/views/login/register.vue'),
+    meta: {
+      notKeepAlive: true,
+    },
+  },
+  {
+    path: '/linkAccount',
+    name: 'LinkAccount',
+    component: () => import('@/views/login/linkAccount.vue'),
     meta: {
       notKeepAlive: true,
     },

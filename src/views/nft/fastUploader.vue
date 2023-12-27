@@ -65,7 +65,6 @@
     return import.meta.env.VITE_BUILD_TYPE == 'ANDROID';
   });
   const emits = defineEmits(['uploadComplete']);
-
   interface Props {
     bucketName?: string;
     accessKeyId?: string;
