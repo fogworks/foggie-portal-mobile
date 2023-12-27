@@ -56,21 +56,39 @@
   .my-custom-popup {
     background: transparent;
   }
-  .my_dialog_content {
+  .my_dialog_content_box {
     padding: 20px;
+    .bucketImg1 {
+      width: 120px;
+      height: 120px;
+      position: absolute;
+      top: 120px;
+      left: 10px;
+    }
+    .bucketImg {
+      width: 200px;
+      height: 200px;
+      position: absolute;
+      bottom: 0px;
+      right: 10px;
+    }
     .my_dialog_title {
       font-weight: bold;
       text-align: center;
       padding-top: 50px;
+      margin-bottom: 10px;
     }
     .my_dialog_content {
-      font-size: 28px;
+      font-size: 26px;
       color: #333;
       .my_dialog_content_p {
         margin-bottom: 10px;
         text-indent: 20px;
         line-height: 40px;
         white-space: pre-wrap;
+      }
+      .my_dialog_content_pText {
+        font-size: 24px;
       }
     }
   }

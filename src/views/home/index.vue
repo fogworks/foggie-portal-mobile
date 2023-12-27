@@ -73,7 +73,9 @@
       <DouArrowUp width="100" height="50" class="nut-icon-am-jump nut-icon-am-infinite" />
     </div>
     <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
-    <div class="tab_top_title" v-if="ishaveProfit">Last 7 days <span style="font-size: 12px">(DMC)</span></div>
+    <div class="tab_top_title" v-if="ishaveProfit"
+      >Income and Expenditure <span style="font-size: 12px; display: inline-block">(for the last weeks)</span></div
+    >
 
     <ErrorPage v-if="isError && !earningsList.length" @refresh="loadMore"></ErrorPage>
     <template v-else-if="!ishaveProfit">
@@ -171,7 +173,9 @@
       </div>
     </nut-infinite-loading>
 
-    <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week"></nut-empty>
+    <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week">
+      <!-- <img src="@/assets/yinhuanzhenggai.svg" /> -->
+    </nut-empty>
     <!-- <nut-backtop el-id="main-page" :z-index="999" :bottom="60"></nut-backtop> -->
 
     <nut-popup

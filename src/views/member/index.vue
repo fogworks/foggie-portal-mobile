@@ -17,29 +17,37 @@
           <div class="email" v-if="promo_code">promoCode: {{ promo_code }}</div>
         </div>
       </div>
-      <!-- <div class="money">
-        <div>
+      <div class="money">
+        <!-- <div>
           <div class="key">Balance</div>
           <div class="value">
             <span style="font-size: 18px">{{ money.Balance.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.Balance.decimalPart }}</span>
           </div>
-        </div>
-        <div>
+        </div> -->
+        <!-- <div>
           <div class="key">Recharge</div>
           <div class="value">
             <span style="font-size: 18px">{{ money.Recharge.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.Recharge.decimalPart }}</span>
           </div>
-        </div>
+        </div> -->
         <div>
-          <div class="key">withdraw</div>
-          <div class="value">
+          <div class="key">Profit</div>
+          <div class="value" @click="gotoDetail('/assetsInfo')">
+            <span style="font-size: 18px">{{ money.income.integerPart }}</span>
+            <span style="font-size: 12px">.{{ money.income.decimalPart }}</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="key">Withdrawn</div>
+          <div class="value" @click="gotoDetail('/assetsInfo')">
             <span style="font-size: 18px">{{ money.withdraw.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.withdraw.decimalPart }}</span>
           </div>
         </div>
-      </div> -->
+      </div>
       <!-- <div class="bottom_btn">
         <div class="bottom_btn_item">
           <img src="@/assets/shop.svg" alt="" />
@@ -55,7 +63,7 @@
         </div>
       </div> -->
     </div>
-    <div class="my_assets_card"> </div>
+    <!-- <div class="my_assets_card"> </div> -->
     <div class="userBox">
       <!-- <div class="withdraw-btn" direction="horizontal" align="center">
         <div class="action_item" @click="toRecharge">
@@ -199,6 +207,7 @@
     Balance: <object>{ integerPart: 0, decimalPart: 0 },
     Recharge: <object>{ integerPart: 0, decimalPart: 0 },
     withdraw: <object>{ integerPart: 0, decimalPart: 0 },
+    income: <object>{ integerPart: 0, decimalPart: 0 },
   });
 
   function loadUserDmc() {
@@ -209,6 +218,7 @@
           money.Balance = formatNumber(data?.balance);
           money.Recharge = formatNumber(data?.Recharge);
           money.withdraw = formatNumber(data?.withdraw);
+          money.income = formatNumber(data?.income);
         }
       })
       .catch((err) => {});
@@ -434,18 +444,25 @@
         margin-top: 20px;
         display: flex;
         justify-content: space-around;
-        border-top: 1px solid #fff;
+        // border-bottom: 1px dashed #fff;
 
         & > div {
           display: flex;
           align-items: center;
           flex-direction: column;
           justify-content: center;
+          border-right: 1px solid #fff;
+          width: 50%;
+          &:last-child {
+            border-right: none;
+          }
 
           .value {
             color: #fff;
             font-weight: 600;
             line-height: 40px;
+            text-decoration: underline;
+            cursor: pointer;
           }
 
           .key {
@@ -495,10 +512,14 @@
     .userBox {
       position: relative;
       top: -100px;
-      height: auto;
+      //   height: auto;
       background-color: #fff;
       border-radius: 60px 60px 0 0;
       padding: 50px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
 
       .withdraw-btn {
         position: relative;
