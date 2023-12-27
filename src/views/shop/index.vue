@@ -237,7 +237,7 @@
       </nut-popup>
     </Teleport>
     <BasicModal :show="dialogShow" @update:show="dialogShow = false">
-      <div class="my_dialog_content">
+      <div class="my_dialog_content_box">
         <div class="my_dialog_title">why Recharge?</div>
         <div class="my_dialog_content">
           <div class="my_dialog_content_p">

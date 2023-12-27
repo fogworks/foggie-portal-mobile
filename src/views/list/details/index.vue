@@ -2,10 +2,10 @@
   <div>
     <div class="top_box">
       <TopBack class="detail_top">
-        <div v-if="bucketName">
-          <!-- <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" /> -->
+        <div v-if="bucketName" style="text-decoration: underline; cursor: pointer" @click="dialogShow = true">
+          <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
           {{ bucketName }}
-          <!-- <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" /> -->
+          <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
         </div>
         <div v-else> Order:{{ order_id }} </div>
         <span class="benefit_analysis" v-if="orderInfo.value.state == '0' && mintType == 0" @click="closedOrder">
@@ -297,10 +297,15 @@
             </span>
             Create a Bucket
           </template>
+
           <p class="bucket_tip" style="text-align: left; word-break: break-word"
             >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
-            (-), and must start and end with lowercase letters or numbers</p
-          >
+            (-), and must start and end with lowercase letters or numbers
+            <span @click="dialogShow = true" style="text-align: right; width: 100%; display: inline-block; text-decoration: underline"
+              >what is Bucket?</span
+            >
+          </p>
+
           <p
             style="
               margin-top: 10px;
@@ -331,10 +336,29 @@
       :orderInfo="orderInfo"
       @uploadComplete="uploadComplete"
     ></uploader>
+    <BasicModal :show="dialogShow" @update:show="dialogShow = false">
+      <div class="my_dialog_content_box">
+        <img src="@/assets/bucketIcon.svg" class="bucketImg1" />
+        <img src="@/assets/bucketInfo.svg" class="bucketImg" />
+        <div class="my_dialog_title">what is S3 Bucket?</div>
+        <div class="my_dialog_content" style="margin-top: 16px">
+          <div class="my_dialog_content_pText" style="text-indent: 20px; line-height: 18px">
+            S3 (Simple Storage Service) is a cloud storage service provided by Amazon Web Services (AWS). An S3 bucket is a container for
+            objects stored in S3. It's similar to a folder in a file system, and it can store an unlimited number of objects, including
+            data, images, videos, and documents.
+          </div>
+          <div class="my_dialog_content_pText" style="text-indent: 20px; line-height: 18px"
+            >They provide features for data protection, encryption, and access control. Overall, S3 buckets are a versatile and scalable
+            storage solution for a wide range of applications.</div
+          >
+        </div>
+      </div>
+    </BasicModal>
   </div>
 </template>
 
 <script setup lang="ts">
+  import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
@@ -390,6 +414,7 @@
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
+  const dialogShow = ref(false);
   const showText = ref(false);
   const statusTypes = {
     0: 'Consensus not reached',
