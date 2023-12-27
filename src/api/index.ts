@@ -210,11 +210,39 @@ export const get_order_sign = (data) => {
 };
 export function setUserAvatarApi(data) {
   return request({
-    url:  `${apiUrl}/api_accounts/accounts/upload_user_image`,
+    url: `${apiUrl}/api_accounts/accounts/upload_user_image`,
     method: 'POST',
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
+    data,
+  });
+}
+export function generate_nonce(params) {
+  return request({
+    url: `${apiUrl}/api_accounts/accounts/generate_nonce`,
+    method: 'GET',
+    params,
+  });
+}
+export function wallet_login(data) {
+  return request({
+    url: `${apiUrl}/api_accounts/accounts/wallet_login`,
+    method: 'POST',
+    data,
+  });
+}
+export function check_wallet(params) {
+  return request({
+    url: `${apiUrl}/api_accounts/accounts/check_wallet`,
+    method: 'GET',
+    params,
+  });
+}
+export function wallet_register(data) {
+  return request({
+    url: `${apiUrl}/api_accounts/accounts/wallet_register`,
+    method: 'POST',
     data,
   });
 }

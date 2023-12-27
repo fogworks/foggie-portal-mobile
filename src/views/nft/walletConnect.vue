@@ -43,10 +43,9 @@
   import { useRouter } from 'vue-router';
   import TopBack from '@/components/topBack/index.vue';
   import loadingImg from '@/components/loadingImg/index.vue';
-  const uuid = computed(() => userStore.getUserInfo?.uuid);
   const userStore = useUserStore();
+  const uuid = computed(() => userStore.getUserInfo?.uuid);
   const router = useRouter();
-  const injected = injectedModule();
   const metamaskSDKWallet = metamaskSDK({
     options: {
       extensionOnly: false,
@@ -64,10 +63,7 @@
   const rpcUrl = `https://mainnet.infura.io/v3/${infuraKey}`;
   // 不要删除
   const web3Onboard = init({
-    wallets: [
-      // metamaskSDKWallet,
-      injected,
-    ],
+    wallets: [metamaskSDKWallet],
     chains: [
       {
         id: '0x1',

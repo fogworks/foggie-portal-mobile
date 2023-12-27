@@ -46,6 +46,9 @@
     overflow: auto;
   }
 
+  .z-indexed.svelte-g9s19b {
+    display: none;
+  }
   ::-webkit-scrollbar {
     width: 0px;
     height: 0px;

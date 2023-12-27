@@ -5,7 +5,9 @@
       <img v-else @click="router.go(-1)" src="@/assets/arrow-left2.svg" alt="" />
     </div>
     <slot></slot>
-    <slot name="right"></slot>
+    <div class="right">
+      <slot name="right"></slot>
+    </div>
   </div>
 </template>
 
@@ -47,6 +49,9 @@
   .img_box2 {
     border-radius: 50%;
     background-color: #e6e6e6;
+  }
+  .right {
+    float: right;
   }
   img {
     width: 40px;
