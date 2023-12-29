@@ -425,10 +425,38 @@
       :prefix="prefix"
       @uploadComplete="uploadComplete"
     ></uploader>
+    <Teleport to="body">
+      <nut-dialog
+        v-model:visible="showSocketDialog"
+        title="File Update"
+        :close-on-click-overlay="false"
+        :show-cancel="false"
+        :show-confirm="false"
+        custom-class="CustomName BucketName"
+        overlayClass="CustomOverlay"
+      >
+        <template #header>
+          <span class="icon" style="margin-right: 5px">
+            <IconBucket color="#000"></IconBucket>
+            <!-- <img src="@/assets/bucketInfo.svg" alt="" srcset="" class="fileUpdateIcon" /> -->
+          </span>
+          File update Tips
+        </template>
+
+        <p class="bucket_tip" style="text-align: left; word-break: break-word"
+          >We found that you updated the files in the current directory elsewhere. Do you want to update them simultaneously?.
+        </p>
+        <template #footer>
+          <!-- <nut-button type="primary" style="font-size: 12px" @click="closeSocketDialog">Operate Later</nut-button> -->
+          <nut-button type="primary" @click="closeSocketDialog">Confirm</nut-button>
+        </template>
+      </nut-dialog>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
+  import IconBucket from '~icons/home/bucket.svg';
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNFT from '~icons/material-symbols/cast';
@@ -450,7 +478,7 @@
   import IconMore from '~icons/home/more.svg';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
   import IconHttp from '~icons/home/http.svg';
-  import { reactive, toRefs, watch, onMounted } from 'vue';
+  import { reactive, toRefs, watch, onMounted, onUnmounted } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { Search2, TriangleUp, Loading } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
@@ -528,6 +556,13 @@
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
   });
   provide('isMobileOrder', isMobileOrder);
+
+  const fileSocket = ref('');
+  const socketDate = ref('');
+  const socketToken = ref('');
+  const currentFolder = ref('');
+  const showSocketDialog = ref(false);
+  import { get_order_sign } from '@/api/index';
 
   const {
     tableLoading,
@@ -961,18 +996,24 @@
     showTypeCheckPop.value = false;
   };
 
-  const uploadComplete = () => {
-    console.log('uploadComplete');
+  const uploadComplete = (file) => {
     getFileList('', prefix.value, true);
   };
 
   function getFileList(scroll: string, prefix: any[], reset = false) {
     showToast.loading('Loading', {
+      //   cover: true,
+      //   customClass: 'app_loading',
+      //   icon: loadingImg,
+      //   loadingRotate: false,
+      //   id: 'file_list',
+      //   coverColor: 'rgba(0,0,0,0.45)',
+
       cover: true,
+      coverColor: 'rgba(0,0,0,0.45)',
       customClass: 'app_loading',
       icon: loadingImg,
       loadingRotate: false,
-      id: 'file_list',
     });
     let list_prefix = '';
     if (prefix?.length) {
@@ -1012,8 +1053,8 @@
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
-    console.log('list-object--header', header, metadata.value);
-    console.log('listObjectlistObject', listObject);
+    // console.log('list-object--header', header, metadata.value);
+    // console.log('listObjectlistObject', listObject);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
@@ -1081,7 +1122,7 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
-          console.log(transferData, 'transferData,transferData');
+          //   console.log(transferData, 'transferData,transferData');
           isError.value = false;
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
@@ -1105,11 +1146,11 @@
     let port = orderInfo.value.rpc?.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
-    console.log(bucketName.value, 'bucketName');
+    // console.log(bucketName.value, 'bucketName');
 
     if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
       type = 'img';
-      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
+      //   console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       // console.log('--------imgHttpLarge', imgHttpLarge);
@@ -1226,7 +1267,7 @@
 
       // let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
       const imgData = await handleImg(data.content[j], type, isDir);
-      console.log('----------contentType', data?.content[j].contentType);
+      //   console.log('----------contentType', data?.content[j].contentType);
       const url = imgData.imgHttpLink;
       const isSystemImg = imgData.isSystemImg;
       const url_large = imgData.imgHttpLarge;
@@ -1234,7 +1275,9 @@
       let file_id = data.content[j].fileId;
 
       let name = data.content[j].key;
-      console.log(data.prefix, 'data.prefix');
+      currentFolder.value = data.prefix;
+      window.sessionStorage.setItem('currentFolder', currentFolder.value);
+      console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
 
       if (data.prefix) {
         name = name.split(data.prefix)[1];
@@ -1326,11 +1369,18 @@
       // }
     } else {
       showToast.loading('Loading', {
+        // cover: true,
+        // customClass: 'app_loading',
+        // icon: loadingImg,
+        // loadingRotate: false,
+        // id: 'file_list',
+        // coverColor: 'rgba(0,0,0,0.45)',
+
         cover: true,
+        coverColor: 'rgba(0,0,0,0.45)',
         customClass: 'app_loading',
         icon: loadingImg,
         loadingRotate: false,
-        id: 'file_list',
       });
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
@@ -1354,7 +1404,7 @@
           }
         }
         ProxFindRequest.setPrefix(list_prefix);
-        console.log(ProxFindRequest, 'ProxFindRequestProxFindRequest');
+        // console.log(ProxFindRequest, 'ProxFindRequestProxFindRequest');
 
         server.findObjects(ProxFindRequest, metadata.value, (err: any, res: { getContentsList: () => any[] }) => {
           infinityValue.value = false;
@@ -1465,16 +1515,105 @@
     { deep: true },
   );
   onMounted(async () => {
-    console.log(route, 'routerouteroute');
+    initPage();
+  });
+  const initPage = async () => {
     if (route?.query?.prefix) {
       prefix.value = route?.query?.prefix?.split('/');
     }
     let category1 = route.query.category || '0';
     await getOrderInfo();
     switchType(category1);
+
+    let param = {
+      order_uuid: route?.query?.uuid,
+    };
+    const signData = await get_order_sign(param);
+    socketDate.value = signData?.result?.data?.timestamp;
+    socketToken.value = signData?.result?.data?.sign;
+    initWebSocket();
+  };
+  onUnmounted(() => {
+    closeSocket();
   });
+
+  const initWebSocket = () => {
+    console.log('initWebSocket');
+    const url = `wss://${bucketName.value}.devus.u2i.net:6008/ws`;
+    fileSocket.value = new WebSocket(url);
+    fileSocket.value.onopen = () => {
+      const authMessage = {
+        action: 'AUTH',
+        userID: orderInfo.value.foggie_id,
+        token: socketToken.value,
+        date: socketDate.value,
+      };
+      fileSocket.value.send(JSON.stringify(authMessage));
+    };
+
+    fileSocket.value.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      const currentFolder = window.sessionStorage.getItem('currentFolder');
+      console.log('Received message from server:', message, currentFolder);
+      const uploadFileName = window.sessionStorage.getItem('uploadFileName');
+      let fileInfo = message.fileInfo;
+      let dirArr = fileInfo.keys;
+      const updateBy = fileInfo.updateBy;
+      let dirFile = '';
+      let dirFileName = '';
+      if (dirArr.length) {
+        let index = dirArr[0].lastIndexOf('/');
+        if (index > -1) {
+          dirFile = dirArr[0].substring(0, index + 1);
+          dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
+        } else {
+          dirFile = '';
+          dirFileName = dirArr[0];
+        }
+      }
+      console.log(
+        '888888',
+        dirArr,
+        dirFile,
+        currentFolder,
+        dirFileName,
+        uploadFileName,
+        dirFile === currentFolder,
+        dirFileName !== uploadFileName,
+      );
+      if (dirFile === currentFolder && dirFileName !== uploadFileName) {
+        console.log('弹框显示');
+        initSocketDialog();
+        // window.sessionStorage.removeItem('uploadFileName');
+      }
+    };
+
+    fileSocket.value.onclose = (event) => {
+      console.log('WebSocket connection closed:', event);
+    };
+    fileSocket.value.onerror = (event) => {
+      console.error('WebSocket connection error:', event);
+    };
+  };
+  const initSocketDialog = () => {
+    showSocketDialog.value = true;
+  };
+  const closeSocketDialog = () => {
+    getFileList('', prefix.value, true);
+    showSocketDialog.value = false;
+  };
+  const closeSocket = () => {
+    fileSocket.value.onclose();
+  };
 </script>
 <style>
+  .fileUpdateIcon {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    width: 140px;
+    height: 140px;
+  }
   .type_check_pop {
     /* padding-top: 120px; */
     height: 450px;
