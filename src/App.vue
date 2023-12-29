@@ -47,7 +47,8 @@
   }
 
   .z-indexed.svelte-g9s19b {
-    display: none;
+    display: none !important;
+    --account-center-z-index: -99;
   }
   ::-webkit-scrollbar {
     width: 0px;
@@ -58,6 +59,7 @@
     --nut-toast-font-color: #000;
     --nut-toast-inner-bg-color: #fff;
     --nut-toast-cover-bg-color: rgba(0, 0, 0, 0.5);
+    --account-center-z-index: -99;
   }
 
   .nut-toast-loading {

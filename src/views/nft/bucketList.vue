@@ -55,6 +55,8 @@
     const postData = {
       sort_type: 'created_at',
       ascending: false,
+      is_domain: true,
+      electronic_type: '0',
     };
     await loadMore([0, 1, 2, 3, 6], '', '', '', postData);
     nextTick(() => {

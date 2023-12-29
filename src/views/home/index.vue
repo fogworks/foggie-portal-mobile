@@ -8,7 +8,7 @@
           </router-link>
         </div>
         Hello,
-        {{ userInfo.email && userInfo.email.split('@')[0] }}
+        {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
       </div>
       <div class="Notice" @click="openGoogleSetting" v-if="userInfo.dmc">
         <img src="@/assets/enableProtection.svg" alt="" srcset="" v-if="bindOtp" />
