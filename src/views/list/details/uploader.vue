@@ -247,6 +247,9 @@
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     isDisabled.value = false;
     console.log('uploadSuccess', responseText, option, fileItem);
+    console.log('-----uploadSuccess', fileItem.name);
+    window.sessionStorage.setItem('uploadFileName', fileItem.name);
+
     // console.log(option, 'option');
     uploadStatus.value = 'success';
 
