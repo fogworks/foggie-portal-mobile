@@ -59,7 +59,7 @@ export default function useLinkAccount() {
       ],
     },
   });
-  const accountsList = ref([]);
+  const accountsList = ref(<any>[]);
   const showAccountList = ref(false);
   const userStore = useUserStore();
   const router = useRouter();
@@ -85,6 +85,10 @@ export default function useLinkAccount() {
   const showAllWalletList = async () => {
     if (window.ethereum) {
       // await connectWallet();
+      await window.ethereum.request({
+        method: 'eth_requestAccounts',
+        params: [],
+      });
       accountsList.value = await window.ethereum.request({
         method: 'eth_accounts',
         params: [],

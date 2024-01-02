@@ -25,7 +25,7 @@
       <div class="add_link_wallet" @click="showAllWalletList">Add</div>
     </nut-cell-group>
     <nut-dialog teleport="#app" title="Link Wallet" v-model:visible="showAccountList">
-      <nut-radio-group v-model="choosedWallet">
+      <nut-radio-group v-model="choosedWallet" class="account_list">
         <nut-radio v-for="item in accountsList" :disabled="hasLinked(item)" :label="item">{{ item }}</nut-radio>
       </nut-radio-group>
       <template #footer>
@@ -67,6 +67,7 @@
   const hasLinked = (address) => {
     return walletInfo.value.find((el) => el.address === address);
   };
+  const initFoggieDate = inject('initFoggieDate');
   const confirmLink = () => {
     showToast.loading('Loading', {
       cover: true,
@@ -76,9 +77,10 @@
       id: 'bind_wallet',
     });
     wallet_bind_uuid({ address: choosedWallet.value, wallet_type: 'metamask', uuid: userInfo.value.uuid })
-      .then((res) => {
+      .then(async (res) => {
         if (res.code == 200) {
           showToast.success('Linkage Success');
+          await initFoggieDate();
           choosedWallet.value = '';
           showAccountList.value = false;
         }
@@ -93,6 +95,13 @@
 </script>
 
 <style lang="scss" scoped>
+  .account_list {
+    :deep {
+      .nut-radio__label {
+        text-align: left;
+      }
+    }
+  }
   .info_title {
     :deep {
       .nut-cell-group__title {
