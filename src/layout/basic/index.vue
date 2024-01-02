@@ -188,6 +188,7 @@ const initFoggieDate = async () => {
   }
   showToast.hide('user_info')
 };
+provide('initFoggieDate',initFoggieDate)
 
 const bindDmcIsShow = ref(false); // 绑定dmc账户钱包弹窗 是否展示
 const accountName = ref(''); // 用户钱包名称

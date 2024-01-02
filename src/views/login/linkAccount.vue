@@ -58,9 +58,9 @@
       <!-- <nut-form-item required prop="promo_code">
         <input v-model="loginForm.promo_code" class="nut-input-text" placeholder="Enter your invitation code(optional)" type="text" />
       </nut-form-item> -->
-      <nut-form-item required prop="amb_promo_code">
+      <!-- <nut-form-item required prop="amb_promo_code">
         <input v-model.trim="loginForm.amb_promo_code" class="nut-input-text" placeholder="Invitation Code(optional)" type="text" />
-      </nut-form-item>
+      </nut-form-item> -->
     </nut-form>
     <div>
       <nut-button block type="info" @click="submit" :loading="loading"> Link Account </nut-button>
@@ -72,7 +72,7 @@
 </template>
 
 <script lang="ts" setup name="LoginPage">
-  import { register, get_verify_pw, check_promo, user, login } from '@/api';
+  import { register, get_verify_pw, check_promo, user, login, wallet_bind_email, check_email_register } from '@/api';
   import { useRouter, useRoute } from 'vue-router';
   import { reactive, ref } from 'vue';
   import { useUserStore } from '@/store/modules/user';
@@ -80,12 +80,14 @@
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
   import { check_promo as check_amb_promo } from '@/api/amb.ts';
+  import loadingImg from '@/components/loadingImg/index.vue';
 
   const router = useRouter();
   const route = useRoute();
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
   const userStore = useUserStore();
+  const userInfo = computed(() => userStore.getUserInfo);
   const loginForm = reactive({
     email: '',
     password: '',
@@ -94,6 +96,22 @@
     promo_code: '',
     amb_promo_code: '',
   });
+  const initFoggieDate = async () => {
+    showToast.loading('Loading', {
+      cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+      id: 'user_info',
+    });
+    let data = await user();
+    if (data) {
+      userStore.setInfo({
+        ...data.data,
+      });
+    }
+    showToast.hide('user_info');
+  };
   const validatePass2 = (value: string) => {
     console.log(value);
 
@@ -190,121 +208,88 @@
   const submit = () => {
     ruleForm.value.validate().then(async ({ valid, errors }: any) => {
       if (valid) {
-        loading.value = true;
-        const password = loginForm.password;
-        // let hashPwd = bcryptjs.hashSync(password, 10);
-        let hashPwd = password;
-        let postData = {
-          email: loginForm.email,
-          password: hashPwd,
-          confirm: hashPwd,
-          verify_pw: loginForm.verifyPw,
-          // recaptcha_token: reCaptchaV3Token,
-        };
-        let isUserCode, isAmbCode;
-        if (loginForm.amb_promo_code) {
-          try {
-            const userPromoRes = await check_promo({
-              promo_code: loginForm.amb_promo_code,
-            });
-            if (userPromoRes.code == 200) {
-              isUserCode = true;
-            } else {
-              isUserCode = false;
-            }
-          } catch {
-            isUserCode = false;
-            loading.value = false;
-            showToast.fail('Invitation code verification failed, please try again');
-            return false;
-          }
-          try {
-            const ambPromoRes = await check_amb_promo(loginForm.amb_promo_code);
-            if (ambPromoRes.code == 200) {
-              isAmbCode = true;
-            } else {
-              isAmbCode = false;
-            }
-          } catch {
-            showToast.fail('Invitation code verification failed, please try again');
-            isAmbCode = false;
-            loading.value = false;
-            return false;
-          }
+        check_email_register(loginForm.email).then((rr) => {
+          if (rr.data) {
+            if (!rr.data.email) {
+              loading.value = true;
+              const password = loginForm.password;
+              // let hashPwd = bcryptjs.hashSync(password, 10);
+              let hashPwd = window.btoa(password);
 
-          if (!isAmbCode && !isUserCode) {
-            showToast.fail('Please enter a valid invitation code');
-            loading.value = false;
-            return false;
-          }
-          if (isUserCode) {
-            postData.promo_code = loginForm.amb_promo_code;
-          } else if (isAmbCode) {
-            postData.amb_promo_code = loginForm.amb_promo_code;
-          }
-        }
-
-        register(postData)
-          .then((res) => {
-            if (res && res.data && res.data.uuid) {
-              showToast.success('Registration successful');
-              const loginPassword = loginForm.password;
-              let hashPwd = bcryptjs.hashSync(loginPassword, 10);
+              // let hashPwd = password;
               let postData = {
+                address: userInfo.value.address,
+                wallet_type: 'metamask',
                 email: loginForm.email,
                 password: hashPwd,
-                captcha_text: '',
-                captcha_id: '',
-                is_client: true,
-                login_type: 'password',
+                confirm: hashPwd,
+                verify_pw: loginForm.verifyPw,
                 // recaptcha_token: reCaptchaV3Token,
               };
-              login(postData)
+              wallet_bind_email(postData)
                 .then((res) => {
-                  console.log(res);
-                  if (res.next_step === 'captcha') {
-                    loading.value = false;
+                  if (res && res.data && res.data.uuid) {
+                    showToast.success('Linkage Success');
+                    const loginPassword = loginForm.password;
+                    let hashPwd = bcryptjs.hashSync(loginPassword, 10);
+                    let postData = {
+                      email: loginForm.email,
+                      password: hashPwd,
+                      captcha_text: '',
+                      captcha_id: '',
+                      is_client: true,
+                      login_type: 'password',
+                      // recaptcha_token: reCaptchaV3Token,
+                    };
+                    login(postData)
+                      .then((res) => {
+                        console.log(res);
+                        if (res.next_step === 'captcha') {
+                          loading.value = false;
+                        } else if (res && res.data) {
+                          let data = res.data;
+                          let token = data.token_type + ' ' + data.access_token;
+                          let refresh_token = data.token_type + ' ' + data.refresh_token;
+                          let user_id = data.user_id;
+                          window.localStorage.setItem('user_id', user_id);
+                          userStore.setToken(token);
+                          userStore.setRefreshToken(refresh_token);
+                          router.push('/home');
+                          // getUserInfo();
+                          loading.value = false;
+                        } else {
+                          showToast.fail(res.error);
+                          loading.value = false;
+                        }
+                      })
+                      .catch((err) => {
+                        loading.value = false;
+                        console.log(err);
+                        showToast.fail(err.error);
+                        if (err.next_step === 'captcha') {
+                        }
+                      });
                   } else if (res && res.data) {
-                    let data = res.data;
-                    let token = data.token_type + ' ' + data.access_token;
-                    let refresh_token = data.token_type + ' ' + data.refresh_token;
-                    let user_id = data.user_id;
-                    window.localStorage.setItem('user_id', user_id);
-                    userStore.setToken(token);
-                    userStore.setRefreshToken(refresh_token);
-                    router.push('/home');
-                    // getUserInfo();
-                    loading.value = false;
+                    showToast.text(
+                      'A verification link has been sent to your email address, please check your email to verify and Login your account.',
+                    );
                   } else {
-                    showToast.fail(res.error);
                     loading.value = false;
                   }
                 })
-                .catch((err) => {
+                .catch(() => {
                   loading.value = false;
-                  console.log(err);
-                  showToast.fail(err.error);
-                  if (err.next_step === 'captcha') {
-                    getCaptcha();
-                    showCaptcha.value = true;
-                  }
                 });
-            } else if (res && res.data) {
-              showToast.text(
-                'A verification link has been sent to your email address, please check your email to verify and Login your account.',
-              );
-            } else {
-              loading.value = false;
-            }
-          })
-          .catch(() => {
-            loading.value = false;
-          });
 
-        // const userInfo = await userStore.login(loginForm);
-        // if (userInfo) {
-        //   router.push({ path: '/home' });
-        // }
+              // const userInfo = await userStore.login(loginForm);
+              // if (userInfo) {
+              //   router.push({ path: '/home' });
+              // }
+            } else {
+              showToast.fail('This email address has been registered, please change to a new one and try again.');
+            }
+          }
+        });
       } else {
         console.log('error submit!!', errors);
       }
@@ -323,6 +308,7 @@
     });
   }, 300);
   onMounted(() => {
+    initFoggieDate();
     loginForm.amb_promo_code = route.query.amb_promo_code || '';
   });
 </script>

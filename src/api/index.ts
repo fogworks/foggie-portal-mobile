@@ -246,3 +246,19 @@ export function wallet_register(data) {
     data,
   });
 }
+export const wallet_bind_email = (data: any) => {
+  let url = `${apiUrl}/api_accounts/accounts/wallet_bind_email`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+};
+export const wallet_bind_uuid = (data: any) => {
+  let url = `${apiUrl}/api_accounts/accounts/wallet_bind_uuid`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+};
