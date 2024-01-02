@@ -30,7 +30,7 @@
             </p>
           </div>
         </nut-grid-item>
-        <nut-grid-item class="top_icon" text="Earnings">
+        <nut-grid-item class="top_icon" text="Reward">
           <div>
             <IconIncome class="top_icon"></IconIncome>
             <p style="color: green; font-weight: bold">+ {{ cloudProfitNum?.integerPart }}<span

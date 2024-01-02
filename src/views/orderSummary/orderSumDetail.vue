@@ -5,7 +5,7 @@
     </div>
     <nut-tabs class="type_tabs" v-model="searchType">
       <nut-tab-pane title="All " pane-key="2"> </nut-tab-pane>
-      <nut-tab-pane title="Earnings " pane-key="0"> </nut-tab-pane>
+      <nut-tab-pane title="Reward " pane-key="0"> </nut-tab-pane>
       <nut-tab-pane title="Expense" pane-key="1"> </nut-tab-pane>
     </nut-tabs>
     <template v-if="listData.length">
@@ -55,7 +55,7 @@
   ordertype.value = route.query.type;
   domain.value = route.query.domain;
   const state = reactive({
-    queryType: 'Earnings',
+    queryType: 'Reward',
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},

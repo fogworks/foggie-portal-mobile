@@ -134,7 +134,7 @@
   const router = useRouter();
 
   const state = reactive({
-    queryType: 'Earnings',
+    queryType: 'Reward',
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
@@ -319,7 +319,7 @@
           chartOptions0.value = {
             backgroundColor: '#fff',
             title: {
-              text: `Earnings analysis`,
+              text: `Reward analysis`,
               textStyle: {
                 fontSize: '14px',
                 color: '#4c5093',

@@ -107,7 +107,7 @@
           <nut-step
             title="Waiting for approval"
             :content="
-              ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'
+              ambRefuse ? 'Your application has been rejected by the AGENT please reapply' : 'Your application has been approved.'
             "
             >2</nut-step
           >

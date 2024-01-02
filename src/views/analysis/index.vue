@@ -16,7 +16,7 @@
             >
           </div>
         </nut-grid-item>
-        <nut-grid-item class="top_icon" text="Earnings" @click="router.push('/analysisCate?type=1')">
+        <nut-grid-item class="top_icon" text="Reward" @click="router.push('/analysisCate?type=1')">
           <div>
             <IconIncome class="top_icon"></IconIncome>
             <p style="display: flex; align-items: center"
@@ -79,7 +79,7 @@
         </div> -->
       </div>
     </nut-infinite-loading>
-    <nut-empty v-else description="No earnings information" image="error"></nut-empty>
+    <nut-empty v-else description="No reward information" image="error"></nut-empty>
 
     <nut-popup position="bottom" closeable round pop-class="TipsPopup" :style="{ minHeight: '60%' }" v-model:visible="TipsPopup">
       <h3 class="buyOrderTitle"> Q&A</h3>
@@ -88,7 +88,7 @@
         <ul>
           <li>the amount remaining in the system at the current time.</li>
         </ul>
-        <h4>Earnings</h4>
+        <h4>Reward</h4>
         <ul>
           <li>Order Revenue </li>
           <li>User Recharge</li>
@@ -128,7 +128,7 @@
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
-    queryType: 'Earnings',
+    queryType: 'Reward',
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},

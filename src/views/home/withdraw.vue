@@ -76,9 +76,9 @@
           </div>
           <div class="real_amount balance"> Balance: {{ cloudBalance }} DMC </div>
           <div v-if="realAmount != '--'" class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
-          <div v-else class="real_amount">Failed to get ambassador pumping rate, please retry </div>
+          <div v-else class="real_amount">Failed to get agent pumping rate, please retry </div>
           <div class="tips">
-            Please be aware that withdrawals incur a handling fee of {{ (commissionRate * 100).toFixed(2) }}% for ambassadors and 2% for DMC
+            Please be aware that withdrawals incur a handling fee of {{ (commissionRate * 100).toFixed(2) }}% for agent and 2% for DMC
             Foundation
           </div>
         </div>
@@ -86,7 +86,7 @@
       <!-- <nut-noticebar
         :text="`Please be aware that withdrawals incur a handling fee of  ${(commissionRate * 100).toFixed(
           2,
-        )}% for ambassadors and 2% for DMC Foundation`"
+        )}% for agent and 2% for DMC Foundation`"
         wrapable
       ></nut-noticebar> -->
 
