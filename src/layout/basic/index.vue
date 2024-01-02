@@ -188,6 +188,7 @@ const initFoggieDate = async () => {
   }
   showToast.hide('user_info')
 };
+provide('initFoggieDate',initFoggieDate)
 
 const bindDmcIsShow = ref(false); // 绑定dmc账户钱包弹窗 是否展示
 const accountName = ref(''); // 用户钱包名称
@@ -484,5 +485,20 @@ onMounted(async () => {
   padding-right: 30px;
   padding-bottom: 100px;
   // background: #f5f7fb;
+}
+@media screen and (min-width: 500px){
+  :deep{
+    .nut-tabbar{
+      --nut-tabbar-height:60px;
+      .nut-popover-item-img{
+        width: 20px;
+        height: 20px;
+        font-size:1rem
+      }
+      .nut-tabbar-item_icon-box_nav-word{
+        font-size:1rem
+      }
+    }
+  }
 }
 </style>

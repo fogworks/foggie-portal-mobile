@@ -1,10 +1,12 @@
 :root {
+  --van-dropdown-menu-title-font-size: 1.5rem;
+  --van-font-size-md: 1.5rem;
+  --van-dropdown-menu-height: 2rem;
   .van-popup {
     // background: transparent;
-    width: 250px;
+    // width: 250px;
     -webkit-tap-highlight-color: #ccc;
-  }
-  // .nut-toast {
+  } // .nut-toast {
   //   position: fixed;
   //   top: 0;
   //   bottom: 0;

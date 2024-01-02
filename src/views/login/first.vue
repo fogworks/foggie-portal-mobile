@@ -20,9 +20,6 @@
       <nut-swiper-item>
         <img src="@/assets/guide3.png" alt="" />
       </nut-swiper-item>
-      <nut-swiper-item>
-        <img src="@/assets/guide4.png" alt="" />
-      </nut-swiper-item>
       <nut-swiper-item @click="gotoLogin">
         <img src="@/assets/guide.png" alt="" />
       </nut-swiper-item>
@@ -34,8 +31,8 @@
   import { useRouter } from 'vue-router';
   const router = useRouter();
   console.log('aaa-----------');
-  function gotoLogin() {   
-    window.localStorage.setItem('ByBootstrapping','yes')
+  function gotoLogin() {
+    window.localStorage.setItem('ByBootstrapping', 'yes');
     router.push({ path: '/login' });
   }
 </script>

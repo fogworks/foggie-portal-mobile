@@ -4,6 +4,29 @@
       <div class="top_back" @click="router.go(-1)">Recharge </div>
     </div>
     <div :class="['middle_box']">
+      <div inset class="recharge-card">
+        <div class="card_row_1 card_header">
+          <div class="total_income_text">Your have recharge:</div>
+
+          <div class="total_income">
+            <div class="balance_text">
+              <span>{{ cloudRecharge >= 0 ? cloudRecharge.toFixed(4) : cloudRecharge }}</span>
+              <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
+            </div>
+          </div>
+        </div>
+        <div class="card_row_1 pst-row">
+          <div @click="dialogShow = true">
+            <p style="text-decoration: underline">Why Recharge?</p>
+          </div>
+          <div @click="$router.push({ name: 'rechargeInfo' })">
+            <p style="text-decoration: underline">How to Recharge?</p>
+          </div>
+          <div @click="router.push(`/transactionRecords`)">
+            <p style="text-decoration: underline">Recharge Record</p>
+          </div>
+        </div>
+      </div>
       <!-- <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" /> -->
       <div class="recharge_box">
         <div class="recharge_contact">
@@ -19,7 +42,7 @@
           <div class="dot">
             <img class="top_img" src="@/assets/DMC_Token1.png" alt="" />
             <span>{{ targetAccount }}</span>
-            <span class="small">(Receiving account)</span>
+            <span class="small">(Agent Account)</span>
           </div>
         </div>
 
@@ -29,7 +52,7 @@
             <p class="dmc_account" v-if="memo" @click="copySecret(memo)">{{ memo }} <IconCopy color="#246bf7"></IconCopy></p>
           </div>
           <div class="title_item">
-            <p>Receiving account:</p>
+            <p>Agent Account:</p>
             <p v-if="targetAccount" @click="copySecret(targetAccount)" class="dmc_account"
               >{{ targetAccount }} <IconCopy color="#246bf7"></IconCopy
             ></p>
@@ -39,22 +62,40 @@
             <p class="dmc_account">{{ dmc }}</p>
           </div>
           <div class="tips">
-            Please open the DMC Wallet App, copy the receiving account name and memo for recharging. Make sure to fill in the Memo to ensure
-            a smooth and successful transaction.One Memo corresponds to one recharge, if you want to recharge multiple times, please refresh
+            Please open the DMC Wallet App, copy the Agent Account name and memo for recharging. Make sure to fill in the Memo to ensure a
+            smooth and successful transaction.One Memo corresponds to one recharge, if you want to recharge multiple times, please refresh
             the page to get a new Memo.
           </div>
         </div>
       </div>
-      <div class="recharge_btn_box" v-if="memo" @click="$router.push({ name: 'rechargeInfo' })">
+      <!-- <div class="recharge_btn_box" v-if="memo" @click="$router.push({ name: 'rechargeInfo' })">
         <div class="recharge_btn">
           <span> How to recharge?</span>
         </div>
-      </div>
+      </div> -->
     </div>
+    <BasicModal :show="dialogShow" @update:show="dialogShow = false">
+      <div class="my_dialog_content_box">
+        <div class="my_dialog_title">why Recharge?</div>
+        <div class="my_dialog_content">
+          <div class="my_dialog_content_p">
+            In order to improve the efficiency of buying orders, we have set up an agent account for you. When paying orders, you can
+            directly deduct money from the agent account.
+          </div>
+          <div class="my_dialog_content_p"
+            >Therefore, we recommend that you recharge a certain amount of money into your agent account before purchasing. This will
+            greatly improve the efficiency of buying orders.</div
+          >
+        </div>
+      </div>
+    </BasicModal>
   </div>
 </template>
 
 <script setup lang="ts" name="Withdraw">
+  import useUserAssets from './useUserAssets.ts';
+  import BasicModal from '@/components/Modal/src/BasicModal.vue';
+  const { getUserAssets, cloudRecharge } = useUserAssets();
   import IconCopy from '~icons/home/copy.svg';
   import { reactive, toRefs, computed } from 'vue';
   import { useUserStore } from '@/store/modules/user';
@@ -67,12 +108,12 @@
   const dmc = computed(() => userStore.getUserInfo.dmc);
   const email = computed(() => userStore.getUserInfo.email);
   const router = useRouter();
+  const dialogShow = ref(false);
   const state = reactive({
     amount: '1.0000',
     memo: '',
   });
   const { memo, amount } = toRefs(state);
-
   const formatAmount = (val) => {
     if (val == 0) {
       return val;
@@ -104,6 +145,7 @@
   onMounted(() => {
     getAmbDmc();
     confirmRecharge();
+    getUserAssets();
     // getCommissionRate();
   });
   onActivated(() => {
@@ -172,10 +214,10 @@
   }
   .middle_box {
     // padding: 0 10px;
-    height: calc(100vh - 450px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    // height: calc(100vh - 450px);
+    // display: flex;
+    // flex-direction: column;
+    // justify-content: center;
   }
   .full_height {
     height: 115%;
@@ -249,6 +291,7 @@
 
 <style scoped lang="scss">
   .recharge_box {
+    margin: 20px;
     background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
     color: #fff;
     padding: 20px;
@@ -301,9 +344,9 @@
       font-size: 26px !important;
       font-weight: normal;
       margin: 20px 0;
-      background:
-        radial-gradient(circle at -6% 50%, transparent 10%, #fff 4%) left,
-        radial-gradient(circle at 106% 50%, transparent 10%, #fff 3.2%) right;
+      //   background:
+      //     radial-gradient(circle at -6% 50%, transparent 10%, #fff 4%) left,
+      //     radial-gradient(circle at 106% 50%, transparent 10%, #fff 3.2%) right;
       background-size: 50% 100%;
       background-repeat: no-repeat;
 
@@ -318,6 +361,104 @@
       .tips {
         color: #ff8b00;
         // font-weight: bold;
+      }
+    }
+  }
+  .recharge-card {
+    margin: 30px;
+    position: relative;
+    padding: 30px 40px 20px;
+    // height: 410px;
+    box-sizing: border-box;
+    background: $primary-color;
+    color: #fff;
+    border-radius: 30px;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    // margin-top: 150px;
+
+    > div {
+      min-height: 60px;
+      line-height: 60px;
+      text-align: center;
+    }
+
+    .card_row_1 {
+      display: flex;
+      justify-content: space-between;
+
+      &.card_header {
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-content: space-between;
+        // margin-right: 100px;
+
+        span {
+          text-align: left;
+        }
+
+        .total_income {
+          > div {
+            font-size: 30px;
+            text-align: left;
+          }
+
+          .balance_text {
+            font-size: 60px;
+
+            img {
+              height: 50px;
+              width: 100px;
+              vertical-align: sub;
+            }
+          }
+
+          .usd_text {
+            color: #ccc;
+          }
+        }
+      }
+      .total_income_text {
+        text-align: left;
+        margin-top: -20px;
+        font-size: 26px;
+      }
+    }
+
+    .card_row_top {
+      font-weight: bold;
+      font-size: 32px;
+    }
+
+    .pst-row {
+      margin-top: 20px;
+      font-size: 28px;
+      text-align: left;
+      font-weight: bold;
+      p {
+        font-size: 22px;
+        white-space: nowrap;
+      }
+
+      .column_value {
+        font-size: 28px;
+      }
+
+      .today_income {
+        color: #ff8b00;
+        color: #fbd116;
+
+        svg {
+          vertical-align: sub;
+        }
+      }
+    }
+
+    .total_income {
+      font-size: 55px;
+      font-weight: 700;
+
+      .about_income {
+        font-size: 35px;
       }
     }
   }

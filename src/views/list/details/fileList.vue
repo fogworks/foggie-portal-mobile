@@ -143,9 +143,9 @@
           :id="[index == 0 ? 'list_item_1' : '']"
           v-for="(item, index) in tableData"
           :key="index"
-          @touchstart="touchRow(item, $event)"
-          @touchmove="touchmoveRow(item, $event)"
-          @touchend="touchendRow(item, $event)"
+          @pointerdown="touchRow(item, $event)"
+          @pointermove="touchmoveRow(item, $event)"
+          @pointerup="touchendRow(item, $event)"
         >
           <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
             <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
@@ -172,6 +172,7 @@
     <ImgList
       ref="imgListRef"
       :orderId="route.query.id"
+      :mintType="mintType"
       v-model:isCheckMode="isCheckMode"
       v-model:checkedData="imgCheckedData"
       @cancelSelect="cancelSelect"
@@ -258,7 +259,7 @@
     </nut-popup>
     <!-- move -->
 
-    <nut-popup teleport-disable v-if="moveShow" position="bottom" closeable round :style="{ height: '600px' }" v-model:visible="moveShow">
+    <nut-popup teleport-disable v-if="moveShow" position="bottom" closeable round :style="{ height: '100vh' }" v-model:visible="moveShow">
       <div class="rename_box move_box">
         <IconFolder></IconFolder>
         <div
@@ -308,16 +309,20 @@
       <div v-if="isReady" class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period:">
           <template #link>
-            <span style="display: flex"
-              >{{ desc }} <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
-            ></span>
+            <span v-if="isMobileDevice" style="display: flex; align-items: center"
+              >{{ desc }}
+              <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit>
+            </span>
+            <van-dropdown-menu direction="up" v-else>
+              <van-dropdown-item v-model="periodValue" :options="options" />
+            </van-dropdown-menu>
           </template>
         </nut-cell>
         <template v-if="shareType">
           <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
           <nut-textarea rows="3" v-model="imgDesc" />
         </template>
-        <nut-popup position="bottom" v-model:visible="periodShow">
+        <nut-popup position="bottom" v-if="isMobileDevice" v-model:visible="periodShow">
           <nut-picker
             v-model="periodValue"
             :columns="options"
@@ -327,6 +332,7 @@
           >
           </nut-picker>
         </nut-popup>
+
         <nut-button type="info" block @click="() => confirmHttpShare(shareType, shareCheckData, accessKeyId, secretAccessKey, bucketName)"
           >Confirm</nut-button
         >
@@ -419,10 +425,38 @@
       :prefix="prefix"
       @uploadComplete="uploadComplete"
     ></uploader>
+    <Teleport to="body">
+      <nut-dialog
+        v-model:visible="showSocketDialog"
+        title="File Update"
+        :close-on-click-overlay="false"
+        :show-cancel="false"
+        :show-confirm="false"
+        custom-class="CustomName BucketName"
+        overlayClass="CustomOverlay"
+      >
+        <template #header>
+          <span class="icon" style="margin-right: 5px">
+            <IconBucket color="#000"></IconBucket>
+            <!-- <img src="@/assets/bucketInfo.svg" alt="" srcset="" class="fileUpdateIcon" /> -->
+          </span>
+          File update Tips
+        </template>
+
+        <p class="bucket_tip" style="text-align: left; word-break: break-word"
+          >We found that you updated the files in the current directory elsewhere. Do you want to update them simultaneously?.
+        </p>
+        <template #footer>
+          <!-- <nut-button type="primary" style="font-size: 12px" @click="closeSocketDialog">Operate Later</nut-button> -->
+          <nut-button type="primary" @click="closeSocketDialog">Confirm</nut-button>
+        </template>
+      </nut-dialog>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
+  import IconBucket from '~icons/home/bucket.svg';
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNFT from '~icons/material-symbols/cast';
@@ -444,7 +478,7 @@
   import IconMore from '~icons/home/more.svg';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
   import IconHttp from '~icons/home/http.svg';
-  import { reactive, toRefs, watch, onMounted } from 'vue';
+  import { reactive, toRefs, watch, onMounted, onUnmounted } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { Search2, TriangleUp, Loading } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
@@ -474,6 +508,7 @@
   let server = null;
   const route = useRoute();
   const router = useRouter();
+  const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const state = reactive({
     category: 0,
     keyWord: '',
@@ -514,7 +549,20 @@
       return false;
     }
   });
+  const isMobileDevice = computed(() => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    // 此正则表达式涵盖了大多数使用的手机和平板设备
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+  });
   provide('isMobileOrder', isMobileOrder);
+
+  const fileSocket = ref('');
+  const socketDate = ref('');
+  const socketToken = ref('');
+  const currentFolder = ref('');
+  const showSocketDialog = ref(false);
+  import { get_order_sign } from '@/api/index';
 
   const {
     tableLoading,
@@ -610,7 +658,7 @@
   const touchRow = (row: any, event: any) => {
     timeOutEvent = setTimeout(function () {
       timeOutEvent = 0;
-      if (isMobileOrder.value) {
+      if (isMobileOrder.value && (mintType.value != 1 || category.value == 1)) {
         isCheckMode.value = true;
       }
     }, 1000);
@@ -948,18 +996,24 @@
     showTypeCheckPop.value = false;
   };
 
-  const uploadComplete = () => {
-    console.log('uploadComplete');
+  const uploadComplete = (file) => {
     getFileList('', prefix.value, true);
   };
 
   function getFileList(scroll: string, prefix: any[], reset = false) {
     showToast.loading('Loading', {
+      //   cover: true,
+      //   customClass: 'app_loading',
+      //   icon: loadingImg,
+      //   loadingRotate: false,
+      //   id: 'file_list',
+      //   coverColor: 'rgba(0,0,0,0.45)',
+
       cover: true,
+      coverColor: 'rgba(0,0,0,0.45)',
       customClass: 'app_loading',
       icon: loadingImg,
       loadingRotate: false,
-      id: 'file_list',
     });
     let list_prefix = '';
     if (prefix?.length) {
@@ -999,8 +1053,8 @@
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header);
-    console.log('list-object--header', header, metadata.value);
-    console.log('listObjectlistObject', listObject);
+    // console.log('list-object--header', header, metadata.value);
+    // console.log('listObjectlistObject', listObject);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
@@ -1068,7 +1122,7 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
-          console.log(transferData, 'transferData,transferData');
+          //   console.log(transferData, 'transferData,transferData');
           isError.value = false;
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
@@ -1092,11 +1146,11 @@
     let port = orderInfo.value.rpc?.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
-    console.log(bucketName.value, 'bucketName');
+    // console.log(bucketName.value, 'bucketName');
 
     if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
       type = 'img';
-      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
+      //   console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       // console.log('--------imgHttpLarge', imgHttpLarge);
@@ -1213,7 +1267,7 @@
 
       // let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
       const imgData = await handleImg(data.content[j], type, isDir);
-      console.log('----------contentType', data?.content[j].contentType);
+      //   console.log('----------contentType', data?.content[j].contentType);
       const url = imgData.imgHttpLink;
       const isSystemImg = imgData.isSystemImg;
       const url_large = imgData.imgHttpLarge;
@@ -1221,7 +1275,9 @@
       let file_id = data.content[j].fileId;
 
       let name = data.content[j].key;
-      console.log(data.prefix, 'data.prefix');
+      currentFolder.value = data.prefix;
+      window.sessionStorage.setItem('currentFolder', currentFolder.value);
+      console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
 
       if (data.prefix) {
         name = name.split(data.prefix)[1];
@@ -1313,11 +1369,18 @@
       // }
     } else {
       showToast.loading('Loading', {
+        // cover: true,
+        // customClass: 'app_loading',
+        // icon: loadingImg,
+        // loadingRotate: false,
+        // id: 'file_list',
+        // coverColor: 'rgba(0,0,0,0.45)',
+
         cover: true,
+        coverColor: 'rgba(0,0,0,0.45)',
         customClass: 'app_loading',
         icon: loadingImg,
         loadingRotate: false,
-        id: 'file_list',
       });
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
@@ -1341,7 +1404,7 @@
           }
         }
         ProxFindRequest.setPrefix(list_prefix);
-        console.log(ProxFindRequest, 'ProxFindRequestProxFindRequest');
+        // console.log(ProxFindRequest, 'ProxFindRequestProxFindRequest');
 
         server.findObjects(ProxFindRequest, metadata.value, (err: any, res: { getContentsList: () => any[] }) => {
           infinityValue.value = false;
@@ -1452,16 +1515,105 @@
     { deep: true },
   );
   onMounted(async () => {
-    console.log(route, 'routerouteroute');
+    initPage();
+  });
+  const initPage = async () => {
     if (route?.query?.prefix) {
       prefix.value = route?.query?.prefix?.split('/');
     }
     let category1 = route.query.category || '0';
     await getOrderInfo();
     switchType(category1);
+
+    let param = {
+      order_uuid: route?.query?.uuid,
+    };
+    const signData = await get_order_sign(param);
+    socketDate.value = signData?.result?.data?.timestamp;
+    socketToken.value = signData?.result?.data?.sign;
+    initWebSocket();
+  };
+  onUnmounted(() => {
+    closeSocket();
   });
+
+  const initWebSocket = () => {
+    console.log('initWebSocket');
+    const url = `wss://${bucketName.value}.devus.u2i.net:6008/ws`;
+    fileSocket.value = new WebSocket(url);
+    fileSocket.value.onopen = () => {
+      const authMessage = {
+        action: 'AUTH',
+        userID: orderInfo.value.foggie_id,
+        token: socketToken.value,
+        date: socketDate.value,
+      };
+      fileSocket.value.send(JSON.stringify(authMessage));
+    };
+
+    fileSocket.value.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      const currentFolder = window.sessionStorage.getItem('currentFolder');
+      console.log('Received message from server:', message, currentFolder);
+      const uploadFileName = window.sessionStorage.getItem('uploadFileName');
+      let fileInfo = message.fileInfo;
+      let dirArr = fileInfo.keys;
+      const updateBy = fileInfo.updateBy;
+      let dirFile = '';
+      let dirFileName = '';
+      if (dirArr.length) {
+        let index = dirArr[0].lastIndexOf('/');
+        if (index > -1) {
+          dirFile = dirArr[0].substring(0, index + 1);
+          dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
+        } else {
+          dirFile = '';
+          dirFileName = dirArr[0];
+        }
+      }
+      console.log(
+        '888888',
+        dirArr,
+        dirFile,
+        currentFolder,
+        dirFileName,
+        uploadFileName,
+        dirFile === currentFolder,
+        dirFileName !== uploadFileName,
+      );
+      if (dirFile === currentFolder && dirFileName !== uploadFileName) {
+        console.log('弹框显示');
+        initSocketDialog();
+        // window.sessionStorage.removeItem('uploadFileName');
+      }
+    };
+
+    fileSocket.value.onclose = (event) => {
+      console.log('WebSocket connection closed:', event);
+    };
+    fileSocket.value.onerror = (event) => {
+      console.error('WebSocket connection error:', event);
+    };
+  };
+  const initSocketDialog = () => {
+    showSocketDialog.value = true;
+  };
+  const closeSocketDialog = () => {
+    getFileList('', prefix.value, true);
+    showSocketDialog.value = false;
+  };
+  const closeSocket = () => {
+    fileSocket.value.onclose();
+  };
 </script>
 <style>
+  .fileUpdateIcon {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    width: 140px;
+    height: 140px;
+  }
   .type_check_pop {
     /* padding-top: 120px; */
     height: 450px;
@@ -1474,6 +1626,22 @@
     }
     .nut-dialog__content {
       font-size: 30px;
+    }
+  }
+  @media screen and (min-width: 500px) {
+    .type_check_pop {
+      /* padding-top: 120px; */
+      height: unset;
+    }
+    .dialog_class {
+      font-size: 30px;
+      .nut-dialog__header {
+        height: unset;
+        font-size: 35px;
+      }
+      .nut-dialog__content {
+        font-size: 30px;
+      }
     }
   }
 </style>
@@ -1581,9 +1749,13 @@
     color: #2e70ff;
     font-size: 30px;
     background: #fff;
+    span {
+      cursor: pointer;
+    }
     .checked_num {
       color: #000;
       font-size: 35px;
+      cursor: default;
     }
   }
   .fileList_content {
@@ -1919,6 +2091,364 @@
       color: #000;
       text-align: center;
       font-size: 35px;
+    }
+  }
+  @media screen and (min-width: 500px) {
+    #txtContainer {
+      color: #fff;
+      width: 100%;
+      padding: 0 20px;
+      max-height: calc(100% - 300px);
+      overflow-y: auto;
+    }
+    .file_list {
+      height: calc(100vh - 180px);
+      overflow: auto;
+    }
+    .tour-demo-custom-content {
+      padding: 20px;
+      height: 100px;
+      .tour_btn {
+        height: 50px;
+        margin-top: 10px;
+        padding: 5px 10px;
+      }
+    }
+    .detail_over {
+      padding: 30px 10px;
+      .middle_img {
+        max-height: calc(100vh - 500px);
+
+        .nut-image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .bottom_action {
+        height: 200px;
+        margin-top: 20px;
+        svg {
+          color: #fff;
+          width: 80px;
+          height: 80px;
+        }
+      }
+    }
+    .detail_back {
+      width: 60px;
+      height: 60px;
+    }
+    .top_title {
+      margin-left: 60px;
+    }
+    .check_top {
+      padding: 20px 20px;
+      font-size: 30px;
+      .checked_num {
+        font-size: 35px;
+      }
+    }
+    .list_header {
+      padding: 10px;
+      width: 100%;
+      span {
+        font-size: 24px;
+        line-height: 30px;
+      }
+      .triangle {
+        margin: 0 15px;
+        width: 30px;
+        height: 30px;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+    }
+    .cate_title {
+      padding: 20px;
+      font-size: 40px;
+    }
+    .type_check_box {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      .type_item {
+        width: 100px;
+        text-align: center;
+        height: 150px;
+        .svg_box {
+          width: 80px;
+          height: 80px;
+          line-height: 80px;
+          margin: 10px auto;
+          text-align: center;
+          border-radius: 20px;
+          svg {
+            width: 100%;
+            height: 100%;
+            vertical-align: middle;
+          }
+        }
+        p {
+          color: #051e56;
+        }
+      }
+    }
+    .search_bar {
+      padding: 10px 20px;
+      .new_folder {
+        width: 40px;
+        height: 40px;
+      }
+      :deep {
+        .nut-searchbar {
+          width: calc(100% - 60px);
+          padding: 0;
+        }
+
+        .nut-searchbar__search-input {
+          --nut-searchbar-input-height: 50px;
+          --nut-icon-width: 30px;
+          --nut-icon-height: 30px;
+          --nut-icon-line-height: 30px;
+        }
+        .nut-searchbar__input-bar {
+          font-size: 1.5rem;
+        }
+        .nut-icon-search2 {
+          --nut-icon-width: 30px;
+          --nut-icon-height: 30px;
+          --nut-icon-line-height: 30px;
+        }
+      }
+    }
+    .list_item {
+      padding: 5px 20px;
+      border-top: 1px solid #eee;
+
+      &:active,
+      &:hover {
+        background: #cde3f5;
+      }
+      .left_checkMode {
+        width: 80px;
+        height: 80px;
+        img {
+          width: 50px !important;
+          height: 50px !important;
+        }
+        &.is_checked {
+          width: 60px;
+          height: 60px;
+          margin: 10px;
+          background: #2e70ff;
+        }
+      }
+      .type_icon {
+        width: 80px;
+        height: 80px;
+      }
+      .left_icon_box {
+        width: 80px;
+        height: 80px;
+        img {
+          width: 80px;
+          height: 80px;
+        }
+      }
+      .name_box {
+        width: calc(100% - 180px);
+        margin-left: 30px;
+
+        p:last-child {
+          margin-top: 5px;
+          color: #a7a7a7;
+          font-size: 18px;
+        }
+      }
+      .right_more {
+        width: 30px;
+        height: 30px;
+      }
+    }
+    .bottom_action {
+      :deep {
+        .nut-tabbar {
+          --nut-tabbar-height: 60px;
+        }
+        .nut-tabbar-item {
+          background-color: #2e70ff;
+          color: #fff;
+          cursor: pointer;
+          svg {
+            width: 30px;
+            height: 30px;
+          }
+        }
+        .nut-tabbar-item_icon-box_nav-word {
+          color: #ffffff5c;
+          --nut-tabbar-item-text-font-size: 1rem;
+        }
+      }
+    }
+    :deep {
+      .nut-popup {
+        .nut-icon {
+          min-height: 20px;
+        }
+      }
+    }
+    .rename_box {
+      margin-top: 40px;
+      padding: 0 40px;
+      :deep {
+        .nut-cell {
+          padding-left: 0;
+          padding-right: 0;
+          box-shadow: none;
+        }
+        .nut-textarea {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+      p {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      svg {
+        display: block;
+        margin: 0 auto;
+      }
+      :deep {
+        .nut-searchbar {
+          margin: 0 auto;
+          padding: 20px 0;
+          --nut-searchbar-width: 600px;
+          --nut-searchbar-input-height: 70px;
+        }
+        .nut-button {
+          width: 300px;
+          margin: 0 auto;
+          margin-top: 40px;
+          --nut-button-default-height: 70px;
+          --nut-button-default-font-size: 1.5rem;
+        }
+        .nut-searchbar__search-input .nut-searchbar__input-bar {
+          font-size: 1.5rem;
+        }
+        .nut-icon {
+          --nut-icon-width: 30px;
+          --nut-icon-height: 30px;
+          --nut-icon-line-height: 30px;
+        }
+      }
+    }
+    .move_box {
+      :deep {
+        .nut-cell {
+          padding: 10px;
+          --nut-cell-title-font: 1.5rem;
+        }
+      }
+      .top_back {
+        margin-bottom: 10px;
+        p {
+          margin: 0 5px;
+          font-size: 2rem;
+        }
+      }
+      .file_list {
+        height: 600px;
+        overflow-y: auto;
+        .list_item {
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .left_icon_box {
+          width: 80px;
+          height: 80px;
+          svg {
+            width: 80px;
+            height: 80px;
+          }
+        }
+        .name_box {
+          p {
+            text-align: right;
+            margin: 0;
+            font-size: 30px;
+          }
+        }
+      }
+      .nut-button {
+        --nut-button-default-font-size: 1rem;
+      }
+    }
+    .share_info_box {
+      margin-top: 30px;
+      margin: 30px 120px 0;
+      justify-content: space-around;
+      div {
+        min-width: 150px;
+        margin-top: 20px;
+
+        img,
+        svg {
+          width: 80px;
+          height: 80px;
+        }
+      }
+    }
+    .custom-content {
+      p {
+        padding: 10px 20px;
+        color: #909090;
+        border-bottom: 1px solid #eee;
+        svg {
+          width: 60px;
+          height: 60px;
+          margin-right: 20px;
+          vertical-align: middle;
+        }
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        li {
+          padding: 10px 20px;
+          svg {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            vertical-align: middle;
+          }
+          &:active,
+          &:hover {
+            background: #cde3f5;
+          }
+        }
+      }
+      .cancel_btn {
+        padding: 10px;
+        font-size: 24px;
+      }
+    }
+    :deep {
+      .van-dropdown-menu__bar {
+        background-color: transparent;
+        box-shadow: none;
+      }
+      .van-dropdown-menu__title:after {
+        transform: rotate(-45deg) scale(0.8);
+      }
+      .van-dropdown-menu__title--down:after {
+        transform: rotate(135deg) scale(0.8);
+      }
+      .van-dropdown-item__option {
+        padding: 20px;
+      }
     }
   }
 </style>

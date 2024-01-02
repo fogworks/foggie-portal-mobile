@@ -281,8 +281,8 @@
       statusArr: [],
       createDate: [],
       timeType: 'create',
-      min: '',
-      max: '',
+      min: '0',
+      max: '100',
       priceType: 'purchase',
       sortTypeOptions: [
         { text: 'Payment Time', value: 'created_at' },

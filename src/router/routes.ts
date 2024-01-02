@@ -10,6 +10,11 @@ export const routes = [
         component: () => import('@/views/home/index.vue'),
       },
       {
+        path: 'assetsInfo',
+        name: 'AssetsInfo',
+        component: () => import('@/views/home/assetsInfo.vue'),
+      },
+      {
         path: 'transactionRecords',
         name: 'TransactionRecords',
         component: () => import('@/views/home/transactionRecords.vue'),
@@ -26,22 +31,7 @@ export const routes = [
           // keepAlive: true,
         },
       },
-      {
-        path: 'bucketList',
-        component: () => import('@/views/list/bucketList.vue'),
-        meta: {
-          title: 'tabbar.list',
-          // keepAlive: true,
-        },
-      },
-      {
-        path: 'nft',
-        component: () => import('@/views/nft/index.vue'),
-        meta: {
-          title: 'tabbar.list',
-          // keepAlive: true,
-        },
-      },
+
       {
         path: 'filePreview',
         name: 'filePreview',
@@ -116,6 +106,15 @@ export const routes = [
         },
       },
       {
+        path: 'recordsListGuid',
+        name: 'RecordsListGuid',
+        component: () => import('@/views/list/details/recordListGuid.vue'),
+        meta: {
+          notBar: true,
+          notKeepAlive: true,
+        },
+      },
+      {
         path: 'withdraw',
         name: 'Withdraw',
         component: () => import('@/views/home/withdraw.vue'),
@@ -184,6 +183,58 @@ export const routes = [
         component: () => import('@/views/list/details/s3Info.vue'),
         meta: {},
       },
+      {
+        path: 'bucketList',
+        name: 'BucketList',
+        component: () => import('@/views/nft/bucketList.vue'),
+        meta: {
+          title: 'tabbar.list',
+          // keepAlive: true,
+        },
+      },
+      {
+        path: 'nft',
+        component: () => import('@/views/nft/index.vue'),
+        meta: {
+          title: 'tabbar.list',
+          // keepAlive: true,
+        },
+        redirect: 'AllNFTList',
+        children: [
+          {
+            path: '/allNFTList',
+            name: 'AllNFTList',
+            component: () => import('@/views/nft/allNFTList.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+          {
+            path: '/nftList',
+            name: 'NFTList',
+            component: () => import('@/views/nft/nftList.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+          {
+            path: '/welcome',
+            name: 'Welcome',
+            component: () => import('@/views/nft/welcome.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+          {
+            path: '/walletConnect',
+            name: 'WalletConnect',
+            component: () => import('@/views/nft/walletConnect.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+        ],
+      },
     ],
   },
   {
@@ -206,6 +257,14 @@ export const routes = [
     path: '/register',
     name: 'Register',
     component: () => import('@/views/login/register.vue'),
+    meta: {
+      notKeepAlive: true,
+    },
+  },
+  {
+    path: '/linkAccount',
+    name: 'LinkAccount',
+    component: () => import('@/views/login/linkAccount.vue'),
     meta: {
       notKeepAlive: true,
     },

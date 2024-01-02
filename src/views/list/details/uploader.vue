@@ -34,7 +34,7 @@
     </nut-button>
   </div>
   <Transition name="fade-transform" mode="out-in">
-    <div v-if="uploadProgressIsShow" style="margin-top: 30px">
+    <div v-if="uploadProgressIsShow">
       <nut-progress
         class="upload_progress"
         :percentage="uploadProgress"
@@ -143,7 +143,7 @@
       let nowTime = Date.now();
       let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
       let time = Math.round((endTime - nowTime) / 1000);
-      if (time > 4 * 60) {
+      if (time > 6 * 60) {
         time -= 60 * 60;
       }
       if (time > 0) {
@@ -247,6 +247,9 @@
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     isDisabled.value = false;
     console.log('uploadSuccess', responseText, option, fileItem);
+    console.log('-----uploadSuccess', fileItem.name);
+    window.sessionStorage.setItem('uploadFileName', fileItem.name);
+
     // console.log(option, 'option');
     uploadStatus.value = 'success';
 
@@ -373,6 +376,31 @@
       }
     }
   }
+  @media screen and (min-width: 500px) {
+    .upload_btn {
+      bottom: 100px;
+      right: 30px;
+      font-size: 50px;
+      padding: 0px;
+      width: 60px;
+      height: 60px;
+      --nut-button-small-line-height: 60px;
+    }
+    .upload_class {
+      z-index: 100;
+      :deep {
+        .nut-uploader__input {
+          position: fixed !important;
+          top: unset !important;
+          left: unset !important;
+          bottom: 100px !important;
+          right: 30px !important;
+          width: 60px !important;
+          height: 60px !important;
+        }
+      }
+    }
+  }
 </style>
 <style lang="scss">
   .upload_progress.nut-progress {
@@ -390,5 +418,10 @@
     position: fixed;
     bottom: 14vw;
     z-index: 999;
+  }
+  @media screen and (min-width: 500px) {
+    .upload_progress {
+      bottom: 60px !important;
+    }
   }
 </style>

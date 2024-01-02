@@ -8,7 +8,7 @@
           </router-link>
         </div>
         Hello,
-        {{ userInfo.email && userInfo.email.split('@')[0] }}
+        {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
       </div>
       <div class="Notice" @click="openGoogleSetting" v-if="userInfo.dmc">
         <img src="@/assets/enableProtection.svg" alt="" srcset="" v-if="bindOtp" />
@@ -17,7 +17,7 @@
       </div>
     </div>
     <div inset class="income-card">
-      <img src="@/assets/balance_right.svg" />
+      <img src="@/assets/balance_right.svg" @click="gotoPage('analysisChart')" />
       <div class="card_row_1 card_header">
         <div class="total_income">
           <div class="balance_text">
@@ -36,10 +36,10 @@
           <p>Space</p>
           <p class="column_value">{{ getfilesize2(cloudPst == '--' ? 0 : cloudPst) }}</p>
         </div>
-        <div @click="gotoPage('transactionRecords', '1')">
+        <!-- <div @click="gotoPage('transactionRecords', '1')">
           <p>Withdrawn</p>
           <p class="column_value">{{ cloudWithdraw >= 0 ? cloudWithdraw.toFixed(4) : cloudWithdraw }}</p>
-        </div>
+        </div> -->
         <div @click="gotoPage('analysis')">
           <p>Today's new funds</p>
           <p class="column_value today_income"
@@ -50,10 +50,18 @@
       </div>
     </div>
     <div class="withdraw-btn" direction="horizontal" align="center">
+      <div class="action_item" @click="toBuyOrder">
+        <img src="@/assets/shop.svg" alt="" />
+        Buy
+      </div>
+      <div class="action_item" @click="gotoPage('Assets')">
+        <img src="@/assets/homeTran.svg" alt="" />
+        Assets
+      </div>
       <div class="action_item" @click="gotoPage('Bucket')">
         <!-- <img src="@/assets/recharge.svg" alt="" /> -->
         <img src="@/assets/home_bucket.png" alt="" />
-        Bucket 
+        Bucket
       </div>
       <div class="action_item" @click="gotoPage('NFT')">
         <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
@@ -61,53 +69,13 @@
         NFT
       </div>
     </div>
-    <div class="middle_btn_box">
-      <div>
-        <div class="flex-content" @click="toBuyOrder">
-          <div class="svg-box">
-            <!-- <Shop></Shop> -->
-            <img src="@/assets/newIcon/buyOrder.png" alt="" />
-          </div>
-          <span>Buy</span>
-        </div>
-      </div>
-      <div>
-        <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
-        <div class="flex-content" @click="gotoPage('Order')">
-          <div class="svg-box">
-            <img src="@/assets/newIcon/orders.png" alt="" />
-          </div>
-          <span>Orders</span>
-        </div>
-      </div>
-      <div>
-        <!-- <div class="flex-content" @click="router.push('/analysis')"> -->
-        <div class="flex-content" @click="gotoPage('analysisChart')">
-          <div class="svg-box">
-            <img src="@/assets/newIcon/analysis.png" alt="" />
-          </div>
-          <span>Charts</span>
-        </div>
-      </div>
-      <div>
-        <div class="flex-content" @click="gotoPage('transactionRecords')">
-          <!-- <div class="flex-content" @click="router.push('/transactionRecords')"> -->
-          <div class="svg-box">
-            <img src="@/assets/newIcon/transaction.png" alt="" />
-            <!-- <img src="@/assets/IconTransaction.svg" alt="" />
-            <IconTransaction></IconTransaction> -->
-          </div>
-          <span>Transaction <br /> </span>
-          <!-- records -->
-        </div>
-      </div>
-    </div>
-
     <div class="DouArrowDown" v-if="!targetIsVisible && !ishaveProfit" @click="scrollIntoViewTo">
       <DouArrowUp width="100" height="50" class="nut-icon-am-jump nut-icon-am-infinite" />
     </div>
     <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
-    <div class="tab_top_title" v-if="ishaveProfit">Last 7 days <span style="font-size: 12px">(DMC)</span></div>
+    <div class="tab_top_title" v-if="ishaveProfit"
+      >Income and Expenditure <span style="font-size: 12px; display: inline-block">(for the last weeks)</span></div
+    >
 
     <ErrorPage v-if="isError && !earningsList.length" @refresh="loadMore"></ErrorPage>
     <template v-else-if="!ishaveProfit">
@@ -205,7 +173,9 @@
       </div>
     </nut-infinite-loading>
 
-    <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week"></nut-empty>
+    <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week">
+      <!-- <img src="@/assets/yinhuanzhenggai.svg" /> -->
+    </nut-empty>
     <!-- <nut-backtop el-id="main-page" :z-index="999" :bottom="60"></nut-backtop> -->
 
     <nut-popup
@@ -502,10 +472,12 @@
         router.push('/analysisChart');
       } else if (type === 'Order') {
         router.push('/list');
-      }else if(type == 'Bucket'){
+      } else if (type == 'Bucket') {
         router.push('/bucketList');
-      }else if(type == 'NFT'){
+      } else if (type == 'NFT') {
         router.push('/nft');
+      } else if (type == 'Assets') {
+        router.push('/assetsInfo');
       }
     }
   };
@@ -747,6 +719,7 @@
     overflow-x: auto;
     white-space: nowrap;
     width: 100%;
+    background: #fff;
 
     // background: #fff;
     > div {
@@ -801,21 +774,24 @@
         border-radius: 50px;
         width: 100px;
         height: 100px;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         // background: #ff8b00;
-        background: linear-gradient(to bottom, #d5dee7 0%, #e8ebf2 50%, #e2e7ed 100%),
-          linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 50%, rgba(255, 255, 255, 0.02) 61%, rgba(0, 0, 0, 0.02) 73%),
-          linear-gradient(33deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
-        background-blend-mode: normal, color-burn;
+        // background: linear-gradient(to bottom, #d5dee7 0%, #e8ebf2 50%, #e2e7ed 100%),
+        //   linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 50%, rgba(255, 255, 255, 0.02) 61%, rgba(0, 0, 0, 0.02) 73%),
+        //   linear-gradient(33deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
+        // background-blend-mode: normal, color-burn;
 
         // box-shadow: 0px 1px 2px 2px #ccc;
-        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        // box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        // background: #ff656d;
+        // background-image: linear-gradient(to top, #3551ad 0%, #fff 100%) !important;
 
         svg,
         img {
-          width: 70px;
-          height: 70px;
+          width: 90px;
+          height: 90px;
           color: #fff;
+          border-radius: 50%;
         }
       }
     }
@@ -828,8 +804,6 @@
     box-sizing: border-box;
     margin: 0;
     // margin-top: 20px;
-    margin-left: -4vw;
-    margin-right: -4vw;
     //   box-shadow: 0px 0px 4px 1px #ccc;
     // background-color: var(--van-blue);
     background: $primary-color;
@@ -842,6 +816,31 @@
       position: absolute;
       right: 40px;
       width: 100px;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      -webkit-transform-origin: 50%;
+      -webkit-animation: sizeChange 10s infinite;
+      -webkit-animation-timing-function: linear;
+      -webkit-perspective: 1000;
+      -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+      -webkit-filter: saturate(1.45) hue-rotate(2deg);
+    }
+    @keyframes sizeChange {
+      0% {
+        -webkit-transform: rotateY(0deg);
+      }
+      25% {
+        -webkit-transform: rotateY(-90deg);
+      }
+      50% {
+        -webkit-transform: rotateY(-180deg);
+      }
+      75% {
+        -webkit-transform: rotateY(-270deg);
+      }
+      100% {
+        -webkit-transform: rotateY(-360deg);
+      }
     }
 
     > div {
@@ -991,12 +990,12 @@
       align-items: center;
       // color: #333333;
       color: #5758a0;
-      font-size: 30px;
+      font-size: 24px;
       font-weight: bold;
 
       img {
         display: block;
-        width: 140px;
+        width: 100px;
         margin-bottom: 10px;
       }
     }
@@ -1006,7 +1005,7 @@
     content: '';
     position: absolute;
     width: 140%;
-    background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
+    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
     height: 80%;
     animation: rotBGimg 3s linear infinite;
     transition: all 0.2s linear;
@@ -1031,7 +1030,7 @@
   }
 
   .tab_top_title {
-    margin-top: 20px;
+    // margin-top: 20px;
     margin-bottom: 20px;
     // font-style: italic;
     font-size: 35px;
