@@ -66,8 +66,7 @@
     "vue-cordova": "^0.1.2",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.3",
-    "vue3-pdf-app": "^1.0.3",
-    "WebODF": "^0.5.10"
+    "vue3-pdf-app": "^1.0.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",

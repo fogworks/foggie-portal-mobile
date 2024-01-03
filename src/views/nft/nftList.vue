@@ -3,7 +3,7 @@
     <TopBack class="top_title" type="2"
       ><span class="title">{{ activeTab == 1 ? 'Mint List' : 'Deploy List' }}</span></TopBack
     >
-    <ListComponent v-model:activeTab="activeTab" chooseType="1" :imgList="imgList"></ListComponent>
+    <ListComponent v-model:activeTab="activeTab" chooseType="1" :imgList="imgList" :contractList="contractList"></ListComponent>
   </div>
 </template>
 
@@ -14,53 +14,44 @@
   import TopBack from '@/components/topBack/index.vue';
   import loadingImg from '@/components/loadingImg/index.vue';
   import ListComponent from './listComponent.vue';
+  import { search_mint, search_deploy } from '@/api/index.ts';
+
+  const useStore = useUserStore();
+  const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
 
   const uuid = computed(() => userStore.getUserInfo?.uuid);
   const userStore = useUserStore();
   const router = useRouter();
   const state = reactive({
     activeTab: 1,
-    imgList: [
-      {
-        imgUrl: require('@/assets/banner1.svg'),
-        name: '001',
-        price: '0.6310',
-        createTime: '2023-12-20',
-      },
-      {
-        imgUrl: require('@/assets/banner1.svg'),
-        name: '001',
-        price: '0.6310',
-        createTime: '2023-12-20',
-      },
-      {
-        imgUrl: require('@/assets/banner1.svg'),
-        name: '001',
-        price: '0.6310',
-        createTime: '2023-12-20',
-      },
-      {
-        imgUrl: require('@/assets/banner1.svg'),
-        name: '001',
-        price: '0.6310',
-        createTime: '2023-12-20',
-      },
-      {
-        imgUrl: require('@/assets/banner1.svg'),
-        name: '001',
-        price: '0.6310',
-        createTime: '2023-12-20',
-      },
-      {
-        imgUrl: require('@/assets/banner1.svg'),
-        name: '001',
-        price: '0.6310',
-        createTime: '2023-12-20',
-      },
-    ],
+    imgList: [],
+    contractList: [],
   });
-  const { activeTab, imgList } = toRefs(state);
+  const { activeTab, imgList, contractList } = toRefs(state);
+
+  const init = async () => {
+    let arr = [];
+    for (let i = 0; i < walletInfo.value.length; i++) {
+      arr.push(walletInfo.value[i].address);
+    }
+    const d = {
+      account: arr,
+    };
+    const res = await search_mint(d);
+    if (res?.result?.data) {
+      imgList.value = res.result.data;
+    }
+    const r = await search_deploy(d);
+    if (r?.result?.data) {
+      contractList.value = r.result.data;
+    }
+  };
   onMounted(async () => {});
+  
+
+  watch(walletInfo, (val) => {
+    init();
+  });
 </script>
 
 <style>
