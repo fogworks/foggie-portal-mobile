@@ -45,12 +45,8 @@
     ],
     infoList: [
       {
-        text: 'Items',
-        value: 2140,
-      },
-      {
         text: 'Fog Drops',
-        value: 1140,
+        value: '',
       },
     ],
     seeType: false,
@@ -84,6 +80,7 @@
     const r = await search_mint(d);
     if (r?.result?.data) {
       imgList.value = r.result.data;
+      infoList.value[0].value = r.result.total;
     }
   };
   onMounted(async () => {
