@@ -31,6 +31,9 @@
 
   const init = async () => {
     let arr = [];
+    if (!walletInfo || !walletInfo.value || walletInfo.value.length === 0) {
+      return;
+    }
     for (let i = 0; i < walletInfo.value.length; i++) {
       arr.push(walletInfo.value[i].address);
     }
@@ -46,7 +49,9 @@
       contractList.value = r.result.data;
     }
   };
-  onMounted(async () => {});
+  onMounted(() => {
+    init();
+  });
   
 
   watch(walletInfo, (val) => {
