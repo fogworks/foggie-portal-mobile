@@ -115,7 +115,7 @@
         <span @click="cancelSelect">Cancel</span>
       </div>
     </nut-sticky>
-    <ErrorPage v-if="isError" @refresh="() => doSearch('', prefix, true)"></ErrorPage>
+    <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
     <template v-else-if="category != 1">
       <nut-infinite-loading
         v-if="tableData.length"
@@ -235,7 +235,7 @@
             <li v-if="(!chooseItem.isPin || !chooseItem.cid) && showActionBtn" @click="handlerClick('ipfs')">
               <img src="@/assets/ipfs.png" alt="" /> IPFS</li
             >
-            <li v-else-if="chooseItem.isPin && showActionBtn" @click="handlerClick('ipfs')">
+            <li v-else-if="chooseItem.isPin && showActionBtn" @click="handlerClick('unipfs')">
               <img src="@/assets/ipfs.png" alt="" /> UN IPFS</li
             >
             <li v-if="!chooseItem.isDir && showActionBtn && chooseItem.category == 1 && isMobileOrder" @click="handlerClick('nft')"
@@ -1573,6 +1573,10 @@
   onUnmounted(() => {
     closeSocket();
   });
+  const refresh = async () => {
+    await getOrderInfo();
+    doSearch('', prefix.value, true);
+  };
 
   const initWebSocket = () => {
     console.log('initWebSocket');

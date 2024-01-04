@@ -410,7 +410,7 @@
   import { getSecondTime } from '@/utils/util';
   import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
   import ErrorPage from '@/views/errorPage/index.vue';
-  import { status } from 'grpc';
+  // import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';

@@ -11,6 +11,7 @@ import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
 import IconHttp2 from '~icons/home/http2.svg';
 import { poolUrl } from '@/setting.js';
+import loadingImg from '@/components/loadingImg/index.vue';
 // import useOrderInfo from './useOrderInfo.js';
 // const { metadata } = useOrderInfo();
 
@@ -105,14 +106,26 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     request.setPay(pinPay);
     console.log(request, 'request');
     return new Promise((resolve, reject) => {
+      showToast.loading('Loading', {
+        cover: true,
+        coverColor: 'rgba(0,0,0,0.45)',
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
+        duration: 0,
+        id: 'cloud_pin',
+      });
       server.pin(request, metadata.value, (err, response) => {
         if (err) {
           console.log('cloud-pin------err', err);
+          showToast.hide('cloud_pin');
           reject(false);
           return;
+        } else if (response) {
+          showToast.hide('cloud_pin');
+          console.log(response, 'response');
+          resolve(true);
         }
-        resolve(true);
-        console.log(response);
       });
     });
   };
