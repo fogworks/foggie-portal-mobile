@@ -187,6 +187,8 @@
   .bottom_btn {
     // position: fixed;
     // bottom: 120px;
+    position: fixed;
+    bottom: 4rem;
     width: calc(100% - 60px);
     margin: 0 auto;
   }
