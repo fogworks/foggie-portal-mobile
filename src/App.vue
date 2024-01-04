@@ -18,7 +18,13 @@
   const userInfo = computed(() => userStore.getUserInfo);
 
   let vh = window.innerHeight * 0.01;
+  const isMobileDevice = computed(() => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
+    // 此正则表达式涵盖了大多数使用的手机和平板设备
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+  });
+  provide('isMobileDevice', isMobileDevice);
   onMounted(async () => {
     if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
       let script = document.createElement('script');

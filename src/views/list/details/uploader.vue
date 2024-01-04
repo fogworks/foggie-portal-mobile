@@ -151,11 +151,18 @@
         showToast.fail(content);
         return reject(false);
       }
-      if (file[0].name == 'image.jpg') {
+
+      let fileCopy = file[0];
+      if (fileCopy.name == 'image.jpg') {
         const timestamp = Date.now();
-        file[0].name = `image_${timestamp}.jpg`;
+        const newFileName = `image_${timestamp}.jpg`;
+
+        // 创建一个新的 Blob 对象
+        const blob = new Blob([fileCopy], { type: fileCopy.type });
+
+        // 使用新文件名创建一个新的文件对象
+        fileCopy = new File([blob], newFileName, { type: fileCopy.type });
       }
-      const fileCopy = file[0];
       const d = { orderId: order_id.value };
       let merkleRes = await valid_upload(d);
       if (merkleRes?.data) {

@@ -7,7 +7,7 @@
     </div>
     <p v-if="hasMore" @click="emits('gotoMore')" class="show_more"> Show More </p>
     <div class="img_list_box" v-if="activeTab == 1">
-      <div :class="['img_item', checkedItem.value.name == item.name ? 'isChecked' : '']" v-for="item in imgList" @click="itemClick(item)">
+      <div :class="['img_item', checkedItem.value.name == item.name ? 'isChecked' : '']" v-for="item in imgList">
         <div class="img_box">
           <img :src="item.meta_image" alt="" />
         </div>
@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="img_list_box" v-if="activeTab == 2">
-      <div :class="['img_item', checkedItem.value.name == item.name ? 'isChecked' : '']" v-for="item in contractList" @click="itemClick(item)">
+      <div :class="['img_item', checkedItem.value.name == item.name ? 'isChecked' : '']" v-for="item in contractList">
         <div class="img_box">
           <img :src="item.meta_image" alt="" />
         </div>
@@ -35,9 +35,7 @@
       </div>
     </div>
     <div v-if="chooseType != 0" class="bottom_btn">
-      <nut-button v-if="!checkedItem.value.name" block type="primary" @click="router.push({ name: 'BucketList', query: { mintType: 1 } })"
-        >Mint New</nut-button
-      >
+      <nut-button v-if="!checkedItem.value.name" block type="primary" @click="goToDapp">Mint New</nut-button>
       <nut-button v-else-if="checkedItem.value.name && activeTab == 2" block type="primary">Mint</nut-button>
       <nut-button v-else-if="checkedItem.value.name" block type="primary">Mint Again</nut-button>
     </div>
@@ -45,6 +43,7 @@
 </template>
 
 <script setup>
+  import { dappUrl } from '@/setting.js';
   import { useRouter } from 'vue-router';
   import { showToast } from '@nutui/nutui';
 
@@ -95,6 +94,19 @@
     if (chooseType.value == 1) {
       checkedItem.value = item;
       emits('itemClick', item);
+    }
+  };
+  const isMobileDevice = inject('isMobileDevice');
+  const goToDapp = () => {
+    if (isMobileDevice) {
+      if (window.ethereum) {
+        // window.open(`https://metamask.app.link/dapp/${redirectUrl}`);
+        window.open(dappUrl);
+      } else {
+        window.open(`https://metamask.app.link/dapp/${dappUrl}`);
+      }
+    } else {
+      window.open(dappUrl);
     }
   };
 </script>
