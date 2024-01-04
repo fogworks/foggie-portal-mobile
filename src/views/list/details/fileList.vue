@@ -143,9 +143,9 @@
           :id="[index == 0 ? 'list_item_1' : '']"
           v-for="(item, index) in tableData"
           :key="index"
-          @pointerdown="touchRow(item, $event)"
-          @pointermove="touchmoveRow(item, $event)"
-          @pointerup="touchendRow(item, $event)"
+          @touchstart="touchRow(item, $event)"
+          @touchmove="touchmoveRow(item, $event)"
+          @touchend="touchendRow(item, $event)"
         >
           <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
             <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
@@ -204,6 +204,14 @@
             <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
           </template>
         </nut-tabbar-item>
+        <nut-tabbar-item
+          :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'IPFS' : 'UNIPFS'"
+          :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']"
+        >
+          <template #icon="props">
+            <IconIPFS :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconIPFS>
+          </template>
+        </nut-tabbar-item>
         <nut-tabbar-item tab-title="Move" :class="[category == 1 || !isMobileOrder ? 'is-disable' : '']">
           <template #icon="props">
             <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
@@ -224,6 +232,12 @@
           <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
           <ul>
             <li v-if="!chooseItem.isDir && showActionBtn" @click="handlerClick('share')"><IconShare></IconShare> Share</li>
+            <li v-if="(!chooseItem.isPin || !chooseItem.cid) && showActionBtn" @click="handlerClick('ipfs')">
+              <img src="@/assets/ipfs.png" alt="" /> IPFS</li
+            >
+            <li v-else-if="chooseItem.isPin && showActionBtn" @click="handlerClick('ipfs')">
+              <img src="@/assets/ipfs.png" alt="" /> UN IPFS</li
+            >
             <li v-if="!chooseItem.isDir && showActionBtn && chooseItem.category == 1 && isMobileOrder" @click="handlerClick('nft')"
               ><IconNFT></IconNFT> Cast NFT</li
             >
@@ -457,6 +471,7 @@
 
 <script setup lang="ts">
   import IconBucket from '~icons/home/bucket.svg';
+  import IconIPFS from '~icons/home/ipfs.svg';
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNFT from '~icons/material-symbols/cast';
@@ -500,6 +515,7 @@
   import { HmacSHA1, enc } from 'crypto-js';
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
+  import { get_order_sign } from '@/api/index';
 
   // const accessKeyId = ref<string>('');
   // const secretAccessKey = ref<string>('');
@@ -562,7 +578,6 @@
   const socketToken = ref('');
   const currentFolder = ref('');
   const showSocketDialog = ref(false);
-  import { get_order_sign } from '@/api/index';
 
   const {
     tableLoading,
@@ -613,7 +628,8 @@
     copyContent,
     confirmHttpShare,
     getHttpShare,
-  } = useShare(orderInfo, header, deviceType);
+    cloudPin,
+  } = useShare(orderInfo, header, deviceType, metadata);
   const shareCheckData = computed(() => {
     return isCheckMode.value ? selectArr.value[0] : chooseItem.value;
   });
@@ -673,7 +689,7 @@
   const touchendRow = (row: { checked: boolean; isDir: any; name: string; imgUrl: string }, event: { target: { nodeName: string } }) => {
     clearTimeout(timeOutEvent);
     if (event?.target?.nodeName == 'svg' || event?.target?.nodeName == 'path') {
-      showAction(row);
+      // showAction(row);
       return false;
     }
     if (timeOutEvent != 0) {
@@ -979,8 +995,29 @@
       if (checkData.length > 1) return false;
       await createNFT(checkData[0], accessKeyId.value, secretAccessKey.value, bucketName.value);
     } else if (type === 'ipfs') {
+      const onOk = async () => {
+        await cloudPin(checkData[0], 'ipfs');
+        doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS PIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        onOk,
+      });
     } else if (type === 'unipfs') {
-      // ipfsPin(checkedData.value[0], "ipfs", "unpin");
+      const onOk = async () => {
+        await cloudPin(checkData[0], 'ipfs', 'unpin');
+        doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS UNPIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        onOk,
+      });
     }
   };
   const fileTypeText = {
@@ -2058,7 +2095,8 @@
       padding: 30px 20px;
       color: #909090;
       border-bottom: 1px solid #eee;
-      svg {
+      svg,
+      img {
         width: 60px;
         height: 60px;
         margin-right: 20px;
@@ -2071,7 +2109,8 @@
       margin: 0;
       li {
         padding: 30px 20px;
-        svg {
+        svg,
+        img {
           width: 40px;
           height: 40px;
           margin-right: 15px;

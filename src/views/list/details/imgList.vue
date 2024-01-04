@@ -30,9 +30,9 @@
             <div
               :class="['img-item']"
               v-for="(img, index2) in item.list"
-              @pointerdown="emits('touchRow', img)"
-              @pointermove="emits('touchmoveRow', img)"
-              @pointerup="emits('touchendRow', img)"
+              @touchstart="emits('touchRow', img)"
+              @touchmove="emits('touchmoveRow', img)"
+              @touchend="emits('touchendRow', img)"
             >
               <div :class="['mask', isCheckMode ? 'isChecking' : '']">
                 <nut-checkbox

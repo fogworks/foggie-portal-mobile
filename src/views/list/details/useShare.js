@@ -11,17 +11,17 @@ import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
 import IconHttp2 from '~icons/home/http2.svg';
 import { poolUrl } from '@/setting.js';
-import useOrderInfo from './useOrderInfo.js';
-const { metadata } = useOrderInfo();
+// import useOrderInfo from './useOrderInfo.js';
+// const { metadata } = useOrderInfo();
 
-export default function useShare(orderInfo, header, deviceType) {
+export default function useShare(orderInfo, header, deviceType, metadata) {
   const userStore = useUserStore();
-    const isMobileDevice = computed(() => {
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  const isMobileDevice = computed(() => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
-      // 此正则表达式涵盖了大多数使用的手机和平板设备
-      return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
-    });
+    // 此正则表达式涵盖了大多数使用的手机和平板设备
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+  });
   const daySeconds = 86400;
   const monthSeconds = 2592000;
   const { shareRefContent, copyContent, pinData, ipfsDialogShow } = useVariable();
@@ -73,7 +73,49 @@ export default function useShare(orderInfo, header, deviceType) {
       value: monthSeconds * 12,
     },
   ]);
+  const cloudPin = async (item, stype = 'ipfs', flag, exp, isShare = true) => {
+    let server = null;
+    let mp_domain = '';
+    mp_domain = `${orderInfo.value.domain}.${poolUrl}`;
 
+    server = new grpcService.default.ServiceClient(`https://${mp_domain}:7007`, null, null);
+
+    console.log(`https://${mp_domain}:7007`, '`https://${mp_domain}:7007`');
+    console.log(metadata.value, 'metadata');
+    console.log(header, 'header');
+    console.log(item, 'item');
+    console.log(item.cid, 'item');
+
+    let request = new Prox.default.ProxPinReq();
+    let pinRequest = new Prox.default.ProxPinRequest();
+    let pinPay = new Prox.default.ProxPinPay();
+
+    pinRequest.setCid(item.cid);
+    pinRequest.setStype(stype);
+    pinRequest.setExp(exp);
+    pinRequest.setPin(flag !== 'unpin');
+    pinRequest.setIsdir(item.isDir);
+    pinRequest.setKey(item.key);
+
+    pinPay.setCopied(0);
+    // pinPay.setTrxid("");
+
+    request.setRequest(pinRequest);
+    request.setHeader(header);
+    request.setPay(pinPay);
+    console.log(request, 'request');
+    return new Promise((resolve, reject) => {
+      server.pin(request, metadata.value, (err, response) => {
+        if (err) {
+          console.log('cloud-pin------err', err);
+          reject(false);
+          return;
+        }
+        resolve(true);
+        console.log(response);
+      });
+    });
+  };
   const ipfsPin = (item, stype, flag, exp = true) => {
     console.log(item, 'item');
     console.log(orderInfo.value, 'orderInfo.value');
@@ -452,5 +494,6 @@ export default function useShare(orderInfo, header, deviceType) {
     confirmShare,
     confirmHttpShare,
     getHttpShare,
+    cloudPin,
   };
 }

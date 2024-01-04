@@ -151,7 +151,10 @@
         showToast.fail(content);
         return reject(false);
       }
-
+      if (file[0].name == 'image.jpg') {
+        const timestamp = Date.now();
+        file[0].name = `image_${timestamp}.jpg`;
+      }
       const fileCopy = file[0];
       const d = { orderId: order_id.value };
       let merkleRes = await valid_upload(d);
