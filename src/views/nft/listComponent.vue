@@ -6,17 +6,31 @@
       </div>
     </div>
     <p v-if="hasMore" @click="emits('gotoMore')" class="show_more"> Show More </p>
-    <div class="img_list_box">
+    <div class="img_list_box" v-if="activeTab == 1">
       <div :class="['img_item', checkedItem.value.name == item.name ? 'isChecked' : '']" v-for="item in imgList" @click="itemClick(item)">
         <div class="img_box">
-          <img :src="item.imgUrl" alt="" />
+          <img :src="item.meta_image" alt="" />
         </div>
         <p class="item_name">
           {{ item.name }}
         </p>
         <p class="price_time">
-          <span>{{ item.price }}</span>
-          <span>{{ item.createTime }}</span>
+          <span>{{ item.cost }}</span>
+          <span>{{ item.createAt }}</span>
+        </p>
+      </div>
+    </div>
+    <div class="img_list_box" v-if="activeTab == 2">
+      <div :class="['img_item', checkedItem.value.name == item.name ? 'isChecked' : '']" v-for="item in contractList" @click="itemClick(item)">
+        <div class="img_box">
+          <img :src="item.meta_image" alt="" />
+        </div>
+        <p class="item_name">
+          {{ item.name }}
+        </p>
+        <p class="price_time">
+          <span>{{ item.cost }}</span>
+          <span>{{ item.createAt }}</span>
         </p>
       </div>
     </div>
@@ -52,13 +66,17 @@
       type: Array,
       default: () => [],
     },
+    contractList: {
+      type: Array,
+      default: () => [],
+    },
     chooseType: {
       type: String,
       default: '0', //0 no choose ,1 single,2 multiple
     },
   });
   const emits = defineEmits(['update:activeTab', 'itemClick', 'gotoMore']);
-  const { tabList, activeTab, hasMore, imgList, chooseType } = toRefs(props);
+  const { tabList, activeTab, hasMore, imgList, contractList, chooseType } = toRefs(props);
   const checkedItem = reactive({
     value: {},
   });

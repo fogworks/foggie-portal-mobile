@@ -59,7 +59,7 @@
   import { login, Captcha, check_email_register, user, generate_nonce, wallet_login, check_wallet, wallet_register } from '@/api';
   // import router from '@/router';
   import { useRouter } from 'vue-router';
-  import { reactive, ref } from 'vue';
+  import { reactive, ref, onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';

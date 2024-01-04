@@ -14,11 +14,11 @@
       <nut-cell
         class="not_amb"
         v-if="!userInfo.amb_promo_code || !cloudCodeIsBind"
-        title="Ambassador Invitation Code"
+        title="AGENT Invitation Code"
         desc="Unbound"
         @click="bindAmbCode"
       ></nut-cell>
-      <nut-cell v-else class="not_amb" title="Ambassador Invitation Code" :desc="userInfo.amb_promo_code"></nut-cell>
+      <nut-cell v-else class="not_amb" title="AGENT Invitation Code" :desc="userInfo.amb_promo_code"></nut-cell>
     </nut-cell-group>
     <nut-cell-group title="Linked MetaMask Wallet" class="info_title wallet_info">
       <nut-cell v-for="item in walletInfo" title="Address" :desc="item.address"></nut-cell>

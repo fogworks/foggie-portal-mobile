@@ -50,7 +50,7 @@
     <img src="@/assets/fog-works_w.png" style="height: 60px" alt="" srcset="">
 
 
-    <nut-input v-model="userBindAmbCode" placeholder="Please enter Ambassador Invitation Code" max-length="12"
+    <nut-input v-model="userBindAmbCode" placeholder="Please enter AGENT Invitation Code" max-length="12"
       min-length="12"></nut-input>
     <nut-checkbox v-model="isConfirm" class="isConfirmCheckbox" style="text-align: left;" icon-size="24">I understand the
       usage scenario of this
@@ -333,8 +333,8 @@ async function bindAmbCode() {
           };
           showDialog({
             title: 'Notice',
-            content: `Your application to join the Ambassador platform has been rejected  ${res2.result.fault ? 'with the reason:' + res2.result.fault : ''
-              }. you can change the Ambassador invitation code and try to join another Ambassador platform!`,
+            content: `Your application to join the AGENT platform has been rejected  ${res2.result.fault ? 'with the reason:' + res2.result.fault : ''
+              }. you can change the AGENT invitation code and try to join another AGENT platform!`,
             cancelText: 'Cancel',
             okText: 'Confirm',
             popClass: 'dialog_class',
@@ -370,9 +370,9 @@ async function bindAmbCode() {
         } else {
           userStore.setcurStepIndex(2)
           let src = require('@/assets/fog-works_w.png');
-          let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#535353;text-align:left;'>Awaiting approval from the Ambassador, please be patient until the approval is complete</p >`;
+          let str = `<img class="bind_img" src=${src} style="height:60px"/><p style='word-break:break-word;color:#535353;text-align:left;'>Awaiting approval from the AGENT, please be patient until the approval is complete</p >`;
           showDialog({
-            title: 'Ambassador Invitation Code',
+            title: 'AGENT Invitation Code',
             content: str,
             'no-ok-btn': true,
             'cancel-text': 'OK',

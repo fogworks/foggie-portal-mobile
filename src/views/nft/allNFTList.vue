@@ -32,31 +32,21 @@
   import { useRouter } from 'vue-router';
   import ListComponent from './listComponent.vue';
   import { showToast, showDialog } from '@nutui/nutui';
+  import { search_mint } from '@/api/index.ts';
+  import { useUserStore } from '@/store/modules/user';
+
+  const useStore = useUserStore();
+  const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
+
   const router = useRouter();
   const state = reactive({
     activeTab: 1, //1 nft, 2 inscription
     imgList: [
-      {
-        imgUrl: require('@/assets/banner1.svg'),
-        name: '001',
-        price: '0.6310',
-        createTime: '2023-12-20',
-      },
-      {
-        imgUrl: require('@/assets/DMC_Token1.png'),
-        name: '001',
-        price: '0.6310',
-        createTime: '2023-12-20',
-      },
     ],
     infoList: [
       {
-        text: 'Items',
-        value: 2140,
-      },
-      {
         text: 'Fog Drops',
-        value: 1140,
+        value: '',
       },
     ],
     seeType: false,
@@ -72,6 +62,29 @@
   };
   watch(activeTab, (val) => {
     console.log(val);
+  });
+  watch(walletInfo, (val) => {
+    init()
+  });
+  const init = async() => {
+    let arr = [];
+    if (!walletInfo || !walletInfo.value || walletInfo.value.length === 0) {
+      return;
+    }
+    for (let i = 0; i < walletInfo.value.length; i++) {
+      arr.push(walletInfo.value[i].address);
+    }
+    const d = {
+      account: arr,
+    };
+    const r = await search_mint(d);
+    if (r?.result?.data) {
+      imgList.value = r.result.data;
+      infoList.value[0].value = r.result.total;
+    }
+  };
+  onMounted(async () => {
+    init();
   });
 </script>
 

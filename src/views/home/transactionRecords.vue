@@ -10,7 +10,7 @@
             <p>{{ cloudBalance }}</p>
           </div>
         </nut-grid-item>
-        <nut-grid-item class="top_icon" text="Earnings" @click="router.push('/analysisCate?type=1')"
+        <nut-grid-item class="top_icon" text="Reward" @click="router.push('/analysisCate?type=1')"
           ><div>
             <IconIncome class="top_icon"></IconIncome>
             <p>{{ cloudIncome }}</p>
@@ -98,7 +98,7 @@
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
-    queryType: 'Earnings',
+    queryType: 'Reward',
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},

@@ -196,6 +196,11 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           changeOrigin: true,
           secure: false,
         },
+        '^/nft_scanner': {
+          target: 'http://154.31.41.124:9102',
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
     plugins: [

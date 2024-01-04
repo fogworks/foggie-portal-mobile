@@ -75,7 +75,7 @@
   } = useOrderList();
 
   const state = reactive({
-    queryType: 'Earnings',
+    queryType: 'Reward',
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
@@ -214,7 +214,7 @@
         queryType.value = 'Withdrawn';
         break;
       case '1':
-        queryType.value = 'Earnings';
+        queryType.value = 'Reward';
         break;
       case '2':
         queryType.value = 'Recharge';
@@ -235,7 +235,7 @@
         queryType.value = 'Withdrawn';
         break;
       case '1':
-        queryType.value = 'Earnings';
+        queryType.value = 'Reward';
         break;
       case '2':
         queryType.value = 'Recharge';

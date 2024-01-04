@@ -11,7 +11,7 @@ export const lang: langType = {
     shop: 'Buy Order',
     bind: '',
     empty: '',
-    analysis: 'Earnings Records',
+    analysis: 'Reward Records',
     transactionRecords: 'Transaction Records',
   },
   language: {

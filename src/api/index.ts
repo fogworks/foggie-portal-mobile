@@ -262,3 +262,22 @@ export const wallet_bind_uuid = (data: any) => {
     data,
   });
 };
+
+
+export const search_mint = (data: any) => {
+  let url = `${apiUrl}/nft_scanner/nft/search_mint`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+}
+
+export const search_deploy = (data: any) => {
+  let url = `${apiUrl}/nft_scanner/nft/search_deploy`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+}

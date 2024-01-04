@@ -239,7 +239,7 @@
               <img src="@/assets/ipfs.png" alt="" /> UN IPFS</li
             >
             <li v-if="!chooseItem.isDir && showActionBtn && chooseItem.category == 1 && isMobileOrder" @click="handlerClick('nft')"
-              ><IconNFT></IconNFT> Cast NFT</li
+              ><IconNFT></IconNFT> Mint NFT</li
             >
             <li v-if="isMobileOrder" @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
             <li v-if="isMobileOrder" @click="handlerClick('move')"><IconMove></IconMove> Move</li>
