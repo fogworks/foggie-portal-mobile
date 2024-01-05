@@ -281,3 +281,11 @@ export const search_deploy = (data: any) => {
     data,
   });
 }
+
+export const oauth_url = (data) => {
+  return request({
+    url: `${apiUrl}/api_accounts/accounts/oauth_url`,
+    method: 'POST',
+    data,
+  });
+}

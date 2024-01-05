@@ -36,10 +36,17 @@
         <span class="password_login" @click="router.push('/forget')"> Forgot password?</span>
         <span class="password_login" @click="router.push('/register')">create an account?</span>
       </div>
-      <div class="other_login_box" @click="loginWithMeta">
+      <!-- <div class="other_login_box" @click="loginWithMeta">
         <MetaMask></MetaMask>
         Sign In with MetaMask
+      </div> -->
+      <nut-divider :style="{ color: '#fff' }">Sign in with</nut-divider>
+      <div class="login-img">
+        <div class="img-metamask" @click="loginWithMeta"><MetaMask></MetaMask></div>
+        <img class="img-github" src="@/assets/github.png" @click="githubLogin" />
+        <img src="@/assets/google-logo.png" class="img-google" @click="googleLogin" />
       </div>
+
       <!-- <div v-if="!isMobileDevice" class="other_login_box" @click="loginWithUniSat">
         <img src="@/assets/svg/home/unisat.svg" alt="" />
         Sign In with UniSat 
@@ -56,7 +63,7 @@
   import detectEthereumProvider from '@metamask/detect-provider';
   import MetaMask from '~icons/home/metamask.svg';
   // import UniSat from '~icons/home/unisat.svg';
-  import { login, Captcha, check_email_register, user, generate_nonce, wallet_login, check_wallet, wallet_register } from '@/api';
+  import { login, Captcha, check_email_register, user, generate_nonce, wallet_login, check_wallet, wallet_register, oauth_url } from '@/api';
   // import router from '@/router';
   import { useRouter } from 'vue-router';
   import { reactive, ref, onMounted } from 'vue';
@@ -64,6 +71,10 @@
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
   import { load_gpa_token } from '@/utils/util.ts';
+  import { redirectUrl } from '@/setting.js';
+  import Cookies from "js-cookie";
+
+
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
@@ -387,7 +398,48 @@
       return false;
     }
   };
-  onMounted(async () => {});
+  const githubLogin = () => {
+    const data = {
+      redirect: redirectUrl,
+      state: {},
+      device_type: 1,
+      login_type: 0, 
+    }
+    oauth_url(data).then((res) => {
+      if (res?.data.redirect_url) {
+        window.location.href = res.data.redirect_url;
+      }
+    });
+  };
+  const googleLogin = () => {
+    const data = {
+      redirect: redirectUrl,
+      state: {},   
+      device_type: 1,
+      login_type: 1, 
+    }
+    oauth_url(data).then((res) => {
+      if (res?.data.redirect_url) {
+        console.log('-------google', res.data.redirect_url);
+        window.location.href = res.data.redirect_url;
+      }
+    });
+  };
+
+  onMounted(async () => {
+    setTimeout(()=> {
+      const access_token = Cookies.get('access_token');
+      const refresh_token = Cookies.get('refresh_token');
+      console.log('-----acc-ref', access_token, refresh_token)
+      if (access_token || refresh_token) {
+        const token = access_token || refresh_token;
+        userStore.setToken(`Bearer ${token}`);
+        userStore.setRefreshToken(`Bearer ${refresh_token}`);
+        router.push({ path: '/home' });
+      }
+    }, 100)
+
+  });
 </script>
 
 <style lang="scss">
@@ -449,4 +501,30 @@
       }
     }
   }
+  .login-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      margin: .5rem 1rem;
+      width: 2.5rem;
+      cursor: pointer;
+    }
+    .img-google {
+      box-sizing: border-box;
+      padding: .5rem;
+      background: #fff;
+      border-radius: 50%;
+    }
+    .img-metamask {
+      margin: .5rem 1rem;
+      width: 2.5rem;
+      cursor: pointer;
+      svg {
+        margin-top: 0.5rem;
+        width: 2.5rem;
+      }
+    }
+  }
+
 </style>
