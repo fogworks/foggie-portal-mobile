@@ -254,7 +254,13 @@ function syncPhotos(options) {
   });
 }
 const getType = (fileName) => {
-  if (fileName.endsWith('.jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.svg')) {
+  if (
+    fileName.endsWith('.jpeg') ||
+    fileName.endsWith('.jpg') ||
+    fileName.endsWith('.png') ||
+    fileName.endsWith('.svg') ||
+    fileName.endsWith('.gif')
+  ) {
     return 1;
   } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mp4')) {
     return 2;

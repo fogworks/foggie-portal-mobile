@@ -212,7 +212,7 @@
             :text-inside="true"
             size="large"
             status="active"
-            stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+            stroke-color="linear-gradient(135deg, #18191b 0%, #eeb40a 45%, rgb(113, 99, 76) 83%, #eaeef9 100%)"
             style="margin: 30px auto"
             class="confirmBuy_btn"
           >

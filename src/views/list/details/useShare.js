@@ -82,10 +82,6 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     server = new grpcService.default.ServiceClient(`https://${mp_domain}:7007`, null, null);
 
     console.log(`https://${mp_domain}:7007`, '`https://${mp_domain}:7007`');
-    console.log(metadata.value, 'metadata');
-    console.log(header, 'header');
-    console.log(item, 'item');
-    console.log(item.cid, 'item');
 
     let request = new Prox.default.ProxPinReq();
     let pinRequest = new Prox.default.ProxPinRequest();
@@ -147,11 +143,6 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
       foggieToken = orderInfo.value.sign;
     }
 
-    let token = orderInfo.value.upload_file_token;
-    if (deviceType.value != 3) {
-      token = foggieToken;
-    }
-
     let poolType = orderInfo.value.pool_type;
     let poolWalletAcc = orderInfo.value.pool_wallet_acc;
     if (device_type == 3) {
@@ -204,7 +195,8 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
       let foggie_id = orderInfo.value.foggie_id;
       // let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
       let httpStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/o/${item.cid}`;
-      let ipfsStr = item.cid ? `ipfs://${item.cid}` : '';
+      // let ipfsStr = item.cid ? `ipfs://${item.cid}` : '';
+      let ipfsStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${item.cid}`;
       shareRefContent.ipfsStr = ipfsStr;
       shareRefContent.httpStr = httpStr;
       if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
@@ -375,13 +367,13 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
         showToast.fail('File size exceeds 1% of the order space size, sharing is not supported');
       } else {
         if (!pinData.item.isPin) {
-          ipfsPin(pinData.item, 'ipfs', '', isMobileDevice.value ? periodValue.value[0] : periodValue.value);
+          cloudPin(pinData.item, 'ipfs', '', isMobileDevice.value ? periodValue.value[0] : periodValue.value);
           copyLink(shareRefContent.ipfsStr);
         }
       }
     } else {
       if (!pinData.item.isPin) {
-        ipfsPin(pinData.item, 'ipfs', '', isMobileDevice.value ? periodValue.value[0] : periodValue.value);
+        cloudPin(pinData.item, 'ipfs', '', isMobileDevice.value ? periodValue.value[0] : periodValue.value);
         copyLink(shareRefContent.ipfsStr);
       }
     }

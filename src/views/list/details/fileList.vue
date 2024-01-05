@@ -1159,7 +1159,7 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
-          //   console.log(transferData, 'transferData,transferData');
+          console.log(transferData, 'transferData,transferData');
           isError.value = false;
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
