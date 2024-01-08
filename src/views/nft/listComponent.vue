@@ -5,35 +5,55 @@
         {{ item }}
       </div>
     </div>
-    <p v-if="hasMore" @click="emits('gotoMore')" class="show_more"> Show More </p>
-    <div class="img_list_box" v-if="activeTab == 1">
-      <div :class="['img_item', checkedItem.value.name == item.name ? 'isChecked' : '']" v-for="item in imgList">
-        <div class="img_box">
-          <img :src="item.meta_image" alt="" />
+    <p v-if="isShowMore" @click="emits('gotoMore')" class="show_more"> Show More </p>
+    <nut-infinite-loading
+      v-if="activeTab == 1"
+      class="list_box"
+      load-more-txt="No more content"
+      :has-more="hasMoreNFT"
+      @load-more="nftLoadMoreFun"
+    >
+      <div class="img_list_box" >
+        <div :class="['img_item', checkedItem.value.name == item.name ? 'isChecked' : '']" v-for="item in imgList">
+          <div class="img_box">
+            <img :src="item.meta_image" alt="" />
+          </div>
+          <p class="item_name">
+            {{ item.name }}
+          </p>
+          <p class="price_time">
+            <span>{{ item.token_id }}</span>
+          </p>
+          <p class="price_time">
+            <span class="contract-link" @click="toContract(item.contract)">{{ contractLink(item.contract) }}</span>
+          </p>
         </div>
-        <p class="item_name">
-          {{ item.name }}
-        </p>
-        <p class="price_time">
-          <span>{{ item.cost }}</span>
-          <span>{{ item.createAt }}</span>
-        </p>
       </div>
-    </div>
-    <div class="img_list_box" v-if="activeTab == 2">
-      <div :class="['img_item', checkedItem.value.name == item.name ? 'isChecked' : '']" v-for="item in contractList">
-        <div class="img_box">
-          <img :src="item.meta_image" alt="" />
+    </nut-infinite-loading>
+    <nut-infinite-loading
+      v-if="activeTab == 2"
+      class="list_box"
+      load-more-txt="No more content"
+      :has-more="hasMoreContract"
+      @load-more="contractLoadMoreFun"
+    >
+      <div class="img_list_box">
+        <div :class="['img_item', checkedItem.value.name == item.name ? 'isChecked' : '']" v-for="item in contractList">
+          <div class="img_box">
+            <img :src="item.meta_image" alt="" />
+          </div>
+          <p class="item_name">
+            {{ item.name }}
+          </p>
+          <p class="price_time">
+            <span>{{ transferUTCTime(item.createdAt) }}</span>
+          </p>
+          <p class="price_time">
+            <span class="contract-link" @click="toContract(item.contract)">{{ contractLink(item.contract) }}</span>
+          </p>
         </div>
-        <p class="item_name">
-          {{ item.name }}
-        </p>
-        <p class="price_time">
-          <span>{{ item.cost }}</span>
-          <span>{{ item.createAt }}</span>
-        </p>
       </div>
-    </div>
+    </nut-infinite-loading>
     <div v-if="chooseType != 0" class="bottom_btn">
       <nut-button v-if="!checkedItem.value.name" block type="primary" @click="goToDapp">Mint New</nut-button>
       <nut-button v-else-if="checkedItem.value.name && activeTab == 2" block type="primary">Mint</nut-button>
@@ -46,12 +66,19 @@
   import { dappUrl } from '@/setting.js';
   import { useRouter } from 'vue-router';
   import { showToast } from '@nutui/nutui';
+  import { transferUTCTime } from '@/utils/util';
+  import { browserUrl } from '@/setting';
+  import { useUserStore } from '@/store/modules/user';
+  import { search_mint, search_deploy } from '@/api/index.ts';
+
+const useStore = useUserStore();
+const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
 
   const router = useRouter();
   const props = defineProps({
     tabList: {
       type: Array,
-      default: () => ['Mint List', 'Deploy List'],
+      default: () => ['NFT List', 'Contract List'],
     },
     activeTab: {
       type: [String, Number],
@@ -73,12 +100,80 @@
       type: String,
       default: '0', //0 no choose ,1 single,2 multiple
     },
+    nftTotal: {
+      type: Number,
+      default: 0,
+    },
+    contractTotal: {
+      type: Number,
+      default: 0,
+    },
+    isShowMore: {
+      type: Boolean,
+      default: false,
+    },
   });
-  const emits = defineEmits(['update:activeTab', 'itemClick', 'gotoMore']);
-  const { tabList, activeTab, hasMore, imgList, contractList, chooseType } = toRefs(props);
+  const emits = defineEmits(['update:activeTab', 'itemClick', 'gotoMore', 'loadImgList', 'loadcontractList']);
+  const { tabList, activeTab, hasMore, imgList, contractList, chooseType, nftTotal, contractTotal } = toRefs(props);
+
+
   const checkedItem = reactive({
     value: {},
   });
+  const nftPs = ref(10);
+  const nftPn = ref(1);
+  const contractPs = ref(10);
+  const contractPn = ref(1);
+  const hasMoreNFT = computed(() => {
+    console.log(nftTotal.value, nftPs.value, nftPn.value, imgList.value);
+    return nftTotal.value > nftPs.value * nftPn.value;
+  });
+  const hasMoreContract = computed(() => {
+    console.log('hasMoreContract------',contractTotal.value, contractPs.value, contractPn.value, contractList.value);
+    return contractTotal.value > contractPs.value * contractPn.value;
+  });
+  const nftLoadMoreFun = async () => {
+    console.log('---------nft');
+    nftPn.value++;
+    const arr = getWallet();
+    const d = {
+      account: arr,
+    };
+    const res = await search_mint(d, nftPs.value, nftPn.value);
+    if (res?.result?.data) {
+      
+      emits("loadImgList", res.result.data)
+      // nftList.value = nftList.value.concat(res.result.data);
+    }
+  };
+  const contractLoadMoreFun = async () => {
+    console.log('---------contract');
+    contractPn.value++;
+    const arr = getWallet();
+    const d = {
+      account: arr,
+    };
+    const res = await search_deploy(d, contractPs.value, contractPn.value);
+    if (res?.result?.data) {
+      console.log('---------contract');
+      emits("loadcontractList", res.result.data)
+    }
+  };
+
+  const getWallet = () => {
+    if (!walletInfo || !walletInfo.value || walletInfo.value.length === 0) {
+      return;
+    }
+    let arr = [];
+    for (let i = 0; i < walletInfo.value.length; i++) {
+      arr.push(walletInfo.value[i].address);
+    }
+    return arr;
+  };
+
+  const contractLink = (str) => {
+    return str.slice(0, 6) + "..." + str.slice(-4);
+  }
   const updateTab = (index) => {
     if (tabList.value[index] == 'Inscription List') {
       showToast.text('Coming Soon');
@@ -108,6 +203,9 @@
     } else {
       window.open(dappUrl);
     }
+  };
+  const toContract = (contract) => {
+    window.open(`${browserUrl}/address/${contract}`)
   };
 </script>
 
@@ -143,12 +241,14 @@
     justify-items: center;
     align-content: flex-start;
     grid-gap: 20px;
-    height: calc(100vh - 400px);
+    // height: calc(100vh - 400px);
+    height: 100vh;
+    padding-bottom: 4rem;
     overflow: auto;
     // margin: 0 30px;
     .img_item {
       width: 300px;
-      height: 400px;
+      height: 450px;
       padding: 10px;
       border-radius: 20px;
       overflow: hidden;
@@ -249,5 +349,9 @@
         }
       }
     }
+  }
+  .contract-link {
+    color: #8fc7ff;
+    cursor: pointer;
   }
 </style>

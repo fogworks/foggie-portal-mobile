@@ -264,8 +264,8 @@ export const wallet_bind_uuid = (data: any) => {
 };
 
 
-export const search_mint = (data: any) => {
-  let url = `${apiUrl}/nft_scanner/nft/search_mint`;
+export const search_mint = (data: any, ps: any, pn: any) => {
+  let url = `${apiUrl}/nft_scanner/nft/search_mint?ps=${ps}&pn=${pn}`;
   return request({
     url: url,
     method: 'POST',
@@ -273,8 +273,8 @@ export const search_mint = (data: any) => {
   });
 }
 
-export const search_deploy = (data: any) => {
-  let url = `${apiUrl}/nft_scanner/nft/search_deploy`;
+export const search_deploy = (data: any, ps: any, pn: any) => {
+  let url = `${apiUrl}/nft_scanner/nft/search_deploy?ps=${ps}&pn=${pn}`;
   return request({
     url: url,
     method: 'POST',

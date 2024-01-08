@@ -24,6 +24,9 @@
       v-model:activeTab="activeTab"
       :tabList="['NFT List', 'Inscription List']"
       :imgList="imgList"
+      :nftTotal="nftTotal"
+      :isShowMore="true"
+      @loadImgList="loadImgList"
     ></ListComponent>
   </div>
 </template>
@@ -41,8 +44,6 @@
   const router = useRouter();
   const state = reactive({
     activeTab: 1, //1 nft, 2 inscription
-    imgList: [
-    ],
     infoList: [
       {
         text: 'Fog Drops',
@@ -51,7 +52,8 @@
     ],
     seeType: false,
   });
-  const { seeType, activeTab, imgList, infoList } = toRefs(state);
+  const { seeType, activeTab, infoList } = toRefs(state);
+  const imgList = ref([]);
   const gotoMore = () => {
     if (activeTab.value == 1) {
       router.push({ name: 'NFTList' });
@@ -66,6 +68,7 @@
   watch(walletInfo, (val) => {
     init()
   });
+  const nftTotal = ref(0);
   const init = async() => {
     let arr = [];
     if (!walletInfo || !walletInfo.value || walletInfo.value.length === 0) {
@@ -77,11 +80,15 @@
     const d = {
       account: arr,
     };
-    const r = await search_mint(d);
+    const r = await search_mint(d, 10, 1);
     if (r?.result?.data) {
       imgList.value = r.result.data;
       infoList.value[0].value = r.result.total;
+      nftTotal.value = r.result.total;
     }
+  };
+  const loadImgList = (data) => {
+    imgList.value = imgList.value.concat(data);
   };
   onMounted(async () => {
     init();
