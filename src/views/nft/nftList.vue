@@ -1,9 +1,18 @@
 <template>
   <div class="page_box">
     <TopBack class="top_title" type="2"
-      ><span class="title">{{ activeTab == 1 ? 'Mint List' : 'Deploy List' }}</span></TopBack
+      ><span class="title">{{ activeTab == 1 ? 'NFT List' : 'Contract List' }}</span></TopBack
     >
-    <ListComponent v-model:activeTab="activeTab" chooseType="1" :imgList="imgList" :contractList="contractList"></ListComponent>
+    <ListComponent 
+      v-model:activeTab="activeTab" 
+      chooseType="1" 
+      :nftTotal="nftTotal"
+      :contractTotal="contractTotal"
+      :imgList="imgList" 
+      :contractList="contractList"
+      @loadcontractList="loadcontractList"
+      @loadImgList="loadImgList"
+      ></ListComponent>
   </div>
 </template>
 
@@ -24,10 +33,12 @@
   const router = useRouter();
   const state = reactive({
     activeTab: 1,
-    imgList: [],
     contractList: [],
   });
-  const { activeTab, imgList, contractList } = toRefs(state);
+  const { activeTab, contractList } = toRefs(state);
+  const imgList = ref([]);
+  const nftTotal = ref(0);
+  const contractTotal = ref(0);
 
   const init = async () => {
     let arr = [];
@@ -40,14 +51,22 @@
     const d = {
       account: arr,
     };
-    const res = await search_mint(d);
+    const res = await search_mint(d, 10, 1);
     if (res?.result?.data) {
       imgList.value = res.result.data;
+      nftTotal.value = res.result.total;
     }
-    const r = await search_deploy(d);
+    const r = await search_deploy(d, 10 ,1);
     if (r?.result?.data) {
       contractList.value = r.result.data;
+      contractTotal.value = r.result.total;
     }
+  };
+  const loadImgList = (data) => {
+    imgList.value = imgList.value.concat(data);
+  };
+  const loadcontractList = (data) => {
+    contractList.value = contractList.value.concat(data);
   };
   onMounted(() => {
     init();

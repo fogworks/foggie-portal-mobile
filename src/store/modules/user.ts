@@ -1,6 +1,7 @@
 // import { loginPassword } from '@/api';
 import { useCookies } from '@vueuse/integrations/useCookies';
 import { defineStore } from 'pinia';
+import Cookies from 'js-cookie';
 
 const { VITE_TOKEN_KEY } = import.meta.env;
 const token = useCookies().get(VITE_TOKEN_KEY as string);
@@ -78,6 +79,9 @@ export const useUserStore = defineStore({
       this.refreshToken = '';
       this.info = {};
       this.cloudCodeIsBind = false;
+      Cookies.remove('access_token');
+      Cookies.remove('refresh_token');
+
     },
     login(data) {
       return new Promise((resolve) => {
