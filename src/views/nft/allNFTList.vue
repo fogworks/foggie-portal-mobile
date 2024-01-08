@@ -41,8 +41,7 @@
   const router = useRouter();
   const state = reactive({
     activeTab: 1, //1 nft, 2 inscription
-    imgList: [
-    ],
+    imgList: [],
     infoList: [
       {
         text: 'Fog Drops',
@@ -64,9 +63,9 @@
     console.log(val);
   });
   watch(walletInfo, (val) => {
-    init()
+    init();
   });
-  const init = async() => {
+  const init = async () => {
     let arr = [];
     if (!walletInfo || !walletInfo.value || walletInfo.value.length === 0) {
       return;
@@ -90,8 +89,9 @@
 
 <style lang="scss" scoped>
   .page_box {
-    height: 100%;
+    // height: 100%;
     background: #fff;
+    padding-bottom: 5rem;
   }
   .top_img {
     position: relative;

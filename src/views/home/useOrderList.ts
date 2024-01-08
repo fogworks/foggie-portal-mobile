@@ -1,10 +1,13 @@
-import { search_cloud } from '@/api';
+import { search_cloud, get_order_sign } from '@/api';
 import { useOrderStore } from '@/store/modules/order';
 import { showToast } from '@nutui/nutui';
 import '@nutui/nutui/dist/packages/toast/style';
 import { transferUTCTimeDay } from '@/utils/util';
 import loadingImg from '@/components/loadingImg/index.vue';
 import { useUserStore } from '@/store/modules/user';
+import * as Prox from '@/pb/prox_pb.js';
+import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+import { poolUrl } from '@/setting.js';
 
 export default function useOrderList() {
   const shortcuts = {
@@ -54,7 +57,15 @@ export default function useOrderList() {
     total.value = 0;
     listData.value = [];
   };
-  const loadMore = async (order_state = null, start_time = '', end_time = '', buy_result = 'success', postData = {}, type) => {
+  const loadMore = async (
+    order_state = null,
+    start_time = '',
+    end_time = '',
+    buy_result = 'success',
+    postData = {},
+    type,
+    getUsedSpace = false,
+  ) => {
     // console.log(cloudCodeIsBind.value, 'cloudCodeIsBindcloudCodeIsBindcloudCodeIsBind');
 
     if (!cloudCodeIsBind.value) {
@@ -87,6 +98,9 @@ export default function useOrderList() {
         listData.value = [...listData.value, ...cloudList];
         infinityValue.value = false;
         isError.value = false;
+        if (getUsedSpace) {
+          getAllUsedSpace();
+        }
       })
       .catch(() => {
         // pn.value--;
@@ -95,6 +109,83 @@ export default function useOrderList() {
       .finally(() => {
         showToast.hide();
       });
+  };
+  const getAllUsedSpace = () => {
+    let foggieIdObject = {};
+    let rpcList = [];
+    let uuidList = [];
+    let bucketObject = {};
+    let peerIdObject = {};
+    listData.value.forEach((el) => {
+      if (rpcList.indexOf(el.rpc) == -1 && el.domain) {
+        rpcList.push(el.rpc);
+        uuidList.push(el.uuid);
+        bucketObject[el.rpc] = [];
+        bucketObject[el.rpc].push(el.domain);
+        foggieIdObject[el.rpc] = [];
+        foggieIdObject[el.rpc].push(el.foggie_id);
+        peerIdObject[el.rpc] = [];
+        peerIdObject[el.rpc].push(el.peer_id);
+      } else if (rpcList.indexOf(el.rpc) > -1 && el.domain) {
+        foggieIdObject[el.rpc].push(el.foggie_id);
+        peerIdObject[el.rpc].push(el.peer_id);
+      }
+    });
+    console.log();
+
+    rpcList.forEach(async (el, index) => {
+      let metadata = {};
+
+      let param = {
+        order_uuid: uuidList[index],
+      };
+      let header = new Prox.default.ProxHeader();
+      const signData = await get_order_sign(param);
+      header.setPeerid(peerIdObject[el][0]);
+      header.setId(foggieIdObject[el][0]);
+      let cur_token = signData?.result?.data?.sign;
+      const date = signData?.result?.data?.timestamp;
+      metadata = {
+        'X-Custom-Date': date,
+      };
+      header.setToken(cur_token);
+      console.log(metadata, 'metadata');
+
+      return new Promise((resolve, reject) => {
+        let server = new grpcService.default.ServiceClient(`https://${bucketObject[el][0]}.${poolUrl}:7007`, null, null);
+        let request = new Prox.default.ProxRequestSummaryIds();
+        request.setHeader(header);
+
+        request.setIdsList(foggieIdObject[el]);
+        console.log(request, 'request');
+
+        server.summaryInfo(request, metadata, (err, res) => {
+          if (err) {
+            console.log('errsummry------:', err);
+            // reject(false);
+            resolve(false);
+          } else {
+            const contentList = res.getContentsList().map((el) => {
+              return {
+                count: el.getCount(),
+                id: el.getId(),
+                total: el.getTotal(),
+              };
+            });
+            console.log('contentList', contentList);
+            contentList.forEach((el) => {
+              let target = listData.value.find((item) => item.foggie_id == el.id);
+              if (target) {
+                target.used_space = el.total;
+              }
+            });
+            // filesCount.value = contentList?.[0]?.count || 0;
+            // usedSize.value = contentList?.[0]?.total || 0;
+            resolve(contentList?.[0]?.total || 0);
+          }
+        });
+      });
+    });
   };
   return {
     isError,

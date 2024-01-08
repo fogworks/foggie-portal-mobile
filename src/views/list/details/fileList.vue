@@ -222,6 +222,11 @@
             <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
           </template>
         </nut-tabbar-item>
+        <nut-tabbar-item tab-title="Delete">
+          <template #icon="props">
+            <IconDelete :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDelete>
+          </template>
+        </nut-tabbar-item>
       </nut-tabbar>
     </Teleport>
 
@@ -244,6 +249,7 @@
             <li v-if="isMobileOrder" @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
             <li v-if="isMobileOrder" @click="handlerClick('move')"><IconMove></IconMove> Move</li>
             <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
+            <li v-if="isMobileOrder && showActionBtn" @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li>
           </ul>
           <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
         </div>
@@ -477,6 +483,7 @@
   import IconNFT from '~icons/material-symbols/cast';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
+  import IconDelete from '~icons/home/delete.svg';
   import IconTwitter from '~icons/home/twitter.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';
   import IconNewFolder from '~icons/home/new_folder.svg';
@@ -654,6 +661,7 @@
     },
     orderInfo,
     header,
+    metadata,
   );
 
   const selectArr = computed(() => {
@@ -1160,6 +1168,7 @@
             prefixpins: res.getPrefixpinsList(),
           };
           console.log(transferData, 'transferData,transferData');
+          console.log(res, 'res,res');
           isError.value = false;
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
@@ -1229,6 +1238,7 @@
       showToast.hide('file_list');
       return;
     }
+    console.log('data', data);
     if (data.err) {
       showToast.fail('Failed to  retrieve data. Please try again later');
     }
@@ -1251,9 +1261,11 @@
       }
 
       let cur_cid = '';
+      let isPin = false;
       for (let i = 0; i < data.prefixpins?.length; i++) {
-        if (data.prefixpins[i]?.prefix === name && data.prefixpins[i]?.cid) {
-          cur_cid = data.prefixpins[i].cid;
+        if (data.prefixpins[i]?.array[0] === name && data.prefixpins[i]?.array[1]) {
+          cur_cid = data.prefixpins[i].array[1];
+          isPin = data.prefixpins[i].array[2];
         }
       }
 
@@ -1288,6 +1300,7 @@
         share: {},
         isSystemImg: false,
         canShare: false,
+        isPin,
       };
       if (moveShow.value) {
         dirData.value.push(item);
@@ -1317,7 +1330,7 @@
       console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
 
       if (data.prefix) {
-        name = name.split(data.prefix)[1];
+        name = name.split(decodeURIComponent(data.prefix))[1];
       }
       if (name.indexOf('/') > 0) {
         if (isDir) {
@@ -1624,7 +1637,9 @@
       );
       if (dirFile === currentFolder && dirFileName !== uploadFileName) {
         console.log('弹框显示');
-        initSocketDialog();
+        if (detailShow.value) {
+          initSocketDialog();
+        }
         // window.sessionStorage.removeItem('uploadFileName');
       }
     };

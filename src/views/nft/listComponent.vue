@@ -34,7 +34,7 @@
         </p>
       </div>
     </div>
-    <div v-if="chooseType != 0" class="bottom_btn">
+    <div class="bottom_btn">
       <nut-button v-if="!checkedItem.value.name" block type="primary" @click="goToDapp">Mint New</nut-button>
       <nut-button v-else-if="checkedItem.value.name && activeTab == 2" block type="primary">Mint</nut-button>
       <nut-button v-else-if="checkedItem.value.name" block type="primary">Mint Again</nut-button>
@@ -190,6 +190,8 @@
     // bottom: 120px;
     position: fixed;
     bottom: 4rem;
+    left: 50%;
+    transform: translateX(-50%);
     width: calc(100% - 60px);
     margin: 0 auto;
   }
