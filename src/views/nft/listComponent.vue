@@ -10,6 +10,7 @@
       v-if="activeTab == 1"
       class="list_box"
       load-more-txt="No more content"
+      v-model="nftInfinityValue"
       :has-more="hasMoreNFT"
       @load-more="nftLoadMoreFun"
     >
@@ -34,6 +35,7 @@
       v-if="activeTab == 2"
       class="list_box"
       load-more-txt="No more content"
+      v-model="contractInfinityValue"
       :has-more="hasMoreContract"
       @load-more="contractLoadMoreFun"
     >
@@ -115,6 +117,8 @@ const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
   });
   const emits = defineEmits(['update:activeTab', 'itemClick', 'gotoMore', 'loadImgList', 'loadcontractList']);
   const { tabList, activeTab, hasMore, imgList, contractList, chooseType, nftTotal, contractTotal } = toRefs(props);
+  const nftInfinityValue = ref(false);
+  const contractInfinityValue = ref(false);
 
 
   const checkedItem = reactive({
@@ -125,11 +129,11 @@ const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
   const contractPs = ref(10);
   const contractPn = ref(1);
   const hasMoreNFT = computed(() => {
-    console.log(nftTotal.value, nftPs.value, nftPn.value, imgList.value);
+    nftInfinityValue.value = false;
     return nftTotal.value > nftPs.value * nftPn.value;
   });
   const hasMoreContract = computed(() => {
-    console.log('hasMoreContract------',contractTotal.value, contractPs.value, contractPn.value, contractList.value);
+    contractInfinityValue.value = false;
     return contractTotal.value > contractPs.value * contractPn.value;
   });
   const nftLoadMoreFun = async () => {
