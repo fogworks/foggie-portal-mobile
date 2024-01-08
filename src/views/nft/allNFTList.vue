@@ -66,7 +66,7 @@
     console.log(val);
   });
   watch(walletInfo, (val) => {
-    init()
+    init();
   });
   const nftTotal = ref(0);
   const init = async() => {
@@ -97,8 +97,9 @@
 
 <style lang="scss" scoped>
   .page_box {
-    height: 100%;
+    // height: 100%;
     background: #fff;
+    padding-bottom: 5rem;
   }
   .top_img {
     position: relative;

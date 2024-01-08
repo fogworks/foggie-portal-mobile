@@ -489,17 +489,17 @@
           arr = arr.concat(statusArr);
         }
         const uniqueArray = [...new Set(arr)];
-        loadMore(uniqueArray, '', '', '', postData);
+        loadMore(uniqueArray, '', '', '', postData, '', true);
       } else if (searchType.value == 'History') {
         let arr = [4, 5];
         if (statusArr.length > 0) {
           arr = arr.concat(statusArr);
         }
         const uniqueArray = [...new Set(arr)];
-        loadMore(uniqueArray, '', '', '', postData);
+        loadMore(uniqueArray, '', '', '', postData, '', true);
       } else {
         let arr = statusArr;
-        loadMore(arr, '', '', '', postData);
+        loadMore(arr, '', '', '', postData, '', true);
       }
       //   if (searchType.value == 'Open') {
       //     loadMore([0, 1, 2, 3, 6]);
@@ -525,17 +525,17 @@
             arr = arr.concat(statusArr);
           }
           const uniqueArray = [...new Set(arr)];
-          loadMore(uniqueArray, '', '', '', postData);
+          loadMore(uniqueArray, '', '', '', postData, 'search', true);
         } else if (searchType.value == 'History') {
           let arr = [4, 5];
           if (statusArr.length > 0) {
             arr = arr.concat(statusArr);
           }
           const uniqueArray = [...new Set(arr)];
-          loadMore(uniqueArray, '', '', '', postData);
+          loadMore(uniqueArray, '', '', '', postData, 'search', true);
         } else {
           let arr = statusArr;
-          loadMore(arr, '', '', '', postData);
+          loadMore(arr, '', '', '', postData, 'search', true);
         }
         // if (searchType.value == 'Open') {
         //   loadMore([0, 1, 2, 3, 6]);
@@ -560,14 +560,14 @@
         if (val == 'Open') {
           let arr = [0, 1, 2, 3, 6];
           searchForm.value.statusArr = [0, 1, 2, 3, 6];
-          loadMore(arr, '', '', '', postData);
+          loadMore(arr, '', '', '', postData, 'search', true);
         } else if (val == 'History') {
           let arr = [4, 5];
           searchForm.value.statusArr = arr;
-          loadMore(arr, '', '', '', postData);
+          loadMore(arr, '', '', '', postData, 'search', true);
         } else {
           let statusArr = searchForm.value.statusArr;
-          loadMore(statusArr, '', '', '', postData);
+          loadMore(statusArr, '', '', '', postData, 'search', true);
         }
         // if (val == 'Open') {
         //   loadMore([0, 1, 2, 3, 6]);

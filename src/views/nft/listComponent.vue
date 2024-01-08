@@ -290,6 +290,8 @@ const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
     // bottom: 120px;
     position: fixed;
     bottom: 4rem;
+    left: 50%;
+    transform: translateX(-50%);
     width: calc(100% - 60px);
     margin: 0 auto;
   }

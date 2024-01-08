@@ -17,6 +17,7 @@ message ProxHeader {
 	string peerId =1;
 	string Id = 2;
 	string token = 3;
+	string appType = 4;
 }
 
 message ProxStagePartRequest {
@@ -313,6 +314,7 @@ message ProxObject{
 message ProxPrefixPin{
 	string prefix=1;
 	string cid = 2;
+	bool isPin = 3;
 }
 message ProxListObjectsResp{
 	repeated string commonPrefixes =1;
@@ -468,6 +470,7 @@ service Service {
 	rpc Knowledge(ProxKNReq) returns (ProxKNResponse) {}
 	rpc GenerateCred(ProxCredRequest)returns(ProxCredResp){}
 	rpc ListCreds(ProxGetCredRequest)returns(ProxCredsList){}
+	rpc GenPinningCred(ProxGeneratePinCredRequest)returns(ProxGeneratePinCredResp){}
 	rpc DeleteCred(ProxCredRequest)returns(ProxCredResp){}
 }
 message ProxCred{
@@ -483,6 +486,12 @@ message ProxCredResp {
 }
 message ProxGetCredRequest{
 	ProxHeader header = 1;
+}
+message ProxGeneratePinCredRequest{
+	ProxHeader header = 1;
+}
+message ProxGeneratePinCredResp {
+	string cred = 1;
 }
 message ProxCredsList{
 	repeated ProxCred creds = 1;
