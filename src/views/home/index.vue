@@ -106,19 +106,17 @@
           >
           <nut-step
             title="Waiting for approval"
-            :content="
-              ambRefuse ? 'Your application has been rejected by the AGENT please reapply' : 'Your application has been approved.'
-            "
+            :content="ambRefuse ? 'Your application has been rejected by the AGENT please reapply' : 'Your application has been approved.'"
             >2</nut-step
           >
           <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
-          <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
+          <nut-step title="Purchase Order" content="We provide you with the most rewardable order for your purchase" @click="toBuyOrder"
             >3</nut-step
           >
           <nut-step
             @click="gotoOrderList"
-            title="Ops, you haven't made a profit yet"
-            content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you."
+            title="Ops, you haven't made a reward yet"
+            content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the reward for you."
             >4</nut-step
           >
         </nut-steps>
@@ -295,7 +293,7 @@
   const router = useRouter();
 
   const mapTypes = {
-    user_delivery_income: 'UserDeliveryIncome',
+    user_delivery_income: 'UserDeliveryReward',
     buy_order: 'Purchased Order',
     challenge: 'Order Challenge',
     arbitration: 'Order Arbitration',

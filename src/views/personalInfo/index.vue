@@ -9,8 +9,8 @@
     </nut-cell-group>
 
     <nut-cell-group title="Binding Information" class="info_title">
-      <nut-cell v-if="!userInfo.dmc" title="DMC Account" desc="Unbound" @click="openBindDMCDiaolg"></nut-cell>
-      <nut-cell v-else title="DMC Account" :desc="userInfo.dmc"></nut-cell>
+      <nut-cell v-if="!userInfo.dmc" title="Withdrawal account" desc="Unbound" @click="openBindDMCDiaolg"></nut-cell>
+      <nut-cell v-else title="Withdrawal account" :desc="userInfo.dmc"></nut-cell>
       <nut-cell
         class="not_amb"
         v-if="!userInfo.amb_promo_code || !cloudCodeIsBind"
@@ -22,7 +22,7 @@
     </nut-cell-group>
     <nut-cell-group title="Linked MetaMask Wallet" class="info_title wallet_info">
       <nut-cell v-for="item in walletInfo" title="Address" :desc="item.address"></nut-cell>
-      <div class="add_link_wallet" @click="showAllWalletList">Add</div>
+      <div class="add_link_wallet" @click="showAllWalletList"><MetaMask></MetaMask> Add</div>
     </nut-cell-group>
     <nut-dialog teleport="#app" title="Link Wallet" v-model:visible="showAccountList">
       <nut-radio-group v-model="choosedWallet" class="account_list">
@@ -46,6 +46,7 @@
 
 <script setup>
   import { inject } from 'vue';
+  import MetaMask from '~icons/home/metamask.svg';
   import { useUserStore } from '@/store/modules/user';
   import { useRouter } from 'vue-router';
   import useLinkAccounts from '@/views/login/useLinkAccount.ts';
@@ -132,6 +133,7 @@
   }
   .info_box {
     background: #f5f7fb;
+    padding-bottom: 5rem;
     :deep {
       .nut-cell__title {
         color: #000;
@@ -147,5 +149,10 @@
     text-align: center;
     color: $main-blue;
     cursor: pointer;
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      vertical-align: middle;
+    }
   }
 </style>

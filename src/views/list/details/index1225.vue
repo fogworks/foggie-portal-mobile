@@ -18,7 +18,7 @@
       <nut-row class="order-detail">
         <div class="main_detail_box">
           <div class="profit_box">
-            <div class="title">Profit</div>
+            <div class="title">Reward</div>
             <div class="value">+ {{ income }} DMC</div>
           </div>
           <div class="progress_box">

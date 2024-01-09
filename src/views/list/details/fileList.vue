@@ -143,9 +143,9 @@
           :id="[index == 0 ? 'list_item_1' : '']"
           v-for="(item, index) in tableData"
           :key="index"
-          @touchstart="touchRow(item, $event)"
-          @touchmove="touchmoveRow(item, $event)"
-          @touchend="touchendRow(item, $event)"
+          @pointerdown="touchRow(item, $event)"
+          @pointermove="touchmoveRow(item, $event)"
+          @pointerup="touchendRow(item, $event)"
         >
           <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
             <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
@@ -161,6 +161,10 @@
           <div class="name_box">
             <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
             <p>{{ item.date || '' }}</p>
+          </div>
+          <div @click.stop v-if="item.isPin" class="ipfs_info">
+            <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
+            <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2>
           </div>
           <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
         </div>
@@ -222,9 +226,9 @@
             <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
           </template>
         </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Delete">
+        <nut-tabbar-item tab-title="Delete" :class="[selectArr.length < 1 ? 'is-disable' : 'delete-item']">
           <template #icon="props">
-            <IconDelete :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDelete>
+            <IconDelete :color="selectArr.length ? 'red' : '#ffffff5c'"></IconDelete>
           </template>
         </nut-tabbar-item>
       </nut-tabbar>
@@ -249,7 +253,9 @@
             <li v-if="isMobileOrder" @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
             <li v-if="isMobileOrder" @click="handlerClick('move')"><IconMove></IconMove> Move</li>
             <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
-            <li v-if="isMobileOrder && showActionBtn" @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li>
+            <li class="delete_item" v-if="isMobileOrder && showActionBtn" @click="handlerClick('delete')"
+              ><IconDelete></IconDelete>Delete</li
+            >
           </ul>
           <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
         </div>
@@ -272,8 +278,15 @@
     >
       <div class="rename_box">
         <IconFolder></IconFolder>
-        <p v-if="!isNewFolder"> {{ chooseItem.name ? chooseItem.name.split('/')[0] : '' }}</p>
-        <nut-searchbar v-model="newName" :placeholder="isNewFolder ? 'Please Input Folder Name' : 'Please Input New Name'"></nut-searchbar>
+        <p v-if="!isNewFolder"> {{ chooseItem.name ? getOriginName(chooseItem.name.split('/')[0]) : '' }}</p>
+        <nut-searchbar
+          v-model="newName"
+          :placeholder="isNewFolder ? 'Please Input Folder Name' : getOriginName(chooseItem.name.split('/')[0])"
+        >
+          <template #rightin>
+            <span> {{ getEndName(chooseItem.name.split('/')[0]) }}</span>
+          </template>
+        </nut-searchbar>
         <nut-button type="info" block @click="confirmRename">Confirm</nut-button>
       </div>
     </nut-popup>
@@ -477,6 +490,7 @@
 
 <script setup lang="ts">
   import IconBucket from '~icons/home/bucket.svg';
+  import IconHttp2 from '~icons/home/http2.svg';
   import IconIPFS from '~icons/home/ipfs.svg';
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
@@ -636,6 +650,7 @@
     confirmHttpShare,
     getHttpShare,
     cloudPin,
+    copyIPFS,
   } = useShare(orderInfo, header, deviceType, metadata);
   const shareCheckData = computed(() => {
     return isCheckMode.value ? selectArr.value[0] : chooseItem.value;
@@ -698,6 +713,9 @@
     clearTimeout(timeOutEvent);
     if (event?.target?.nodeName == 'svg' || event?.target?.nodeName == 'path') {
       // showAction(row);
+      return false;
+    }
+    if (event?.target?.className == 'ipfs_img' || event?.target?.className == 'ipfs_info') {
       return false;
     }
     if (timeOutEvent != 0) {
@@ -831,6 +849,21 @@
     });
     // moveShow.value = false;
   };
+  const getOriginName = (name) => {
+    let arr = name.split('.');
+    if (arr.length > 1) {
+      arr.pop();
+    }
+    return arr.join('.');
+  };
+  const getEndName = (name) => {
+    let arr = name.split('.');
+    if (arr.length > 1) {
+      return '.' + arr[arr.length - 1];
+    } else {
+      return '';
+    }
+  };
   //rename
   const confirmRename = () => {
     if (!newName.value) {
@@ -853,6 +886,7 @@
           return encodeURIComponent(newName.value) + '/';
         }
       } else {
+        const endName = getEndName(checkData[0].name);
         const arr = checkData?.[0]?.fullName.split('/');
         if (checkData[0]?.type == 'application/x-directory') {
           if (newName.value[newName.value.length - 1] == '/') {
@@ -862,7 +896,7 @@
             arr.splice(arr.length - 2, 1, newName.value);
           }
         } else {
-          arr.splice(arr.length - 1, 1, newName.value);
+          arr.splice(arr.length - 1, 1, newName.value + endName);
         }
         return arr.join('/');
       }
@@ -1974,7 +2008,8 @@
       }
     }
     .name_box {
-      width: calc(100% - 180px);
+      width: calc(100% - 500px);
+      flex: 1;
       margin-left: 30px;
       p:first-child {
         white-space: nowrap;
@@ -1985,6 +2020,20 @@
         margin-top: 5px;
         color: #a7a7a7;
         font-size: 20px;
+      }
+    }
+    .ipfs_info {
+      display: flex;
+      align-items: center;
+      width: 300px;
+      height: 80px;
+      svg,
+      img {
+        object-fit: contain;
+        height: 2rem;
+        width: 2rem;
+        margin-left: 20px;
+        cursor: pointer;
       }
     }
     .right_more {
@@ -2019,6 +2068,14 @@
       :deep {
         .nut-tabbar-item_icon-box_nav-word {
           color: #ffffff5c;
+        }
+      }
+    }
+    .delete-item {
+      color: red;
+      :deep {
+        .nut-tabbar-item_icon-box_nav-word {
+          color: red;
         }
       }
     }
@@ -2127,7 +2184,10 @@
       padding: 0;
       margin: 0;
       li {
-        padding: 30px 20px;
+        padding: 20px 20px;
+        &:not(:last-child) {
+          border-bottom: 1px dotted #e5e5e5;
+        }
         svg,
         img {
           width: 40px;
@@ -2142,6 +2202,9 @@
       .is-disable {
         color: #ccc;
       }
+    }
+    .delete_item {
+      color: red;
     }
     .cancel_btn {
       padding: 20px;

@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="vip_order_choose">
-      <div class="vip_title">Choose Exclusive Product</div>
+      <div class="vip_title">Select size and period</div>
       <div class="img_list">
         <img src="@/assets/vipOrder.svg" @click="submit" />
         <img src="@/assets/customOrder.svg" class="customOrder" @click="showTop = true" />
@@ -34,7 +34,7 @@
         <span style="text-align: center; margin-bottom: 10px; color: #e5960f" class="price_box_text">
           100 GB = {{ middleTotalPrice }} DMC</span
         >
-        Estimated Annual Revenue: <br />
+        Estimated Annual Reward: <br />
         <span style="text-align: center; color: #e5960f" class="price_box_text">
           + {{ (perGoldenPSTIncome * 100).toFixed(0) }} DMC/<span>100 GB </span></span
         >
@@ -66,8 +66,8 @@
             <img src="@/assets/shopPeople.svg" />
           </div>
           <div class="vip_list_text">
-            <div class="vip_list_title">Higher Revenue</div>
-            <div class="vip_list_sub_title">Greater profit than before</div>
+            <div class="vip_list_title">Higher Reward</div>
+            <div class="vip_list_sub_title">Greater reward than before</div>
           </div>
         </div>
         <div class="vip_list_item">
@@ -101,7 +101,7 @@
           <p>{{ (perGoldenPSTIncome * 100).toFixed(0) }} DMC/100 GB</p>
         </div>
       </div>
-      <div class="title">Your orders will receive a higher amount of revenue.</div>
+      <div class="title">Your orders will receive a higher amount of Reward.</div>
     </div> -->
 
     <!-- <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading">Buy</nut-button> -->
@@ -109,7 +109,7 @@
     <Teleport to="body">
       <nut-popup position="top" :style="{ height: '480px' }" round v-model:visible="showTop">
         <nut-form class="query_form" :model-value="shopForm">
-          <div class="custom_order">Custom order</div>
+          <div class="custom_order">Custom</div>
           <nut-form-item label="Service Period">
             <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
               <nut-radio shape="button" :label="52">52 weeks</nut-radio>
@@ -1010,6 +1010,15 @@
       .nut-range-button .number {
         font-weight: 800;
         transform: translate3d(0, 100%, 0);
+      }
+      .nut-input-number {
+        user-select: none;
+        .nut-input-number__icon {
+          touch-action: manipulation;
+          svg {
+            --nut-inputnumber-icon-size: 2rem;
+          }
+        }
       }
 
       .nut-range-container {

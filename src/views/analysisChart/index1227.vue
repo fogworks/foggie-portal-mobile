@@ -14,7 +14,7 @@
                 <div class="question_tips" @click="dialogShow = true"><img src="@/assets/tips.svg" /></div>
               </div>
             </nut-grid-item>
-            <nut-grid-item class="top_icon" text="Profit" @click="router.push('/analysisCate?type=1')">
+            <nut-grid-item class="top_icon" text="Reward" @click="router.push('/analysisCate?type=1')">
               <div class="top_grid_item">
                 <IconIncome class="top_icon"></IconIncome>
                 <p class="banlance_text">{{ cloudIncome }}<Search2></Search2> </p>
@@ -34,8 +34,8 @@
     </div>
     <div class="analysis_assets_tab">
       <div class="segmented-control">
-        <input type="radio" name="radio2" value="3" id="tab-1" :checked="currentAssetsType === 'Profit'" />
-        <label for="tab-1" class="segmented-control__1"> <p>Profit</p></label>
+        <input type="radio" name="radio2" value="3" id="tab-1" :checked="currentAssetsType === 'Reward'" />
+        <label for="tab-1" class="segmented-control__1"> <p>Reward</p></label>
 
         <input type="radio" name="radio2" value="4" id="tab-2" :checked="currentAssetsType === 'Expenses'" />
         <label for="tab-2" class="segmented-control__2"> <p>Expenses</p></label>
@@ -126,7 +126,7 @@
   import { Type } from '@varlet/ui';
   import { showToast } from '@nutui/nutui';
   import useOrderList from '../home/useOrderList.ts';
-  const currentAssetsType = ref('Profit');
+  const currentAssetsType = ref('Reward');
 
   // import { useUserStore } from '@/store/modules/user';
   // const useStore = useUserStore();
@@ -267,7 +267,7 @@
           let data = res.result.data || {};
           chartOptions.value = {
             title: {
-              text: 'Miner Profit',
+              text: 'Miner Reward',
               textStyle: {
                 fontSize: '14px',
                 color: '#4c5093',
@@ -281,7 +281,7 @@
             },
             series: [
               {
-                name: 'Miner Profit',
+                name: 'Miner Reward',
                 type: 'pie',
                 radius: [10, 50],
                 center: ['50%', '50%'],
@@ -290,7 +290,7 @@
                   borderRadius: 1,
                 },
                 data: [
-                  { value: data?.income, name: 'Income' },
+                  { value: data?.income, name: 'Reward' },
                   { value: data?.withdraw, name: 'Withdraw' },
                   { value: data?.balance, name: 'Balance' },
                   { value: data?.Recharge, name: 'Recharge' },
@@ -451,7 +451,7 @@
               //     data: Object.values(dmcCount.value).map((item) => item.balance),
               //   },
               {
-                name: 'Income',
+                name: 'Reward',
                 type: 'line',
                 // miniBarWidth: 20,
                 yAxisIndex: 0,

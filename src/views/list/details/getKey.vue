@@ -4,39 +4,30 @@
       <TopBack>Generate Access keys</TopBack>
     </div>
     <div class="generateKey">
-      <div class="top_tips">
-        <div class="bucket_svg_box">
-          <img src="@/assets/bucket.svg" class="bucket_svg" />
-          <div class="right_keys">
-            <span class="key_title"> Amazon S3 Object storage </span>
-            <span class="how" @click="s3To">How to use S3 Browser?</span>
-            <span> Amazon S3 Object storage built specifically for retrieving any amount of data from any location. </span>
-            <span
-              >You can access S3 clients through a private key. Access address:
-              <span class="s3url1" @click="copyS3">
-                <span>{{ bucketName }}</span
-                >.{{ s3Url }}:9900
-              </span></span
-            >
-          </div>
-        </div>
-        <!-- <span class="how" @click="s3To">How to use S3 Browser?</span>
-        <p class="key_tips">
-          Amazon S3 Object storage built specifically for retrieving any amount of data from any location.
-          <span class="how" @click="s3To">How to use S3 Browser?</span>
-        </p>
-        <p class="key_tips"> You can access S3 clients through a private key. Access address: </p>
-        <span class="s3url" @click="copyS3">
-          <span>{{ bucketName }}</span
-          >.{{ s3Url }}:9900
-        </span>
-        <span class="how" @click="s3To">How to use S3 Browser?</span> -->
-        <p class="key_tips">After using the S3 tool to operate the data, it is necessary to manually submit a merkle once.</p>
+      <div class="top_tips2">
+        <!-- <span>
+          S3 EndPoint:
+          <span class="s3url1" @click="copyS3">
+            <span>{{ bucketName }}</span
+            >.{{ s3Url }}:9900
+          </span></span
+        >
+        <p>TLS: <nut-tag type="success"> True </nut-tag></p> -->
+        <nut-searchbar disabled :placeholder="`https://${bucketName}.${s3Url}:9900`">
+          <template #leftin> <Link></Link> </template>
+          <template #rightout>
+            <div @click="copyS3"> <IconCopy style="vertical-align: middle"></IconCopy> Copy</div>
+          </template>
+          <!-- <template #rightin>
+      <Search2 />
+    </template> -->
+        </nut-searchbar>
       </div>
 
       <div class="add_key_topBox">
-        <nut-button type="primary" class="add_key_top" @click="dynamicForm.methods.add">+</nut-button>
-        <span> Click to automatically generate Access Key and Secret Key for you.</span>
+        <nut-button type="primary" class="add_key_top" @click="dynamicForm.methods.add">
+          <IconAdd></IconAdd> Create an access key</nut-button
+        >
       </div>
       <nut-form class="key_form" :model-value="dynamicForm.state" ref="dynamicRefForm">
         <!-- <nut-form-item label="Access Key">
@@ -93,7 +84,40 @@
         Click the Add button to automatically generate Access Key and Secret Key for you.
       </p> -->
       <!-- <p class="key_tips s3_tips" v-if="!dynamicForm.state.tels.length"> Click to learn more about AWS S3. </p> -->
+      <div class="top_tips">
+        <div class="bucket_svg_box">
+          <img src="@/assets/bucket.svg" class="bucket_svg" />
+          <div class="right_keys">
+            <span class="key_title"> Amazon S3 Object storage </span>
+            <span class="how" @click="s3To">How to use S3 Browser?</span>
+            <div class="my_dialog_content" style="margin-top: 16px">
+              <div class="my_dialog_content_pText" style="text-indent: 20px; line-height: 18px">
+                S3 (Simple Storage Service) is a cloud storage service provided by Amazon Web Services (AWS). An S3 bucket is a container
+                for objects stored in S3. It's similar to a folder in a file system, and it can store an unlimited number of objects,
+                including data, images, videos, and documents.
+              </div>
+              <div class="my_dialog_content_pText" style="text-indent: 20px; line-height: 18px"
+                >They provide features for data protection, encryption, and access control. Overall, S3 buckets are a versatile and scalable
+                storage solution for a wide range of applications.</div
+              >
+            </div>
+          </div>
+        </div>
+        <!-- <span class="how" @click="s3To">How to use S3 Browser?</span>
+        <p class="key_tips">
+          Amazon S3 Object storage built specifically for retrieving any amount of data from any location.
+          <span class="how" @click="s3To">How to use S3 Browser?</span>
+        </p>
+        <p class="key_tips"> You can access S3 clients through a private key. Access address: </p>
+        <span class="s3url" @click="copyS3">
+          <span>{{ bucketName }}</span
+          >.{{ s3Url }}:9900
+        </span>
+        <span class="how" @click="s3To">How to use S3 Browser?</span> -->
+        <!-- <p class="key_tips">After using the S3 tool to operate the data, it is necessary to manually submit a merkle once.</p> -->
+      </div>
     </div>
+
     <!-- <nut-button type="primary" class="add_key" @click="dynamicForm.methods.add">+</nut-button> -->
     <!-- <nut-button type="primary" class="s3_key" @click="s3To">
       <template #icon>
@@ -104,9 +128,11 @@
 </template>
 
 <script setup lang="ts">
+  import { Link } from '@nutui/icons-vue';
   import IconCopy from '~icons/home/copy.svg';
   import { ref, reactive, onMounted } from 'vue';
   import eyeOffIon from '~icons/ion/eye-off';
+  import IconAdd from '~icons/gg/add';
   import keySolid from '~icons/teenyicons/key-solid';
   import { useRoute, useRouter } from 'vue-router';
   import eyeIon from '~icons/ion/eye';
@@ -460,6 +486,7 @@
     }
     .key_form {
       --nut-form-item-label-width: 100px;
+      min-height: 300px;
     }
     .secret_key {
       color: #5264f9;
@@ -526,7 +553,15 @@
     }
   }
   .top_tips {
+    margin-top: 2rem;
     background: #fff;
+  }
+  .top_tips2 {
+    background: #fff;
+    font-size: 0.8rem;
+    p {
+      padding: 5px 0;
+    }
   }
   .right_keys {
     padding: 20px;
@@ -566,14 +601,13 @@
     justify-content: start;
     padding-left: 20px;
     .add_key_top {
-      padding: 10px;
-      width: 80px;
-      height: 80px;
-      font-size: 80px;
-      border-radius: 50%;
+      svg {
+        vertical-align: sub;
+      }
     }
     span {
-      font-size: 18px;
+      display: inline-block;
+      font-size: 0.8rem;
     }
   }
 

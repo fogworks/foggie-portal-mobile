@@ -14,7 +14,7 @@
       :has-more="hasMoreNFT"
       @load-more="nftLoadMoreFun"
     >
-      <div class="img_list_box" >
+      <div class="img_list_box">
         <div :class="['img_item', checkedItem.value.name == item.name ? 'isChecked' : '']" v-for="item in imgList">
           <div class="img_box">
             <img :src="item.meta_image" alt="" />
@@ -56,7 +56,7 @@
         </div>
       </div>
     </nut-infinite-loading>
-    <div v-if="chooseType != 0" class="bottom_btn">
+    <div class="bottom_btn">
       <nut-button v-if="!checkedItem.value.name" block type="primary" @click="goToDapp">Mint New</nut-button>
       <nut-button v-else-if="checkedItem.value.name && activeTab == 2" block type="primary">Mint</nut-button>
       <nut-button v-else-if="checkedItem.value.name" block type="primary">Mint Again</nut-button>
@@ -73,8 +73,8 @@
   import { useUserStore } from '@/store/modules/user';
   import { search_mint, search_deploy } from '@/api/index.ts';
 
-const useStore = useUserStore();
-const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
+  const useStore = useUserStore();
+  const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
 
   const router = useRouter();
   const props = defineProps({
@@ -120,7 +120,6 @@ const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
   const nftInfinityValue = ref(false);
   const contractInfinityValue = ref(false);
 
-
   const checkedItem = reactive({
     value: {},
   });
@@ -145,8 +144,7 @@ const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
     };
     const res = await search_mint(d, nftPs.value, nftPn.value);
     if (res?.result?.data) {
-      
-      emits("loadImgList", res.result.data)
+      emits('loadImgList', res.result.data);
       // nftList.value = nftList.value.concat(res.result.data);
     }
   };
@@ -160,7 +158,7 @@ const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
     const res = await search_deploy(d, contractPs.value, contractPn.value);
     if (res?.result?.data) {
       console.log('---------contract');
-      emits("loadcontractList", res.result.data)
+      emits('loadcontractList', res.result.data);
     }
   };
 
@@ -176,8 +174,8 @@ const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
   };
 
   const contractLink = (str) => {
-    return str.slice(0, 6) + "..." + str.slice(-4);
-  }
+    return str.slice(0, 6) + '...' + str.slice(-4);
+  };
   const updateTab = (index) => {
     if (tabList.value[index] == 'Inscription List') {
       showToast.text('Coming Soon');
@@ -209,7 +207,7 @@ const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
     }
   };
   const toContract = (contract) => {
-    window.open(`${browserUrl}/address/${contract}`)
+    window.open(`${browserUrl}/address/${contract}`);
   };
 </script>
 

@@ -64,7 +64,7 @@
     activeNames: '',
   });
   const mapTypes = {
-    user_delivery_income: 'UserDeliveryIncome',
+    user_delivery_income: 'UserDeliveryReward',
     buy_order: 'Purchased Order',
     challenge: 'Order Challenge',
     arbitration: 'Order Arbitration',

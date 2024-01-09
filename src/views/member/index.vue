@@ -33,7 +33,7 @@
           </div>
         </div> -->
         <div>
-          <div class="key">Profit</div>
+          <div class="key">Reward</div>
           <div class="value" @click="gotoDetail('/assetsInfo')">
             <span style="font-size: 18px">{{ money.income.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.income.decimalPart }}</span>

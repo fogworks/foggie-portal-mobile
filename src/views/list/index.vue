@@ -201,7 +201,7 @@
           <nut-form-item label="">
             <nut-radio-group direction="horizontal" v-model="searchForm.priceType" @change="changePrice">
               <nut-radio label="purchase">Purchase Price Range</nut-radio>
-              <nut-radio label="income">Income Range</nut-radio>
+              <nut-radio label="income">Reward Range</nut-radio>
             </nut-radio-group>
           </nut-form-item>
           <nut-form-item label="" direction="horizontal" class="range_number">
@@ -287,7 +287,7 @@
       sortTypeOptions: [
         { text: 'Payment Time', value: 'created_at' },
         { text: 'Expiration Time', value: 'expire' },
-        { text: 'Revenue Price', value: 'profit' },
+        { text: 'Reward Price', value: 'Reward' },
         { text: 'Purchase Price', value: 'total_price' },
       ],
       sortTypeOptions1: [

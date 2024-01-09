@@ -14,7 +14,7 @@
                 <div class="question_tips"><img src="@/assets/tips.svg" /></div>
               </div>
             </nut-grid-item>
-            <nut-grid-item class="top_icon" text="Profit" @click="dialogShow = true">
+            <nut-grid-item class="top_icon" text="Reward" @click="dialogShow = true">
               <div class="top_grid_item">
                 <IconIncome class="top_icon"></IconIncome>
                 <p class="banlance_text2"
@@ -74,7 +74,7 @@
       </div>
       <div v-if="_listData.length">
         <div class="order_profit_title"
-          >Order Profit List <span>({{ queryParmas[0] }}-{{ queryParmas[1] }})</span></div
+          >Order Reward List <span>({{ queryParmas[0] }}-{{ queryParmas[1] }})</span></div
         >
         <nut-infinite-loading v-if="listData.length" class="list_box" load-more-txt="No more content" :has-more="false">
           <div class="list_item" v-for="(item, index) in listData">
@@ -111,11 +111,11 @@
           <div class="my_dialog_content_p" style="font-weight: bold">Balance</div>
 
           <div class="my_dialog_content_p my_dialog_content_pText">
-            Statistics your available balance within a certain time range.(Balance = Profit - Expenses).</div
+            Statistics your available balance within a certain time range.(Balance = Reward - Expenses).</div
           >
-          <div class="my_dialog_content_p" style="font-weight: bold"> Profit</div>
+          <div class="my_dialog_content_p" style="font-weight: bold"> Reward</div>
           <div class="my_dialog_content_p my_dialog_content_pText">
-            Statistics for you the total income brought by all your orders within a certain time range</div
+            Statistics for you the total reward brought by all your orders within a certain time range</div
           >
 
           <div class="my_dialog_content_p" style="font-weight: bold"> Expenses</div>
@@ -148,13 +148,16 @@
   import { Type } from '@varlet/ui';
   import { showToast } from '@nutui/nutui';
   import useOrderList from '../home/useOrderList.ts';
-  const currentAssetsType = ref('Profit');
+  import { useUserStore } from '@/store/modules/user';
+
+  const currentAssetsType = ref('Reward');
 
   // import { useUserStore } from '@/store/modules/user';
   // const useStore = useUserStore();
   const route = useRoute();
   const router = useRouter();
-
+  const userStore = useUserStore();
+  const userCreatedAt = computed(() => userStore.getUserInfo.created_at);
   const state = reactive({
     queryType: 'Reward',
     queryTypeValue: [],
@@ -164,7 +167,7 @@
     chartOptions0: {},
     chartOptions1: {},
     chartOptions2: {},
-    timeType: 'All',
+    timeType: '',
 
     earnListData: [],
     _listData: [],
@@ -177,6 +180,15 @@
   const dmcCount = ref({});
   const { shortcuts } = useOrderList();
   watch(
+    userCreatedAt,
+    (val) => {
+      if (val) {
+        timeType.value = 'All';
+      }
+    },
+    { deep: true, immediate: true },
+  );
+  watch(
     timeType,
     (newValue) => {
       let params = {
@@ -184,18 +196,38 @@
       };
 
       if (newValue == 'All') {
-        let year = moment().format('YYYY');
-        for (let index = 1; index <= 12; index++) {
-          const nowMonth = new Date().getMonth() + 1;
-          if (index > nowMonth) {
-            break;
-          }
+        if (!userCreatedAt.value) return false;
+        let startDate = moment(userCreatedAt.value);
+        // 当前日期
+        let currentDate = moment();
+
+        // 初始化参数对象，用于存储查询时间
+
+        // 从起始日期开始遍历，直到当前日期
+        while (startDate.isBefore(currentDate, 'month') || startDate.isSame(currentDate, 'month')) {
           // 获取指定年月的第一天
-          const firstDayOfMonth = moment(`${year}-${index}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD');
+          let firstDayOfMonth = startDate.clone().startOf('month').format('YYYY-MM-DD');
           // 获取该月的最后一天
-          const lastDayOfMonth = moment(`${year}-${index}`, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
+          let lastDayOfMonth = startDate.clone().endOf('month').format('YYYY-MM-DD');
+          // 将时间范围添加到参数中
           params.query_time.push({ start_time: firstDayOfMonth, end_time: lastDayOfMonth });
+
+          // 移动到下一个月
+          startDate.add(1, 'months');
         }
+
+        // let year = moment().format('YYYY');
+        // for (let index = 1; index <= 12; index++) {
+        //   const nowMonth = new Date().getMonth() + 1;
+        //   if (index > nowMonth) {
+        //     break;
+        //   }
+        //   // 获取指定年月的第一天
+        //   const firstDayOfMonth = moment(`${year}-${index}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD');
+        //   // 获取该月的最后一天
+        //   const lastDayOfMonth = moment(`${year}-${index}`, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
+        //   params.query_time.push({ start_time: firstDayOfMonth, end_time: lastDayOfMonth });
+        // }
         // console.log(params.query_time, 'params.query_time');
       } else if (newValue == '3Months') {
         // let year_month = moment().subtract(2, 'month').format('YYYY-MM');
@@ -258,7 +290,9 @@
         const yesterday = moment().add(1, 'days').format('YYYY-MM-DD');
         params.query_time.push({ start_time: today, end_time: yesterday });
       }
-      queryParmas.value = [params.query_time[0].start_time, params.query_time[params.query_time.length - 1].start_time];
+      console.log(params.query_time);
+
+      queryParmas.value = [params.query_time?.[0]?.start_time, params.query_time?.[params.query_time.length - 1]?.start_time];
       loadUserDmc();
       loadSearchUserAssetCount(params);
       searchOrderProfit(newValue);
@@ -307,7 +341,7 @@
             },
             series: [
               {
-                name: 'Miner Profit',
+                name: 'Miner Reward',
                 type: 'pie',
                 radius: [10, 50],
                 center: ['50%', '50%'],
@@ -316,10 +350,10 @@
                   borderRadius: 1,
                 },
                 data: [
-                  { value: data?.income, name: 'Profit' },
-                  { value: data?.withdraw, name: 'Withdraw' },
-                  { value: data?.balance, name: 'Balance' },
-                  { value: data?.Recharge, name: 'Recharge' },
+                  { value: data?.income.toFixed(4), name: 'Reward' },
+                  { value: data?.withdraw.toFixed(4), name: 'Withdraw' },
+                  { value: data?.balance.toFixed(4), name: 'Balance' },
+                  { value: data?.Recharge.toFixed(4), name: 'Recharge' },
                 ],
               },
             ],
@@ -345,7 +379,7 @@
           chartOptions0.value = {
             backgroundColor: '#fff',
             title: {
-              text: `Profit Analysis`,
+              text: `Reward Analysis`,
               textStyle: {
                 fontSize: '14px',
                 color: '#4c5093',
@@ -441,7 +475,7 @@
             series: [
               {
                 areaStyle: {},
-                name: 'Income',
+                name: 'Reward',
                 type: 'line',
                 zlevel: 11,
                 yAxisIndex: 0, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
@@ -799,7 +833,7 @@
     _listData.value = listData.value.filter((el) => el.profit > 0);
     const dateList = _listData.value.map((el) => 'Order: ' + el.order_id);
     const valueList = _listData.value.map((el) => el.profit);
-    orderChartOption.value = barOption(dateList, valueList, 'Bucket Profit Analysis');
+    orderChartOption.value = barOption(dateList, valueList, 'Bucket Reward Analysis');
     orderChartOption.value.xAxis[0].show = true;
     orderChartOption.value.grid[0] = {
       left: '30px',
@@ -812,7 +846,7 @@
         type: 'shadow',
       },
       formatter: function (params) {
-        return params[0].axisValueLabel + '<br/>' + 'Profit' + ' : + ' + params[0].data + ' DMC';
+        return params[0].axisValueLabel + '<br/>' + 'Reward' + ' : + ' + params[0].data + ' DMC';
       },
     };
   };

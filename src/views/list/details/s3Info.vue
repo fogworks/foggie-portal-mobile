@@ -52,7 +52,7 @@
   .recharge_info {
     width: 100%;
     padding: 20px;
-    padding-bottom: 40px;
+    padding-bottom: 5rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;

@@ -18,7 +18,7 @@
       <nut-row class="order-detail">
         <div class="main_detail_box">
           <div class="profit_box">
-            <div class="title">Miner Profit</div>
+            <div class="title">Miner Reward</div>
             <div class="value">+ {{ income }} DMC</div>
           </div>
           <div class="progress_box">
@@ -34,15 +34,15 @@
           <nut-col :span="12" class="order-count left_count" v-if="showText">
             <nut-cell>
               <IconMdiF color="#9F9BEF" />
-              File:{{ filesCount }}
+              File:<span>{{ filesCount }}</span>
             </nut-cell>
             <nut-cell>
               <IconSpace color="#7F7AE9" />
-              Space: {{ getfilesize(orderInfo.value.total_space, 'B') }}
+              Space: <span>{{ getfilesize(orderInfo.value.total_space, 'B') }}</span>
             </nut-cell>
             <nut-cell>
               <IconRiPie color="#7F7AE9" />
-              Used: {{ getfilesize(usedSize, 'B') }}
+              Used: <span> {{ getfilesize(usedSize, 'B') }}</span>
             </nut-cell>
             <nut-cell>
               <Order />
@@ -112,17 +112,14 @@
       <div class="today_file">
         <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
         <!-- <span class="see_all" @click="syncPhotos">Sync Photos {{ syncImgList.length }}</span> -->
-        <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })"
-          >See All ></span
-        >
       </div>
       <ErrorPage v-if="isError" @refresh="getFileList"></ErrorPage>
-      <nut-infinite-loading load-more-txt="No more content" v-else-if="tableData.length" :has-more="false" class="file_list">
+      <!-- <nut-infinite-loading load-more-txt="No more content" v-else-if="tableData.length" :has-more="false" class="file_list">
         <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
           <div :class="['left_icon_box']">
-            <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+          
             <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-            <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
+          
             <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
 
             <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
@@ -133,8 +130,31 @@
             <p>{{ item.date || '' }}</p>
           </div>
         </div>
-      </nut-infinite-loading>
+      </nut-infinite-loading> -->
+      <template v-else-if="tableData.length">
+        <div class="file_list file_list_img">
+          <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
+            <img :src="item.imgUrl" alt="" />
+          </div>
+        </div>
+        <div class="file_list">
+          <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
+            <div :class="['left_icon_box']">
+              <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+              <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+              <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
+              <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+
+              <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
+              <img v-else src="@/assets/svg/home/file.svg" alt="" />
+            </div>
+            <p>{{ item.name }}</p>
+          </div>
+        </div>
+        <p class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></p>
+      </template>
       <nut-empty v-else style="padding: 10px 0 50px 0" description="No data,Go ahead and upload it." image="error"> </nut-empty>
+
       <Teleport to="body">
         <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
           <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
@@ -352,6 +372,9 @@
             storage solution for a wide range of applications.</div
           >
         </div>
+        <div class="my_dialog_title">
+          <nut-button type="primary" @click="getKey">S3 Endpoint</nut-button>
+        </div>
       </div>
     </BasicModal>
   </div>
@@ -492,6 +515,8 @@
   const showCreateName = ref<boolean>(true);
   const newBucketName = ref<string>('');
   const tableData = ref<array>([]);
+  const imgData = ref([]);
+  const otherData = ref([]);
   const tableLoading = ref<boolean>(false);
   const isDisabled = ref<boolean>(false);
   const btnLoading = ref<boolean>(false);
@@ -517,6 +542,23 @@
   });
 
   let merkleTimeOut;
+  watch(
+    tableData,
+    (val) => {
+      if (val.length) {
+        imgData.value = [];
+        otherData.value = [];
+        val.forEach((el) => {
+          if (el.category == 1) {
+            imgData.value.push(el);
+          } else {
+            otherData.value.push(el);
+          }
+        });
+      }
+    },
+    { deep: true },
+  );
   const getMerkleState = (timeout = true) => {
     const d = {
       orderId: order_id.value,
@@ -1129,7 +1171,7 @@
     listObject.setPrefix('');
     listObject.setDelimiter('');
     listObject.setEncodingType('');
-    listObject.setMaxKeys(5);
+    listObject.setMaxKeys(20);
     listObject.setStartAfter('');
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
@@ -1748,7 +1790,10 @@
         margin: 0px 0;
         padding: 13px 10px 13px 52px;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        span {
+          color: #ff7b1d;
+        }
       }
 
       svg {
@@ -1773,6 +1818,7 @@
     height: 100%;
     padding: 20px;
     margin-top: -60px;
+    padding-bottom: 5rem;
     // background: #fff;
     border-radius: 40px 40px 0 0;
     z-index: 99;
@@ -1965,6 +2011,9 @@
     }
 
     .file_list {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 0.5rem;
       margin-top: 20px;
       background: #fff;
       border-radius: 16px;
@@ -1972,10 +2021,15 @@
 
     .list_item {
       display: flex;
+      flex-direction: column;
       justify-content: flex-start;
       align-items: center;
       padding: 20px;
       border-top: 1px solid #eee;
+      img {
+        width: 80px;
+        height: 80px;
+      }
 
       &:active {
         background: #cde3f5;
@@ -1984,16 +2038,6 @@
       .type_icon {
         width: 80px;
         height: 80px;
-      }
-
-      .left_icon_box {
-        width: 80px;
-        height: 80px;
-
-        img {
-          width: 80px;
-          height: 80px;
-        }
       }
 
       .name_box {
@@ -2018,6 +2062,14 @@
         height: 50px;
         color: #ccc;
       }
+    }
+    .see_all {
+      margin-top: 1rem;
+      color: #5460fe;
+      font-size: 30px;
+      text-align: center;
+      cursor: pointer;
+      // text-decoration: underline;
     }
 
     .top_grid {
@@ -2110,43 +2162,6 @@
 
       .nut-button {
         margin-top: 40px;
-      }
-    }
-  }
-
-  .move_box {
-    .top_back {
-      margin-bottom: 10px;
-
-      p {
-        margin: 0 5px;
-        color: #000;
-      }
-    }
-
-    .file_list {
-      height: 950px;
-      overflow-y: auto;
-
-      .list_item {
-        width: 100%;
-      }
-
-      .left_icon_box {
-        width: 80px;
-        height: 80px;
-
-        svg {
-          width: 100px;
-          height: 100px;
-        }
-      }
-
-      .name_box {
-        p {
-          text-align: right;
-          margin: 0;
-        }
       }
     }
   }
@@ -2352,6 +2367,7 @@
       padding: 20px;
       margin-top: -40px;
       border-radius: 40px 40px 0 0;
+      padding-bottom: 5rem;
 
       .type_check_box {
         float: left;
@@ -2567,47 +2583,7 @@
         }
       }
     }
-    .move_box {
-      :deep {
-        .nut-cell {
-          padding: 10px;
-          --nut-cell-title-font: 1.5rem;
-        }
-      }
-      .top_back {
-        margin-bottom: 10px;
-        p {
-          margin: 0 5px;
-          font-size: 2rem;
-        }
-      }
-      .file_list {
-        height: 600px;
-        overflow-y: auto;
-        .list_item {
-          width: 100%;
-          box-sizing: border-box;
-        }
-        .left_icon_box {
-          width: 80px;
-          height: 80px;
-          svg {
-            width: 80px;
-            height: 80px;
-          }
-        }
-        .name_box {
-          p {
-            text-align: right;
-            margin: 0;
-            font-size: 30px;
-          }
-        }
-      }
-      .nut-button {
-        --nut-button-default-font-size: 1rem;
-      }
-    }
+
     .share_info_box {
       margin-top: 30px;
       margin: 30px 120px 0;

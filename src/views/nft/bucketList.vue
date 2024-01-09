@@ -1,14 +1,12 @@
 <template>
   <div class="page_box">
-    <TopBack class="top_title" type="2"
-      ><span class="title">Bucket List</span>
-      <uploadSet #right></uploadSet>
-    </TopBack>
-    <span class="sub_title">Choose your Bucket</span>
+    <TopBack class="top_title" type="2"><span class="title">Bucket List</span> </TopBack>
     <div>
       <nut-searchbar v-model="keyWord" placeholder="Search by order number" clearable class="my_top_search">
         <Search #leftin />
       </nut-searchbar>
+      <span class="sub_title">Choose your Bucket</span>
+
       <div class="total_tag">
         <nut-tag>{{ total }}</nut-tag> Buckets
       </div>
@@ -97,8 +95,9 @@
     font-weight: 700;
   }
   .sub_title {
+    display: block;
     margin-left: 10px;
-    margin-top: 10px;
+    margin-bottom: 10px;
   }
   .total_tag {
     font-weight: 600;
@@ -111,13 +110,16 @@
       }
     }
   }
+  .my_top_search {
+    padding: 10px 0;
+  }
   .bucket_box {
     height: calc(100vh - 390px);
     overflow: auto;
     :deep {
       .nut-infinite__container {
         display: flex;
-        justify-content: space-evenly;
+        justify-content: space-between;
         align-items: flex-start;
         flex-wrap: wrap;
       }
@@ -141,6 +143,7 @@
     .my_top_search {
       --nut-searchbar-input-height: 50px;
       --nut-searchbar-padding: 10px;
+      padding: 10px 0;
       :deep {
         .nut-searchbar__search-input .nut-searchbar__iptleft-search-icon {
           width: 30px;

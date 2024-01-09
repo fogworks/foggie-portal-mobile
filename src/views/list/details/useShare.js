@@ -195,9 +195,10 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
       let foggie_id = orderInfo.value.foggie_id;
       // let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
       let httpStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/o/${item.cid}`;
-      // let ipfsStr = item.cid ? `ipfs://${item.cid}` : '';
+      let ipfsStr2 = item.cid ? `ipfs://${item.cid}` : '';
       let ipfsStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${item.cid}`;
       shareRefContent.ipfsStr = ipfsStr;
+      shareRefContent.ipfsStr2 = ipfsStr2;
       shareRefContent.httpStr = httpStr;
       if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
         shareRefContent.ipfsStr = '';
@@ -405,6 +406,15 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
       window.open(`https://drops.fogworks.io/personal/#/create/${encodeURIComponent(shareRefContent.httpStr)}`);
     }
   };
+  const copyIPFS = (type, item) => {
+    let ipfsStr2 = item.cid ? `ipfs://${item.cid}` : '';
+    let ipfsStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${item.cid}`;
+    if (type == 'ipfs') {
+      copyLink(ipfsStr2);
+    } else {
+      copyLink(ipfsStr);
+    }
+  };
   watch(
     isReady,
     (val) => {
@@ -500,5 +510,6 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     confirmHttpShare,
     getHttpShare,
     cloudPin,
+    copyIPFS,
   };
 }

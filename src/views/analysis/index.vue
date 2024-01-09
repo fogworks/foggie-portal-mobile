@@ -2,7 +2,7 @@
   <div class="analysis_content">
     <div class="top_box">
       <TopBack>
-        Miner profit
+        Miner Reward
         <template #right>
           <div class="right" @click.stop="openTipsPopup"> <Ask color="#64B592" /></div>
         </template>
@@ -71,7 +71,7 @@
               >+ {{ formatNumber(item.profit)?.integerPart
               }}<span style="font-size: 13px">.{{ formatNumber(item.profit)?.decimalPart }}</span></span
             >
-            <span v-else style="font-size: 13px">No revenue at present</span>
+            <span v-else style="font-size: 13px">No reward at present</span>
           </span>
         </div>
         <!-- <div
@@ -90,16 +90,14 @@
         </ul>
         <h4>Reward</h4>
         <ul>
-          <li>Order Revenue </li>
+          <li>Order Reward </li>
           <li>User Recharge</li>
           <li>Cancellation Refund</li>
           <li>Where orders are awarded a certain amount of DMC per cycle after the merkle is reached</li>
-          
         </ul>
         <h4>Expense</h4>
         <ul>
           <li>User expenses include purchase orders and withdrawals</li>
-  
         </ul>
       </div>
 
@@ -435,7 +433,7 @@
 </style>
 <style lang="scss">
   .TipsPopup {
-    h4{
+    h4 {
       font-style: italic;
     }
     .ribbon {
@@ -462,10 +460,9 @@
     }
     .qaContent {
       padding: 30px 40px;
-      ul:not(:last-child){
+      ul:not(:last-child) {
         border-bottom: 2px dashed #616161;
         padding-bottom: 30px;
-        
       }
       li {
         font-size: 28px;
