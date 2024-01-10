@@ -194,14 +194,13 @@
 
     <!-- checkbox action -->
     <Teleport to="body">
-      <!-- <div class="bottom_ipfs_info" v-if="selectArr.length == 1 && selectArr[0].isPin">
+      <div class="bottom_ipfs_info" v-if="selectArr.length == 1 && selectArr[0].isPin">
+        <p> {{ handleID(`ipfs://${selectArr[0].cid}`) }} <IconCopy @click="copyIPFS('ipfs', selectArr[0])"></IconCopy> </p>
         <p>
-          {{ `ipfs://${selectArr[0].cid}` }}
+          {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${selectArr[0].cid}`)
+          }}<IconCopy @click="copyIPFS('http', selectArr[0])"></IconCopy>
         </p>
-        <p>
-          {{ `https://${orderInfo.domain}.${poolUrl}:6008/ipfs/${selectArr[0].cid}` }}
-        </p>
-      </div> -->
+      </div>
       <nut-tabbar
         v-if="isCheckMode && selectArr.length"
         @tab-switch="tabSwitch"
@@ -502,6 +501,7 @@
 </template>
 
 <script setup lang="ts">
+  import IconCopy from '~icons/home/copy.svg';
   import IconBucket from '~icons/home/bucket.svg';
   import IconHttp2 from '~icons/home/http2.svg';
   import IconIPFS from '~icons/home/ipfs.svg';
@@ -1745,6 +1745,11 @@
       console.error('WebSocket connection error:', event);
     };
   };
+  function handleID(id) {
+    if (id) {
+      return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
+    }
+  }
   const initSocketDialog = () => {
     showSocketDialog.value = true;
   };
@@ -1799,6 +1804,13 @@
   .bottom_ipfs_info {
     position: fixed;
     bottom: 100px;
+    padding: 20px;
+    background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    svg {
+      color: $main_blue;
+    }
   }
   .file_list {
     height: calc(100vh - 310px);
