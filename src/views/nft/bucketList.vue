@@ -2,10 +2,25 @@
   <div class="page_box">
     <TopBack class="top_title" type="2"><span class="title">Bucket List</span> </TopBack>
     <div>
-      <nut-searchbar v-model="keyWord" placeholder="Search by order number" clearable class="my_top_search">
+      <!-- <nut-searchbar v-model="keyWord" placeholder="Search by order number" clearable class="my_top_search">
         <Search #leftin />
       </nut-searchbar>
-      <span class="sub_title">Choose your Bucket</span>
+      <span class="sub_title">Choose your Bucket</span> -->
+
+      <nut-fixed-nav v-model:visible="dragIsShow" v-if="listData.length > 8" :position="{ bottom: '200px' }" :overlay="true" type="right">
+        <template #list>
+          <ul class="nut-fixed-nav__list">
+            <nut-searchbar v-model="keyWord" placeholder="Search by order number" :clearable="false" class="my_top_search">
+              <template #leftin>
+                <Search />
+              </template>
+            </nut-searchbar>
+          </ul>
+        </template>
+        <template #btn>
+          <Search color="#fff" />
+        </template>
+      </nut-fixed-nav>
 
       <div class="total_tag">
         <nut-tag>{{ total }}</nut-tag> Buckets
@@ -18,26 +33,27 @@
         @load-more="loadMoreFun"
         class="bucket_box"
       >
-        <div class="bucket_item" @click="gotoFileList(item)" v-for="item in list">
+        <div class="bucket_item" @click="gotoFileList(item)" v-for="item in list" :key="item.order_id">
           <img src="@/assets/home_bucket.png" alt="" />
           <p>{{ item.domain || item.order_id }}</p>
         </div>
       </nut-infinite-loading>
     </div>
-    <UploadSet></UploadSet>
+    <UploadSet />
   </div>
 </template>
 
 <script setup lang="ts" name="bucketList">
   import { computed } from 'vue';
   import UploadSet from './uploadSet.vue';
-  import FastUploader from './fastUploader.vue';
+
   import { useUserStore } from '@/store/modules/user';
   import { useRouter, useRoute } from 'vue-router';
-  import { Search, Category, TriangleUp, Clock, Checked } from '@nutui/icons-vue';
+  import { Search } from '@nutui/icons-vue';
   import TopBack from '@/components/topBack/index.vue';
   import useOrderList from './useOrderList.ts';
-  const { resetData, loadMore, isError, listData, hasMore, infinityValue, total } = useOrderList();
+
+  const { loadMore, listData, hasMore, infinityValue, total } = useOrderList();
   const keyWord = ref('');
   const listRef = ref('');
   const router = useRouter();
@@ -79,6 +95,8 @@
     { deep: true, immediate: true },
   );
 
+  const dragIsShow = ref(false);
+
   onMounted(() => {});
 </script>
 <style>
@@ -87,71 +105,100 @@
   }
 </style>
 <style lang="scss" scoped>
+  ::v-deep {
+    .nut-fixed-nav.active .nut-icon {
+      transform: rotate(0) !important;
+    }
+
+    .nut-searchbar__search-input {
+      height: 90%;
+      background-color: rgb(73 107 242 / 14%) !important;
+    }
+
+    .nut-fixed-nav__btn {
+      width: 130px;
+    }
+  }
+
   .page_box {
     padding: 30px;
   }
+
   .title {
     color: #000;
     font-weight: 700;
   }
+
   .sub_title {
     display: block;
-    margin-left: 10px;
     margin-bottom: 10px;
+    margin-left: 10px;
   }
+
   .total_tag {
     font-weight: 600;
+
     :deep {
       .nut-tag {
         margin-left: 10px;
         padding: 4px 12px;
-        vertical-align: text-top;
         border-radius: 30px;
+        vertical-align: text-top;
       }
     }
   }
+
   .my_top_search {
     padding: 10px 0;
   }
+
   .bucket_box {
     height: calc(100vh - 390px);
     overflow: auto;
+
     :deep {
       .nut-infinite__container {
         display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
         flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
       }
     }
+
     .bucket_item {
+      box-sizing: border-box;
       width: 45%;
       margin: 15px;
       padding: 10px 0;
       border-radius: 30px;
+      font-size: 40px;
       //   background-color: #71ea6f;
       text-align: center;
-      font-size: 40px;
-      box-sizing: border-box;
+
       img {
         width: 100px;
-        margin: 0px 0 10px 0;
+        margin: 0 0 10px;
       }
     }
   }
-  @media screen and (min-width: 500px) {
+
+  @media screen and (width >= 500px) {
     .my_top_search {
       --nut-searchbar-input-height: 50px;
       --nut-searchbar-padding: 10px;
+
       padding: 10px 0;
+
       :deep {
         .nut-searchbar__search-input .nut-searchbar__iptleft-search-icon {
           width: 30px;
           height: 30px;
         }
+
         .nut-searchbar__search-input .nut-searchbar__input-bar {
           font-size: 1.5rem;
         }
+
         .nut-icon {
           --nut-icon-width: 30px;
           --nut-icon-height: 30px;
@@ -159,9 +206,11 @@
         }
       }
     }
+
     .total_tag {
       --nut-tag-height: 20px;
       --nut-tag-font-size: 1rem;
+
       :deep {
         .nut-tag {
           padding: 2px 10px;
@@ -169,32 +218,37 @@
         }
       }
     }
+
     .bucket_box {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       grid-gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       height: calc(100vh - 300px);
+
       :deep {
         .nut-infinite__container {
           display: flex;
-          justify-content: flex-start;
-          align-items: flex-start;
           flex-wrap: wrap;
+          align-items: flex-start;
+          justify-content: flex-start;
         }
       }
+
       .bucket_item {
+        box-sizing: border-box;
         width: 200px;
         height: 150px;
         margin: 15px;
         padding: 10px 0;
         border-radius: 30px;
+        font-size: 40px;
         // background-color: #71ea6f;
         text-align: center;
-        font-size: 40px;
-        box-sizing: border-box;
+
         img {
           width: 80px;
-          margin: 0px 0 10px 0;
+          margin: 0 0 10px;
         }
+
         p {
           font-size: 1.5rem;
         }
