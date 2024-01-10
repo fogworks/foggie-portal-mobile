@@ -74,7 +74,7 @@
       </div>
       <div v-if="_listData.length">
         <div class="order_profit_title"
-          >Order Reward List <span>({{ queryParmas[0] }}-{{ queryParmas[1] }})</span></div
+          >Bucket Reward List <span>({{ queryParmas[0] }}-{{ queryParmas[1] }})</span></div
         >
         <nut-infinite-loading v-if="listData.length" class="list_box" load-more-txt="No more content" :has-more="false">
           <div class="list_item" v-for="(item, index) in listData">
@@ -754,7 +754,7 @@
             series: [
               {
                 areaStyle: {},
-                name: 'Expenses',
+                name: 'Balance',
                 type: 'line',
                 zlevel: 11,
                 yAxisIndex: 0, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
