@@ -24,13 +24,13 @@
         </div>
       </nut-infinite-loading>
     </div>
-    <UploadSet></UploadSet>
+    <!-- <UploadSet></UploadSet> -->
   </div>
 </template>
 
 <script setup lang="ts" name="bucketList">
   import { computed } from 'vue';
-  import UploadSet from './uploadSet.vue';
+  // import UploadSet from './uploadSet.vue';
   import FastUploader from './fastUploader.vue';
   import { useUserStore } from '@/store/modules/user';
   import { useRouter, useRoute } from 'vue-router';

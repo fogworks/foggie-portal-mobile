@@ -292,8 +292,8 @@
         { text: 'Purchase Price', value: 'total_price' },
       ],
       sortTypeOptions1: [
-        { text: 'Sort By Descending', value: 'descending' },
-        { text: 'Sort By Ascending', value: 'ascending' },
+        { text: '↓ Descending', value: 'descending' },
+        { text: '↑ Ascending', value: 'ascending' },
       ],
       sortType: 'created_at',
       sortValue: 'descending',

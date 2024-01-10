@@ -5,22 +5,12 @@
     </div>
     <div class="generateKey">
       <div class="top_tips2">
-        <!-- <span>
-          S3 EndPoint:
-          <span class="s3url1" @click="copyS3">
-            <span>{{ bucketName }}</span
-            >.{{ s3Url }}:9900
-          </span></span
-        >
-        <p>TLS: <nut-tag type="success"> True </nut-tag></p> -->
+        <p>S3 API EndPoint</p>
         <nut-searchbar disabled :placeholder="`https://${bucketName}.${s3Url}:9900`">
           <template #leftin> <Link></Link> </template>
           <template #rightout>
             <div @click="copyS3"> <IconCopy style="vertical-align: middle"></IconCopy> Copy</div>
           </template>
-          <!-- <template #rightin>
-      <Search2 />
-    </template> -->
         </nut-searchbar>
       </div>
 
@@ -29,7 +19,7 @@
           <IconAdd></IconAdd> Create an access key</nut-button
         >
       </div>
-      <nut-form class="key_form" :model-value="dynamicForm.state" ref="dynamicRefForm">
+      <nut-form v-if="dynamicForm.state.tels.length" class="key_form" :model-value="dynamicForm.state" ref="dynamicRefForm">
         <!-- <nut-form-item label="Access Key">
         <span>Secret Key</span>
       </nut-form-item> -->
@@ -560,7 +550,18 @@
     background: #fff;
     font-size: 0.8rem;
     p {
-      padding: 5px 0;
+      padding: 0.4rem 1rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+    .nut-searchbar__search-input .nut-searchbar__input-bar {
+      &:-ms-input-placeholder {
+        color: #000;
+      }
+
+      &::placeholder {
+        color: #000;
+      }
     }
   }
   .right_keys {
