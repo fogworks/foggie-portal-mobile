@@ -54,6 +54,7 @@
     <div class="top_filter">
       <nut-menu active-color="#4524a3">
         <nut-menu-item
+          :title="`Sort By ${searchForm.sortTypeOptions.find((el) => el.value == searchForm.sortType).text}`"
           v-model="searchForm.sortType"
           :options="searchForm.sortTypeOptions"
           @change="sortChange(searchForm.sortType, 'sortType')"
@@ -1035,6 +1036,9 @@
     .nut-menu {
       width: calc(100% - 100px);
       width: 100%;
+      .nut-menu__bar .nut-menu__item {
+        --nut-menu-item-font-size: 0.8rem;
+      }
     }
     .my_category_icon_box {
       width: 100px;
@@ -1047,6 +1051,7 @@
       color: #000;
       cursor: pointer;
     }
+
     .my_category_icon_active {
       color: #4916a1;
       color: #ff8b00;

@@ -193,8 +193,6 @@ export function getIsVerifiedAPI() {
   });
 }
 
-
-
 export function get_commission_rate() {
   return request({
     url: `${apiUrl}/ambmgr/ambuser/get_commission_rate`,
@@ -246,5 +244,18 @@ export function sync_challenge(data) {
     url: nodeUrl + `/order/sync_challenge`,
     method: 'POST',
     data,
+  });
+}
+export function set_bucket_file(data) {
+  return request({
+    url: `${apiUrl}/ambmgr/order/set_bucket_file`,
+    method: 'POST',
+    data,
+  });
+}
+export function get_bucket_file() {
+  return request({
+    url: `${apiUrl}/ambmgr/order/get_bucket_file`,
+    method: 'GET',
   });
 }

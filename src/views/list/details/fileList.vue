@@ -166,7 +166,9 @@
             <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
             <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2>
           </div>
-          <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
+          <div @click.stop="showAction(item)" class="right_div">
+            <IconMore v-show="!isCheckMode" class="right_more"></IconMore>
+          </div>
         </div>
       </nut-infinite-loading>
       <nut-empty v-else description="No data" image="error">
@@ -2011,6 +2013,7 @@
       width: calc(100% - 500px);
       flex: 1;
       margin-left: 30px;
+      margin-right: 30px;
       p:first-child {
         white-space: nowrap;
         overflow: hidden;
@@ -2035,6 +2038,13 @@
         margin-left: 20px;
         cursor: pointer;
       }
+    }
+    .right_div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 80px;
+      height: 80px;
     }
     .right_more {
       width: 50px;
@@ -2386,6 +2396,13 @@
           color: #a7a7a7;
           font-size: 18px;
         }
+      }
+      .right_div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        height: 80px;
       }
       .right_more {
         width: 30px;

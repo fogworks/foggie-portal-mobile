@@ -2012,6 +2012,14 @@
 
     .file_list {
       display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 0.5rem;
+      margin-top: 20px;
+      background: #fff;
+      border-radius: 16px;
+    }
+    .file_list_img {
+      display: grid;
       grid-template-columns: repeat(5, 1fr);
       grid-gap: 0.5rem;
       margin-top: 20px;
@@ -2025,12 +2033,14 @@
       justify-content: flex-start;
       align-items: center;
       padding: 20px;
-      border-top: 1px solid #eee;
+      // border-top: 1px solid #eee;
       img {
         width: 80px;
         height: 80px;
       }
-
+      p {
+        word-break: break-all;
+      }
       &:active {
         background: #cde3f5;
       }
