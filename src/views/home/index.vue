@@ -249,10 +249,12 @@
         </template>
       </div>
     </nut-popup>
+    <UploadSet v-if="curStepIndex == 4"></UploadSet>
   </div>
 </template>
 
 <script lang="ts" setup name="HomePage">
+  import UploadSet from '@/views/nft/uploadSet.vue';
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';

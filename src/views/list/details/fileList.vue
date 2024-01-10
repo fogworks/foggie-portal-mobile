@@ -96,7 +96,7 @@
           </template>
         </div>
       </div>
-      <div class="search_bar" v-if="!isCheckMode && category !== 1">
+      <div class="search_bar" v-if="category !== 1">
         <IconNewFolder
           @click="
             isNewFolder = true;
@@ -138,38 +138,41 @@
             <nut-button class="tour_btn" @click="handleFirst" type="default">OK</nut-button>
           </div>
         </nut-tour>
-        <div
-          :class="['list_item', item.checked ? 'row_is_checked' : '']"
-          :id="[index == 0 ? 'list_item_1' : '']"
-          v-for="(item, index) in tableData"
-          :key="index"
-          @pointerdown="touchRow(item, $event)"
-          @pointermove="touchmoveRow(item, $event)"
-          @pointerup="touchendRow(item, $event)"
-        >
-          <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
-            <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
-            <template v-else>
-              <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
-              <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-              <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
-              <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-              <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
-              <img v-else src="@/assets/svg/home/file.svg" alt="" />
-            </template>
-          </div>
-          <div class="name_box">
-            <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
-            <p>{{ item.date || '' }}</p>
-          </div>
-          <div @click.stop v-if="item.isPin" class="ipfs_info">
-            <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
-            <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2>
-          </div>
-          <div @click.stop="showAction(item)" class="right_div">
+        <nut-checkbox-group v-model="checkedItem" ref="group" :max="30">
+          <div
+            :class="['list_item', checkedItem.indexOf(item.name) > -1 ? 'row_is_checked' : '']"
+            :id="[index == 0 ? 'list_item_1' : '']"
+            v-for="(item, index) in tableData"
+            :key="index"
+            @click="rowClick(item)"
+          >
+            <div :class="['left_icon_box']">
+              <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
+              <template v-else>
+                <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+                <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+                <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
+                <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+                <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
+                <img v-else src="@/assets/svg/home/file.svg" alt="" />
+              </template>
+            </div>
+            <div class="name_box">
+              <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
+              <p>{{ item.date || '' }}</p>
+            </div>
+            <div @click.stop v-if="item.isPin" class="ipfs_info">
+              <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
+              <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2>
+            </div>
+            <!-- <div @click.stop="showAction(item)" class="right_div">
             <IconMore v-show="!isCheckMode" class="right_more"></IconMore>
+          </div> -->
+            <div class="right_radio" @click.stop>
+              <nut-checkbox :label="item.name"></nut-checkbox>
+            </div>
           </div>
-        </div>
+        </nut-checkbox-group>
       </nut-infinite-loading>
       <nut-empty v-else description="No data" image="error">
         <div style="margin-top: 10px"> </div>
@@ -191,8 +194,15 @@
 
     <!-- checkbox action -->
     <Teleport to="body">
+      <div class="bottom_ipfs_info" v-if="selectArr.length == 1 && selectArr[0].isPin">
+        <p> {{ handleID(`ipfs://${selectArr[0].cid}`) }} <IconCopy @click="copyIPFS('ipfs', selectArr[0])"></IconCopy> </p>
+        <p>
+          {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${selectArr[0].cid}`)
+          }}<IconCopy @click="copyIPFS('http', selectArr[0])"></IconCopy>
+        </p>
+      </div>
       <nut-tabbar
-        v-if="isCheckMode"
+        v-if="isCheckMode && selectArr.length"
         @tab-switch="tabSwitch"
         :class="['bottom_action', selectArr.length ? 'canAction' : '']"
         bottom
@@ -211,7 +221,7 @@
           </template>
         </nut-tabbar-item>
         <nut-tabbar-item
-          :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'IPFS' : 'UNIPFS'"
+          :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'Pin' : 'Un Pin'"
           :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']"
         >
           <template #icon="props">
@@ -491,6 +501,7 @@
 </template>
 
 <script setup lang="ts">
+  import IconCopy from '~icons/home/copy.svg';
   import IconBucket from '~icons/home/bucket.svg';
   import IconHttp2 from '~icons/home/http2.svg';
   import IconIPFS from '~icons/home/ipfs.svg';
@@ -556,7 +567,7 @@
     showActionPop: false,
     tableData: [],
     chooseItem: { name: '' },
-    isCheckMode: false,
+    isCheckMode: true,
     renameShow: false,
     newName: '',
     showTypeCheckPop: false,
@@ -571,6 +582,7 @@
     continuationToken2: '',
     dirData: [],
     isNewFolder: false,
+    checkedItem: [],
     longPress: [
       {
         content: 'Long press on a list file to enable multi-select mode',
@@ -628,6 +640,7 @@
     longPress,
     isFirst,
     isError,
+    checkedItem,
   } = toRefs(state);
   const { getSummary, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
   provide('getSummary', getSummary);
@@ -674,6 +687,7 @@
   const { deleteItem } = useDelete(
     tableLoading,
     () => {
+      checkedItem.value = [];
       doSearch('', prefix.value, true);
     },
     orderInfo,
@@ -685,7 +699,9 @@
     if (category.value == 1) {
       return imgCheckedData.value;
     } else {
-      return tableData.value.filter((el) => el.checked);
+      return tableData.value.filter((el) => {
+        return checkedItem.value.indexOf(el.name) > -1;
+      });
     }
   });
 
@@ -768,16 +784,58 @@
     return false;
   };
   const cancelSelect = () => {
-    isCheckMode.value = false;
-    tableData.value.forEach((el) => {
-      el.checked = false;
-    });
+    // isCheckMode.value = false;
+    // tableData.value.forEach((el) => {
+    //   el.checked = false;
+    // });
+    checkedItem.value = [];
   };
   const selectAll = () => {
     const isAll = selectArr.value.length == tableData.value.length;
     tableData.value.forEach((el) => {
       el.checked = !isAll;
     });
+  };
+  const rowClick = (row) => {
+    if (row.isDir) {
+      checkedItem.value = [];
+      keyWord.value = '';
+      let long_name = prefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
+      prefix.value = long_name.split('/').slice(0, -1);
+      prefixChange();
+    } else {
+      chooseItem.value = row;
+      console.log(chooseItem.value, 'chooseItem.value');
+      const type = row.name.substring(row.name.lastIndexOf('.') + 1);
+
+      if (type == 'pdf') {
+        // window.open(row.imgUrlLarge);
+        console.log(row.imgUrlLarge);
+
+        router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
+      } else if (type == 'txt') {
+        chooseItem.value.detailType = 'txt';
+        detailShow.value = true;
+        fetch(row.imgUrlLarge)
+          .then((response) => response.text())
+          .then((text) => {
+            document.getElementById('txtContainer').textContent = text;
+          });
+      } else if (['xls', 'xlsx'].includes(type)) {
+        router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
+      } else if (['doc', 'docx'].includes(type)) {
+        router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'docx' } });
+        // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+        // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+        console.log(row.imgUrlLarge);
+      } else if (['ppt', 'pptx'].includes(type)) {
+        window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+        console.log(row.imgUrlLarge);
+      } else if (row.imgUrlLarge) {
+        imgUrl.value = row.imgUrlLarge;
+        detailShow.value = true;
+      }
+    }
   };
   const showAction = (item: { name: string }) => {
     if (timeOutEvent !== 0) {
@@ -1038,7 +1096,7 @@
     } else if (type == 'nft') {
       if (checkData.length > 1) return false;
       await createNFT(checkData[0], accessKeyId.value, secretAccessKey.value, bucketName.value);
-    } else if (type === 'ipfs') {
+    } else if (type === 'pin') {
       const onOk = async () => {
         await cloudPin(checkData[0], 'ipfs');
         doSearch('', prefix.value, true);
@@ -1050,7 +1108,7 @@
         okText: 'Confirm',
         onOk,
       });
-    } else if (type === 'unipfs') {
+    } else if (type === 'un pin') {
       const onOk = async () => {
         await cloudPin(checkData[0], 'ipfs', 'unpin');
         doSearch('', prefix.value, true);
@@ -1687,6 +1745,11 @@
       console.error('WebSocket connection error:', event);
     };
   };
+  function handleID(id) {
+    if (id) {
+      return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
+    }
+  }
   const initSocketDialog = () => {
     showSocketDialog.value = true;
   };
@@ -1738,6 +1801,17 @@
   }
 </style>
 <style lang="scss" scoped>
+  .bottom_ipfs_info {
+    position: fixed;
+    bottom: 100px;
+    padding: 20px;
+    background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    svg {
+      color: $main_blue;
+    }
+  }
   .file_list {
     height: calc(100vh - 310px);
     overflow: auto;
@@ -2045,6 +2119,23 @@
       align-items: center;
       width: 80px;
       height: 80px;
+    }
+    .right_radio {
+      height: 80px;
+      width: 80px;
+      :deep {
+        .nut-checkbox {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          height: 100%;
+          margin-right: 0;
+        }
+        .nut-checkbox__label {
+          display: none;
+        }
+      }
     }
     .right_more {
       width: 50px;
@@ -2403,6 +2494,23 @@
         align-items: center;
         width: 80px;
         height: 80px;
+      }
+      .right_radio {
+        height: 80px;
+        width: 80px;
+        :deep {
+          .nut-checkbox {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            margin-right: 0;
+          }
+          .nut-checkbox__label {
+            display: none;
+          }
+        }
       }
       .right_more {
         width: 30px;

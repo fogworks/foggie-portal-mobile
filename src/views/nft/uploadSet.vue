@@ -1,5 +1,5 @@
 <template>
-  <nut-button class="upload_btn" type="primary" @click="popShow = true">+ Quick Upload</nut-button>
+  <nut-button class="upload_btn" type="primary" @click="popShow = true">+</nut-button>
   <nut-popup closeable position="bottom" :style="{ height: '100%' }" v-model:visible="popShow">
     <div class="bucket_box">
       <p class="title">
@@ -160,12 +160,18 @@
     folderListShow.value = false;
     get_bucket_file()
       .then(async (res) => {
-        if (res.result.data.length) {
-          bucketName.value = res.result.data[0].domain;
-          uploadPath.value = res.result.data[0].file_path;
-          setDefaultBucketAndPath();
-          await getOrderInfo(true, res.result.data[0].uuid);
-          needSet.value = false;
+        if (res.code == 200) {
+          bucketName.value = res.result.data.domain;
+          uploadPath.value = res.result.data.file_path;
+          if ([4, 5].includes(res.result.data.state)) {
+            needSet.value = true;
+            showToast.fail('This bucket has expired, please select a new bucket to upload.');
+            return false;
+          } else {
+            setDefaultBucketAndPath();
+            await getOrderInfo(true, res.result.data.uuid);
+            needSet.value = false;
+          }
         }
       })
       .finally(() => {
@@ -174,7 +180,7 @@
   };
   const setDefaultBucketAndPath = () => {
     if (listData.value.length && !bucketName.value) {
-      bucketName.value = listData.value[0].domain;
+      bucketName.value = listData.value.domain;
       uploadPath.value = 'NFT';
       setBucketAndPath();
     }
@@ -225,9 +231,18 @@
 <style lang="scss" scoped>
   .upload_btn {
     position: fixed;
-    bottom: 120px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 150px;
+    right: 50px;
+    font-size: 80px;
+    border-radius: 50%;
+    padding: 10px;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    img {
+      width: 100%;
+      height: 100%;
+    }
   }
   .set_icon {
     position: fixed;
@@ -365,6 +380,21 @@
     }
   }
   @media screen and (min-width: 500px) {
+    .upload_btn {
+      position: fixed;
+      bottom: 100px;
+      right: 50px;
+      font-size: 80px;
+      border-radius: 50%;
+      padding: 10px;
+      width: 80px;
+      height: 80px;
+      cursor: pointer;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
     .title {
       font-size: 1.5rem;
     }

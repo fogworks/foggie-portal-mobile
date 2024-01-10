@@ -148,7 +148,10 @@
               <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else src="@/assets/svg/home/file.svg" alt="" />
             </div>
-            <p>{{ item.name }}</p>
+            <div class="name_box">
+              <p>{{ item.name }}</p>
+              <p>{{ item.date || '' }}</p>
+            </div>
           </div>
         </div>
         <p class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></p>
@@ -2011,9 +2014,9 @@
     }
 
     .file_list {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-gap: 0.5rem;
+      // display: grid;
+      // grid-template-columns: repeat(4, 1fr);
+      // grid-gap: 0.5rem;
       margin-top: 20px;
       background: #fff;
       border-radius: 16px;
@@ -2021,15 +2024,28 @@
     .file_list_img {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      grid-gap: 0.5rem;
+      grid-gap: 0.2rem;
+      justify-items: center;
       margin-top: 20px;
+      padding: 0 1rem;
       background: #fff;
       border-radius: 16px;
+      .list_item {
+        width: 120px;
+        height: 120px;
+        justify-content: center;
+        padding: 20px 0;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
     }
 
     .list_item {
       display: flex;
-      flex-direction: column;
+      // flex-direction: column;
       justify-content: flex-start;
       align-items: center;
       padding: 20px;
