@@ -129,7 +129,7 @@
       margin: 15px;
       padding: 10px 0;
       border-radius: 30px;
-      background-color: #71ea6f;
+      //   background-color: #71ea6f;
       text-align: center;
       font-size: 40px;
       box-sizing: border-box;
@@ -187,7 +187,7 @@
         margin: 15px;
         padding: 10px 0;
         border-radius: 30px;
-        background-color: #71ea6f;
+        // background-color: #71ea6f;
         text-align: center;
         font-size: 40px;
         box-sizing: border-box;
