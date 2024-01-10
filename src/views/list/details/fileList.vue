@@ -516,7 +516,7 @@
   import IconMore from '~icons/home/more.svg';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
   import IconHttp from '~icons/home/http.svg';
-  import { reactive, toRefs, watch, onMounted, onUnmounted } from 'vue';
+  import { reactive, toRefs, watch, onMounted, onUnmounted, onBeforeUnmount } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { Search2, TriangleUp, Loading } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
@@ -794,7 +794,7 @@
   //move
   const confirmMove = () => {
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
-    const targetObject = (val) => {
+    const targetObject = (val: { name: string; }) => {
       if (movePrefix.value.length) {
         return movePrefix.value.join('/') + '/' + val.name;
       } else {
@@ -803,7 +803,7 @@
     };
     let index = 0;
     const length = checkData.length - 1;
-    const rename = function (resolve, reject) {
+    const rename = function (resolve: { (value: unknown): void; (arg0: boolean): void; }, reject: { (reason?: any): void; (arg0: boolean): void; }) {
       if (targetObject(checkData[index]).length > 1024) {
         showToast.warn('The file path cannot exceed a maximum of 1024 characters, operation failed');
         if (index === length) {
@@ -825,7 +825,7 @@
       ProxRenameObject.setFiletype(checkData[index].fileType);
       console.log(ProxRenameObject, 'ProxRenameObject');
 
-      server.renameObjects(ProxRenameObject, {}, (err, data) => {
+      server.renameObjects(ProxRenameObject, {}, (err: { message: any; }, data: any) => {
         if (data) {
           if (index === length) {
             showToast.success('Move successful');
@@ -851,14 +851,14 @@
     });
     // moveShow.value = false;
   };
-  const getOriginName = (name) => {
+  const getOriginName = (name: string) => {
     let arr = name.split('.');
     if (arr.length > 1) {
       arr.pop();
     }
     return arr.join('.');
   };
-  const getEndName = (name) => {
+  const getEndName = (name: string) => {
     let arr = name.split('.');
     if (arr.length > 1) {
       return '.' + arr[arr.length - 1];
@@ -920,7 +920,7 @@
       ProxFileInfo.setSize(0);
       console.log(ProxFileInfo, 'ProxFileInfo');
 
-      server.touchFile(ProxFileInfo, metadata.value, (err, data) => {
+      server.touchFile(ProxFileInfo, metadata.value, (err: { message: any; }, data: any) => {
         if (data) {
           showToast.success('Create successful');
           renameShow.value = false;
@@ -939,7 +939,7 @@
       ProxRenameObject.setFiletype(checkData[0].fileType);
       console.log(ProxRenameObject, 'ProxRenameObject');
 
-      server.renameObjects(ProxRenameObject, metadata.value, (err, data) => {
+      server.renameObjects(ProxRenameObject, metadata.value, (err: { message: any; }, data: any) => {
         if (data) {
           showToast.success('Rename successful');
           renameShow.value = false;
@@ -1077,7 +1077,7 @@
     showTypeCheckPop.value = false;
   };
 
-  const uploadComplete = (file) => {
+  const uploadComplete = (file: any) => {
     getFileList('', prefix.value, true);
   };
 
@@ -1111,8 +1111,8 @@
 
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix(list_prefix);
-    let delimiter;
-    let categoryParam;
+    let delimiter: string;
+    let categoryParam: string | number;
     if (moveShow.value) {
       delimiter = '/';
       categoryParam = '0';
@@ -1415,6 +1415,7 @@
       if (moveShow.value) {
       } else {
         tableData.value.push(item);
+        console.log('tableData-----', tableData.value);
       }
     }
     if (data.isTruncated) {
@@ -1471,6 +1472,7 @@
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
       if (type == 'space') {
+
         // let ip = orderInfo.value.rpc.split(':')[0];
         // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
@@ -1482,7 +1484,7 @@
         ProxFindRequest.setCid('');
         ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
         ProxFindRequest.setFileid('');
-        let list_prefix;
+        let list_prefix: string;
         if (prefixArg?.length) {
           list_prefix = prefixArg.join('/');
           if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
@@ -1544,13 +1546,13 @@
       }
     }
   }
-  const shareTwitter = (fileLink) => {
+  const shareTwitter = (fileLink: string | number | boolean) => {
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
     let tweetText = checkData[0].name;
     var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(fileLink);
     window.open(twitterUrl, '_blank');
   };
-  const shareFacebook = (fileLink) => {
+  const shareFacebook = (fileLink: string | number | boolean) => {
     var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fileLink);
     window.open(twitterUrl, '_blank');
   };
@@ -1560,7 +1562,7 @@
     window.localStorage.notFirst = true;
   };
 
-  const getSignHeaders = (objectKey) => {
+  const getSignHeaders = (objectKey: string) => {
     const date = new Date().toUTCString();
     const httpMethod = 'GET';
     const contentType = '';
@@ -1603,6 +1605,12 @@
   onMounted(async () => {
     initPage();
   });
+  onBeforeUnmount(() => {
+    if (fileSocket.value) {
+      fileSocket.value.close();
+      fileSocket.value = null;
+    }
+  });
   const initPage = async () => {
     if (route?.query?.prefix) {
       prefix.value = route?.query?.prefix?.split('/');
@@ -1619,16 +1627,16 @@
     socketToken.value = signData?.result?.data?.sign;
     initWebSocket();
   };
-  onUnmounted(() => {
-    closeSocket();
-  });
+  // onUnmounted(() => {
+  //   closeSocket();
+  // });
   const refresh = async () => {
     await getOrderInfo();
     doSearch('', prefix.value, true);
   };
 
   const initWebSocket = () => {
-    console.log('initWebSocket');
+    console.log('initWebSocket-----------');
     const url = `wss://${bucketName.value}.devus.u2i.net:6008/ws`;
     fileSocket.value = new WebSocket(url);
     fileSocket.value.onopen = () => {
@@ -1641,10 +1649,10 @@
       fileSocket.value.send(JSON.stringify(authMessage));
     };
 
-    fileSocket.value.onmessage = (event) => {
+    fileSocket.value.onmessage = (event: { data: string; }) => {
       const message = JSON.parse(event.data);
       const currentFolder = window.sessionStorage.getItem('currentFolder');
-      console.log('Received message from server:', message, currentFolder);
+      // console.log('Received message from server:', message, currentFolder);
       const uploadFileName = window.sessionStorage.getItem('uploadFileName');
       let fileInfo = message.fileInfo;
       let dirArr = fileInfo.keys;
@@ -1661,6 +1669,7 @@
           dirFileName = dirArr[0];
         }
       }
+
       console.log(
         '888888',
         dirArr,
@@ -1672,18 +1681,22 @@
         dirFileName !== uploadFileName,
       );
       if (dirFile === currentFolder && dirFileName !== uploadFileName) {
-        console.log('弹框显示');
         if (detailShow.value) {
           initSocketDialog();
+        } else {
+          doSocketFn(message);
         }
-        // window.sessionStorage.removeItem('uploadFileName');
       }
     };
 
-    fileSocket.value.onclose = (event) => {
-      console.log('WebSocket connection closed:', event);
+    fileSocket.value.onclose = (event: any) => {
+      console.log('WebSocket connection closed:', event, fileSocket.value);
+      if (fileSocket.value) {
+        console.log('WebSocket connection again:');
+        initPage();
+      }
     };
-    fileSocket.value.onerror = (event) => {
+    fileSocket.value.onerror = (event: any) => {
       console.error('WebSocket connection error:', event);
     };
   };
@@ -1695,8 +1708,36 @@
     showSocketDialog.value = false;
   };
   const closeSocket = () => {
+    console.log('closeSocket-------');
     fileSocket.value.onclose();
   };
+
+  const doSocketFn = (msg: { action: any; fileInfo: any; })=> {
+    console.log('doSocketFn', msg, tableData.value);
+    const action = msg.action;
+    const fileInfo = msg.fileInfo;
+    const keys = fileInfo.keys;
+    const bucket = fileInfo.bucket;
+    const cid = fileInfo.cid;
+    if (action === 'FILE_ADD') {
+      const target = tableData.value.find((el: { cid: any; }) => el.cid === cid);
+      if (!target) {
+        // return false;
+      }
+
+    } else if (action === 'FILE_PIN') {
+      tableData.value.map((el: { cid: any; isPin: boolean; }) => {
+        if (el.cid === cid) {
+          el.isPin = true;
+        }
+      });
+    } else if (action === 'FILE_CHANGE') {
+
+    } else if (action === 'FILE_DELETE') {
+      tableData.value = tableData.value.filter(item => item.cid !== cid);
+    } else if (action === 'FILE_PINNING') {}
+
+  }
 </script>
 <style>
   .fileUpdateIcon {
