@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="vip_order_choose">
-      <div class="vip_title">Select size and period</div>
+      <div class="vip_title">Select space and time</div>
       <div class="img_list">
         <img src="@/assets/vipOrder.svg" @click="submit" />
         <img src="@/assets/customOrder.svg" class="customOrder" @click="showTop = true" />
@@ -1048,10 +1048,17 @@
       :deep {
         .nut-button {
           width: 40%;
+          background: linear-gradient(135deg, #c8d4ec 0%, #e9b212 25%, rgb(35 23 3) 83%, #eaeef9 100%);
+          border: none;
 
           &.nut-button--disabled {
             background: #aaa !important;
             opacity: 0.28 !important;
+          }
+          &.nut-button--plain {
+            background: #fff !important;
+            border: 1px solid #262016;
+            color: #2b1d06;
           }
         }
       }
