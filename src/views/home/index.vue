@@ -74,7 +74,7 @@
     </div>
     <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
     <div class="tab_top_title" v-if="ishaveProfit"
-      >Income and Expenditure <span style="font-size: 12px; display: inline-block">(for the last weeks)</span></div
+      >Reward and Expenditure <span style="font-size: 12px; display: inline-block">(for the last weeks)</span></div
     >
 
     <ErrorPage v-if="isError && !earningsList.length" @refresh="loadMore"></ErrorPage>
