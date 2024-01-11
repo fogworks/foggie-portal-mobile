@@ -96,24 +96,24 @@
           </template>
         </div>
       </div>
-      <div class="search_bar" v-if="!isCheckMode && category !== 1">
+      <div class="search_bar" v-if="category !== 1">
         <IconNewFolder
           @click="
             isNewFolder = true;
             renameShow = true;
           "
-          v-show="category == 0 && isMobileOrder"
+          v-show="category == 0 && isMobileOrder && isAvailableOrder"
           class="new_folder"
         ></IconNewFolder>
         <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
           <template #rightin> <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" /> </template>
         </nut-searchbar>
       </div>
-      <div class="check_top" v-else-if="isCheckMode">
+      <!-- <div class="check_top" v-if="isCheckMode && category != 1 && selectArr.length">
         <span @click="selectAll">{{ selectArr.length == tableData.length ? 'UnSelect' : 'Select' }} All</span>
         <span class="checked_num">{{ selectArr.length }} items selected</span>
         <span @click="cancelSelect">Cancel</span>
-      </div>
+      </div> -->
     </nut-sticky>
     <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
     <template v-else-if="category != 1">
@@ -138,38 +138,41 @@
             <nut-button class="tour_btn" @click="handleFirst" type="default">OK</nut-button>
           </div>
         </nut-tour>
-        <div
-          :class="['list_item', item.checked ? 'row_is_checked' : '']"
-          :id="[index == 0 ? 'list_item_1' : '']"
-          v-for="(item, index) in tableData"
-          :key="index"
-          @pointerdown="touchRow(item, $event)"
-          @pointermove="touchmoveRow(item, $event)"
-          @pointerup="touchendRow(item, $event)"
-        >
-          <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
-            <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
-            <template v-else>
-              <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
-              <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-              <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
-              <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-              <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
-              <img v-else src="@/assets/svg/home/file.svg" alt="" />
-            </template>
-          </div>
-          <div class="name_box">
-            <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
-            <p>{{ item.date || '' }}</p>
-          </div>
-          <div @click.stop v-if="item.isPin" class="ipfs_info">
-            <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
-            <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2>
-          </div>
-          <div @click.stop="showAction(item)" class="right_div">
+        <nut-checkbox-group v-model="checkedItem" ref="group" :max="30">
+          <div
+            :class="['list_item', checkedItem.indexOf(item.name) > -1 ? 'row_is_checked' : '']"
+            :id="[index == 0 ? 'list_item_1' : '']"
+            v-for="(item, index) in tableData"
+            :key="index"
+            @click="rowClick(item)"
+          >
+            <div :class="['left_icon_box']">
+              <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
+              <template v-else>
+                <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+                <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+                <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
+                <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+                <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
+                <img v-else src="@/assets/svg/home/file.svg" alt="" />
+              </template>
+            </div>
+            <div class="name_box">
+              <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
+              <p>{{ item.date || '' }}</p>
+            </div>
+            <div @click.stop v-if="item.isPin" class="ipfs_info">
+              <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
+              <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2>
+            </div>
+            <!-- <div @click.stop="showAction(item)" class="right_div">
             <IconMore v-show="!isCheckMode" class="right_more"></IconMore>
+          </div> -->
+            <div class="right_radio" @click.stop>
+              <nut-checkbox :label="item.name"></nut-checkbox>
+            </div>
           </div>
-        </div>
+        </nut-checkbox-group>
       </nut-infinite-loading>
       <nut-empty v-else description="No data" image="error">
         <div style="margin-top: 10px"> </div>
@@ -189,40 +192,109 @@
       v-else
     ></ImgList>
 
+    <nut-popup
+      teleport-disable
+      v-if="fileItemPopupIsShow"
+      pop-class="fileItemPopup"
+      position="bottom"
+      safe-area-inset-bottom
+      closeable
+      round
+      :style="{ height: 'auto', minHeight: '60%' }"
+      v-model:visible="fileItemPopupIsShow"
+    >
+      <div class="fileItem_header">
+        <img :src="selectArr[0].imgUrl" alt="" srcset="" />
+        <div class="fileItem_header_right">
+          <div>{{ selectArr[0].fullName }}</div>
+          <div>{{ selectArr[0].date }} · {{ selectArr[0].size }}</div>
+        </div>
+      </div>
+      <div class="fileItem_body">
+        <div class="optionBox">
+          <div @click="handlerClick('share')">
+            <IconShare :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconShare>
+            <span>Share</span>
+          </div>
+          <div @click="handlerClick('rename')">
+            <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
+            Rename
+          </div>
+          <div @click="handlerClick(selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'pin' : 'un pin')">
+            <IconIPFS :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconIPFS>
+            {{ selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'Pinned' : 'Un Pinned' }}
+          </div>
+          <div @click="handlerClick('move')">
+            <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
+            Move
+          </div>
+          <div @click="handlerClick('download')">
+            <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
+            Download
+          </div>
+          <div @click="handlerClick('delete')">
+            <IconDelete :color="selectArr.length ? 'red' : '#ffffff5c'"></IconDelete>
+            Delete
+          </div>
+        </div>
+        <div class="ipfs">
+          <p v-if="selectArr.length == 1 && selectArr[0].isPin">
+            <span>{{ handleID(`ipfs://${selectArr[0].cid}`) }} </span>
+            <IconCopy color="#fff" @click="copyIPFS('ipfs', selectArr[0])"></IconCopy>
+          </p>
+          <p>
+            <span> {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${selectArr[0].cid}`) }} </span>
+            <IconCopy color="#fff" @click="copyIPFS('http', selectArr[0])"></IconCopy>
+          </p>
+        </div>
+      </div>
+    </nut-popup>
+
     <!-- checkbox action -->
     <Teleport to="body">
+      <!-- <div class="bottom_ipfs_info" v-if="selectArr.length == 1 && selectArr[0].isPin">
+        <p> {{ handleID(`ipfs://${selectArr[0].cid}`) }} <IconCopy @click="copyIPFS('ipfs', selectArr[0])"></IconCopy> </p>
+        <p>
+          {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${selectArr[0].cid}`)
+          }}<IconCopy @click="copyIPFS('http', selectArr[0])"></IconCopy>
+        </p>
+      </div> -->
+
       <nut-tabbar
-        v-if="isCheckMode"
+        v-if="isCheckMode && selectArr.length"
         @tab-switch="tabSwitch"
         :class="['bottom_action', selectArr.length ? 'canAction' : '']"
         bottom
         safe-area-inset-bottom
         placeholder
       >
-        <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
-          <template #icon>
-            <IconShare :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconShare>
-            <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
-          </template>
-        </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
-          <template #icon="props">
-            <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
-          </template>
-        </nut-tabbar-item>
-        <nut-tabbar-item
-          :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'IPFS' : 'UNIPFS'"
-          :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']"
-        >
-          <template #icon="props">
-            <IconIPFS :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconIPFS>
-          </template>
-        </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Move" :class="[category == 1 || !isMobileOrder ? 'is-disable' : '']">
-          <template #icon="props">
-            <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
-          </template>
-        </nut-tabbar-item>
+        <template v-if="isAvailableOrder">
+          <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
+            <template #icon>
+              <IconShare :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconShare>
+              <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
+            </template>
+          </nut-tabbar-item>
+          <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
+            <template #icon="props">
+              <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
+            </template>
+          </nut-tabbar-item>
+          <nut-tabbar-item
+            :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'Pin' : 'Un Pin'"
+            :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']"
+          >
+            <template #icon="props">
+              <IconIPFS :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconIPFS>
+            </template>
+          </nut-tabbar-item>
+          <nut-tabbar-item tab-title="Move" :class="[category == 1 || !isMobileOrder ? 'is-disable' : '']">
+            <template #icon="props">
+              <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
+            </template>
+          </nut-tabbar-item>
+        </template>
+
         <nut-tabbar-item tab-title="Download">
           <template #icon="props">
             <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
@@ -238,7 +310,8 @@
 
     <!-- single action -->
     <Teleport to="body">
-      <nut-action-sheet class="action_pop" v-if="showActionPop" v-model:visible="showActionPop">
+      <nut-popup v-model:visible="showActionPop" position="bottom" closeable round :style="{ height: '58%' }">
+        <!-- <nut-action-sheet class="action_pop" v-if="showActionPop" v-model:visible="showActionPop"> -->
         <div class="custom-content">
           <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
           <ul>
@@ -261,7 +334,8 @@
           </ul>
           <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
         </div>
-      </nut-action-sheet>
+        <!-- </nut-action-sheet> -->
+      </nut-popup>
     </Teleport>
 
     <!-- rename / newFolder -->
@@ -426,20 +500,41 @@
     </nut-popup>
     <Teleport to="body">
       <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
-        <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-        <HLSVideo v-if="chooseItem.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
+        <div class="detail_top">
+          <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+          <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
+        </div>
+        <HLSVideo v-if="chooseItem.category == 2" :imgUrl="imgUrl"></HLSVideo>
         <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
         <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
         <div v-else-if="imgUrl" class="middle_img">
-          <!-- v-if="chooseItem.type.split('/')[0] == 'video'" -->
-          <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
-            <template #loading>
-              <Loading width="16px" height="16px" name="loading" />
+          <van-image-preview
+            v-model:show="detailShow"
+            :closeOnClickOverlay="false"
+            :start-position="imgStartIndex"
+            :images="images"
+            @change="swipeChange"
+          >
+            <template #cover>
+              <div class="detail_top">
+                <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+                <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
+              </div>
+              <div class="bottom_action">
+                <div v-if="isAvailableOrder">
+                  <IconShare @click="handlerClick('share')"></IconShare>
+                  <p>Share</p>
+                </div>
+                <div>
+                  <IconDownload @click="handlerClick('download')"></IconDownload>
+                  <p>Download</p>
+                </div>
+              </div>
             </template>
-          </nut-image>
+          </van-image-preview>
         </div>
         <div class="bottom_action">
-          <div>
+          <div v-if="isAvailableOrder">
             <IconShare @click="handlerClick('share')"></IconShare>
             <p>Share</p>
           </div>
@@ -451,7 +546,7 @@
       </nut-overlay>
     </Teleport>
     <uploader
-      v-if="isMobileOrder"
+      v-if="isMobileOrder && isAvailableOrder"
       :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
@@ -491,9 +586,12 @@
 </template>
 
 <script setup lang="ts">
+  import IconCopy from '~icons/home/copy.svg';
   import IconBucket from '~icons/home/bucket.svg';
   import IconHttp2 from '~icons/home/http2.svg';
-  import IconIPFS from '~icons/home/ipfs.svg';
+  // import IconIPFS from '~icons/home/ipfs.svg';
+  import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
+
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNFT from '~icons/material-symbols/cast';
@@ -549,6 +647,9 @@
   const router = useRouter();
   const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const state = reactive({
+    swipe: '',
+    imgArray: [],
+    imgStartIndex: 0,
     category: 0,
     keyWord: '',
     infinityValue: false,
@@ -556,7 +657,7 @@
     showActionPop: false,
     tableData: [],
     chooseItem: { name: '' },
-    isCheckMode: false,
+    isCheckMode: true,
     renameShow: false,
     newName: '',
     showTypeCheckPop: false,
@@ -571,6 +672,7 @@
     continuationToken2: '',
     dirData: [],
     isNewFolder: false,
+    checkedItem: [],
     longPress: [
       {
         content: 'Long press on a list file to enable multi-select mode',
@@ -603,6 +705,9 @@
   const showSocketDialog = ref(false);
 
   const {
+    swipe,
+    imgArray,
+    imgStartIndex,
     tableLoading,
     showTypeCheckPop,
     newName,
@@ -628,8 +733,11 @@
     longPress,
     isFirst,
     isError,
+    checkedItem,
   } = toRefs(state);
-  const { getSummary, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
+
+  const { isAvailableOrder, getSummary, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } =
+    useOrderInfo();
   provide('getSummary', getSummary);
   const {
     httpCopyLink,
@@ -655,7 +763,14 @@
     copyIPFS,
   } = useShare(orderInfo, header, deviceType, metadata);
   const shareCheckData = computed(() => {
-    return isCheckMode.value ? selectArr.value[0] : chooseItem.value;
+    return !detailShow.value ? selectArr.value[0] : chooseItem.value;
+  });
+  const images = computed(() => {
+    let arr = [];
+    imgArray.value.filter((el) => {
+      arr.push(el.src);
+    });
+    return arr;
   });
   const showActionBtn = computed(() => {
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type === 3) {
@@ -674,6 +789,7 @@
   const { deleteItem } = useDelete(
     tableLoading,
     () => {
+      checkedItem.value = [];
       doSearch('', prefix.value, true);
     },
     orderInfo,
@@ -685,7 +801,9 @@
     if (category.value == 1) {
       return imgCheckedData.value;
     } else {
-      return tableData.value.filter((el: {checked: any}) => el.checked);
+      return tableData.value.filter((el) => {
+        return checkedItem.value.indexOf(el.name) > -1;
+      });
     }
   });
 
@@ -761,6 +879,7 @@
           } else if (row.imgUrlLarge) {
             imgUrl.value = row.imgUrlLarge;
             detailShow.value = true;
+            imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
           }
         }
       }
@@ -768,16 +887,57 @@
     return false;
   };
   const cancelSelect = () => {
-    isCheckMode.value = false;
-    tableData.value.forEach((el) => {
-      el.checked = false;
-    });
+    // isCheckMode.value = false;
+
+    checkedItem.value = [];
   };
   const selectAll = () => {
     const isAll = selectArr.value.length == tableData.value.length;
     tableData.value.forEach((el) => {
       el.checked = !isAll;
     });
+  };
+  const rowClick = (row) => {
+    if (row.isDir) {
+      checkedItem.value = [];
+      keyWord.value = '';
+      let long_name = prefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
+      prefix.value = long_name.split('/').slice(0, -1);
+      prefixChange();
+    } else {
+      chooseItem.value = row;
+      console.log(chooseItem.value, 'chooseItem.value');
+      const type = row.name.substring(row.name.lastIndexOf('.') + 1);
+
+      if (type == 'pdf') {
+        // window.open(row.imgUrlLarge);
+        console.log(row.imgUrlLarge);
+
+        router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
+      } else if (type == 'txt') {
+        chooseItem.value.detailType = 'txt';
+        detailShow.value = true;
+        fetch(row.imgUrlLarge)
+          .then((response) => response.text())
+          .then((text) => {
+            document.getElementById('txtContainer').textContent = text;
+          });
+      } else if (['xls', 'xlsx'].includes(type)) {
+        router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
+      } else if (['doc', 'docx'].includes(type)) {
+        router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'docx' } });
+        // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+        // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+        console.log(row.imgUrlLarge);
+      } else if (['ppt', 'pptx'].includes(type)) {
+        window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+        console.log(row.imgUrlLarge);
+      } else if (row.imgUrlLarge) {
+        imgUrl.value = row.imgUrlLarge;
+        detailShow.value = true;
+        imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
+      }
+    }
   };
   const showAction = (item: { name: string }) => {
     if (timeOutEvent !== 0) {
@@ -878,7 +1038,7 @@
 
       return false;
     }
-    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
+    const checkData = !detailShow.value ? selectArr.value : [chooseItem.value];
 
     const targetObject = () => {
       if (isNewFolder.value) {
@@ -964,7 +1124,7 @@
 
   const handlerClick = async (type: string) => {
     showActionPop.value = false;
-    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
+    const checkData = !detailShow.value ? selectArr.value : [chooseItem.value];
     if (type === 'move') {
       // if (category.value == 1) return false;
       movePrefix.value = [];
@@ -1050,7 +1210,7 @@
         okText: 'Confirm',
         onOk,
       });
-    } else if (type === 'unipfs') {
+    } else if (type === 'un pin') {
       const onOk = async () => {
         const d = await cloudPin(checkData[0], 'ipfs', 'unpin');
         if (d) {
@@ -1237,17 +1397,25 @@
     let peerId = orderInfo.value.peer_id;
     // console.log(bucketName.value, 'bucketName');
 
-    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
-      type = 'img';
+    if (
+      type === 'png' ||
+      type === 'bmp' ||
+      type === 'gif' ||
+      type === 'jpeg' ||
+      type === 'jpg' ||
+      type === 'svg' ||
+      type === 'ico' ||
+      type === 'webp'
+    ) {
       //   console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, type === 'ico' ? false : true);
       // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
@@ -1291,6 +1459,7 @@
         dirData.value = [];
       } else {
         tableData.value = [];
+        imgArray.value = [];
       }
     }
     if (!accessKeyId.value) {
@@ -1422,7 +1591,10 @@
       if (moveShow.value) {
       } else {
         tableData.value.push(item);
-        console.log('tableData-----', tableData.value);
+        if (item.category == 1) {
+          item.src = item.imgUrlLarge;
+          imgArray.value.push(item);
+        }
       }
     }
     if (data.isTruncated) {
@@ -1709,6 +1881,54 @@
       console.error('WebSocket connection error:', event);
     };
   };
+  function swipeChange(index) {
+    chooseItem.value = imgArray.value[index];
+  }
+  function handleID(id) {
+    if (id) {
+      return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
+    }
+  }
+  const matrix_box = () => {
+    nextTick(() => {
+      let x = 0;
+      let y = 0;
+      let _node = this.$refs.activeBox; // 获取之前在模板中设置的ref属性
+      let hand = new Hammer(_node); // 创建一个新的Hammer实例，传入要进行手势操作的元素
+
+      // 启用pinch手势
+      hand.get('pinch').set({ enable: true });
+
+      // 监听pinch手势的不同事件，用于实现缩放功能
+      hand.on('pinchmove pinchstart pinchin pinchout', (e) => {
+        if (e.type == 'pinchstart') {
+          this.scaleIndex = this.scaleCount || 1; // 记录当前的缩放比例
+        }
+        this.scaleCount = this.scaleIndex * e.scale; // 计算新的缩放比例
+        _node.style.transform = 'scale(' + this.scaleIndex * e.scale + ')'; // 应用缩放效果
+      });
+
+      // 监听doubletap手势，用于双击重置缩放和位置
+      hand.on('doubletap', (e) => {
+        x = 0;
+        y = 0;
+        this.scaleCount = 1; // 重置缩放比例为1
+        _node.style.transform = 'translateX(0px) translateY(0px) scale(1)'; // 重置位置和缩放效果
+      });
+
+      // 监听pan手势，用于实现拖动功能
+      hand.on('panright panleft panup pandown', (e) => {
+        _node.style.transform =
+          'translateX(' + (e.deltaX + x) + 'px)' + 'translateY(' + (e.deltaY + y) + 'px)' + 'scale(' + this.scaleCount * e.scale + ')'; // 应用拖动和缩放效果
+      });
+
+      // 监听panend手势，用于记录拖动的偏移量，以便在下一次拖动时保持连续性
+      hand.on('panend', (e) => {
+        x = e.deltaX + x; // 记录水平方向上的偏移量
+        y = e.deltaY + y; // 记录垂直方向上的偏移量
+      });
+    });
+  };
   const initSocketDialog = () => {
     showSocketDialog.value = true;
   };
@@ -1803,7 +2023,97 @@
 
   }
 </script>
-<style>
+<style lang="scss">
+  .fileItemPopup.nut-popup {
+    background-color: #fafafa;
+    padding: 40px 40px;
+    box-sizing: border-box;
+    .fileItem_header {
+      display: grid;
+      grid-template-columns: 100px auto;
+      gap: 30px;
+      align-items: center;
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+      .fileItem_header_right > div {
+        font-size: 30px;
+        font-weight: 600;
+        line-height: 50px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .fileItem_body {
+      margin-top: 50px;
+      .optionBox {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        // place-items: center;
+        justify-items: center;
+        gap: 25px;
+        padding: 30px;
+        & > div {
+          width: 100%;
+          border-radius: 25px;
+          border: 1px solid #ddd1d1;
+          background-color: #5758a0;
+          height: 170px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-evenly;
+          color: #fff;
+          svg {
+            width: 60px;
+            height: 60px;
+          }
+        }
+      }
+      .ipfs {
+        border-radius: 25px;
+        border: 1px solid #ddd1d1;
+        background-color: #5758a0;
+        p {
+          display: grid;
+          grid-template-columns: auto 100px;
+          gap: 100px;
+          align-items: center;
+          border-bottom: 2px solid #fff;
+          height: 100px;
+          line-height: 100px;
+          box-sizing: border-box;
+          padding: 0px 15px;
+
+          & > * {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 25px;
+            color: #fafafa;
+          }
+          svg {
+            height: 60px;
+            width: 60px;
+          }
+        }
+        p:last-child {
+          border-bottom: 0px;
+        }
+      }
+    }
+
+    .nut-popup__close-icon {
+      background-color: #ccccccc2;
+      border-radius: 50%;
+      color: #fff;
+    }
+  }
+
   .fileUpdateIcon {
     position: absolute;
     bottom: 8px;
@@ -1843,6 +2153,17 @@
   }
 </style>
 <style lang="scss" scoped>
+  .bottom_ipfs_info {
+    position: fixed;
+    bottom: 100px;
+    padding: 20px;
+    background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    svg {
+      color: $main_blue;
+    }
+  }
   .file_list {
     height: calc(100vh - 310px);
     overflow: auto;
@@ -1898,22 +2219,59 @@
   .detail_over {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 30px 10px;
+    justify-content: center;
+    padding: 0px 10px;
     background: #000;
     box-sizing: border-box;
+    // overflow: auto;
+    z-index: 99;
+    .detail_top {
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(180deg, #00000059, transparent);
+      z-index: 99;
+    }
     .middle_img {
-      max-height: calc(100vh - 500px);
-
+      max-height: 100%;
       .nut-image {
         width: 100%;
         height: 100%;
       }
+      :deep {
+        .van-swipe {
+          width: 100%;
+          height: 100%;
+          .van-swipe__track {
+            align-items: center;
+            width: 100% !important;
+            img {
+              // width: 100%;
+              width: unset;
+              max-width: 100%;
+              margin: 0 auto;
+            }
+          }
+        }
+      }
     }
     .bottom_action {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
       display: flex;
       justify-content: space-evenly;
-      height: 200px;
+      height: 140px;
+      background: linear-gradient(0deg, #00000059, transparent);
+
       margin-top: 20px;
       div {
         text-align: center;
@@ -2071,8 +2429,8 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    padding: 20px;
-    border-top: 1px solid #eee;
+    padding: 20px 20px 20px 40px;
+    border-top: 1px solid #efefef;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -2091,6 +2449,7 @@
       img {
         width: 50px !important;
         height: 50px !important;
+        border-radius: 0.4rem;
       }
       &.is_checked {
         width: 60px;
@@ -2112,12 +2471,13 @@
       img {
         width: 80px;
         height: 80px;
+        border-radius: 0.3rem;
       }
     }
     .name_box {
       width: calc(100% - 500px);
       flex: 1;
-      margin-left: 30px;
+      margin-left: 40px;
       margin-right: 30px;
       p:first-child {
         white-space: nowrap;
@@ -2138,8 +2498,8 @@
       svg,
       img {
         object-fit: contain;
-        height: 2rem;
-        width: 2rem;
+        height: 1.5rem;
+        width: 1.5rem;
         margin-left: 20px;
         cursor: pointer;
       }
@@ -2150,6 +2510,23 @@
       align-items: center;
       width: 80px;
       height: 80px;
+    }
+    .right_radio {
+      height: 80px;
+      width: 80px;
+      :deep {
+        .nut-checkbox {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          height: 100%;
+          margin-right: 0;
+        }
+        .nut-checkbox__label {
+          display: none;
+        }
+      }
     }
     .right_more {
       width: 50px;
@@ -2282,6 +2659,7 @@
     }
   }
   .custom-content {
+    width: 100%;
     p {
       padding: 30px 20px;
       color: #909090;
@@ -2459,8 +2837,8 @@
       }
     }
     .list_item {
-      padding: 5px 20px;
-      border-top: 1px solid #eee;
+      padding: 5px 20px 5px 40px;
+      border-top: 1px solid #efefef;
 
       &:active,
       &:hover {
@@ -2508,6 +2886,23 @@
         align-items: center;
         width: 80px;
         height: 80px;
+      }
+      .right_radio {
+        height: 80px;
+        width: 80px;
+        :deep {
+          .nut-checkbox {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            margin-right: 0;
+          }
+          .nut-checkbox__label {
+            display: none;
+          }
+        }
       }
       .right_more {
         width: 30px;

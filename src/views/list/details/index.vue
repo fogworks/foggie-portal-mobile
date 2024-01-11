@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="top_box">
+    <div :class="['top_box', isAvailableOrder ? '' : 'isHistory']">
       <TopBack class="detail_top">
         <div v-if="bucketName" style="text-decoration: underline; cursor: pointer" @click="dialogShow = true">
           <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
@@ -73,7 +73,10 @@
             <p>Miner Tool</p>
           </div>
 
-          <div :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' ? 'router_disabled' : '']" @click="getKey">
+          <div
+            :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+            @click="getKey"
+          >
             <div class="svg_box svg_box2 order-icon-recycle">
               <!-- <keySolid color="#fff" /> -->
               <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
@@ -148,7 +151,10 @@
               <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else src="@/assets/svg/home/file.svg" alt="" />
             </div>
-            <p>{{ item.name }}</p>
+            <div class="name_box">
+              <p>{{ item.name }}</p>
+              <p>{{ item.date || '' }}</p>
+            </div>
           </div>
         </div>
         <p class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></p>
@@ -158,7 +164,7 @@
       <Teleport to="body">
         <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
           <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-          <HLSVideo v-if="detailRow.value.type && detailRow.value.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
+          <HLSVideo v-if="detailRow.value.category == 2" :imgUrl="imgUrl"></HLSVideo>
           <pre v-else-if="detailRow.value.detailType == 'txt'" id="txtContainer"></pre>
           <MyAudio v-else-if="detailRow.value.category == 3" :audioUrl="detailRow.value.imgUrl"></MyAudio>
           <div v-else-if="imgUrl" class="middle_img">
@@ -169,7 +175,7 @@
             </nut-image>
           </div>
           <div class="bottom_action">
-            <div>
+            <div v-if="isAvailableOrder">
               <IconShare @click="handlerClick('share')"></IconShare>
               <p>Share</p>
             </div>
@@ -348,7 +354,7 @@
       </Teleport>
     </div>
     <uploader
-      v-if="isMobileOrder"
+      v-if="isMobileOrder && isAvailableOrder"
       :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
@@ -372,7 +378,7 @@
             storage solution for a wide range of applications.</div
           >
         </div>
-        <div class="my_dialog_title">
+        <div class="my_dialog_title" v-if="isAvailableOrder">
           <nut-button type="primary" @click="getKey">S3 Endpoint</nut-button>
         </div>
       </div>
@@ -430,7 +436,7 @@
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
-  import { getSecondTime } from '@/utils/util';
+  import { getSecondTime, getType } from '@/utils/util';
   import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
   import ErrorPage from '@/views/errorPage/index.vue';
   // import { status } from 'grpc';
@@ -460,6 +466,7 @@
     deviceType,
     orderInfo,
     getOrderInfo,
+    isAvailableOrder,
   } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
   const {
@@ -634,37 +641,6 @@
     });
   };
 
-  const getType = (fileName: string) => {
-    if (fileName.endsWith('.jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.svg')) {
-      return 1;
-    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mp4')) {
-      return 2;
-    } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
-      return 4;
-    } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar') || fileName.endsWith('.gz') || fileName.endsWith('.tar')) {
-      return 5;
-    } else if (fileName.endsWith('.cmd')) {
-      return 5;
-    } else if (fileName.endsWith('.css')) {
-      return 5;
-    } else if (fileName.endsWith('.mp3')) {
-      return 3;
-    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      return 4;
-    } else if (fileName.endsWith('.pdf')) {
-      return 4;
-    } else if (fileName.endsWith('.ppt')) {
-      return 4;
-    } else if (fileName.endsWith('.text') || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
-      return 4;
-    } else if (fileName.endsWith('.html')) {
-      return 5;
-    } else if (fileName.endsWith('/')) {
-      return 5;
-    } else {
-      return 5;
-    }
-  };
   const detailShow = ref(false);
   const imgUrl = ref('');
   const detailRow = reactive({ value: {} });
@@ -1002,7 +978,7 @@
     xhr.send(options.formData);
   };
   const getKey = () => {
-    if (orderInfo.value.electronic_type == '1') {
+    if (orderInfo.value.electronic_type == '1' || !isAvailableOrder.value) {
       return false;
     } else {
       router.push({
@@ -1127,17 +1103,25 @@
     let port = orderInfo.value.rpc.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
-    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
-      type = 'img';
+    if (
+      type === 'png' ||
+      type === 'bmp' ||
+      type === 'gif' ||
+      type === 'jpeg' ||
+      type === 'jpg' ||
+      type === 'svg' ||
+      type === 'ico' ||
+      type === 'webp'
+    ) {
       console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, type === 'ico' ? false : true);
       // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
@@ -1419,6 +1403,7 @@
         uuid: orderInfo.value.uuid,
         amb_uuid: orderInfo.value.amb_uuid,
         domain: orderInfo.value.domain,
+        type: isAvailableOrder.value ? '' : 'history',
       },
     });
     window.sessionStorage.removeItem('myHistoryOrder');
@@ -1792,7 +1777,8 @@
         display: flex;
         flex-direction: row;
         span {
-          color: #ff7b1d;
+          // color: #ff7b1d;
+          color: #9cb77d;
         }
       }
 
@@ -1811,6 +1797,9 @@
       padding-right: 10px !important;
       //   transition: all 0.3s;
     }
+  }
+  .isHistory {
+    background: #2b2929;
   }
 
   .detail_box {
@@ -2011,9 +2000,9 @@
     }
 
     .file_list {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-gap: 0.5rem;
+      // display: grid;
+      // grid-template-columns: repeat(4, 1fr);
+      // grid-gap: 0.5rem;
       margin-top: 20px;
       background: #fff;
       border-radius: 16px;
@@ -2021,15 +2010,29 @@
     .file_list_img {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      grid-gap: 0.5rem;
+      grid-gap: 0.2rem;
+      justify-items: center;
       margin-top: 20px;
+      padding: 0 1rem;
       background: #fff;
       border-radius: 16px;
+      .list_item {
+        width: 120px;
+        height: 120px;
+        justify-content: center;
+        padding: 20px 0;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 0.3rem;
+        }
+      }
     }
 
     .list_item {
       display: flex;
-      flex-direction: column;
+      // flex-direction: column;
       justify-content: flex-start;
       align-items: center;
       padding: 20px;

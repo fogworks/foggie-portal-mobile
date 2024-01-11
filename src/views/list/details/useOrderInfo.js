@@ -20,6 +20,16 @@ export default function useOrderInfo() {
   let header = new Prox.default.ProxHeader();
   let metadata = ref({});
   const deviceType = computed(() => orderInfo.value.device_type);
+  const isAvailableOrder = computed(() => {
+    if (
+      [4, 5].includes(orderInfo.value.state)
+      // || !merkleState.value
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  });
   const token = computed(() => {
     if (deviceType.value == 'space') {
       return orderInfo.value.upload_file_token;
@@ -119,6 +129,7 @@ export default function useOrderInfo() {
   };
 
   return {
+    isAvailableOrder,
     getSummary,
     bucketName,
     orderInfo,

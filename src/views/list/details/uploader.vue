@@ -56,7 +56,7 @@
   import { showToast, showNotify } from '@nutui/nutui';
   import { save_upload, valid_upload, get_unique_order } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
-  import { getSecondTime } from '@/utils/util';
+  import { getSecondTime, getType } from '@/utils/util';
   import { update_order_size } from '@/api/amb';
   import { delay, throttle } from 'lodash';
   import { poolUrl } from '@/setting.js';

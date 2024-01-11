@@ -46,7 +46,7 @@
           <p>Name</p>
           <p>{{ defaultFileList[0].name }} <EditIcon @click="startRename"></EditIcon></p>
           <div class="deploy_action">
-            <nut-button class="block_button" @click="clearUploadList">Edit and upload</nut-button>
+            <nut-button type="primary" class="block_button" @click="clearUploadList">Edit and upload</nut-button>
           </div>
         </div>
       </div>
@@ -106,7 +106,7 @@
   import { showToast, showNotify } from '@nutui/nutui';
   import { save_upload, valid_upload, get_unique_order } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
-  import { getSecondTime } from '@/utils/util';
+  import { getSecondTime, getType } from '@/utils/util';
   import { delay, throttle } from 'lodash';
   import { poolUrl } from '@/setting.js';
   import CryptoJS from 'crypto-js';
@@ -783,6 +783,7 @@
     align-items: center;
     width: 20rem;
     height: 20rem;
+    text-align: center;
     box-shadow:
       rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
       rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
@@ -854,7 +855,7 @@
       margin-top: 0.8rem;
       :deep {
         .nut-button {
-          width: 45%;
+          width: 60%;
         }
       }
     }

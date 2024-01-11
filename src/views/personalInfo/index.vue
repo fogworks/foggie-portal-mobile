@@ -21,7 +21,18 @@
       <nut-cell v-else class="not_amb" title="AGENT Invitation Code" :desc="userInfo.amb_promo_code"></nut-cell>
     </nut-cell-group>
     <nut-cell-group title="Linked MetaMask Wallet" class="info_title wallet_info">
-      <nut-cell v-for="item in walletInfo" title="Address" :desc="item.address"></nut-cell>
+      <!-- <nut-cell :desc="item.address"></nut-cell> -->
+      <nut-cell v-for="(item, index) in walletInfo">
+        <template #title>
+          <span v-show="index == 0">ERC20 Address</span>
+        </template>
+        <template #desc>
+          <span v-if="item.eyeState">{{ item.address }}</span>
+          <span v-else>{{ item.address.slice(0, 5) + '...' + item.address.slice(-5) }}</span>
+          <eyeOffIon v-if="item.eyeState" @click="item.eyeState = false" style="font-size: 12px; margin-left: 8px" />
+          <eyeIon v-if="!item.eyeState" @click="item.eyeState = true" style="font-size: 12px; margin-left: 8px" />
+        </template>
+      </nut-cell>
       <div class="add_link_wallet" @click="showAllWalletList"><MetaMask></MetaMask> Add</div>
     </nut-cell-group>
     <nut-dialog teleport="#app" title="Link Wallet" v-model:visible="showAccountList">
@@ -45,6 +56,8 @@
 </template>
 
 <script setup>
+  import eyeOffIon from '~icons/ion/eye-off';
+  import eyeIon from '~icons/ion/eye';
   import { inject } from 'vue';
   import MetaMask from '~icons/home/metamask.svg';
   import { useUserStore } from '@/store/modules/user';
@@ -147,12 +160,18 @@
   .add_link_wallet {
     padding: 20px 0;
     text-align: center;
-    color: $main-blue;
+    color: #fff;
+    // background-color: $main-blue;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     cursor: pointer;
     svg {
       width: 1.5rem;
       height: 1.5rem;
+      margin-right: 0.5rem;
       vertical-align: middle;
+    }
+    &:hover {
+      opacity: 0.8;
     }
   }
 </style>
