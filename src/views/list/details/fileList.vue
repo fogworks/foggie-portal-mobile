@@ -954,7 +954,7 @@
   //move
   const confirmMove = () => {
     const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
-    const targetObject = (val: { name: string; }) => {
+    const targetObject = (val: { name: string }) => {
       if (movePrefix.value.length) {
         return movePrefix.value.join('/') + '/' + val.name;
       } else {
@@ -963,7 +963,10 @@
     };
     let index = 0;
     const length = checkData.length - 1;
-    const rename = function (resolve: { (value: unknown): void; (arg0: boolean): void; }, reject: { (reason?: any): void; (arg0: boolean): void; }) {
+    const rename = function (
+      resolve: { (value: unknown): void; (arg0: boolean): void },
+      reject: { (reason?: any): void; (arg0: boolean): void },
+    ) {
       if (targetObject(checkData[index]).length > 1024) {
         showToast.warn('The file path cannot exceed a maximum of 1024 characters, operation failed');
         if (index === length) {
@@ -985,7 +988,7 @@
       ProxRenameObject.setFiletype(checkData[index].fileType);
       console.log(ProxRenameObject, 'ProxRenameObject');
 
-      server.renameObjects(ProxRenameObject, {}, (err: { message: any; }, data: any) => {
+      server.renameObjects(ProxRenameObject, {}, (err: { message: any }, data: any) => {
         if (data) {
           if (index === length) {
             showToast.success('Move successful');
@@ -1080,7 +1083,7 @@
       ProxFileInfo.setSize(0);
       console.log(ProxFileInfo, 'ProxFileInfo');
 
-      server.touchFile(ProxFileInfo, metadata.value, (err: { message: any; }, data: any) => {
+      server.touchFile(ProxFileInfo, metadata.value, (err: { message: any }, data: any) => {
         if (data) {
           showToast.success('Create successful');
           renameShow.value = false;
@@ -1099,7 +1102,7 @@
       ProxRenameObject.setFiletype(checkData[0].fileType);
       console.log(ProxRenameObject, 'ProxRenameObject');
 
-      server.renameObjects(ProxRenameObject, metadata.value, (err: { message: any; }, data: any) => {
+      server.renameObjects(ProxRenameObject, metadata.value, (err: { message: any }, data: any) => {
         if (data) {
           showToast.success('Rename successful');
           renameShow.value = false;
@@ -1214,7 +1217,7 @@
       const onOk = async () => {
         const d = await cloudPin(checkData[0], 'ipfs', 'unpin');
         if (d) {
-          tableData.value.map((el: {cid: any}) => {
+          tableData.value.map((el: { cid: any }) => {
             if (el.cid && el.cid == checkData[0].cid) {
               el.isPin = false;
             }
@@ -1651,7 +1654,6 @@
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
       if (type == 'space') {
-
         // let ip = orderInfo.value.rpc.split(':')[0];
         // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
@@ -1798,8 +1800,6 @@
     await getOrderInfo();
     switchType(category1);
 
-    
-    
     initWebSocket();
   };
   // onUnmounted(() => {
@@ -1830,7 +1830,7 @@
       fileSocket.value.send(JSON.stringify(authMessage));
     };
 
-    fileSocket.value.onmessage = (event: { data: string; }) => {
+    fileSocket.value.onmessage = (event: { data: string }) => {
       const message = JSON.parse(event.data);
       const currentFolder = window.sessionStorage.getItem('currentFolder');
       console.log('Received message from server:', message, currentFolder);
@@ -1851,14 +1851,7 @@
         }
       }
 
-      console.log(
-        '888888',
-        dirArr,
-        dirFile,
-        currentFolder,
-        dirFile === currentFolder,
-        dirFileName !== uploadFileName,
-      );
+      console.log('888888', dirArr, dirFile, currentFolder, dirFile === currentFolder, dirFileName !== uploadFileName);
       if (dirFile === currentFolder) {
         if (detailShow.value) {
           setTimeout(() => {
@@ -1941,7 +1934,7 @@
     fileSocket.value.onclose();
   };
 
-  const doSocketFn = async (msg: { action: any; fileInfo: any; })=> {
+  const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
     console.log('doSocketFn', msg, tableData.value);
     const action = msg.action;
     const fileInfo = msg.fileInfo;
@@ -1952,19 +1945,19 @@
       refresh();
       return;
     }
-   
+
     if (action === 'FILE_ADD') {
       let index = keys[0].lastIndexOf('/');
       let name = keys[0].substring(index + 1);
       const date = transferGMTTime(fileInfo.lastModified * 1000);
-      const target = tableData.value.find((el: { cid: any; }) => el.cid === cid[0]);
+      const target = tableData.value.find((el: { cid: any }) => el.cid === cid[0]);
       if (!target) {
         const type = keys[0].substring(keys[0].lastIndexOf('.') + 1);
 
         const data = {
           cid: cid[0],
           key: keys[0],
-        }
+        };
         const imgData = await handleImg(data, type, false);
         let category = 0;
         if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
@@ -2007,21 +2000,33 @@
         };
         tableData.value.push(item);
       }
-
     } else if (action === 'FILE_PIN') {
-      tableData.value.map((el: { cid: any; isPin: boolean; }) => {
+      tableData.value.map((el: { cid: any; isPin: boolean }) => {
         if (el.cid === cid[0]) {
           el.isPin = true;
         }
       });
     } else if (action === 'FILE_CHANGE') {
-
     } else if (action === 'FILE_DELETE') {
       console.log('FILE_DELETE', keys);
-      tableData.value = tableData.value.filter((item: { key: any; })=> keys.indexOf(item.key) === -1);
-    } else if (action === 'FILE_PINNING') {}
+      tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+    } else if (action === 'FILE_PINNING') {
+    }
+  };
 
-  }
+  const fileItemPopupIsShow = ref(false);
+
+  watch(
+    () => selectArr.value,
+    (newVal, oldVal) => {
+      if (newVal.length == 1 && oldVal.length == 0) {
+        console.log(newVal);
+
+        fileItemPopupIsShow.value = true;
+      }
+    },
+    { deep: true },
+  );
 </script>
 <style lang="scss">
   .fileItemPopup.nut-popup {

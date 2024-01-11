@@ -10,7 +10,7 @@
         <nut-fixed-nav v-model:visible="dragIsShow" :position="{ bottom: '200px' }" :overlay="true" type="right">
           <template #list>
             <ul class="nut-fixed-nav__list">
-              <nut-searchbar v-model="keyWord" placeholder="Search by order number" :clearable="false" class="my_top_search">
+              <nut-searchbar v-model="keyWord" placeholder="Search by bucket number" :clearable="false" class="my_top_search">
                 <template #leftin>
                   <Search />
                 </template>
