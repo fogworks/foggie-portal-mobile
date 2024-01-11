@@ -61,6 +61,9 @@
   import { delay, throttle } from 'lodash';
   import { poolUrl } from '@/setting.js';
   import useSyncPhotos from './useSyncPhotos.js';
+  import CryptoJS from 'crypto-js';
+
+
   const isAndroid = computed(() => {
     return import.meta.env.VITE_BUILD_TYPE == 'ANDROID';
   });
@@ -125,7 +128,7 @@
       }
     });
   };
-  const beforeupload = (file: any) => {
+  const beforeupload = async(file: any) => {
     return new Promise(async (resolve, reject) => {
       const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
       if (!bucketName || !accessKeyId || !secretAccessKey) {
@@ -151,7 +154,6 @@
         showToast.fail(content);
         return reject(false);
       }
-
       let fileCopy = file[0];
       if (fileCopy.name == 'image.jpg') {
         const timestamp = Date.now();
@@ -178,6 +180,7 @@
         return reject();
       }
 
+
       uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
 
       const policy = {
@@ -193,6 +196,11 @@
 
       let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
       const signature = enc.Base64.stringify(hmac);
+      console.time('md5Hash');
+      const md5Hash = await calculateMD5(fileCopy);
+      console.timeEnd('md5Hash');
+      console.log('md5Hash-------', md5Hash);
+      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
 
       formData.value = {
         Key: encodeURIComponent(prefixStr + fileCopy.name),
@@ -200,11 +208,52 @@
         Signature: signature,
         Awsaccesskeyid: accessKeyId,
         category: getType(fileCopy.name),
+        'Content-Md5': md5Hash,
+        'App-Type': appType,
       };
 
       resolve([fileCopy]);
     });
   };
+
+
+
+  const calculateMD5 = (file: { size: number; slice: (arg0: number, arg1: any) => Blob; })=> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      const chunkSize = 1024 * 1024; // 1MB
+      const chunks = Math.ceil(file.size / chunkSize);
+      let currentChunk = 0;
+      let md5 = CryptoJS.algo.MD5.create();
+
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const wordArray = CryptoJS.lib.WordArray.create(data);
+        md5.update(wordArray);
+
+        currentChunk++;
+
+        if (currentChunk < chunks) {
+          loadNext();
+        } else {
+          const hash = md5.finalize().toString();
+          resolve(hash);
+        }
+      };
+
+      reader.onerror = function() {
+        reject(new Error("Failed to read file"));
+      };
+
+      function loadNext() {
+        const start = currentChunk * chunkSize;
+        const end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
+        reader.readAsArrayBuffer(file.slice(start, end));
+      }
+
+      loadNext();
+    });
+  }
 
   const getType = (fileName: string) => {
     if (

@@ -520,7 +520,7 @@
   import { useRoute, useRouter } from 'vue-router';
   import { Search2, TriangleUp, Loading } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
-  import { transferUTCTime, getfilesize } from '@/utils/util';
+  import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import ImgList from './imgList.vue';
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
@@ -685,7 +685,7 @@
     if (category.value == 1) {
       return imgCheckedData.value;
     } else {
-      return tableData.value.filter((el) => el.checked);
+      return tableData.value.filter((el: {checked: any}) => el.checked);
     }
   });
 
@@ -1037,11 +1037,11 @@
       // });
     } else if (type == 'nft') {
       if (checkData.length > 1) return false;
-      await createNFT(checkData[0], accessKeyId.value, secretAccessKey.value, bucketName.value);
+      createNFT(checkData[0], accessKeyId.value, secretAccessKey.value, bucketName.value);
     } else if (type === 'ipfs') {
       const onOk = async () => {
         await cloudPin(checkData[0], 'ipfs');
-        doSearch('', prefix.value, true);
+        // doSearch('', prefix.value, true);
       };
       showDialog({
         title: 'Warning',
@@ -1052,8 +1052,15 @@
       });
     } else if (type === 'unipfs') {
       const onOk = async () => {
-        await cloudPin(checkData[0], 'ipfs', 'unpin');
-        doSearch('', prefix.value, true);
+        const d = await cloudPin(checkData[0], 'ipfs', 'unpin');
+        if (d) {
+          tableData.value.map((el: {cid: any}) => {
+            if (el.cid && el.cid == checkData[0].cid) {
+              el.isPin = false;
+            }
+          });
+        }
+        // doSearch('', prefix.value, true);
       };
       showDialog({
         title: 'Warning',
@@ -1078,7 +1085,7 @@
   };
 
   const uploadComplete = (file: any) => {
-    getFileList('', prefix.value, true);
+    // getFileList('', prefix.value, true);
   };
 
   function getFileList(scroll: string, prefix: any[], reset = false) {
@@ -1619,12 +1626,8 @@
     await getOrderInfo();
     switchType(category1);
 
-    let param = {
-      order_uuid: route?.query?.uuid,
-    };
-    const signData = await get_order_sign(param);
-    socketDate.value = signData?.result?.data?.timestamp;
-    socketToken.value = signData?.result?.data?.sign;
+    
+    
     initWebSocket();
   };
   // onUnmounted(() => {
@@ -1635,7 +1638,13 @@
     doSearch('', prefix.value, true);
   };
 
-  const initWebSocket = () => {
+  const initWebSocket = async () => {
+    let param = {
+      order_uuid: route?.query?.uuid,
+    };
+    const signData = await get_order_sign(param);
+    socketDate.value = signData?.result?.data?.timestamp;
+    socketToken.value = signData?.result?.data?.sign;
     console.log('initWebSocket-----------');
     const url = `wss://${bucketName.value}.devus.u2i.net:6008/ws`;
     fileSocket.value = new WebSocket(url);
@@ -1652,14 +1661,14 @@
     fileSocket.value.onmessage = (event: { data: string; }) => {
       const message = JSON.parse(event.data);
       const currentFolder = window.sessionStorage.getItem('currentFolder');
-      // console.log('Received message from server:', message, currentFolder);
+      console.log('Received message from server:', message, currentFolder);
       const uploadFileName = window.sessionStorage.getItem('uploadFileName');
       let fileInfo = message.fileInfo;
       let dirArr = fileInfo.keys;
       const updateBy = fileInfo.updateBy;
       let dirFile = '';
       let dirFileName = '';
-      if (dirArr.length) {
+      if (dirArr && dirArr.length > 0) {
         let index = dirArr[0].lastIndexOf('/');
         if (index > -1) {
           dirFile = dirArr[0].substring(0, index + 1);
@@ -1675,14 +1684,14 @@
         dirArr,
         dirFile,
         currentFolder,
-        dirFileName,
-        uploadFileName,
         dirFile === currentFolder,
         dirFileName !== uploadFileName,
       );
-      if (dirFile === currentFolder && dirFileName !== uploadFileName) {
+      if (dirFile === currentFolder) {
         if (detailShow.value) {
-          initSocketDialog();
+          setTimeout(() => {
+            initWebSocket();
+          }, 3000);
         } else {
           doSocketFn(message);
         }
@@ -1712,29 +1721,84 @@
     fileSocket.value.onclose();
   };
 
-  const doSocketFn = (msg: { action: any; fileInfo: any; })=> {
+  const doSocketFn = async (msg: { action: any; fileInfo: any; })=> {
     console.log('doSocketFn', msg, tableData.value);
     const action = msg.action;
     const fileInfo = msg.fileInfo;
     const keys = fileInfo.keys;
     const bucket = fileInfo.bucket;
     const cid = fileInfo.cid;
+    if (!action || !keys || keys.length === 0) {
+      refresh();
+      return;
+    }
+   
     if (action === 'FILE_ADD') {
-      const target = tableData.value.find((el: { cid: any; }) => el.cid === cid);
+      let index = keys[0].lastIndexOf('/');
+      let name = keys[0].substring(index + 1);
+      const date = transferGMTTime(fileInfo.lastModified * 1000);
+      const target = tableData.value.find((el: { cid: any; }) => el.cid === cid[0]);
       if (!target) {
-        // return false;
+        const type = keys[0].substring(keys[0].lastIndexOf('.') + 1);
+
+        const data = {
+          cid: cid[0],
+          key: keys[0],
+        }
+        const imgData = await handleImg(data, type, false);
+        let category = 0;
+        if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
+          category = 1;
+        }
+        const url = imgData.imgHttpLink;
+        const isSystemImg = imgData.isSystemImg;
+        const url_large = imgData.imgHttpLarge;
+
+        console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
+
+        let item = {
+          isDir: false,
+          checked: false,
+          name,
+          category,
+          fileType: 2,
+          fullName: keys[0],
+          key: keys[0],
+          idList: [
+            {
+              name: 'IPFS',
+              code: '',
+            },
+            {
+              name: 'CYFS',
+              code: '',
+            },
+          ],
+          date,
+          pubkey: cid[0],
+          cid: cid[0],
+          imgUrl: url,
+          imgUrlLarge: url_large,
+          share: {},
+          isSystemImg,
+          canShare: cid[0] ? true : false,
+          isPin: false,
+          isPinCyfs: false,
+        };
+        tableData.value.push(item);
       }
 
     } else if (action === 'FILE_PIN') {
       tableData.value.map((el: { cid: any; isPin: boolean; }) => {
-        if (el.cid === cid) {
+        if (el.cid === cid[0]) {
           el.isPin = true;
         }
       });
     } else if (action === 'FILE_CHANGE') {
 
     } else if (action === 'FILE_DELETE') {
-      tableData.value = tableData.value.filter(item => item.cid !== cid);
+      console.log('FILE_DELETE', keys);
+      tableData.value = tableData.value.filter((item: { key: any; })=> keys.indexOf(item.key) === -1);
     } else if (action === 'FILE_PINNING') {}
 
   }

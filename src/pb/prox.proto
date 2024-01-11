@@ -472,6 +472,19 @@ service Service {
 	rpc ListCreds(ProxGetCredRequest)returns(ProxCredsList){}
 	rpc GenPinningCred(ProxGeneratePinCredRequest)returns(ProxGeneratePinCredResp){}
 	rpc DeleteCred(ProxCredRequest)returns(ProxCredResp){}
+	rpc UpdateNFT(ProxUpdateNFTRequest)returns(ProxUpdateNFTResp){}
+}
+message ProxNFTInfo {
+	string cid = 1;
+	string contractID = 2;
+	string tokenID = 3;
+}
+message ProxUpdateNFTRequest{
+	ProxHeader header = 1;
+repeated ProxNFTInfo nftInfos= 2;
+}
+message ProxUpdateNFTResp {
+	string status = 1;
 }
 message ProxCred{
 	string accessKey = 1;
