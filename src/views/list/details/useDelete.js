@@ -14,22 +14,30 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
     tableLoading.value = true;
     let cids = [];
     let prefixes = [];
-    let objects = [];
+    let objects = '';
+    let ProxDeleteObjectRequest = new Prox.default.ProxDeleteObjectRequest();
+    let ProxUploads = [];
+    
     for (let i = 0; i < item.length; i++) {
       if (item[i].type == 'application/x-directory') {
         prefixes.push(item[i].key + '');
       } else {
-        objects.push({
-          pubkey: item[i].pubkey ? item[i].pubkey + '' : encodeURIComponent(item[i].key + ''),
-        });
-        cids.push(item[i].cid + '');
+        // objects.push({
+        //   pubkey: item[i].pubkey ? item[i].pubkey + '' : encodeURIComponent(item[i].key + ''),
+        // });
+        const ProxUpload = new Prox.default.ProxUpload();
+
+        objects = encodeURIComponent(item[i].key + '');
+        ProxUpload.setKey(objects);
+        ProxUploads.push(ProxUpload);
+
+        // cids.push(item[i].cid + '');
       }
     }
-    let ProxDeleteObjectRequest = new Prox.default.ProxDeleteObjectRequest();
-    ProxDeleteObjectRequest.setCidsList(cids);
-    let ProxUpload = new Prox.default.ProxUpload();
-    ProxUpload.setKey(objects);
-    ProxDeleteObjectRequest.setObjectsList(ProxUpload);
+    // ProxDeleteObjectRequest.setCidsList(cids);
+    
+    ProxDeleteObjectRequest.setObjectsList(ProxUploads);
+   
     ProxDeleteObjectRequest.setObjectType('normal');
     ProxDeleteObjectRequest.setPrefixesList(prefixes);
     let ProxDeleteObjectReq = new Prox.default.ProxDeleteObjectReq();
@@ -40,6 +48,7 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
 
     let ip = `https://${orderInfo.value.domain}.${poolUrl}:7007`;
     let server = new grpcService.default.ServiceClient(ip, null, null);
+
 
     server.deleteObject(ProxDeleteObjectReq, metadata.value, (err, res) => {
       if (res) {
@@ -55,7 +64,7 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
         //   }
         // }
         nextTick(() => {
-          refresh();
+          // refresh();
         });
       } else {
         tableLoading.value = false;
