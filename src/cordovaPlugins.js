@@ -254,6 +254,7 @@ function syncPhotos(options) {
   });
 }
 const getType = (fileName) => {
+  fileName = fileName.toLowerCase();
   if (
     fileName.endsWith('.jpeg') ||
     fileName.endsWith('.jpg') ||

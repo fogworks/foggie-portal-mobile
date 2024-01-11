@@ -1,13 +1,24 @@
 <template>
   <nut-button class="upload_btn" type="primary" @click="popShow = true">+</nut-button>
-  <nut-popup closeable position="bottom" :style="{ height: '100%' }" v-model:visible="popShow">
+<Teleport to="body">
+
+  <nut-popup  closeable position="bottom" :style="{ height: '100%' }" v-model:visible="popShow">
     <div class="bucket_box">
+      <p style="text-align: center; font-size: 1.5rem; font-weight: 600">Quick Upload</p>
       <p class="title">
-        Upload Path:{{ bucketName }}/{{ uploadPath }}
-        <EditIcon v-if="!needSet && canSet" class="edit_button" type="primary" @click="needSet = !needSet"></EditIcon>
-        <CancelBoxIcon v-else-if="needSet && canSet" class="edit_button" type="primary" @click="getBucketAndPath"></CancelBoxIcon>
+        <span>
+            CUSTOM UPLOAD PATH
+        </span>
+        <div>
+          <span>
+            {{ bucketName }}/{{ uploadPath }}
+          </span>
+          <EditIcon v-if="!needSet && canSet" class="edit_button" type="primary" @click="needSet = !needSet"></EditIcon>
+          <CancelBoxIcon v-else-if="needSet && canSet" class="edit_button" type="primary" @click="getBucketAndPath"></CancelBoxIcon>
+        </div>
       </p>
       <template v-if="needSet && canSet">
+        <p class="title2" >Setting up the upload bucket and directory</p>
         <nut-infinite-loading
           v-if="!folderListShow"
           load-more-txt="No more bucket"
@@ -52,6 +63,7 @@
       :secretAccessKey="secretAccessKey"
       :bucketName="bucketName"
     ></FastUploader>
+  <p class="title2" v-if="!needSet">Select existing file casting</p>
     <nut-infinite-loading
       v-if="!needSet"
       load-more-txt="No more bucket"
@@ -71,6 +83,8 @@
       </div>
     </nut-infinite-loading>
   </nut-popup>
+</Teleport>
+
 </template>
 
 <script setup>
@@ -158,6 +172,13 @@
   };
   const getBucketAndPath = () => {
     folderListShow.value = false;
+    showToast.loading('Loading', {
+      cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+      id: 'setBucket',
+    });
     get_bucket_file()
       .then(async (res) => {
         if (res.code == 200) {
@@ -166,6 +187,7 @@
           if ([4, 5].includes(res.result.data.state)) {
             needSet.value = true;
             showToast.fail('This bucket has expired, please select a new bucket to upload.');
+            showToast.hide('setBucket');
             return false;
           } else {
             setDefaultBucketAndPath();
@@ -311,7 +333,7 @@
     flex-direction: column;
     margin-top: 3rem;
     .edit_button {
-      width: 1rem;
+      width: 2rem;
       height: 1.2rem;
       color: $main_blue;
       vertical-align: middle;
@@ -364,10 +386,43 @@
     }
   }
   .title {
+    margin: 1rem auto;
+    width: 18rem;
     color: #000;
     font-size: 0.8rem;
-    text-align: center;
+    text-align: left;
     margin-bottom: 1rem;
+    >span{
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    div{
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem;
+      background: #ccc;
+      border-radius: 0.8rem;
+      span{
+        display: block;
+        margin-right:1rem;
+        font-size: 1rem;
+        color: green;
+        text-overflow: ellipsis;
+    overflow: hidden;
+      }
+      svg{
+        width: 2rem;
+        height: 1.2rem;
+      }
+    }
+  }
+   .title2 {
+    width: 18rem;
+    margin: 1rem auto;
+    color: #000;
+    font-size: 1rem;
+    font-weight: 600;
   }
   :deep {
     .nut-form-item__label {
