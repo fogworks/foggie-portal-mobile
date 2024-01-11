@@ -1198,7 +1198,7 @@
     } else if (type == 'nft') {
       if (checkData.length > 1) return false;
       createNFT(checkData[0], accessKeyId.value, secretAccessKey.value, bucketName.value);
-    } else if (type === 'ipfs') {
+    } else if (type === 'pin') {
       const onOk = async () => {
         await cloudPin(checkData[0], 'ipfs');
         // doSearch('', prefix.value, true);
