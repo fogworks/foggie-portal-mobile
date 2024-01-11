@@ -456,7 +456,7 @@
         window.sessionStorage.removeItem('myHistoryOrder');
         window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(item));
         router.push({
-          name: 'orderSummary',
+          name: 'listDetails',
           query: {
             id: item.order_id,
             type: 'history',

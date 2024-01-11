@@ -490,6 +490,7 @@
       align-items: center;
       border-bottom: 1px solid #f7f1f1;
       .nut-form-item__label {
+        display: none !important;
         width: auto !important;
       }
     }

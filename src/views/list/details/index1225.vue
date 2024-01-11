@@ -403,7 +403,7 @@
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
-  import { getSecondTime } from '@/utils/util';
+  import { getSecondTime, getType } from '@/utils/util';
   import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
   import ErrorPage from '@/views/errorPage/index.vue';
   import { status } from 'grpc';
@@ -581,37 +581,6 @@
     });
   };
 
-  const getType = (fileName: string) => {
-    if (fileName.endsWith('.jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.svg')) {
-      return 1;
-    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mp4')) {
-      return 2;
-    } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
-      return 4;
-    } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar') || fileName.endsWith('.gz') || fileName.endsWith('.tar')) {
-      return 5;
-    } else if (fileName.endsWith('.cmd')) {
-      return 5;
-    } else if (fileName.endsWith('.css')) {
-      return 5;
-    } else if (fileName.endsWith('.mp3')) {
-      return 3;
-    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      return 4;
-    } else if (fileName.endsWith('.pdf')) {
-      return 4;
-    } else if (fileName.endsWith('.ppt')) {
-      return 4;
-    } else if (fileName.endsWith('.text') || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
-      return 4;
-    } else if (fileName.endsWith('.html')) {
-      return 5;
-    } else if (fileName.endsWith('/')) {
-      return 5;
-    } else {
-      return 5;
-    }
-  };
   const detailShow = ref(false);
   const imgUrl = ref('');
   const detailRow = reactive({ value: {} });

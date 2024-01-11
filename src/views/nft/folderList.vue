@@ -1,16 +1,14 @@
 <template>
   <div>
     <div class="rename_box move_box">
-      <IconNewFolder class="new_icon" @click="newFolderShow = true"></IconNewFolder>
-      <div
-        v-if="movePrefix.length"
-        class="top_back"
-        @click="
-          movePrefix.splice(-1);
-          getFileList('', movePrefix, true);
-        "
-      >
-        <p> {{ movePrefix.length ? movePrefix.slice(-1)[0] : '' }}</p>
+      <nut-button class="block_button" type="info" block @click="newFolderShow = true">
+        <IconNewFolder class="new_icon"></IconNewFolder>
+        New file directory
+      </nut-button>
+      <div class="top_path">
+        <p v-if="movePrefix.length > 1"> {{ bucketName + '/../' + movePrefix.slice(-1)[0] }}</p>
+        <p v-else-if="movePrefix.length == 1"> {{ bucketName + '/' + movePrefix.slice(-1)[0] }}</p>
+        <p v-else="movePrefix.length == 1"> {{ bucketName + '/' }}</p>
       </div>
       <nut-infinite-loading
         load-more-txt="No more content"
@@ -19,6 +17,22 @@
         :has-more="!!continuationToken2"
         @load-more="() => getFileList('', movePrefix, false)"
       >
+        <div
+          class="list_item"
+          @click="
+            movePrefix.splice(-1);
+            getFileList('', movePrefix, true);
+          "
+          v-if="movePrefix.length"
+        >
+          <div :class="['left_icon_box']">
+            <IconFolder></IconFolder>
+          </div>
+          <div class="name_box">
+            <p>..</p>
+            <!-- <p>{{ item.date || '' }}</p> -->
+          </div>
+        </div>
         <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in dirData" :key="index">
           <div :class="['left_icon_box']">
             <IconFolder></IconFolder>
@@ -31,25 +45,28 @@
       </nut-infinite-loading>
       <nut-button class="block_button" type="info" block @click="confirmSet">Confirm</nut-button>
     </div>
-    <nut-popup
-      teleport-disable
-      v-if="newFolderShow"
-      @closed="
-        newFolderShow = false;
-        newName = '';
-      "
-      position="bottom"
-      closeable
-      round
-      :style="{ height: '500px' }"
-      v-model:visible="newFolderShow"
-    >
-      <div class="rename_box">
-        <IconFolder style="display: block; margin: 0 auto"></IconFolder>
-        <nut-searchbar v-model="newName" :placeholder="'Please Input Folder Name'"></nut-searchbar>
-        <nut-button class="block_button" type="info" block @click="confirmNew">Confirm</nut-button>
-      </div>
-    </nut-popup>
+    <Teleport to="body">
+      <nut-popup
+        style="z-index: 2333"
+        z-index="2333"
+        v-if="newFolderShow"
+        @closed="
+          newFolderShow = false;
+          newName = '';
+        "
+        position="bottom"
+        closeable
+        round
+        :style="{ height: '500px' }"
+        v-model:visible="newFolderShow"
+      >
+        <div class="rename_box">
+          <IconFolder style="display: block; margin: 0 auto"></IconFolder>
+          <nut-searchbar v-model="newName" :placeholder="'Please Input Folder Name'"></nut-searchbar>
+          <nut-button class="block_button" type="info" block @click="confirmNew">Confirm</nut-button>
+        </div>
+      </nut-popup>
+    </Teleport>
   </div>
 </template>
 
@@ -293,7 +310,7 @@
         showToast.success('Create successful');
         newFolderShow.value = false;
         newName.value = '';
-        getFileList('', movePrefix, true);
+        getFileList('', movePrefix.value, true);
       } else {
         showToast.fail(err.message || 'Create failed');
       }
@@ -305,18 +322,28 @@
 </script>
 
 <style lang="scss" scoped>
+  .block_button {
+  }
   .move_box {
+    padding: 1rem;
     .new_icon {
       width: 2rem;
       height: 2rem;
-      margin-left: 1rem;
-      margin-bottom: 0.5rem;
+      vertical-align: middle;
+      color: #fff;
       cursor: pointer;
     }
-    .top_back {
+    .top_path {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
       cursor: pointer;
-
-      margin-bottom: 10px;
+      margin: 0.8rem;
+      font-size: 1.5rem;
+      .pre_path {
+        cursor: pointer;
+        color: $main_blue;
+      }
       p {
         margin: 0 5px;
         color: #000;
@@ -392,6 +419,9 @@
         }
       }
     }
+  }
+  .rename_box {
+    padding: 1rem;
   }
   @media screen and (min-width: 500px) {
     .move_box {

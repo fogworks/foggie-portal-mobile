@@ -102,18 +102,18 @@
             isNewFolder = true;
             renameShow = true;
           "
-          v-show="category == 0 && isMobileOrder"
+          v-show="category == 0 && isMobileOrder && isAvailableOrder"
           class="new_folder"
         ></IconNewFolder>
         <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
           <template #rightin> <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" /> </template>
         </nut-searchbar>
       </div>
-      <div class="check_top" v-else-if="isCheckMode">
+      <!-- <div class="check_top" v-if="isCheckMode && category != 1 && selectArr.length">
         <span @click="selectAll">{{ selectArr.length == tableData.length ? 'UnSelect' : 'Select' }} All</span>
         <span class="checked_num">{{ selectArr.length }} items selected</span>
         <span @click="cancelSelect">Cancel</span>
-      </div>
+      </div> -->
     </nut-sticky>
     <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
     <template v-else-if="category != 1">
@@ -209,30 +209,33 @@
         safe-area-inset-bottom
         placeholder
       >
-        <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
-          <template #icon>
-            <IconShare :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconShare>
-            <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
-          </template>
-        </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
-          <template #icon="props">
-            <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
-          </template>
-        </nut-tabbar-item>
-        <nut-tabbar-item
-          :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'Pin' : 'Un Pin'"
-          :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']"
-        >
-          <template #icon="props">
-            <IconIPFS :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconIPFS>
-          </template>
-        </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Move" :class="[category == 1 || !isMobileOrder ? 'is-disable' : '']">
-          <template #icon="props">
-            <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
-          </template>
-        </nut-tabbar-item>
+        <template v-if="isAvailableOrder">
+          <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
+            <template #icon>
+              <IconShare :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconShare>
+              <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
+            </template>
+          </nut-tabbar-item>
+          <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
+            <template #icon="props">
+              <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
+            </template>
+          </nut-tabbar-item>
+          <nut-tabbar-item
+            :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'Pin' : 'Un Pin'"
+            :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']"
+          >
+            <template #icon="props">
+              <IconIPFS :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconIPFS>
+            </template>
+          </nut-tabbar-item>
+          <nut-tabbar-item tab-title="Move" :class="[category == 1 || !isMobileOrder ? 'is-disable' : '']">
+            <template #icon="props">
+              <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
+            </template>
+          </nut-tabbar-item>
+        </template>
+
         <nut-tabbar-item tab-title="Download">
           <template #icon="props">
             <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
@@ -436,20 +439,33 @@
     </nut-popup>
     <Teleport to="body">
       <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
-        <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-        <HLSVideo v-if="chooseItem.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
+        <div class="detail_top">
+          <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+        </div>
+        <HLSVideo v-if="chooseItem.category == 2" :imgUrl="imgUrl"></HLSVideo>
         <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
         <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
         <div v-else-if="imgUrl" class="middle_img">
           <!-- v-if="chooseItem.type.split('/')[0] == 'video'" -->
-          <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
+          <!-- <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
             <template #loading>
               <Loading width="16px" height="16px" name="loading" />
             </template>
-          </nut-image>
+          </nut-image> -->
+          <van-swipe ref="swipe" @change="swipeChange" :initial-swipe="imgStartIndex" :show-indicators="false">
+            <van-swipe-item v-for="image in imgArray" :key="image.src">
+              <!-- <img :src="image.src" /> -->
+              <nut-image :src="image.src" fit="contain" position="center" show-loading>
+                <template #loading>
+                  <Loading width="16px" height="16px" name="loading" />
+                </template>
+              </nut-image>
+            </van-swipe-item>
+          </van-swipe>
+          <!-- <nut-image-preview :content-close="false" :show="true" :images="imgArray" :init-no="imgStartIndex" /> -->
         </div>
         <div class="bottom_action">
-          <div>
+          <div v-if="isAvailableOrder">
             <IconShare @click="handlerClick('share')"></IconShare>
             <p>Share</p>
           </div>
@@ -461,7 +477,7 @@
       </nut-overlay>
     </Teleport>
     <uploader
-      v-if="isMobileOrder"
+      v-if="isMobileOrder && isAvailableOrder"
       :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
@@ -560,6 +576,9 @@
   const router = useRouter();
   const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const state = reactive({
+    swipe: '',
+    imgArray: [],
+    imgStartIndex: 0,
     category: 0,
     keyWord: '',
     infinityValue: false,
@@ -615,6 +634,9 @@
   const showSocketDialog = ref(false);
 
   const {
+    swipe,
+    imgArray,
+    imgStartIndex,
     tableLoading,
     showTypeCheckPop,
     newName,
@@ -642,7 +664,9 @@
     isError,
     checkedItem,
   } = toRefs(state);
-  const { getSummary, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
+
+  const { isAvailableOrder, getSummary, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } =
+    useOrderInfo();
   provide('getSummary', getSummary);
   const {
     httpCopyLink,
@@ -668,7 +692,7 @@
     copyIPFS,
   } = useShare(orderInfo, header, deviceType, metadata);
   const shareCheckData = computed(() => {
-    return isCheckMode.value ? selectArr.value[0] : chooseItem.value;
+    return !detailShow.value ? selectArr.value[0] : chooseItem.value;
   });
   const showActionBtn = computed(() => {
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type === 3) {
@@ -777,6 +801,7 @@
           } else if (row.imgUrlLarge) {
             imgUrl.value = row.imgUrlLarge;
             detailShow.value = true;
+            imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
           }
         }
       }
@@ -785,9 +810,7 @@
   };
   const cancelSelect = () => {
     // isCheckMode.value = false;
-    // tableData.value.forEach((el) => {
-    //   el.checked = false;
-    // });
+
     checkedItem.value = [];
   };
   const selectAll = () => {
@@ -834,6 +857,7 @@
       } else if (row.imgUrlLarge) {
         imgUrl.value = row.imgUrlLarge;
         detailShow.value = true;
+        imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
       }
     }
   };
@@ -851,7 +875,7 @@
   };
   //move
   const confirmMove = () => {
-    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
+    const checkData = !detailShow.value ? selectArr.value : [chooseItem.value];
     const targetObject = (val) => {
       if (movePrefix.value.length) {
         return movePrefix.value.join('/') + '/' + val.name;
@@ -936,7 +960,7 @@
 
       return false;
     }
-    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
+    const checkData = !detailShow.value ? selectArr.value : [chooseItem.value];
 
     const targetObject = () => {
       if (isNewFolder.value) {
@@ -1022,7 +1046,7 @@
 
   const handlerClick = async (type: string) => {
     showActionPop.value = false;
-    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
+    const checkData = !detailShow.value ? selectArr.value : [chooseItem.value];
     if (type === 'move') {
       // if (category.value == 1) return false;
       movePrefix.value = [];
@@ -1288,17 +1312,25 @@
     let peerId = orderInfo.value.peer_id;
     // console.log(bucketName.value, 'bucketName');
 
-    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
-      type = 'img';
+    if (
+      type === 'png' ||
+      type === 'bmp' ||
+      type === 'gif' ||
+      type === 'jpeg' ||
+      type === 'jpg' ||
+      type === 'svg' ||
+      type === 'ico' ||
+      type === 'webp'
+    ) {
       //   console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, type === 'ico' ? false : true);
       // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
@@ -1342,6 +1374,7 @@
         dirData.value = [];
       } else {
         tableData.value = [];
+        imgArray.value = [];
       }
     }
     if (!accessKeyId.value) {
@@ -1473,6 +1506,10 @@
       if (moveShow.value) {
       } else {
         tableData.value.push(item);
+        if (item.category == 1) {
+          item.src = item.imgUrlLarge;
+          imgArray.value.push(item);
+        }
       }
     }
     if (data.isTruncated) {
@@ -1745,6 +1782,9 @@
       console.error('WebSocket connection error:', event);
     };
   };
+  function swipeChange(index) {
+    chooseItem.value = imgArray.value[index];
+  }
   function handleID(id) {
     if (id) {
       return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
@@ -1867,22 +1907,60 @@
   .detail_over {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     padding: 30px 10px;
+    padding-bottom: 150px;
+    padding-top: 150px;
     background: #000;
     box-sizing: border-box;
+    // overflow: auto;
+    z-index: 99;
+    .detail_top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 1rem;
+      background: #000;
+      z-index: 99;
+    }
     .middle_img {
-      max-height: calc(100vh - 500px);
+      max-height: calc(100vh - 300px);
+      overflow: auto;
 
       .nut-image {
         width: 100%;
         height: 100%;
       }
+      :deep {
+        .van-swipe {
+          width: 100%;
+          .van-swipe__track {
+            align-items: center;
+            width: 100% !important;
+            img {
+              // width: 100%;
+              width: unset;
+              max-width: 100%;
+              margin: 0 auto;
+            }
+          }
+        }
+      }
     }
     .bottom_action {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
       display: flex;
       justify-content: space-evenly;
-      height: 200px;
+      height: 140px;
+      background: #000;
       margin-top: 20px;
       div {
         text-align: center;
@@ -2040,8 +2118,8 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    padding: 20px;
-    border-top: 1px solid #eee;
+    padding: 20px 20px 20px 40px;
+    border-top: 1px solid #efefef;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -2060,6 +2138,7 @@
       img {
         width: 50px !important;
         height: 50px !important;
+        border-radius: 0.4rem;
       }
       &.is_checked {
         width: 60px;
@@ -2081,12 +2160,13 @@
       img {
         width: 80px;
         height: 80px;
+        border-radius: 0.3rem;
       }
     }
     .name_box {
       width: calc(100% - 500px);
       flex: 1;
-      margin-left: 30px;
+      margin-left: 40px;
       margin-right: 30px;
       p:first-child {
         white-space: nowrap;
@@ -2445,8 +2525,8 @@
       }
     }
     .list_item {
-      padding: 5px 20px;
-      border-top: 1px solid #eee;
+      padding: 5px 20px 5px 40px;
+      border-top: 1px solid #efefef;
 
       &:active,
       &:hover {

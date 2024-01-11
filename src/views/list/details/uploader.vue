@@ -56,7 +56,7 @@
   import { showToast, showNotify } from '@nutui/nutui';
   import { save_upload, valid_upload, get_unique_order } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
-  import { getSecondTime } from '@/utils/util';
+  import { getSecondTime, getType } from '@/utils/util';
   import { update_order_size } from '@/api/amb';
   import { delay, throttle } from 'lodash';
   import { poolUrl } from '@/setting.js';
@@ -204,44 +204,6 @@
 
       resolve([fileCopy]);
     });
-  };
-
-  const getType = (fileName: string) => {
-    if (
-      fileName.endsWith('.jpeg') ||
-      fileName.endsWith('.jpg') ||
-      fileName.endsWith('.png') ||
-      fileName.endsWith('.svg') ||
-      fileName.endsWith('.gif')
-    ) {
-      return 1;
-    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mp4')) {
-      return 2;
-    } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
-      return 4;
-    } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar') || fileName.endsWith('.gz') || fileName.endsWith('.tar')) {
-      return 5;
-    } else if (fileName.endsWith('.cmd')) {
-      return 5;
-    } else if (fileName.endsWith('.css')) {
-      return 5;
-    } else if (fileName.endsWith('.mp3')) {
-      return 3;
-    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      return 4;
-    } else if (fileName.endsWith('.pdf')) {
-      return 4;
-    } else if (fileName.endsWith('.ppt') || fileName.endsWith('.pptx')) {
-      return 4;
-    } else if (fileName.endsWith('.text') || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
-      return 4;
-    } else if (fileName.endsWith('.html')) {
-      return 5;
-    } else if (fileName.endsWith('/')) {
-      return 5;
-    } else {
-      return 5;
-    }
   };
 
   const uploadStatus = ref('');

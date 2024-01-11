@@ -46,7 +46,7 @@
           <p>Name</p>
           <p>{{ defaultFileList[0].name }} <EditIcon @click="startRename"></EditIcon></p>
           <div class="deploy_action">
-            <nut-button class="block_button" @click="clearUploadList">Edit and upload</nut-button>
+            <nut-button type="primary" class="block_button" @click="clearUploadList">Edit and upload</nut-button>
           </div>
         </div>
       </div>
@@ -106,7 +106,7 @@
   import { showToast, showNotify } from '@nutui/nutui';
   import { save_upload, valid_upload, get_unique_order } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
-  import { getSecondTime } from '@/utils/util';
+  import { getSecondTime, getType } from '@/utils/util';
   import { delay, throttle } from 'lodash';
   import { poolUrl } from '@/setting.js';
   const router = useRouter();
@@ -268,44 +268,6 @@
 
       resolve([fileCopy]);
     });
-  };
-
-  const getType = (fileName: string) => {
-    if (
-      fileName.endsWith('.jpeg') ||
-      fileName.endsWith('.jpg') ||
-      fileName.endsWith('.png') ||
-      fileName.endsWith('.svg') ||
-      fileName.endsWith('.gif')
-    ) {
-      return 1;
-    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mp4')) {
-      return 2;
-    } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
-      return 4;
-    } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar') || fileName.endsWith('.gz') || fileName.endsWith('.tar')) {
-      return 5;
-    } else if (fileName.endsWith('.cmd')) {
-      return 5;
-    } else if (fileName.endsWith('.css')) {
-      return 5;
-    } else if (fileName.endsWith('.mp3')) {
-      return 3;
-    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      return 4;
-    } else if (fileName.endsWith('.pdf')) {
-      return 4;
-    } else if (fileName.endsWith('.ppt') || fileName.endsWith('.pptx')) {
-      return 4;
-    } else if (fileName.endsWith('.text') || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
-      return 4;
-    } else if (fileName.endsWith('.html')) {
-      return 5;
-    } else if (fileName.endsWith('/')) {
-      return 5;
-    } else {
-      return 5;
-    }
   };
 
   const uploadStatus = ref('');
@@ -811,7 +773,7 @@
       margin-top: 0.8rem;
       :deep {
         .nut-button {
-          width: 45%;
+          width: 60%;
         }
       }
     }
