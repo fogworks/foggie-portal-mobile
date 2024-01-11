@@ -68,5 +68,6 @@ declare module 'vue' {
     TopBack: typeof import('./../src/components/topBack/index.vue')['default']
     VanDropdownItem: typeof import('vant/es')['DropdownItem']
     VanDropdownMenu: typeof import('vant/es')['DropdownMenu']
+    VanImagePreview: typeof import('vant/es')['ImagePreview']
   }
 }

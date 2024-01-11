@@ -26,7 +26,7 @@
             <span>{{ item.token_id }}</span>
           </p>
           <p class="price_time">
-            <span class="contract-link" @click="toContract(item.contract)">{{ contractLink(item.contract) }}</span>
+            <span class="contract-link" @click="toContract(item, 'nft')">{{ contractLink(item.contract) }}</span>
           </p>
         </div>
       </div>
@@ -51,7 +51,7 @@
             <span>{{ transferUTCTime(item.createdAt) }}</span>
           </p>
           <p class="price_time">
-            <span class="contract-link" @click="toContract(item.contract)">{{ contractLink(item.contract) }}</span>
+            <span class="contract-link" @click="toContract(item, 'contract')">{{ contractLink(item.contract) }}</span>
           </p>
         </div>
       </div>
@@ -206,8 +206,12 @@
       window.open(dappUrl);
     }
   };
-  const toContract = (contract) => {
-    window.open(`${browserUrl}/address/${contract}`);
+  const toContract = (item, type) => {
+    if (type === 'nft') {
+      window.open(`${browserUrl}/nft/${item.contract}/${item.token_id}`);
+    } else {
+      window.open(`${browserUrl}/address/${item.contract}`);
+    }
   };
 </script>
 
