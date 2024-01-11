@@ -251,7 +251,8 @@
 
     <!-- single action -->
     <Teleport to="body">
-      <nut-action-sheet class="action_pop" v-if="showActionPop" v-model:visible="showActionPop">
+      <nut-popup v-model:visible="showActionPop" position="bottom" closeable round :style="{ height: '58%' }">
+        <!-- <nut-action-sheet class="action_pop" v-if="showActionPop" v-model:visible="showActionPop"> -->
         <div class="custom-content">
           <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
           <ul>
@@ -274,7 +275,8 @@
           </ul>
           <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
         </div>
-      </nut-action-sheet>
+        <!-- </nut-action-sheet> -->
+      </nut-popup>
     </Teleport>
 
     <!-- rename / newFolder -->
@@ -441,28 +443,36 @@
       <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
         <div class="detail_top">
           <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+          <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
         </div>
         <HLSVideo v-if="chooseItem.category == 2" :imgUrl="imgUrl"></HLSVideo>
         <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
         <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
         <div v-else-if="imgUrl" class="middle_img">
-          <!-- v-if="chooseItem.type.split('/')[0] == 'video'" -->
-          <!-- <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
-            <template #loading>
-              <Loading width="16px" height="16px" name="loading" />
+          <van-image-preview
+            v-model:show="detailShow"
+            :closeOnClickOverlay="false"
+            :start-position="imgStartIndex"
+            :images="images"
+            @change="swipeChange"
+          >
+            <template #cover>
+              <div class="detail_top">
+                <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+                <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
+              </div>
+              <div class="bottom_action">
+                <div v-if="isAvailableOrder">
+                  <IconShare @click="handlerClick('share')"></IconShare>
+                  <p>Share</p>
+                </div>
+                <div>
+                  <IconDownload @click="handlerClick('download')"></IconDownload>
+                  <p>Download</p>
+                </div>
+              </div>
             </template>
-          </nut-image> -->
-          <van-swipe ref="swipe" @change="swipeChange" :initial-swipe="imgStartIndex" :show-indicators="false">
-            <van-swipe-item v-for="image in imgArray" :key="image.src">
-              <!-- <img :src="image.src" /> -->
-              <nut-image :src="image.src" fit="contain" position="center" show-loading>
-                <template #loading>
-                  <Loading width="16px" height="16px" name="loading" />
-                </template>
-              </nut-image>
-            </van-swipe-item>
-          </van-swipe>
-          <!-- <nut-image-preview :content-close="false" :show="true" :images="imgArray" :init-no="imgStartIndex" /> -->
+          </van-image-preview>
         </div>
         <div class="bottom_action">
           <div v-if="isAvailableOrder">
@@ -693,6 +703,13 @@
   } = useShare(orderInfo, header, deviceType, metadata);
   const shareCheckData = computed(() => {
     return !detailShow.value ? selectArr.value[0] : chooseItem.value;
+  });
+  const images = computed(() => {
+    let arr = [];
+    imgArray.value.filter((el) => {
+      arr.push(el.src);
+    });
+    return arr;
   });
   const showActionBtn = computed(() => {
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type === 3) {
@@ -1790,6 +1807,46 @@
       return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
     }
   }
+  const matrix_box = () => {
+    nextTick(() => {
+      let x = 0;
+      let y = 0;
+      let _node = this.$refs.activeBox; // 获取之前在模板中设置的ref属性
+      let hand = new Hammer(_node); // 创建一个新的Hammer实例，传入要进行手势操作的元素
+
+      // 启用pinch手势
+      hand.get('pinch').set({ enable: true });
+
+      // 监听pinch手势的不同事件，用于实现缩放功能
+      hand.on('pinchmove pinchstart pinchin pinchout', (e) => {
+        if (e.type == 'pinchstart') {
+          this.scaleIndex = this.scaleCount || 1; // 记录当前的缩放比例
+        }
+        this.scaleCount = this.scaleIndex * e.scale; // 计算新的缩放比例
+        _node.style.transform = 'scale(' + this.scaleIndex * e.scale + ')'; // 应用缩放效果
+      });
+
+      // 监听doubletap手势，用于双击重置缩放和位置
+      hand.on('doubletap', (e) => {
+        x = 0;
+        y = 0;
+        this.scaleCount = 1; // 重置缩放比例为1
+        _node.style.transform = 'translateX(0px) translateY(0px) scale(1)'; // 重置位置和缩放效果
+      });
+
+      // 监听pan手势，用于实现拖动功能
+      hand.on('panright panleft panup pandown', (e) => {
+        _node.style.transform =
+          'translateX(' + (e.deltaX + x) + 'px)' + 'translateY(' + (e.deltaY + y) + 'px)' + 'scale(' + this.scaleCount * e.scale + ')'; // 应用拖动和缩放效果
+      });
+
+      // 监听panend手势，用于记录拖动的偏移量，以便在下一次拖动时保持连续性
+      hand.on('panend', (e) => {
+        x = e.deltaX + x; // 记录水平方向上的偏移量
+        y = e.deltaY + y; // 记录垂直方向上的偏移量
+      });
+    });
+  };
   const initSocketDialog = () => {
     showSocketDialog.value = true;
   };
@@ -1908,14 +1965,13 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 30px 10px;
-    padding-bottom: 150px;
-    padding-top: 150px;
+    padding: 0px 10px;
     background: #000;
     box-sizing: border-box;
     // overflow: auto;
     z-index: 99;
     .detail_top {
+      box-sizing: border-box;
       position: fixed;
       top: 0;
       left: 0;
@@ -1924,13 +1980,11 @@
       align-items: center;
       width: 100%;
       padding: 1rem;
-      background: #000;
+      background: linear-gradient(180deg, #00000059, transparent);
       z-index: 99;
     }
     .middle_img {
-      max-height: calc(100vh - 300px);
-      overflow: auto;
-
+      max-height: 100%;
       .nut-image {
         width: 100%;
         height: 100%;
@@ -1938,6 +1992,7 @@
       :deep {
         .van-swipe {
           width: 100%;
+          height: 100%;
           .van-swipe__track {
             align-items: center;
             width: 100% !important;
@@ -1960,7 +2015,8 @@
       display: flex;
       justify-content: space-evenly;
       height: 140px;
-      background: #000;
+      background: linear-gradient(0deg, #00000059, transparent);
+
       margin-top: 20px;
       div {
         text-align: center;
@@ -2348,6 +2404,7 @@
     }
   }
   .custom-content {
+    width: 100%;
     p {
       padding: 30px 20px;
       color: #909090;
