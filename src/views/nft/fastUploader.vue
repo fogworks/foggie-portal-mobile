@@ -270,7 +270,7 @@
         Awsaccesskeyid: accessKeyId,
         category: getType(fileCopy.name),
         'Content-Md5': md5Hash,
-        // appType,
+        'App-Type': appType,
       };
 
       resolve([fileCopy]);
