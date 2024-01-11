@@ -161,7 +161,8 @@
     padding: 20px 0;
     text-align: center;
     color: #fff;
-    background-color: $main-blue;
+    // background-color: $main-blue;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     cursor: pointer;
     svg {
       width: 1.5rem;

@@ -1795,7 +1795,8 @@
         display: flex;
         flex-direction: row;
         span {
-          color: #ff7b1d;
+          // color: #ff7b1d;
+          color: #9cb77d;
         }
       }
 
@@ -2039,6 +2040,8 @@
           width: 100%;
           height: 100%;
           object-fit: cover;
+          border-radius: 10px;
+          border: 2px #90909075 solid;
         }
       }
     }
