@@ -1777,7 +1777,8 @@
         display: flex;
         flex-direction: row;
         span {
-          color: #07dc00;
+          // color: #ff7b1d;
+          color: #9cb77d;
         }
       }
 

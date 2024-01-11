@@ -42,7 +42,7 @@
 
         <div>
           <div class="key">Withdrawn</div>
-          <div class="value" @click="gotoDetail('/assetsInfo')">
+          <div class="value" @click="gotoDetail('/withdraw')">
             <span style="font-size: 18px">{{ money.withdraw.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.withdraw.decimalPart }}</span>
           </div>

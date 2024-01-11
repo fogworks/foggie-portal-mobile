@@ -6,22 +6,22 @@
         <Search #leftin />
       </nut-searchbar>
       <span class="sub_title">Choose your Bucket</span> -->
-
-      <nut-fixed-nav v-model:visible="dragIsShow" v-if="listData.length > 8" :position="{ bottom: '200px' }" :overlay="true" type="right">
-        <template #list>
-          <ul class="nut-fixed-nav__list">
-            <nut-searchbar v-model="keyWord" placeholder="Search by order number" :clearable="false" class="my_top_search">
-              <template #leftin>
-                <Search />
-              </template>
-            </nut-searchbar>
-          </ul>
-        </template>
-        <template #btn>
-          <Search color="#fff" />
-        </template>
-      </nut-fixed-nav>
-
+      <nut-drag direction="y" :style="{ right: '0px', bottom: '200px' }">
+        <nut-fixed-nav v-model:visible="dragIsShow" :position="{ bottom: '200px' }" :overlay="true" type="right">
+          <template #list>
+            <ul class="nut-fixed-nav__list">
+              <nut-searchbar v-model="keyWord" placeholder="Search by order number" :clearable="false" class="my_top_search">
+                <template #leftin>
+                  <Search />
+                </template>
+              </nut-searchbar>
+            </ul>
+          </template>
+          <template #btn>
+            <Search color="#fff" />
+          </template>
+        </nut-fixed-nav>
+      </nut-drag>
       <div class="total_tag">
         <nut-tag>{{ total }}</nut-tag> Buckets
       </div>
@@ -33,9 +33,11 @@
         @load-more="loadMoreFun"
         class="bucket_box"
       >
-        <div class="bucket_item" @click="gotoFileList(item)" v-for="item in list" :key="item.order_id">
-          <img src="@/assets/home_bucket.png" alt="" />
-          <p>{{ item.domain || item.order_id }}</p>
+        <div class="loadBox">
+          <div class="bucket_item" @click="gotoFileList(item)" v-for="item in list" :key="item.order_id">
+            <img src="@/assets/home_bucket.png" alt="" />
+            <p>{{ item.domain || item.order_id }}</p>
+          </div>
         </div>
       </nut-infinite-loading>
     </div>
@@ -165,9 +167,16 @@
       }
     }
 
+    .loadBox {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 200px));
+      gap: 10px;
+      justify-content: center;
+    }
     .bucket_item {
       box-sizing: border-box;
-      width: 45%;
+      // width: 100%;
       margin: 15px;
       padding: 10px 0;
       border-radius: 30px;
@@ -176,8 +185,13 @@
       text-align: center;
 
       img {
-        width: 100px;
+        width: 150px;
         margin: 0 0 10px;
+      }
+      p {
+        margin-top: 0px;
+        font-size: 24px;
+        font-weight: 600;
       }
     }
   }
