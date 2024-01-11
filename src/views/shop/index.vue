@@ -20,7 +20,7 @@
     <div class="vip_order_choose">
       <div class="vip_title">Select space and time</div>
       <div class="img_list">
-        <img src="@/assets/vipOrder.svg" @click="submit" />
+        <img src="@/assets/vipOrder.png" @click="submit" />
         <img src="@/assets/customOrder.svg" class="customOrder" @click="showTop = true" />
       </div>
     </div>
@@ -1201,6 +1201,8 @@
       align-items: center;
     }
     img {
+      width: 280px;
+      height: 280px;
       cursor: pointer;
       &:hover {
         transform: scale(1.1);

@@ -30,7 +30,7 @@
 
   /* fade  */
   .fade-transform-leave-active {
-    transition: all 0.3s ease;
+    transition: all 0.15s ease;
   }
   .fade-transform-enter-active {
     transition: all 0.15s ease;

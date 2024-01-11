@@ -192,15 +192,74 @@
       v-else
     ></ImgList>
 
+    <nut-popup
+      teleport-disable
+      v-if="fileItemPopupIsShow"
+      pop-class="fileItemPopup"
+      position="bottom"
+      safe-area-inset-bottom
+      closeable
+      round
+      :style="{ height: 'auto', minHeight: '60%' }"
+      v-model:visible="fileItemPopupIsShow"
+    >
+      <div class="fileItem_header">
+        <img :src="selectArr[0].imgUrl" alt="" srcset="" />
+        <div class="fileItem_header_right">
+          <div>{{ selectArr[0].fullName }}</div>
+          <div>{{ selectArr[0].date }} · {{ selectArr[0].size }}</div>
+        </div>
+      </div>
+      <div class="fileItem_body">
+        <div class="optionBox">
+          <div @click="handlerClick('share')">
+            <IconShare :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconShare>
+            <span>Share</span>
+          </div>
+          <div @click="handlerClick('rename')">
+            <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
+            Rename
+          </div>
+          <div @click="handlerClick(selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'pin' : 'un pin')">
+            <IconIPFS :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconIPFS>
+            {{ selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'Pinned' : 'Un Pinned' }}
+          </div>
+          <div @click="handlerClick('move')">
+            <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
+            Move
+          </div>
+          <div @click="handlerClick('download')">
+            <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
+            Download
+          </div>
+          <div @click="handlerClick('delete')">
+            <IconDelete :color="selectArr.length ? 'red' : '#ffffff5c'"></IconDelete>
+            Delete
+          </div>
+        </div>
+        <div class="ipfs">
+          <p v-if="selectArr.length == 1 && selectArr[0].isPin">
+            <span>{{ handleID(`ipfs://${selectArr[0].cid}`) }} </span>
+            <IconCopy color="#fff" @click="copyIPFS('ipfs', selectArr[0])"></IconCopy>
+          </p>
+          <p>
+            <span> {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${selectArr[0].cid}`) }} </span>
+            <IconCopy color="#fff" @click="copyIPFS('http', selectArr[0])"></IconCopy>
+          </p>
+        </div>
+      </div>
+    </nut-popup>
+
     <!-- checkbox action -->
     <Teleport to="body">
-      <div class="bottom_ipfs_info" v-if="selectArr.length == 1 && selectArr[0].isPin">
+      <!-- <div class="bottom_ipfs_info" v-if="selectArr.length == 1 && selectArr[0].isPin">
         <p> {{ handleID(`ipfs://${selectArr[0].cid}`) }} <IconCopy @click="copyIPFS('ipfs', selectArr[0])"></IconCopy> </p>
         <p>
           {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${selectArr[0].cid}`)
           }}<IconCopy @click="copyIPFS('http', selectArr[0])"></IconCopy>
         </p>
-      </div>
+      </div> -->
+
       <nut-tabbar
         v-if="isCheckMode && selectArr.length"
         @tab-switch="tabSwitch"
@@ -220,8 +279,9 @@
             <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
           </template>
         </nut-tabbar-item>
+
         <nut-tabbar-item
-          :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'Pin' : 'Un Pin'"
+          :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'Pinned' : 'Un Pinned'"
           :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']"
         >
           <template #icon="props">
@@ -504,7 +564,9 @@
   import IconCopy from '~icons/home/copy.svg';
   import IconBucket from '~icons/home/bucket.svg';
   import IconHttp2 from '~icons/home/http2.svg';
-  import IconIPFS from '~icons/home/ipfs.svg';
+  // import IconIPFS from '~icons/home/ipfs.svg';
+  import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
+
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNFT from '~icons/material-symbols/cast';
@@ -1760,8 +1822,112 @@
   const closeSocket = () => {
     fileSocket.value.onclose();
   };
+
+  const fileItemPopupIsShow = ref(false);
+
+  watch(
+    () => selectArr.value,
+    (newVal, oldVal) => {
+      if (newVal.length == 1 && oldVal.length == 0) {
+        console.log(newVal);
+
+        fileItemPopupIsShow.value = true;
+      }
+    },
+    { deep: true },
+  );
 </script>
-<style>
+<style lang="scss">
+  .fileItemPopup.nut-popup {
+    background-color: #fafafa;
+    padding: 40px 40px;
+    box-sizing: border-box;
+    .fileItem_header {
+      display: grid;
+      grid-template-columns: 100px auto;
+      gap: 30px;
+      align-items: center;
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+      .fileItem_header_right > div {
+        font-size: 30px;
+        font-weight: 600;
+        line-height: 50px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .fileItem_body {
+      margin-top: 50px;
+      .optionBox {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        // place-items: center;
+        justify-items: center;
+        gap: 25px;
+        padding: 30px;
+        & > div {
+          width: 100%;
+          border-radius: 25px;
+          border: 1px solid #ddd1d1;
+          background-color: #5758a0;
+          height: 170px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-evenly;
+          color: #fff;
+          svg {
+            width: 60px;
+            height: 60px;
+          }
+        }
+      }
+      .ipfs {
+        border-radius: 25px;
+        border: 1px solid #ddd1d1;
+        background-color: #5758a0;
+        p {
+          display: grid;
+          grid-template-columns: auto 100px;
+          gap: 100px;
+          align-items: center;
+          border-bottom: 2px solid #fff;
+          height: 100px;
+          line-height: 100px;
+          box-sizing: border-box;
+          padding: 0px 15px;
+
+          & > * {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 25px;
+            color: #fafafa;
+          }
+          svg {
+            height: 60px;
+            width: 60px;
+          }
+        }
+        p:last-child {
+          border-bottom: 0px;
+        }
+      }
+    }
+
+    .nut-popup__close-icon {
+      background-color: #ccccccc2;
+      border-radius: 50%;
+      color: #fff;
+    }
+  }
+
   .fileUpdateIcon {
     position: absolute;
     bottom: 8px;
@@ -2107,8 +2273,8 @@
       svg,
       img {
         object-fit: contain;
-        height: 2rem;
-        width: 2rem;
+        height: 1.5rem;
+        width: 1.5rem;
         margin-left: 20px;
         cursor: pointer;
       }
