@@ -6,22 +6,22 @@
         <Search #leftin />
       </nut-searchbar>
       <span class="sub_title">Choose your Bucket</span> -->
-
-      <nut-fixed-nav v-model:visible="dragIsShow" v-if="listData.length > 8" :position="{ bottom: '200px' }" :overlay="true" type="right">
-        <template #list>
-          <ul class="nut-fixed-nav__list">
-            <nut-searchbar v-model="keyWord" placeholder="Search by order number" :clearable="false" class="my_top_search">
-              <template #leftin>
-                <Search />
-              </template>
-            </nut-searchbar>
-          </ul>
-        </template>
-        <template #btn>
-          <Search color="#fff" />
-        </template>
-      </nut-fixed-nav>
-
+      <nut-drag direction="y" :style="{ right: '0px', bottom: '200px' }">
+        <nut-fixed-nav v-model:visible="dragIsShow" v-if="listData.length > 8" :position="{ bottom: '200px' }" :overlay="true" type="right">
+          <template #list>
+            <ul class="nut-fixed-nav__list">
+              <nut-searchbar v-model="keyWord" placeholder="Search by order number" :clearable="false" class="my_top_search">
+                <template #leftin>
+                  <Search />
+                </template>
+              </nut-searchbar>
+            </ul>
+          </template>
+          <template #btn>
+            <Search color="#fff" />
+          </template>
+        </nut-fixed-nav>
+      </nut-drag>
       <div class="total_tag">
         <nut-tag>{{ total }}</nut-tag> Buckets
       </div>
