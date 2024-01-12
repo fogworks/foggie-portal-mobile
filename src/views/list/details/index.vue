@@ -137,7 +137,12 @@
       <template v-else-if="tableData.length">
         <div class="file_list file_list_img">
           <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
-            <img :src="item.imgUrl" alt="" />
+            <nut-image show-loading show-error round radius="5px" :src="item.imgUrl" fit="cover" position="center">
+              <template #loading>
+                <Loading width="16" height="16"></Loading>
+              </template>
+            </nut-image>
+            <!-- <img :src="item.imgUrl" alt="" /> -->
           </div>
         </div>
         <div class="file_list">
@@ -407,6 +412,7 @@
 </template>
 
 <script setup lang="ts">
+  import { Loading } from '@nutui/icons-vue';
   import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
@@ -2063,14 +2069,21 @@
       grid-gap: 0.2rem;
       justify-items: center;
       margin-top: 20px;
-      padding: 0 1rem;
+      padding: 0.5rem;
       background: #fff;
       border-radius: 16px;
       .list_item {
         width: 120px;
         height: 120px;
         justify-content: center;
-        padding: 20px 0;
+        padding: 0 !important;
+        // padding: 20px 0;
+        :deep {
+          .nut-image {
+            width: 100%;
+            height: 100%;
+          }
+        }
         img {
           width: 100%;
           height: 100%;

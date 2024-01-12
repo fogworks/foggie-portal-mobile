@@ -186,7 +186,7 @@
           uploadPath.value = res.result.data.file_path;
           if ([4, 5].includes(res.result.data.state)) {
             needSet.value = true;
-            showToast.fail('This bucket has expired, please select a new bucket to upload.');
+            showToast.fail('The currently set fast upload bucket is no longer available, select the bucket and directory again to continue to use the fast upload function.');
             showToast.hide('setBucket');
             return false;
           } else {

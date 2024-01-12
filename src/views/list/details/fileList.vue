@@ -153,7 +153,21 @@
                 <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
                 <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
                 <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-                <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
+                <nut-image
+                  v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl"
+                  show-loading
+                  show-error
+                  round
+                  radius="5px"
+                  :src="item.imgUrl"
+                  fit="cover"
+                  position="center"
+                >
+                  <template #loading>
+                    <Loading width="16" height="16"></Loading>
+                  </template>
+                </nut-image>
+                <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
                 <img v-else src="@/assets/svg/home/file.svg" alt="" />
               </template>
             </div>
@@ -2411,6 +2425,12 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    :deep {
+      .nut-image {
+        width: 100%;
+        height: 100%;
+      }
+    }
     &:active {
       background: #cde3f5;
     }
