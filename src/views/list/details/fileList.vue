@@ -1619,6 +1619,9 @@
         tableData.value.push(item);
       }
     }
+    currentFolder.value = data.prefix;
+    window.sessionStorage.setItem('currentFolder', currentFolder.value);
+    console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
       let isDir = data?.content[j].contentType == 'application/x-directory' ? true : false;
@@ -1636,9 +1639,7 @@
       let file_id = data.content[j].fileId;
 
       let name = data.content[j].key;
-      currentFolder.value = data.prefix;
-      window.sessionStorage.setItem('currentFolder', currentFolder.value);
-      console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
+     
 
       if (data.prefix) {
         name = name.split(decodeURIComponent(data.prefix))[1];
@@ -2001,12 +2002,12 @@
       let index = keys[0].lastIndexOf('/');
       let name = keys[0].substring(index + 1);
       const date = transferGMTTime(fileInfo.lastModified * 1000);
-      const target = tableData.value.find((el: { cid: any }) => el.cid === cid[0]);
+      const _cid = cid && cid[0]? cid[0] : '';
+      const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
       if (!target) {
         const type = keys[0].substring(keys[0].lastIndexOf('.') + 1);
-
         const data = {
-          cid: cid[0],
+          cid: _cid,
           key: keys[0],
         };
         const imgData = await handleImg(data, type, false);
@@ -2039,13 +2040,13 @@
             },
           ],
           date,
-          pubkey: cid[0],
-          cid: cid[0],
+          pubkey: _cid,
+          cid: _cid,
           imgUrl: url,
           imgUrlLarge: url_large,
           share: {},
           isSystemImg,
-          canShare: cid[0] ? true : false,
+          canShare: _cid ? true : false,
           isPin: false,
           isPinCyfs: false,
         };
