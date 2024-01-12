@@ -473,10 +473,10 @@
         >
       </div>
       <div class="share_info_box" v-else>
-        <div v-if="shareRefContent.ipfsStr && isMobileOrder">
+        <!-- <div v-if="shareRefContent.ipfsStr && isMobileOrder">
           <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
           IPFS Link
-        </div>
+        </div> -->
         <div v-if="shareRefContent.httpStr">
           <IconHttp
             @click="
@@ -535,12 +535,16 @@
         <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
         <div v-else-if="imgUrl" class="middle_img">
           <van-image-preview
+            v-if="detailShow"
             v-model:show="detailShow"
             :closeOnClickOverlay="false"
             :start-position="imgStartIndex"
             :images="images"
             @change="swipeChange"
           >
+            <template #index>
+              <span> {{ imgStartIndex + 1 }}/{{ images.length }} </span>
+            </template>
             <template #cover>
               <div class="detail_top">
                 <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
@@ -1914,6 +1918,7 @@
     };
   };
   function swipeChange(index) {
+    imgStartIndex.value = index;
     chooseItem.value = imgArray.value[index];
   }
   function handleID(id) {
@@ -1921,46 +1926,7 @@
       return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
     }
   }
-  const matrix_box = () => {
-    nextTick(() => {
-      let x = 0;
-      let y = 0;
-      let _node = this.$refs.activeBox; // 获取之前在模板中设置的ref属性
-      let hand = new Hammer(_node); // 创建一个新的Hammer实例，传入要进行手势操作的元素
 
-      // 启用pinch手势
-      hand.get('pinch').set({ enable: true });
-
-      // 监听pinch手势的不同事件，用于实现缩放功能
-      hand.on('pinchmove pinchstart pinchin pinchout', (e) => {
-        if (e.type == 'pinchstart') {
-          this.scaleIndex = this.scaleCount || 1; // 记录当前的缩放比例
-        }
-        this.scaleCount = this.scaleIndex * e.scale; // 计算新的缩放比例
-        _node.style.transform = 'scale(' + this.scaleIndex * e.scale + ')'; // 应用缩放效果
-      });
-
-      // 监听doubletap手势，用于双击重置缩放和位置
-      hand.on('doubletap', (e) => {
-        x = 0;
-        y = 0;
-        this.scaleCount = 1; // 重置缩放比例为1
-        _node.style.transform = 'translateX(0px) translateY(0px) scale(1)'; // 重置位置和缩放效果
-      });
-
-      // 监听pan手势，用于实现拖动功能
-      hand.on('panright panleft panup pandown', (e) => {
-        _node.style.transform =
-          'translateX(' + (e.deltaX + x) + 'px)' + 'translateY(' + (e.deltaY + y) + 'px)' + 'scale(' + this.scaleCount * e.scale + ')'; // 应用拖动和缩放效果
-      });
-
-      // 监听panend手势，用于记录拖动的偏移量，以便在下一次拖动时保持连续性
-      hand.on('panend', (e) => {
-        x = e.deltaX + x; // 记录水平方向上的偏移量
-        y = e.deltaY + y; // 记录垂直方向上的偏移量
-      });
-    });
-  };
   const initSocketDialog = () => {
     showSocketDialog.value = true;
   };
@@ -2038,6 +2004,10 @@
           isPinCyfs: false,
         };
         tableData.value.push(item);
+        if (item.category == 1) {
+          item.src = item.imgUrlLarge;
+          imgArray.value.push(item);
+        }
       }
     } else if (action === 'FILE_PIN') {
       tableData.value.map((el: { cid: any; isPin: boolean }) => {
@@ -2049,6 +2019,7 @@
     } else if (action === 'FILE_DELETE') {
       console.log('FILE_DELETE', keys);
       tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+      imgArray.value = imgArray.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
     } else if (action === 'FILE_PINNING') {
     }
   };

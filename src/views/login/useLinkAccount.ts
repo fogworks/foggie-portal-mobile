@@ -19,6 +19,8 @@ export default function useLinkAccount() {
       // useDeeplink: true,
     },
   });
+  const isMobileDevice = inject('isMobileDevice');
+  const metaOpen = inject('metaOpen');
   const infuraKey = '<INFURA_KEY>';
   const rpcUrl = `https://mainnet.infura.io/v3/${infuraKey}`;
   const web3Onboard = init({
@@ -95,6 +97,8 @@ export default function useLinkAccount() {
       });
       showAccountList.value = true;
       console.log(accountsList.value, 'accountsList');
+    } else {
+      metaOpen();
     }
   };
   return {

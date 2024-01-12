@@ -63,7 +63,6 @@
   import useSyncPhotos from './useSyncPhotos.js';
   import CryptoJS from 'crypto-js';
 
-
   const isAndroid = computed(() => {
     return import.meta.env.VITE_BUILD_TYPE == 'ANDROID';
   });
@@ -128,7 +127,7 @@
       }
     });
   };
-  const beforeupload = async(file: any) => {
+  const beforeupload = async (file: any) => {
     return new Promise(async (resolve, reject) => {
       const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
       if (!bucketName || !accessKeyId || !secretAccessKey) {
@@ -143,17 +142,6 @@
 
       console.log('prefixStr-------------', prefixStr, '-------------------', prefix);
 
-      let nowTime = Date.now();
-      let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
-      let time = Math.round((endTime - nowTime) / 1000);
-      if (time > 6 * 60) {
-        time -= 60 * 60;
-      }
-      if (time > 0) {
-        const content = `Upload files after ${getSecondTime(time)}`;
-        showToast.fail(content);
-        return reject(false);
-      }
       let fileCopy = file[0];
       if (fileCopy.name == 'image.jpg') {
         const timestamp = Date.now();
@@ -179,7 +167,6 @@
         }
         return reject();
       }
-
 
       uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
 
@@ -216,9 +203,7 @@
     });
   };
 
-
-
-  const calculateMD5 = (file: { size: number; slice: (arg0: number, arg1: any) => Blob; })=> {
+  const calculateMD5 = (file: { size: number; slice: (arg0: number, arg1: any) => Blob }) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       const chunkSize = 1024 * 1024; // 1MB
@@ -226,7 +211,7 @@
       let currentChunk = 0;
       let md5 = CryptoJS.algo.MD5.create();
 
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         const data = new Uint8Array(e.target.result);
         const wordArray = CryptoJS.lib.WordArray.create(data);
         md5.update(wordArray);
@@ -241,19 +226,19 @@
         }
       };
 
-      reader.onerror = function() {
-        reject(new Error("Failed to read file"));
+      reader.onerror = function () {
+        reject(new Error('Failed to read file'));
       };
 
       function loadNext() {
         const start = currentChunk * chunkSize;
-        const end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
+        const end = start + chunkSize >= file.size ? file.size : start + chunkSize;
         reader.readAsArrayBuffer(file.slice(start, end));
       }
 
       loadNext();
     });
-  }
+  };
 
   const getType = (fileName: string) => {
     if (
@@ -395,13 +380,13 @@
     isDisabled,
   });
   onMounted(() => {
-    document.querySelector('.nut-uploader__input')?.addEventListener('click', () => {
-      showNotify.primary('Sensitive information is recommended to be encrypted and uploaded', {
-        'class-name': 'notify_primary',
-        position: 'bottom',
-        duration: 5000,
-      });
-    });
+    // document.querySelector('.nut-uploader__input')?.addEventListener('click', () => {
+    //   showNotify.primary('Sensitive information is recommended to be encrypted and uploaded', {
+    //     'class-name': 'notify_primary',
+    //     position: 'bottom',
+    //     duration: 5000,
+    //   });
+    // });
   });
   onUnmounted(() => {
     clearTimeout(merkleTimeOut);

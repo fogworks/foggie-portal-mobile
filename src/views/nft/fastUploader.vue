@@ -44,15 +44,29 @@
         <div style="padding: 3rem; text-align: center" v-else> Support for displaying files in image format only </div>
         <div class="deploy_box">
           <p>Name</p>
-          <p>{{ defaultFileList[0].name }} <EditIcon @click="startRename"></EditIcon></p>
+          <nut-searchbar v-if="renameShow" v-model="newName" :placeholder="getOriginName(defaultFileList[0].name)">
+            <template #rightin>
+              <span> {{ getEndName(defaultFileList[0].name) }}</span>
+            </template>
+            <template #rightout>
+              <IconCancel
+                @click="
+                  renameShow = false;
+                  newName = '';
+                "
+              ></IconCancel>
+              <IconOk @click="confirmRename"></IconOk>
+            </template>
+          </nut-searchbar>
+          <p v-else>{{ defaultFileList[0].name }} <EditIcon @click="startRename"></EditIcon></p>
           <div class="deploy_action">
-            <nut-button type="primary" class="block_button" @click="clearUploadList">Edit and upload</nut-button>
+            <nut-button type="primary" class="block_button" @click="clearUploadList">Upload New</nut-button>
           </div>
         </div>
       </div>
     </nut-uploader>
   </div>
-  <nut-popup
+  <!-- <nut-popup
     teleport-disable
     v-if="renameShow"
     @closed="
@@ -75,7 +89,7 @@
       </nut-searchbar>
       <nut-button class="block_button" type="info" block @click="confirmRename">Confirm</nut-button>
     </div>
-  </nut-popup>
+  </nut-popup> -->
   <Transition name="fade-transform" mode="out-in">
     <div v-if="uploadProgressIsShow" style="margin-top: 30px">
       <nut-progress
@@ -91,8 +105,10 @@
 </template>
 
 <script setup lang="ts">
-  import { Loading, CircleClose } from '@nutui/icons-vue';
+  import { Loading, CircleClose, CloseLittle } from '@nutui/icons-vue';
   import IconFolder from '~icons/home/folder.svg';
+  import IconCancel from '~icons/home/cancel.svg';
+  import IconOk from '~icons/home/ok.svg';
   import useShare from '@/views/list/details/useShare.js';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
@@ -197,7 +213,7 @@
     },
     { deep: true },
   );
-  const beforeupload = async(file: any) => {
+  const beforeupload = async (file: any) => {
     return new Promise(async (resolve, reject) => {
       const { bucketName, accessKeyId, secretAccessKey, prefix, orderInfo } = props;
       if (!bucketName || !accessKeyId || !secretAccessKey) {
@@ -214,18 +230,6 @@
 
       console.log('prefixStr-------------', prefixStr, '-------------------', prefix);
 
-      let nowTime = Date.now();
-      let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
-      let time = Math.round((endTime - nowTime) / 1000);
-      if (time > 6 * 60) {
-        time -= 60 * 60;
-      }
-      if (time > 0) {
-        const content = `Upload files after ${getSecondTime(time)}`;
-        showToast.fail(content);
-        return reject(false);
-      }
-
       const fileCopy = file[0];
       console.log(orderInfo.value.orderId, 'order_idorder_idorder_id');
 
@@ -234,7 +238,6 @@
       if (merkleRes?.data) {
         isDisabled.value = false;
       } else {
-        isDisabled.value = true;
         showToast.fail(merkleRes.msg || 'Merkle is being built, not allowed to upload file.');
         if (!merkleTimeOut) {
           merkleTimeOut = setTimeout(() => {
@@ -277,7 +280,7 @@
     });
   };
 
-  const calculateMD5 = (file: { size: number; slice: (arg0: number, arg1: any) => Blob; })=> {
+  const calculateMD5 = (file: { size: number; slice: (arg0: number, arg1: any) => Blob }) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       const chunkSize = 1024 * 1024; // 1MB
@@ -285,7 +288,7 @@
       let currentChunk = 0;
       let md5 = CryptoJS.algo.MD5.create();
 
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         const data = new Uint8Array(e.target.result);
         const wordArray = CryptoJS.lib.WordArray.create(data);
         md5.update(wordArray);
@@ -300,19 +303,19 @@
         }
       };
 
-      reader.onerror = function() {
-        reject(new Error("Failed to read file"));
+      reader.onerror = function () {
+        reject(new Error('Failed to read file'));
       };
 
       function loadNext() {
         const start = currentChunk * chunkSize;
-        const end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
+        const end = start + chunkSize >= file.size ? file.size : start + chunkSize;
         reader.readAsArrayBuffer(file.slice(start, end));
       }
 
       loadNext();
     });
-  }
+  };
 
   const getType = (fileName: string) => {
     if (
@@ -423,6 +426,8 @@
   };
   const clearUploadList = () => {
     emits('update:canSet', true);
+    renameShow.value = false;
+    newName.value = '';
     isDisabled.value = false;
     defaultFileList.value = [];
     uploadProgressIsShow.value = false;
@@ -833,6 +838,20 @@
       rgba(0, 0, 0, 0.1) 0px 0px 0.3rem 0px,
       rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
     box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
+    :deep {
+      .nut-searchbar__right-search-icon {
+        width: 3.5rem;
+        height: 1.5rem;
+        margin: 0 0.2rem;
+        svg {
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+    }
+    p {
+      text-align: left;
+    }
     p:first-child {
       color: #777;
     }

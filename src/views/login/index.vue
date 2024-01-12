@@ -367,6 +367,7 @@
       }
     });
   };
+  const metaOpen = inject('metaOpen');
   const loginWithMeta = async () => {
     const provider = await detectEthereumProvider();
     if (provider == window.ethereum && provider) {
@@ -378,7 +379,8 @@
       }
       await checkWallet(address);
     } else {
-      window.open('https://metamask.app.link/dapp/https://amb.u2i.net');
+      metaOpen();
+      // window.open('https://metamask.app.link/dapp/https://amb.u2i.net');
       // window.open('https://metamask.app.link/dapp/http://172.16.20.113:5173');
     }
   };

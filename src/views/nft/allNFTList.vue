@@ -69,7 +69,7 @@
     init();
   });
   const nftTotal = ref(0);
-  const init = async() => {
+  const init = async () => {
     let arr = [];
     if (!walletInfo || !walletInfo.value || walletInfo.value.length === 0) {
       return;
@@ -109,7 +109,7 @@
     height: 400px;
 
     img {
-      object-fit: cover;
+      object-fit: contain;
       width: 100%;
 
       height: 100%;

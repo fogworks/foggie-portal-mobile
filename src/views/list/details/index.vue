@@ -34,27 +34,27 @@
           <nut-col :span="12" class="order-count left_count" v-if="showText">
             <nut-cell>
               <IconMdiF color="#9F9BEF" />
-              File:<span>{{ filesCount }}</span>
+              File:&nbsp;<span>{{ filesCount }}</span>
             </nut-cell>
             <nut-cell>
               <IconSpace color="#7F7AE9" />
-              Space: <span>{{ getfilesize(orderInfo.value.total_space, 'B') }}</span>
+              Space:&nbsp;<span>{{ getfilesize(orderInfo.value.total_space, 'B') }}</span>
             </nut-cell>
             <nut-cell>
               <IconRiPie color="#7F7AE9" />
-              Used: <span> {{ getfilesize(usedSize, 'B') }}</span>
+              Used:&nbsp;<span>{{ getfilesize(usedSize, 'B') }}</span>
             </nut-cell>
             <nut-cell>
               <Order />
-              ID:{{ orderInfo.value?.foggie_id }}
+              ID:&nbsp;{{ orderInfo.value?.foggie_id }}
             </nut-cell>
             <nut-cell>
               <Clock />
-              Expiration: {{ transferUTCTime(orderInfo.value.expire) }}
+              Expiration:&nbsp;{{ transferUTCTime(orderInfo.value.expire) }}
             </nut-cell>
             <nut-cell>
               <Refresh />
-              Status: {{ statusTypes[orderInfo.value.state] }}
+              Status:&nbsp;{{ statusTypes[orderInfo.value.state] }}
             </nut-cell>
           </nut-col>
         </nut-col>
@@ -168,11 +168,32 @@
           <pre v-else-if="detailRow.value.detailType == 'txt'" id="txtContainer"></pre>
           <MyAudio v-else-if="detailRow.value.category == 3" :audioUrl="detailRow.value.imgUrl"></MyAudio>
           <div v-else-if="imgUrl" class="middle_img">
-            <nut-image :src="imgUrl" fit="contain" position="center">
-              <template #loading>
-                <Loading width="16px" height="16px" name="loading" />
+            <van-image-preview
+              v-model:show="detailShow"
+              :closeOnClickOverlay="false"
+              :start-position="imgStartIndex"
+              :images="images"
+              @change="swipeChange"
+            >
+              <template #index>
+                <span> {{ imgStartIndex + 1 }}/{{ images.length }} </span>
               </template>
-            </nut-image>
+              <template #cover>
+                <div class="detail_top">
+                  <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
+                </div>
+                <div class="bottom_action">
+                  <div v-if="isAvailableOrder">
+                    <IconShare @click="handlerClick('share')"></IconShare>
+                    <p>Share</p>
+                  </div>
+                  <div>
+                    <IconDownload @click="handlerClick('download')"></IconDownload>
+                    <p>Download</p>
+                  </div>
+                </div>
+              </template>
+            </van-image-preview>
           </div>
           <div class="bottom_action">
             <div v-if="isAvailableOrder">
@@ -249,11 +270,10 @@
             >
           </div>
           <div class="share_info_box" v-else>
-            <div v-if="shareRefContent.ipfsStr && +detailRow.value.originalSize <= orderInfo.value.total_space * 0.01">
+            <!-- <div v-if="shareRefContent.ipfsStr && +detailRow.value.originalSize <= orderInfo.value.total_space * 0.01">
               <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
               IPFS Link
-              <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
-            </div>
+            </div> -->
             <div v-if="shareRefContent.httpStr">
               <IconHttp
                 @click="
@@ -326,7 +346,7 @@
 
           <p class="bucket_tip" style="text-align: left; word-break: break-word"
             >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
-            (-), and must start and end with lowercase letters or numbers
+            (-), and must start and end with lowercase letters or numbers.Sensitive information is recommended to be encrypted and uploaded.
             <span @click="dialogShow = true" style="text-align: right; width: 100%; display: inline-block; text-decoration: underline"
               >what is Bucket?</span
             >
@@ -529,12 +549,24 @@
   const btnLoading = ref<boolean>(false);
   const formData = ref<any>({});
 
+  const imgStartIndex = ref(0);
   const memo = ref<any>('');
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
   const minerIp = ref<string>('');
   const isError = ref(false);
   const income = ref(0);
+  const images = computed(() => {
+    let arr = [];
+    imgData.value.filter((el) => {
+      arr.push(el.imgUrlLarge);
+    });
+    return arr;
+  });
+  function swipeChange(index) {
+    imgStartIndex.value = index;
+    detailRow.value = imgData.value[index];
+  }
   // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
   // order_id.value = '1281';
   memo.value = route.query.uuid;
@@ -1574,8 +1606,21 @@
     padding: 30px 10px;
     background: #000;
     box-sizing: border-box;
+    .detail_top {
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(180deg, #00000059, transparent);
+      z-index: 99;
+    }
     .middle_img {
-      max-height: calc(100vh - 500px);
+      max-height: 100%;
 
       .nut-image {
         width: 100%;
@@ -1583,10 +1628,15 @@
       }
     }
     .bottom_action {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
       display: flex;
       justify-content: space-evenly;
-      height: 200px;
-      margin-top: 20px;
+      height: 140px;
+      background: linear-gradient(0deg, #00000059, transparent);
       div {
         text-align: center;
         color: #fff;

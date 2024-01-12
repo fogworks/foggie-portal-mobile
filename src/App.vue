@@ -3,7 +3,7 @@
 </template>
 <script setup lang="ts">
   import { user, bind_user_promo } from '@/api';
-
+  import { dappUrl } from '@/setting.js';
   import { onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast, showDialog } from '@nutui/nutui';
@@ -25,6 +25,29 @@
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
   });
   provide('isMobileDevice', isMobileDevice);
+  const metaOpen = () => {
+    if (isMobileDevice.value) {
+      window.open(`https://metamask.app.link/dapp/${redirectUrl}`);
+    } else {
+      window.open('https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn');
+    }
+  };
+  const metaOpenDapp = () => {
+    if (isMobileDevice) {
+      if (window.ethereum) {
+        // window.open(`https://metamask.app.link/dapp/${redirectUrl}`);
+        window.open(dappUrl);
+      } else {
+        window.open(`https://metamask.app.link/dapp/${dappUrl}`);
+      }
+    } else {
+      window.open(dappUrl);
+    }
+  };
+
+  provide('metaOpen', metaOpen);
+  provide('metaOpenDapp', metaOpenDapp);
+
   onMounted(async () => {
     if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
       let script = document.createElement('script');

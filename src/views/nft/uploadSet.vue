@@ -222,17 +222,17 @@
   router.beforeEach(() => {
     popShow.value = false;
   });
-  watch(
-    popShow,
-    async (val) => {
-      if (val) {
-        resetData();
-        await loadMoreFun();
-        await getBucketAndPath();
-      }
-    },
-    { deep: true, immediate: true },
-  );
+  // watch(
+  //   popShow,
+  //   async (val) => {
+  //     if (val) {
+  //       resetData();
+  //       await loadMoreFun();
+  //       await getBucketAndPath();
+  //     }
+  //   },
+  //   { deep: true, immediate: true },
+  // );
   watch(
     needSet,
     async (val) => {
@@ -241,9 +241,11 @@
     },
     { deep: true },
   );
-  // onMounted(async () => {
-  //   await getBucketAndPath();
-  // });
+  onMounted(async () => {
+        resetData();
+        await loadMoreFun();
+        await getBucketAndPath();
+  });
 </script>
 <style lang="scss">
   .upload_set {

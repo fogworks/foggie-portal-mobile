@@ -23,6 +23,9 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     // 此正则表达式涵盖了大多数使用的手机和平板设备
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
   });
+  const address = computed(() => {
+    return userStore.getUserInfo.address;
+  });
   const daySeconds = 86400;
   const monthSeconds = 2592000;
   const { shareRefContent, copyContent, pinData, ipfsDialogShow } = useVariable();
@@ -230,7 +233,7 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
         let linkRes = await getLink({
           url: fileLink + '&thumb=true',
           coverUrl: fileLink + '&thumb=true',
-          username: userInfo.value.email,
+          username: userInfo.value.email || address.value,
           userUuid: userInfo.value.uuid,
           period: isMobileDevice.value ? periodValue.value[0] : periodValue.value,
           imageName: shareOption.name,
@@ -245,7 +248,7 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
       return getLink({
         url: fileLink,
         coverUrl: category == 2 ? coverUrl : '',
-        username: userInfo.value.email,
+        username: userInfo.value.email || address.value,
         userUuid: userInfo.value.uuid,
         period: isMobileDevice.value ? periodValue.value[0] : periodValue.value,
         imageName: shareOption.name,

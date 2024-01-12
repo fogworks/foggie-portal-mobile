@@ -194,17 +194,9 @@
     }
   };
   const isMobileDevice = inject('isMobileDevice');
+  const metaOpenDapp = inject('metaOpenDapp');
   const goToDapp = () => {
-    if (isMobileDevice) {
-      if (window.ethereum) {
-        // window.open(`https://metamask.app.link/dapp/${redirectUrl}`);
-        window.open(dappUrl);
-      } else {
-        window.open(`https://metamask.app.link/dapp/${dappUrl}`);
-      }
-    } else {
-      window.open(dappUrl);
-    }
+    metaOpenDapp();
   };
   const toContract = (item, type) => {
     if (type === 'nft') {

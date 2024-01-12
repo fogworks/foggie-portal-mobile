@@ -249,12 +249,12 @@
         </template>
       </div>
     </nut-popup>
-    <UploadSet v-if="curStepIndex == 4"></UploadSet>
+    <!-- <UploadSet v-if="curStepIndex == 4"></UploadSet> -->
   </div>
 </template>
 
 <script lang="ts" setup name="HomePage">
-  import UploadSet from '@/views/nft/uploadSet.vue';
+  // import UploadSet from '@/views/nft/uploadSet.vue';
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
@@ -273,6 +273,9 @@
   import { useIntersectionObserver } from '@vueuse/core';
   import { search_order_profit, search_user_asset_detail, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
   import googleVerificationHook from './googleVerificationHook.ts';
+  //   import useOrderList from './useOrderList.ts';
+
+  // const { loadMore as loadBucket, listData  } = useOrderList();
 
   const {
     bindOtp,
@@ -455,7 +458,7 @@
   //   }
   // };
 
-  const gotoPage = (type, query = '') => {
+  const gotoPage = async (type, query = '') => {
     if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
       bindAmbCode();
       return false;
@@ -473,7 +476,42 @@
       } else if (type === 'Order') {
         router.push('/list');
       } else if (type == 'Bucket') {
-        router.push('/bucketList');
+        const postData = {
+          sort_type: 'created_at',
+          ascending: false,
+          is_domain: true,
+          electronic_type: '0',
+        };
+        // await loadBucket([0, 1, 2, 3, 6], '', '', '', postData);
+        search_cloud({
+          ps: 2,
+          pn: 1,
+          order_state: [0, 1, 2, 3, 6],
+          start_time: '',
+          end_time: '',
+          buy_result: 'success',
+          ...postData,
+        }).then((res) => {
+          let total = res?.result?.total;
+          if (total == 1) {
+            let item = res?.result.data[0];
+            router.push({
+              name: 'listDetails',
+              query: {
+                id: item.order_id,
+                uuid: item.uuid,
+                amb_uuid: item.amb_uuid,
+                income: item.income,
+                mintType: '0',
+              },
+            });
+            return false;
+          } else {
+            router.push({
+              name: 'BucketList',
+            });
+          }
+        });
       } else if (type == 'NFT') {
         router.push('/nft');
       } else if (type == 'Assets') {
