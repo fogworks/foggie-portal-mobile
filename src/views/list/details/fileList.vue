@@ -146,7 +146,7 @@
         </nut-tour>
         <nut-checkbox-group v-model="checkedItem" ref="group" :max="30">
           <div
-            :class="['list_item', checkedItem.indexOf(item.name) > -1 ? 'row_is_checked' : '']"
+            :class="['list_item', checkedItem.indexOf(item.name) > -1 && isCheckMode ? 'row_is_checked' : '']"
             :id="[index == 0 ? 'list_item_1' : '']"
             v-for="(item, index) in tableData"
             :key="index"
@@ -232,14 +232,14 @@
         <img v-else-if="chooseItem.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
         <img v-else src="@/assets/svg/home/file.svg" alt="" />
         <div class="fileItem_header_right">
-          <div>{{ chooseItem.fullName }}</div>
-          <div  v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
+          <div style="width: 85%;">{{ chooseItem.fullName }}</div>
+          <div v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
         </div>
       </div>
       <div
         class="fileItem_body"
         :style="{
-          height: chooseItem.isPin ? '345px' : '300px',
+          height: chooseItem.isPin ? '345px' : '285px',
         }"
       >
         <div class="optionBox">
@@ -253,7 +253,7 @@
           </div>
           <div @click="handlerClick(chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'un pin')">
             <IconIPFS color="#222224"></IconIPFS>
-            {{ chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'Pinned' : 'Unpin' }}
+            {{ chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'unpin' }}
           </div>
           <div @click="handlerClick('move')">
             <IconMove :color="category != 1 || !isMobileOrder ? '#222224' : '#ffffff5c'"></IconMove>
@@ -276,13 +276,13 @@
         </div>
 
         <nut-button
-          color="linear-gradient(to right, #ff6034, #ee0a24)"
+
           block
-          type="danger"
-          style="margin-top: 40px"
+          type="primary"
+          style="margin-top: 40px;color: rgb(238, 10, 36);"
           @click="handlerClick('delete')"
         >
-          <template #icon><IconDelete /> </template>Delete</nut-button
+          <template #icon><IconDelete  /> </template>Delete</nut-button
         >
       </div>
     </nut-popup>
@@ -310,7 +310,7 @@
             </template>
           </nut-tabbar-item>
           <nut-tabbar-item
-            :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'Pin' : 'Un Pin'"
+            :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'pin' : 'unpin'"
             :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']"
           >
             <template #icon="props">
@@ -338,9 +338,8 @@
     </Teleport>
 
     <!-- single action -->
-    <Teleport to="body">
+    <!-- <Teleport to="body">
       <nut-popup v-model:visible="showActionPop" z-index="2100" position="bottom" closeable round :style="{ height: '58%' }">
-        <!-- <nut-action-sheet class="action_pop" v-if="showActionPop" v-model:visible="showActionPop"> -->
         <div class="custom-content">
           <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
           <ul>
@@ -363,9 +362,8 @@
           </ul>
           <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
         </div>
-        <!-- </nut-action-sheet> -->
       </nut-popup>
-    </Teleport>
+    </Teleport> -->
 
     <!-- rename / newFolder -->
     <nut-popup
@@ -384,13 +382,13 @@
     >
       <div class="rename_box">
         <IconFolder></IconFolder>
-        <p v-if="!isNewFolder"> {{ chooseItem.name ? getOriginName(chooseItem.name.split('/')[0]) : '' }}</p>
+        <p v-if="!isNewFolder"> {{ selectArr.length ? getOriginName(selectArr[0].name.split('/')[0]) : '' }}</p>
         <nut-searchbar
           v-model="newName"
-          :placeholder="isNewFolder ? 'Please Input Folder Name' : getOriginName(chooseItem.name.split('/')[0])"
+          :placeholder="isNewFolder ? 'Please Input Folder Name' : getOriginName(selectArr[0].name.split('/')[0])"
         >
           <template #rightin>
-            <span> {{ getEndName(chooseItem.name.split('/')[0]) }}</span>
+            <span> {{ getEndName(selectArr[0].name.split('/')[0]) }}</span>
           </template>
         </nut-searchbar>
         <nut-button type="info" block @click="confirmRename">Confirm</nut-button>
@@ -562,7 +560,7 @@
             <template #cover>
               <div class="detail_top">
                 <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-                <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
+                <IconMore @click="clickFIleItem(chooseItem)" class="detail_back" color="#fff"></IconMore>
               </div>
               <div class="bottom_action">
                 <div v-if="isAvailableOrder">
@@ -807,7 +805,17 @@
     copyIPFS,
   } = useShare(orderInfo, header, deviceType, metadata);
   const shareCheckData = computed(() => {
-    return !detailShow.value ? selectArr.value[0] : chooseItem.value;
+    let checkData = [];
+    if (detailShow.value) {
+      checkData = [chooseItem.value];
+    } else {
+      if (isCheckMode.value) {
+        checkData = selectArr.value;
+      } else {
+        checkData = [chooseItem.value];
+      }
+    }
+    return checkData;
   });
   const images = computed(() => {
     let arr = [];
@@ -845,9 +853,17 @@
     if (category.value == 1) {
       return imgCheckedData.value;
     } else {
-      return tableData.value.filter((el) => {
-        return checkedItem.value.indexOf(el.name) > -1;
-      });
+      if (detailShow.value) {
+        return [chooseItem.value];
+      } else {
+        if (isCheckMode.value) {
+          return tableData.value.filter((el) => {
+            return checkedItem.value.indexOf(el.name) > -1;
+          });
+        } else {
+          return [chooseItem.value];
+        }
+      }
     }
   });
 
@@ -997,7 +1013,16 @@
   };
   //move
   const confirmMove = () => {
-    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
+    let checkData = [];
+    if (detailShow.value) {
+      checkData = [chooseItem.value];
+    } else {
+      if (isCheckMode.value) {
+        checkData = selectArr.value;
+      } else {
+        checkData = [chooseItem.value];
+      }
+    }
     const targetObject = (val: { name: string }) => {
       if (movePrefix.value.length) {
         return movePrefix.value.join('/') + '/' + val.name;
@@ -1038,6 +1063,7 @@
             showToast.success('Move successful');
             moveShow.value = false;
             movePrefix.value = [];
+            cancelSelect();
             doSearch('', prefix.value, true);
             resolve(true);
           } else {
@@ -1085,7 +1111,17 @@
 
       return false;
     }
-    const checkData = !detailShow.value ? selectArr.value : [chooseItem.value];
+    // const checkData = !detailShow.value ? selectArr.value : [chooseItem.value];
+    let checkData = [];
+    if (detailShow.value) {
+      checkData = [chooseItem.value];
+    } else {
+      if (isCheckMode.value) {
+        checkData = selectArr.value;
+      } else {
+        checkData = [chooseItem.value];
+      }
+    }
 
     const targetObject = () => {
       if (isNewFolder.value) {
@@ -1151,6 +1187,8 @@
           showToast.success('Rename successful');
           renameShow.value = false;
           newName.value = '';
+          cancelSelect();
+
           doSearch('', prefix.value, true);
         } else {
           console.log(err, 'err');
@@ -1518,6 +1556,7 @@
       if (moveShow.value) {
         dirData.value = [];
       } else {
+        cancelSelect();
         tableData.value = [];
         imgArray.value = [];
       }
@@ -1784,16 +1823,7 @@
       }
     }
   }
-  const shareTwitter = (fileLink: string | number | boolean) => {
-    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
-    let tweetText = checkData[0].name;
-    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(fileLink);
-    window.open(twitterUrl, '_blank');
-  };
-  const shareFacebook = (fileLink: string | number | boolean) => {
-    var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fileLink);
-    window.open(twitterUrl, '_blank');
-  };
+
   const handleFirst = () => {
     document.getElementsByClassName('main-page')[0].style.overflow = '';
     isFirst.value = false;
@@ -1826,6 +1856,7 @@
   watch(
     category,
     async (val, old) => {
+      cancelSelect();
       if (old == 1) {
         imgListRef?.value?.resetChecked();
         imgCheckedData.value = [];
@@ -1863,6 +1894,7 @@
   //   closeSocket();
   // });
   const refresh = async () => {
+    cancelSelect();
     await getOrderInfo();
     doSearch('', prefix.value, true);
   };
@@ -2034,6 +2066,7 @@
       console.log('FILE_DELETE', keys);
       tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
       imgArray.value = imgArray.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+      cancelSelect();
     } else if (action === 'FILE_PINNING') {
     }
   };
@@ -2066,6 +2099,7 @@
         font-size: 30px;
         font-weight: 600;
         line-height: 50px;
+        
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

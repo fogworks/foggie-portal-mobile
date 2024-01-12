@@ -348,6 +348,8 @@
   };
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
+    console.log(responseText, option, fileItem);
+
     showToast.fail('Upload failed, please try again later');
     delay(() => {
       uploadProgressIsShow.value = false;
