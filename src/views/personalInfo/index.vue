@@ -37,7 +37,9 @@
     </nut-cell-group>
     <nut-dialog teleport="#app" title="Link Wallet" v-model:visible="showAccountList">
       <nut-radio-group v-model="choosedWallet" class="account_list">
-        <nut-radio v-for="item in accountsList" :disabled="hasLinked(item)" :label="item">{{ item }}</nut-radio>
+        <nut-radio v-for="item in accountsList" :disabled="hasLinked(item) || item.bind || item.register" :label="item">{{
+          item
+        }}</nut-radio>
       </nut-radio-group>
       <template #footer>
         <div style="display: flex; justify-content: space-evenly">

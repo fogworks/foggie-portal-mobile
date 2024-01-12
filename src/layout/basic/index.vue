@@ -89,9 +89,11 @@
           </template>
         </nut-dialog>
       </Teleport>
+    <UploadSet v-if="curStepIndex == 4&&showUpload"></UploadSet>
   </template>
   
   <script lang="ts" setup name="BasicLayoutPage">
+  import UploadSet from '@/views/nft/uploadSet.vue';
   import { useRouter, useRoute } from 'vue-router';
   import { Home, Horizontal, My } from '@nutui/icons-vue';
   import { user, search_cloud,check_promo, bind_user_promo, checkDmcAccount, updateUser, } from '@/api';
@@ -110,8 +112,8 @@
   const uuid = computed(() => userStore.getUserInfo?.uuid);
   const userInfo = computed(() => userStore.getUserInfo);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
-  
-  
+  const curStepIndex = computed(() => userStore.getCurStepIndex); // 1 绑定大使邀请码
+
   watch(amb_promo_code, (newVal) => {
     userBindAmbCode.value = newVal
   })
@@ -134,7 +136,13 @@
   
   const router = useRouter();
   const route = useRoute();
-  
+    const showUpload = computed(() => {
+        if (route.name != 'details' && route.name != 'filePreview' && route.name != 'getKey' && route.name != 'FileList' && route.name != 'orderSummary' && route.name != 'orderSumDetail' && route.name != 's3Info') {
+      return true
+          } else {
+      return false
+    }
+  })
   const activeTab = ref(0);
   const orderTotal=ref(0)
   

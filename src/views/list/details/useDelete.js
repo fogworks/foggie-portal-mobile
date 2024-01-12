@@ -17,7 +17,7 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
     let objects = '';
     let ProxDeleteObjectRequest = new Prox.default.ProxDeleteObjectRequest();
     let ProxUploads = [];
-    
+
     for (let i = 0; i < item.length; i++) {
       if (item[i].type == 'application/x-directory') {
         prefixes.push(item[i].key + '');
@@ -35,9 +35,9 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
       }
     }
     // ProxDeleteObjectRequest.setCidsList(cids);
-    
+
     ProxDeleteObjectRequest.setObjectsList(ProxUploads);
-   
+
     ProxDeleteObjectRequest.setObjectType('normal');
     ProxDeleteObjectRequest.setPrefixesList(prefixes);
     let ProxDeleteObjectReq = new Prox.default.ProxDeleteObjectReq();
@@ -49,9 +49,10 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
     let ip = `https://${orderInfo.value.domain}.${poolUrl}:7007`;
     let server = new grpcService.default.ServiceClient(ip, null, null);
 
-
+    console.log('ProxDeleteObjectReq', ProxDeleteObjectReq);
     server.deleteObject(ProxDeleteObjectReq, metadata.value, (err, res) => {
       if (res) {
+        console.log(res);
         showToast.success('Delete succeeded');
         tableLoading.value = false;
         // let arr = [];
@@ -67,6 +68,7 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
           // refresh();
         });
       } else {
+        console.log(err);
         tableLoading.value = false;
         showToast.fail('Delete Failed');
       }
