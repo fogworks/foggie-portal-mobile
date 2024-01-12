@@ -71,14 +71,19 @@
       <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
         <div style="display: flex">
           <template v-if="!prefix.length">
-            <div class="top_back" @click="router.go(-1)"> </div>
-            <span class="top_title">
-              {{ fileTypeText[category] }}
-            </span>
-            <TriangleUp
-              @click="showTypeCheckPop = !showTypeCheckPop"
-              :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
-            ></TriangleUp>
+            <div class="boxtop">
+              <div style="display: flex; align-items: center; flex: 0 0 auto">
+                <div class="top_back" @click="router.go(-1)"> </div>
+                <span class="top_title">
+                  {{ fileTypeText[category] }}
+                </span>
+                <TriangleUp
+                  @click="showTypeCheckPop = !showTypeCheckPop"
+                  :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
+                ></TriangleUp>
+              </div>
+              <nut-checkbox style="flex: 0 0 100px" v-model="isCheckMode" label="Multiple">Multiple</nut-checkbox>
+            </div>
           </template>
           <template v-else>
             <div
@@ -108,6 +113,7 @@
         <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
           <template #rightin> <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" /> </template>
         </nut-searchbar>
+        <div> </div>
       </div>
       <!-- <div class="check_top" v-if="isCheckMode && category != 1 && selectArr.length">
         <span @click="selectAll">{{ selectArr.length == tableData.length ? 'UnSelect' : 'Select' }} All</span>
@@ -162,14 +168,17 @@
               <p>{{ item.date || '' }}</p>
             </div>
             <div @click.stop v-if="item.isPin" class="ipfs_info">
-              <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
-              <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2>
+              <!-- <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
+              <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2> -->
+
+              <IconIPFS color="#496AF2"></IconIPFS>
             </div>
             <!-- <div @click.stop="showAction(item)" class="right_div">
             <IconMore v-show="!isCheckMode" class="right_more"></IconMore>
           </div> -->
             <div class="right_radio" @click.stop>
-              <nut-checkbox :label="item.name"></nut-checkbox>
+              <nut-checkbox v-if="isCheckMode" :label="item.name"></nut-checkbox>
+              <MoreX @click="clickFIleItem(item)" v-else width="40px" height="25px" />
             </div>
           </div>
         </nut-checkbox-group>
@@ -194,72 +203,78 @@
 
     <nut-popup
       teleport-disable
-      v-if="fileItemPopupIsShow"
       pop-class="fileItemPopup"
       position="bottom"
       safe-area-inset-bottom
       closeable
       round
-      :style="{ height: 'auto', minHeight: '60%' }"
+      z-index="2000"
+      :style="{ height: 'auto', minHeight: '40%' }"
       v-model:visible="fileItemPopupIsShow"
     >
       <div class="fileItem_header">
-        <img :src="selectArr[0].imgUrl" alt="" srcset="" />
+        <img v-if="(chooseItem.category == 1 || chooseItem.category == 2) && chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
+        <img v-else-if="chooseItem.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+        <img v-else-if="chooseItem.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+        <img v-else src="@/assets/svg/home/file.svg" alt="" />
         <div class="fileItem_header_right">
-          <div>{{ selectArr[0].fullName }}</div>
-          <div>{{ selectArr[0].date }} · {{ selectArr[0].size }}</div>
+          <div>{{ chooseItem.fullName }}</div>
+          <div  v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
         </div>
       </div>
-      <div class="fileItem_body">
+      <div
+        class="fileItem_body"
+        :style="{
+          height: chooseItem.isPin ? '345px' : '300px',
+        }"
+      >
         <div class="optionBox">
           <div @click="handlerClick('share')">
-            <IconShare :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconShare>
+            <IconShare color="#222224 "></IconShare>
             <span>Share</span>
           </div>
           <div @click="handlerClick('rename')">
-            <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
+            <IconRename color="#222224"></IconRename>
             Rename
           </div>
-          <div @click="handlerClick(selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'pin' : 'un pin')">
-            <IconIPFS :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconIPFS>
-            {{ selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'Pinned' : 'Un Pinned' }}
+          <div @click="handlerClick(chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'un pin')">
+            <IconIPFS color="#222224"></IconIPFS>
+            {{ chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'Pinned' : 'Unpin' }}
           </div>
           <div @click="handlerClick('move')">
-            <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
+            <IconMove :color="category != 1 || !isMobileOrder ? '#222224' : '#ffffff5c'"></IconMove>
             Move
           </div>
           <div @click="handlerClick('download')">
-            <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
+            <IconDownload color="#222224"></IconDownload>
             Download
-          </div>
-          <div @click="handlerClick('delete')">
-            <IconDelete :color="selectArr.length ? 'red' : '#ffffff5c'"></IconDelete>
-            Delete
           </div>
         </div>
         <div class="ipfs">
-          <p v-if="selectArr.length == 1 && selectArr[0].isPin">
-            <span>{{ handleID(`ipfs://${selectArr[0].cid}`) }} </span>
-            <IconCopy color="#fff" @click="copyIPFS('ipfs', selectArr[0])"></IconCopy>
+          <p v-if="chooseItem.isPin">
+            <span>{{ handleID(`ipfs://${chooseItem.cid}`) }} </span>
+            <IconCopy color="#222224" @click="copyIPFS('ipfs', chooseItem)"></IconCopy>
           </p>
           <p>
-            <span> {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${selectArr[0].cid}`) }} </span>
-            <IconCopy color="#fff" @click="copyIPFS('http', selectArr[0])"></IconCopy>
+            <span> {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${chooseItem.cid}`) }} </span>
+            <IconCopy color="#222224" @click="copyIPFS('http', chooseItem)"></IconCopy>
           </p>
         </div>
+
+        <nut-button
+          color="linear-gradient(to right, #ff6034, #ee0a24)"
+          block
+          type="danger"
+          style="margin-top: 40px"
+          @click="handlerClick('delete')"
+        >
+          <template #icon><IconDelete /> </template>Delete</nut-button
+        >
       </div>
     </nut-popup>
 
     <!-- checkbox action -->
     <Teleport to="body">
-      <!-- <div class="bottom_ipfs_info" v-if="selectArr.length == 1 && selectArr[0].isPin">
-        <p> {{ handleID(`ipfs://${selectArr[0].cid}`) }} <IconCopy @click="copyIPFS('ipfs', selectArr[0])"></IconCopy> </p>
-        <p>
-          {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${selectArr[0].cid}`)
-          }}<IconCopy @click="copyIPFS('http', selectArr[0])"></IconCopy>
-        </p>
-      </div> -->
-
       <nut-tabbar
         v-if="isCheckMode && selectArr.length"
         @tab-switch="tabSwitch"
@@ -310,7 +325,7 @@
 
     <!-- single action -->
     <Teleport to="body">
-      <nut-popup v-model:visible="showActionPop" position="bottom" closeable round :style="{ height: '58%' }">
+      <nut-popup v-model:visible="showActionPop" z-index="2100" position="bottom" closeable round :style="{ height: '58%' }">
         <!-- <nut-action-sheet class="action_pop" v-if="showActionPop" v-model:visible="showActionPop"> -->
         <div class="custom-content">
           <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
@@ -349,6 +364,7 @@
       position="bottom"
       closeable
       round
+      z-index="2100"
       :style="{ height: '90%' }"
       v-model:visible="renameShow"
     >
@@ -368,7 +384,16 @@
     </nut-popup>
     <!-- move -->
 
-    <nut-popup teleport-disable v-if="moveShow" position="bottom" closeable round :style="{ height: '100vh' }" v-model:visible="moveShow">
+    <nut-popup
+      teleport-disable
+      v-if="moveShow"
+      z-index="2100"
+      position="bottom"
+      closeable
+      round
+      :style="{ height: '100vh' }"
+      v-model:visible="moveShow"
+    >
       <div class="rename_box move_box">
         <IconFolder></IconFolder>
         <div
@@ -405,6 +430,7 @@
     <nut-popup
       teleport-disable
       v-if="showShareDialog"
+      z-index="2100"
       @closed="
         isReady = false;
         shareType = '';
@@ -431,7 +457,7 @@
           <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
           <nut-textarea rows="3" v-model="imgDesc" />
         </template>
-        <nut-popup position="bottom" v-if="isMobileDevice" v-model:visible="periodShow">
+        <nut-popup position="bottom" z-index="2100" v-if="isMobileDevice" v-model:visible="periodShow">
           <nut-picker
             v-model="periodValue"
             :columns="options"
@@ -616,7 +642,7 @@
   import IconHttp from '~icons/home/http.svg';
   import { reactive, toRefs, watch, onMounted, onUnmounted, onBeforeUnmount } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
-  import { Search2, TriangleUp, Loading } from '@nutui/icons-vue';
+  import { Search2, TriangleUp, Loading, MoreX } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import ImgList from './imgList.vue';
@@ -657,7 +683,7 @@
     showActionPop: false,
     tableData: [],
     chooseItem: { name: '' },
-    isCheckMode: true,
+    isCheckMode: false,
     renameShow: false,
     newName: '',
     showTypeCheckPop: false,
@@ -1127,7 +1153,19 @@
 
   const handlerClick = async (type: string) => {
     showActionPop.value = false;
-    const checkData = !detailShow.value ? selectArr.value : [chooseItem.value];
+    fileItemPopupIsShow.value = false;
+    let checkData = [];
+    if (detailShow.value) {
+      checkData = [chooseItem.value];
+    } else {
+      if (isCheckMode.value) {
+        checkData = selectArr.value;
+      } else {
+        checkData = [chooseItem.value];
+      }
+    }
+    // const checkData = !detailShow.value || isCheckMode ? selectArr.value : [chooseItem.value];
+    console.log(checkData);
     if (type === 'move') {
       // if (category.value == 1) return false;
       movePrefix.value = [];
@@ -1175,6 +1213,7 @@
     } else if (type === 'delete') {
       const onOk = async () => {
         deleteItem(checkData);
+        fileItemPopupIsShow.value = false;
       };
       showDialog({
         title: 'Warning',
@@ -2015,22 +2054,16 @@
   };
 
   const fileItemPopupIsShow = ref(false);
+  function clickFIleItem(params) {
+    chooseItem.value = params;
+    console.log(params);
 
-  watch(
-    () => selectArr.value,
-    (newVal, oldVal) => {
-      if (newVal.length == 1 && oldVal.length == 0) {
-        console.log(newVal);
-
-        fileItemPopupIsShow.value = true;
-      }
-    },
-    { deep: true },
-  );
+    fileItemPopupIsShow.value = true;
+  }
 </script>
 <style lang="scss">
   .fileItemPopup.nut-popup {
-    background-color: #fafafa;
+    background-color: #f9f9f9;
     padding: 40px 40px;
     box-sizing: border-box;
     .fileItem_header {
@@ -2055,24 +2088,26 @@
     }
     .fileItem_body {
       margin-top: 50px;
+      overflow-x: hidden;
+      overflow-y: auto;
       .optionBox {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         // place-items: center;
         justify-items: center;
         gap: 25px;
-        padding: 30px;
+        padding: 30px 10px;
         & > div {
           width: 100%;
           border-radius: 25px;
           border: 1px solid #ddd1d1;
-          background-color: #5758a0;
+          background-color: #f1f1f1;
           height: 170px;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: space-evenly;
-          color: #fff;
+          color: #222224;
           svg {
             width: 60px;
             height: 60px;
@@ -2082,7 +2117,7 @@
       .ipfs {
         border-radius: 25px;
         border: 1px solid #ddd1d1;
-        background-color: #5758a0;
+        background-color: #f1f1f1;
         p {
           display: grid;
           grid-template-columns: auto 100px;
@@ -2099,7 +2134,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             font-size: 25px;
-            color: #fafafa;
+            color: #222224;
           }
           svg {
             height: 60px;
@@ -2158,6 +2193,12 @@
   }
 </style>
 <style lang="scss" scoped>
+  .boxtop {
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
+  }
+
   .bottom_ipfs_info {
     position: fixed;
     bottom: 100px;
@@ -2498,7 +2539,7 @@
     .ipfs_info {
       display: flex;
       align-items: center;
-      width: 300px;
+      width: 100px;
       height: 80px;
       svg,
       img {
@@ -2519,6 +2560,9 @@
     .right_radio {
       height: 80px;
       width: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       :deep {
         .nut-checkbox {
           display: flex;
@@ -2895,6 +2939,9 @@
       .right_radio {
         height: 80px;
         width: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         :deep {
           .nut-checkbox {
             display: flex;

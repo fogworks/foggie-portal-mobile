@@ -22,18 +22,18 @@
     </nut-cell-group>
     <nut-cell-group title="Linked MetaMask Wallet" class="info_title wallet_info">
       <!-- <nut-cell :desc="item.address"></nut-cell> -->
+
       <nut-cell v-for="(item, index) in walletInfo">
-        <template #title>
-          <span v-show="index == 0">ERC20 Address</span>
-        </template>
+         <template #title> <span v-show="index == 0">ERC20 Address</span> </template> 
         <template #desc>
-          <span v-if="item.eyeState">{{ item.address }}</span>
-          <span v-else>{{ item.address.slice(0, 5) + '...' + item.address.slice(-5) }}</span>
-          <eyeOffIon v-if="item.eyeState" @click="item.eyeState = false" style="font-size: 12px; margin-left: 8px" />
-          <eyeIon v-if="!item.eyeState" @click="item.eyeState = true" style="font-size: 12px; margin-left: 8px" />
+           <span v-if="!item.eyeState">{{ item.address }}</span> 
+          <span v-else>{{ item.address.slice(0, 5) + '...' + item.address.slice(-5) }}</span> 
+          <eyeOffIon v-if="!item.eyeState" @click="item.eyeState = true" style="font-size: 12px; margin-left: 8px" /> 
+          <eyeIon v-if="item.eyeState" @click="item.eyeState = false" style="font-size: 12px; margin-left: 8px" /> 
         </template>
+ 
       </nut-cell>
-      <div class="add_link_wallet" @click="showAllWalletList"><MetaMask></MetaMask> Add</div>
+      <div class="add_link_wallet" @click="showAllWalletList"> <MetaMask></MetaMask> Add </div>
     </nut-cell-group>
     <nut-dialog teleport="#app" title="Link Wallet" v-model:visible="showAccountList">
       <nut-radio-group v-model="choosedWallet" class="account_list">
@@ -116,6 +116,7 @@
       }
     }
   }
+
   .info_title {
     :deep {
       .nut-cell-group__title {
@@ -124,6 +125,7 @@
       }
     }
   }
+
   .wallet_info {
     :deep {
       .nut-cell__value {
@@ -131,6 +133,7 @@
       }
     }
   }
+
   .not_amb {
     :deep {
       .nut-cell__value {
@@ -139,24 +142,29 @@
       }
     }
   }
+
   :deep {
     .nut-cell-group__wrap {
       margin-bottom: 0;
     }
   }
+
   .info_box {
     background: #f5f7fb;
     padding-bottom: 5rem;
+
     :deep {
       .nut-cell__title {
         color: #000;
       }
+
       .nut-cell__value {
         color: #4d5093;
         font-weight: bold;
       }
     }
   }
+
   .add_link_wallet {
     padding: 20px 0;
     text-align: center;
@@ -164,12 +172,14 @@
     // background-color: $main-blue;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     cursor: pointer;
+
     svg {
       width: 1.5rem;
       height: 1.5rem;
       margin-right: 0.5rem;
       vertical-align: middle;
     }
+
     &:hover {
       opacity: 0.8;
     }
