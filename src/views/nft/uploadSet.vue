@@ -191,7 +191,9 @@
             return false;
           } else {
             setDefaultBucketAndPath();
+            if (res.result.data.uuid) {
             await getOrderInfo(true, res.result.data.uuid);
+            }
             needSet.value = false;
           }
         }
@@ -202,7 +204,7 @@
   };
   const setDefaultBucketAndPath = () => {
     if (listData.value.length && !bucketName.value) {
-      bucketName.value = listData.value.domain;
+      bucketName.value = listData.value[0].domain;
       uploadPath.value = 'NFT';
       setBucketAndPath();
     }
