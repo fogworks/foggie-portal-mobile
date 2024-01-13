@@ -387,7 +387,7 @@
           v-model="newName"
           :placeholder="isNewFolder ? 'Please Input Folder Name' : getOriginName(selectArr[0].name.split('/')[0])"
         >
-          <template #rightin>
+          <template v-if="!isNewFolder" #rightin>
             <span> {{ getEndName(selectArr[0].name.split('/')[0]) }}</span>
           </template>
         </nut-searchbar>

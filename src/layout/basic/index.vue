@@ -137,7 +137,7 @@
   const router = useRouter();
   const route = useRoute();
     const showUpload = computed(() => {
-        if (route.name != 'details' && route.name != 'filePreview' && route.name != 'getKey' && route.name != 'FileList' && route.name != 'orderSummary' && route.name != 'orderSumDetail' && route.name != 's3Info') {
+        if (route.name != 'listDetails' && route.name != 'filePreview' && route.name != 'getKey' && route.name != 'FileList' && route.name != 'orderSummary' && route.name != 'orderSumDetail' && route.name != 's3Info') {
       return true
           } else {
       return false
