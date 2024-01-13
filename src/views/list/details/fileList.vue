@@ -146,7 +146,7 @@
         </nut-tour>
         <nut-checkbox-group v-model="checkedItem" ref="group" :max="30">
           <div
-            :class="['list_item', checkedItem.indexOf(item.name) > -1 ? 'row_is_checked' : '']"
+            :class="['list_item', checkedItem.indexOf(item.name) > -1 && isCheckMode ? 'row_is_checked' : '']"
             :id="[index == 0 ? 'list_item_1' : '']"
             v-for="(item, index) in tableData"
             :key="index"
@@ -232,14 +232,14 @@
         <img v-else-if="chooseItem.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
         <img v-else src="@/assets/svg/home/file.svg" alt="" />
         <div class="fileItem_header_right">
-          <div>{{ chooseItem.fullName }}</div>
+          <div style="width: 85%;">{{ chooseItem.fullName }}</div>
           <div v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
         </div>
       </div>
       <div
         class="fileItem_body"
         :style="{
-          height: chooseItem.isPin ? '345px' : '300px',
+          height: chooseItem.isPin ? '345px' : '285px',
         }"
       >
         <div class="optionBox">
@@ -253,7 +253,7 @@
           </div>
           <div @click="handlerClick(chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'un pin')">
             <IconIPFS color="#222224"></IconIPFS>
-            {{ chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'Pinned' : 'Unpin' }}
+            {{ chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'unpin' }}
           </div>
           <div @click="handlerClick('move')">
             <IconMove :color="category != 1 || !isMobileOrder ? '#222224' : '#ffffff5c'"></IconMove>
@@ -276,13 +276,13 @@
         </div>
 
         <nut-button
-          color="linear-gradient(to right, #ff6034, #ee0a24)"
+
           block
-          type="danger"
-          style="margin-top: 40px"
+          type="primary"
+          style="margin-top: 40px;color: rgb(238, 10, 36);"
           @click="handlerClick('delete')"
         >
-          <template #icon><IconDelete /> </template>Delete</nut-button
+          <template #icon><IconDelete  /> </template>Delete</nut-button
         >
       </div>
     </nut-popup>
@@ -310,7 +310,7 @@
             </template>
           </nut-tabbar-item>
           <nut-tabbar-item
-            :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'Pin' : 'Un Pin'"
+            :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'pin' : 'unpin'"
             :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']"
           >
             <template #icon="props">
@@ -1619,6 +1619,9 @@
         tableData.value.push(item);
       }
     }
+    currentFolder.value = data.prefix;
+    window.sessionStorage.setItem('currentFolder', currentFolder.value);
+    console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
       let isDir = data?.content[j].contentType == 'application/x-directory' ? true : false;
@@ -1636,9 +1639,7 @@
       let file_id = data.content[j].fileId;
 
       let name = data.content[j].key;
-      currentFolder.value = data.prefix;
-      window.sessionStorage.setItem('currentFolder', currentFolder.value);
-      console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
+     
 
       if (data.prefix) {
         name = name.split(decodeURIComponent(data.prefix))[1];
@@ -2001,12 +2002,12 @@
       let index = keys[0].lastIndexOf('/');
       let name = keys[0].substring(index + 1);
       const date = transferGMTTime(fileInfo.lastModified * 1000);
-      const target = tableData.value.find((el: { cid: any }) => el.cid === cid[0]);
+      const _cid = cid && cid[0]? cid[0] : '';
+      const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
       if (!target) {
         const type = keys[0].substring(keys[0].lastIndexOf('.') + 1);
-
         const data = {
-          cid: cid[0],
+          cid: _cid,
           key: keys[0],
         };
         const imgData = await handleImg(data, type, false);
@@ -2039,13 +2040,13 @@
             },
           ],
           date,
-          pubkey: cid[0],
-          cid: cid[0],
+          pubkey: _cid,
+          cid: _cid,
           imgUrl: url,
           imgUrlLarge: url_large,
           share: {},
           isSystemImg,
-          canShare: cid[0] ? true : false,
+          canShare: _cid ? true : false,
           isPin: false,
           isPinCyfs: false,
         };
@@ -2099,6 +2100,7 @@
         font-size: 30px;
         font-weight: 600;
         line-height: 50px;
+        
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
