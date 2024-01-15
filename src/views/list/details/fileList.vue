@@ -131,19 +131,6 @@
         :has-more="!!continuationToken"
         @load-more="loadMore"
       >
-        <nut-tour
-          class="nut-custom-tour nut-customword-tour nut-customstyle-tour"
-          v-model="isFirst"
-          :steps="longPress"
-          type="tile"
-          location="bottom-center"
-          :close-on-click-overlay="false"
-        >
-          <div class="tour-demo-custom-content">
-            <div>Long press on a list file to enable multi-select mode</div>
-            <nut-button class="tour_btn" @click="handleFirst" type="default">OK</nut-button>
-          </div>
-        </nut-tour>
         <nut-checkbox-group v-model="checkedItem" ref="group" :max="30">
           <div
             :class="['list_item', checkedItem.indexOf(item.name) > -1 && isCheckMode ? 'row_is_checked' : '']"
@@ -340,34 +327,6 @@
       </nut-tabbar>
     </Teleport>
 
-    <!-- single action -->
-    <!-- <Teleport to="body">
-      <nut-popup v-model:visible="showActionPop" z-index="2100" position="bottom" closeable round :style="{ height: '58%' }">
-        <div class="custom-content">
-          <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
-          <ul>
-            <li v-if="!chooseItem.isDir && showActionBtn" @click="handlerClick('share')"><IconShare></IconShare> Share</li>
-            <li v-if="(!chooseItem.isPin || !chooseItem.cid) && showActionBtn" @click="handlerClick('ipfs')">
-              <img src="@/assets/ipfs.png" alt="" /> IPFS</li
-            >
-            <li v-else-if="chooseItem.isPin && showActionBtn" @click="handlerClick('unipfs')">
-              <img src="@/assets/ipfs.png" alt="" /> UN IPFS</li
-            >
-            <li v-if="!chooseItem.isDir && showActionBtn && chooseItem.category == 1 && isMobileOrder" @click="handlerClick('nft')"
-              ><IconNFT></IconNFT> Mint NFT</li
-            >
-            <li v-if="isMobileOrder" @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
-            <li v-if="isMobileOrder" @click="handlerClick('move')"><IconMove></IconMove> Move</li>
-            <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
-            <li class="delete_item" v-if="isMobileOrder && showActionBtn" @click="handlerClick('delete')"
-              ><IconDelete></IconDelete>Delete</li
-            >
-          </ul>
-          <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
-        </div>
-      </nut-popup>
-    </Teleport> -->
-
     <!-- rename / newFolder -->
     <nut-popup
       teleport-disable
@@ -384,7 +343,16 @@
       v-model:visible="renameShow"
     >
       <div class="rename_box">
-        <IconFolder></IconFolder>
+        <!-- <IconFolder></IconFolder> -->
+        <div v-if="!isNewFolder" :class="['left_icon_box']">
+          <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+          <IconFolder v-if="selectArr[0].isDir"></IconFolder>
+          <IconImage v-else-if="selectArr[0].category == 1"></IconImage>
+          <IconVideo v-else-if="selectArr[0].category == 2"></IconVideo>
+          <IconAudio2 v-else-if="selectArr[0].category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+          <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
+          <IconFile v-else src="@/assets/svg/home/file.svg" alt="" />
+        </div>
         <p v-if="!isNewFolder"> {{ selectArr.length ? getOriginName(selectArr[0].name.split('/')[0]) : '' }}</p>
         <nut-searchbar
           v-model="newName"
@@ -650,6 +618,7 @@
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
+  import IconFile from '~icons/home/file.svg';
   import IconVideo from '~icons/home/video.svg';
   import IconFolder from '~icons/home/folder.svg';
   import IconShare from '~icons/home/share.svg';
@@ -1729,17 +1698,6 @@
     }
     tableLoading.value = false;
     showToast.hide('file_list');
-    nextTick(() => {
-      if (window.localStorage.notFirst) {
-        document.getElementsByClassName('main-page')[0].style.overflow = '';
-        isFirst.value = false;
-      } else {
-        setTimeout(() => {
-          document.getElementsByClassName('main-page')[0].style.overflow = 'hidden';
-          isFirst.value = true;
-        }, 1000);
-      }
-    });
   };
   function doSearch(scroll: string = '', prefixArg: any[] = [], reset = false) {
     if (tableLoading.value) return false;
@@ -1845,12 +1803,6 @@
       }
     }
   }
-
-  const handleFirst = () => {
-    document.getElementsByClassName('main-page')[0].style.overflow = '';
-    isFirst.value = false;
-    window.localStorage.notFirst = true;
-  };
 
   const getSignHeaders = (objectKey: string) => {
     const date = new Date().toUTCString();
