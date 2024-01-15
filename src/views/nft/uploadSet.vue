@@ -5,7 +5,7 @@
   <nut-popup  closeable position="bottom" :style="{ height: '100%' }" v-model:visible="popShow">
     <div class="bucket_box">
       <p style="text-align: center; font-size: 1.5rem; font-weight: 600">Quick Upload</p>
-      <p class="title">
+      <p class="title" v-if="listData.length||bucketName">
         <span>
             CUSTOM UPLOAD PATH
         </span>
@@ -51,7 +51,7 @@
       </template>
     </div>
     <FastUploader
-      v-if="!needSet"
+      v-if="!needSet&&bucketName"
       @getRouteOrder="getRouteOrder"
       @setBucketAndPath="setBucketAndPath"
       v-model:canSet="canSet"
@@ -66,7 +66,7 @@
   <p class="title2" v-if="!needSet">Select existing file casting</p>
     <nut-infinite-loading
       v-if="!needSet"
-      load-more-txt="No more bucket"
+      :load-more-txt="listData.length?'No more bucket':'No available buckets, please purchase order first!'"
       class="file_list file_list_move"
       ref="listRef"
       v-model="infinityValue"
@@ -209,7 +209,6 @@
       setBucketAndPath();
     }
   };
-  onMounted(async () => {});
   // watch(
   //   cloudCodeIsBind,
   //   async (val) => {
@@ -242,11 +241,18 @@
       await loadMoreFun();
     },
     { deep: true },
-  );
-  onMounted(async () => {
-        resetData();
-        await loadMoreFun();
-        await getBucketAndPath();
+);
+watch(cloudCodeIsBind, async (val) => {
+  if (val) {
+    console.log(1111111111);
+      resetData();
+  await loadMoreFun();
+  await getBucketAndPath();
+  }
+
+}, { deep: true,immediate:true });
+onMounted(async () => {
+      
   });
 </script>
 <style lang="scss">

@@ -17,6 +17,7 @@ export default function useOrderInfo() {
   const secretAccessKey = ref('');
   const filesCount = ref(0);
   const usedSize = ref(0);
+  const isError = ref(false);
   let header = new Prox.default.ProxHeader();
   let metadata = ref({});
   const deviceType = computed(() => orderInfo.value.device_type);
@@ -83,6 +84,7 @@ export default function useOrderInfo() {
         // console.log('metadata==11:', request, metadata.value);
         server.listCreds(request, metadata.value, (err, res) => {
           if (err) {
+            isError.value = true;
             console.log('err------111222:', err);
             showToast.hide('order_info_id');
             reject(false);
@@ -142,5 +144,6 @@ export default function useOrderInfo() {
     metadata,
     accessKeyId,
     secretAccessKey,
+    isError,
   };
 }

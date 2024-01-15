@@ -18,6 +18,7 @@ router.beforeEach((to, from, next) => {
       id: 'router_loading',
       customClass: 'app_loading',
       icon: '',
+      duration: 0,
     });
   }
 
@@ -40,7 +41,6 @@ router.beforeEach((to, from, next) => {
       } else {
         next({ name: 'Guide' });
       }
-
     }
   }
 });

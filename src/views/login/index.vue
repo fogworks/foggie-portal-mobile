@@ -57,12 +57,13 @@
 
 <script lang="ts" setup name="LoginPage">
   // import { MetaMaskSDK } from '@metamask/sdk';
-  import injectedModule from '@web3-onboard/injected-wallets';
-  import { init, useOnboard } from '@web3-onboard/vue';
-  import metamaskSDK from '@web3-onboard/metamask';
+  // import injectedModule from '@web3-onboard/injected-wallets';
+  // import { init, useOnboard } from '@web3-onboard/vue';
+  // import metamaskSDK from '@web3-onboard/metamask';
   import detectEthereumProvider from '@metamask/detect-provider';
   import MetaMask from '~icons/home/metamask.svg';
   // import UniSat from '~icons/home/unisat.svg';
+  import loadingImg from '@/components/loadingImg/index.vue';
   import {
     login,
     Captcha,
@@ -90,62 +91,58 @@
     // 此正则表达式涵盖了大多数使用的手机和平板设备
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
   });
-  const metamaskSDKWallet = metamaskSDK({
-    options: {
-      extensionOnly: false,
-      dappMetadata: {
-        name: 'Web3Onboard',
-        url: 'https://amb.u2i.net',
-      },
-      // openDeeplink: (link) => {
-      //   window.open(link);
-      // },
-      // useDeeplink: true,
-    },
-  });
-  const infuraKey = '<INFURA_KEY>';
-  const rpcUrl = `https://mainnet.infura.io/v3/${infuraKey}`;
+  // const metamaskSDKWallet = metamaskSDK({
+  //   options: {
+  //     extensionOnly: false,
+  //     dappMetadata: {
+  //       name: 'Web3Onboard',
+  //       url: 'https://amb.u2i.net',
+  //     },
+  //   },
+  // });
+  // const infuraKey = '<INFURA_KEY>';
+  // const rpcUrl = `https://mainnet.infura.io/v3/${infuraKey}`;
   // 不要删除
-  const web3Onboard = init({
-    wallets: [metamaskSDKWallet],
-    chains: [
-      {
-        id: '0x1',
-        token: 'ETH',
-        label: 'Ethereum Mainnet',
-        rpcUrl,
-      },
-      {
-        id: 42161,
-        token: 'ARB-ETH',
-        label: 'Arbitrum One',
-        rpcUrl: 'https://rpc.ankr.com/arbitrum',
-      },
-      {
-        id: '0xa4ba',
-        token: 'ARB',
-        label: 'Arbitrum Nova',
-        rpcUrl: 'https://nova.arbitrum.io/rpc',
-      },
-      {
-        id: '0x2105',
-        token: 'ETH',
-        label: 'Base',
-        rpcUrl: 'https://mainnet.base.org',
-      },
-    ],
-    appMetadata: {
-      name: 'Wallet',
-      icon: '<svg>My App Icon</svg>',
-      description: 'Login via MetaMask',
-      recommendedInjectedWallets: [
-        { name: 'MetaMask', url: 'https://metamask.io' },
-        { name: 'Coinbase', url: 'https://wallet.coinbase.com/' },
-      ],
-    },
-  });
+  // const web3Onboard = init({
+  //   wallets: [metamaskSDKWallet],
+  //   chains: [
+  //     {
+  //       id: '0x1',
+  //       token: 'ETH',
+  //       label: 'Ethereum Mainnet',
+  //       rpcUrl,
+  //     },
+  //     {
+  //       id: 42161,
+  //       token: 'ARB-ETH',
+  //       label: 'Arbitrum One',
+  //       rpcUrl: 'https://rpc.ankr.com/arbitrum',
+  //     },
+  //     {
+  //       id: '0xa4ba',
+  //       token: 'ARB',
+  //       label: 'Arbitrum Nova',
+  //       rpcUrl: 'https://nova.arbitrum.io/rpc',
+  //     },
+  //     {
+  //       id: '0x2105',
+  //       token: 'ETH',
+  //       label: 'Base',
+  //       rpcUrl: 'https://mainnet.base.org',
+  //     },
+  //   ],
+  //   appMetadata: {
+  //     name: 'Wallet',
+  //     icon: '<svg>My App Icon</svg>',
+  //     description: 'Login via MetaMask',
+  //     recommendedInjectedWallets: [
+  //       { name: 'MetaMask', url: 'https://metamask.io' },
+  //       { name: 'Coinbase', url: 'https://wallet.coinbase.com/' },
+  //     ],
+  //   },
+  // });
 
-  const { wallets, connectWallet, disconnectConnectedWallet, connectedWallet } = useOnboard();
+  // const { wallets, connectWallet, disconnectConnectedWallet, connectedWallet } = useOnboard();
   const router = useRouter();
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
@@ -163,6 +160,7 @@
   const loading = ref<boolean>(false);
   const showCaptcha = ref<boolean>(false);
   const ruleForm = ref<any>(null);
+  const accountsList = ref<string>([]);
 
   function getCaptcha() {
     Captcha().then((res) => {
@@ -319,6 +317,7 @@
   async function signMetaMessage(accounts, nonce) {
     if (accounts.length === 0) {
       showToast.text('Please register and log in to MetaMask!');
+      showToast.hide('login');
     } else {
       try {
         const message = `Welcome to Fog works!\nThis request will not trigger a login.\nYour authentication status will reset after 24 hours.\nWallet address:\n${accounts[0]}\nNonce:\n${nonce}`;
@@ -327,7 +326,7 @@
           params: [message, accounts[0]],
         });
         console.log(signature);
-        wallet_login({
+        return wallet_login({
           address: accounts[0],
           wallet_type: 'metamask',
           sign: signature,
@@ -345,39 +344,61 @@
           userStore.setRefreshToken(refresh_token);
           // getUserInfo();
           loading.value = false;
+          showToast.hide('login');
           router.push({ path: '/home' });
         });
       } catch (error) {
+        showToast.hide('login');
         console.error('User denied message signing');
       }
     }
   }
   const checkWallet = async (address, wallet_type = 'metamask') => {
-    return check_wallet({ address, wallet_type }).then(async (res) => {
-      if (res.data.register || res.data.bind) {
-        await getNonce(address, 'metamask');
-        signMetaMessage([address], nonce.value);
-      } else {
-        wallet_register({ address, wallet_type }).then(async (res) => {
-          if (res.code == 200) {
-            await getNonce(address, 'metamask');
-            signMetaMessage([address], nonce.value);
-          }
-        });
-      }
-    });
+    return check_wallet({ address, wallet_type })
+      .then(async (res) => {
+        if (res.data.register || res.data.bind) {
+          await getNonce(address, 'metamask');
+          signMetaMessage([address], nonce.value);
+        } else {
+          wallet_register({ address, wallet_type }).then(async (res) => {
+            if (res.code == 200) {
+              await getNonce(address, 'metamask');
+              signMetaMessage([address], nonce.value);
+            }
+          });
+        }
+      })
+      .catch(() => {
+        showToast.hide('login');
+      });
   };
   const metaOpen = inject('metaOpen');
   const loginWithMeta = async () => {
     const provider = await detectEthereumProvider();
     if (provider == window.ethereum && provider) {
-      if (!connectedWallet?.value?.accounts?.[0]?.address) await connectWallet();
-      let address = connectedWallet?.value?.accounts?.[0]?.address;
-      if (!address) {
-        disconnectConnectedWallet();
-        return false;
+      showToast.loading('Connecting', {
+        cover: true,
+        customClass: 'app_loading',
+        coverColor: 'rgba(0,0,0,0.45)',
+        icon: loadingImg,
+        loadingRotate: false,
+        id: 'login',
+        duration: 0,
+      });
+      try {
+        await window.ethereum.request({
+          method: 'eth_requestAccounts',
+          params: [],
+        });
+        accountsList.value = await window.ethereum.request({
+          method: 'eth_accounts',
+          params: [],
+        });
+      } catch (err) {
+        showToast.hide('login');
+        showToast.text(err);
       }
-      await checkWallet(address);
+      await checkWallet(accountsList.value[0]);
     } else {
       metaOpen();
       // window.open('https://metamask.app.link/dapp/https://amb.u2i.net');

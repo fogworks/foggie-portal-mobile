@@ -82,7 +82,7 @@
                   :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
                 ></TriangleUp>
               </div>
-              <nut-checkbox style="flex: 0 0 100px" v-model="isCheckMode" label="Multiple">Multiple</nut-checkbox>
+              <nut-checkbox style="flex: 0 0 100px" v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
             </div>
           </template>
           <template v-else>
@@ -232,7 +232,7 @@
         <img v-else-if="chooseItem.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
         <img v-else src="@/assets/svg/home/file.svg" alt="" />
         <div class="fileItem_header_right">
-          <div style="width: 85%;">{{ chooseItem.fullName }}</div>
+          <div style="width: 85%">{{ chooseItem.fullName }}</div>
           <div v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
         </div>
       </div>
@@ -243,22 +243,25 @@
         }"
       >
         <div class="optionBox">
-          <div @click="handlerClick('share')">
-            <IconShare color="#222224 "></IconShare>
-            <span>Share</span>
-          </div>
-          <div @click="handlerClick('rename')">
-            <IconRename color="#222224"></IconRename>
-            Rename
-          </div>
-          <div @click="handlerClick(chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'un pin')">
-            <IconIPFS color="#222224"></IconIPFS>
-            {{ chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'unpin' }}
-          </div>
-          <div @click="handlerClick('move')">
-            <IconMove :color="category != 1 || !isMobileOrder ? '#222224' : '#ffffff5c'"></IconMove>
-            Move
-          </div>
+          <template v-if="isAvailableOrder">
+            <div @click="handlerClick('share')">
+              <IconShare color="#222224 "></IconShare>
+              <span>Share</span>
+            </div>
+            <div @click="handlerClick('rename')">
+              <IconRename color="#222224"></IconRename>
+              Rename
+            </div>
+            <div @click="handlerClick(chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'un pin')">
+              <IconIPFS color="#222224"></IconIPFS>
+              {{ chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'unpin' }}
+            </div>
+            <div @click="handlerClick('move')">
+              <IconMove :color="category != 1 || !isMobileOrder ? '#222224' : '#ffffff5c'"></IconMove>
+              Move
+            </div>
+          </template>
+
           <div @click="handlerClick('download')">
             <IconDownload color="#222224"></IconDownload>
             Download
@@ -276,13 +279,13 @@
         </div>
 
         <nut-button
-
+          v-if="isAvailableOrder"
           block
           type="primary"
-          style="margin-top: 40px;color: rgb(238, 10, 36);"
+          style="margin-top: 40px; color: rgb(238, 10, 36)"
           @click="handlerClick('delete')"
         >
-          <template #icon><IconDelete  /> </template>Delete</nut-button
+          <template #icon><IconDelete /> </template>Delete</nut-button
         >
       </div>
     </nut-popup>
@@ -329,7 +332,7 @@
             <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
           </template>
         </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Delete" :class="[selectArr.length < 1 ? 'is-disable' : 'delete-item']">
+        <nut-tabbar-item v-if="isAvailableOrder" tab-title="Delete" :class="[selectArr.length < 1 ? 'is-disable' : 'delete-item']">
           <template #icon="props">
             <IconDelete :color="selectArr.length ? 'red' : '#ffffff5c'"></IconDelete>
           </template>
@@ -722,7 +725,6 @@
       },
     ],
     isFirst: false,
-    isError: false,
   });
   const imgListRef = ref('');
   const isMobileOrder = computed(() => {
@@ -774,12 +776,22 @@
     isNewFolder,
     longPress,
     isFirst,
-    isError,
     checkedItem,
   } = toRefs(state);
 
-  const { isAvailableOrder, getSummary, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } =
-    useOrderInfo();
+  const {
+    isAvailableOrder,
+    isError,
+    getSummary,
+    bucketName,
+    header,
+    metadata,
+    deviceType,
+    orderInfo,
+    accessKeyId,
+    secretAccessKey,
+    getOrderInfo,
+  } = useOrderInfo();
   provide('getSummary', getSummary);
   const {
     httpCopyLink,
@@ -1507,7 +1519,13 @@
     ) {
       //   console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, type === 'ico' ? false : true);
+      imgHttpLink = getHttpShare(
+        accessKeyId.value,
+        secretAccessKey.value,
+        bucketName.value,
+        item.key,
+        type === 'ico' || type === 'svg' ? false : true,
+      );
       // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
@@ -1639,7 +1657,6 @@
       let file_id = data.content[j].fileId;
 
       let name = data.content[j].key;
-     
 
       if (data.prefix) {
         name = name.split(decodeURIComponent(data.prefix))[1];
@@ -1692,7 +1709,11 @@
       } else {
         tableData.value.push(item);
         if (item.category == 1) {
-          item.src = item.imgUrlLarge;
+          if (item.originalSize > 1024 * 1024 * 20) {
+            item.src = item.imgUrl;
+          } else {
+            item.src = item.imgUrlLarge;
+          }
           imgArray.value.push(item);
         }
       }
@@ -1967,7 +1988,23 @@
   function swipeChange(index) {
     imgStartIndex.value = index;
     chooseItem.value = imgArray.value[index];
+    if (chooseItem.value.originalSize > 1024 * 1024 * 20) {
+      showToast.text('The image is too large, please download and view');
+    }
   }
+  watch(
+    detailShow,
+    (val) => {
+      if (val) {
+        nextTick(() => {
+          if (chooseItem.value.originalSize > 1024 * 1024 * 20) {
+            showToast.text('The image is too large, please download and view');
+          }
+        });
+      }
+    },
+    { deep: true },
+  );
   function handleID(id) {
     if (id) {
       return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
@@ -2002,17 +2039,27 @@
       let index = keys[0].lastIndexOf('/');
       let name = keys[0].substring(index + 1);
       const date = transferGMTTime(fileInfo.lastModified * 1000);
-      const _cid = cid && cid[0]? cid[0] : '';
+      const _cid = cid && cid[0] ? cid[0] : '';
       const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
       if (!target) {
-        const type = keys[0].substring(keys[0].lastIndexOf('.') + 1);
+        const type = keys[0].substring(keys[0].lastIndexOf('.') + 1).toLowerCase();
         const data = {
           cid: _cid,
           key: keys[0],
         };
         const imgData = await handleImg(data, type, false);
         let category = 0;
-        if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
+        if (
+          type === 'png' ||
+          type === 'bmp' ||
+          type === 'gif' ||
+          type === 'jpeg' ||
+          type === 'jpg' ||
+          type === 'svg' ||
+          type === 'heif' ||
+          type === 'webp' ||
+          type === 'ico'
+        ) {
           category = 1;
         }
         const url = imgData.imgHttpLink;
@@ -2100,7 +2147,7 @@
         font-size: 30px;
         font-weight: 600;
         line-height: 50px;
-        
+
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

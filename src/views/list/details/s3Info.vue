@@ -42,7 +42,7 @@
         Window installation package: <span class="title_click" @click="gotoLink('duckInstall')">click to install </span></div
       >
       <div class="h_title"> 2.2 How to use Cyberduck? </div>
-      <img src="@/assets/s3Use3.png" />
+      <img src="@/assets/s3Use3.jpg" />
     </div>
   </div>
 </template>

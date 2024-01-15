@@ -260,7 +260,8 @@ const getType = (fileName: string) => {
     fileName.endsWith('.gif') ||
     fileName.endsWith('.ico') ||
     fileName.endsWith('.webp') ||
-    fileName.endsWith('.heif')
+    fileName.endsWith('.heif') ||
+    fileName.endsWith('.psd')
   ) {
     return 1;
   } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mov')) {

@@ -116,7 +116,7 @@
         <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
         <!-- <span class="see_all" @click="syncPhotos">Sync Photos {{ syncImgList.length }}</span> -->
       </div>
-      <ErrorPage v-if="isError" @refresh="getFileList"></ErrorPage>
+      <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
       <!-- <nut-infinite-loading load-more-txt="No more content" v-else-if="tableData.length" :has-more="false" class="file_list">
         <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
           <div :class="['left_icon_box']">
@@ -493,6 +493,7 @@
     orderInfo,
     getOrderInfo,
     isAvailableOrder,
+    isError,
   } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
   const {
@@ -560,7 +561,6 @@
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
   const minerIp = ref<string>('');
-  const isError = ref(false);
   const income = ref(0);
   const images = computed(() => {
     let arr = [];
@@ -1153,7 +1153,13 @@
     ) {
       console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, type === 'ico' ? false : true);
+      imgHttpLink = getHttpShare(
+        accessKeyId.value,
+        secretAccessKey.value,
+        bucketName.value,
+        item.key,
+        type === 'ico' || type === 'svg' ? false : true,
+      );
       // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
@@ -1455,6 +1461,11 @@
     sync_challenge(data).then((res) => {
       console.log('------sync challenge', res);
     });
+  };
+  const refresh = async () => {
+    await getOrderInfo();
+    getFileList();
+    getSummary();
   };
   onMounted(async () => {
     await getOrderInfo();
