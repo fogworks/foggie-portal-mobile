@@ -13,6 +13,7 @@ export const lang: langType = {
     empty: '',
     analysis: 'Reward Records',
     transactionRecords: 'Transaction Records',
+    photography: 'photography',
   },
   language: {
     en: 'English',
