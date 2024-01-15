@@ -49,6 +49,23 @@ export const routes = [
           keepAlive: true,
         },
       },
+      {
+        path: 'photography',
+        component: () => import('@/views/photo/index.vue'),
+        meta: {
+          title: 'tabbar.photography',
+          keepAlive: false,
+        },
+      },
+      {
+        name: 'photoList',
+        path: 'photoList',
+        component: () => import('@/views/photo/photoList.vue'),
+        meta: {
+          title: 'tabbar.photoList',
+          keepAlive: false,
+        },
+      },
 
       // {
       //   path: 'demo',
