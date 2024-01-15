@@ -38,6 +38,13 @@
   import { search_mint } from '@/api/index.ts';
   import { useUserStore } from '@/store/modules/user';
 
+  import { update_nft_sync } from '@/api';
+
+  import * as Prox from '@/pb/prox_pb.js';
+  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+  import { poolUrl } from '@/setting.js';
+  import { get_unique_order, get_order_sign } from '@/api/index';
+
   const useStore = useUserStore();
   const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
 
@@ -86,7 +93,84 @@
       infoList.value[0].value = r.result.total;
       nftTotal.value = r.result.total;
     }
+
+    const dd = {
+      account: arr,
+      sync_storage: 2,
+    }
+    const sync_data = await search_mint(dd, 100, 1);
+    if (sync_data?.result?.data) {
+      const  nft_info = [];
+      sync_data?.result.data.map(async (item) => {
+        const meta_image = item.meta_image;
+        const bucket = meta_image.split('://')[1]?.split('.')[0];
+        const cid = meta_image.split('/ipfs/')[1];
+        const contractAddress = item.contract;
+        const tokenId = item.token_id;
+        if (contractAddress && tokenId) {
+          let ip = `https://${bucket}.${poolUrl}:7007`;
+          let server = new grpcService.default.ServiceClient(ip, null, null);
+          let ProxUpdateNFTRequest = new Prox.default.ProxUpdateNFTRequest();
+          let ProxNFTInfo = new Prox.default.ProxNFTInfo();
+          const { header, metadata } = await getOrderInfo(bucket);
+          ProxUpdateNFTRequest.setHeader(header);
+          ProxNFTInfo.setCid(cid);
+          ProxNFTInfo.setContractid (contractAddress);
+          ProxNFTInfo.setTokenid (tokenId);
+          ProxUpdateNFTRequest.addNftinfos(ProxNFTInfo);
+
+          console.log('ProxUpdateNFTRequest----------', ProxUpdateNFTRequest, ProxNFTInfo);
+
+          const update_data = await server.updateNFT(ProxUpdateNFTRequest, metadata.value, (err, data) => {
+            if (err) {
+              console.log('err----------', err);
+            } else {
+              console.log('data----------', data);
+            } 
+          });
+          if (update_data) {
+            console.log('update_data----------', update_data);
+            nft_info.push({
+              contract: contractAddress,
+              token_id: tokenId,
+            })
+            
+          }
+        }
+      });
+      if (nft_info.length > 0) {
+        const _d = {
+          nft_info
+        }
+        await update_nft_sync(_d);
+      }
+    }
+
   };
+
+  const getOrderInfo = async (bucket)=> {
+    let header = new Prox.default.ProxHeader();
+    let metadata = ref({});
+    let res = await get_unique_order({ domain: bucket });
+    if (res?.result?.data?.uuid) {
+      const order_uuid = res?.result?.data?.uuid;
+      let param = {
+        order_uuid,
+      };
+      const signData = await get_order_sign(param);
+      header.setPeerid(res?.result?.data.peer_id);
+      header.setId(res?.result?.data.foggie_id);
+
+      let cur_token = signData?.result?.data?.sign;
+      const date = signData?.result?.data?.timestamp;
+      metadata.value = {
+        'X-Custom-Date': date,
+      };
+      header.setToken(cur_token);
+    }
+    return { header, metadata };
+  }
+
   const loadImgList = (data) => {
     imgList.value = imgList.value.concat(data);
   };

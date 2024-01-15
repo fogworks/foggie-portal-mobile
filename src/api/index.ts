@@ -289,3 +289,13 @@ export const oauth_url = (data) => {
     data,
   });
 }
+
+
+export const update_nft_sync = (data: any) => {
+  let url = `/nft_scanner/nft/update_nft_sync`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+}

@@ -171,7 +171,7 @@
             <div @click.stop v-if="item.isPin" class="ipfs_info">
               <!-- <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
               <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2> -->
-
+              <IconNft v-if="item.nftInfoList && item.nftInfoList.length > 0"></IconNft>
               <IconIPFS color="#496AF2"></IconIPFS>
             </div>
             <!-- <div @click.stop="showAction(item)" class="right_div">
@@ -210,7 +210,7 @@
       closeable
       round
       z-index="2000"
-      :style="{ height: 'auto', minHeight: '40%' }"
+      :style="{ height: 'auto', minHeight: (chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0) ? '80%' : '40%' }"
       v-model:visible="fileItemPopupIsShow"
     >
       <div class="fileItem_header">
@@ -226,7 +226,7 @@
       <div
         class="fileItem_body"
         :style="{
-          height: chooseItem.isPin ? '345px' : '285px',
+          height: (chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0) ? '500px' : chooseItem.isPin ? '225px' : '200px',
         }"
       >
         <div class="optionBox">
@@ -264,6 +264,14 @@
             <IconCopy color="#222224" @click="copyIPFS('http', chooseItem)"></IconCopy>
           </p>
         </div>
+
+        <div class="ipfs" v-if="chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0" style="margin-top: 40px">
+          <p v-for="(nft, index) in chooseItem.nftInfoList">
+            <span> {{ handleID(`${browserUrl}/nft/${nft.getContractid()}/${nft.getTokenid()}`) }} </span>
+            <IconCopy color="#262628" @click="copyNft(nft)"></IconCopy>
+          </p>
+        </div>
+        
 
         <nut-button
           v-if="isAvailableOrder"
@@ -607,7 +615,7 @@
 
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
-  import IconNFT from '~icons/material-symbols/cast';
+  import IconNft from '~icons/home/nft.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
   import IconDelete from '~icons/home/delete.svg';
@@ -651,6 +659,7 @@
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
   import { get_order_sign } from '@/api/index';
+  import { browserUrl } from '@/setting';
 
   // const accessKeyId = ref<string>('');
   // const secretAccessKey = ref<string>('');
@@ -784,6 +793,7 @@
     getHttpShare,
     cloudPin,
     copyIPFS,
+    copyNft,
   } = useShare(orderInfo, header, deviceType, metadata);
   const shareCheckData = computed(() => {
     let checkData = [];
@@ -1422,7 +1432,9 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
+                  getNftinfosList: () => any;
                 }) => {
+                  console.log(el, 'el---1');
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1439,6 +1451,7 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
+                    nftInfoList: el.getNftinfosList(),
                   };
                 },
               ),
@@ -1673,6 +1686,7 @@
         isPersistent,
         isPin: data.content[j].isPin,
         isPinCyfs: data.content[j].isPinCyfs,
+        nftInfoList: data.content[j].nftInfoList,
       };
       if (moveShow.value) {
       } else {
@@ -1773,7 +1787,9 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
+                  getNftinfosList: () => any;
                 }) => {
+                  console.log(el, 'el---');
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1790,6 +1806,7 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
+                    nftInfoList: el.getNftinfosList(),
                   };
                 },
               );

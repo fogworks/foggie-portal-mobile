@@ -12,6 +12,7 @@ import { HmacSHA1, enc } from 'crypto-js';
 import IconHttp2 from '~icons/home/http2.svg';
 import { poolUrl } from '@/setting.js';
 import loadingImg from '@/components/loadingImg/index.vue';
+import { browserUrl } from '@/setting';
 // import useOrderInfo from './useOrderInfo.js';
 // const { metadata } = useOrderInfo();
 
@@ -418,6 +419,10 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
       copyLink(ipfsStr);
     }
   };
+  const copyNft = (nft) => {
+    let content = `${browserUrl}/nft/${nft.getContractid()}/${nft.getTokenid()}`;
+    copyLink(content);
+  };
   watch(
     isReady,
     (val) => {
@@ -514,5 +519,6 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     getHttpShare,
     cloudPin,
     copyIPFS,
+    copyNft,
   };
 }
