@@ -4,7 +4,8 @@
   --van-dropdown-menu-height: 2rem;
   .van-popup {
     background: transparent;
-    max-width: 750px;
+    // max-width: 750px;
+    --van-padding-md: 0;
     -webkit-tap-highlight-color: #ccc;
   }
 }

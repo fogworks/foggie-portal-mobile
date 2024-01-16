@@ -565,7 +565,7 @@
         <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
         <div v-else-if="imgUrl" class="middle_img">
           <van-image-preview
-            v-if="detailShow"
+            ref="imgPreRef"
             v-model:show="detailShow"
             :closeOnClickOverlay="false"
             :start-position="imgStartIndex"
@@ -721,6 +721,7 @@
   const router = useRouter();
   const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const state = reactive({
+    imgPreRef: '',
     swipe: '',
     imgArray: [],
     imgStartIndex: 0,
@@ -784,6 +785,7 @@
   const showSocketDialog = ref(false);
 
   const {
+    imgPreRef,
     swipe,
     imgArray,
     imgStartIndex,
@@ -1042,8 +1044,12 @@
         console.log(row.imgUrlLarge);
       } else if (row.imgUrlLarge) {
         imgUrl.value = row.imgUrlLarge;
+
         imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
         detailShow.value = true;
+        nextTick(() => {
+          imgPreRef.value.swipeTo(index);
+        });
       }
     }
   };
