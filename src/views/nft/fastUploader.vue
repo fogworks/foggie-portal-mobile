@@ -943,8 +943,6 @@
       }
     }
   }
-</style>
-<style lang="scss">
   .upload_progress.nut-progress {
     .nut-progress-outer-part {
       width: 100%;
@@ -968,3 +966,4 @@
     }
   }
 </style>
+<style lang="scss"></style>
