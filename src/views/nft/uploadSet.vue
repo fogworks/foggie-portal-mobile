@@ -125,7 +125,7 @@ const getRouteOrder = async () => {
   bucketName.value = checkBucket.value;
 };
 
-const setBucketAndPath = async () => {
+const setBucketAndPath = async (isAuto = false) => {
   showToast.loading('Loading', {
     cover: true,
     customClass: 'app_loading',
@@ -135,6 +135,10 @@ const setBucketAndPath = async () => {
   });
   try {
     await set_bucket_file({ domain: bucketName.value, file_path: uploadPath.value });
+    if (isAuto) {
+      showToast.text(`has been automatically set up for you to upload to ${bucketName.value}/${uploadPath.value}`)
+
+    }
     getBucketAndPath();
   } catch {
     showToast.hide('setBucket');
@@ -159,7 +163,7 @@ const getBucketAndPath = () => {
           needSet.value = true;
           isHistory.value = true
           if (popShow.value) {
-            showToast.fail('The currently set fast upload bucket is no longer available, select the bucket and directory again to continue to use the fast upload function.');
+            // showToast.fail('The currently set fast upload bucket is no longer available, select the bucket and directory again to continue to use the fast upload function.');
           }
           showToast.hide('setBucket');
           return false;
@@ -177,8 +181,16 @@ const getBucketAndPath = () => {
       showToast.hide('setBucket');
     });
 };
-const setDefaultBucketAndPath = () => {
-  if (listData.value.length && !bucketName.value) {
+const setDefaultBucketAndPath = (isAuto = false) => {
+  if (isAuto) {
+    if (listData.value.length) {
+      bucketName.value = listData.value[0].domain;
+      uploadPath.value = 'NFT';
+      setBucketAndPath(isAuto);
+    } else {
+      showToast.text("You don't have a bucket available, please set the bucket name for the order or buy a new order and set the bucket name.")
+    }
+  } else if (listData.value.length && !bucketName.value) {
     bucketName.value = listData.value[0].domain;
     uploadPath.value = 'NFT';
     setBucketAndPath();
@@ -217,9 +229,11 @@ watch(
   },
   { deep: true },
 );
-watch(popShow, (val) => {
+watch(popShow, async (val) => {
   if (val && isHistory.value) {
-    showToast.fail('The currently set fast upload bucket is no longer available, select the bucket and directory again to continue to use the fast upload function.');
+    resetData();
+    await loadMoreFun();
+    setDefaultBucketAndPath(true)
   }
 }, { deep: true })
 watch(cloudCodeIsBind, async (val) => {
@@ -590,4 +604,5 @@ onMounted(async () => {
       vertical-align: middle;
     }
   }
-}</style>
+}
+</style>

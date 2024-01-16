@@ -22,7 +22,7 @@
       @gotoMore="gotoMore"
       has-more
       v-model:activeTab="activeTab"
-      :tabList="['NFT List', 'Inscription List']"
+      :tabList="['NFT List']"
       :imgList="imgList"
       :nftTotal="nftTotal"
       :isShowMore="true"
@@ -97,10 +97,10 @@
     const dd = {
       account: arr,
       sync_storage: 2,
-    }
+    };
     const sync_data = await search_mint(dd, 100, 1);
     if (sync_data?.result?.data) {
-      const  nft_info = [];
+      const nft_info = [];
       sync_data?.result.data.map(async (item) => {
         const meta_image = item.meta_image;
         const bucket = meta_image.split('://')[1]?.split('.')[0];
@@ -115,8 +115,8 @@
           const { header, metadata } = await getOrderInfo(bucket);
           ProxUpdateNFTRequest.setHeader(header);
           ProxNFTInfo.setCid(cid);
-          ProxNFTInfo.setContractid (contractAddress);
-          ProxNFTInfo.setTokenid (tokenId);
+          ProxNFTInfo.setContractid(contractAddress);
+          ProxNFTInfo.setTokenid(tokenId);
           ProxUpdateNFTRequest.addNftinfos(ProxNFTInfo);
 
           console.log('ProxUpdateNFTRequest----------', ProxUpdateNFTRequest, ProxNFTInfo);
@@ -126,29 +126,27 @@
               console.log('err----------', err);
             } else {
               console.log('data----------', data);
-            } 
+            }
           });
           if (update_data) {
             console.log('update_data----------', update_data);
             nft_info.push({
               contract: contractAddress,
               token_id: tokenId,
-            })
-            
+            });
           }
         }
       });
       if (nft_info.length > 0) {
         const _d = {
-          nft_info
-        }
+          nft_info,
+        };
         await update_nft_sync(_d);
       }
     }
-
   };
 
-  const getOrderInfo = async (bucket)=> {
+  const getOrderInfo = async (bucket) => {
     let header = new Prox.default.ProxHeader();
     let metadata = ref({});
     let res = await get_unique_order({ domain: bucket });
@@ -169,7 +167,7 @@
       header.setToken(cur_token);
     }
     return { header, metadata };
-  }
+  };
 
   const loadImgList = (data) => {
     imgList.value = imgList.value.concat(data);

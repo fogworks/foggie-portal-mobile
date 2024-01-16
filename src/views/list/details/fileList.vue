@@ -210,7 +210,7 @@
       closeable
       round
       z-index="2000"
-      :style="{ height: 'auto', minHeight: (chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0) ? '80%' : '40%' }"
+      :style="{ height: 'auto', minHeight: chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0 ? '80%' : '40%' }"
       v-model:visible="fileItemPopupIsShow"
     >
       <div class="fileItem_header">
@@ -226,7 +226,7 @@
       <div
         class="fileItem_body"
         :style="{
-          height: (chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0) ? '500px' : chooseItem.isPin ? '225px' : '200px',
+          height: chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0 ? '500px' : chooseItem.isPin ? '225px' : '200px',
         }"
       >
         <div class="optionBox">
@@ -254,12 +254,12 @@
             Download
           </div>
         </div>
-        <div class="ipfs">
-          <p v-if="chooseItem.isPin">
+        <div class="ipfs" v-if="chooseItem.cid">
+          <p v-if="chooseItem.isPin && chooseItem.cid">
             <span>{{ handleID(`ipfs://${chooseItem.cid}`) }} </span>
             <IconCopy color="#222224" @click="copyIPFS('ipfs', chooseItem)"></IconCopy>
           </p>
-          <p>
+          <p v-if="chooseItem.cid">
             <span> {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${chooseItem.cid}`) }} </span>
             <IconCopy color="#222224" @click="copyIPFS('http', chooseItem)"></IconCopy>
           </p>
@@ -271,7 +271,6 @@
             <IconCopy color="#262628" @click="copyNft(nft)"></IconCopy>
           </p>
         </div>
-        
 
         <nut-button
           v-if="isAvailableOrder"
@@ -1316,6 +1315,8 @@
         content: 'Are you sure you want to execute IPFS UNPIN?',
         cancelText: 'Cancel',
         okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+
         onOk,
       });
     }
