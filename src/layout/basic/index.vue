@@ -394,7 +394,10 @@
             userStore.setCloudCodeIsBind(true);
             userStore.setambRefuse(false);
             userStore.setcurStepIndex(3)
-  
+            if (!amb_promo_code.value) {
+              await bind_user_promo({amb_promo_code: res2.result.amb_promo_code,})
+              await initFoggieDate();
+            }
             // approved
             await getOrder()
             if (orderTotal.value == 0 ) {
@@ -414,8 +417,6 @@
                 onOk,
               });
               } 
-            
-         
             }
           } else {
             userStore.setcurStepIndex(2)
