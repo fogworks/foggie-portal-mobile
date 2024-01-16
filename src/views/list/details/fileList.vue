@@ -254,7 +254,7 @@
             Download
           </div>
         </div>
-        <div class="ipfs" v-if="chooseItem.cid">
+        <div class="ipfs" v-if=" chooseItem.isPin || chooseItem.cid">
           <p v-if="chooseItem.isPin && chooseItem.cid">
             <span>{{ handleID(`ipfs://${chooseItem.cid}`) }} </span>
             <IconCopy color="#222224" @click="copyIPFS('ipfs', chooseItem)"></IconCopy>
@@ -281,6 +281,47 @@
         >
           <template #icon><IconDelete /> </template>Delete</nut-button
         >
+      </div>
+    </nut-popup>
+
+    <nut-popup
+      teleport-disable
+      pop-class="fileItemPopup"
+      position="bottom"
+      safe-area-inset-bottom
+      closeable
+      round
+      z-index="2000"
+      :style="{ height: 'auto', minHeight: '35%' }"
+      v-model:visible="fileItemDetailPopupIsShow"
+    >
+      <div class="fileItem_header">
+        <img v-if="chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
+
+        <div class="fileItem_header_right">
+          <div style="width: 85%">{{ chooseItem.fullName }}</div>
+          <div>{{ chooseItem.imageInfo?.datetime }} · {{ chooseItem.size }}</div>
+        </div>
+      </div>
+      <div class="fileItemDetail">
+        <div class="fileItemDetail_header">
+          <span>{{ chooseItem.imageInfo?.camerainfo.model }} </span>
+          <span class="flashlamp" v-if="chooseItem.imageInfo.Flash">
+            <FlashLight></FlashLight>
+          </span>
+        </div>
+        <div class="fileItemDetail_Body">
+          <div>{{ chooseItem.imageInfo?.resolution.weight }} * {{ chooseItem.imageInfo?.resolution.height }}</div>
+          <div>{{ Number(chooseItem.imageInfo?.gps.lat).toFixed(4) }}°N {{ Number(chooseItem.imageInfo?.gps.pb_long).toFixed(4) }}°W</div>
+        </div>
+        <div class="fileItemDetail_bottom">
+          <span>ISO {{ chooseItem.imageInfo?.iso }}</span>
+          <span> {{ chooseItem.imageInfo?.exposuretime || 0 }} ev</span>
+          <span>{{ chooseItem.imageInfo?.focallength }}</span>
+          <span>f{{ chooseItem.imageInfo?.aperture }}</span>
+          <span>{{ chooseItem.imageInfo?.exptime }} s</span>
+
+        </div>
       </div>
     </nut-popup>
 
@@ -538,7 +579,17 @@
             <template #cover>
               <div class="detail_top">
                 <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-                <IconMore @click="clickFIleItem(chooseItem)" class="detail_back" color="#fff"></IconMore>
+                <div>
+                  <Tips
+                    v-if="chooseItem.isShowDetail"
+                    @click="clickFIleItemDetail(chooseItem)"
+                    class="detail_back"
+                    width="22px"
+                    style="margin-right: 10px"
+                    color="#fff"
+                  />
+                  <IconMore @click="clickFIleItem(chooseItem)" class="detail_back" color="#fff"></IconMore>
+                </div>
               </div>
               <div class="bottom_action">
                 <div v-if="isAvailableOrder">
@@ -613,6 +664,8 @@
   import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
 
   import ErrorPage from '@/views/errorPage/index.vue';
+  import FlashLight from '~icons/ri/flashlight-fill';
+
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNft from '~icons/home/nft.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
@@ -637,7 +690,7 @@
   import IconHttp from '~icons/home/http.svg';
   import { reactive, toRefs, watch, onMounted, onUnmounted, onBeforeUnmount } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
-  import { Search2, TriangleUp, Loading, MoreX } from '@nutui/icons-vue';
+  import { Search2, TriangleUp, Loading, MoreX, Tips } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import ImgList from './imgList.vue';
@@ -653,7 +706,7 @@
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
-
+  import moment from 'moment';
   import { HmacSHA1, enc } from 'crypto-js';
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
@@ -678,7 +731,13 @@
     hasMore: false,
     showActionPop: false,
     tableData: [],
-    chooseItem: { name: '' },
+    chooseItem: {
+      imageInfo: {
+        camerainfo: {},
+        gps: {},
+        resolution: {},
+      },
+    },
     isCheckMode: false,
     renameShow: false,
     newName: '',
@@ -1433,9 +1492,7 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
-                  getNftinfosList: () => any;
                 }) => {
-                  console.log(el, 'el---1');
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1452,7 +1509,6 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
-                    nftInfoList: el.getNftinfosList(),
                   };
                 },
               ),
@@ -1654,6 +1710,8 @@
       let isPersistent = data.content[j].isPersistent;
 
       let item = {
+        imageInfo: data.content[j].imageInfo,
+        isShowDetail: data.content[j].isShowDetail,
         isDir: isDir,
         checked: false,
         name,
@@ -1913,8 +1971,8 @@
 
     fileSocket.value.onmessage = (event: { data: string }) => {
       const message = JSON.parse(event.data);
-      const currentFolder = window.sessionStorage.getItem('currentFolder');
-      console.log('Received message from server:', message, currentFolder);
+      const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
+      console.log('Received message from server:', message, currentFolderStr);
       const uploadFileName = window.sessionStorage.getItem('uploadFileName');
       let fileInfo = message.fileInfo;
       let dirArr = fileInfo.keys;
@@ -1932,8 +1990,8 @@
         }
       }
 
-      console.log('888888', dirArr, dirFile, currentFolder, dirFile === currentFolder, dirFileName !== uploadFileName);
-      if (dirFile === currentFolder) {
+      console.log('888888', dirArr, dirFile, currentFolderStr, dirFile === decodeURIComponent(currentFolderStr), dirFileName !== uploadFileName);
+      if (dirFile === decodeURIComponent(currentFolderStr)) {
         if (detailShow.value) {
           setTimeout(() => {
             initWebSocket();
@@ -2092,9 +2150,14 @@
   const fileItemPopupIsShow = ref(false);
   function clickFIleItem(params) {
     chooseItem.value = params;
-    console.log(params);
-
     fileItemPopupIsShow.value = true;
+  }
+
+  const fileItemDetailPopupIsShow = ref(false); // 文件详情展示 例如 光圈 曝光时间等
+
+  function clickFIleItemDetail(params) {
+    console.log(params);
+    fileItemDetailPopupIsShow.value = true;
   }
 </script>
 <style lang="scss">
@@ -2188,6 +2251,70 @@
       background-color: #ccccccc2;
       border-radius: 50%;
       color: #fff;
+    }
+    .fileItemDetail {
+      margin-top: 60px;
+      border-radius: 15px;
+      border: 1px solid #cac9ce;
+      overflow: hidden;
+      .fileItemDetail_header {
+        padding: 0px 20px;
+        height: 70px;
+        line-height: 70px;
+        background-color: #cbcacf;
+        font-weight: 600;
+        font-size: 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 4px solid #adacb1;
+        .flashlamp {
+          display: flex;
+          border-radius: 50%;
+          border: 4px solid #5e5d62;
+        }
+      }
+      .fileItemDetail_Body {
+        padding: 20px 20px;
+        border-bottom: 4px solid #adacb1;
+        background-color: #DFDEE3;
+        & > div{
+          height: 40px;
+          line-height: 40px;
+          font-weight: 600px;
+          font-size: 28px;
+
+        }
+
+      }
+      .fileItemDetail_bottom{
+        background-color: #DFDEE3;
+        display: grid;
+        padding: 0px 20px;
+        grid-template-columns: repeat(5,1fr);
+        & > span {
+          text-align: center;
+          height: 60px;
+          line-height: 60px;
+          font-weight: 700px;
+          font-size: 28px;
+          position: relative;
+        }
+        & > span:not(:last-child)::before{
+          display: inline-block;
+          content: '';
+          width: 3px;
+          height: 60%;
+          background-color: #CDCCD1;
+          position: absolute;
+          right: 0px;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+        // & > span:last-child{
+        //  border: 0px;
+        // }
+      }
     }
   }
 

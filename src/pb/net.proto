@@ -245,6 +245,8 @@ message ImageAddition {
   string orientation = 5;
   string flash = 6;
   string software = 7;
+  string exposureTime = 8;
+  string focalLength = 9;
 }
 
 message GpsInfo {

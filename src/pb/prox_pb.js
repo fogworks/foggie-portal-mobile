@@ -13094,7 +13094,9 @@ proto.proto.ProxImageAddition.toObject = function(includeInstance, msg) {
     aperture: jspb.Message.getFieldWithDefault(msg, 4, ""),
     orientation: jspb.Message.getFieldWithDefault(msg, 5, ""),
     flash: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    software: jspb.Message.getFieldWithDefault(msg, 7, "")
+    software: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    exposuretime: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    focallength: jspb.Message.getFieldWithDefault(msg, 9, "")
   };
 
   if (includeInstance) {
@@ -13158,6 +13160,14 @@ proto.proto.ProxImageAddition.deserializeBinaryFromReader = function(msg, reader
     case 7:
       var value = /** @type {string} */ (reader.readString());
       msg.setSoftware(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExposuretime(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setFocallength(value);
       break;
     default:
       reader.skipField();
@@ -13234,6 +13244,20 @@ proto.proto.ProxImageAddition.serializeBinaryToWriter = function(message, writer
   if (f.length > 0) {
     writer.writeString(
       7,
+      f
+    );
+  }
+  f = message.getExposuretime();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
+    );
+  }
+  f = message.getFocallength();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
       f
     );
   }
@@ -13363,6 +13387,42 @@ proto.proto.ProxImageAddition.prototype.getSoftware = function() {
  */
 proto.proto.ProxImageAddition.prototype.setSoftware = function(value) {
   return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * optional string exposureTime = 8;
+ * @return {string}
+ */
+proto.proto.ProxImageAddition.prototype.getExposuretime = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageAddition} returns this
+ */
+proto.proto.ProxImageAddition.prototype.setExposuretime = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+
+/**
+ * optional string focalLength = 9;
+ * @return {string}
+ */
+proto.proto.ProxImageAddition.prototype.getFocallength = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageAddition} returns this
+ */
+proto.proto.ProxImageAddition.prototype.setFocallength = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
 };
 
 
@@ -23123,7 +23183,8 @@ proto.proto.ProxKNResponse.prototype.setData = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
+
+// goog.object.extend(exports, proto.proto);
 const exportedObject={}
 goog.object.extend(exportedObject,proto.proto)
 module.exports=exportedObject
-// goog.object.extend(exports, proto.proto);

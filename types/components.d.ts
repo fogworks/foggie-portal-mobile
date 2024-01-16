@@ -60,7 +60,6 @@ declare module 'vue' {
     NutTabs: typeof import('@nutui/nutui')['Tabs']
     NutTag: typeof import('@nutui/nutui')['Tag']
     NutTextarea: typeof import('@nutui/nutui')['Textarea']
-    NutTour: typeof import('@nutui/nutui')['Tour']
     NutUploader: typeof import('@nutui/nutui')['Uploader']
     NutVideo: typeof import('@nutui/nutui')['Video']
     RouterLink: typeof import('vue-router')['RouterLink']
