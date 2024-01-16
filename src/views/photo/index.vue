@@ -22,6 +22,8 @@
           <img src="@/assets/bucketPhoto1.svg" v-if="index % 5 === 1" />
           <img src="@/assets/bucketPhoto2.svg" v-if="index % 5 === 2" />
           <img src="@/assets/bucketPhoto3.svg" v-if="index % 5 === 3" />
+          <img src="@/assets/bucketPhoto0.svg" v-if="index % 5 === 4" />
+          <img src="@/assets/bucketPhoto1.svg" v-if="index % 5 === 5" />
           <div class="my_photo_item_text">
             <div class="bucketName">{{ item.domain || item.order_id }}</div>
             <div class="time">{{ transferUTCTime(item.order_created_at) }}</div>
