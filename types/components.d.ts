@@ -17,6 +17,7 @@ declare module 'vue' {
     NutButton: typeof import('@nutui/nutui')['Button']
     NutCalendar: typeof import('@nutui/nutui')['Calendar']
     NutCell: typeof import('@nutui/nutui')['Cell']
+    NutCellGroup: typeof import('@nutui/nutui')['CellGroup']
     NutCheckbox: typeof import('@nutui/nutui')['Checkbox']
     NutCheckboxGroup: typeof import('@nutui/nutui')['CheckboxGroup']
     NutCol: typeof import('@nutui/nutui')['Col']
@@ -64,8 +65,12 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Tabbar: typeof import('./../src/components/tabbar/index.vue')['default']
     TopBack: typeof import('./../src/components/topBack/index.vue')['default']
+    VanButton: typeof import('vant/es')['Button']
     VanDropdownItem: typeof import('vant/es')['DropdownItem']
     VanDropdownMenu: typeof import('vant/es')['DropdownMenu']
+    VanIcon: typeof import('vant/es')['Icon']
     VanImagePreview: typeof import('vant/es')['ImagePreview']
+    VanNumberKeyboard: typeof import('vant/es')['NumberKeyboard']
+    VanPasswordInput: typeof import('vant/es')['PasswordInput']
   }
 }
