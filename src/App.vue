@@ -3,7 +3,6 @@
 </template>
 <script setup lang="ts">
   import { user, bind_user_promo } from '@/api';
-  import { dappUrl } from '@/setting.js';
   import { onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast, showDialog } from '@nutui/nutui';
@@ -11,7 +10,7 @@
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
   import '@nutui/nutui/dist/packages/notify/style';
-  import { redirectUrl } from '@/setting.js';
+  import { redirectUrl, dappUrl } from '@/setting.js';
   const userStore = useUserStore();
   const router = useRouter();
   const route = useRoute();
@@ -35,13 +34,13 @@
     }
   };
   const metaOpenDapp = () => {
-    if (isMobileDevice) {
-      if (window.ethereum) {
-        // window.open(`https://metamask.app.link/dapp/${redirectUrl}`);
-        window.open(dappUrl);
-      } else {
-        window.open(`https://metamask.app.link/dapp/${dappUrl}`);
-      }
+    if (isMobileDevice.value) {
+      // if (window.ethereum) {
+      //   // window.open(`https://metamask.app.link/dapp/${redirectUrl}`);
+      //   window.open(dappUrl);
+      // } else {
+      window.open(`https://metamask.app.link/dapp/${dappUrl}`);
+      // }
     } else {
       window.open(dappUrl);
     }
