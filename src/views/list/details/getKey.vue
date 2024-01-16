@@ -234,6 +234,10 @@
         header.setPeerid(peer_id.value);
         header.setId(foggie_id.value);
         header.setToken(token.value);
+
+        const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+        header.setApptype(appType);
+
         cred.setAccesskey(ak);
         cred.setSecretkey(sk);
         let request = new grpc.default.ProxCredRequest();
@@ -307,6 +311,9 @@
       header.setPeerid(peer_id.value);
       header.setId(foggie_id.value);
       header.setToken(token.value);
+      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+      header.setApptype(appType);
+
       let request = new grpc.default.ProxGetCredRequest();
       request.setHeader(header);
       // console.log('-------metadata:',  grpcWeb.Metadata, grpc, pb)
@@ -360,6 +367,10 @@
     header.setPeerid(peer_id.value);
     header.setId(foggie_id.value);
     header.setToken(token.value);
+
+    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+    header.setApptype(appType);
+    
     const ak = dynamicForm.state.tels[index].accessKey;
     const sk = dynamicForm.state.tels[index].secretKey;
     cred.setAccesskey(ak);

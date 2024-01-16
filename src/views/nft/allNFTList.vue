@@ -158,6 +158,8 @@
       const signData = await get_order_sign(param);
       header.setPeerid(res?.result?.data.peer_id);
       header.setId(res?.result?.data.foggie_id);
+      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+      header.setApptype(appType);
 
       let cur_token = signData?.result?.data?.sign;
       const date = signData?.result?.data?.timestamp;
