@@ -294,6 +294,40 @@ message ProxListObjectsReq{
 	ProxHeader header = 1;
 	ProxListObjectsRequest request =2 ;
 }
+message ProxImageCameraInfo {
+	string make = 1;
+	string model = 2;
+}
+message ProxImageCameraResolution {
+	int32 weight = 1;
+	int32 height = 2;
+}
+
+message ProxImageAddition {
+	string dateTime=1;
+	string iso = 2;
+	string expTime =3;
+	string aperture = 4;
+	string orientation = 5;
+	string flash = 6;
+	string software = 7;
+	string exposureTime = 8;
+	string focalLength = 9;
+}
+
+message ProxGpsInfo {
+	float lat = 1;
+	float long = 2;
+}
+
+message ProxImageInfo {
+	ProxImageCameraInfo  cameraInfo = 1;
+	ProxImageCameraResolution resolution = 2;
+	ProxGpsInfo gps = 3;
+	ProxImageAddition addition = 4;
+}
+
+
 message ProxObject{
 	string key= 1;
 	string etag = 2;
@@ -310,11 +344,16 @@ message ProxObject{
 	bool  isPersistent= 13;
 	int32 category = 14;
 	string tags = 15;
+	repeated ProxNFTInfo nftInfos = 16;
+	repeated ProxPinning pinning = 17;
+	ProxImageInfo images = 18;
 }
 message ProxPrefixPin{
 	string prefix=1;
 	string cid = 2;
 	bool isPin = 3;
+	repeated ProxNFTInfo nftInfos = 4;
+	repeated ProxPinning pinning = 5;
 }
 message ProxListObjectsResp{
 	repeated string commonPrefixes =1;
@@ -325,8 +364,12 @@ message ProxListObjectsResp{
 	string continuationToken=6;
 	repeated ProxObject content = 7;
 	repeated ProxPrefixPin prefixpins = 8;
+
 }
 
+message ProxPinning {
+	string requestID  = 1;
+}
 message ProxPinRequest{
 		string cid = 1;
 		string stype = 2;

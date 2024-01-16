@@ -267,12 +267,12 @@
             Download
           </div>
         </div>
-        <div class="ipfs">
+        <div class="ipfs" v-if=" chooseItem.isPin || chooseItem.cid">
           <p v-if="chooseItem.isPin">
             <span>{{ handleID(`ipfs://${chooseItem.cid}`) }} </span>
             <IconCopy color="#222224" @click="copyIPFS('ipfs', chooseItem)"></IconCopy>
           </p>
-          <p>
+          <p v-if="chooseItem.cid">
             <span> {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${chooseItem.cid}`) }} </span>
             <IconCopy color="#222224" @click="copyIPFS('http', chooseItem)"></IconCopy>
           </p>
@@ -287,6 +287,47 @@
         >
           <template #icon><IconDelete /> </template>Delete</nut-button
         >
+      </div>
+    </nut-popup>
+
+    <nut-popup
+      teleport-disable
+      pop-class="fileItemPopup"
+      position="bottom"
+      safe-area-inset-bottom
+      closeable
+      round
+      z-index="2000"
+      :style="{ height: 'auto', minHeight: '35%' }"
+      v-model:visible="fileItemDetailPopupIsShow"
+    >
+      <div class="fileItem_header">
+        <img v-if="chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
+
+        <div class="fileItem_header_right">
+          <div style="width: 85%">{{ chooseItem.fullName }}</div>
+          <div>{{ chooseItem.imageInfo?.datetime }} · {{ chooseItem.size }}</div>
+        </div>
+      </div>
+      <div class="fileItemDetail">
+        <div class="fileItemDetail_header">
+          <span>{{ chooseItem.imageInfo?.camerainfo.model }} </span>
+          <span class="flashlamp" v-if="chooseItem.imageInfo.Flash">
+            <FlashLight></FlashLight>
+          </span>
+        </div>
+        <div class="fileItemDetail_Body">
+          <div>{{ chooseItem.imageInfo?.resolution.weight }} * {{ chooseItem.imageInfo?.resolution.height }}</div>
+          <div>{{ Number(chooseItem.imageInfo?.gps.lat).toFixed(4) }}°N {{ Number(chooseItem.imageInfo?.gps.pb_long).toFixed(4) }}°W</div>
+        </div>
+        <div class="fileItemDetail_bottom">
+          <span>ISO {{ chooseItem.imageInfo?.iso }}</span>
+          <span> {{ chooseItem.imageInfo?.exposuretime || 0 }} ev</span>
+          <span>{{ chooseItem.imageInfo?.focallength }}</span>
+          <span>f{{ chooseItem.imageInfo?.aperture }}</span>
+          <span>{{ chooseItem.imageInfo?.exptime }} s</span>
+
+        </div>
       </div>
     </nut-popup>
 
@@ -563,7 +604,17 @@
             <template #cover>
               <div class="detail_top">
                 <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-                <IconMore @click="clickFIleItem(chooseItem)" class="detail_back" color="#fff"></IconMore>
+                <div>
+                  <Tips
+                    v-if="chooseItem.isShowDetail"
+                    @click="clickFIleItemDetail(chooseItem)"
+                    class="detail_back"
+                    width="22px"
+                    style="margin-right: 10px"
+                    color="#fff"
+                  />
+                  <IconMore @click="clickFIleItem(chooseItem)" class="detail_back" color="#fff"></IconMore>
+                </div>
               </div>
               <div class="bottom_action">
                 <div v-if="isAvailableOrder">
@@ -638,6 +689,8 @@
   import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
 
   import ErrorPage from '@/views/errorPage/index.vue';
+  import FlashLight from '~icons/ri/flashlight-fill';
+
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNFT from '~icons/material-symbols/cast';
   import IconPinterest from '~icons/logos/pinterest.svg';
@@ -661,7 +714,7 @@
   import IconHttp from '~icons/home/http.svg';
   import { reactive, toRefs, watch, onMounted, onUnmounted, onBeforeUnmount } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
-  import { Search2, TriangleUp, Loading, MoreX } from '@nutui/icons-vue';
+  import { Search2, TriangleUp, Loading, MoreX, Tips } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import ImgList from './imgList.vue';
@@ -677,7 +730,7 @@
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
-
+  import moment from 'moment';
   import { HmacSHA1, enc } from 'crypto-js';
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
@@ -701,7 +754,13 @@
     hasMore: false,
     showActionPop: false,
     tableData: [],
-    chooseItem: { name: '' },
+    chooseItem: {
+      imageInfo: {
+        camerainfo: {},
+        gps: {},
+        resolution: {},
+      },
+    },
     isCheckMode: false,
     renameShow: false,
     newName: '',
@@ -1453,7 +1512,26 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
+                  getImages: () => any;
                 }) => {
+                  const imageObj = el.getImages().toObject();
+                  const imggeInfo = {};
+                  let isShowDetail = false;
+                  if (imageObj.camerainfo?.make) {                    
+                    isShowDetail = true;
+                    imggeInfo.aperture = imageObj.addition.aperture; //光圈
+                    imggeInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+                    imggeInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
+                    imggeInfo.exptime = imageObj.addition.exptime; //曝光时间
+                    imggeInfo.orientation = imageObj.addition.orientation; //方向
+                    imggeInfo.focallength = imageObj.addition.focallength; //焦距
+                    imggeInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
+                    imggeInfo.software = imageObj.addition.software; // 使用软件
+                    imggeInfo.iso = imageObj.addition.iso.charCodeAt(0);
+                    imggeInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
+                    imggeInfo.gps = imageObj.gps; //经纬度
+                    imggeInfo.resolution = imageObj.resolution; //像素
+                  }
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1470,6 +1548,8 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
+                    imageInfo: imggeInfo,
+                    isShowDetail,
                   };
                 },
               ),
@@ -1671,6 +1751,8 @@
       let isPersistent = data.content[j].isPersistent;
 
       let item = {
+        imageInfo: data.content[j].imageInfo,
+        isShowDetail: data.content[j].isShowDetail,
         isDir: isDir,
         checked: false,
         name,
@@ -2122,9 +2204,14 @@
   const fileItemPopupIsShow = ref(false);
   function clickFIleItem(params) {
     chooseItem.value = params;
-    console.log(params);
-
     fileItemPopupIsShow.value = true;
+  }
+
+  const fileItemDetailPopupIsShow = ref(false); // 文件详情展示 例如 光圈 曝光时间等
+
+  function clickFIleItemDetail(params) {
+    console.log(params);
+    fileItemDetailPopupIsShow.value = true;
   }
 </script>
 <style lang="scss">
@@ -2218,6 +2305,70 @@
       background-color: #ccccccc2;
       border-radius: 50%;
       color: #fff;
+    }
+    .fileItemDetail {
+      margin-top: 60px;
+      border-radius: 15px;
+      border: 1px solid #cac9ce;
+      overflow: hidden;
+      .fileItemDetail_header {
+        padding: 0px 20px;
+        height: 70px;
+        line-height: 70px;
+        background-color: #cbcacf;
+        font-weight: 600;
+        font-size: 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 4px solid #adacb1;
+        .flashlamp {
+          display: flex;
+          border-radius: 50%;
+          border: 4px solid #5e5d62;
+        }
+      }
+      .fileItemDetail_Body {
+        padding: 20px 20px;
+        border-bottom: 4px solid #adacb1;
+        background-color: #DFDEE3;
+        & > div{
+          height: 40px;
+          line-height: 40px;
+          font-weight: 600px;
+          font-size: 28px;
+
+        }
+
+      }
+      .fileItemDetail_bottom{
+        background-color: #DFDEE3;
+        display: grid;
+        padding: 0px 20px;
+        grid-template-columns: repeat(5,1fr);
+        & > span {
+          text-align: center;
+          height: 60px;
+          line-height: 60px;
+          font-weight: 700px;
+          font-size: 28px;
+          position: relative;
+        }
+        & > span:not(:last-child)::before{
+          display: inline-block;
+          content: '';
+          width: 3px;
+          height: 60%;
+          background-color: #CDCCD1;
+          position: absolute;
+          right: 0px;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+        // & > span:last-child{
+        //  border: 0px;
+        // }
+      }
     }
   }
 
