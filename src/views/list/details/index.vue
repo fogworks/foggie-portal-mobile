@@ -724,6 +724,7 @@
     } else if (row.imgUrlLarge) {
       imgUrl.value = row.imgUrlLarge;
       detailShow.value = true;
+      imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
     } else {
       let prefix;
       if (row.isDir) {

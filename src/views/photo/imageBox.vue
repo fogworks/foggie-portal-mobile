@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="img-content" v-if="isReady">
-        <div class="top_phpto_title"  >
-            <span class="title">My Photos</span>
-            <span class="more" @click="changeFlag('timeline')">TimeLine ></span>
-        </div>
-        <!-- <div class="top_phpto_select" >
+      <div class="top_phpto_title">
+        <span class="title">My Photos</span>
+        <span class="more" @click="changeFlag('timeline')">TimeLine ></span>
+      </div>
+      <!-- <div class="top_phpto_select" >
             <nut-menu active-color="#4524a3">
                 <nut-menu-item
                 :title="`List By ${currentTimeValue}`"
@@ -18,8 +18,8 @@
             </nut-menu>
         </div> -->
 
-        <!-- v-if="pageFlag==='timeFlag'" -->
-        <!-- <nut-infinite-loading
+      <!-- v-if="pageFlag==='timeFlag'" -->
+      <!-- <nut-infinite-loading
             ref="listRef"
             load-more-txt="No more content"
             v-model="infinityValue"
@@ -41,21 +41,21 @@
         <nut-empty v-else :image-size="200" description="No Data" image="error" />
         </nut-infinite-loading> -->
 
-        <nut-infinite-loading
+      <nut-infinite-loading
         ref="listRef"
         load-more-txt="No more content"
         v-model="infinityValue"
         :has-more="!isEnd"
         @load-more="getFileList"
         class="photo_image_box"
-        v-if="pageFlag==='timeFlag'"
+        v-if="pageFlag === 'timeFlag'"
       >
         <div class="photo_image_listP" v-for="(item, index) in imgData" v-if="imgData.length">
-          <p  class="top-title">
+          <p class="top-title">
             <span>{{ item.time }}</span>
           </p>
           <div class="photo_image_listS" v-if="item.list.length">
-            <div :class="['img-item']" v-for="(img, index2) in item.list" @click="openImage" class="photo_image_listItem">
+            <div :class="['img-item']" v-for="(img, index2) in item.list" @click="openImage(index2)" class="photo_image_listItem">
               <nut-image
                 :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
                 fit="cover"
@@ -71,7 +71,6 @@
         </div>
       </nut-infinite-loading>
 
-
       <!-- v-if="pageFlag==='timeDetailFlag' -->
       <nut-infinite-loading
         ref="listRef"
@@ -80,14 +79,19 @@
         :has-more="!isEnd"
         @load-more="getFileList"
         class="photo_image_box"
-        v-if="pageFlag==='timeDetailFlag'"
+        v-if="pageFlag === 'timeDetailFlag'"
       >
         <div class="photo_image_listP">
           <p v-if="currentTimeList.list.length" class="top-title">
             <span>{{ currentTimeList.time }}</span>
           </p>
           <div class="photo_image_listS">
-            <div :class="['img-item']" v-for="(img, index2) in currentTimeList.list" @click="openImage" class="photo_image_listItem">
+            <div
+              :class="['img-item']"
+              v-for="(img, index2) in currentTimeList.list"
+              @click="openImage(index2)"
+              class="photo_image_listItem"
+            >
               <nut-image
                 :class="[isCheckMode && itemChecked(img.cid, currentTimeList.dateId) ? 'imageItemChecked' : '']"
                 fit="cover"
@@ -103,7 +107,7 @@
         </div>
       </nut-infinite-loading>
 
- <!-- v-if="pageFlag==='timeLineFlag' -->
+      <!-- v-if="pageFlag==='timeLineFlag' -->
       <nut-infinite-loading
         ref="listRef"
         load-more-txt="No more content"
@@ -111,29 +115,29 @@
         :has-more="!isEnd"
         @load-more="getFileList"
         class="photo_image_box photo_image_timeLineBox"
-        v-if="pageFlag==='timeLineFlag'"
+        v-if="pageFlag === 'timeLineFlag'"
       >
         <div v-if="imgData.length" v-for="(item, index) in imgData" class="photo_image_listP">
           <p v-if="item.list.length" class="top-title">
             <span>{{ item.time }}</span>
           </p>
           <div class="photo_image_listS">
-            <nut-steps direction="vertical" :current="1" >
-                <nut-step :title="img.fullName" v-for="(img, index2) in item.list" @click="openImage">
-                    <template #content>
-                        <span>{{ img.date }}</span>
-                        <nut-image
-                            :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
-                            fit="cover"
-                            :key="img.cid"
-                            :src="img.imgUrl"
-                        >
-                            <template #loading>
-                            <Loading width="16px" height="16px" name="loading" />
-                            </template>
-                        </nut-image>
+            <nut-steps direction="vertical" :current="1">
+              <nut-step :title="img.fullName" v-for="(img, index2) in item.list" @click="openImage(index2)">
+                <template #content>
+                  <span>{{ img.date }}</span>
+                  <nut-image
+                    :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
+                    fit="cover"
+                    :key="img.cid"
+                    :src="img.imgUrl"
+                  >
+                    <template #loading>
+                      <Loading width="16px" height="16px" name="loading" />
                     </template>
-                </nut-step>
+                  </nut-image>
+                </template>
+              </nut-step>
             </nut-steps>
           </div>
         </div>
@@ -159,6 +163,9 @@
             :images="images"
             @change="swipeChange"
           >
+            <template #index>
+              <span> {{ imgStartIndex + 1 }}/{{ images.length }} </span>
+            </template>
             <template #cover>
               <div class="detail_top">
                 <IconArrowLeft @click="imgDetailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
@@ -203,7 +210,7 @@
         <img v-else src="@/assets/svg/home/file.svg" alt="" />
         <div class="fileItem_header_right">
           <div>{{ chooseItem.fullName }}</div>
-          <div  v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
+          <div v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
         </div>
       </div>
       <div
@@ -277,7 +284,7 @@
   import { list } from 'postcss';
 
   let server;
-  const { header, metadata, deviceType, orderInfo, bucketName, accessKeyId, secretAccessKey,  getOrderInfo } = useOrderInfo();
+  const { header, metadata, deviceType, orderInfo, bucketName, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
   const imgCheckedData = reactive({
     value: {},
   });
@@ -301,20 +308,20 @@
   const tableData = ref([]);
 
   const imgDetailShow = ref(false);
-  const imgStartIndex = ref(3);
+  const imgStartIndex = ref(0);
   const imgArray = ref([]);
   const state = reactive({
     imgData: [],
     chooseItem: { name: '' },
-    currentTimeList:{},
+    currentTimeList: {},
     currentTimeArr: [],
   });
-  const currentTimeValue=ref('All');
-  const {chooseItem,imgData,currentTimeList,currentTimeArr}= toRefs(state);
-  const fileItemPopupIsShow=ref(false);
+  const currentTimeValue = ref('All');
+  const { chooseItem, imgData, currentTimeList, currentTimeArr } = toRefs(state);
+  const fileItemPopupIsShow = ref(false);
   const $cordovaPlugins = inject('$cordovaPlugins');
   import { HmacSHA1, enc } from 'crypto-js';
-  const pageFlag = ref('timeFlag')
+  const pageFlag = ref('timeFlag');
 
   onMounted(async () => {
     await getOrderInfo();
@@ -323,25 +330,21 @@
   const init = async () => {
     await getTimeLine();
     isReady.value = true;
-    currentTimeArr.value=[];
+    currentTimeArr.value = [];
   };
-  const getFileCategories=()=>{
-
+  const getFileCategories = () => {};
+  const timeChange = (val) => {
+    let item = imgData.value.find((el) => el.text == val);
+    changeFlag('detail', item);
   };
-  const timeChange=(val)=>{
-    let item =imgData.value.find((el) => el.text == val);
-    changeFlag('detail',item);
-    
-  };
-  const changeFlag=(type,item)=>{
-    if(type === 'detail'){
-        currentTimeList.value =item;
-        currentTimeValue.value = item.time;
-        pageFlag.value = "timeDetailFlag";
-    }else if(type === 'timeline'){
-        pageFlag.value = "timeLineFlag";
+  const changeFlag = (type, item) => {
+    if (type === 'detail') {
+      currentTimeList.value = item;
+      currentTimeValue.value = item.time;
+      pageFlag.value = 'timeDetailFlag';
+    } else if (type === 'timeline') {
+      pageFlag.value = 'timeLineFlag';
     }
-
   };
   const getTimeLine = () => {
     return new Promise((resolve, reject) => {
@@ -411,19 +414,19 @@
     let target = '';
     let max_keys = '';
     target = imgData.value.find((el) => el.time == date);
-    console.log(imgData.value,'imgData.value');
+    console.log(imgData.value, 'imgData.value');
     if (target) return false;
     if (dateTimeLine.value[imgIndex.value]) {
       date = dateTimeLine.value[imgIndex.value].date;
       max_keys = dateTimeLine.value[imgIndex.value].count;
       if (!target) {
         imgData.value.push({
-            time: date,
-            dateId: date,
-            indeterminate: false,
-            list: [],
-            text:date,
-            value:date,
+          time: date,
+          dateId: date,
+          indeterminate: false,
+          list: [],
+          text: date,
+          value: date,
         });
       }
       imgIndex.value++;
@@ -566,11 +569,11 @@
     if (target) {
       console.log(content, 'content');
       target.list = [...target.list, ...content];
-      target[target.time]= target.list;
+      target[target.time] = target.list;
       tableData.value = [...tableData.value, ...content];
       imgArray.value = tableData.value;
     }
-    console.log(tableData.value, 'tableDatatableData', imgData.value,imgData.value[0]);
+    console.log(tableData.value, 'tableDatatableData', imgData.value, imgData.value[0]);
     // currentTimeValue.value =imgData.value[0].time;
     isEnd.value = dateTimeLine.value.findIndex((el) => el.date == dateKey) == dateTimeLine.value.length - 1;
     if (data.isTruncated) {
@@ -610,58 +613,58 @@
   function swipeChange(index) {
     chooseItem.value = imgArray.value[index];
   }
-  const openImage = () => {
+  const openImage = (index) => {
+    imgStartIndex.value = index;
     imgDetailShow.value = true;
   };
 
-
-const showAction = (item) => {
+  const showAction = (item) => {
     // if (timeOutEvent !== 0) {
-      chooseItem.value = item;
-      fileItemPopupIsShow.value = true;
+    chooseItem.value = item;
+    fileItemPopupIsShow.value = true;
     // }
-};
-const copyIPFS= () => {};
-const handlerClick=(type)=>{
+  };
+  const copyIPFS = () => {};
+  const handlerClick = (type) => {
     let checkData = [];
     checkData = [chooseItem.value];
-    if(type === 'download'){
-        const objectKey = encodeURIComponent(checkData[0].fullName);
-        const headers = getSignHeaders(objectKey);
-        const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
-        if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
-            $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
-        } else {
-            showToast.text('Coming soon for your download');
-            fetch(url, { method: 'GET', headers })
-                .then((response) => {
-                if (response.ok) {
-                    // 创建一个 Blob 对象，并将响应数据写入其中
-                    return response.blob();
-                } else {
-                    // 处理错误响应
-                    console.error('Error:', response.status, response.statusText);
-                }
-                })
-                .then((blob) => {
-                // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = checkData[0].fullName;
+    if (type === 'download') {
+      const objectKey = encodeURIComponent(checkData[0].fullName);
+      const headers = getSignHeaders(objectKey);
+      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
+      if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+        $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
+      } else {
+        showToast.text('Coming soon for your download');
+        fetch(url, { method: 'GET', headers })
+          .then((response) => {
+            if (response.ok) {
+              // 创建一个 Blob 对象，并将响应数据写入其中
+              return response.blob();
+            } else {
+              // 处理错误响应
+              console.error('Error:', response.status, response.statusText);
+            }
+          })
+          .then((blob) => {
+            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = checkData[0].fullName;
 
-                // 将 <a> 元素添加到文档中，并模拟点击
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                })
-                .catch((error) => {
-                // 处理网络错误
-                    console.error('Network Error:', error);
-                });
-        }
+            // 将 <a> 元素添加到文档中，并模拟点击
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          })
+          .catch((error) => {
+            // 处理网络错误
+            console.error('Network Error:', error);
+          });
+      }
     }
-};
-const getSignHeaders = (objectKey) => {
+  };
+  const getSignHeaders = (objectKey) => {
     const date = new Date().toUTCString();
     const httpMethod = 'GET';
     const contentType = '';
@@ -679,7 +682,7 @@ const getSignHeaders = (objectKey) => {
     };
     return headers;
   };
-function handleID(id) {
+  function handleID(id) {
     if (id) {
       return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
     }
@@ -693,12 +696,11 @@ function handleID(id) {
   );
 </script>
 
-
-<style lang="scss"  >
+<style lang="scss">
   #app {
     background: #fff;
   }
-  .top_phpto_title{
+  .top_phpto_title {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -707,50 +709,46 @@ function handleID(id) {
     margin: 0 8vw;
     margin-top: 30px;
     margin-bottom: 30px;
-    .title{
-        font-size: 50px;
-        font-weight:bold;
-
+    .title {
+      font-size: 50px;
+      font-weight: bold;
     }
-    .more{
-        background: #ffd870;
-        height: 30px;
-        padding: 10px 30px;
-        display: inline-block;
-        border-radius: 30px;
-        color:#000;
-        font-weight: bold;
-        line-height: 30px;
-        font-size: 20px;
+    .more {
+      background: #ffd870;
+      height: 30px;
+      padding: 10px 30px;
+      display: inline-block;
+      border-radius: 30px;
+      color: #000;
+      font-weight: bold;
+      line-height: 30px;
+      font-size: 20px;
     }
-
   }
-  .photo_timeLine_box{
+  .photo_timeLine_box {
     margin-top: 40px;
     width: calc(100% - 4vw);
-    .nut-infinite__container{
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-around;
+    .nut-infinite__container {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: space-around;
     }
-    .photo_timeLine_List{
-        cursor: pointer;
-        width: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        .photo_timeLine_item{
-            text-align: center;
-            .photo_timeLine_img{
-                img {
-                    // width: ;
-                }
-            }
-
+    .photo_timeLine_List {
+      cursor: pointer;
+      width: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .photo_timeLine_item {
+        text-align: center;
+        .photo_timeLine_img {
+          img {
+            // width: ;
+          }
         }
+      }
     }
-
   }
   .photo_image_box {
     padding: 20px;
@@ -946,21 +944,20 @@ function handleID(id) {
       color: #fff;
     }
   }
-  .photo_image_timeLineBox{
-    .photo_image_listP{
-        margin-bottom: 20px;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 20px;
+  .photo_image_timeLineBox {
+    .photo_image_listP {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 20px;
     }
-    .nut-step-title{
-        margin-top: 10px;
-        font-weight: bold;
-        font-size: 30px;
-        color:#5758a0;
+    .nut-step-title {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 30px;
+      color: #5758a0;
     }
-    .nut-step-content{
-        margin-bottom: 30px;
+    .nut-step-content {
+      margin-bottom: 30px;
     }
   }
-
 </style>

@@ -305,14 +305,14 @@
       </div>
       <div class="fileItemDetail">
         <div class="fileItemDetail_header">
-          <span>{{ chooseItem.imageInfo?.camerainfo.model }} </span>
+          <span>{{ chooseItem.imageInfo?.camerainfo?.model }} </span>
           <span class="flashlamp" v-if="chooseItem.imageInfo?.Flash">
             <FlashLight></FlashLight>
           </span>
         </div>
         <div class="fileItemDetail_Body">
-          <div>{{ chooseItem.imageInfo?.resolution.weight }} * {{ chooseItem.imageInfo?.resolution.height }}</div>
-          <div>{{ Number(chooseItem.imageInfo?.gps.lat).toFixed(4) }}°N {{ Number(chooseItem.imageInfo?.gps.pb_long).toFixed(4) }}°W</div>
+          <div>{{ chooseItem.imageInfo?.resolution?.weight }} * {{ chooseItem.imageInfo?.resolution?.height }}</div>
+          <div>{{ Number(chooseItem.imageInfo?.gps?.lat).toFixed(4) }}°N {{ Number(chooseItem.imageInfo?.gps?.pb_long).toFixed(4) }}°W</div>
         </div>
         <div class="fileItemDetail_bottom">
           <span>ISO {{ chooseItem.imageInfo?.iso }}</span>
@@ -1496,7 +1496,7 @@
                   const imageObj = el.getImages().toObject();
                   const imageInfo = {};
                   let isShowDetail = false;
-                  if (imageObj.camerainfo?.make) {                    
+                  if (imageObj.camerainfo?.make) {
                     isShowDetail = true;
                     imageInfo.aperture = imageObj.addition.aperture; //光圈
                     imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
@@ -1527,9 +1527,8 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
-                    imageInfo:imageInfo,
+                    imageInfo: imageInfo,
                     isShowDetail,
-
                   };
                 },
               ),
@@ -1730,9 +1729,8 @@
       }
       let isPersistent = data.content[j].isPersistent;
 
-   
-        console.log(data.content[j],'data.content[j]1');
-        
+      console.log(data.content[j], 'data.content[j]1');
+
       let item = {
         imageInfo: data.content[j].imageInfo,
         isShowDetail: data.content[j].isShowDetail,
@@ -1771,7 +1769,7 @@
         isPinCyfs: data.content[j].isPinCyfs,
         nftInfoList: data.content[j].nftInfoList,
       };
-      console.log(item,'data.content[j]');
+      console.log(item, 'data.content[j]');
 
       if (moveShow.value) {
       } else {
@@ -2016,7 +2014,14 @@
         }
       }
 
-      console.log('888888', dirArr, dirFile, currentFolderStr, dirFile === decodeURIComponent(currentFolderStr), dirFileName !== uploadFileName);
+      console.log(
+        '888888',
+        dirArr,
+        dirFile,
+        currentFolderStr,
+        dirFile === decodeURIComponent(currentFolderStr),
+        dirFileName !== uploadFileName,
+      );
       if (dirFile === decodeURIComponent(currentFolderStr)) {
         if (detailShow.value) {
           setTimeout(() => {

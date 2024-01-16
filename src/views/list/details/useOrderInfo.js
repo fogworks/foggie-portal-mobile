@@ -46,36 +46,42 @@ export default function useOrderInfo() {
       icon: loadingImg,
       loadingRotate: false,
       id: 'order_info_id',
-      coverColor: 'rgba(0,0,0,0.45)',
+      // coverColor: 'rgba(0,0,0,0.45)',
+      duration: 0,
     });
-    let res = await get_unique_order({ order_uuid: route?.query?.uuid });
+    try {
+      let res = await get_unique_order({ order_uuid: route?.query?.uuid });
 
-    let param = {
-      order_uuid: route?.query?.uuid,
-    };
-    const signData = await get_order_sign(param);
+      let param = {
+        order_uuid: route?.query?.uuid,
+      };
+      const signData = await get_order_sign(param);
 
-    orderInfo.value = res.result.data;
-    orderInfo.value.used_space = 0;
-    // orderInfo.value.rpc = '218.2.96.99:6007';
-    header.setPeerid(orderInfo.value.peer_id);
-    header.setId(orderInfo.value.foggie_id);
-    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-    header.setApptype(appType);
-    // header.setId('baeqacmjq');
-    // header.setToken(orderInfo.value.sign);
-    // console.log('signData==11:', signData);
-    let cur_token = signData?.result?.data?.sign;
-    const date = signData?.result?.data?.timestamp;
-    metadata.value = {
-      'X-Custom-Date': date,
-    };
+      orderInfo.value = res.result.data;
+      orderInfo.value.used_space = 0;
+      // orderInfo.value.rpc = '218.2.96.99:6007';
+      header.setPeerid(orderInfo.value.peer_id);
+      header.setId(orderInfo.value.foggie_id);
+      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+      header.setApptype(appType);
+      // header.setId('baeqacmjq');
+      // header.setToken(orderInfo.value.sign);
+      // console.log('signData==11:', signData);
+      let cur_token = signData?.result?.data?.sign;
+      const date = signData?.result?.data?.timestamp;
+      metadata.value = {
+        'X-Custom-Date': date,
+      };
 
-    // console.log('cur_token==11:', cur_token);
-    header.setToken(cur_token);
+      // console.log('cur_token==11:', cur_token);
+      header.setToken(cur_token);
 
-    bucketName.value = orderInfo.value.domain;
-    orderInfo.value.used_space = 0;
+      bucketName.value = orderInfo.value.domain;
+      orderInfo.value.used_space = 0;
+    } catch {
+      isError.value = true;
+      showToast.hide('order_info_id');
+    }
     if (bucketName.value && getKey) {
       return new Promise((resolve, reject) => {
         let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
