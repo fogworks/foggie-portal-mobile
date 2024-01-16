@@ -1983,7 +1983,7 @@
     socketDate.value = signData?.result?.data?.timestamp;
     socketToken.value = signData?.result?.data?.sign;
     console.log('initWebSocket-----------');
-    const url = `wss://${bucketName.value}.devus.u2i.net:6008/ws`;
+    const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
     fileSocket.value = new WebSocket(url);
     fileSocket.value.onopen = () => {
       const authMessage = {
