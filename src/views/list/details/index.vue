@@ -723,8 +723,8 @@
       console.log(row.imgUrlLarge);
     } else if (row.imgUrlLarge) {
       imgUrl.value = row.imgUrlLarge;
-      detailShow.value = true;
       imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
+      detailShow.value = true;
     } else {
       let prefix;
       if (row.isDir) {
@@ -1639,7 +1639,25 @@
     }
     .middle_img {
       max-height: 100%;
-
+      :deep {
+        .van-swipe {
+          width: 100%;
+          height: 100%;
+          .van-swipe__track {
+            align-items: center;
+            width: 100% !important;
+            img {
+              // width: 100%;
+              width: unset;
+              max-width: 100%;
+              margin: 0 auto;
+            }
+          }
+          .van-image-preview__swipe-item {
+            background: #000;
+          }
+        }
+      }
       .nut-image {
         width: 100%;
         height: 100%;

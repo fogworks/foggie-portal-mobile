@@ -986,8 +986,8 @@
             console.log(row.imgUrlLarge);
           } else if (row.imgUrlLarge) {
             imgUrl.value = row.imgUrlLarge;
-            detailShow.value = true;
             imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
+            detailShow.value = true;
           }
         }
       }
@@ -2496,6 +2496,9 @@
               max-width: 100%;
               margin: 0 auto;
             }
+          }
+          .van-image-preview__swipe-item {
+            background: #000;
           }
         }
       }
