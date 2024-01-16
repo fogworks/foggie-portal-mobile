@@ -1,7 +1,10 @@
 <template>
-  <nut-button class="upload_btn" type="primary" @click="popShow = true">+</nut-button>
   <Teleport to="body">
-
+    <nut-drag class="button_drag" attract>
+      <nut-button class="upload_btn" type="primary" @click="popShow = true">+</nut-button>
+    </nut-drag>
+  </Teleport>
+  <Teleport to="body">
     <nut-popup closeable position="bottom" :style="{ height: '100%' }" v-model:visible="popShow">
       <div class="bucket_box">
         <p style="text-align: center; font-size: 1.5rem; font-weight: 600">Quick Upload</p>
@@ -255,10 +258,14 @@ onMounted(async () => {
 }
 </style>
 <style lang="scss" scoped>
+.button_drag{
+  right: 0;
+  bottom: 100px;
+}
 .upload_btn {
-  position: fixed;
-  bottom: 150px;
-  right: 50px;
+  // position: fixed;
+  // bottom: 150px;
+  // right: 50px;
   font-size: 80px;
   border-radius: 50%;
   padding: 10px;
