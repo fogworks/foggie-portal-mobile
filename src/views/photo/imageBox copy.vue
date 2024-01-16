@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="img-content" v-if="isReady">
-        <div class="top_phpto_title"  >
+        <div class="top_phpto_title"  v-if="pageFlag==='timeFlag'">
             <span class="title">My Photos</span>
             <span class="more" @click="changeFlag('timeline')">TimeLine ></span>
         </div>
-        <!-- <div class="top_phpto_select" >
+        <div class="top_phpto_select"  v-if="pageFlag==='timeDetailFlag'">
             <nut-menu active-color="#4524a3">
                 <nut-menu-item
                 :title="`List By ${currentTimeValue}`"
@@ -16,10 +16,10 @@
                 <template #icon> <Checked></Checked> </template>
                 </nut-menu-item>
             </nut-menu>
-        </div> -->
+        </div>
 
         <!-- v-if="pageFlag==='timeFlag'" -->
-        <!-- <nut-infinite-loading
+        <nut-infinite-loading
             ref="listRef"
             load-more-txt="No more content"
             v-model="infinityValue"
@@ -39,37 +39,7 @@
           </div>
         </div>
         <nut-empty v-else :image-size="200" description="No Data" image="error" />
-        </nut-infinite-loading> -->
-
-        <nut-infinite-loading
-        ref="listRef"
-        load-more-txt="No more content"
-        v-model="infinityValue"
-        :has-more="!isEnd"
-        @load-more="getFileList"
-        class="photo_image_box"
-        v-if="pageFlag==='timeFlag'"
-      >
-        <div class="photo_image_listP" v-for="(item, index) in imgData" v-if="imgData.length">
-          <p  class="top-title">
-            <span>{{ item.time }}</span>
-          </p>
-          <div class="photo_image_listS" v-if="item.list.length">
-            <div :class="['img-item']" v-for="(img, index2) in item.list" @click="openImage" class="photo_image_listItem">
-              <nut-image
-                :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
-                fit="cover"
-                :key="img.cid"
-                :src="img.imgUrl"
-              >
-                <template #loading>
-                  <Loading width="16px" height="16px" name="loading" />
-                </template>
-              </nut-image>
-            </div>
-          </div>
-        </div>
-      </nut-infinite-loading>
+        </nut-infinite-loading>
 
 
       <!-- v-if="pageFlag==='timeDetailFlag' -->
@@ -309,12 +279,13 @@
     currentTimeList:{},
     currentTimeArr: [],
   });
-  const currentTimeValue=ref('All');
+  const currentTimeValue=ref('');
   const {chooseItem,imgData,currentTimeList,currentTimeArr}= toRefs(state);
   const fileItemPopupIsShow=ref(false);
   const $cordovaPlugins = inject('$cordovaPlugins');
   import { HmacSHA1, enc } from 'crypto-js';
   const pageFlag = ref('timeFlag')
+
 
   onMounted(async () => {
     await getOrderInfo();
@@ -570,8 +541,7 @@
       tableData.value = [...tableData.value, ...content];
       imgArray.value = tableData.value;
     }
-    console.log(tableData.value, 'tableDatatableData', imgData.value,imgData.value[0]);
-    // currentTimeValue.value =imgData.value[0].time;
+    console.log(tableData.value, 'tableDatatableData', imgData.value);
     isEnd.value = dateTimeLine.value.findIndex((el) => el.date == dateKey) == dateTimeLine.value.length - 1;
     if (data.isTruncated) {
       continuationToken.value = data.continuationToken;
@@ -706,7 +676,6 @@ function handleID(id) {
     line-height: 50px;
     margin: 0 8vw;
     margin-top: 30px;
-    margin-bottom: 30px;
     .title{
         font-size: 50px;
         font-weight:bold;
