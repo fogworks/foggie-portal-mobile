@@ -95,7 +95,7 @@
   <script lang="ts" setup name="BasicLayoutPage">
   import UploadSet from '@/views/nft/uploadSet.vue';
   import { useRouter, useRoute } from 'vue-router';
-  import { Home, Horizontal, My } from '@nutui/icons-vue';
+  import { Home, Horizontal, My,Image } from '@nutui/icons-vue';
   import { user, search_cloud,check_promo, bind_user_promo, checkDmcAccount, updateUser, } from '@/api';
   import { bind_promo, check_promo as check_amb_promo, check_user_bind } from '@/api/amb';
   import { onMounted, provide } from 'vue';
@@ -129,8 +129,9 @@
   
   
   const tabItem = [
-    { key: 'home', icon: Home },
+  { key: 'home', icon: Home },
     { key: 'list', icon: Horizontal },
+    // { key: 'photography', icon: Image },
     { key: 'member', icon: My },
   ];
   
@@ -175,6 +176,21 @@
       case 3:
         router.push('/demo');
         break;
+        // case 0:
+        //     router.push('/home');
+        //     break;
+        // case 1:
+        //     router.push('/list');
+        //     break;
+        // case 2:
+        //     router.push('/photography');
+        //     break;
+        // case 3:
+        //     router.push('/member');
+        //     break;
+        // case 4:
+        //     router.push('/demo');
+        //     break;
     }
     activeTab.value = index;
   };

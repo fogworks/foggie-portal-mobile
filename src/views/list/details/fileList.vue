@@ -131,19 +131,6 @@
         :has-more="!!continuationToken"
         @load-more="loadMore"
       >
-        <nut-tour
-          class="nut-custom-tour nut-customword-tour nut-customstyle-tour"
-          v-model="isFirst"
-          :steps="longPress"
-          type="tile"
-          location="bottom-center"
-          :close-on-click-overlay="false"
-        >
-          <div class="tour-demo-custom-content">
-            <div>Long press on a list file to enable multi-select mode</div>
-            <nut-button class="tour_btn" @click="handleFirst" type="default">OK</nut-button>
-          </div>
-        </nut-tour>
         <nut-checkbox-group v-model="checkedItem" ref="group" :max="30">
           <div
             :class="['list_item', checkedItem.indexOf(item.name) > -1 && isCheckMode ? 'row_is_checked' : '']"
@@ -184,7 +171,7 @@
             <div @click.stop v-if="item.isPin" class="ipfs_info">
               <!-- <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
               <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2> -->
-
+              <IconNft v-if="item.nftInfoList && item.nftInfoList.length > 0"></IconNft>
               <IconIPFS color="#496AF2"></IconIPFS>
             </div>
             <!-- <div @click.stop="showAction(item)" class="right_div">
@@ -223,7 +210,7 @@
       closeable
       round
       z-index="2000"
-      :style="{ height: 'auto', minHeight: '40%' }"
+      :style="{ height: 'auto', minHeight: chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0 ? '80%' : '40%' }"
       v-model:visible="fileItemPopupIsShow"
     >
       <div class="fileItem_header">
@@ -239,7 +226,7 @@
       <div
         class="fileItem_body"
         :style="{
-          height: chooseItem.isPin ? '345px' : '285px',
+          height: chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0 ? '500px' : chooseItem.isPin ? '225px' : '200px',
         }"
       >
         <div class="optionBox">
@@ -268,13 +255,20 @@
           </div>
         </div>
         <div class="ipfs" v-if=" chooseItem.isPin || chooseItem.cid">
-          <p v-if="chooseItem.isPin">
+          <p v-if="chooseItem.isPin && chooseItem.cid">
             <span>{{ handleID(`ipfs://${chooseItem.cid}`) }} </span>
             <IconCopy color="#222224" @click="copyIPFS('ipfs', chooseItem)"></IconCopy>
           </p>
           <p v-if="chooseItem.cid">
             <span> {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${chooseItem.cid}`) }} </span>
             <IconCopy color="#222224" @click="copyIPFS('http', chooseItem)"></IconCopy>
+          </p>
+        </div>
+
+        <div class="ipfs" v-if="chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0" style="margin-top: 40px">
+          <p v-for="(nft, index) in chooseItem.nftInfoList">
+            <span> {{ handleID(`${browserUrl}/nft/${nft.getContractid()}/${nft.getTokenid()}`) }} </span>
+            <IconCopy color="#262628" @click="copyNft(nft)"></IconCopy>
           </p>
         </div>
 
@@ -381,34 +375,6 @@
       </nut-tabbar>
     </Teleport>
 
-    <!-- single action -->
-    <!-- <Teleport to="body">
-      <nut-popup v-model:visible="showActionPop" z-index="2100" position="bottom" closeable round :style="{ height: '58%' }">
-        <div class="custom-content">
-          <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
-          <ul>
-            <li v-if="!chooseItem.isDir && showActionBtn" @click="handlerClick('share')"><IconShare></IconShare> Share</li>
-            <li v-if="(!chooseItem.isPin || !chooseItem.cid) && showActionBtn" @click="handlerClick('ipfs')">
-              <img src="@/assets/ipfs.png" alt="" /> IPFS</li
-            >
-            <li v-else-if="chooseItem.isPin && showActionBtn" @click="handlerClick('unipfs')">
-              <img src="@/assets/ipfs.png" alt="" /> UN IPFS</li
-            >
-            <li v-if="!chooseItem.isDir && showActionBtn && chooseItem.category == 1 && isMobileOrder" @click="handlerClick('nft')"
-              ><IconNFT></IconNFT> Mint NFT</li
-            >
-            <li v-if="isMobileOrder" @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
-            <li v-if="isMobileOrder" @click="handlerClick('move')"><IconMove></IconMove> Move</li>
-            <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
-            <li class="delete_item" v-if="isMobileOrder && showActionBtn" @click="handlerClick('delete')"
-              ><IconDelete></IconDelete>Delete</li
-            >
-          </ul>
-          <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
-        </div>
-      </nut-popup>
-    </Teleport> -->
-
     <!-- rename / newFolder -->
     <nut-popup
       teleport-disable
@@ -425,7 +391,16 @@
       v-model:visible="renameShow"
     >
       <div class="rename_box">
-        <IconFolder></IconFolder>
+        <!-- <IconFolder></IconFolder> -->
+        <div v-if="!isNewFolder" :class="['left_icon_box']">
+          <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+          <IconFolder v-if="selectArr[0].isDir"></IconFolder>
+          <IconImage v-else-if="selectArr[0].category == 1"></IconImage>
+          <IconVideo v-else-if="selectArr[0].category == 2"></IconVideo>
+          <IconAudio2 v-else-if="selectArr[0].category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+          <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
+          <IconFile v-else src="@/assets/svg/home/file.svg" alt="" />
+        </div>
         <p v-if="!isNewFolder"> {{ selectArr.length ? getOriginName(selectArr[0].name.split('/')[0]) : '' }}</p>
         <nut-searchbar
           v-model="newName"
@@ -692,7 +667,7 @@
   import FlashLight from '~icons/ri/flashlight-fill';
 
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
-  import IconNFT from '~icons/material-symbols/cast';
+  import IconNft from '~icons/home/nft.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
   import IconDelete from '~icons/home/delete.svg';
@@ -703,6 +678,7 @@
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
+  import IconFile from '~icons/home/file.svg';
   import IconVideo from '~icons/home/video.svg';
   import IconFolder from '~icons/home/folder.svg';
   import IconShare from '~icons/home/share.svg';
@@ -735,6 +711,7 @@
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
   import { get_order_sign } from '@/api/index';
+  import { browserUrl } from '@/setting';
 
   // const accessKeyId = ref<string>('');
   // const secretAccessKey = ref<string>('');
@@ -874,6 +851,7 @@
     getHttpShare,
     cloudPin,
     copyIPFS,
+    copyNft,
   } = useShare(orderInfo, header, deviceType, metadata);
   const shareCheckData = computed(() => {
     let checkData = [];
@@ -1396,6 +1374,8 @@
         content: 'Are you sure you want to execute IPFS UNPIN?',
         cancelText: 'Cancel',
         okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+
         onOk,
       });
     }
@@ -1512,26 +1492,7 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
-                  getImages: () => any;
                 }) => {
-                  const imageObj = el.getImages().toObject();
-                  const imggeInfo = {};
-                  let isShowDetail = false;
-                  if (imageObj.camerainfo?.make) {                    
-                    isShowDetail = true;
-                    imggeInfo.aperture = imageObj.addition.aperture; //光圈
-                    imggeInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
-                    imggeInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
-                    imggeInfo.exptime = imageObj.addition.exptime; //曝光时间
-                    imggeInfo.orientation = imageObj.addition.orientation; //方向
-                    imggeInfo.focallength = imageObj.addition.focallength; //焦距
-                    imggeInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
-                    imggeInfo.software = imageObj.addition.software; // 使用软件
-                    imggeInfo.iso = imageObj.addition.iso.charCodeAt(0);
-                    imggeInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
-                    imggeInfo.gps = imageObj.gps; //经纬度
-                    imggeInfo.resolution = imageObj.resolution; //像素
-                  }
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1548,8 +1509,6 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
-                    imageInfo: imggeInfo,
-                    isShowDetail,
                   };
                 },
               ),
@@ -1786,6 +1745,7 @@
         isPersistent,
         isPin: data.content[j].isPin,
         isPinCyfs: data.content[j].isPinCyfs,
+        nftInfoList: data.content[j].nftInfoList,
       };
       if (moveShow.value) {
       } else {
@@ -1811,17 +1771,6 @@
     }
     tableLoading.value = false;
     showToast.hide('file_list');
-    nextTick(() => {
-      if (window.localStorage.notFirst) {
-        document.getElementsByClassName('main-page')[0].style.overflow = '';
-        isFirst.value = false;
-      } else {
-        setTimeout(() => {
-          document.getElementsByClassName('main-page')[0].style.overflow = 'hidden';
-          isFirst.value = true;
-        }, 1000);
-      }
-    });
   };
   function doSearch(scroll: string = '', prefixArg: any[] = [], reset = false) {
     if (tableLoading.value) return false;
@@ -1897,7 +1846,9 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
+                  getNftinfosList: () => any;
                 }) => {
+                  console.log(el, 'el---');
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1914,6 +1865,7 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
+                    nftInfoList: el.getNftinfosList(),
                   };
                 },
               );
@@ -1927,12 +1879,6 @@
       }
     }
   }
-
-  const handleFirst = () => {
-    document.getElementsByClassName('main-page')[0].style.overflow = '';
-    isFirst.value = false;
-    window.localStorage.notFirst = true;
-  };
 
   const getSignHeaders = (objectKey: string) => {
     const date = new Date().toUTCString();

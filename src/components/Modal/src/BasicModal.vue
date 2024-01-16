@@ -55,7 +55,7 @@
 <style lang="scss">
   .my-custom-popup {
     background: transparent;
-    z-index: 2100;
+    z-index: 2100 !important;
   }
   .my_dialog_content_box {
     padding: 20px;

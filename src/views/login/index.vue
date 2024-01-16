@@ -57,9 +57,9 @@
 
 <script lang="ts" setup name="LoginPage">
   // import { MetaMaskSDK } from '@metamask/sdk';
-  // import injectedModule from '@web3-onboard/injected-wallets';
-  // import { init, useOnboard } from '@web3-onboard/vue';
-  // import metamaskSDK from '@web3-onboard/metamask';
+  import injectedModule from '@web3-onboard/injected-wallets';
+  import { init, useOnboard } from '@web3-onboard/vue';
+  import metamaskSDK from '@web3-onboard/metamask';
   import detectEthereumProvider from '@metamask/detect-provider';
   import MetaMask from '~icons/home/metamask.svg';
   // import UniSat from '~icons/home/unisat.svg';
@@ -91,58 +91,57 @@
     // 此正则表达式涵盖了大多数使用的手机和平板设备
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
   });
-  // const metamaskSDKWallet = metamaskSDK({
-  //   options: {
-  //     extensionOnly: false,
-  //     dappMetadata: {
-  //       name: 'Web3Onboard',
-  //       url: 'https://amb.u2i.net',
-  //     },
-  //   },
-  // });
-  // const infuraKey = '<INFURA_KEY>';
-  // const rpcUrl = `https://mainnet.infura.io/v3/${infuraKey}`;
-  // 不要删除
-  // const web3Onboard = init({
-  //   wallets: [metamaskSDKWallet],
-  //   chains: [
-  //     {
-  //       id: '0x1',
-  //       token: 'ETH',
-  //       label: 'Ethereum Mainnet',
-  //       rpcUrl,
-  //     },
-  //     {
-  //       id: 42161,
-  //       token: 'ARB-ETH',
-  //       label: 'Arbitrum One',
-  //       rpcUrl: 'https://rpc.ankr.com/arbitrum',
-  //     },
-  //     {
-  //       id: '0xa4ba',
-  //       token: 'ARB',
-  //       label: 'Arbitrum Nova',
-  //       rpcUrl: 'https://nova.arbitrum.io/rpc',
-  //     },
-  //     {
-  //       id: '0x2105',
-  //       token: 'ETH',
-  //       label: 'Base',
-  //       rpcUrl: 'https://mainnet.base.org',
-  //     },
-  //   ],
-  //   appMetadata: {
-  //     name: 'Wallet',
-  //     icon: '<svg>My App Icon</svg>',
-  //     description: 'Login via MetaMask',
-  //     recommendedInjectedWallets: [
-  //       { name: 'MetaMask', url: 'https://metamask.io' },
-  //       { name: 'Coinbase', url: 'https://wallet.coinbase.com/' },
-  //     ],
-  //   },
-  // });
+  const metamaskSDKWallet = metamaskSDK({
+    options: {
+      extensionOnly: false,
+      dappMetadata: {
+        name: 'Web3Onboard',
+        url: 'https://amb.u2i.net',
+      },
+    },
+  });
+  const infuraKey = '<INFURA_KEY>';
+  const rpcUrl = `https://mainnet.infura.io/v3/${infuraKey}`;
+  const web3Onboard = init({
+    wallets: [metamaskSDKWallet],
+    chains: [
+      {
+        id: '0x1',
+        token: 'ETH',
+        label: 'Ethereum Mainnet',
+        rpcUrl,
+      },
+      {
+        id: 42161,
+        token: 'ARB-ETH',
+        label: 'Arbitrum One',
+        rpcUrl: 'https://rpc.ankr.com/arbitrum',
+      },
+      {
+        id: '0xa4ba',
+        token: 'ARB',
+        label: 'Arbitrum Nova',
+        rpcUrl: 'https://nova.arbitrum.io/rpc',
+      },
+      {
+        id: '0x2105',
+        token: 'ETH',
+        label: 'Base',
+        rpcUrl: 'https://mainnet.base.org',
+      },
+    ],
+    appMetadata: {
+      name: 'Wallet',
+      icon: '<svg>My App Icon</svg>',
+      description: 'Login via MetaMask',
+      recommendedInjectedWallets: [
+        { name: 'MetaMask', url: 'https://metamask.io' },
+        { name: 'Coinbase', url: 'https://wallet.coinbase.com/' },
+      ],
+    },
+  });
 
-  // const { wallets, connectWallet, disconnectConnectedWallet, connectedWallet } = useOnboard();
+  const { wallets, connectWallet, disconnectConnectedWallet, connectedWallet } = useOnboard();
   const router = useRouter();
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
@@ -374,17 +373,30 @@
   };
   const metaOpen = inject('metaOpen');
   const loginWithMeta = async () => {
+    showToast.loading('Connecting', {
+      cover: true,
+      customClass: 'app_loading',
+      coverColor: 'rgba(0,0,0,0.45)',
+      icon: loadingImg,
+      loadingRotate: false,
+      id: 'login',
+      duration: 0,
+    });
     const provider = await detectEthereumProvider();
+    // if (provider == window.ethereum && provider) {
+    //   if (!connectedWallet?.value?.accounts?.[0]?.address) await connectWallet();
+    //   let address = connectedWallet?.value?.accounts?.[0]?.address;
+    //   if (!address) {
+    //     disconnectConnectedWallet();
+    //     return false;
+    //   }
+    //   await checkWallet(address);
+    // } else {
+    //   window.open('https://metamask.app.link/dapp/https://amb.u2i.net');
+    //   // metaOpen();
+    // }
+
     if (provider == window.ethereum && provider) {
-      showToast.loading('Connecting', {
-        cover: true,
-        customClass: 'app_loading',
-        coverColor: 'rgba(0,0,0,0.45)',
-        icon: loadingImg,
-        loadingRotate: false,
-        id: 'login',
-        duration: 0,
-      });
       try {
         await window.ethereum.request({
           method: 'eth_requestAccounts',
@@ -400,9 +412,8 @@
       }
       await checkWallet(accountsList.value[0]);
     } else {
+      showToast.hide('login');
       metaOpen();
-      // window.open('https://metamask.app.link/dapp/https://amb.u2i.net');
-      // window.open('https://metamask.app.link/dapp/http://172.16.20.113:5173');
     }
   };
   const signUniSatMessage = async (message = 'qianming') => {

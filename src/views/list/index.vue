@@ -51,7 +51,7 @@
       </nut-row>
     </div>
 
-    <div class="top_filter">
+    <div v-if="total > 8" class="top_filter">
       <nut-menu active-color="#4524a3">
         <nut-menu-item
           :title="`Sort By ${searchForm.sortTypeOptions.find((el) => el.value == searchForm.sortType).text}`"
@@ -93,7 +93,7 @@
         :close-mode="true"
       ></nut-noticebar>
     </div> -->
-    <div class="find_tips">Based on your search criteria,We found {{ total }} items for you.</div>
+    <div v-if="total > 8" class="find_tips">Based on your search criteria,We found {{ total }} items for you.</div>
     <ErrorPage v-if="isError && !list.length" @refresh="loadMoreFun"></ErrorPage>
     <nut-infinite-loading
       v-else-if="list.length"

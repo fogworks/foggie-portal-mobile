@@ -162,9 +162,9 @@
             </div>
           </div>
         </div>
-        <p class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></p>
       </template>
       <nut-empty v-else style="padding: 10px 0 50px 0" description="No data,Go ahead and upload it." image="error"> </nut-empty>
+      <p class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></p>
 
       <Teleport to="body">
         <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
@@ -403,7 +403,7 @@
             storage solution for a wide range of applications.</div
           >
         </div>
-        <div class="my_dialog_title" v-if="isAvailableOrder">
+        <div class="my_dialog_title" v-if="orderInfo.value.electronic_type == '0' && isAvailableOrder">
           <nut-button type="primary" @click="getKey">S3 Endpoint</nut-button>
         </div>
       </div>

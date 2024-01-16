@@ -46,6 +46,7 @@ export default function useOrderInfo() {
       icon: loadingImg,
       loadingRotate: false,
       id: 'order_info_id',
+      coverColor: 'rgba(0,0,0,0.45)',
     });
     let res = await get_unique_order({ order_uuid: route?.query?.uuid });
 
