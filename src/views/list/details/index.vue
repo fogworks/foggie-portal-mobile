@@ -174,9 +174,9 @@
           <MyAudio v-else-if="detailRow.value.category == 3" :audioUrl="detailRow.value.imgUrl"></MyAudio>
           <div v-else-if="imgUrl" class="middle_img">
             <van-image-preview
+              ref="imgPreRef"
               v-model:show="detailShow"
               :closeOnClickOverlay="false"
-              :start-position="imgStartIndex"
               :images="images"
               @change="swipeChange"
             >
@@ -523,7 +523,7 @@
   const successStatus = ref<number>(204);
   const isNameLoading = ref(false);
   // const sheetVisible = ref(false);
-
+  const imgPreRef = ref('');
   const userStore = useUserStore();
   const uuid = computed(() => userStore.getUserInfo.uuid);
   const dmcName = computed(() => userStore.getUserInfo.dmc);
@@ -725,6 +725,12 @@
       imgUrl.value = row.imgUrlLarge;
       imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
       detailShow.value = true;
+      nextTick(() => {
+        console.log(imgPreRef.value, 'imgPreRef.value');
+
+        imgPreRef.value.swipeTo(imgStartIndex.value);
+        console.log(imgPreRef.value, 'imgPreRef.value');
+      });
     } else {
       let prefix;
       if (row.isDir) {
