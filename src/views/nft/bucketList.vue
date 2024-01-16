@@ -120,6 +120,10 @@
     .nut-fixed-nav__btn {
       width: 130px;
     }
+
+    .nut-fixed-nav__list{
+      width: 95vw;
+    }
   }
 
   .page_box {
@@ -152,6 +156,7 @@
 
   .my_top_search {
     padding: 10px 0;
+    min-width: 400px;
   }
 
   .bucket_box {
