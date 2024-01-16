@@ -1971,8 +1971,8 @@
 
     fileSocket.value.onmessage = (event: { data: string }) => {
       const message = JSON.parse(event.data);
-      const currentFolder = window.sessionStorage.getItem('currentFolder');
-      console.log('Received message from server:', message, currentFolder);
+      const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
+      console.log('Received message from server:', message, currentFolderStr);
       const uploadFileName = window.sessionStorage.getItem('uploadFileName');
       let fileInfo = message.fileInfo;
       let dirArr = fileInfo.keys;
@@ -1990,8 +1990,8 @@
         }
       }
 
-      console.log('888888', dirArr, dirFile, currentFolder, dirFile === currentFolder, dirFileName !== uploadFileName);
-      if (dirFile === currentFolder) {
+      console.log('888888', dirArr, dirFile, currentFolderStr, dirFile === decodeURIComponent(currentFolderStr), dirFileName !== uploadFileName);
+      if (dirFile === decodeURIComponent(currentFolderStr)) {
         if (detailShow.value) {
           setTimeout(() => {
             initWebSocket();
