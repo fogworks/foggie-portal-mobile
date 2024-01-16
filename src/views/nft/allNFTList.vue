@@ -22,7 +22,7 @@
       @gotoMore="gotoMore"
       has-more
       v-model:activeTab="activeTab"
-      :tabList="['NFT List']"
+      :tabList="[]"
       :imgList="imgList"
       :nftTotal="nftTotal"
       :isShowMore="true"
