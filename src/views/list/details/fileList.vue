@@ -1042,8 +1042,8 @@
         console.log(row.imgUrlLarge);
       } else if (row.imgUrlLarge) {
         imgUrl.value = row.imgUrlLarge;
-        detailShow.value = true;
         imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
+        detailShow.value = true;
       }
     }
   };
