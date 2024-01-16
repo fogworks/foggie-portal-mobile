@@ -151,10 +151,10 @@
     <!-- preview -->
     <Teleport to="body">
       <nut-overlay v-if="imgDetailShow" overlay-class="photo_detail_prev" v-model:visible="imgDetailShow" :close-on-click-overlay="false">
-        <div class="detail_top">
+        <!-- <div class="detail_top">
           <IconArrowLeft @click="imgDetailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
           <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
-        </div>
+        </div> -->
         <div class="middle_img">
           <van-image-preview
             v-model:show="imgDetailShow"
@@ -829,6 +829,10 @@
           }
         }
       }
+    }
+    .detail_back {
+      width: 60px;
+      height: 60px;
     }
     .bottom_action {
       position: fixed;
