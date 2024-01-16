@@ -11507,13 +11507,9 @@ proto.proto.ImageAddition.toObject = function(includeInstance, msg) {
     aperture: jspb.Message.getFieldWithDefault(msg, 4, ""),
     orientation: jspb.Message.getFieldWithDefault(msg, 5, ""),
     flash: jspb.Message.getFieldWithDefault(msg, 6, ""),
-<<<<<<< HEAD
     software: jspb.Message.getFieldWithDefault(msg, 7, ""),
     exposuretime: jspb.Message.getFieldWithDefault(msg, 8, ""),
     focallength: jspb.Message.getFieldWithDefault(msg, 9, "")
-=======
-    software: jspb.Message.getFieldWithDefault(msg, 7, "")
->>>>>>> fa00b5ae4c34b29a0a8e537dfb8a8ad051ae0af7
   };
 
   if (includeInstance) {
@@ -11578,7 +11574,6 @@ proto.proto.ImageAddition.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setSoftware(value);
       break;
-<<<<<<< HEAD
     case 8:
       var value = /** @type {string} */ (reader.readString());
       msg.setExposuretime(value);
@@ -11587,8 +11582,6 @@ proto.proto.ImageAddition.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setFocallength(value);
       break;
-=======
->>>>>>> fa00b5ae4c34b29a0a8e537dfb8a8ad051ae0af7
     default:
       reader.skipField();
       break;
@@ -11810,7 +11803,6 @@ proto.proto.ImageAddition.prototype.setSoftware = function(value) {
 };
 
 
-<<<<<<< HEAD
 /**
  * optional string exposureTime = 8;
  * @return {string}
@@ -11847,8 +11839,6 @@ proto.proto.ImageAddition.prototype.setFocallength = function(value) {
 };
 
 
-=======
->>>>>>> fa00b5ae4c34b29a0a8e537dfb8a8ad051ae0af7
 
 
 

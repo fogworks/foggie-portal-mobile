@@ -226,7 +226,7 @@
       <div
         class="fileItem_body"
         :style="{
-          height: chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0 ? '500px' : chooseItem.isPin ? '225px' : '200px',
+          height: chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0 ? '500px' : chooseItem.isPin ? '345px' : '300px',
         }"
       >
         <div class="optionBox">
@@ -254,7 +254,7 @@
             Download
           </div>
         </div>
-        <div class="ipfs" v-if=" chooseItem.isPin || chooseItem.cid">
+        <div class="ipfs" v-if="chooseItem.isPin || chooseItem.cid">
           <p v-if="chooseItem.isPin && chooseItem.cid">
             <span>{{ handleID(`ipfs://${chooseItem.cid}`) }} </span>
             <IconCopy color="#222224" @click="copyIPFS('ipfs', chooseItem)"></IconCopy>
@@ -306,7 +306,7 @@
       <div class="fileItemDetail">
         <div class="fileItemDetail_header">
           <span>{{ chooseItem.imageInfo?.camerainfo.model }} </span>
-          <span class="flashlamp" v-if="chooseItem.imageInfo.Flash">
+          <span class="flashlamp" v-if="chooseItem.imageInfo?.Flash">
             <FlashLight></FlashLight>
           </span>
         </div>
@@ -320,7 +320,6 @@
           <span>{{ chooseItem.imageInfo?.focallength }}</span>
           <span>f{{ chooseItem.imageInfo?.aperture }}</span>
           <span>{{ chooseItem.imageInfo?.exptime }} s</span>
-
         </div>
       </div>
     </nut-popup>
@@ -1492,7 +1491,26 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
+                  getImages: () => any;
                 }) => {
+                  const imageObj = el.getImages().toObject();
+                  const imageInfo = {};
+                  let isShowDetail = false;
+                  if (imageObj.camerainfo?.make) {                    
+                    isShowDetail = true;
+                    imageInfo.aperture = imageObj.addition.aperture; //光圈
+                    imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+                    imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
+                    imageInfo.exptime = imageObj.addition.exptime; //曝光时间
+                    imageInfo.orientation = imageObj.addition.orientation; //方向
+                    imageInfo.focallength = imageObj.addition.focallength; //焦距
+                    imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
+                    imageInfo.software = imageObj.addition.software; // 使用软件
+                    imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
+                    imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
+                    imageInfo.gps = imageObj.gps; //经纬度
+                    imageInfo.resolution = imageObj.resolution; //像素
+                  }
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1509,6 +1527,9 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
+                    imageInfo:imageInfo,
+                    isShowDetail,
+
                   };
                 },
               ),
@@ -1709,6 +1730,9 @@
       }
       let isPersistent = data.content[j].isPersistent;
 
+   
+        console.log(data.content[j],'data.content[j]1');
+        
       let item = {
         imageInfo: data.content[j].imageInfo,
         isShowDetail: data.content[j].isShowDetail,
@@ -1747,6 +1771,8 @@
         isPinCyfs: data.content[j].isPinCyfs,
         nftInfoList: data.content[j].nftInfoList,
       };
+      console.log(item,'data.content[j]');
+
       if (moveShow.value) {
       } else {
         tableData.value.push(item);
@@ -2277,21 +2303,19 @@
       .fileItemDetail_Body {
         padding: 20px 20px;
         border-bottom: 4px solid #adacb1;
-        background-color: #DFDEE3;
-        & > div{
+        background-color: #dfdee3;
+        & > div {
           height: 40px;
           line-height: 40px;
           font-weight: 600px;
           font-size: 28px;
-
         }
-
       }
-      .fileItemDetail_bottom{
-        background-color: #DFDEE3;
+      .fileItemDetail_bottom {
+        background-color: #dfdee3;
         display: grid;
         padding: 0px 20px;
-        grid-template-columns: repeat(5,1fr);
+        grid-template-columns: repeat(5, 1fr);
         & > span {
           text-align: center;
           height: 60px;
@@ -2300,12 +2324,12 @@
           font-size: 28px;
           position: relative;
         }
-        & > span:not(:last-child)::before{
+        & > span:not(:last-child)::before {
           display: inline-block;
           content: '';
           width: 3px;
           height: 60%;
-          background-color: #CDCCD1;
+          background-color: #cdccd1;
           position: absolute;
           right: 0px;
           top: 50%;

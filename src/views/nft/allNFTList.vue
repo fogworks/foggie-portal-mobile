@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="top_info">
-      <nut-switch class="check_account" @change="seeTypeChange" v-model="seeType" active-text="Current" inactive-text="All" />
+      <!-- <nut-switch class="check_account" @change="seeTypeChange" v-model="seeType" active-text="Current" inactive-text="All" /> -->
       <p>
         {{ activeTab == 1 ? 'NFT List' : 'Inscription List' }}
       </p>
