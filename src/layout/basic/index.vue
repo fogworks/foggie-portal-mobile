@@ -131,7 +131,7 @@
   const tabItem = [
   { key: 'home', icon: Home },
     { key: 'list', icon: Horizontal },
-    // { key: 'photography', icon: Image },
+    { key: 'photography', icon: Image },
     { key: 'member', icon: My },
   ];
   
@@ -164,33 +164,33 @@
   
   const tabSwitch = (_item, index) => {
     switch (index) {
-      case 0:
-        router.push('/home');
-        break;
-      case 1:
-        router.push('/list');
-        break;
-      case 2:
-        router.push('/member');
-        break;
-      case 3:
-        router.push('/demo');
-        break;
-        // case 0:
-        //     router.push('/home');
-        //     break;
-        // case 1:
-        //     router.push('/list');
-        //     break;
-        // case 2:
-        //     router.push('/photography');
-        //     break;
-        // case 3:
-        //     router.push('/member');
-        //     break;
-        // case 4:
-        //     router.push('/demo');
-        //     break;
+    //   case 0:
+    //     router.push('/home');
+    //     break;
+    //   case 1:
+    //     router.push('/list');
+    //     break;
+    //   case 2:
+    //     router.push('/member');
+    //     break;
+    //   case 3:
+    //     router.push('/demo');
+    //     break;
+        case 0:
+            router.push('/home');
+            break;
+        case 1:
+            router.push('/list');
+            break;
+        case 2:
+            router.push('/photography');
+            break;
+        case 3:
+            router.push('/member');
+            break;
+        case 4:
+            router.push('/demo');
+            break;
     }
     activeTab.value = index;
   };

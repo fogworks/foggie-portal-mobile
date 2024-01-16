@@ -80,7 +80,7 @@
         v-model="infinityValue"
         :has-more="!isEnd"
         @load-more="getFileList"
-        class="photo_image_box"
+        class="photo_image_box photo_image_timeLineBox"
         v-if="pageFlag==='timeLineFlag'"
       >
         <div v-if="imgData.length" v-for="(item, index) in imgData" class="photo_image_listP">
@@ -88,18 +88,23 @@
             <span>{{ item.time }}</span>
           </p>
           <div class="photo_image_listS">
-            <div :class="['img-item']" v-for="(img, index2) in item.list" @click="openImage" class="photo_image_listItem">
-              <nut-image
-                :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
-                fit="cover"
-                :key="img.cid"
-                :src="img.imgUrl"
-              >
-                <template #loading>
-                  <Loading width="16px" height="16px" name="loading" />
-                </template>
-              </nut-image>
-            </div>
+            <nut-steps direction="vertical" :current="1" >
+                <nut-step :title="img.fullName" v-for="(img, index2) in item.list" @click="openImage">
+                    <template #content>
+                        <span>{{ img.date }}</span>
+                        <nut-image
+                            :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
+                            fit="cover"
+                            :key="img.cid"
+                            :src="img.imgUrl"
+                        >
+                            <template #loading>
+                            <Loading width="16px" height="16px" name="loading" />
+                            </template>
+                        </nut-image>
+                    </template>
+                </nut-step>
+            </nut-steps>
           </div>
         </div>
         <nut-empty v-else :image-size="200" description="No Data" image="error" />
@@ -908,6 +913,22 @@ function handleID(id) {
       background-color: #ccccccc2;
       border-radius: 50%;
       color: #fff;
+    }
+  }
+  .photo_image_timeLineBox{
+    .photo_image_listP{
+        margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+    }
+    .nut-step-title{
+        margin-top: 10px;
+        font-weight: bold;
+        font-size: 30px;
+        color:#5758a0;
+    }
+    .nut-step-content{
+        margin-bottom: 30px;
     }
   }
 
