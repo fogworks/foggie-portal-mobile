@@ -10,11 +10,11 @@
                 <span class="top_title photo_title">
                     {{ bucketName }} Photography
                 </span>
-                <TriangleUp
+                <!-- <TriangleUp
                 color="white"
                   @click="showTypeCheckPop = !showTypeCheckPop"
                   :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
-                ></TriangleUp>
+                ></TriangleUp> -->
               </div>
             </div>
         </div>
@@ -34,7 +34,7 @@
             </div>
           </div>
           <div class="photo_top_select_check_box type_check_box">
-            <div class="type_item" @click="switchType(0)" v-for="(item,index) in bucketList" :key="index">
+            <div class="type_item" @click="switchType(item)" v-for="(item,index) in bucketList" :key="index">
               <div class="svg_box">
                 <img src="@/assets/home_bucket.png"/>
               </div>
@@ -44,7 +44,7 @@
         </nut-popup>
       </Teleport>
     </div>
-    <ImgBox ref="imgListRef" :orderId="route.query.id"></ImgBox>
+    <ImgBox ref="imgListRef" :orderId="orderId"></ImgBox>
   </div>
 </template>
 
@@ -72,6 +72,8 @@ const router = useRouter();
 let list = JSON.parse(window.sessionStorage.getItem('bucketList'));
 const bucketList= ref([]);
 bucketList.value=list;
+const orderId=ref('');
+orderId.value=route.query.id;
 
 const imgListRef = ref('');
 const { isAvailableOrder, getSummary, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } =
@@ -123,10 +125,16 @@ const fileTypeText = {
   3: 'Audio',
   4: 'Document',
 };
-const category = ref(0);
-const switchType = (type: number) => {
-  category.value = type;
+const switchType =async (list) => {
   showTypeCheckPop.value = false;
+//   window.sessionStorage.setItem('bucketList', JSON.stringify(list));
+//     router.push({
+//         name: 'photoList',
+//         query: { name: list.domain || list.order_id, id: list.order_id, uuid: list.uuid, amb_uuid: list.amb_uuid, category: 1 },
+//     });
+};
+const initParam=()=>{
+
 };
 onMounted(async () => {
   console.log('-----parent---onMounted-----');
@@ -134,7 +142,7 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss" >
+<style lang="scss" scoped>
 @import './index.scss';
 .my_photoList_page {
   background: #fff;

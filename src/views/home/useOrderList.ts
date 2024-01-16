@@ -149,6 +149,9 @@ export default function useOrderList() {
         'X-Custom-Date': date,
       };
       header.setToken(cur_token);
+      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+      header.setApptype(appType);
+
       console.log(metadata, 'metadata');
 
       return new Promise((resolve, reject) => {
