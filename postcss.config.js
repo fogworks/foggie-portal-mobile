@@ -23,6 +23,7 @@ module.exports = {
       landscapeWidth: 1134, //横屏时使用的视口宽度
       include: [],
       exclude: [/node_modules/], // 设置忽略文件，用正则做目录名匹配
+      selectorBlackList: [/^\.el-/],
       customFun: ({ file }) => {
         if (['vant', '@nutui', '@varlet'].some((item) => path.join(file).includes(path.join('node_modules', item)))) {
           return 375;
