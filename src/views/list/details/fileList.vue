@@ -558,7 +558,7 @@
       <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
         <div class="detail_top" v-if="chooseItem.category !== 1 && !imgUrl">
           <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-          <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
+          <IconMore @click="clickFIleItemDetail(chooseItem)" class="detail_back" color="#fff"></IconMore>
         </div>
         <HLSVideo v-if="chooseItem.category == 2" :imgUrl="imgUrl"></HLSVideo>
         <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
@@ -1051,9 +1051,11 @@
         nextTick(() => {
           console.log(imgStartIndex.value, 'imgStartIndex.value');
 
-          imgPreRef.value.swipeTo(imgStartIndex.value);
-          console.log(imgPreRef.value.startPosition, 'startPosition.value');
-          console.log(imgPreRef.value, 'imgPreRef.value');
+          if (imgPreRef.value) {
+            imgPreRef.value.swipeTo(imgStartIndex.value);
+            console.log(imgPreRef.value.startPosition, 'startPosition.value');
+            console.log(imgPreRef.value, 'imgPreRef.value');
+          }
         });
       }
     }
