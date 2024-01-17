@@ -167,7 +167,7 @@
       <p class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></p>
 
       <Teleport to="body">
-        <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
+        <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
           <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
           <HLSVideo v-if="detailRow.value.category == 2" :imgUrl="imgUrl"></HLSVideo>
           <pre v-else-if="detailRow.value.detailType == 'txt'" id="txtContainer"></pre>

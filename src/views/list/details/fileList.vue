@@ -555,7 +555,7 @@
       </div>
     </nut-popup>
     <Teleport to="body">
-      <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
+      <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
         <div class="detail_top">
           <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
           <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
