@@ -716,9 +716,11 @@
         nextTick(() => {
           console.log(imgStartIndex.value, 'imgStartIndex.value');
 
-          imgPreRef.value.swipeTo(imgStartIndex.value);
-          console.log(imgPreRef.value.startPosition, 'startPosition.value');
-          console.log(imgPreRef.value, 'imgPreRef.value');
+          if (imgPreRef.value) {
+            imgPreRef.value.swipeTo(imgStartIndex.value);
+            console.log(imgPreRef.value.startPosition, 'startPosition.value');
+            console.log(imgPreRef.value, 'imgPreRef.value');
+          }
         });
       }
     }
@@ -1796,6 +1798,12 @@
           type === 'ico'
         ) {
           category = 1;
+        } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
+          category = 2;
+        } else if (type === 'mp3') {
+          category = 3;
+        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+          category = 4;
         }
         const url = imgData.imgHttpLink;
         const isSystemImg = imgData.isSystemImg;
@@ -1831,6 +1839,7 @@
           canShare: _cid ? true : false,
           isPin: false,
           isPinCyfs: false,
+          type,
         };
         tableData.value.push(item);
         if (item.category == 1) {
