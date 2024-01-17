@@ -34,7 +34,7 @@
         </div> -->
         <div>
           <div class="key">Reward</div>
-          <div class="value" @click="gotoDetail('/assetsInfo')">
+          <div class="value" v-if="cloudCodeIsBind" @click="gotoDetail('/assetsInfo')">
             <span style="font-size: 18px">{{ money.income.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.income.decimalPart }}</span>
           </div>
@@ -42,7 +42,7 @@
 
         <div>
           <div class="key">Withdrawn</div>
-          <div class="value" @click="gotoDetail('/withdraw')">
+          <div class="value" v-if="cloudCodeIsBind" @click="gotoDetail('/withdraw')">
             <span style="font-size: 18px">{{ money.withdraw.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.withdraw.decimalPart }}</span>
           </div>

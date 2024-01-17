@@ -33,120 +33,133 @@
     </nut-infinite-loading>
   </div>
 </template>
-  
-  <script setup lang="ts" name="bucketPhotoList">
-import useOrderList from '../nft/useOrderList.js';
-import { transferUTCTime } from '@/utils/util';
-import { useRouter, useRoute } from 'vue-router';
-const router = useRouter();
-const keyWord = ref('');
-const bucketListRef = ref('');
-const { loadMore, listData, hasMore, infinityValue, total } = useOrderList();
-let list = computed(() => {
-  return listData.value.filter((el) => {
-    return el.order_id.indexOf(keyWord.value) > -1 || el.domain.indexOf(keyWord.value) > -1 || el.pst == keyWord.value;
+
+<script setup lang="ts" name="bucketPhotoList">
+  import useOrderList from '../nft/useOrderList.js';
+  import { transferUTCTime } from '@/utils/util';
+  import { useRouter, useRoute } from 'vue-router';
+  import { useUserStore } from '@/store/modules/user';
+  const userStore = useUserStore();
+  const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+  const router = useRouter();
+  const keyWord = ref('');
+  const bucketListRef = ref('');
+  const { loadMore, listData, hasMore, infinityValue, total } = useOrderList();
+  let list = computed(() => {
+    return listData.value.filter((el) => {
+      return el.order_id.indexOf(keyWord.value) > -1 || el.domain.indexOf(keyWord.value) > -1 || el.pst == keyWord.value;
+    });
   });
-});
-const loadMoreFun = async () => {
-  const postData = {
-    sort_type: 'created_at',
-    ascending: false,
-    is_domain: true,
-    electronic_type: '0',
+  const loadMoreFun = async () => {
+    const postData = {
+      sort_type: 'created_at',
+      ascending: false,
+      is_domain: true,
+      electronic_type: '0',
+    };
+    await loadMore([0, 1, 2, 3, 6], '', '', '', postData);
+    nextTick(() => {
+      if (hasMore.value && bucketListRef?.value?.$el?.clientHeight >= bucketListRef?.value?.$el?.scrollHeight) {
+        loadMoreFun();
+      }
+    });
   };
-  await loadMore([0, 1, 2, 3, 6], '', '', '', postData);
-  nextTick(() => {
-    if (hasMore.value && bucketListRef?.value?.$el?.clientHeight >= bucketListRef?.value?.$el?.scrollHeight) {
-      loadMoreFun();
-    }
-  });
-};
-onMounted(() => {
-  console.log('onMounted');
-  loadMoreFun();
-});
-const gotoFileList = (item) => {
+  watch(
+    cloudCodeIsBind,
+    (val) => {
+      if (val) {
+        loadMoreFun();
+      }
+    },
+    {
+      deep: true,
+      immediate: true,
+    },
+  );
+  const gotoFileList = (item) => {
     window.sessionStorage.setItem('bucketList', JSON.stringify(list.value));
     router.push({
-        name: 'photoList',
-        query: { name: item.domain || item.order_id, id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, category: 1 },
+      name: 'photoList',
+      query: { name: item.domain || item.order_id, id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, category: 1 },
     });
-};
+  };
 </script>
-  
-  <style lang="scss" scoped>
-.my_photo_page {
-  background: #fff;
-  min-height: 100vh;
-  height: 100%;
-  margin: 0 -4vw;
-  width: calc(100% + 8vw);
-  .my_photo_head {
-    width: 100%;
-    text-align: center;
-    font-weight: bold;
-    height: 100px;
-    line-height: 100px;
+
+<style lang="scss" scoped>
+  .my_photo_page {
     background: #fff;
-    background: #e4d8c8;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 20px;
-    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.05), 0px 4px 20px rgba(0, 0, 0, 0.04), 0px 2px 20px -1px rgba(0, 0, 0, 0.05);
-  }
-  .my_photo_headTitle {
-    padding-left: 20px;
-    margin: 20px 0;
-    .text {
+    min-height: 100vh;
+    height: 100%;
+    margin: 0 -4vw;
+    width: calc(100% + 8vw);
+    .my_photo_head {
+      width: 100%;
+      text-align: center;
       font-weight: bold;
-      font-size: 50px;
-      font-style: italic;
+      height: 100px;
+      line-height: 100px;
+      background: #fff;
+      background: #e4d8c8;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 20px;
+      box-shadow:
+        0px 1px 5px rgba(0, 0, 0, 0.05),
+        0px 4px 20px rgba(0, 0, 0, 0.04),
+        0px 2px 20px -1px rgba(0, 0, 0, 0.05);
     }
-  }
-  .my_photo_headImg {
-    width: 100%;
-    height: auto;
-    img {
+    .my_photo_headTitle {
+      padding-left: 20px;
+      margin: 20px 0;
+      .text {
+        font-weight: bold;
+        font-size: 50px;
+        font-style: italic;
+      }
+    }
+    .my_photo_headImg {
       width: 100%;
       height: auto;
-      object-fit: cover;
+      img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
     }
-  }
-  .my_photo_box {
-    width: 100%;
-    .my_photo_list {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: start;
-      .my_photo_item {
-        cursor: pointer;
-        width: 40%;
-        margin-left: 4%;
-        //   height: 340px;
-        //   background: #fff;
-        padding: 20px;
-        border-radius: 20px;
-        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-        margin-top: 40px;
-        img {
-          width: 100%;
-          height: 260px;
-          object-fit: cover;
-        }
-        .my_photo_item_text {
-          margin-top: 20px;
-          .bucketName {
-            font-weight: bold;
-            margin-bottom: 20px;
+    .my_photo_box {
+      width: 100%;
+      .my_photo_list {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: start;
+        .my_photo_item {
+          cursor: pointer;
+          width: 40%;
+          margin-left: 4%;
+          //   height: 340px;
+          //   background: #fff;
+          padding: 20px;
+          border-radius: 20px;
+          box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+          margin-top: 40px;
+          img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
           }
-          .time {
-            font-size: 24px;
-            color: #333;
+          .my_photo_item_text {
+            margin-top: 20px;
+            .bucketName {
+              font-weight: bold;
+              margin-bottom: 20px;
+            }
+            .time {
+              font-size: 24px;
+              color: #333;
+            }
           }
         }
       }
     }
   }
-}
 </style>
-  
