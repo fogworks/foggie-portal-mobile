@@ -202,128 +202,6 @@
       v-else
     ></ImgList>
 
-    <nut-popup
-      teleport-disable
-      pop-class="fileItemPopup"
-      position="bottom"
-      safe-area-inset-bottom
-      closeable
-      round
-      z-index="2000"
-      :style="{ height: 'auto', minHeight: chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0 ? '80%' : '40%' }"
-      v-model:visible="fileItemPopupIsShow"
-    >
-      <div class="fileItem_header">
-        <img v-if="(chooseItem.category == 1 || chooseItem.category == 2) && chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
-        <img v-else-if="chooseItem.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-        <img v-else-if="chooseItem.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-        <img v-else src="@/assets/svg/home/file.svg" alt="" />
-        <div class="fileItem_header_right">
-          <div style="width: 85%">{{ chooseItem.fullName }}</div>
-          <div v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
-        </div>
-      </div>
-      <div
-        class="fileItem_body"
-        :style="{
-          height: chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0 ? '500px' : chooseItem.isPin ? '345px' : '300px',
-        }"
-      >
-        <div class="optionBox">
-          <template v-if="isAvailableOrder">
-            <div @click="handlerClick('share')">
-              <IconShare color="#222224 "></IconShare>
-              <span>Share</span>
-            </div>
-            <div @click="handlerClick('rename')">
-              <IconRename color="#222224"></IconRename>
-              Rename
-            </div>
-            <div @click="handlerClick(chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'un pin')">
-              <IconIPFS color="#222224"></IconIPFS>
-              {{ chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'unpin' }}
-            </div>
-            <div @click="handlerClick('move')">
-              <IconMove :color="category != 1 || !isMobileOrder ? '#222224' : '#ffffff5c'"></IconMove>
-              Move
-            </div>
-          </template>
-
-          <div @click="handlerClick('download')">
-            <IconDownload color="#222224"></IconDownload>
-            Download
-          </div>
-        </div>
-        <div class="ipfs" v-if="chooseItem.isPin || chooseItem.cid">
-          <p v-if="chooseItem.isPin && chooseItem.cid">
-            <span>{{ handleID(`ipfs://${chooseItem.cid}`) }} </span>
-            <IconCopy color="#222224" @click="copyIPFS('ipfs', chooseItem)"></IconCopy>
-          </p>
-          <p v-if="chooseItem.cid">
-            <span> {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${chooseItem.cid}`) }} </span>
-            <IconCopy color="#222224" @click="copyIPFS('http', chooseItem)"></IconCopy>
-          </p>
-        </div>
-
-        <div class="ipfs" v-if="chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0" style="margin-top: 40px">
-          <p v-for="(nft, index) in chooseItem.nftInfoList">
-            <span> {{ handleID(`${browserUrl}/nft/${nft.getContractid()}/${nft.getTokenid()}`) }} </span>
-            <IconCopy color="#262628" @click="copyNft(nft)"></IconCopy>
-          </p>
-        </div>
-
-        <nut-button
-          v-if="isAvailableOrder"
-          block
-          type="primary"
-          style="margin-top: 40px; color: rgb(238, 10, 36)"
-          @click="handlerClick('delete')"
-        >
-          <template #icon><IconDelete /> </template>Delete</nut-button
-        >
-      </div>
-    </nut-popup>
-
-    <nut-popup
-      teleport-disable
-      pop-class="fileItemPopup"
-      position="bottom"
-      safe-area-inset-bottom
-      closeable
-      round
-      z-index="2000"
-      :style="{ height: 'auto', minHeight: '35%' }"
-      v-model:visible="fileItemDetailPopupIsShow"
-    >
-      <div class="fileItem_header">
-        <img v-if="chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
-
-        <div class="fileItem_header_right">
-          <div style="width: 85%">{{ chooseItem.fullName }}</div>
-          <div>{{ chooseItem.imageInfo?.datetime }} · {{ chooseItem.size }}</div>
-        </div>
-      </div>
-      <div class="fileItemDetail">
-        <div class="fileItemDetail_header">
-          <span>{{ chooseItem.imageInfo?.camerainfo?.model }} </span>
-          <span class="flashlamp" v-if="chooseItem.imageInfo?.Flash">
-            <FlashLight></FlashLight>
-          </span>
-        </div>
-        <div class="fileItemDetail_Body">
-          <div>{{ chooseItem.imageInfo?.resolution?.weight }} * {{ chooseItem.imageInfo?.resolution?.height }}</div>
-          <div>{{ Number(chooseItem.imageInfo?.gps?.lat).toFixed(4) }}°N {{ Number(chooseItem.imageInfo?.gps?.pb_long).toFixed(4) }}°W</div>
-        </div>
-        <div class="fileItemDetail_bottom">
-          <span>ISO {{ chooseItem.imageInfo?.iso }}</span>
-          <span> {{ chooseItem.imageInfo?.exposuretime || 0 }} ev</span>
-          <span>{{ chooseItem.imageInfo?.focallength }}</span>
-          <span>f{{ chooseItem.imageInfo?.aperture }}</span>
-          <span>{{ chooseItem.imageInfo?.exptime }} s</span>
-        </div>
-      </div>
-    </nut-popup>
-
     <!-- checkbox action -->
     <Teleport to="body">
       <nut-tabbar
@@ -373,248 +251,35 @@
         </nut-tabbar-item>
       </nut-tabbar>
     </Teleport>
+    <ActionComponent
+      v-model:fileItemPopupIsShow="fileItemPopupIsShow"
+      v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
+      v-model:renameShow="renameShow"
+      v-model:detailShow="detailShow"
+      v-model:imgStartIndex="imgStartIndex"
+      :category="category"
+      :header="header"
+      :prefix="prefix"
+      :isAvailableOrder="isAvailableOrder"
+      :chooseItem="chooseItem"
+      :images="images"
+      :imgUrl="imgUrl"
+      :isMobileOrder="isMobileOrder"
+      :isNewFolder="isNewFolder"
+      :selectArr="selectArr"
+      :bucketName="bucketName"
+      :metadata="metadata"
+      :orderInfo="orderInfo"
+      :isCheckMode="isCheckMode"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      @refresh="refresh"
+      @handlerClick="handlerClick"
+      @swipeChange="swipeChange"
+      @clickFIleItemDetail="clickFIleItemDetail"
+      @clickFIleItem="clickFIleItem"
+    ></ActionComponent>
 
-    <!-- rename / newFolder -->
-    <nut-popup
-      teleport-disable
-      v-if="renameShow"
-      @closed="
-        isNewFolder = false;
-        newName = '';
-      "
-      position="bottom"
-      closeable
-      round
-      z-index="2100"
-      :style="{ height: '90%' }"
-      v-model:visible="renameShow"
-    >
-      <div class="rename_box">
-        <!-- <IconFolder></IconFolder> -->
-        <div v-if="!isNewFolder" :class="['left_icon_box']">
-          <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
-          <IconFolder v-if="selectArr[0].isDir"></IconFolder>
-          <IconImage v-else-if="selectArr[0].category == 1"></IconImage>
-          <IconVideo v-else-if="selectArr[0].category == 2"></IconVideo>
-          <IconAudio2 v-else-if="selectArr[0].category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-          <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
-          <IconFile v-else src="@/assets/svg/home/file.svg" alt="" />
-        </div>
-        <p v-if="!isNewFolder"> {{ selectArr.length ? getOriginName(selectArr[0].name.split('/')[0]) : '' }}</p>
-        <nut-searchbar
-          v-model="newName"
-          :placeholder="isNewFolder ? 'Please Input Folder Name' : getOriginName(selectArr[0].name.split('/')[0])"
-        >
-          <template v-if="!isNewFolder" #rightin>
-            <span> {{ getEndName(selectArr[0].name.split('/')[0]) }}</span>
-          </template>
-        </nut-searchbar>
-        <nut-button type="info" block @click="confirmRename">Confirm</nut-button>
-      </div>
-    </nut-popup>
-    <!-- move -->
-
-    <nut-popup
-      teleport-disable
-      v-if="moveShow"
-      z-index="2100"
-      position="bottom"
-      closeable
-      round
-      :style="{ height: '100vh' }"
-      v-model:visible="moveShow"
-    >
-      <div class="rename_box move_box">
-        <IconFolder></IconFolder>
-        <div
-          v-if="movePrefix.length"
-          class="top_back"
-          @click="
-            movePrefix.splice(-1);
-            doSearch('', movePrefix, true);
-          "
-        >
-          <p> {{ movePrefix.length ? movePrefix.slice(-1)[0] : '' }}</p>
-        </div>
-        <nut-infinite-loading
-          load-more-txt="No more content"
-          class="file_list file_list_move"
-          v-model="infinityValue"
-          :has-more="!!continuationToken2"
-          @load-more="loadMore"
-        >
-          <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in dirData" :key="index">
-            <div :class="['left_icon_box']">
-              <IconFolder></IconFolder>
-            </div>
-            <div class="name_box">
-              <p>{{ item.name.split('/')[0] }}</p>
-              <!-- <p>{{ item.date || '' }}</p> -->
-            </div>
-          </div>
-        </nut-infinite-loading>
-        <nut-button type="info" block @click="confirmMove">Move to current folder</nut-button>
-      </div>
-    </nut-popup>
-    <!-- share -->
-    <nut-popup
-      teleport-disable
-      v-if="showShareDialog"
-      z-index="2100"
-      @closed="
-        isReady = false;
-        shareType = '';
-      "
-      position="bottom"
-      closeable
-      round
-      :style="{ height: '300px' }"
-      v-model:visible="showShareDialog"
-    >
-      <div v-if="isReady" class="rename_box move_box">
-        <nut-cell style="margin-top: 50px" title="Access Period:">
-          <template #link>
-            <span v-if="isMobileDevice" style="display: flex; align-items: center"
-              >{{ desc }}
-              <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit>
-            </span>
-            <van-dropdown-menu direction="up" v-else>
-              <van-dropdown-item v-model="periodValue" :options="options" />
-            </van-dropdown-menu>
-          </template>
-        </nut-cell>
-        <template v-if="shareType">
-          <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
-          <nut-textarea rows="3" v-model="imgDesc" />
-        </template>
-        <nut-popup position="bottom" z-index="2100" v-if="isMobileDevice" v-model:visible="periodShow">
-          <nut-picker
-            v-model="periodValue"
-            :columns="options"
-            title="Select expiration time"
-            @confirm="confirmPeriod"
-            @cancel="periodShow = false"
-          >
-          </nut-picker>
-        </nut-popup>
-
-        <nut-button type="info" block @click="() => confirmHttpShare(shareType, shareCheckData, accessKeyId, secretAccessKey, bucketName)"
-          >Confirm</nut-button
-        >
-      </div>
-      <div class="share_info_box" v-else>
-        <!-- <div v-if="shareRefContent.ipfsStr && isMobileOrder">
-          <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
-          IPFS Link
-        </div> -->
-        <div v-if="shareRefContent.httpStr">
-          <IconHttp
-            @click="
-              shareType = '';
-              isReady = true;
-            "
-          ></IconHttp>
-          HTTP Link
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconTwitter
-            @click="
-              shareType = 'twitter';
-              isReady = true;
-            "
-          ></IconTwitter>
-          Twitter
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconFacebook
-            @click="
-              shareType = 'faceBook';
-              isReady = true;
-            "
-          ></IconFacebook>
-          Facebook
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconSlack
-            @click="
-              shareType = 'slack';
-              isReady = true;
-            "
-          ></IconSlack>
-          Slack
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconPinterest
-            @click="
-              shareType = 'pinterest';
-              isReady = true;
-            "
-          ></IconPinterest>
-          Pinterest
-        </div>
-      </div>
-    </nut-popup>
-    <Teleport to="body">
-      <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
-        <div class="detail_top" v-if="chooseItem.category !== 1 && !imgUrl">
-          <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-          <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
-        </div>
-        <HLSVideo v-if="chooseItem.category == 2" :imgUrl="imgUrl"></HLSVideo>
-        <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
-        <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
-        <div v-else-if="imgUrl" class="middle_img">
-          <van-image-preview
-            ref="imgPreRef"
-            v-model:show="detailShow"
-            :start-position="imgStartIndex"
-            :closeOnClickOverlay="false"
-            :images="images"
-            @change="swipeChange"
-          >
-            <!-- <template #index>
-              <span> {{ imgStartIndex + 1 }}/{{ images.length }} </span>
-            </template> -->
-            <template #cover>
-              <div class="detail_top">
-                <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-                <div>
-                  <Tips
-                    v-if="chooseItem.isShowDetail"
-                    @click="clickFIleItemDetail(chooseItem)"
-                    class="detail_back"
-                    width="22px"
-                    style="margin-right: 10px"
-                    color="#fff"
-                  />
-                  <IconMore @click="clickFIleItem(chooseItem)" class="detail_back" color="#fff"></IconMore>
-                </div>
-              </div>
-              <div class="bottom_action">
-                <div v-if="isAvailableOrder">
-                  <IconShare @click="handlerClick('share')"></IconShare>
-                  <p>Share</p>
-                </div>
-                <div>
-                  <IconDownload @click="handlerClick('download')"></IconDownload>
-                  <p>Download</p>
-                </div>
-              </div>
-            </template>
-          </van-image-preview>
-        </div>
-        <div class="bottom_action">
-          <div v-if="isAvailableOrder">
-            <IconShare @click="handlerClick('share')"></IconShare>
-            <p>Share</p>
-          </div>
-          <div>
-            <IconDownload @click="handlerClick('download')"></IconDownload>
-            <p>Download</p>
-          </div>
-        </div>
-      </nut-overlay>
-    </Teleport>
     <uploader
       v-if="isMobileOrder && isAvailableOrder"
       :isMobileOrder="isMobileOrder"
@@ -656,6 +321,7 @@
 </template>
 
 <script setup lang="ts">
+  import ActionComponent from './actionComponent.vue';
   import IconCopy from '~icons/home/copy.svg';
   import IconBucket from '~icons/home/bucket.svg';
   import IconHttp2 from '~icons/home/http2.svg';
@@ -892,7 +558,6 @@
     tableLoading,
     () => {
       checkedItem.value = [];
-      doSearch('', prefix.value, true);
     },
     orderInfo,
     header,
@@ -1415,7 +1080,7 @@
       //   loadingRotate: false,
       //   id: 'file_list',
       //   coverColor: 'rgba(0,0,0,0.45)',
-
+      id: 'file_list',
       cover: true,
       coverColor: 'rgba(0,0,0,0.45)',
       customClass: 'app_loading',
@@ -2837,138 +2502,70 @@
   .row_is_checked {
     background: #cde3f5;
   }
-  .rename_box {
-    margin-top: 40px;
-    padding: 0 40px;
-    :deep {
-      .nut-cell {
-        padding-left: 0;
-        padding-right: 0;
-        box-shadow: none;
-      }
-      .nut-textarea {
-        padding-left: 0;
-        padding-right: 0;
-      }
-    }
-    p {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    svg {
-      display: block;
-      margin: 0 auto;
-    }
-    :deep {
-      .nut-searchbar {
-        padding: 20px 0;
-      }
-      .nut-button {
-        margin-top: 40px;
-      }
-    }
-  }
-  .move_box {
-    .top_back {
-      margin-bottom: 10px;
-      p {
-        margin: 0 5px;
-        color: #000;
-      }
-    }
-    .file_list {
-      height: 600px;
-      overflow-y: auto;
-      .list_item {
-        width: 100%;
-        box-sizing: border-box;
-      }
-      .left_icon_box {
-        width: 80px;
-        height: 80px;
-        svg {
-          width: 100px;
-          height: 100px;
-        }
-      }
-      .name_box {
-        p {
-          text-align: right;
-          margin: 0;
-          font-size: 30px;
-        }
-      }
-    }
-  }
-  .share_info_box {
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-top: 100px;
-    div {
-      min-width: 240px;
-      margin-top: 20px;
-      text-align: center;
-      color: $main_blue;
-      img,
-      svg {
-        display: block;
-        margin: 0 auto;
-        width: 80px;
-        height: 80px;
-      }
-    }
-  }
-  .custom-content {
-    width: 100%;
-    p {
-      padding: 30px 20px;
-      color: #909090;
-      border-bottom: 1px solid #eee;
-      svg,
-      img {
-        width: 60px;
-        height: 60px;
-        margin-right: 20px;
-        vertical-align: middle;
-      }
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      li {
-        padding: 20px 20px;
-        &:not(:last-child) {
-          border-bottom: 1px dotted #e5e5e5;
-        }
-        svg,
-        img {
-          width: 40px;
-          height: 40px;
-          margin-right: 15px;
-          vertical-align: text-bottom;
-        }
-        &:active {
-          background: #cde3f5;
-        }
-      }
-      .is-disable {
-        color: #ccc;
-      }
-    }
-    .delete_item {
-      color: red;
-    }
-    .cancel_btn {
-      padding: 20px;
-      background-color: #f7f7f7;
-      color: #000;
-      text-align: center;
-      font-size: 35px;
-    }
-  }
+  // .rename_box {
+  //   margin-top: 40px;
+  //   padding: 0 40px;
+  //   :deep {
+  //     .nut-cell {
+  //       padding-left: 0;
+  //       padding-right: 0;
+  //       box-shadow: none;
+  //     }
+  //     .nut-textarea {
+  //       padding-left: 0;
+  //       padding-right: 0;
+  //     }
+  //   }
+  //   p {
+  //     text-align: center;
+  //     margin-bottom: 30px;
+  //   }
+  //   svg {
+  //     display: block;
+  //     margin: 0 auto;
+  //   }
+  //   :deep {
+  //     .nut-searchbar {
+  //       padding: 20px 0;
+  //     }
+  //     .nut-button {
+  //       margin-top: 40px;
+  //     }
+  //   }
+  // }
+  // .move_box {
+  //   .top_back {
+  //     margin-bottom: 10px;
+  //     p {
+  //       margin: 0 5px;
+  //       color: #000;
+  //     }
+  //   }
+  //   .file_list {
+  //     height: 600px;
+  //     overflow-y: auto;
+  //     .list_item {
+  //       width: 100%;
+  //       box-sizing: border-box;
+  //     }
+  //     .left_icon_box {
+  //       width: 80px;
+  //       height: 80px;
+  //       svg {
+  //         width: 100px;
+  //         height: 100px;
+  //       }
+  //     }
+  //     .name_box {
+  //       p {
+  //         text-align: right;
+  //         margin: 0;
+  //         font-size: 30px;
+  //       }
+  //     }
+  //   }
+  // }
+
   @media screen and (min-width: 500px) {
     #txtContainer {
       color: #fff;

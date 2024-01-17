@@ -165,171 +165,34 @@
       </template>
       <nut-empty v-else style="padding: 10px 0 50px 0" description="No data,Go ahead and upload it." image="error"> </nut-empty>
       <p class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></p>
-
-      <Teleport to="body">
-        <nut-overlay overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
-          <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-          <HLSVideo v-if="detailRow.value.category == 2" :imgUrl="imgUrl"></HLSVideo>
-          <pre v-else-if="detailRow.value.detailType == 'txt'" id="txtContainer"></pre>
-          <MyAudio v-else-if="detailRow.value.category == 3" :audioUrl="detailRow.value.imgUrl"></MyAudio>
-          <div v-else-if="imgUrl" class="middle_img">
-            <van-image-preview
-              ref="imgPreRef"
-              v-model:show="detailShow"
-              :closeOnClickOverlay="false"
-              :images="images"
-              @change="swipeChange"
-            >
-              <template #index>
-                <span> {{ imgStartIndex + 1 }}/{{ images.length }} </span>
-              </template>
-              <template #cover>
-                <div class="detail_top">
-                  <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-                </div>
-                <div class="bottom_action">
-                  <div v-if="isAvailableOrder">
-                    <IconShare @click="handlerClick('share')"></IconShare>
-                    <p>Share</p>
-                  </div>
-                  <div>
-                    <IconDownload @click="handlerClick('download')"></IconDownload>
-                    <p>Download</p>
-                  </div>
-                </div>
-              </template>
-            </van-image-preview>
-          </div>
-          <div class="bottom_action">
-            <div v-if="isAvailableOrder">
-              <IconShare @click="handlerClick('share')"></IconShare>
-              <p>Share</p>
-            </div>
-            <div>
-              <IconDownload @click="handlerClick('download')"></IconDownload>
-              <p>Download</p>
-            </div>
-          </div>
-        </nut-overlay>
-      </Teleport>
-
-      <!-- share -->
-      <Teleport to="body">
-        <nut-popup
-          v-if="showShareDialog"
-          @closed="
-            isReady = false;
-            shareType = '';
-          "
-          position="bottom"
-          closeable
-          round
-          :style="{ height: httpCopyLink ? '150px' : '300px' }"
-          v-model:visible="showShareDialog"
-        >
-          <!-- <div style="display: flex; align-items: center; justify-content: center; height: 100%" v-if="httpCopyLink">
-          <span>
-            {{ httpCopyLink.substring(0, 30) + '...' }}
-          </span>
-          <IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
-        </div> -->
-          <div v-if="isReady" class="rename_box move_box">
-            <nut-cell style="margin-top: 50px" title="Access Period:">
-              <template #link>
-                <span style="display: flex" v-if="isMobileDevice"
-                  >{{ desc }} <IconEdit id="editIcon" style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
-                ></span>
-                <van-dropdown-menu class="" direction="up" v-else>
-                  <van-dropdown-item class="timeSelect" v-model="periodValue" :options="options" />
-                </van-dropdown-menu>
-              </template>
-            </nut-cell>
-            <template v-if="shareType">
-              <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
-              <nut-textarea rows="3" v-model="imgDesc" />
-            </template>
-            <nut-popup position="bottom" v-if="isMobileDevice" v-model:visible="periodShow">
-              <nut-picker
-                v-model="periodValue"
-                :columns="options"
-                title="Select expiration time"
-                @confirm="confirmPeriod"
-                @cancel="periodShow = false"
-              >
-              </nut-picker>
-            </nut-popup>
-            <nut-popover
-              v-else
-              v-model:visible="periodShow"
-              :list="options"
-              location="top-start"
-              targetId="editIcon"
-              @choose="confirmPeriod"
-            >
-            </nut-popover>
-            <nut-button
-              type="info"
-              block
-              @click="() => confirmHttpShare(shareType, detailRow.value, accessKeyId, secretAccessKey, bucketName)"
-              >Confirm</nut-button
-            >
-          </div>
-          <div class="share_info_box" v-else>
-            <!-- <div v-if="shareRefContent.ipfsStr && +detailRow.value.originalSize <= orderInfo.value.total_space * 0.01">
-              <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
-              IPFS Link
-            </div> -->
-            <div v-if="shareRefContent.httpStr">
-              <IconHttp
-                @click="
-                  shareType = '';
-                  isReady = true;
-                "
-              ></IconHttp>
-              HTTP Link
-              <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-            </div>
-            <div v-if="shareRefContent.httpStr">
-              <IconTwitter
-                @click="
-                  shareType = 'twitter';
-                  isReady = true;
-                "
-              ></IconTwitter>
-              Twitter
-              <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-            </div>
-            <div v-if="shareRefContent.httpStr">
-              <IconFacebook
-                @click="
-                  shareType = 'faceBook';
-                  isReady = true;
-                "
-              ></IconFacebook>
-              Facebook
-              <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-            </div>
-            <div v-if="shareRefContent.httpStr">
-              <IconSlack
-                @click="
-                  shareType = 'slack';
-                  isReady = true;
-                "
-              ></IconSlack>
-              Slack
-            </div>
-            <div v-if="shareRefContent.httpStr">
-              <IconPinterest
-                @click="
-                  shareType = 'pinterest';
-                  isReady = true;
-                "
-              ></IconPinterest>
-              Pinterest
-            </div>
-          </div>
-        </nut-popup>
-      </Teleport>
+      <ActionComponent
+        v-model:fileItemPopupIsShow="fileItemPopupIsShow"
+        v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
+        v-model:renameShow="renameShow"
+        v-model:detailShow="detailShow"
+        v-model:imgStartIndex="imgStartIndex"
+        :category="0"
+        :header="header"
+        :prefix="[]"
+        :isAvailableOrder="isAvailableOrder"
+        :chooseItem="detailRow.value"
+        :images="images"
+        :imgUrl="imgUrl"
+        :isMobileOrder="isMobileOrder"
+        :isNewFolder="false"
+        :selectArr="selectArr"
+        :bucketName="bucketName"
+        :metadata="metadata"
+        :orderInfo="orderInfo"
+        :isCheckMode="false"
+        :accessKeyId="accessKeyId"
+        :secretAccessKey="secretAccessKey"
+        @refresh="refresh"
+        @handlerClick="handlerClick"
+        @swipeChange="swipeChange"
+        @clickFIleItemDetail="clickFIleItemDetail"
+        @clickFIleItem="clickFIleItem"
+      ></ActionComponent>
 
       <Teleport to="body">
         <nut-dialog
@@ -412,6 +275,7 @@
 </template>
 
 <script setup lang="ts">
+  import ActionComponent from './actionComponent.vue';
   import { Loading } from '@nutui/icons-vue';
   import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
@@ -465,6 +329,7 @@
   import { getSecondTime, getType } from '@/utils/util';
   import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
   import ErrorPage from '@/views/errorPage/index.vue';
+  import useDelete from './useDelete.js';
   // import { status } from 'grpc';
   import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
@@ -515,7 +380,11 @@
     copyContent,
     confirmHttpShare,
     getHttpShare,
-  } = useShare(orderInfo, header, deviceType);
+    cloudPin,
+    copyIPFS,
+    copyNft,
+  } = useShare(orderInfo, header, deviceType, metadata);
+
   let server;
   const route = useRoute();
   const router = useRouter();
@@ -556,12 +425,17 @@
   const btnLoading = ref<boolean>(false);
   const formData = ref<any>({});
 
-  const imgStartIndex = ref(0);
   const memo = ref<any>('');
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
   const minerIp = ref<string>('');
   const income = ref(0);
+  const fileItemPopupIsShow = ref(false);
+  const fileItemDetailPopupIsShow = ref(false);
+  const renameShow = ref(false);
+  const detailShow = ref(false);
+  const imgStartIndex = ref(false);
+
   const images = computed(() => {
     let arr = [];
     imgData.value.filter((el) => {
@@ -569,9 +443,30 @@
     });
     return arr;
   });
+  const selectArr = computed(() => {
+    return [detailRow.value];
+  });
+  const { deleteItem } = useDelete(
+    tableLoading,
+    () => {
+      refresh();
+    },
+    orderInfo,
+    header,
+    metadata,
+  );
   function swipeChange(index) {
     imgStartIndex.value = index;
     detailRow.value = imgData.value[index];
+  }
+  function clickFIleItem(params) {
+    detailRow.value = params;
+    fileItemPopupIsShow.value = true;
+  }
+
+  function clickFIleItemDetail(params) {
+    console.log(params);
+    fileItemDetailPopupIsShow.value = true;
   }
   // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
   // order_id.value = '1281';
@@ -679,7 +574,6 @@
     });
   };
 
-  const detailShow = ref(false);
   const imgUrl = ref('');
   const detailRow = reactive({ value: {} });
 
@@ -726,10 +620,9 @@
       imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
       detailShow.value = true;
       nextTick(() => {
-        console.log(imgPreRef.value, 'imgPreRef.value');
-
-        imgPreRef.value.swipeTo(imgStartIndex.value);
-        console.log(imgPreRef.value, 'imgPreRef.value');
+        if (imgPreRef.value) {
+          imgPreRef.value.swipeTo(imgStartIndex.value);
+        }
       });
     } else {
       let prefix;
@@ -820,6 +713,56 @@
       }
     } else if (type === 'share') {
       await doShare(checkData);
+    } else if (type == 'rename') {
+      renameShow.value = true;
+    } else if (type === 'delete') {
+      const onOk = async () => {
+        deleteItem([checkData]);
+        fileItemPopupIsShow.value = false;
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to delete?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+        onOk,
+      });
+    } else if (type == 'nft') {
+      createNFT(checkData, accessKeyId.value, secretAccessKey.value, bucketName.value);
+    } else if (type === 'pin') {
+      const onOk = async () => {
+        await cloudPin(checkData, 'ipfs');
+        // doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS PIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        onOk,
+      });
+    } else if (type === 'un pin') {
+      const onOk = async () => {
+        const d = await cloudPin(checkData, 'ipfs', 'unpin');
+        if (d) {
+          tableData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+        }
+        // doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS UNPIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+
+        onOk,
+      });
     }
   };
   const syncImgList = ref([]);
@@ -1396,7 +1339,7 @@
         checked: false,
         name,
         category: data.content[j].category,
-        fileType: data.content[j].contentType,
+        fileType: 2,
         fullName: data.content[j].key,
         key: data.content[j].key,
         idList: [
@@ -1470,6 +1413,7 @@
     });
   };
   const refresh = async () => {
+    detailShow.value = false;
     await getOrderInfo();
     getFileList();
     getSummary();

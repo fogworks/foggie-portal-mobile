@@ -65,7 +65,7 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
         //   }
         // }
         nextTick(() => {
-          // refresh();
+          refresh();
         });
       } else {
         console.log(err);
