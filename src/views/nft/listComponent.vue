@@ -260,6 +260,7 @@
         margin: 0 auto;
         border-radius: 30px;
         overflow: hidden;
+        border: 2px solid rgba(76, 80, 147, 0.1607843137);
         img {
           width: 100%;
           height: 100%;
