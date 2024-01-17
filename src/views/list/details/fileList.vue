@@ -564,7 +564,14 @@
         <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
         <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
         <div v-else-if="imgUrl" class="middle_img">
-          <van-image-preview ref="imgPreRef" v-model:show="detailShow" :closeOnClickOverlay="false" :images="images" @change="swipeChange">
+          <van-image-preview
+            ref="imgPreRef"
+            v-model:show="detailShow"
+            :start-position="imgStartIndex"
+            :closeOnClickOverlay="false"
+            :images="images"
+            @change="swipeChange"
+          >
             <!-- <template #index>
               <span> {{ imgStartIndex + 1 }}/{{ images.length }} </span>
             </template> -->
@@ -1042,9 +1049,10 @@
         imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
         detailShow.value = true;
         nextTick(() => {
-          console.log(imgPreRef.value, 'imgPreRef.value');
+          console.log(imgStartIndex.value, 'imgStartIndex.value');
 
           imgPreRef.value.swipeTo(imgStartIndex.value);
+          console.log(imgPreRef.value.startPosition, 'startPosition.value');
           console.log(imgPreRef.value, 'imgPreRef.value');
         });
       }
