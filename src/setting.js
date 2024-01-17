@@ -14,7 +14,7 @@ export const browserUrl = 'https://mumbai.polygonscan.com';
 // export const poolUrl = "us1.vofocorp.com";
 // export const ambAddress = 'https://grey.ambadmin.fogworks.io';
 // export const redirectUrl = 'https://grey.m.fogworks.io/';
-// export const dappUrl = 'https://dapp.u2i.net/';
+// export const dappUrl = 'https://grey.dapp.fogworks.io/';
 // export const browserUrl = 'https://polygonscan.com';
 
 // export const shareUrl = "https://share.fogworks.io";
@@ -22,5 +22,5 @@ export const browserUrl = 'https://mumbai.polygonscan.com';
 // export const poolUrl = "us1.vofocorp.com";
 // export const ambAddress = 'https://ambadmin.fogworks.io';
 // export const redirectUrl = 'https://m.fogworks.io/';
-// export const dappUrl = 'https://dapp.u2i.net/';
+// export const dappUrl = 'https://dapp.fogworks.io/';
 // export const browserUrl = 'https://polygonscan.com';
