@@ -3,20 +3,8 @@
   --van-font-size-md: 1.5rem;
   --van-dropdown-menu-height: 2rem;
   .van-popup {
-    // background: transparent;
-    // width: 250px;
+    background: transparent;
+    max-width: 750px;
     -webkit-tap-highlight-color: #ccc;
-  } // .nut-toast {
-  //   position: fixed;
-  //   top: 0;
-  //   bottom: 0;
-  //   left: 0;
-  //   right: 0;
-  // }
-  .van-popup--center {
-    --van-padding-md: 0;
-  }
-  .van-image-preview__index {
-    top: 1rem;
   }
 }

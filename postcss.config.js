@@ -24,9 +24,21 @@ module.exports = {
       include: [],
       exclude: [], // 设置忽略文件，用正则做目录名匹配
       customFun: ({ file }) => {
-        // 这个自定义的方法是针对处理vant组件下的设计稿为375问题
-        const designWidth = judgeComponent(file) ? 375 : 750;
-        return designWidth;
+        if (['vant', '@nutui', '@varlet'].some((item) => path.join(file).includes(path.join('node_modules', item)))) {
+          return 375;
+        } else if (['element-plus'].some((item) => path.join(file).includes(path.join('node_modules', item)))) {
+          return 1640;
+        } else {
+          if (typeof window !== 'undefined') {
+            const userAgent = window.navigator.userAgent || window.navigator.vendor || window.opera;
+            // 此正则表达式涵盖了大多数使用的手机和平板设备
+            const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+
+            return isMobileDevice ? 750 : 1640;
+          } else {
+            return 750;
+          }
+        }
       },
     },
   },
