@@ -565,7 +565,7 @@
     cloudPin,
     copyIPFS,
     copyNft,
-  } = useShare(orderInfo, header, deviceType, metadata);
+  } = useShare(orderInfo.value, header, deviceType, metadata);
   const shareCheckData = computed(() => {
     let checkData = [];
     if (detailShow.value) {
