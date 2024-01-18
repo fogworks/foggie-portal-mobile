@@ -14,7 +14,6 @@ import { poolUrl } from '@/setting.js';
 import loadingImg from '@/components/loadingImg/index.vue';
 import { browserUrl } from '@/setting';
 // import useOrderInfo from './useOrderInfo.js';
-// const { metadata } = useOrderInfo();
 
 export default function useShare(orderInfo, header, deviceType, metadata) {
   const userStore = useUserStore();

@@ -8,7 +8,7 @@ import useOrderInfo from './useOrderInfo.js';
 import { poolUrl } from '@/setting.js';
 
 // import { isCloudCanUpload_Api } from '@/api/upload';
-// const { bucketName, metadata } = useOrderInfo();
+
 export default function useDelete(tableLoading, refresh, orderInfo, header, metadata) {
   const deleteItem = (item) => {
     tableLoading.value = true;

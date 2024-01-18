@@ -549,7 +549,7 @@
     },
     { deep: true, immediate: true },
   );
-  const deviceType = computed(() => orderInfo.value.device_type);
+  const deviceType = computed(() => orderInfo.value.value.device_type);
   const {
     httpCopyLink,
     copyLink,
