@@ -594,14 +594,11 @@
       window.sessionStorage.removeItem('myHistoryOrder');
       window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(row));
       router.push({
-        name: 'orderSummary',
+        name: 'listDetails',
         query: {
           id: row.order_id,
-          type: 'history',
-          status: row.order_info.state,
-          createdTime: transferUTCTime(row.order_created_at),
-          endTime: row.expire ? transferUTCTime(row.expire) : '- -',
-          uuid: row.order_info.uuid,
+          uuid: row.order_info && row.order_info.uuid,
+          amb_uuid: row.amb_uuid,
         },
       });
     } else {
