@@ -421,6 +421,7 @@
   import { poolUrl } from '@/setting.js';
   import { get_order_sign } from '@/api/index';
   import { browserUrl } from '@/setting';
+  const { getOrderInfo } = useOrderInfo();
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
@@ -476,6 +477,7 @@
     continuationToken2: '',
     detailShow1: false,
     infinityValue: false,
+    imgPreRef: '',
   });
   const {
     prefix,
@@ -501,6 +503,7 @@
     selectArr,
   } = toRefs(props);
   const {
+    imgPreRef,
     infinityValue,
     dirData,
     currentFolder,
@@ -538,6 +541,11 @@
     detailShow,
     (val) => {
       detailShow1.value = val;
+      nextTick(() => {
+        if (imgPreRef.value) {
+          imgPreRef.value.swipeTo(imgStartIndex.value);
+        }
+      });
     },
     { deep: true, immediate: true },
   );
@@ -661,6 +669,7 @@
       //   id: 'file_list',
       //   coverColor: 'rgba(0,0,0,0.45)',
 
+      id: 'file_list',
       cover: true,
       coverColor: 'rgba(0,0,0,0.45)',
       customClass: 'app_loading',
@@ -834,9 +843,9 @@
         dirData.value = [];
       }
     }
-    // if (!accessKeyId.value) {
-    //   await getOrderInfo();
-    // }
+    if (!accessKeyId.value) {
+      await getOrderInfo();
+    }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
       if (data.prefix) {

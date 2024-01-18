@@ -41,7 +41,7 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
     ProxDeleteObjectRequest.setObjectType('normal');
     ProxDeleteObjectRequest.setPrefixesList(prefixes);
     let ProxDeleteObjectReq = new Prox.default.ProxDeleteObjectReq();
-    ProxDeleteObjectReq.setHeader(header);
+    ProxDeleteObjectReq.setHeader(header.value);
     ProxDeleteObjectReq.setRequest(ProxDeleteObjectRequest);
     // let ip = orderInfo.value.rpc.split(':')[0];
     // let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);

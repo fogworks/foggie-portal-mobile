@@ -154,7 +154,7 @@
         server = new grpcService.default.ServiceClient(ip, null, null);
 
         let ProxTimeLine = new Prox.default.ProxTimeLine();
-        ProxTimeLine.setHeader(header);
+        ProxTimeLine.setHeader(header.value);
         ProxTimeLine.setInterval(interval);
         ProxTimeLine.setDate(date);
         ProxTimeLine.setCategory(1);
@@ -246,7 +246,7 @@
     listObject.setCategory(1);
     listObject.setDate(date);
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
     server.listObjects(requestReq, metadata.value, (err, res) => {
       if (res) {

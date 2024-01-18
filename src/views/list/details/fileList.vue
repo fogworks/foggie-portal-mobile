@@ -777,7 +777,7 @@
       let ip = `https://${bucketName.value}.${poolUrl}:7007`;
       server = new grpcService.default.ServiceClient(ip, null, null);
       let ProxRenameObject = new Prox.default.ProxRenameObject();
-      ProxRenameObject.setHeader(header);
+      ProxRenameObject.setHeader(header.value);
       ProxRenameObject.setSourceobject(encodeURIComponent(checkData[index].fullName));
       ProxRenameObject.setTargetobject(encodeURIComponent(targetObject(checkData[index])));
       ProxRenameObject.setFiletype(checkData[index].fileType);
@@ -883,7 +883,7 @@
 
     if (isNewFolder.value) {
       let ProxFileInfo = new Prox.default.ProxFileInfo();
-      ProxFileInfo.setHeader(header);
+      ProxFileInfo.setHeader(header.value);
       ProxFileInfo.setKey(targetObject());
       ProxFileInfo.setContenttype('application/x-directory');
       ProxFileInfo.setSize(0);
@@ -902,7 +902,7 @@
       });
     } else {
       let ProxRenameObject = new Prox.default.ProxRenameObject();
-      ProxRenameObject.setHeader(header);
+      ProxRenameObject.setHeader(header.value);
       ProxRenameObject.setSourceobject(encodeURIComponent(checkData[0].fullName));
       ProxRenameObject.setTargetobject(targetObject());
       ProxRenameObject.setFiletype(checkData[0].fileType);
@@ -1126,7 +1126,7 @@
     listObject.setCategory(categoryParam);
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     // console.log('list-object--header', header, metadata.value);
     // console.log('listObjectlistObject', listObject);
     requestReq.setRequest(listObject);
@@ -1512,7 +1512,7 @@
         server = new grpcService.default.ServiceClient(ip, null, null);
 
         let ProxFindRequest = new Prox.default.ProxFindRequest();
-        ProxFindRequest.setHeader(header);
+        ProxFindRequest.setHeader(header.value);
         ProxFindRequest.setCid('');
         ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
         ProxFindRequest.setFileid('');
@@ -1618,6 +1618,7 @@
         if (!orderInfo?.value?.id) {
           await getOrderInfo();
         }
+        console.log(category.value, 'categorycategorycategory');
         doSearch('', prefix.value, true);
       }
     },
@@ -1638,6 +1639,8 @@
     }
     let category1 = route.query.category || '0';
     await getOrderInfo();
+    console.log(category1, 'category1category1');
+
     switchType(category1);
 
     initWebSocket();

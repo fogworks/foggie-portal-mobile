@@ -1165,7 +1165,7 @@
     listObject.setCategory(0);
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
@@ -1244,7 +1244,7 @@
       },
     );
   }
-  const initRemoteData = (
+  const initRemoteData = async (
     data: {
       commonPrefixes?: any;
       content: any;
@@ -1269,6 +1269,9 @@
     let dir = [].join('/');
     if (reset) {
       tableData.value = [];
+    }
+    if (!accessKeyId.value) {
+      await getOrderInfo();
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
@@ -1399,7 +1402,7 @@
         id: order_id,
         status: state,
         createdTime: transferUTCTime(orderInfo.value.order_created_at),
-        endTime: transferUTCTime(orderInfo.value.expire),
+        endTime: orderInfo.value.expire ? transferUTCTime(orderInfo.value.expire) : '- -',
         uuid: orderInfo.value.uuid,
         amb_uuid: orderInfo.value.amb_uuid,
         domain: orderInfo.value.domain,
