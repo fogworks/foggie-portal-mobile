@@ -356,15 +356,29 @@
     return check_wallet({ address, wallet_type })
       .then(async (res) => {
         if (res.data.register || res.data.bind) {
-          await getNonce(address, 'metamask');
-          signMetaMessage([address], nonce.value);
+          try {
+            await getNonce(address, 'metamask');
+            await signMetaMessage([address], nonce.value);
+          } catch {
+            showToast.hide('login');
+          }
         } else {
-          wallet_register({ address, wallet_type }).then(async (res) => {
-            if (res.code == 200) {
-              await getNonce(address, 'metamask');
-              signMetaMessage([address], nonce.value);
-            }
-          });
+          wallet_register({ address, wallet_type })
+            .then(async (res) => {
+              if (res.code == 200) {
+                try {
+                  await getNonce(address, 'metamask');
+                  await signMetaMessage([address], nonce.value);
+                } catch {
+                  showToast.hide('login');
+                }
+              } else {
+                showToast.hide('login');
+              }
+            })
+            .catch(() => {
+              showToast.hide('login');
+            });
         }
       })
       .catch(() => {

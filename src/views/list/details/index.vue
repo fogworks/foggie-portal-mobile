@@ -458,10 +458,16 @@
   function swipeChange(index) {
     imgStartIndex.value = index;
     detailRow.value = imgData.value[index];
+    if (detailRow.value.originalSize > 1024 * 1024 * 20) {
+      showToast.text('The image is too large, please download and view');
+    }
   }
   function clickFIleItem(params) {
     detailRow.value = params;
     fileItemPopupIsShow.value = true;
+    if (detailRow.value.originalSize > 1024 * 1024 * 20) {
+      showToast.text('The image is too large, please download and view');
+    }
   }
 
   function clickFIleItemDetail(params) {

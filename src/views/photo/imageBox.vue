@@ -55,7 +55,7 @@
             <span>{{ item.time }}</span>
           </p>
           <div class="photo_image_listS" v-if="item.list.length">
-            <div :class="['img-item']" v-for="(img, index2) in item.list" @click="openImage(index2)" class="photo_image_listItem">
+            <div :class="['img-item']" v-for="(img, index2) in item.list" @click="openImage(img)" class="photo_image_listItem">
               <nut-image
                 :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
                 fit="cover"
@@ -86,12 +86,7 @@
             <span>{{ currentTimeList.time }}</span>
           </p>
           <div class="photo_image_listS">
-            <div
-              :class="['img-item']"
-              v-for="(img, index2) in currentTimeList.list"
-              @click="openImage(index2)"
-              class="photo_image_listItem"
-            >
+            <div :class="['img-item']" v-for="(img, index2) in currentTimeList.list" @click="openImage(img)" class="photo_image_listItem">
               <nut-image
                 :class="[isCheckMode && itemChecked(img.cid, currentTimeList.dateId) ? 'imageItemChecked' : '']"
                 fit="cover"
@@ -123,7 +118,7 @@
           </p>
           <div class="photo_image_listS">
             <nut-steps direction="vertical" :current="1">
-              <nut-step :title="img.fullName" v-for="(img, index2) in item.list" @click="openImage(index2)">
+              <nut-step :title="img.fullName" v-for="(img, index2) in item.list" @click="openImage(img)">
                 <template #content>
                   <span>{{ img.date }}</span>
                   <nut-image
@@ -150,22 +145,23 @@
 
     <!-- preview -->
     <Teleport to="body">
-      <nut-overlay v-if="imgDetailShow" overlay-class="photo_detail_prev" v-model:visible="imgDetailShow" :close-on-click-overlay="false">
+      <nut-overlay overlay-class="photo_detail_prev" v-model:visible="imgDetailShow" :close-on-click-overlay="false">
         <!-- <div class="detail_top">
           <IconArrowLeft @click="imgDetailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
           <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
         </div> -->
         <div class="middle_img">
           <van-image-preview
+            ref="imgPreRef"
             v-model:show="imgDetailShow"
             :closeOnClickOverlay="false"
             :start-position="imgStartIndex"
             :images="images"
             @change="swipeChange"
           >
-            <template #index>
+            <!-- <template #index>
               <span> {{ imgStartIndex + 1 }}/{{ images.length }} </span>
-            </template>
+            </template> -->
             <template #cover>
               <div class="detail_top">
                 <IconArrowLeft @click="imgDetailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
@@ -306,7 +302,7 @@
   const dateTimeLine = ref([]);
   const continuationToken = ref('');
   const tableData = ref([]);
-
+  const imgPreRef = ref('');
   const imgDetailShow = ref(false);
   const imgStartIndex = ref(0);
   const imgArray = ref([]);
@@ -370,7 +366,7 @@
         server = new grpcService.default.ServiceClient(ip, null, null);
 
         let ProxTimeLine = new Prox.default.ProxTimeLine();
-        ProxTimeLine.setHeader(header);
+        ProxTimeLine.setHeader(header.value);
         ProxTimeLine.setInterval(interval);
         ProxTimeLine.setDate(date);
         ProxTimeLine.setCategory(1);
@@ -460,7 +456,7 @@
     listObject.setCategory(1);
     listObject.setDate(date);
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
     server.listObjects(requestReq, metadata.value, (err, res) => {
       if (res) {
@@ -613,9 +609,15 @@
   function swipeChange(index) {
     chooseItem.value = imgArray.value[index];
   }
-  const openImage = (index) => {
+  const openImage = (item) => {
+    const index = imgArray.value.findIndex((el) => el.fullName == item.fullName);
     imgStartIndex.value = index;
     imgDetailShow.value = true;
+    nextTick(() => {
+      if (imgPreRef.value) {
+        imgPreRef.value.swipeTo(imgStartIndex.value);
+      }
+    });
   };
 
   const showAction = (item) => {
