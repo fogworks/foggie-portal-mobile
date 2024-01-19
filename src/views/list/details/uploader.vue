@@ -14,8 +14,10 @@
       @progress="onProgress"
       @start="onStart"
       @failure="onFailure"
+      @change="onChange"
       ref="uploadRef"
       class="upload_class"
+      multiple
     >
       <nut-button type="info" class="upload_btn" size="small">
         +
@@ -80,6 +82,8 @@
   const props = defineProps<Props>();
   const { bucketName, prefix, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
 
+  const uploadList = ref<any[]>([]);
+
   // const props = defineProps({
   //   bucketName: [String],
   //   accessKeyId: [String],
@@ -114,7 +118,6 @@
     };
     return valid_upload(d).then((res) => {
       if (res?.data) {
-        // TODO
         isDisabled.value = false;
         clearTimeout(merkleTimeOut);
       } else {
@@ -135,24 +138,55 @@
         return reject(false);
       }
 
-      let prefixStr = '';
-      if (prefix?.length > 0) {
-        prefixStr = prefix.join('/') + '/';
+      let fileArr: any = [];
+
+      for (let i = 0; i < file.length; i++) {
+        
+
+        let fileCopy = file[i];
+        if (fileCopy.name == 'image.jpg') {
+          const timestamp = Date.now();
+          const newFileName = `image_${timestamp}.jpg`;
+
+          // 创建一个新的 Blob 对象
+          const blob = new Blob([fileCopy], { type: fileCopy.type });
+
+          // 使用新文件名创建一个新的文件对象
+          fileCopy = new File([blob], newFileName, { type: fileCopy.type });
+        }
+
+        // uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
+
+        // const policy = {
+        //   expiration: new Date(Date.now() + 3600 * 1000),
+        //   conditions: [
+        //     { bucket: bucketName },
+        //     { acl: 'public-read' },
+        //     ['starts-with', fileCopy, prefixStr],
+        //     ['starts-with', '$Content-Type', ''],
+        //   ],
+        // };
+        // const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
+
+        // let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
+        // const signature = enc.Base64.stringify(hmac);
+        // const md5Hash = await calculateMD5(fileCopy);
+        // const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+
+        // formData.value = {
+        //   Key: encodeURIComponent(prefixStr + fileCopy.name),
+        //   Policy: policyBase64,
+        //   Signature: signature,
+        //   Awsaccesskeyid: accessKeyId,
+        //   category: getType(fileCopy.name),
+        //   'Content-Md5': md5Hash,
+        //   'App-Type': appType,
+        // };
+        uploadList.value.push(fileCopy);
+        fileArr.push(fileCopy);
       }
 
-      console.log('prefixStr-------------', prefixStr, '-------------------', prefix);
 
-      let fileCopy = file[0];
-      if (fileCopy.name == 'image.jpg') {
-        const timestamp = Date.now();
-        const newFileName = `image_${timestamp}.jpg`;
-
-        // 创建一个新的 Blob 对象
-        const blob = new Blob([fileCopy], { type: fileCopy.type });
-
-        // 使用新文件名创建一个新的文件对象
-        fileCopy = new File([blob], newFileName, { type: fileCopy.type });
-      }
       const d = { orderId: order_id.value };
       let merkleRes = await valid_upload(d);
       if (merkleRes?.data) {
@@ -167,39 +201,10 @@
         }
         return reject();
       }
-
       uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
+      console.log('uploadList------', uploadList.value);
 
-      const policy = {
-        expiration: new Date(Date.now() + 3600 * 1000),
-        conditions: [
-          { bucket: bucketName },
-          { acl: 'public-read' },
-          ['starts-with', fileCopy, prefixStr],
-          ['starts-with', '$Content-Type', ''],
-        ],
-      };
-      const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
-
-      let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
-      const signature = enc.Base64.stringify(hmac);
-      console.time('md5Hash');
-      const md5Hash = await calculateMD5(fileCopy);
-      console.timeEnd('md5Hash');
-      console.log('md5Hash-------', md5Hash);
-      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-
-      formData.value = {
-        Key: encodeURIComponent(prefixStr + fileCopy.name),
-        Policy: policyBase64,
-        Signature: signature,
-        Awsaccesskeyid: accessKeyId,
-        category: getType(fileCopy.name),
-        'Content-Md5': md5Hash,
-        'App-Type': appType,
-      };
-
-      resolve([fileCopy]);
+      resolve(fileArr);
     });
   };
 
@@ -258,11 +263,8 @@
   );
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     isDisabled.value = false;
-    console.log('uploadSuccess', responseText, option, fileItem);
-    console.log('-----uploadSuccess', fileItem.name);
     window.sessionStorage.setItem('uploadFileName', fileItem.name);
 
-    // console.log(option, 'option');
     uploadStatus.value = 'success';
 
     // emits('getFileList');
@@ -322,11 +324,54 @@
   };
 
   const onChange = ({ fileList, event }: any) => {
-    console.log('--------------22');
-    console.log('onChange', fileList, event);
+    console.log('onChange--------------22',  fileList.length, fileList);
+        
   };
 
-  const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
+  const beforeXhrUpload = async (xhr: XMLHttpRequest, options: any) => {
+    const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
+    console.log('beforeXhrUpload---------111', options, options.sourceFile, bucketName, accessKeyId, secretAccessKey, prefix);
+    
+    const fileCopy = options.sourceFile;
+    console.log('beforeXhrUpload---------222', fileCopy, uploadUri.value);
+    let prefixStr = '';
+      if (prefix?.length > 0) {
+        prefixStr = prefix.join('/') + '/';
+      }
+
+    const policy = {
+      expiration: new Date(Date.now() + 3600 * 1000),
+      conditions: [
+        { bucket: bucketName },
+        { acl: 'public-read' },
+        ['starts-with', fileCopy, prefixStr],
+        ['starts-with', '$Content-Type', ''],
+      ],
+    };
+    const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
+
+    let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
+    const signature = enc.Base64.stringify(hmac);
+    const md5Hash = await calculateMD5(fileCopy);
+    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+
+    formData.value = {
+      Key: encodeURIComponent(prefixStr + fileCopy.name),
+      Policy: policyBase64,
+      Signature: signature,
+      Awsaccesskeyid: accessKeyId,
+      category: getType(fileCopy.name),
+      'Content-Md5': md5Hash,
+      'App-Type': appType,
+    };
+  
+    options.headers = {
+      ...options.headers,
+      ...formData.value,
+    };
+
+    console.log('beforeXhrUpload---------333', formData.value, options);
+
     xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
     xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
     xhr.send(options.formData);
