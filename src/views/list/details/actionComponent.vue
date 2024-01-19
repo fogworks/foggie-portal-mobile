@@ -174,7 +174,7 @@
       round
       @closed="emits('update:moveShow', false)"
       :style="{ height: '100vh' }"
-      v-model:visible="moveShow"
+      v-model:visible="moveShow1"
     >
       <div class="rename_box move_box">
         <IconFolder></IconFolder>
@@ -432,6 +432,7 @@
     'update:fileItemPopupIsShow',
     'update:fileItemDetailPopupIsShow',
     'update:renameShow',
+    'update:moveShow',
     'update:detailShow',
     'update:imgStartIndex',
     'update:isNewFolder',
@@ -464,13 +465,14 @@
     secretAccessKey: String,
     metadata: Object,
     prefix: Array,
+    moveShow: Boolean,
   });
   const state = reactive({
     newName: '',
     fileItemPopupIsShow1: false,
     fileItemDetailPopupIsShow1: false,
     renameShow1: false,
-    moveShow: false,
+    moveShow1: false,
     movePrefix: [],
     dirData: [],
     currentFolder: '',
@@ -480,6 +482,7 @@
     imgPreRef: '',
   });
   const {
+    moveShow,
     prefix,
     accessKeyId,
     secretAccessKey,
@@ -510,7 +513,7 @@
     continuationToken2,
     movePrefix,
     newName,
-    moveShow,
+    moveShow1,
     detailShow1,
     fileItemPopupIsShow1,
     fileItemDetailPopupIsShow1,
@@ -534,6 +537,16 @@
     renameShow,
     (val) => {
       renameShow1.value = val;
+    },
+    { deep: true, immediate: true },
+  );
+  watch(
+    moveShow,
+    (val) => {
+      moveShow1.value = val;
+      if (val) {
+        doSearch('', movePrefix.value, true);
+      }
     },
     { deep: true, immediate: true },
   );
@@ -604,9 +617,9 @@
       await doShare(checkData[0]);
     } else if (type == 'move') {
       movePrefix.value = [];
-      //   emits('update:moveShow', true);
-      moveShow.value = true;
-      doSearch('', movePrefix.value, true);
+      emits('update:moveShow', true);
+      // moveShow.value = true;
+      // doSearch('', movePrefix.value, true);
     } else {
       emits('handlerClick', type);
     }
@@ -1063,7 +1076,8 @@
         if (data) {
           if (index === length) {
             showToast.success('Move successful');
-            moveShow.value = false;
+            emits('update:moveShow', false);
+            // moveShow.value = false;
             movePrefix.value = [];
             emits('refresh');
             resolve(true);
@@ -1073,9 +1087,9 @@
           }
         } else {
           console.log(err, 'err');
-          movePrefix.value = [];
+          // movePrefix.value = [];
           showToast.fail(err.message || 'Move failed');
-          emits('refresh');
+          // emits('refresh');
 
           reject(false);
         }
@@ -1086,6 +1100,9 @@
     });
     // moveShow.value = false;
   };
+  defineExpose({
+    handlerClick,
+  });
 </script>
 <style lang="scss">
   .fileItemPopup.nut-popup {
@@ -1138,6 +1155,7 @@
           svg {
             width: 60px;
             height: 60px;
+            color: #000;
           }
         }
       }

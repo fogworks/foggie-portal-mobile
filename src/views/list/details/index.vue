@@ -169,6 +169,7 @@
         v-model:fileItemPopupIsShow="fileItemPopupIsShow"
         v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
         v-model:renameShow="renameShow"
+        v-model:moveShow="moveShow"
         v-model:detailShow="detailShow"
         v-model:imgStartIndex="imgStartIndex"
         :category="0"
@@ -405,7 +406,7 @@
   });
 
   const dialogVisible = ref<boolean>(false);
-
+  const moveShow = ref<boolean>(false);
   // let details = reactive<any>({ data: {} });
 
   // import { get_order_node } from '@/api/amb';
@@ -719,6 +720,8 @@
       }
     } else if (type === 'share') {
       await doShare(checkData);
+    } else if (type === 'move') {
+      moveShow.value = true;
     } else if (type == 'rename') {
       renameShow.value = true;
     } else if (type === 'delete') {

@@ -131,7 +131,36 @@ export default function useOrderInfo() {
       return true;
     }
   };
-  const getSummary = () => {};
+  const getSummary = () => {
+    return new Promise((resolve, reject) => {
+      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
+      let request = new Prox.default.ProxRequestSummaryIds();
+      request.setHeader(header.value);
+
+      request.setIdsList([orderInfo.value.foggie_id]);
+
+      console.log(`https://${bucketName.value}.${poolUrl}:7007`, 'bucketNamebucketNamebucketNamebucketName');
+
+      server.summaryInfo(request, metadata.value, (err, res) => {
+        if (err) {
+          console.log('errsummry------:', err);
+          // reject(false);
+          resolve(false);
+        } else {
+          const contentList = res.getContentsList().map((el) => {
+            return {
+              count: el.getCount(),
+              id: el.getId(),
+              total: el.getTotal(),
+            };
+          });
+          filesCount.value = contentList?.[0]?.count || 0;
+          usedSize.value = contentList?.[0]?.total || 0;
+          resolve(contentList?.[0]?.total || 0);
+        }
+      });
+    });
+  };
 
   return {
     isAvailableOrder,

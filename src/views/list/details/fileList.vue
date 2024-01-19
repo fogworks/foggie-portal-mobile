@@ -239,9 +239,9 @@
           </nut-tabbar-item>
         </template>
 
-        <nut-tabbar-item tab-title="Download">
+        <nut-tabbar-item tab-title="Download" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
           <template #icon="props">
-            <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
+            <IconDownload :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconDownload>
           </template>
         </nut-tabbar-item>
         <nut-tabbar-item v-if="isAvailableOrder" tab-title="Delete" :class="[selectArr.length < 1 ? 'is-disable' : 'delete-item']">
@@ -252,9 +252,11 @@
       </nut-tabbar>
     </Teleport>
     <ActionComponent
+      ref="actionRef"
       v-model:fileItemPopupIsShow="fileItemPopupIsShow"
       v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
       v-model:renameShow="renameShow"
+      v-model:moveShow="moveShow"
       v-model:detailShow="detailShow"
       v-model:imgStartIndex="imgStartIndex"
       :category="category"
@@ -387,6 +389,7 @@
   const router = useRouter();
   const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const state = reactive({
+    actionRef: '',
     imgPreRef: '',
     swipe: '',
     imgArray: [],
@@ -451,6 +454,7 @@
   const showSocketDialog = ref(false);
 
   const {
+    actionRef,
     imgPreRef,
     swipe,
     imgArray,
@@ -952,8 +956,9 @@
       // if (category.value == 1) return false;
       movePrefix.value = [];
       moveShow.value = true;
-      doSearch('', movePrefix.value, true);
+      // doSearch('', movePrefix.value, true);
     } else if (type === 'download') {
+      if (checkData.length > 1) return false;
       //   downLoad();
 
       // const bucketName = 'test11111';
@@ -963,7 +968,7 @@
 
       const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
-        $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
+        $cordovaPlugins.downloadFileHH(url, checkData[0].fullName, headers);
       } else {
         showToast.text('Coming soon for your download');
         fetch(url, { method: 'GET', headers })
@@ -1012,7 +1017,8 @@
     } else if (type === 'newFolder') {
     } else if (type === 'share') {
       if (checkData.length > 1) return false;
-      await doShare(checkData[0]);
+      actionRef.value.handlerClick('share');
+      // await doShare(checkData[0]);
       // cancelSelect();
       // proxy.$notify({
       //   customClass: "notify-success",

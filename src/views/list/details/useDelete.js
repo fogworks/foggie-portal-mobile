@@ -17,7 +17,7 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
     let objects = '';
     let ProxDeleteObjectRequest = new Prox.default.ProxDeleteObjectRequest();
     let ProxUploads = [];
-
+    console.log(item, 'item');
     for (let i = 0; i < item.length; i++) {
       if (item[i].type == 'application/x-directory') {
         prefixes.push(item[i].key + '');
