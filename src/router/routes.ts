@@ -105,6 +105,16 @@ export const routes = [
         },
       },
       {
+        name: 'IPFSService',
+        path: 'ipfsService',
+        component: () => import('@/views/list/details/ipfsService.vue'),
+        meta: {
+          title: 'list.getKey',
+          border: false,
+          notKeepAlive: true,
+        },
+      },
+      {
         path: 'fileList',
         name: 'FileList',
         component: () => import('@/views/list/details/fileList.vue'),

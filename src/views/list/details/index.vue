@@ -63,26 +63,53 @@
     <div class="detail_box">
       <div class="detail_box_toolbox">
         <div class="type_check_box type_check_box1" v-if="!mintType || mintType == 0">
-          <div
-            class="type_item"
-            @click="router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })"
+          <nut-swiper
+            pagination-color="#496af2"
+            :init-page="page"
+            :loop="true"
+            auto-play="0"
+            direction="vertical"
+            height="150"
+            :pagination-visible="true"
+            :is-prevent-default="false"
+            style="height: 150px"
           >
-            <div class="svg_box svg_box2 order-icon-node-tree">
-              <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
-            </div>
-            <p>Miner Tool</p>
-          </div>
-
-          <div
-            :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
-            @click="getKey"
-          >
-            <div class="svg_box svg_box2 order-icon-recycle">
-              <!-- <keySolid color="#fff" /> -->
-              <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
-            </div>
-            <p>S3 Endpoint</p>
-          </div>
+            <nut-swiper-item>
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getKey"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <!-- <keySolid color="#fff" /> -->
+                  <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                </div>
+                <p>S3 Service</p>
+              </div>
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getIPFSService"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <!-- <keySolid color="#fff" /> -->
+                  <img src="@/assets/ipfs.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                </div>
+                <p>IPFS Pinning</p>
+              </div>
+            </nut-swiper-item>
+            <nut-swiper-item>
+              <div
+                class="type_item s3key"
+                @click="
+                  router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })
+                "
+              >
+                <div class="svg_box svg_box2 order-icon-node-tree">
+                  <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
+                </div>
+                <p>Miner Tool</p>
+              </div>
+            </nut-swiper-item>
+          </nut-swiper>
         </div>
         <div class="type_check_box right_check_box">
           <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1, bucketName } })">
@@ -337,6 +364,7 @@
   import { poolUrl } from '@/setting.js';
   const dialogShow = ref(false);
   const showText = ref(false);
+  const page = ref(0);
   const statusTypes = {
     0: 'Consensus not reached',
     1: 'Consensus reached',
@@ -460,14 +488,14 @@
     imgStartIndex.value = index;
     detailRow.value = imgData.value[index];
     if (detailRow.value.originalSize > 1024 * 1024 * 20) {
-      showToast.text('The image is too large, please download and view');
+      showToast.text('The file is too large, please download and view');
     }
   }
   function clickFIleItem(params) {
     detailRow.value = params;
     fileItemPopupIsShow.value = true;
     if (detailRow.value.originalSize > 1024 * 1024 * 20) {
-      showToast.text('The image is too large, please download and view');
+      showToast.text('The file is too large, please download and view');
     }
   }
 
@@ -742,7 +770,9 @@
     } else if (type === 'pin') {
       const onOk = async () => {
         await cloudPin(checkData, 'ipfs');
-        // doSearch('', prefix.value, true);
+        // detailRow.value.isPin = true;
+        detailShow.value = false;
+        getFileList();
       };
       showDialog({
         title: 'Warning',
@@ -755,11 +785,17 @@
       const onOk = async () => {
         const d = await cloudPin(checkData, 'ipfs', 'unpin');
         if (d) {
-          tableData.value.map((el: { cid: any }) => {
+          imgData.value.map((el: { cid: any }) => {
             if (el.cid && el.cid == checkData.cid) {
               el.isPin = false;
             }
           });
+          otherData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          detailRow.value.isPin = false;
         }
         // doSearch('', prefix.value, true);
       };
@@ -980,6 +1016,16 @@
     } else {
       router.push({
         name: 'getKey',
+        query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain },
+      });
+    }
+  };
+  const getIPFSService = () => {
+    if (orderInfo.value.electronic_type == '1' || !isAvailableOrder.value) {
+      return false;
+    } else {
+      router.push({
+        name: 'IPFSService',
         query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain },
       });
     }
@@ -1862,6 +1908,7 @@
     position: relative;
 
     .type_check_box {
+      position: relative;
       display: flex;
       justify-content: flex-start;
       align-items: center;
@@ -1870,13 +1917,33 @@
       background: #fff;
       border-radius: 20px;
       width: 40%;
-
+      :deep {
+        .nut-swiper-pagination {
+          position: absolute;
+          right: 0;
+          left: unset;
+          top: 1rem;
+        }
+      }
       .type_item {
         width: 50%;
         text-align: center;
         height: 150px;
         cursor: pointer;
         font-weight: bold;
+        &.miner_tool {
+          height: 100px;
+          .svg_box {
+            margin: 0 auto;
+            img {
+              width: unset;
+              height: 60%;
+            }
+          }
+          p {
+            font-size: 0.8rem;
+          }
+        }
 
         .svg_box {
           width: 80px;
@@ -2015,7 +2082,7 @@
         width: 100%;
         background: #fff;
         border-radius: 10px;
-        margin-left: 10px;
+        // margin-left: 10px;
         &.router_disabled {
           .order-icon-recycle {
             background-color: #ccc;

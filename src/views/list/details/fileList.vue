@@ -1735,7 +1735,7 @@
     imgStartIndex.value = index;
     chooseItem.value = imgArray.value[index];
     if (chooseItem.value.originalSize > 1024 * 1024 * 20) {
-      showToast.text('The image is too large, please download and view');
+      showToast.text('The file is too large, please download and view');
     }
   }
   watch(
@@ -1744,7 +1744,7 @@
       if (val) {
         nextTick(() => {
           if (chooseItem.value.originalSize > 1024 * 1024 * 20) {
-            showToast.text('The image is too large, please download and view');
+            showToast.text('The file is too large, please download and view');
           }
         });
       }

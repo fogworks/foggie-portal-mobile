@@ -273,6 +273,8 @@ onMounted(async () => {
   height: 80px;
   cursor: pointer;
   z-index: 1000;
+     display: grid;
+    place-items: center;
 
   img {
     width: 100%;

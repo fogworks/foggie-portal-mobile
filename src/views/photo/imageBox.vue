@@ -573,6 +573,7 @@
         name,
         fullName: decodeURIComponent(el.key),
         key: el.key,
+        category: 1,
         idList: [
           {
             name: 'IPFS',
