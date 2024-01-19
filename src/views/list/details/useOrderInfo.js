@@ -1,25 +1,41 @@
 import { get_unique_order, get_order_sign } from '@/api/index';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/store/modules/user';
+import { useOrderStore } from '@/store/modules/order';
 import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/prox_grpc_web_pb.js';
 import loadingImg from '@/components/loadingImg/index.vue';
 import { showToast } from '@nutui/nutui';
 import { poolUrl } from '@/setting.js';
+import { storeToRefs } from 'pinia';
 
 export default function useOrderInfo() {
   const store = useUserStore();
+  const orderStore = useOrderStore();
+  const { getOrderInfoList } = storeToRefs(orderStore);
   const orderInfo = reactive({
     value: {},
   });
+  let orderSignInfo = ref({
+    header: new Prox.default.ProxHeader(),
+    secretAccessKey: '',
+    accessKeyId: '',
+    metadata: {},
+  });
+  const orderInfo2 = computed(() => getOrderInfoList.value(orderInfo.value?.uuid));
+  let headerProx = new Prox.default.ProxHeader();
+  // let header = new Prox.default.ProxHeader();
+  const header = computed(() => orderInfo2.value?.header);
+  const secretAccessKey = computed(() => orderInfo2.value?.secretAccessKey);
+  const accessKeyId = computed(() => orderInfo2.value?.accessKeyId);
+  const metadata = computed(() => orderInfo2.value?.metadata);
   const bucketName = ref('');
-  const accessKeyId = ref('');
-  const secretAccessKey = ref('');
+  // const accessKeyId = ref('');
+  // const secretAccessKey = ref('');
   const filesCount = ref(0);
   const usedSize = ref(0);
   const isError = ref(false);
-  let header = new Prox.default.ProxHeader();
-  let metadata = ref({});
+  // let metadata = ref({});
   const deviceType = computed(() => orderInfo.value.device_type);
   const isAvailableOrder = computed(() => {
     if (
@@ -51,32 +67,36 @@ export default function useOrderInfo() {
     });
     try {
       let res = await get_unique_order({ order_uuid: route?.query?.uuid });
-
+      orderInfo.value = res.result.data;
+      bucketName.value = orderInfo.value.domain;
+      orderInfo.value.used_space = 0;
+      if (!isError.value && header.value && accessKeyId.value && secretAccessKey.value && metadata.value) {
+        showToast.hide('order_info_id');
+        return true;
+      }
       let param = {
         order_uuid: route?.query?.uuid,
       };
       const signData = await get_order_sign(param);
 
-      orderInfo.value = res.result.data;
-      orderInfo.value.used_space = 0;
       // orderInfo.value.rpc = '218.2.96.99:6007';
-      header.setPeerid(orderInfo.value.peer_id);
-      header.setId(orderInfo.value.foggie_id);
+      headerProx.setPeerid(orderInfo.value.peer_id);
+      headerProx.setId(orderInfo.value.foggie_id);
       const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-      header.setApptype(appType);
+      headerProx.setApptype(appType);
       // header.setId('baeqacmjq');
       // header.setToken(orderInfo.value.sign);
       // console.log('signData==11:', signData);
       let cur_token = signData?.result?.data?.sign;
       const date = signData?.result?.data?.timestamp;
-      metadata.value = {
+      orderSignInfo.value.metadata = {
         'X-Custom-Date': date,
       };
 
       // console.log('cur_token==11:', cur_token);
-      header.setToken(cur_token);
-
-      bucketName.value = orderInfo.value.domain;
+      headerProx.setToken(cur_token);
+      orderSignInfo.value.header = headerProx;
+      await orderStore.setOrderInfoList(orderInfo.value.uuid, orderSignInfo.value);
       orderInfo.value.used_space = 0;
     } catch {
       isError.value = true;
@@ -86,18 +106,22 @@ export default function useOrderInfo() {
       return new Promise((resolve, reject) => {
         let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
         let request = new Prox.default.ProxGetCredRequest();
-        request.setHeader(header);
+        request.setHeader(orderSignInfo.value.header ? orderSignInfo.value.header : header.value);
         // console.log('metadata==11:', request, metadata.value);
-        server.listCreds(request, metadata.value, (err, res) => {
+        server.listCreds(request, metadata.value, async (err, res) => {
           if (err) {
             isError.value = true;
             console.log('err------111222:', err);
             showToast.hide('order_info_id');
             reject(false);
           } else if (res.array.length > 0) {
-            accessKeyId.value = res.array[0][0][0];
-            secretAccessKey.value = res.array[0][0][1];
+            // accessKeyId.value = res.array[0][0][0];
+            // secretAccessKey.value = res.array[0][0][1];
+            orderSignInfo.value.accessKeyId = res.array[0][0][0];
+            orderSignInfo.value.secretAccessKey = res.array[0][0][1];
+            await orderStore.setOrderInfoList(orderInfo.value.uuid, orderSignInfo.value);
             showToast.hide('order_info_id');
+            console.log(secretAccessKey.value, 'secretAccessKey111111111');
             resolve(true);
           }
         });
@@ -111,9 +135,11 @@ export default function useOrderInfo() {
     return new Promise((resolve, reject) => {
       let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
       let request = new Prox.default.ProxRequestSummaryIds();
-      request.setHeader(header);
+      request.setHeader(header.value);
 
       request.setIdsList([orderInfo.value.foggie_id]);
+
+      console.log(`https://${bucketName.value}.${poolUrl}:7007`, 'bucketNamebucketNamebucketNamebucketName');
 
       server.summaryInfo(request, metadata.value, (err, res) => {
         if (err) {

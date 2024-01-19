@@ -239,9 +239,9 @@
           </nut-tabbar-item>
         </template>
 
-        <nut-tabbar-item tab-title="Download">
+        <nut-tabbar-item tab-title="Download" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
           <template #icon="props">
-            <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
+            <IconDownload :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconDownload>
           </template>
         </nut-tabbar-item>
         <nut-tabbar-item v-if="isAvailableOrder" tab-title="Delete" :class="[selectArr.length < 1 ? 'is-disable' : 'delete-item']">
@@ -252,9 +252,11 @@
       </nut-tabbar>
     </Teleport>
     <ActionComponent
+      ref="actionRef"
       v-model:fileItemPopupIsShow="fileItemPopupIsShow"
       v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
       v-model:renameShow="renameShow"
+      v-model:moveShow="moveShow"
       v-model:detailShow="detailShow"
       v-model:imgStartIndex="imgStartIndex"
       :category="category"
@@ -387,6 +389,7 @@
   const router = useRouter();
   const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const state = reactive({
+    actionRef: '',
     imgPreRef: '',
     swipe: '',
     imgArray: [],
@@ -451,6 +454,7 @@
   const showSocketDialog = ref(false);
 
   const {
+    actionRef,
     imgPreRef,
     swipe,
     imgArray,
@@ -777,7 +781,7 @@
       let ip = `https://${bucketName.value}.${poolUrl}:7007`;
       server = new grpcService.default.ServiceClient(ip, null, null);
       let ProxRenameObject = new Prox.default.ProxRenameObject();
-      ProxRenameObject.setHeader(header);
+      ProxRenameObject.setHeader(header.value);
       ProxRenameObject.setSourceobject(encodeURIComponent(checkData[index].fullName));
       ProxRenameObject.setTargetobject(encodeURIComponent(targetObject(checkData[index])));
       ProxRenameObject.setFiletype(checkData[index].fileType);
@@ -883,7 +887,7 @@
 
     if (isNewFolder.value) {
       let ProxFileInfo = new Prox.default.ProxFileInfo();
-      ProxFileInfo.setHeader(header);
+      ProxFileInfo.setHeader(header.value);
       ProxFileInfo.setKey(targetObject());
       ProxFileInfo.setContenttype('application/x-directory');
       ProxFileInfo.setSize(0);
@@ -902,7 +906,7 @@
       });
     } else {
       let ProxRenameObject = new Prox.default.ProxRenameObject();
-      ProxRenameObject.setHeader(header);
+      ProxRenameObject.setHeader(header.value);
       ProxRenameObject.setSourceobject(encodeURIComponent(checkData[0].fullName));
       ProxRenameObject.setTargetobject(targetObject());
       ProxRenameObject.setFiletype(checkData[0].fileType);
@@ -952,8 +956,9 @@
       // if (category.value == 1) return false;
       movePrefix.value = [];
       moveShow.value = true;
-      doSearch('', movePrefix.value, true);
+      // doSearch('', movePrefix.value, true);
     } else if (type === 'download') {
+      if (checkData.length > 1) return false;
       //   downLoad();
 
       // const bucketName = 'test11111';
@@ -963,7 +968,7 @@
 
       const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
-        $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
+        $cordovaPlugins.downloadFileHH(url, checkData[0].fullName, headers);
       } else {
         showToast.text('Coming soon for your download');
         fetch(url, { method: 'GET', headers })
@@ -1012,7 +1017,8 @@
     } else if (type === 'newFolder') {
     } else if (type === 'share') {
       if (checkData.length > 1) return false;
-      await doShare(checkData[0]);
+      actionRef.value.handlerClick('share');
+      // await doShare(checkData[0]);
       // cancelSelect();
       // proxy.$notify({
       //   customClass: "notify-success",
@@ -1126,7 +1132,7 @@
     listObject.setCategory(categoryParam);
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     // console.log('list-object--header', header, metadata.value);
     // console.log('listObjectlistObject', listObject);
     requestReq.setRequest(listObject);
@@ -1512,7 +1518,7 @@
         server = new grpcService.default.ServiceClient(ip, null, null);
 
         let ProxFindRequest = new Prox.default.ProxFindRequest();
-        ProxFindRequest.setHeader(header);
+        ProxFindRequest.setHeader(header.value);
         ProxFindRequest.setCid('');
         ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
         ProxFindRequest.setFileid('');
@@ -1618,6 +1624,7 @@
         if (!orderInfo?.value?.id) {
           await getOrderInfo();
         }
+        console.log(category.value, 'categorycategorycategory');
         doSearch('', prefix.value, true);
       }
     },
@@ -1638,6 +1645,8 @@
     }
     let category1 = route.query.category || '0';
     await getOrderInfo();
+    console.log(category1, 'category1category1');
+
     switchType(category1);
 
     initWebSocket();
@@ -1726,7 +1735,7 @@
     imgStartIndex.value = index;
     chooseItem.value = imgArray.value[index];
     if (chooseItem.value.originalSize > 1024 * 1024 * 20) {
-      showToast.text('The image is too large, please download and view');
+      showToast.text('The file is too large, please download and view');
     }
   }
   watch(
@@ -1735,7 +1744,7 @@
       if (val) {
         nextTick(() => {
           if (chooseItem.value.originalSize > 1024 * 1024 * 20) {
-            showToast.text('The image is too large, please download and view');
+            showToast.text('The file is too large, please download and view');
           }
         });
       }

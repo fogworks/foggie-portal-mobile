@@ -181,7 +181,7 @@
   const category = ref(1);
   //   const tableData = ref([]);
   const { showTypeCheckPop, infinityValue, continuationToken, tableData } = toRefs(state);
-  const { header, metadata, token, deviceType, orderInfo, getOrderInfo, bucketName } = useOrderInfo();
+  const { orderInfo, getOrderInfo, bucketName } = useOrderInfo();
   import { get_merkle_record, get_challenge, get_arbitration } from '@/api/index';
   const order_id = ref<any>('');
   order_id.value = route.query.id;
