@@ -308,14 +308,14 @@
     </nut-popup>
     <Teleport to="body">
       <nut-overlay overlay-class="detail_over" v-model:visible="detailShow1" :close-on-click-overlay="false">
-        <div class="detail_top" v-if="chooseItem.category !== 1 && !imgUrl">
+        <div class="detail_top" v-if="chooseItem.category !== 1">
           <IconArrowLeft @click="emits('update:detailShow', false)" class="detail_back" color="#fff"></IconArrowLeft>
           <IconMore @click="clickFIleItem(chooseItem)" class="detail_back" color="#fff"></IconMore>
         </div>
         <HLSVideo v-if="chooseItem.category == 2" :imgUrl="imgUrl"></HLSVideo>
         <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
         <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
-        <div v-else-if="imgUrl" class="middle_img">
+        <div v-else-if="imgUrl && chooseItem.category == 1" class="middle_img">
           <van-image-preview
             ref="imgPreRef"
             v-model:show="detailShow"
