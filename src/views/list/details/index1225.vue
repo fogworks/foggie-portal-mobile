@@ -1097,7 +1097,7 @@
     listObject.setCategory(0);
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,

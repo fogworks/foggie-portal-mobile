@@ -50,7 +50,7 @@ export default function useOrderInfo() {
     header.setId(orderInfo.value.foggie_id);
     const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
     header.setApptype(appType);
-    
+
     // header.setId('baeqacmjq');
     // header.setToken(orderInfo.value.sign);
     // console.log('signData==11:', signData);

@@ -14,7 +14,6 @@ import { poolUrl } from '@/setting.js';
 import loadingImg from '@/components/loadingImg/index.vue';
 import { browserUrl } from '@/setting';
 // import useOrderInfo from './useOrderInfo.js';
-// const { metadata } = useOrderInfo();
 
 export default function useShare(orderInfo, header, deviceType, metadata) {
   const userStore = useUserStore();
@@ -102,7 +101,7 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     // pinPay.setTrxid("");
 
     request.setRequest(pinRequest);
-    request.setHeader(header);
+    request.setHeader(header.value);
     request.setPay(pinPay);
     console.log(request, 'request');
     return new Promise((resolve, reject) => {
@@ -174,7 +173,7 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     pinPay.setCopied(0);
     pinPay.setTrxid('');
     let ProxPinReq = new Prox.default.ProxPinReq();
-    ProxPinReq.setHeader(header);
+    ProxPinReq.setHeader(header.value);
     ProxPinReq.setRequest(request);
     ProxPinReq.setPay(pinPay);
     // let ip = orderInfo.value.rpc.split(':')[0];
@@ -335,6 +334,7 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
   };
 
   const getHttpShare = (awsAccessKeyId, awsSecretAccessKey, bucketName, keyName, thumb) => {
+    console.log(awsAccessKeyId, awsSecretAccessKey, bucketName, keyName);
     // awsAccessKeyId = 'FOGpmEBp2rE4dvkP2W1r'
     // awsSecretAccessKey = 'TgKOPvlv3MSQhYjuyNN0MKVBw9mZChtT7E0GVh2h'
     const objectKey = encodeURIComponent(keyName);

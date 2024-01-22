@@ -138,7 +138,7 @@
   const router = useRouter();
   const route = useRoute();
   const showUpload = computed(() => {
-      const routeName=['listDetails','filePreview','getKey','FileList','orderSummary','orderSumDetail','s3Info','RecordsListGuid','RecordsList']
+      const routeName=['listDetails','filePreview','getKey','IPFSService','FileList','orderSummary','orderSumDetail','s3Info','RecordsListGuid','RecordsList']
         if (routeName.indexOf(route.name)==-1) {
       return true
           } else {

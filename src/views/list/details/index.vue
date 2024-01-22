@@ -63,26 +63,53 @@
     <div class="detail_box">
       <div class="detail_box_toolbox">
         <div class="type_check_box type_check_box1" v-if="!mintType || mintType == 0">
-          <div
-            class="type_item"
-            @click="router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })"
+          <nut-swiper
+            pagination-color="#496af2"
+            :init-page="page"
+            :loop="true"
+            auto-play="0"
+            direction="vertical"
+            height="150"
+            :pagination-visible="true"
+            :is-prevent-default="false"
+            style="height: 150px"
           >
-            <div class="svg_box svg_box2 order-icon-node-tree">
-              <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
-            </div>
-            <p>Miner Tool</p>
-          </div>
-
-          <div
-            :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
-            @click="getKey"
-          >
-            <div class="svg_box svg_box2 order-icon-recycle">
-              <!-- <keySolid color="#fff" /> -->
-              <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
-            </div>
-            <p>S3 Endpoint</p>
-          </div>
+            <nut-swiper-item>
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getKey"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <!-- <keySolid color="#fff" /> -->
+                  <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                </div>
+                <p>S3 Service</p>
+              </div>
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getIPFSService"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <!-- <keySolid color="#fff" /> -->
+                  <img src="@/assets/ipfs.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                </div>
+                <p>IPFS Pinning</p>
+              </div>
+            </nut-swiper-item>
+            <nut-swiper-item>
+              <div
+                class="type_item s3key"
+                @click="
+                  router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })
+                "
+              >
+                <div class="svg_box svg_box2 order-icon-node-tree">
+                  <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
+                </div>
+                <p>Miner Tool</p>
+              </div>
+            </nut-swiper-item>
+          </nut-swiper>
         </div>
         <div class="type_check_box right_check_box">
           <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1, bucketName } })">
@@ -169,6 +196,7 @@
         v-model:fileItemPopupIsShow="fileItemPopupIsShow"
         v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
         v-model:renameShow="renameShow"
+        v-model:moveShow="moveShow"
         v-model:detailShow="detailShow"
         v-model:imgStartIndex="imgStartIndex"
         :category="0"
@@ -336,6 +364,7 @@
   import { poolUrl } from '@/setting.js';
   const dialogShow = ref(false);
   const showText = ref(false);
+  const page = ref(0);
   const statusTypes = {
     0: 'Consensus not reached',
     1: 'Consensus reached',
@@ -405,7 +434,7 @@
   });
 
   const dialogVisible = ref<boolean>(false);
-
+  const moveShow = ref<boolean>(false);
   // let details = reactive<any>({ data: {} });
 
   // import { get_order_node } from '@/api/amb';
@@ -459,14 +488,14 @@
     imgStartIndex.value = index;
     detailRow.value = imgData.value[index];
     if (detailRow.value.originalSize > 1024 * 1024 * 20) {
-      showToast.text('The image is too large, please download and view');
+      showToast.text('The file is too large, please download and view');
     }
   }
   function clickFIleItem(params) {
     detailRow.value = params;
     fileItemPopupIsShow.value = true;
     if (detailRow.value.originalSize > 1024 * 1024 * 20) {
-      showToast.text('The image is too large, please download and view');
+      showToast.text('The file is too large, please download and view');
     }
   }
 
@@ -719,6 +748,8 @@
       }
     } else if (type === 'share') {
       await doShare(checkData);
+    } else if (type === 'move') {
+      moveShow.value = true;
     } else if (type == 'rename') {
       renameShow.value = true;
     } else if (type === 'delete') {
@@ -739,7 +770,9 @@
     } else if (type === 'pin') {
       const onOk = async () => {
         await cloudPin(checkData, 'ipfs');
-        // doSearch('', prefix.value, true);
+        // detailRow.value.isPin = true;
+        detailShow.value = false;
+        getFileList();
       };
       showDialog({
         title: 'Warning',
@@ -752,11 +785,17 @@
       const onOk = async () => {
         const d = await cloudPin(checkData, 'ipfs', 'unpin');
         if (d) {
-          tableData.value.map((el: { cid: any }) => {
+          imgData.value.map((el: { cid: any }) => {
             if (el.cid && el.cid == checkData.cid) {
               el.isPin = false;
             }
           });
+          otherData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          detailRow.value.isPin = false;
         }
         // doSearch('', prefix.value, true);
       };
@@ -981,6 +1020,16 @@
       });
     }
   };
+  const getIPFSService = () => {
+    if (orderInfo.value.electronic_type == '1' || !isAvailableOrder.value) {
+      return false;
+    } else {
+      router.push({
+        name: 'IPFSService',
+        query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain },
+      });
+    }
+  };
 
   const createName = async () => {
     let retrNumber = 0; // 重试次数
@@ -1165,7 +1214,7 @@
     listObject.setCategory(0);
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
@@ -1244,7 +1293,7 @@
       },
     );
   }
-  const initRemoteData = (
+  const initRemoteData = async (
     data: {
       commonPrefixes?: any;
       content: any;
@@ -1269,6 +1318,9 @@
     let dir = [].join('/');
     if (reset) {
       tableData.value = [];
+    }
+    if (!accessKeyId.value) {
+      await getOrderInfo();
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
@@ -1399,7 +1451,7 @@
         id: order_id,
         status: state,
         createdTime: transferUTCTime(orderInfo.value.order_created_at),
-        endTime: transferUTCTime(orderInfo.value.expire),
+        endTime: orderInfo.value.expire ? transferUTCTime(orderInfo.value.expire) : '- -',
         uuid: orderInfo.value.uuid,
         amb_uuid: orderInfo.value.amb_uuid,
         domain: orderInfo.value.domain,
@@ -1856,6 +1908,7 @@
     position: relative;
 
     .type_check_box {
+      position: relative;
       display: flex;
       justify-content: flex-start;
       align-items: center;
@@ -1864,13 +1917,33 @@
       background: #fff;
       border-radius: 20px;
       width: 40%;
-
+      :deep {
+        .nut-swiper-pagination {
+          position: absolute;
+          right: 0;
+          left: unset;
+          top: 1rem;
+        }
+      }
       .type_item {
         width: 50%;
         text-align: center;
         height: 150px;
         cursor: pointer;
         font-weight: bold;
+        &.miner_tool {
+          height: 100px;
+          .svg_box {
+            margin: 0 auto;
+            img {
+              width: unset;
+              height: 60%;
+            }
+          }
+          p {
+            font-size: 0.8rem;
+          }
+        }
 
         .svg_box {
           width: 80px;
@@ -2009,7 +2082,7 @@
         width: 100%;
         background: #fff;
         border-radius: 10px;
-        margin-left: 10px;
+        // margin-left: 10px;
         &.router_disabled {
           .order-icon-recycle {
             background-color: #ccc;
