@@ -291,6 +291,7 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
   const confirmHttpShare = async (type, shareOption, awsAccessKeyId, awsSecretAccessKey, bucketName) => {
     shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);
     if (!type) {
+      console.log(type, 'type');
       let link = await createLowLink(shareRefContent.httpStr, shareOption);
       showShareDialog.value = false;
       httpCopyLink.value = link;

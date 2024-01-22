@@ -42,7 +42,7 @@
 
         <div>
           <div class="key">Withdrawn</div>
-          <div class="value" v-if="cloudCodeIsBind" @click="gotoDetail('/withdraw')">
+          <div class="value" v-if="cloudCodeIsBind" @click="showWithdraw">
             <span style="font-size: 18px">{{ money.withdraw.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.withdraw.decimalPart }}</span>
           </div>
@@ -106,7 +106,8 @@
             <!-- <Link color="#505056" /> -->
             <img src="@/assets/newIcon/AboutUs.png" style="width: 45px; height: 45px; display: inline-block" />
           </div>
-          <div>About
+          <div
+            >About
             <div>Fog Works</div>
           </div>
         </nut-col>
@@ -124,8 +125,7 @@
       <nut-action-sheet v-model:visible="visible" title="Links">
         <div class="custom-action_sheet">
           <div @click="choose('dmc')">
-            <img src="@/assets/DMC_token.png"
-              style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
+            <img src="@/assets/DMC_token.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
             <div>DMC</div>
           </div>
           <div @click="choose('ipfs')">
@@ -134,8 +134,7 @@
             <div>IPFS</div>
           </div>
           <div @click="choose('foggie')">
-            <img src="@/assets/logo-dog-black.svg"
-              style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
+            <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
             <div>Fog Works</div>
           </div>
           <!-- <div @click="choose('pool')">
@@ -154,616 +153,612 @@
 </template>
 
 <script lang="ts" setup name="MemberPage">
-import { useUserStore } from '@/store/modules/user';
-import { ArrowRight2, Photograph, Scan2 } from '@nutui/icons-vue';
-import { showDialog } from '@nutui/nutui';
-import '@nutui/nutui/dist/packages/dialog/style';
-import { showToast } from '@nutui/nutui';
-import '@nutui/nutui/dist/packages/toast/style';
-import { debounce } from "lodash";
-import loadingImg from '@/components/loadingImg/index.vue';
-import { createVNode, inject } from 'vue';
-import { useRouter } from 'vue-router';
-import { user, setUserAvatarApi, search_cloud } from '@/api/index';
-import { get_user_dmc, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
-import { onMounted, reactive, ref } from 'vue';
-import { formatNumber } from '@/utils/util';
-import { ambAddress } from '@/setting';
+  import { useUserStore } from '@/store/modules/user';
+  import { ArrowRight2, Photograph, Scan2 } from '@nutui/icons-vue';
+  import { showDialog } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/dialog/style';
+  import { showToast } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/toast/style';
+  import { debounce } from 'lodash';
+  import loadingImg from '@/components/loadingImg/index.vue';
+  import { createVNode, inject } from 'vue';
+  import { useRouter } from 'vue-router';
+  import { user, setUserAvatarApi, search_cloud } from '@/api/index';
+  import { get_user_dmc, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
+  import { onMounted, reactive, ref } from 'vue';
+  import { formatNumber } from '@/utils/util';
+  import { ambAddress } from '@/setting';
 
-const uploadRef = ref();
-const userAvatar = computed(() => userStore.getUserInfo?.image_path);
+  const uploadRef = ref();
+  const userAvatar = computed(() => userStore.getUserInfo?.image_path);
 
-const userStore = useUserStore();
-const router = useRouter();
-const email = computed(() => userStore.getUserInfo?.email);
-const dmcAccount = computed(() => userStore.getUserInfo?.dmc);
-const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
-const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
-const visible = ref<boolean>(false);
+  const userStore = useUserStore();
+  const router = useRouter();
+  const email = computed(() => userStore.getUserInfo?.email);
+  const dmcAccount = computed(() => userStore.getUserInfo?.dmc);
+  const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
+  const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+  const visible = ref<boolean>(false);
 
-const bindAmbCode = inject('bindAmbCode');
-const openBindDMCDiaolg = inject('openBindDMCDiaolg');
-watch(
-  () => cloudCodeIsBind.value,
-  (newValue) => {
-    if (newValue) {
-      loadUserDmc();
-    }
-  },
-  { immediate: true },
-);
-
-/* 获取用户身份信息 */
-function loadUserInfo() {
-  user()
-    .then((res) => {
-      if (res && res.data && res.data.email) {
-        userStore.setInfo(res.data);
+  const bindAmbCode = inject('bindAmbCode');
+  const openBindDMCDiaolg = inject('openBindDMCDiaolg');
+  watch(
+    () => cloudCodeIsBind.value,
+    (newValue) => {
+      if (newValue) {
+        loadUserDmc();
       }
-    })
-    .catch(() => {
-      router.push('/login');
-    });
-}
-/* 获取用户 钱包结余 充值 提现金额 */
-const money = reactive({
-  Balance: <object>{ integerPart: 0, decimalPart: 0 },
-  Recharge: <object>{ integerPart: 0, decimalPart: 0 },
-  withdraw: <object>{ integerPart: 0, decimalPart: 0 },
-  income: <object>{ integerPart: 0, decimalPart: 0 },
-});
-
-function loadUserDmc() {
-  get_user_dmc()
-    .then((res) => {
-      if (res.code == 200) {
-        const data = res.result?.data;
-        money.Balance = formatNumber(data?.balance);
-        money.Recharge = formatNumber(data?.Recharge);
-        money.withdraw = formatNumber(data?.withdraw);
-        money.income = formatNumber(data?.income);
-      }
-    })
-    .catch((err) => { });
-}
-const gotoDetail = (path): void => {
-  router.push(path);
-};
-
-const goToPrivacy = () => {
-  window.open('https://fogworks.io/');
-};
-const logout = (): void => {
-  showDialog({
-    title: 'Logout',
-    content: createVNode('span', { style: {} }, 'Are you sure you want to cancel this order?'),
-    cancelText: 'Cancel',
-    okText: 'Yes',
-    onCancel: () => {
-      // console.log('取消');
     },
-    onOk: () => {
-      userStore.logout();
-      userStore.setCloudCodeIsBind(false);
+    { immediate: true },
+  );
 
-      // localStorage.removeItem('refresh_token');
-      // router.push('/guide');
-      router.push('/login');
-      // console.log('确定');
-    },
+  /* 获取用户身份信息 */
+  function loadUserInfo() {
+    user()
+      .then((res) => {
+        if (res && res.data && res.data.email) {
+          userStore.setInfo(res.data);
+        }
+      })
+      .catch(() => {
+        router.push('/login');
+      });
+  }
+  /* 获取用户 钱包结余 充值 提现金额 */
+  const money = reactive({
+    Balance: <object>{ integerPart: 0, decimalPart: 0 },
+    Recharge: <object>{ integerPart: 0, decimalPart: 0 },
+    withdraw: <object>{ integerPart: 0, decimalPart: 0 },
+    income: <object>{ integerPart: 0, decimalPart: 0 },
   });
-};
 
-const contactUs = (): void => {
-  showDialog({
-    title: 'Contact Us',
-    content: createVNode('div', null, [
-      createVNode(
-        'span',
-        { style: { color: '#535353', fontSize: '16px' } },
-        'We sincerely welcome you to contact us for more information!',
-      ),
-    ]),
-    noCancelBtn: true,
-    okText: 'Contact',
-    onOk: () => {
-      window.open('https://discord.com/channels/1046683342025789541/1070536042677030973/1070584672066752573');
-    },
-  });
-};
+  function loadUserDmc() {
+    get_user_dmc()
+      .then((res) => {
+        if (res.code == 200) {
+          const data = res.result?.data;
+          money.Balance = formatNumber(data?.balance);
+          money.Recharge = formatNumber(data?.Recharge);
+          money.withdraw = formatNumber(data?.withdraw);
+          money.income = formatNumber(data?.income);
+        }
+      })
+      .catch((err) => {});
+  }
+  const gotoDetail = (path): void => {
+    router.push(path);
+  };
 
-function choose(type: string) {
-  console.log(type);
-  if (type === 'dmc') {
-    window.open('https://dmctech.io/');
-  } else if (type === 'ipfs') {
-    window.open('https://ipfs.tech/');
-  } else if (type === 'foggie') {
+  const goToPrivacy = () => {
     window.open('https://fogworks.io/');
-  } else if (type === 'pool') {
-    window.open(ambAddress);
-  }
-  visible.value = false;
-}
+  };
+  const logout = (): void => {
+    showDialog({
+      title: 'Logout',
+      content: createVNode('span', { style: {} }, 'Are you sure you want to cancel this order?'),
+      cancelText: 'Cancel',
+      okText: 'Yes',
+      onCancel: () => {
+        // console.log('取消');
+      },
+      onOk: () => {
+        userStore.logout();
+        userStore.setCloudCodeIsBind(false);
 
-// 提现
-const showWithdraw = () => {
-  if (!dmcAccount.value) {
-    openBindDMCDiaolg();
-
-    return false;
-  } else if (!cloudCodeIsBind.value) {
-    bindAmbCode();
-  } else {
-    router.push({ name: 'Withdraw' });
-  }
-};
-
-//充值
-const toRecharge = () => {
-  if (!promo_code.value || !cloudCodeIsBind.value) {
-    bindAmbCode();
-    return false;
-  } else {
-    router.push({ name: 'Recharge' });
-  }
-};
-
-/* 上传 SSSSSSSSSSSSSSSSSSSSS */
-//#region
-function clickInput() {
-  uploadRef.value.click();
-}
-
-function uploadFile(event) {
-  const file = event.target.files[0];
-
-  const imageRegex = /\.(jpg|jpeg|png|gif|bmp)$/i;
-  const isValidImage = imageRegex.test(file.name);
-  if (!isValidImage) {
-    showToast.text('Please select image to upload');
-    return;
-  }
-
-  const uploadForm = new FormData();
-  uploadForm.append('file', file);
-
-  showToast.loading('Loading', {
-    cover: true,
-    coverColor: 'rgba(0,0,0,0.45)',
-    customClass: 'app_loading',
-    icon: loadingImg,
-    loadingRotate: false,
-    duration: 0,
-    id: 'loading',
-  });
-
-  setUserAvatarApi(uploadForm)
-    .then((res) => {
-      if (res.code == 200) {
-        showToast.success(res.data);
-        loadUserInfo();
-      }
-    })
-    .finally(() => {
-      showToast.hide('loading');
+        // localStorage.removeItem('refresh_token');
+        // router.push('/guide');
+        router.push('/login');
+        // console.log('确定');
+      },
     });
-}
-//#endregion
-/* 上传 EEEEEEEEEEEEEEEEEEEEEEEEEEEEEE */
+  };
 
-/* 调用扫码功能 */
-const requestCameraPermission = debounce(() => {
+  const contactUs = (): void => {
+    showDialog({
+      title: 'Contact Us',
+      content: createVNode('div', null, [
+        createVNode(
+          'span',
+          { style: { color: '#535353', fontSize: '16px' } },
+          'We sincerely welcome you to contact us for more information!',
+        ),
+      ]),
+      noCancelBtn: true,
+      okText: 'Contact',
+      onOk: () => {
+        window.open('https://discord.com/channels/1046683342025789541/1070536042677030973/1070584672066752573');
+      },
+    });
+  };
 
-  // const postData = {
-  //   sort_type: 'created_at',
-  //   ascending: false,
-  //   is_domain: true,
-  //   electronic_type: '0',
-  // };
-  // // await loadBucket([0, 1, 2, 3, 6], '', '', '', postData);
-  // search_cloud({
-  //   ps: 2,
-  //   pn: 1,
-  //   order_state: [0, 1, 2, 3, 6],
-  //   start_time: '',
-  //   end_time: '',
-  //   buy_result: 'success',
-  //   ...postData,
-  // }).then((res) => {
-  //   let total = res.result?.total || 0;
-  //   if (total == 1) {
-  //     let item = res.result.data[0];
-  //     router.push({
-  //       name: 'listDetails',
-  //       query: {
-  //         id: item.order_id,
-  //         uuid: item.uuid,
-  //         amb_uuid: item.amb_uuid,
-  //         income: item.income,
-  //         mintType: '0',
-  //       },
-  //     });
+  function choose(type: string) {
+    console.log(type);
+    if (type === 'dmc') {
+      window.open('https://dmctech.io/');
+    } else if (type === 'ipfs') {
+      window.open('https://ipfs.tech/');
+    } else if (type === 'foggie') {
+      window.open('https://fogworks.io/');
+    } else if (type === 'pool') {
+      window.open(ambAddress);
+    }
+    visible.value = false;
+  }
 
-  //   } else {
-  //     router.push({
-  //       name: 'BucketList',
-  //     });
-  //   }
-  // });
+  // 提现
+  const showWithdraw = () => {
+    if (!dmcAccount.value) {
+      openBindDMCDiaolg();
 
+      return false;
+    } else if (!cloudCodeIsBind.value) {
+      bindAmbCode();
+    } else {
+      router.push({ name: 'Withdraw' });
+    }
+  };
 
-  router.push({path:'/scanQRCodes'})
-}, 300);
+  //充值
+  const toRecharge = () => {
+    if (!promo_code.value || !cloudCodeIsBind.value) {
+      bindAmbCode();
+      return false;
+    } else {
+      router.push({ name: 'Recharge' });
+    }
+  };
 
+  /* 上传 SSSSSSSSSSSSSSSSSSSSS */
+  //#region
+  function clickInput() {
+    uploadRef.value.click();
+  }
 
-onMounted(async () => {
-  loadUserInfo();
-});
+  function uploadFile(event) {
+    const file = event.target.files[0];
+
+    const imageRegex = /\.(jpg|jpeg|png|gif|bmp)$/i;
+    const isValidImage = imageRegex.test(file.name);
+    if (!isValidImage) {
+      showToast.text('Please select image to upload');
+      return;
+    }
+
+    const uploadForm = new FormData();
+    uploadForm.append('file', file);
+
+    showToast.loading('Loading', {
+      cover: true,
+      coverColor: 'rgba(0,0,0,0.45)',
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+      duration: 0,
+      id: 'loading',
+    });
+
+    setUserAvatarApi(uploadForm)
+      .then((res) => {
+        if (res.code == 200) {
+          showToast.success(res.data);
+          loadUserInfo();
+        }
+      })
+      .finally(() => {
+        showToast.hide('loading');
+      });
+  }
+  //#endregion
+  /* 上传 EEEEEEEEEEEEEEEEEEEEEEEEEEEEEE */
+
+  /* 调用扫码功能 */
+  const requestCameraPermission = debounce(() => {
+    // const postData = {
+    //   sort_type: 'created_at',
+    //   ascending: false,
+    //   is_domain: true,
+    //   electronic_type: '0',
+    // };
+    // // await loadBucket([0, 1, 2, 3, 6], '', '', '', postData);
+    // search_cloud({
+    //   ps: 2,
+    //   pn: 1,
+    //   order_state: [0, 1, 2, 3, 6],
+    //   start_time: '',
+    //   end_time: '',
+    //   buy_result: 'success',
+    //   ...postData,
+    // }).then((res) => {
+    //   let total = res.result?.total || 0;
+    //   if (total == 1) {
+    //     let item = res.result.data[0];
+    //     router.push({
+    //       name: 'listDetails',
+    //       query: {
+    //         id: item.order_id,
+    //         uuid: item.uuid,
+    //         amb_uuid: item.amb_uuid,
+    //         income: item.income,
+    //         mintType: '0',
+    //       },
+    //     });
+
+    //   } else {
+    //     router.push({
+    //       name: 'BucketList',
+    //     });
+    //   }
+    // });
+
+    router.push({ path: '/scanQRCodes' });
+  }, 300);
+
+  onMounted(async () => {
+    loadUserInfo();
+  });
 </script>
 
 <style lang="scss" scoped>
-.userInfo {
-  margin-left: -4vw;
-  margin-right: -4vw;
-  min-height: 100vh;
-  background-color: #fff;
+  .userInfo {
+    margin-left: -4vw;
+    margin-right: -4vw;
+    min-height: 100vh;
+    background-color: #fff;
 
-  .userHeader {
-    position: relative;
-    padding: 20px 60px;
-    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding-bottom: 120px;
+    .userHeader {
+      position: relative;
+      padding: 20px 60px;
+      background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding-bottom: 120px;
 
-    .scanQR {
-      position: absolute;
-      right: 30px;
-      top: 30px;
-    }
-
-    .title {
-      color: azure;
-      font-size: 40px;
-      text-align: center;
-    }
-
-    .user_header_box {
-      $content-width: 150px;
-      $w: $content-width * 0.9;
-      display: grid;
-      grid-template-columns: $content-width auto;
-      column-gap: 30px;
-      // height: 200px;
-      padding-top: 50px;
-      align-items: center;
-      // display: flex;
-      // flex-direction: column;
-
-      img {
-        margin-top: 6px;
-        width: $w !important;
-        height: $w !important;
-        border-radius: 50%;
-        border: 7px solid #fff;
-        box-shadow:
-          rgb(24 32 79 / 25%) 0px 40px 80px,
-          rgb(255 255 255 / 50%) 0px 0px 0px 0.5px inset;
-      }
-
-      .uploadIcon {
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: grid;
-        place-items: center;
-        background: #f4f5f9;
+      .scanQR {
         position: absolute;
-        bottom: 15px;
-        right: 3px;
+        right: 30px;
+        top: 30px;
       }
 
-      &>.user_header_box_content {
+      .title {
+        color: azure;
+        font-size: 40px;
+        text-align: center;
+      }
 
-        //   text-align: center;
-        .accTitle {
-          color: #fff;
-          font-size: 40px;
-          font-weight: 600;
-          font-family: 'Times New Roman', Times, serif;
-          line-height: 40px;
+      .user_header_box {
+        $content-width: 150px;
+        $w: $content-width * 0.9;
+        display: grid;
+        grid-template-columns: $content-width auto;
+        column-gap: 30px;
+        // height: 200px;
+        padding-top: 50px;
+        align-items: center;
+        // display: flex;
+        // flex-direction: column;
+
+        img {
+          margin-top: 6px;
+          width: $w !important;
+          height: $w !important;
+          border-radius: 50%;
+          border: 7px solid #fff;
+          box-shadow:
+            rgb(24 32 79 / 25%) 0px 40px 80px,
+            rgb(255 255 255 / 50%) 0px 0px 0px 0.5px inset;
         }
 
-        .email {
-          letter-spacing: 0px;
-          margin-top: 10px;
-          color: #fff;
-          font-weight: 500;
-          font-size: 25px;
+        .uploadIcon {
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          display: grid;
+          place-items: center;
+          background: #f4f5f9;
+          position: absolute;
+          bottom: 15px;
+          right: 3px;
         }
 
-        .balance {
-          font-weight: bold;
-          font-size: 30px;
-          color: #f2b70a;
-
-          // margin-top: 10px;
-          span {
+        & > .user_header_box_content {
+          //   text-align: center;
+          .accTitle {
             color: #fff;
+            font-size: 40px;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 40px;
+          }
+
+          .email {
+            letter-spacing: 0px;
+            margin-top: 10px;
+            color: #fff;
+            font-weight: 500;
+            font-size: 25px;
+          }
+
+          .balance {
+            font-weight: bold;
+            font-size: 30px;
+            color: #f2b70a;
+
+            // margin-top: 10px;
+            span {
+              color: #fff;
+            }
+          }
+        }
+      }
+
+      .money {
+        // display: grid;
+        // grid-template-columns: 1fr 1fr 1fr;
+        // gap: 20px;
+        padding-top: 30px;
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+        // border-bottom: 1px dashed #fff;
+
+        & > div {
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+          border-right: 1px solid #fff;
+          width: 50%;
+
+          &:last-child {
+            border-right: none;
+          }
+
+          .value {
+            color: #fff;
+            font-weight: 600;
+            line-height: 40px;
+            text-decoration: underline;
+            cursor: pointer;
+          }
+
+          .key {
+            color: #fff;
+            font-weight: 500px;
+            line-height: 40px;
+            margin-bottom: 10px;
+          }
+        }
+      }
+
+      .bottom_btn {
+        margin-top: 20px;
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
+
+        .bottom_btn_item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+
+          &:hover {
+            transform: scale(1.1);
+          }
+
+          img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow:
+              rgba(0, 0, 0, 0.25) 0px 54px 55px,
+              rgba(0, 0, 0, 0.12) 0px -12px 30px,
+              rgba(0, 0, 0, 0.12) 0px 4px 6px,
+              rgba(0, 0, 0, 0.17) 0px 12px 13px,
+              rgba(0, 0, 0, 0.09) 0px -3px 5px;
+          }
+
+          .bottom_btn_itemText {
+            color: #fff;
+            font-weight: bold;
+            font-size: 24px;
+            margin-top: 10px;
           }
         }
       }
     }
 
-    .money {
-      // display: grid;
-      // grid-template-columns: 1fr 1fr 1fr;
-      // gap: 20px;
-      padding-top: 30px;
-      margin-top: 20px;
-      display: flex;
-      justify-content: space-around;
-      // border-bottom: 1px dashed #fff;
-
-      &>div {
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        justify-content: center;
-        border-right: 1px solid #fff;
-        width: 50%;
-
-        &:last-child {
-          border-right: none;
-        }
-
-        .value {
-          color: #fff;
-          font-weight: 600;
-          line-height: 40px;
-          text-decoration: underline;
-          cursor: pointer;
-        }
-
-        .key {
-          color: #fff;
-          font-weight: 500px;
-          line-height: 40px;
-          margin-bottom: 10px;
-        }
-      }
-    }
-
-    .bottom_btn {
-      margin-top: 20px;
-      display: flex;
-      width: 100%;
-      justify-content: space-around;
-
-      .bottom_btn_item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-
-        &:hover {
-          transform: scale(1.1);
-        }
-
-        img {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          background: #fff;
-          box-shadow:
-            rgba(0, 0, 0, 0.25) 0px 54px 55px,
-            rgba(0, 0, 0, 0.12) 0px -12px 30px,
-            rgba(0, 0, 0, 0.12) 0px 4px 6px,
-            rgba(0, 0, 0, 0.17) 0px 12px 13px,
-            rgba(0, 0, 0, 0.09) 0px -3px 5px;
-        }
-
-        .bottom_btn_itemText {
-          color: #fff;
-          font-weight: bold;
-          font-size: 24px;
-          margin-top: 10px;
-        }
-      }
-    }
-  }
-
-  .userBox {
-    position: relative;
-    top: -100px;
-    //   height: auto;
-    background-color: #fff;
-    border-radius: 60px 60px 0 0;
-    padding: 50px 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-
-    .withdraw-btn {
+    .userBox {
       position: relative;
-      overflow: hidden;
+      top: -100px;
+      //   height: auto;
+      background-color: #fff;
+      border-radius: 60px 60px 0 0;
+      padding: 50px 60px;
       display: flex;
-      justify-content: space-around;
-      transform: translateY(-80px);
-      width: 95%;
-      margin: 0 auto;
-      padding: 20px 0;
-      border-radius: 16px;
-      border: 4px solid transparent;
-      background: #fff;
-      // box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-      background:
-        linear-gradient(#fff, #fff) padding-box,
-        linear-gradient(145deg, #e81cff, #40c9ff) border-box;
-      top: -50px;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
 
-      .action_item {
-        z-index: 88;
+      .withdraw-btn {
+        position: relative;
+        overflow: hidden;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        // color: #333333;
-        color: #5758a0;
-        font-size: 30px;
-        font-weight: bold;
+        justify-content: space-around;
+        transform: translateY(-80px);
+        width: 95%;
+        margin: 0 auto;
+        padding: 20px 0;
+        border-radius: 16px;
+        border: 4px solid transparent;
+        background: #fff;
+        // box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+        background:
+          linear-gradient(#fff, #fff) padding-box,
+          linear-gradient(145deg, #e81cff, #40c9ff) border-box;
+        top: -50px;
 
-        img {
-          display: block;
+        .action_item {
+          z-index: 88;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          // color: #333333;
+          color: #5758a0;
+          font-size: 30px;
+          font-weight: bold;
+
+          img {
+            display: block;
+            width: 100px;
+            height: auto;
+            margin-bottom: 10px;
+          }
+        }
+      }
+
+      .withdraw-btn::before {
+        content: '';
+        position: absolute;
+        width: 140%;
+        background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
+        height: 80%;
+        animation: rotBGimg 3s linear infinite;
+        transition: all 0.2s linear;
+      }
+
+      @keyframes rotBGimg {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .withdraw-btn::after {
+        content: '';
+        position: absolute;
+        background: #fff;
+        inset: 3px;
+        border-radius: 15px;
+      }
+
+      .title {
+        font-size: 26px;
+        color: #000;
+        display: grid;
+        grid-template-columns: auto 80px;
+        font-style: italic;
+        gap: 40px;
+        align-items: center;
+      }
+
+      .buttonContent {
+        .customBtn {
           width: 100px;
-          height: auto;
-          margin-bottom: 10px;
+          height: 100px;
+          background: #f4f5f9;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          transition: transform 0.3s ease-in-out;
+        }
+
+        .customBtn:active {
+          transform: scale(1.4);
+        }
+
+        .nut-col,
+        .customPopover {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          & > div:nth-of-type(2) {
+            font-family: Inter;
+            font-size: 28px;
+            font-weight: 500;
+            line-height: 40px;
+            margin-top: 30px;
+            text-align: center;
+            letter-spacing: 0px;
+            color: #151940;
+            user-select: none;
+            word-wrap: break-word !important;
+            word-break: normal;
+            text-align: center;
+          }
         }
       }
-    }
 
-    .withdraw-btn::before {
-      content: '';
-      position: absolute;
-      width: 140%;
-      background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
-      height: 80%;
-      animation: rotBGimg 3s linear infinite;
-      transition: all 0.2s linear;
-    }
-
-    @keyframes rotBGimg {
-      from {
-        transform: rotate(0deg);
-      }
-
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    .withdraw-btn::after {
-      content: '';
-      position: absolute;
-      background: #fff;
-      inset: 3px;
-      border-radius: 15px;
-    }
-
-    .title {
-      font-size: 26px;
-      color: #000;
-      display: grid;
-      grid-template-columns: auto 80px;
-      font-style: italic;
-      gap: 40px;
-      align-items: center;
-    }
-
-    .buttonContent {
-      .customBtn {
-        width: 100px;
-        height: 100px;
-        background: #f4f5f9;
-        border-radius: 50%;
+      .logOutBtn {
+        position: fixed;
+        bottom: 160px;
+        width: 70%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #4c5093;
+        border-radius: 50px;
+        text-align: center;
+        line-height: 140px;
+        font-family: Inter;
+        font-size: 34px;
+        font-weight: 500;
+        text-align: center;
+        letter-spacing: -0.45px;
+        color: #ffffff;
         display: flex;
-        justify-content: center;
         align-items: center;
+        justify-content: space-between;
         transition: transform 0.3s ease-in-out;
-      }
+        height: 100px;
+        background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
-      .customBtn:active {
-        transform: scale(1.4);
-      }
-
-      .nut-col,
-      .customPopover {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        &>div:nth-of-type(2) {
-          font-family: Inter;
-          font-size: 28px;
-          font-weight: 500;
-          line-height: 40px;
-          margin-top: 30px;
-          text-align: center;
-          letter-spacing: 0px;
-          color: #151940;
-          user-select: none;
-          word-wrap: break-word !important;
-          word-break: normal;
-          text-align: center;
+        .outBnt {
+          width: 60px;
+          height: 60px;
+          border-radius: 18px;
+          background-color: #ffffff;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-right: 20px;
         }
       }
-    }
 
-    .logOutBtn {
-      position: fixed;
-      bottom: 160px;
-      width: 70%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #4c5093;
-      border-radius: 50px;
-      text-align: center;
-      line-height: 140px;
-      font-family: Inter;
-      font-size: 34px;
-      font-weight: 500;
-      text-align: center;
-      letter-spacing: -0.45px;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: transform 0.3s ease-in-out;
-      height: 100px;
-      background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
-      .outBnt {
-        width: 60px;
-        height: 60px;
-        border-radius: 18px;
-        background-color: #ffffff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 20px;
+      .logOutBtn:active {
+        transform: translate(5px, 5px);
       }
-    }
-
-    .logOutBtn:active {
-      transform: translate(5px, 5px);
     }
   }
-}
 </style>
 <style lang="scss">
-.custom-action_sheet {
-  display: flex;
-  flex-direction: column;
-
-  &>div:not(:last-child) {
-    padding: 10px 20px;
-    width: 100%;
-    height: 90px;
-    line-height: 90px;
-    display: grid;
-    grid-template-columns: 80px auto;
-    align-items: center;
-  }
-
-  &>div:last-child {
-    height: 100px;
-    background-color: #f7f7f7;
-    font-size: 32px;
+  .custom-action_sheet {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 600;
+    flex-direction: column;
+
+    & > div:not(:last-child) {
+      padding: 10px 20px;
+      width: 100%;
+      height: 90px;
+      line-height: 90px;
+      display: grid;
+      grid-template-columns: 80px auto;
+      align-items: center;
+    }
+
+    & > div:last-child {
+      height: 100px;
+      background-color: #f7f7f7;
+      font-size: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+    }
   }
-}
 </style>

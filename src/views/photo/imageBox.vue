@@ -269,6 +269,7 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   import { poolUrl } from '@/setting.js';
   import { list } from 'postcss';
+  import moment from 'moment';
 
   let server;
   const { isAvailableOrder, header, metadata, deviceType, orderInfo, bucketName, accessKeyId, secretAccessKey, getOrderInfo } =
@@ -500,6 +501,24 @@
         const transferData = {
           commonPrefixes: res.getCommonprefixesList(),
           content: res.getContentList().map((el) => {
+            const imageObj = el.getImages().toObject();
+            const imageInfo = {};
+            let isShowDetail = false;
+            if (imageObj.camerainfo?.make) {
+              isShowDetail = true;
+              imageInfo.aperture = imageObj.addition.aperture; //光圈
+              imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+              imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
+              imageInfo.exptime = imageObj.addition.exptime; //曝光时间
+              imageInfo.orientation = imageObj.addition.orientation; //方向
+              imageInfo.focallength = imageObj.addition.focallength; //焦距
+              imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
+              imageInfo.software = imageObj.addition.software; // 使用软件
+              imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
+              imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
+              imageInfo.gps = imageObj.gps; //经纬度
+              imageInfo.resolution = imageObj.resolution; //像素
+            }
             return {
               key: el.getKey(),
               etag: el.getEtag(),
@@ -516,6 +535,9 @@
               isPersistent: el.getIspersistent(),
               category: el.getCategory(),
               tags: el.getTags(),
+              imageInfo: imageInfo,
+              isShowDetail,
+              nftInfoList: el.getNftinfosList(),
             };
           }),
           continuationToken: res.getContinuationtoken(),
@@ -568,6 +590,8 @@
       let isPersistent = el.isPersistent;
 
       let item = {
+        imageInfo: el.imageInfo,
+        isShowDetail: el.isShowDetail,
         fileType: 2,
         isDir: isDir,
         name,

@@ -357,8 +357,8 @@
   import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
   import ErrorPage from '@/views/errorPage/index.vue';
   import useDelete from './useDelete.js';
+  import moment from 'moment';
   // import { status } from 'grpc';
-  import HLSVideo from './hlsVideo.vue';
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
   const dialogShow = ref(false);
@@ -1253,7 +1253,27 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
+                  getImages: () => any;
+                  getNftinfosList: () => any;
                 }) => {
+                  const imageObj = el.getImages().toObject();
+                  const imageInfo = {};
+                  let isShowDetail = false;
+                  if (imageObj.camerainfo?.make) {
+                    isShowDetail = true;
+                    imageInfo.aperture = imageObj.addition.aperture; //光圈
+                    imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+                    imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
+                    imageInfo.exptime = imageObj.addition.exptime; //曝光时间
+                    imageInfo.orientation = imageObj.addition.orientation; //方向
+                    imageInfo.focallength = imageObj.addition.focallength; //焦距
+                    imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
+                    imageInfo.software = imageObj.addition.software; // 使用软件
+                    imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
+                    imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
+                    imageInfo.gps = imageObj.gps; //经纬度
+                    imageInfo.resolution = imageObj.resolution; //像素
+                  }
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1270,6 +1290,9 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
+                    imageInfo: imageInfo,
+                    isShowDetail,
+                    nftInfoList: el.getNftinfosList(),
                   };
                 },
               ),
@@ -1392,6 +1415,8 @@
       console.log(data.content[j], 'data.content[j]');
 
       let item = {
+        imageInfo: data.content[j].imageInfo,
+        isShowDetail: data.content[j].isShowDetail,
         isDir: isDir,
         checked: false,
         name,

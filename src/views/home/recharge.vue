@@ -14,6 +14,16 @@
               <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
             </div>
           </div>
+          <template v-if="rechargeDMC">
+            <div class="total_income_text" style="margin-top: 10px">Your need recharge:</div>
+
+            <div class="total_income">
+              <div class="balance_text">
+                <span>{{ rechargeDMC }}</span>
+                <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
+              </div>
+            </div>
+          </template>
         </div>
         <div class="card_row_1 pst-row">
           <div @click="dialogShow = true">
@@ -108,7 +118,9 @@
   const dmc = computed(() => userStore.getUserInfo.dmc);
   const email = computed(() => userStore.getUserInfo.email);
   const router = useRouter();
+  const route = useRoute();
   const dialogShow = ref(false);
+  const rechargeDMC = route.query.rechargeDMC || '';
   const state = reactive({
     amount: '1.0000',
     memo: '',
