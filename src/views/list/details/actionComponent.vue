@@ -324,9 +324,6 @@
             :images="images"
             @change="swipeChange"
           >
-            <!-- <template #index>
-              <span> {{ imgStartIndex + 1 }}/{{ images.length }} </span>
-            </template> -->
             <template #cover>
               <div class="detail_top">
                 <IconArrowLeft @click="emits('update:detailShow', false)" class="detail_back" color="#fff"></IconArrowLeft>
