@@ -1,7 +1,12 @@
 <template>
   <Teleport to="body">
     <nut-drag class="button_drag" attract>
-      <nut-button class="upload_btn" type="primary" @click="popShow = true">+</nut-button>
+      <!-- <div class="upload_btn" @click="popShow = true">
+
+      </div> -->
+      <nut-button class="upload_btn" type="primary" @click="popShow = true">
+      <IconPlus></IconPlus>
+      </nut-button>
     </nut-drag>
   </Teleport>
   <Teleport to="body">
@@ -79,6 +84,7 @@ import settingIcon from '~icons/home/setting.svg';
 import CancelBoxIcon from '~icons/home/cancel-box.svg';
 import EditIcon from '~icons/home/edit.svg';
 import lightningIcon from '~icons/home/lightning.svg';
+import IconPlus from '~icons/home/plus.svg';
 import useOrderList from './useOrderList.ts';
 import useOrderInfoFast from './useOrderInfoFast.js';
 import FolderList from './folderList.vue';
@@ -286,11 +292,9 @@ onMounted(async () => {
   height: 80px;
   cursor: pointer;
   z-index: 1000;
-  display: grid;
-  // place-items: center;
-  align-content: center;
+  color:#fff;
 
-  img {
+ svg, img {
     width: 100%;
     height: 100%;
   }

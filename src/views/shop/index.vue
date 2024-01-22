@@ -405,7 +405,7 @@
       showBuy.value = false;
       loading.value = false;
       const dmcOk = () => {
-        router.push('/recharge');
+        router.push({ path: '/recharge', query: { rechargeDMC } });
       };
       let src = require('@/assets/DMC_token.png');
       let str = `<img class="bind_img" src=${src} style="height:60px;"/>

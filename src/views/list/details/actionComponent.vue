@@ -97,7 +97,6 @@
     >
       <div class="fileItem_header">
         <img v-if="chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
-
         <div class="fileItem_header_right">
           <div style="width: 85%">{{ chooseItem.fullName }}</div>
           <div>{{ chooseItem.imageInfo?.datetime }} · {{ chooseItem.size }}</div>
@@ -250,7 +249,10 @@
           </nut-picker>
         </nut-popup>
 
-        <nut-button type="info" block @click="() => confirmHttpShare(shareType, shareCheckData, accessKeyId, secretAccessKey, bucketName)"
+        <nut-button
+          type="info"
+          block
+          @click="() => confirmHttpShare(shareType, shareCheckData[0], accessKeyId, secretAccessKey, bucketName)"
           >Confirm</nut-button
         >
       </div>
@@ -371,9 +373,7 @@
   import IconCopy from '~icons/home/copy.svg';
   // import IconIPFS from '~icons/home/ipfs.svg';
   import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
-
   import FlashLight from '~icons/ri/flashlight-fill';
-
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
@@ -421,7 +421,6 @@
   const { getOrderInfo } = useOrderInfo();
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
     // 此正则表达式涵盖了大多数使用的手机和平板设备
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
   });

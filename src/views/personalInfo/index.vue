@@ -24,14 +24,13 @@
       <!-- <nut-cell :desc="item.address"></nut-cell> -->
 
       <nut-cell v-for="(item, index) in walletInfo">
-         <template #title> <span v-show="index == 0">ERC20 Address</span> </template> 
+        <template #title> <span v-show="index == 0">ERC20 Address</span> </template>
         <template #desc>
-           <span v-if="!item.eyeState">{{ item.address }}</span> 
-          <span v-else>{{ item.address.slice(0, 5) + '...' + item.address.slice(-5) }}</span> 
-          <eyeOffIon v-if="!item.eyeState" @click="item.eyeState = true" style="font-size: 12px; margin-left: 8px" /> 
-          <eyeIon v-if="item.eyeState" @click="item.eyeState = false" style="font-size: 12px; margin-left: 8px" /> 
+          <span v-if="item.eyeState">{{ item.address }}</span>
+          <span v-else>{{ item.address.slice(0, 5) + '...' + item.address.slice(-5) }}</span>
+          <eyeOffIon v-if="item.eyeState" @click="item.eyeState = false" style="font-size: 12px; margin-left: 8px" />
+          <eyeIon v-if="!item.eyeState" @click="item.eyeState = true" style="font-size: 12px; margin-left: 8px" />
         </template>
- 
       </nut-cell>
       <div class="add_link_wallet" @click="showAllWalletList"> <MetaMask></MetaMask> Add </div>
     </nut-cell-group>
