@@ -68,7 +68,6 @@
             :init-page="page"
             :loop="true"
             auto-play="0"
-            direction="vertical"
             height="150"
             :pagination-visible="true"
             :is-prevent-default="false"
@@ -1918,6 +1917,12 @@
       border-radius: 20px;
       width: 40%;
       :deep {
+        .nut-swiper {
+          width: 100%;
+          .nut-swiper-item {
+            width: 100%;
+          }
+        }
         .nut-swiper-pagination {
           position: absolute;
           right: 0;
