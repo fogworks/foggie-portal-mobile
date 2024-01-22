@@ -250,6 +250,14 @@ export const routes = [
               notBar: true,
             },
           },
+          {
+            path: '/scanQRCodes',
+            name: 'scanQRCodes',
+            component: () => import('@/components/scanQRCodes.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
         ],
       },
     ],
