@@ -10,6 +10,7 @@
       :headers="formData"
       :before-xhr-upload="beforeXhrUpload"
       :xhr-state="successStatus"
+      :maximum="1000"
       @success="uploadSuccess"
       @progress="onProgress"
       @start="onStart"
@@ -84,6 +85,7 @@
 
   const uploadList = ref<any[]>([]);
 
+  const uploaderList = ref<any[]>([]);
   // const props = defineProps({
   //   bucketName: [String],
   //   accessKeyId: [String],
@@ -204,6 +206,8 @@
       uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
       console.log('uploadList------', uploadList.value);
 
+      uploaderList.value = fileArr;
+
       resolve(fileArr);
     });
   };
@@ -263,6 +267,7 @@
   );
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     isDisabled.value = false;
+    console.log('uploadSuccess-----', responseText, option, fileItem);
     window.sessionStorage.setItem('uploadFileName', fileItem.name);
 
     uploadStatus.value = 'success';
@@ -297,17 +302,18 @@
     if (!isAndroid.value) uploadRef.value.clearUploadQueue();
   };
 
-  const onProgress = ({ event, options, percentage }: any) => {
-    console.log('onProgress', event, options, percentage);
+  const onProgress = ({ event, option, percentage }: any) => {
+    debugger
+    console.log('onProgress', option.sourceFile.name, percentage);
     uploadProgress.value = percentage;
     downloadProgress(event.loaded, event.total);
   };
 
-  const onStart = ({ options }: any) => {
+  const onStart = ({ option }: any) => {
     uploadProgress.value = 0;
     uploadProgressIsShow.value = true;
     uploadStatus.value = 'uploading';
-    console.log('onStart', options);
+    console.log('onStart', option);
     isDisabled.value = true;
   };
 
@@ -329,52 +335,76 @@
   };
 
   const beforeXhrUpload = async (xhr: XMLHttpRequest, options: any) => {
-    const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
-    console.log('beforeXhrUpload---------111', options, options.sourceFile, bucketName, accessKeyId, secretAccessKey, prefix);
     
-    const fileCopy = options.sourceFile;
-    console.log('beforeXhrUpload---------222', fileCopy, uploadUri.value);
-    let prefixStr = '';
-      if (prefix?.length > 0) {
-        prefixStr = prefix.join('/') + '/';
+    return new Promise(async (resolve, reject) => {
+      const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
+      console.log('beforeXhrUpload---------111', options, options.sourceFile, bucketName, accessKeyId, secretAccessKey, prefix);
+      
+      const fileCopy = options.sourceFile;
+      console.log('beforeXhrUpload---------222', fileCopy, uploadUri.value);
+      let prefixStr = '';
+        if (prefix?.length > 0) {
+          prefixStr = prefix.join('/') + '/';
+        }
+
+      const policy = {
+        expiration: new Date(Date.now() + 3600 * 1000),
+        conditions: [
+          { bucket: bucketName },
+          { acl: 'public-read' },
+          ['starts-with', fileCopy, prefixStr],
+          ['starts-with', '$Content-Type', ''],
+        ],
+      };
+      const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
+
+      let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
+      const signature = enc.Base64.stringify(hmac);
+      const md5Hash = await calculateMD5(fileCopy);
+      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+
+      formData.value = {
+        Key: encodeURIComponent(prefixStr + fileCopy.name),
+        Policy: policyBase64,
+        Signature: signature,
+        Awsaccesskeyid: accessKeyId,
+        category: getType(fileCopy.name),
+        'Content-Md5': md5Hash,
+        'App-Type': appType,
+      };
+    
+      options.headers = {
+        ...options.headers,
+        ...formData.value,
+      };
+      let _form = new FormData();
+      for (const [key, value] of Object.entries(options.headers)) {
+        xhr.setRequestHeader(key as string, value as string);
+        _form.append(key, value);
       }
+      _form.append('file', options.sourceFile);
+      options.formData = _form;
 
-    const policy = {
-      expiration: new Date(Date.now() + 3600 * 1000),
-      conditions: [
-        { bucket: bucketName },
-        { acl: 'public-read' },
-        ['starts-with', fileCopy, prefixStr],
-        ['starts-with', '$Content-Type', ''],
-      ],
-    };
-    const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
+      console.log('beforeXhrUpload---------333', formData.value, options);
+      console.log('beforeXhrUpload---------444', [...options.formData.entries()]);
 
-    let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
-    const signature = enc.Base64.stringify(hmac);
-    const md5Hash = await calculateMD5(fileCopy);
-    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+      xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
+      xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
+      // xhr.send(options.formData);
 
-    formData.value = {
-      Key: encodeURIComponent(prefixStr + fileCopy.name),
-      Policy: policyBase64,
-      Signature: signature,
-      Awsaccesskeyid: accessKeyId,
-      category: getType(fileCopy.name),
-      'Content-Md5': md5Hash,
-      'App-Type': appType,
-    };
-  
-    options.headers = {
-      ...options.headers,
-      ...formData.value,
-    };
-
-    console.log('beforeXhrUpload---------333', formData.value, options);
-
-    xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
-    xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
-    xhr.send(options.formData);
+      xhr.onload = function() {
+      if (this.status >= 200 && this.status < 300) {
+          resolve(xhr.response);
+        } else {
+          reject();
+        }
+      };
+      xhr.onerror = function() {
+        reject();
+      };
+      xhr.send(options.formData)
+    });
+    
   };
   const { startUpload } = useSyncPhotos({
     bucketName,
