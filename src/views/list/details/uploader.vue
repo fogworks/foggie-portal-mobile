@@ -266,8 +266,8 @@
     { leading: true, trailing: true },
   );
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
-    console.log('uploadSuccess-----', responseText, option, fileItem, xhrArray.value);
-    if (xhrArray.value.length === 0) {
+    console.log('uploadSuccess-----', responseText, option, fileItem, isUploadComplete.value);
+    if (isUploadComplete.value) {
       isDisabled.value = false;
       window.sessionStorage.setItem('uploadFileName', fileItem.name);
 
@@ -319,7 +319,7 @@
   };
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
-    if (xhrArray.value.length === 0) {
+    if (isUploadComplete.value) {
       console.log(responseText, option, fileItem);
 
       showToast.fail('Upload failed, please try again later');
@@ -342,13 +342,17 @@
   const beforeXhrUpload = async (xhr: XMLHttpRequest, options: any) => {
     xhrArray.value.push({xhr, options} as never);
     if (xhrArray.value.length === uploaderList.value.length) {
+      isUploadComplete.value = false;
       sendAllRequests();
     }
   };
   
+  const isUploadComplete = ref(false);
   const sendAllRequests = async()=> {
-    console.log('sendAllRequests---------', xhrArray.value);
-    for (let i = 0; i < xhrArray.value.length; i++) {      
+    for (let i = 0; i < xhrArray.value.length; i++) {  
+      if (i === xhrArray.value.length - 1) {
+        isUploadComplete.value = true;
+      }
       try {
         let response = await sendRequest(xhrArray.value[i].xhr, xhrArray.value[i].options);
         console.log('Response:', response);
