@@ -1176,6 +1176,7 @@
                   getCategory: () => any;
                   getTags: () => any;
                   getImages: () => any;
+                  getNftinfosList: () => any;
                 }) => {
                   const imageObj = el.getImages().toObject();
                   const imageInfo = {};
@@ -1213,6 +1214,7 @@
                     tags: el.getTags(),
                     imageInfo: imageInfo,
                     isShowDetail,
+                    nftInfoList: el.getNftinfosList(),
                   };
                 },
               ),
