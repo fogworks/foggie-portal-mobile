@@ -266,44 +266,45 @@
     { leading: true, trailing: true },
   );
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
-    isDisabled.value = false;
-    console.log('uploadSuccess-----', responseText, option, fileItem);
-    window.sessionStorage.setItem('uploadFileName', fileItem.name);
+    console.log('uploadSuccess-----', responseText, option, fileItem, xhrArray.value);
+    if (xhrArray.value.length === 0) {
+      isDisabled.value = false;
+      window.sessionStorage.setItem('uploadFileName', fileItem.name);
 
-    uploadStatus.value = 'success';
+      uploadStatus.value = 'success';
 
-    // emits('getFileList');
+      // emits('getFileList');
 
-    let used_space = await getSummary();
-    if (!amb_uuid.value) {
-      let res = await get_unique_order({ order_uuid: route?.query?.uuid });
-      amb_uuid.value = res?.result?.data?.amb_uuid;
+      let used_space = await getSummary();
+      if (!amb_uuid.value) {
+        let res = await get_unique_order({ order_uuid: route?.query?.uuid });
+        amb_uuid.value = res?.result?.data?.amb_uuid;
+      }
+      if (used_space) {
+        const d = {
+          orderId: order_id.value,
+          uuid: amb_uuid.value,
+          orderUuid: memo.value,
+          rpc: props.orderInfo.value.rpc,
+          fileSize: option?.sourceFile?.size,
+          usedSpace: used_space,
+        };
+        await save_upload(d).then((res) => {
+          console.log('save_upload-----', res);
+        });
+      }
+
+      delay(() => {
+        uploadProgressIsShow.value = false;
+      }, 2000);
+
+      emits('uploadComplete');
+
+      if (!isAndroid.value) uploadRef.value.clearUploadQueue();
     }
-    if (used_space) {
-      const d = {
-        orderId: order_id.value,
-        uuid: amb_uuid.value,
-        orderUuid: memo.value,
-        rpc: props.orderInfo.value.rpc,
-        fileSize: option?.sourceFile?.size,
-        usedSpace: used_space,
-      };
-      await save_upload(d).then((res) => {
-        console.log('save_upload-----', res);
-      });
-    }
-
-    delay(() => {
-      uploadProgressIsShow.value = false;
-    }, 2000);
-
-    emits('uploadComplete');
-
-    if (!isAndroid.value) uploadRef.value.clearUploadQueue();
   };
 
   const onProgress = ({ event, option, percentage }: any) => {
-    debugger
     console.log('onProgress', option.sourceFile.name, percentage);
     uploadProgress.value = percentage;
     downloadProgress(event.loaded, event.total);
@@ -314,19 +315,21 @@
     uploadProgressIsShow.value = true;
     uploadStatus.value = 'uploading';
     console.log('onStart', option);
-    isDisabled.value = true;
+    // isDisabled.value = true;
   };
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
-    console.log(responseText, option, fileItem);
+    if (xhrArray.value.length === 0) {
+      console.log(responseText, option, fileItem);
 
-    showToast.fail('Upload failed, please try again later');
-    delay(() => {
-      uploadProgressIsShow.value = false;
-    }, 3000);
-    uploadStatus.value = 'error';
-    isDisabled.value = false;
-    if (!isAndroid.value) uploadRef.value.clearUploadQueue();
+      showToast.fail('Upload failed, please try again later');
+      delay(() => {
+        uploadProgressIsShow.value = false;
+      }, 3000);
+      uploadStatus.value = 'error';
+      isDisabled.value = false;
+      if (!isAndroid.value) uploadRef.value.clearUploadQueue();
+    }
   };
 
   const onChange = ({ fileList, event }: any) => {
@@ -334,44 +337,65 @@
         
   };
 
+  const xhrArray = ref<any[]>([]);
+
   const beforeXhrUpload = async (xhr: XMLHttpRequest, options: any) => {
-    
+    xhrArray.value.push({xhr, options} as never);
+    if (xhrArray.value.length === uploaderList.value.length) {
+      sendAllRequests();
+    }
+  };
+  
+  const sendAllRequests = async()=> {
+    console.log('sendAllRequests---------', xhrArray.value);
+    for (let i = 0; i < xhrArray.value.length; i++) {      
+      try {
+        let response = await sendRequest(xhrArray.value[i].xhr, xhrArray.value[i].options);
+        console.log('Response:', response);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+    xhrArray.value = [];
+  }
+
+  const getHeaders = async (options) => {
+    const { bucketName, accessKeyId, secretAccessKey, prefix } = props;
+    const fileCopy = options.sourceFile;
+    let prefixStr = '';
+    if (prefix?.length > 0) {
+      prefixStr = prefix.join('/') + '/';
+    }
+
+    const policy = {
+      expiration: new Date(Date.now() + 3600 * 1000),
+      conditions: [
+        { bucket: bucketName },
+        { acl: 'public-read' },
+        ['starts-with', fileCopy, prefixStr],
+        ['starts-with', '$Content-Type', ''],
+      ],
+    };
+    const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
+
+    let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
+    const signature = enc.Base64.stringify(hmac);
+    const md5Hash = await calculateMD5(fileCopy);
+    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+
+    formData.value = {
+      Key: encodeURIComponent(prefixStr + fileCopy.name),
+      Policy: policyBase64,
+      Signature: signature,
+      Awsaccesskeyid: accessKeyId,
+      category: getType(fileCopy.name),
+      'Content-Md5': md5Hash,
+      'App-Type': appType,
+    };
+  }
+  const sendRequest = async (xhr, options)=> {
     return new Promise(async (resolve, reject) => {
-      const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
-      console.log('beforeXhrUpload---------111', options, options.sourceFile, bucketName, accessKeyId, secretAccessKey, prefix);
-      
-      const fileCopy = options.sourceFile;
-      console.log('beforeXhrUpload---------222', fileCopy, uploadUri.value);
-      let prefixStr = '';
-        if (prefix?.length > 0) {
-          prefixStr = prefix.join('/') + '/';
-        }
-
-      const policy = {
-        expiration: new Date(Date.now() + 3600 * 1000),
-        conditions: [
-          { bucket: bucketName },
-          { acl: 'public-read' },
-          ['starts-with', fileCopy, prefixStr],
-          ['starts-with', '$Content-Type', ''],
-        ],
-      };
-      const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
-
-      let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
-      const signature = enc.Base64.stringify(hmac);
-      const md5Hash = await calculateMD5(fileCopy);
-      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-
-      formData.value = {
-        Key: encodeURIComponent(prefixStr + fileCopy.name),
-        Policy: policyBase64,
-        Signature: signature,
-        Awsaccesskeyid: accessKeyId,
-        category: getType(fileCopy.name),
-        'Content-Md5': md5Hash,
-        'App-Type': appType,
-      };
+      await getHeaders(options);
     
       options.headers = {
         ...options.headers,
@@ -384,13 +408,8 @@
       }
       _form.append('file', options.sourceFile);
       options.formData = _form;
-
-      console.log('beforeXhrUpload---------333', formData.value, options);
-      console.log('beforeXhrUpload---------444', [...options.formData.entries()]);
-
       xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
       xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
-      // xhr.send(options.formData);
 
       xhr.onload = function() {
       if (this.status >= 200 && this.status < 300) {
@@ -404,8 +423,7 @@
       };
       xhr.send(options.formData)
     });
-    
-  };
+  }
   const { startUpload } = useSyncPhotos({
     bucketName,
     accessKeyId,
