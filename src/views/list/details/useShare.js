@@ -286,7 +286,30 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
   };
   const shareSlack = async (fileLink, checkData) => {
     let link = await createLowLink(fileLink, checkData);
-    copyLink(link);
+    let src = require('@/assets/svg/home/http2.svg');
+
+    // let src = IconHttp2;
+    let str = `<div>
+      <img style="height:60px; padding:0 20px;" src=${src}> 
+      </div> <div  class='http_share_text'>The link has been generated, please copy it.</div>`;
+    showDialog({
+      title: 'Http Link',
+      content: str,
+      okText: 'Copy',
+      noCancelBtn: true,
+      customClass: 'BuyOrderClass',
+      onOk: () => {
+        console.log(link, 'httpCopyLink.value');
+        copyLink(link);
+        showShareDialog.value = false;
+        // router.push({ name: 'listDetails', query: { id: res.data?.orderId, uuid: res.data?.uuid, amb_uuid: res.data?.ambUuid } });
+      },
+      beforeClose: () => {
+        showShareDialog.value = false;
+        return true;
+      },
+    });
+    // copyLink(link);
   };
   const confirmHttpShare = async (type, shareOption, awsAccessKeyId, awsSecretAccessKey, bucketName) => {
     shareRefContent.httpStr = getHttpShare(awsAccessKeyId, awsSecretAccessKey, bucketName, pinData.item.fullName);

@@ -361,13 +361,13 @@
 
   watch(
     curStepIndex,
-    (val) => {
+    (val, old) => {
       if (val === 4) {
         searchOrderProfit();
         searchAllOrderProfit();
       }
     },
-    { deep: true, immediate: true },
+    { deep: true },
   );
   const cloudBalanceNum = computed(() => {
     return formatNumber(cloudBalance.value);
@@ -408,6 +408,8 @@
           for (const item of res.result.data || []) {
             item.trx_id = handleID(item.trx_id);
           }
+          console.log('pnnnnnnnnnnn', pageNum.value);
+
           earningsList.value = earningsList.value.concat(res.result.data);
           // const newSetCloudList = [...earningsList.value, ...res.result.data];
           // let arr = [];

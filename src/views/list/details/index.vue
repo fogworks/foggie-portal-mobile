@@ -63,7 +63,7 @@
     <div class="detail_box">
       <div class="detail_box_toolbox">
         <div class="type_check_box type_check_box1" v-if="!mintType || mintType == 0">
-          <nut-swiper
+          <!-- <nut-swiper
             pagination-color="#496af2"
             :init-page="page"
             :loop="true"
@@ -71,7 +71,6 @@
             height="150"
             :pagination-visible="true"
             :is-prevent-default="false"
-            style="height: 150px"
           >
             <nut-swiper-item>
               <div
@@ -79,7 +78,6 @@
                 @click="getKey"
               >
                 <div class="svg_box svg_box2 order-icon-recycle">
-                  <!-- <keySolid color="#fff" /> -->
                   <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
                 </div>
                 <p>S3 Service</p>
@@ -89,7 +87,6 @@
                 @click="getIPFSService"
               >
                 <div class="svg_box svg_box2 order-icon-recycle">
-                  <!-- <keySolid color="#fff" /> -->
                   <img src="@/assets/ipfs.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
                 </div>
                 <p>IPFS Pinning</p>
@@ -108,7 +105,42 @@
                 <p>Miner Tool</p>
               </div>
             </nut-swiper-item>
-          </nut-swiper>
+          </nut-swiper> -->
+          <van-swipe :loop="true">
+            <van-swipe-item>
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getKey"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                </div>
+                <p>S3 Service</p>
+              </div>
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getIPFSService"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <img src="@/assets/ipfs.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                </div>
+                <p>IPFS Pinning</p>
+              </div>
+            </van-swipe-item>
+            <van-swipe-item>
+              <div
+                class="type_item s3key"
+                @click="
+                  router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })
+                "
+              >
+                <div class="svg_box svg_box2 order-icon-node-tree">
+                  <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
+                </div>
+                <p>Miner Tool</p>
+              </div>
+            </van-swipe-item>
+          </van-swipe>
         </div>
         <div class="type_check_box right_check_box">
           <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1, bucketName } })">
@@ -1943,15 +1975,26 @@
       width: 40%;
       :deep {
         .nut-swiper {
-          width: 100%;
+          width: 100% !important;
+          .nut-swiper-inner {
+            // width: 200% !important;
+          }
           .nut-swiper-item {
-            width: 100%;
+            width: 100% !important;
           }
         }
         .nut-swiper-pagination {
           position: absolute;
-          right: 0;
-          left: unset;
+          left: 1rem;
+          top: 1rem;
+        }
+        .van-swipe {
+          width: 100%;
+        }
+        .van-swipe__indicators {
+          position: absolute;
+          bottom: unset;
+          left: 1rem;
           top: 1rem;
         }
       }

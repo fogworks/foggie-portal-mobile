@@ -52,6 +52,7 @@ service.interceptors.response.use(
         userStore.setToken('');
         userStore.setRefreshToken('');
         userStore.setCloudCodeIsBind(false);
+        userStore.setcurStepIndex(1);
         router.push('/login');
         return;
       } else if (code === 420) {

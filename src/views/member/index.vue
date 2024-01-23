@@ -244,7 +244,7 @@
       onOk: () => {
         userStore.logout();
         userStore.setCloudCodeIsBind(false);
-
+        userStore.setcurStepIndex(1);
         // localStorage.removeItem('refresh_token');
         // router.push('/guide');
         router.push('/login');

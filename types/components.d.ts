@@ -73,5 +73,7 @@ declare module 'vue' {
     VanImagePreview: typeof import('vant/es')['ImagePreview']
     VanNumberKeyboard: typeof import('vant/es')['NumberKeyboard']
     VanPasswordInput: typeof import('vant/es')['PasswordInput']
+    VanSwipe: typeof import('vant/es')['Swipe']
+    VanSwipeItem: typeof import('vant/es')['SwipeItem']
   }
 }
