@@ -361,13 +361,13 @@
 
   watch(
     curStepIndex,
-    (val, old) => {
+    (val) => {
       if (val === 4) {
         searchOrderProfit();
         searchAllOrderProfit();
       }
     },
-    { deep: true },
+    { deep: true, immediate: true },
   );
   const cloudBalanceNum = computed(() => {
     return formatNumber(cloudBalance.value);
