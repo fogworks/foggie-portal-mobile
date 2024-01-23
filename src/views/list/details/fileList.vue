@@ -1549,8 +1549,27 @@
                   getCategory: () => any;
                   getTags: () => any;
                   getNftinfosList: () => any;
+                  getImages: () => any;
                 }) => {
                   console.log(el, 'el---');
+                  // const imageObj = el.getImages().toObject();
+                  // const imageInfo = {};
+                  // let isShowDetail = false;
+                  // if (imageObj.camerainfo?.make) {
+                  //   isShowDetail = true;
+                  //   imageInfo.aperture = imageObj.addition.aperture; //光圈
+                  //   imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+                  //   imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
+                  //   imageInfo.exptime = imageObj.addition.exptime; //曝光时间
+                  //   imageInfo.orientation = imageObj.addition.orientation; //方向
+                  //   imageInfo.focallength = imageObj.addition.focallength; //焦距
+                  //   imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
+                  //   imageInfo.software = imageObj.addition.software; // 使用软件
+                  //   imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
+                  //   imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
+                  //   imageInfo.gps = imageObj.gps; //经纬度
+                  //   imageInfo.resolution = imageObj.resolution; //像素
+                  // }
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1568,6 +1587,8 @@
                     category: el.getCategory(),
                     tags: el.getTags(),
                     nftInfoList: el.getNftinfosList(),
+                     // imageInfo,
+                    // isShowDetail,
                   };
                 },
               );
@@ -1811,6 +1832,44 @@
 
         console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
 
+        let imageInfo = {
+          aperture: '',
+          datetime: '', //拍摄时间
+          exposuretime: '', //ev曝光量
+          exptime: '', //曝光时间
+          orientation: '', //方向
+          focallength: '', //焦距
+          Flash: false, //是否使用闪光灯
+          software: '', // 使用软件
+          iso: '', //iso
+          camerainfo: '', //手机厂商及其机型
+          gps: '', //经纬度
+          resolution: '', //像素
+        };
+        let isShowDetail = false;
+        
+        if (fileInfo.image_infos && Object.keys(fileInfo.image_infos).length > 0) {
+          let key = Object.keys(fileInfo.image_infos)[0];
+          let imageObj = fileInfo.image_infos[key];
+          if (imageObj && imageObj.addition) {
+            isShowDetail = true;
+            imageInfo.aperture = imageObj.addition.aperture;
+            imageInfo.datetime = moment(imageObj.addition.date_time, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+            imageInfo.exposuretime = imageObj.addition?.exposure_time; //ev曝光量
+            imageInfo.exptime = imageObj.addition?.exp_time; //曝光时间
+            imageInfo.orientation = imageObj.addition?.orientation; //方向
+            imageInfo.focallength = imageObj.addition?.focal_length; //焦距
+            imageInfo.Flash = imageObj.addition?.flash || false; //是否使用闪光灯
+            imageInfo.software = imageObj.addition?.software; // 使用软件
+            imageInfo.iso = imageObj.addition?.iso.charCodeAt(0);
+            imageInfo.camerainfo = imageObj?.camera_info; //手机厂商及其机型
+            imageInfo.gps = imageObj?.gps; //经纬度
+            imageInfo.resolution = imageObj?.resolution; //像素
+          }
+          console.log('FILE_ADD-----------tableData', imageInfo);
+        }
+        
+
         let item = {
           isDir: false,
           checked: false,
@@ -1840,6 +1899,8 @@
           isPin: false,
           isPinCyfs: false,
           type,
+          isShowDetail,
+          imageInfo,
         };
         tableData.value.push(item);
         if (item.category == 1) {
