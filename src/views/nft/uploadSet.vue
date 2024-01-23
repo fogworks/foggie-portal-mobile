@@ -1,10 +1,7 @@
 <template>
   <Teleport to="body">
     <nut-drag class="button_drag" attract>
-      <!-- <div class="upload_btn" @click="popShow = true">
-
-      </div> -->
-      <nut-button class="upload_btn" type="primary" @click="popShow = true">
+      <nut-button class="upload_btn" type="primary" @click="popShow = !popShow">
       <IconPlus></IconPlus>
       </nut-button>
     </nut-drag>
@@ -17,14 +14,14 @@
           <span>
             CUSTOM UPLOAD PATH
           </span>
-        <div>
-          <span>
-            {{ bucketName }}/{{ uploadPath }}
-          </span>
-          <EditIcon v-if="!needSet && canSet" class="edit_button" type="primary" @click="needSet = !needSet"></EditIcon>
-          <CancelBoxIcon v-else-if="needSet && canSet" class="edit_button" type="primary" @click="getBucketAndPath">
-          </CancelBoxIcon>
-        </div>
+          <div>
+            <span>
+              {{ bucketName }}/{{ uploadPath }}
+            </span>
+            <EditIcon v-if="!needSet && canSet" class="edit_button" type="primary" @click="needSet = !needSet"></EditIcon>
+            <CancelBoxIcon v-else-if="needSet && canSet" class="edit_button" type="primary" @click="getBucketAndPath">
+            </CancelBoxIcon>
+          </div>
         </p>
         <template v-if="needSet && canSet">
           <p class="title2">Setting up the upload bucket and directory</p>

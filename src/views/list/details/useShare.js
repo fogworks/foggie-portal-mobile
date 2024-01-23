@@ -9,6 +9,7 @@ import { transferUTCTime } from '@/utils/util.ts';
 import { shareUrl } from '@/setting.js';
 import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
+
 import IconHttp2 from '~icons/home/http2.svg';
 import { poolUrl } from '@/setting.js';
 import loadingImg from '@/components/loadingImg/index.vue';
@@ -19,7 +20,6 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
   const userStore = useUserStore();
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
     // 此正则表达式涵盖了大多数使用的手机和平板设备
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
   });
@@ -286,8 +286,8 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
   };
   const shareSlack = async (fileLink, checkData) => {
     let link = await createLowLink(fileLink, checkData);
-    let src = require('@/assets/svg/home/http2.svg');
-
+    let src = require('@/assets/svg/home/slack.svg');
+    showShareDialog.value = false;
     // let src = IconHttp2;
     let str = `<div>
       <img style="height:60px; padding:0 20px;" src=${src}> 
@@ -299,7 +299,6 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
       noCancelBtn: true,
       customClass: 'BuyOrderClass',
       onOk: () => {
-        console.log(link, 'httpCopyLink.value');
         copyLink(link);
         showShareDialog.value = false;
         // router.push({ name: 'listDetails', query: { id: res.data?.orderId, uuid: res.data?.uuid, amb_uuid: res.data?.ambUuid } });
