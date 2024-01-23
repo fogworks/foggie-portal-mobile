@@ -58,11 +58,13 @@
   const foggie_id = ref<any>('');
   const token = ref<any>('');
   const bucketName = ref<any>('');
-  bucketName.value = route.query.domain;
+  const domain = ref<any>('');
+  domain.value = route.query.domain;
+  bucketName.value = route.query.bucketName;
   const bucketUrl = ref<any>('');
   const loading = ref(false);
   bucketUrl.value = `https://${bucketName.value}.${poolUrl}:6008/pinning`;
-  ip.value = `https://${bucketName.value}.${poolUrl}:7007`;
+  ip.value = `https://${domain.value}.${poolUrl}:7007`;
   // peer_id.value = '12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp';
   // foggie_id.value = 'baeqagmrygu';
   // token.value = 'SIG_K1_KZgJypnYhkcohgLKczEKdjbXZehopW2RCA5NbWxs1LDsdnqLRqkpQFn3YUbUjnmrpysmi9SxFxcbtU2oRCRPo555jKvE1b';
