@@ -97,7 +97,6 @@
     >
       <div class="fileItem_header">
         <img v-if="chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
-
         <div class="fileItem_header_right">
           <div style="width: 85%">{{ chooseItem.fullName }}</div>
           <div>{{ chooseItem.imageInfo?.datetime }} · {{ chooseItem.size }}</div>
@@ -174,7 +173,7 @@
       round
       @closed="emits('update:moveShow', false)"
       :style="{ height: '100vh' }"
-      v-model:visible="moveShow"
+      v-model:visible="moveShow1"
     >
       <div class="rename_box move_box">
         <IconFolder></IconFolder>
@@ -250,7 +249,10 @@
           </nut-picker>
         </nut-popup>
 
-        <nut-button type="info" block @click="() => confirmHttpShare(shareType, shareCheckData, accessKeyId, secretAccessKey, bucketName)"
+        <nut-button
+          type="info"
+          block
+          @click="() => confirmHttpShare(shareType, shareCheckData[0], accessKeyId, secretAccessKey, bucketName)"
           >Confirm</nut-button
         >
       </div>
@@ -308,14 +310,14 @@
     </nut-popup>
     <Teleport to="body">
       <nut-overlay overlay-class="detail_over" v-model:visible="detailShow1" :close-on-click-overlay="false">
-        <div class="detail_top" v-if="chooseItem.category !== 1 && !imgUrl">
+        <div class="detail_top" v-if="chooseItem.category !== 1">
           <IconArrowLeft @click="emits('update:detailShow', false)" class="detail_back" color="#fff"></IconArrowLeft>
           <IconMore @click="clickFIleItem(chooseItem)" class="detail_back" color="#fff"></IconMore>
         </div>
         <HLSVideo v-if="chooseItem.category == 2" :imgUrl="imgUrl"></HLSVideo>
         <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
         <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
-        <div v-else-if="imgUrl" class="middle_img">
+        <div v-else-if="imgUrl && chooseItem.category == 1" class="middle_img">
           <van-image-preview
             ref="imgPreRef"
             v-model:show="detailShow"
@@ -324,9 +326,6 @@
             :images="images"
             @change="swipeChange"
           >
-            <!-- <template #index>
-              <span> {{ imgStartIndex + 1 }}/{{ images.length }} </span>
-            </template> -->
             <template #cover>
               <div class="detail_top">
                 <IconArrowLeft @click="emits('update:detailShow', false)" class="detail_back" color="#fff"></IconArrowLeft>
@@ -374,9 +373,7 @@
   import IconCopy from '~icons/home/copy.svg';
   // import IconIPFS from '~icons/home/ipfs.svg';
   import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
-
   import FlashLight from '~icons/ri/flashlight-fill';
-
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
@@ -421,9 +418,9 @@
   import { poolUrl } from '@/setting.js';
   import { get_order_sign } from '@/api/index';
   import { browserUrl } from '@/setting';
+  const { getOrderInfo } = useOrderInfo();
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
     // 此正则表达式涵盖了大多数使用的手机和平板设备
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
   });
@@ -431,6 +428,7 @@
     'update:fileItemPopupIsShow',
     'update:fileItemDetailPopupIsShow',
     'update:renameShow',
+    'update:moveShow',
     'update:detailShow',
     'update:imgStartIndex',
     'update:isNewFolder',
@@ -463,21 +461,24 @@
     secretAccessKey: String,
     metadata: Object,
     prefix: Array,
+    moveShow: Boolean,
   });
   const state = reactive({
     newName: '',
     fileItemPopupIsShow1: false,
     fileItemDetailPopupIsShow1: false,
     renameShow1: false,
-    moveShow: false,
+    moveShow1: false,
     movePrefix: [],
     dirData: [],
     currentFolder: '',
     continuationToken2: '',
     detailShow1: false,
     infinityValue: false,
+    imgPreRef: '',
   });
   const {
+    moveShow,
     prefix,
     accessKeyId,
     secretAccessKey,
@@ -501,13 +502,14 @@
     selectArr,
   } = toRefs(props);
   const {
+    imgPreRef,
     infinityValue,
     dirData,
     currentFolder,
     continuationToken2,
     movePrefix,
     newName,
-    moveShow,
+    moveShow1,
     detailShow1,
     fileItemPopupIsShow1,
     fileItemDetailPopupIsShow1,
@@ -535,13 +537,28 @@
     { deep: true, immediate: true },
   );
   watch(
-    detailShow,
+    moveShow,
     (val) => {
-      detailShow1.value = val;
+      moveShow1.value = val;
+      if (val) {
+        doSearch('', movePrefix.value, true);
+      }
     },
     { deep: true, immediate: true },
   );
-  const deviceType = computed(() => orderInfo.value.device_type);
+  watch(
+    detailShow,
+    (val) => {
+      detailShow1.value = val;
+      nextTick(() => {
+        if (imgPreRef.value) {
+          imgPreRef.value.swipeTo(imgStartIndex.value);
+        }
+      });
+    },
+    { deep: true, immediate: true },
+  );
+  const deviceType = computed(() => orderInfo.value.value.device_type);
   const {
     httpCopyLink,
     copyLink,
@@ -596,9 +613,9 @@
       await doShare(checkData[0]);
     } else if (type == 'move') {
       movePrefix.value = [];
-      //   emits('update:moveShow', true);
-      moveShow.value = true;
-      doSearch('', movePrefix.value, true);
+      emits('update:moveShow', true);
+      // moveShow.value = true;
+      // doSearch('', movePrefix.value, true);
     } else {
       emits('handlerClick', type);
     }
@@ -661,6 +678,7 @@
       //   id: 'file_list',
       //   coverColor: 'rgba(0,0,0,0.45)',
 
+      id: 'file_list',
       cover: true,
       coverColor: 'rgba(0,0,0,0.45)',
       customClass: 'app_loading',
@@ -834,9 +852,9 @@
         dirData.value = [];
       }
     }
-    // if (!accessKeyId.value) {
-    //   await getOrderInfo();
-    // }
+    if (!accessKeyId.value) {
+      await getOrderInfo();
+    }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
       if (data.prefix) {
@@ -1054,7 +1072,8 @@
         if (data) {
           if (index === length) {
             showToast.success('Move successful');
-            moveShow.value = false;
+            emits('update:moveShow', false);
+            // moveShow.value = false;
             movePrefix.value = [];
             emits('refresh');
             resolve(true);
@@ -1064,9 +1083,9 @@
           }
         } else {
           console.log(err, 'err');
-          movePrefix.value = [];
+          // movePrefix.value = [];
           showToast.fail(err.message || 'Move failed');
-          emits('refresh');
+          // emits('refresh');
 
           reject(false);
         }
@@ -1077,6 +1096,9 @@
     });
     // moveShow.value = false;
   };
+  defineExpose({
+    handlerClick,
+  });
 </script>
 <style lang="scss">
   .fileItemPopup.nut-popup {
@@ -1129,6 +1151,7 @@
           svg {
             width: 60px;
             height: 60px;
+            color: #000;
           }
         }
       }

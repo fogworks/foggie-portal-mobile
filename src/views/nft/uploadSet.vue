@@ -1,7 +1,12 @@
 <template>
   <Teleport to="body">
     <nut-drag class="button_drag" attract>
-      <nut-button class="upload_btn" type="primary" @click="popShow = true">+</nut-button>
+      <!-- <div class="upload_btn" @click="popShow = true">
+
+      </div> -->
+      <nut-button class="upload_btn" type="primary" @click="popShow = true">
+      <IconPlus></IconPlus>
+      </nut-button>
     </nut-drag>
   </Teleport>
   <Teleport to="body">
@@ -23,7 +28,12 @@
         </p>
         <template v-if="needSet && canSet">
           <p class="title2">Setting up the upload bucket and directory</p>
-          <nut-infinite-loading v-if="!folderListShow" load-more-txt="No more bucket" class="file_list file_list_move"
+          <nut-searchbar v-if="allTotal>10&&!folderListShow" v-model="keyWord" placeholder="Search by Bucket Name" clearable class="my_top_search">
+            <template #rightin>
+              <Search />
+            </template>
+          </nut-searchbar>
+          <nut-infinite-loading v-if="!folderListShow" :load-more-txt="listData.length ? '' : 'No available buckets, please purchase order first!'" class="file_list file_list_move"
             ref="listRef" v-model="infinityValue" :has-more="hasMore" @load-more="loadMoreFun">
             <div class="list_item" v-for="item in listData" @click="setBucket(item)">
               <div :class="['left_icon_box', item.checked ? 'is_checked' : '']">
@@ -43,8 +53,13 @@
         v-model:canSet="canSet" :header="header" :metadata="metadata" :orderInfo="orderInfo" :accessKeyId="accessKeyId"
         :prefix="uploadPath" :secretAccessKey="secretAccessKey" :bucketName="bucketName"></FastUploader>
       <p class="title2" v-if="!needSet">Select existing file casting</p>
+      <nut-searchbar v-if="allTotal>10&&!needSet" v-model="keyWord" placeholder="Search by Bucket Name" clearable class="my_top_search">
+        <template #rightin>
+          <Search @click="getList"/>
+        </template>
+      </nut-searchbar>
       <nut-infinite-loading v-if="!needSet"
-        :load-more-txt="listData.length ? 'No more bucket' : 'No available buckets, please purchase order first!'"
+        :load-more-txt="listData.length ? '' : 'No available buckets, please purchase order first!'"
         class="file_list file_list_move" ref="listRef" v-model="infinityValue" :has-more="hasMore"
         @load-more="loadMoreFun">
         <div class="list_item" v-for="item in listData" @click="gotoFileList(item)">
@@ -61,6 +76,7 @@
 </template>
 
 <script setup>
+import { Search } from '@nutui/icons-vue';
 import { showDialog, showToast } from '@nutui/nutui';
 import loadingImg from '@/components/loadingImg/index.vue';
 import FastUploader from './fastUploader.vue';
@@ -68,6 +84,7 @@ import settingIcon from '~icons/home/setting.svg';
 import CancelBoxIcon from '~icons/home/cancel-box.svg';
 import EditIcon from '~icons/home/edit.svg';
 import lightningIcon from '~icons/home/lightning.svg';
+import IconPlus from '~icons/home/plus.svg';
 import useOrderList from './useOrderList.ts';
 import useOrderInfoFast from './useOrderInfoFast.js';
 import FolderList from './folderList.vue';
@@ -90,6 +107,8 @@ const uploadPath = ref('');
 const router = useRouter();
 const popShow = ref(false);
 const isHistory = ref(false)
+const allTotal=ref(0)
+const keyWord=ref('')
 const checkBucket = computed(() => {
   return route.query.bucket || '';
 });
@@ -103,14 +122,22 @@ const loadMoreFun = async () => {
     ascending: false,
     is_domain: true,
     electronic_type: '0',
+    domain:keyWord.value
   };
   await loadMore([0, 1, 2, 3, 6], '', '', '', postData);
+  if (!keyWord.value) {
+    allTotal.value=total.value
+  }
   nextTick(() => {
     if (hasMore.value && listRef?.value?.$el?.clientHeight >= listRef?.value?.$el?.scrollHeight) {
       loadMoreFun();
     }
   });
 };
+const getList = async () => {
+  resetData();
+  await loadMoreFun();
+}
 const gotoFileList = (item) => {
   router.push({
     name: 'listDetails',
@@ -120,8 +147,13 @@ const gotoFileList = (item) => {
 const setBucket = async (item) => {
   console.log(item);
   bucketName.value = item.domain;
-  await getOrderInfo(true, item.uuid);
+  keyWord.value=''
   folderListShow.value = true;
+  try {
+    await getOrderInfo(true, item.uuid);
+  } catch {
+    folderListShow.value = false;
+  }
 };
 const getRouteOrder = async () => {
   await getOrderInfo(true, route_order_uuid.value);
@@ -140,7 +172,6 @@ const setBucketAndPath = async (isAuto = false) => {
     await set_bucket_file({ domain: bucketName.value, file_path: uploadPath.value });
     if (isAuto) {
       showToast.text(`has been automatically set up for you to upload to ${bucketName.value}/${uploadPath.value}`)
-
     }
     getBucketAndPath();
   } catch {
@@ -199,36 +230,25 @@ const setDefaultBucketAndPath = (isAuto = false) => {
     setBucketAndPath();
   }
 };
-// watch(
-//   cloudCodeIsBind,
-//   async (val) => {
-//     if (val) {
-//       resetData();
-//       await loadMoreFun();
-//       await getBucketAndPath();
-//     }
-//   },
-//   { deep: true, immediate: true },
-// );
 router.beforeEach(() => {
   popShow.value = false;
 });
-// watch(
-//   popShow,
-//   async (val) => {
-//     if (val) {
-//       resetData();
-//       await loadMoreFun();
-//       await getBucketAndPath();
-//     }
-//   },
-//   { deep: true, immediate: true },
-// );
 watch(
   needSet,
   async (val) => {
+    keyWord.value=''
     resetData();
     await loadMoreFun();
+    if (listData.value.length == 1&&val) {
+      bucketName.value = listData.value[0].domain;
+      uploadPath.value = '';
+      folderListShow.value = true;
+      try {
+          await getOrderInfo(true, listData.value[0].uuid);
+      } catch {
+        folderListShow.value = false;
+      }
+    }
   },
   { deep: true },
 );
@@ -241,7 +261,6 @@ watch(popShow, async (val) => {
 }, { deep: true })
 watch(cloudCodeIsBind, async (val) => {
   if (val) {
-    console.log(1111111111);
     resetData();
     await loadMoreFun();
     await getBucketAndPath();
@@ -273,8 +292,9 @@ onMounted(async () => {
   height: 80px;
   cursor: pointer;
   z-index: 1000;
+  color:#fff;
 
-  img {
+ svg, img {
     width: 100%;
     height: 100%;
   }

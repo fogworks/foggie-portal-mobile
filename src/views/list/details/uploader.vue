@@ -21,7 +21,8 @@
       multiple
     >
       <nut-button type="info" class="upload_btn" size="small">
-        +
+        <IconPlus></IconPlus>
+
         <!-- <img src="@/assets/newIcon/upload.png" alt="" srcset="" /> -->
       </nut-button>
     </nut-uploader>
@@ -51,6 +52,7 @@
 </template>
 
 <script setup lang="ts">
+  import IconPlus from '~icons/home/plus.svg';
   import { ref, toRefs, defineProps, inject } from 'vue';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
@@ -465,8 +467,7 @@
     width: 80px;
     height: 80px;
     cursor: pointer;
-    display: grid;
-    place-items: center;
+    svg,
     img {
       width: 100%;
       height: 100%;

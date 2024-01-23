@@ -144,51 +144,9 @@
     </div>
 
     <!-- preview -->
-    <Teleport to="body">
-      <nut-overlay overlay-class="photo_detail_prev" v-model:visible="imgDetailShow" :close-on-click-overlay="false">
-        <!-- <div class="detail_top">
-          <IconArrowLeft @click="imgDetailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-          <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
-        </div> -->
-        <div class="middle_img">
-          <van-image-preview
-            ref="imgPreRef"
-            v-model:show="imgDetailShow"
-            :closeOnClickOverlay="false"
-            :start-position="imgStartIndex"
-            :images="images"
-            @change="swipeChange"
-          >
-            <!-- <template #index>
-              <span> {{ imgStartIndex + 1 }}/{{ images.length }} </span>
-            </template> -->
-            <template #cover>
-              <div class="detail_top">
-                <IconArrowLeft @click="imgDetailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-                <!-- <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore> -->
-              </div>
-              <div class="bottom_action">
-                <!-- <div>
-                  <IconShare @click="handlerClick('share')"></IconShare>
-                  <p>Share</p>
-                </div> -->
-                <div>
-                  <IconDownload @click="handlerClick('download')"></IconDownload>
-                  <p>Download</p>
-                </div>
-                <!-- <div>
-                    <IconMore @click="showAction(chooseItem)" class="detail_back" color="#fff"></IconMore>
-                  <p>More</p>
-                </div> -->
-              </div>
-            </template>
-          </van-image-preview>
-        </div>
-      </nut-overlay>
-    </Teleport>
 
     <!-- more -->
-    <nut-popup
+    <!-- <nut-popup
       teleport-disable
       pop-class="photoBottomPop"
       position="bottom"
@@ -258,7 +216,37 @@
           <template #icon><IconDelete /> </template>Delete</nut-button
         >
       </div>
-    </nut-popup>
+    </nut-popup> -->
+    <ActionComponent
+      ref="actionRef"
+      v-model:fileItemPopupIsShow="fileItemPopupIsShow"
+      v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
+      v-model:renameShow="renameShow"
+      v-model:moveShow="moveShow"
+      v-model:detailShow="imgDetailShow"
+      v-model:imgStartIndex="imgStartIndex"
+      :category="1"
+      :header="header"
+      :prefix="[]"
+      :isAvailableOrder="isAvailableOrder"
+      :chooseItem="chooseItem"
+      :images="images"
+      :imgUrl="chooseItem.imgUrl"
+      :isMobileOrder="isMobileOrder"
+      :isNewFolder="false"
+      :selectArr="selectArr"
+      :bucketName="bucketName"
+      :metadata="metadata"
+      :orderInfo="orderInfo"
+      :isCheckMode="false"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      @refresh="refresh"
+      @handlerClick="handlerClick"
+      @swipeChange="swipeChange"
+      @clickFIleItemDetail="clickFIleItemDetail"
+      @clickFIleItem="clickFIleItem"
+    ></ActionComponent>
   </div>
 </template>
 <script setup>
@@ -270,17 +258,53 @@
   import { toRefs, ref, reactive, nextTick, watch, onMounted, computed, inject } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
-  import { showToast } from '@nutui/nutui';
+  import { showToast, showDialog } from '@nutui/nutui';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   import useOrderInfo from '@/views/list/details/useOrderInfo.js';
+  import useDelete from '@/views/list/details/useDelete.js';
+  import useShare from '@/views/list/details/useShare.js';
+  import ActionComponent from '@/views/list/details/actionComponent.vue';
   import imgUrl from '@/assets/DMC_token.png';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { poolUrl } from '@/setting.js';
   import { list } from 'postcss';
+  import moment from 'moment';
 
   let server;
-  const { header, metadata, deviceType, orderInfo, bucketName, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
+  const { isAvailableOrder, header, metadata, deviceType, orderInfo, bucketName, accessKeyId, secretAccessKey, getOrderInfo } =
+    useOrderInfo();
+
+  const {
+    httpCopyLink,
+    copyLink,
+    shareType,
+    confirmShare,
+    periodValue,
+    confirmPeriod,
+    periodShow,
+    desc,
+    imgDesc,
+    options,
+    doShare,
+    createNFT,
+    ipfsPin,
+    showShareDialog,
+    shareRefContent,
+    copyContent,
+    confirmHttpShare,
+    getHttpShare,
+    cloudPin,
+    copyIPFS,
+    copyNft,
+  } = useShare(orderInfo, header, deviceType, metadata);
+  const isMobileOrder = computed(() => {
+    if (orderInfo.value.electronic_type == '0') {
+      return true;
+    } else {
+      return false;
+    }
+  });
   const imgCheckedData = reactive({
     value: {},
   });
@@ -289,7 +313,7 @@
     isCheckMode: Boolean,
   });
   const handleImg = inject('handleImg');
-
+  const actionRef = ref('');
   const infinityValue = ref(false);
   const tableLoading = ref(false);
   const isReady = ref(false);
@@ -315,10 +339,24 @@
   const currentTimeValue = ref('All');
   const { chooseItem, imgData, currentTimeList, currentTimeArr } = toRefs(state);
   const fileItemPopupIsShow = ref(false);
+  const fileItemDetailPopupIsShow = ref(false);
+  const renameShow = ref(false);
+  const moveShow = ref(false);
   const $cordovaPlugins = inject('$cordovaPlugins');
   import { HmacSHA1, enc } from 'crypto-js';
   const pageFlag = ref('timeFlag');
-
+  const selectArr = computed(() => {
+    return [chooseItem.value];
+  });
+  const { deleteItem } = useDelete(
+    tableLoading,
+    () => {
+      refresh();
+    },
+    orderInfo,
+    header,
+    metadata,
+  );
   onMounted(async () => {
     await getOrderInfo();
     init();
@@ -366,7 +404,7 @@
         server = new grpcService.default.ServiceClient(ip, null, null);
 
         let ProxTimeLine = new Prox.default.ProxTimeLine();
-        ProxTimeLine.setHeader(header);
+        ProxTimeLine.setHeader(header.value);
         ProxTimeLine.setInterval(interval);
         ProxTimeLine.setDate(date);
         ProxTimeLine.setCategory(1);
@@ -456,13 +494,31 @@
     listObject.setCategory(1);
     listObject.setDate(date);
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
     server.listObjects(requestReq, metadata.value, (err, res) => {
       if (res) {
         const transferData = {
           commonPrefixes: res.getCommonprefixesList(),
           content: res.getContentList().map((el) => {
+            const imageObj = el.getImages().toObject();
+            const imageInfo = {};
+            let isShowDetail = false;
+            if (imageObj.camerainfo?.make) {
+              isShowDetail = true;
+              imageInfo.aperture = imageObj.addition.aperture; //光圈
+              imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+              imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
+              imageInfo.exptime = imageObj.addition.exptime; //曝光时间
+              imageInfo.orientation = imageObj.addition.orientation; //方向
+              imageInfo.focallength = imageObj.addition.focallength; //焦距
+              imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
+              imageInfo.software = imageObj.addition.software; // 使用软件
+              imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
+              imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
+              imageInfo.gps = imageObj.gps; //经纬度
+              imageInfo.resolution = imageObj.resolution; //像素
+            }
             return {
               key: el.getKey(),
               etag: el.getEtag(),
@@ -479,6 +535,9 @@
               isPersistent: el.getIspersistent(),
               category: el.getCategory(),
               tags: el.getTags(),
+              imageInfo: imageInfo,
+              isShowDetail,
+              nftInfoList: el.getNftinfosList(),
             };
           }),
           continuationToken: res.getContinuationtoken(),
@@ -507,7 +566,12 @@
       showToast.warn('Failed to  retrieve data. Please try again later');
     }
     let dir = '';
-    if (reset) imgData.value = [];
+    if (reset) {
+      imgData.value = [];
+    }
+    if (!accessKeyId.value) {
+      await getOrderInfo();
+    }
     let promiseArray = data?.content?.map(async (el, index) => {
       let date = transferTime(el.lastModified);
       let isDir = false;
@@ -526,11 +590,14 @@
       let isPersistent = el.isPersistent;
 
       let item = {
+        imageInfo: el.imageInfo,
+        isShowDetail: el.isShowDetail,
         fileType: 2,
         isDir: isDir,
         name,
         fullName: decodeURIComponent(el.key),
-        key: name,
+        key: el.key,
+        category: 1,
         idList: [
           {
             name: 'IPFS',
@@ -588,9 +655,12 @@
   };
 
   const refresh = async () => {
+    imgDetailShow.value = false;
     timeLine.value = [];
     dateTimeLine.value = [];
+    tableData.value = [];
     imgData.value = [];
+    imgArray.value = [];
     imgCheckedData.value = {};
     isReady.value = false;
     imgIndex.value = 0;
@@ -613,6 +683,7 @@
     const index = imgArray.value.findIndex((el) => el.fullName == item.fullName);
     imgStartIndex.value = index;
     imgDetailShow.value = true;
+    chooseItem.value = item;
     nextTick(() => {
       if (imgPreRef.value) {
         imgPreRef.value.swipeTo(imgStartIndex.value);
@@ -626,11 +697,15 @@
     fileItemPopupIsShow.value = true;
     // }
   };
-  const copyIPFS = () => {};
   const handlerClick = (type) => {
     let checkData = [];
     checkData = [chooseItem.value];
-    if (type === 'download') {
+    if (type === 'move') {
+      // if (category.value == 1) return false;
+      movePrefix.value = [];
+      moveShow.value = true;
+      // doSearch('', movePrefix.value, true);
+    } else if (type === 'download') {
       const objectKey = encodeURIComponent(checkData[0].fullName);
       const headers = getSignHeaders(objectKey);
       const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
@@ -664,6 +739,72 @@
             console.error('Network Error:', error);
           });
       }
+    } else if (type === 'delete') {
+      const onOk = async () => {
+        deleteItem(checkData);
+        fileItemPopupIsShow.value = false;
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to delete?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+        onOk,
+      });
+    } else if (type === 'rename') {
+      if (checkData.length > 1) return false;
+
+      renameShow.value = true;
+    } else if (type === 'share') {
+      if (checkData.length > 1) return false;
+      actionRef.value.handlerClick('share');
+      // await doShare(checkData[0]);
+      // cancelSelect();
+      // proxy.$notify({
+      //   customClass: "notify-success",
+      //   message: "Share succeeded",
+      //   position: "bottom-left",
+      // });
+    } else if (type == 'nft') {
+      if (checkData.length > 1) return false;
+      createNFT(checkData[0], accessKeyId.value, secretAccessKey.value, bucketName.value);
+    } else if (type === 'pin') {
+      const onOk = async () => {
+        await cloudPin(checkData[0], 'ipfs');
+        // doSearch('', prefix.value, true);
+        refresh();
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS PIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        onOk,
+      });
+    } else if (type === 'un pin') {
+      const onOk = async () => {
+        const d = await cloudPin(checkData[0], 'ipfs', 'unpin');
+        if (d) {
+          tableData.value.map((el) => {
+            if (el.cid && el.cid == checkData[0].cid) {
+              el.isPin = false;
+            }
+          });
+          refresh();
+        }
+
+        // doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS UNPIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+
+        onOk,
+      });
     }
   };
   const getSignHeaders = (objectKey) => {
@@ -684,6 +825,15 @@
     };
     return headers;
   };
+  function clickFIleItem(params) {
+    chooseItem.value = params;
+    fileItemPopupIsShow.value = true;
+  }
+
+  function clickFIleItemDetail(params) {
+    console.log(params);
+    fileItemDetailPopupIsShow.value = true;
+  }
   function handleID(id) {
     if (id) {
       return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
@@ -692,6 +842,7 @@
   watch(
     isReady,
     (val) => {
+      // getFileList('', '', true);
       getFileList();
     },
     { deep: true },

@@ -105,6 +105,16 @@ export const routes = [
         },
       },
       {
+        name: 'IPFSService',
+        path: 'ipfsService',
+        component: () => import('@/views/list/details/ipfsService.vue'),
+        meta: {
+          title: 'list.getKey',
+          border: false,
+          notKeepAlive: true,
+        },
+      },
+      {
         path: 'fileList',
         name: 'FileList',
         component: () => import('@/views/list/details/fileList.vue'),
@@ -246,6 +256,14 @@ export const routes = [
             path: '/walletConnect',
             name: 'WalletConnect',
             component: () => import('@/views/nft/walletConnect.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+          {
+            path: '/scanQRCodes',
+            name: 'scanQRCodes',
+            component: () => import('@/components/scanQRCodes.vue'),
             meta: {
               notBar: true,
             },

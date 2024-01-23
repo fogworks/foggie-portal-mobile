@@ -8,7 +8,7 @@ import useOrderInfo from './useOrderInfo.js';
 import { poolUrl } from '@/setting.js';
 
 // import { isCloudCanUpload_Api } from '@/api/upload';
-// const { bucketName, metadata } = useOrderInfo();
+
 export default function useDelete(tableLoading, refresh, orderInfo, header, metadata) {
   const deleteItem = (item) => {
     tableLoading.value = true;
@@ -17,7 +17,7 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
     let objects = '';
     let ProxDeleteObjectRequest = new Prox.default.ProxDeleteObjectRequest();
     let ProxUploads = [];
-
+    console.log(item, 'item');
     for (let i = 0; i < item.length; i++) {
       if (item[i].type == 'application/x-directory') {
         prefixes.push(item[i].key + '');
@@ -41,7 +41,7 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, meta
     ProxDeleteObjectRequest.setObjectType('normal');
     ProxDeleteObjectRequest.setPrefixesList(prefixes);
     let ProxDeleteObjectReq = new Prox.default.ProxDeleteObjectReq();
-    ProxDeleteObjectReq.setHeader(header);
+    ProxDeleteObjectReq.setHeader(header.value);
     ProxDeleteObjectReq.setRequest(ProxDeleteObjectRequest);
     // let ip = orderInfo.value.rpc.split(':')[0];
     // let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);

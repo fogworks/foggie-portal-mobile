@@ -5,9 +5,9 @@
         <div style="position: relative">
           <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" @click="clickInput" />
           <input type="file" name="" accept="image/*," ref="uploadRef" @change="uploadFile" id="" style="display: none" />
-          <div class="uploadIcon">
+          <!-- <div class="uploadIcon">
             <Photograph color="#90B3EF" width="15px" height="15px"></Photograph>
-          </div>
+          </div> -->
         </div>
 
         <div class="user_header_box_content">
@@ -42,11 +42,14 @@
 
         <div>
           <div class="key">Withdrawn</div>
-          <div class="value" v-if="cloudCodeIsBind" @click="gotoDetail('/withdraw')">
+          <div class="value" v-if="cloudCodeIsBind" @click="showWithdraw">
             <span style="font-size: 18px">{{ money.withdraw.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.withdraw.decimalPart }}</span>
           </div>
         </div>
+      </div>
+      <div class="scanQR" @click="requestCameraPermission">
+        <Scan2 color="#fff" width="25px" height="25px"></Scan2>
       </div>
       <!-- <div class="bottom_btn">
         <div class="bottom_btn_item">
@@ -151,20 +154,19 @@
 
 <script lang="ts" setup name="MemberPage">
   import { useUserStore } from '@/store/modules/user';
-  import { ArrowRight2, Photograph } from '@nutui/icons-vue';
+  import { ArrowRight2, Photograph, Scan2 } from '@nutui/icons-vue';
   import { showDialog } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
-
+  import { debounce } from 'lodash';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { createVNode, inject } from 'vue';
   import { useRouter } from 'vue-router';
-  import { user, setUserAvatarApi } from '@/api/index';
+  import { user, setUserAvatarApi, search_cloud } from '@/api/index';
   import { get_user_dmc, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
   import { onMounted, reactive, ref } from 'vue';
   import { formatNumber } from '@/utils/util';
-  import { delay } from 'lodash';
   import { ambAddress } from '@/setting';
 
   const uploadRef = ref();
@@ -349,6 +351,48 @@
   //#endregion
   /* 上传 EEEEEEEEEEEEEEEEEEEEEEEEEEEEEE */
 
+  /* 调用扫码功能 */
+  const requestCameraPermission = debounce(() => {
+    // const postData = {
+    //   sort_type: 'created_at',
+    //   ascending: false,
+    //   is_domain: true,
+    //   electronic_type: '0',
+    // };
+    // // await loadBucket([0, 1, 2, 3, 6], '', '', '', postData);
+    // search_cloud({
+    //   ps: 2,
+    //   pn: 1,
+    //   order_state: [0, 1, 2, 3, 6],
+    //   start_time: '',
+    //   end_time: '',
+    //   buy_result: 'success',
+    //   ...postData,
+    // }).then((res) => {
+    //   let total = res.result?.total || 0;
+    //   if (total == 1) {
+    //     let item = res.result.data[0];
+    //     router.push({
+    //       name: 'listDetails',
+    //       query: {
+    //         id: item.order_id,
+    //         uuid: item.uuid,
+    //         amb_uuid: item.amb_uuid,
+    //         income: item.income,
+    //         mintType: '0',
+    //       },
+    //     });
+
+    //   } else {
+    //     router.push({
+    //       name: 'BucketList',
+    //     });
+    //   }
+    // });
+
+    router.push({ path: '/scanQRCodes' });
+  }, 300);
+
   onMounted(async () => {
     loadUserInfo();
   });
@@ -362,9 +406,16 @@
     background-color: #fff;
 
     .userHeader {
+      position: relative;
       padding: 20px 60px;
       background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       padding-bottom: 120px;
+
+      .scanQR {
+        position: absolute;
+        right: 30px;
+        top: 30px;
+      }
 
       .title {
         color: azure;
@@ -424,10 +475,12 @@
             font-weight: 500;
             font-size: 25px;
           }
+
           .balance {
             font-weight: bold;
             font-size: 30px;
             color: #f2b70a;
+
             // margin-top: 10px;
             span {
               color: #fff;
@@ -453,6 +506,7 @@
           justify-content: center;
           border-right: 1px solid #fff;
           width: 50%;
+
           &:last-child {
             border-right: none;
           }
@@ -473,20 +527,24 @@
           }
         }
       }
+
       .bottom_btn {
         margin-top: 20px;
         display: flex;
         width: 100%;
         justify-content: space-around;
+
         .bottom_btn_item {
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
           cursor: pointer;
+
           &:hover {
             transform: scale(1.1);
           }
+
           img {
             width: 80px;
             height: 80px;
@@ -499,6 +557,7 @@
               rgba(0, 0, 0, 0.17) 0px 12px 13px,
               rgba(0, 0, 0, 0.09) 0px -3px 5px;
           }
+
           .bottom_btn_itemText {
             color: #fff;
             font-weight: bold;
@@ -538,6 +597,7 @@
           linear-gradient(#fff, #fff) padding-box,
           linear-gradient(145deg, #e81cff, #40c9ff) border-box;
         top: -50px;
+
         .action_item {
           z-index: 88;
           display: flex;

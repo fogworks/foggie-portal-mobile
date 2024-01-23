@@ -160,11 +160,13 @@
     shortPasswordIsShow,
     ConfirmBindOtp,
   } = googleVerificationHook();
+  import { useUserStore } from '@/store/modules/user';
   import { useRouter } from 'vue-router';
   import { formatNumber } from '@/utils/util';
   const router = useRouter();
   import useUserAssets from './useUserAssets.ts';
   const { getUserAssets, getExchangeRate, dmc2usdRate, cloudBalance, cloudRecharge, cloudWithdraw } = useUserAssets();
+  const userStore = useUserStore();
   onMounted(async () => {
     getUserAssets();
     getExchangeRate();
@@ -172,6 +174,22 @@
   const cloudBalanceNum = computed(() => {
     return formatNumber(cloudBalance.value);
   });
+  const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+  const dmcAccount = computed(() => userStore.getUserInfo?.dmc);
+  const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
+  const bindAmbCode = inject('bindAmbCode');
+  const openBindDMCDiaolg = inject('openBindDMCDiaolg');
+  const showWithdraw = () => {
+    if (!dmcAccount.value) {
+      openBindDMCDiaolg();
+
+      return false;
+    } else if (!cloudCodeIsBind.value) {
+      bindAmbCode();
+    } else {
+      router.push({ name: 'Withdraw' });
+    }
+  };
   const gotoPage = (type, query = '') => {
     if (type === 'analysisCate') {
       router.push('/analysisCate?type=1');
@@ -194,7 +212,7 @@
     } else if (type == 'Recharge') {
       router.push({ name: 'Recharge' });
     } else if (type == 'Withdraw') {
-      router.push({ name: 'Withdraw' });
+      showWithdraw();
     } else if (type == 'enableProtection') {
       openGoogleSetting();
     } else if (type == 'info') {
