@@ -10,12 +10,15 @@
       :headers="formData"
       :before-xhr-upload="beforeXhrUpload"
       :xhr-state="successStatus"
+      :maximum="1000"
       @success="uploadSuccess"
       @progress="onProgress"
       @start="onStart"
       @failure="onFailure"
+      @change="onChange"
       ref="uploadRef"
       class="upload_class"
+      multiple
     >
       <nut-button type="info" class="upload_btn" size="small">
         <IconPlus></IconPlus>
@@ -82,6 +85,9 @@
   const props = defineProps<Props>();
   const { bucketName, prefix, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
 
+  const uploadList = ref<any[]>([]);
+
+  const uploaderList = ref<any[]>([]);
   // const props = defineProps({
   //   bucketName: [String],
   //   accessKeyId: [String],
@@ -116,7 +122,6 @@
     };
     return valid_upload(d).then((res) => {
       if (res?.data) {
-        // TODO
         isDisabled.value = false;
         clearTimeout(merkleTimeOut);
       } else {
@@ -137,24 +142,55 @@
         return reject(false);
       }
 
-      let prefixStr = '';
-      if (prefix?.length > 0) {
-        prefixStr = prefix.join('/') + '/';
+      let fileArr: any = [];
+
+      for (let i = 0; i < file.length; i++) {
+        
+
+        let fileCopy = file[i];
+        if (fileCopy.name == 'image.jpg') {
+          const timestamp = Date.now();
+          const newFileName = `image_${timestamp}.jpg`;
+
+          // 创建一个新的 Blob 对象
+          const blob = new Blob([fileCopy], { type: fileCopy.type });
+
+          // 使用新文件名创建一个新的文件对象
+          fileCopy = new File([blob], newFileName, { type: fileCopy.type });
+        }
+
+        // uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
+
+        // const policy = {
+        //   expiration: new Date(Date.now() + 3600 * 1000),
+        //   conditions: [
+        //     { bucket: bucketName },
+        //     { acl: 'public-read' },
+        //     ['starts-with', fileCopy, prefixStr],
+        //     ['starts-with', '$Content-Type', ''],
+        //   ],
+        // };
+        // const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
+
+        // let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
+        // const signature = enc.Base64.stringify(hmac);
+        // const md5Hash = await calculateMD5(fileCopy);
+        // const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+
+        // formData.value = {
+        //   Key: encodeURIComponent(prefixStr + fileCopy.name),
+        //   Policy: policyBase64,
+        //   Signature: signature,
+        //   Awsaccesskeyid: accessKeyId,
+        //   category: getType(fileCopy.name),
+        //   'Content-Md5': md5Hash,
+        //   'App-Type': appType,
+        // };
+        uploadList.value.push(fileCopy);
+        fileArr.push(fileCopy);
       }
 
-      console.log('prefixStr-------------', prefixStr, '-------------------', prefix);
 
-      let fileCopy = file[0];
-      if (fileCopy.name == 'image.jpg') {
-        const timestamp = Date.now();
-        const newFileName = `image_${timestamp}.jpg`;
-
-        // 创建一个新的 Blob 对象
-        const blob = new Blob([fileCopy], { type: fileCopy.type });
-
-        // 使用新文件名创建一个新的文件对象
-        fileCopy = new File([blob], newFileName, { type: fileCopy.type });
-      }
       const d = { orderId: order_id.value };
       let merkleRes = await valid_upload(d);
       if (merkleRes?.data) {
@@ -169,39 +205,12 @@
         }
         return reject();
       }
-
       uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
+      console.log('uploadList------', uploadList.value);
 
-      const policy = {
-        expiration: new Date(Date.now() + 3600 * 1000),
-        conditions: [
-          { bucket: bucketName },
-          { acl: 'public-read' },
-          ['starts-with', fileCopy, prefixStr],
-          ['starts-with', '$Content-Type', ''],
-        ],
-      };
-      const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
+      uploaderList.value = fileArr;
 
-      let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
-      const signature = enc.Base64.stringify(hmac);
-      console.time('md5Hash');
-      const md5Hash = await calculateMD5(fileCopy);
-      console.timeEnd('md5Hash');
-      console.log('md5Hash-------', md5Hash);
-      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-
-      formData.value = {
-        Key: encodeURIComponent(prefixStr + fileCopy.name),
-        Policy: policyBase64,
-        Signature: signature,
-        Awsaccesskeyid: accessKeyId,
-        category: getType(fileCopy.name),
-        'Content-Md5': md5Hash,
-        'App-Type': appType,
-      };
-
-      resolve([fileCopy]);
+      resolve(fileArr);
     });
   };
 
@@ -259,80 +268,168 @@
     { leading: true, trailing: true },
   );
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
-    isDisabled.value = false;
-    console.log('uploadSuccess', responseText, option, fileItem);
-    console.log('-----uploadSuccess', fileItem.name);
-    window.sessionStorage.setItem('uploadFileName', fileItem.name);
+    console.log('uploadSuccess-----', responseText, option, fileItem, isUploadComplete.value);
+    if (isUploadComplete.value) {
+      isDisabled.value = false;
+      window.sessionStorage.setItem('uploadFileName', fileItem.name);
 
-    // console.log(option, 'option');
-    uploadStatus.value = 'success';
+      uploadStatus.value = 'success';
 
-    // emits('getFileList');
+      // emits('getFileList');
 
-    let used_space = await getSummary();
-    if (!amb_uuid.value) {
-      let res = await get_unique_order({ order_uuid: route?.query?.uuid });
-      amb_uuid.value = res?.result?.data?.amb_uuid;
+      let used_space = await getSummary();
+      if (!amb_uuid.value) {
+        let res = await get_unique_order({ order_uuid: route?.query?.uuid });
+        amb_uuid.value = res?.result?.data?.amb_uuid;
+      }
+      if (used_space) {
+        const d = {
+          orderId: order_id.value,
+          uuid: amb_uuid.value,
+          orderUuid: memo.value,
+          rpc: props.orderInfo.value.rpc,
+          fileSize: option?.sourceFile?.size,
+          usedSpace: used_space,
+        };
+        await save_upload(d).then((res) => {
+          console.log('save_upload-----', res);
+        });
+      }
+
+      delay(() => {
+        uploadProgressIsShow.value = false;
+      }, 2000);
+
+      emits('uploadComplete');
+
+      if (!isAndroid.value) uploadRef.value.clearUploadQueue();
     }
-    if (used_space) {
-      const d = {
-        orderId: order_id.value,
-        uuid: amb_uuid.value,
-        orderUuid: memo.value,
-        rpc: props.orderInfo.value.rpc,
-        fileSize: option?.sourceFile?.size,
-        usedSpace: used_space,
-      };
-      await save_upload(d).then((res) => {
-        console.log('save_upload-----', res);
-      });
-    }
-
-    delay(() => {
-      uploadProgressIsShow.value = false;
-    }, 2000);
-
-    emits('uploadComplete');
-
-    if (!isAndroid.value) uploadRef.value.clearUploadQueue();
   };
 
-  const onProgress = ({ event, options, percentage }: any) => {
-    console.log('onProgress', event, options, percentage);
+  const onProgress = ({ event, option, percentage }: any) => {
+    console.log('onProgress', option.sourceFile.name, percentage);
     uploadProgress.value = percentage;
     downloadProgress(event.loaded, event.total);
   };
 
-  const onStart = ({ options }: any) => {
+  const onStart = ({ option }: any) => {
     uploadProgress.value = 0;
     uploadProgressIsShow.value = true;
     uploadStatus.value = 'uploading';
-    console.log('onStart', options);
-    isDisabled.value = true;
+    console.log('onStart', option);
+    // isDisabled.value = true;
   };
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
-    console.log(responseText, option, fileItem);
+    if (isUploadComplete.value) {
+      console.log(responseText, option, fileItem);
 
-    showToast.fail('Upload failed, please try again later');
-    delay(() => {
-      uploadProgressIsShow.value = false;
-    }, 3000);
-    uploadStatus.value = 'error';
-    isDisabled.value = false;
-    if (!isAndroid.value) uploadRef.value.clearUploadQueue();
+      showToast.fail('Upload failed, please try again later');
+      delay(() => {
+        uploadProgressIsShow.value = false;
+      }, 3000);
+      uploadStatus.value = 'error';
+      isDisabled.value = false;
+      if (!isAndroid.value) uploadRef.value.clearUploadQueue();
+    }
   };
 
   const onChange = ({ fileList, event }: any) => {
-    console.log('--------------22');
-    console.log('onChange', fileList, event);
+    console.log('onChange--------------22',  fileList.length, fileList);
+        
   };
 
-  const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
-    xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
-    xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
-    xhr.send(options.formData);
+  const xhrArray = ref<any[]>([]);
+
+  const beforeXhrUpload = async (xhr: XMLHttpRequest, options: any) => {
+    xhrArray.value.push({xhr, options} as never);
+    if (xhrArray.value.length === uploaderList.value.length) {
+      isUploadComplete.value = false;
+      sendAllRequests();
+    }
   };
+  
+  const isUploadComplete = ref(false);
+  const sendAllRequests = async()=> {
+    for (let i = 0; i < xhrArray.value.length; i++) {  
+      if (i === xhrArray.value.length - 1) {
+        isUploadComplete.value = true;
+      }
+      try {
+        let response = await sendRequest(xhrArray.value[i].xhr, xhrArray.value[i].options);
+        console.log('Response:', response);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+    xhrArray.value = [];
+  }
+
+  const getHeaders = async (options) => {
+    const { bucketName, accessKeyId, secretAccessKey, prefix } = props;
+    const fileCopy = options.sourceFile;
+    let prefixStr = '';
+    if (prefix?.length > 0) {
+      prefixStr = prefix.join('/') + '/';
+    }
+
+    const policy = {
+      expiration: new Date(Date.now() + 3600 * 1000),
+      conditions: [
+        { bucket: bucketName },
+        { acl: 'public-read' },
+        ['starts-with', fileCopy, prefixStr],
+        ['starts-with', '$Content-Type', ''],
+      ],
+    };
+    const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
+
+    let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
+    const signature = enc.Base64.stringify(hmac);
+    const md5Hash = await calculateMD5(fileCopy);
+    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+
+    formData.value = {
+      Key: encodeURIComponent(prefixStr + fileCopy.name),
+      Policy: policyBase64,
+      Signature: signature,
+      Awsaccesskeyid: accessKeyId,
+      category: getType(fileCopy.name),
+      'Content-Md5': md5Hash,
+      'App-Type': appType,
+    };
+  }
+  const sendRequest = async (xhr, options)=> {
+    return new Promise(async (resolve, reject) => {
+      await getHeaders(options);
+    
+      options.headers = {
+        ...options.headers,
+        ...formData.value,
+      };
+      let _form = new FormData();
+      for (const [key, value] of Object.entries(options.headers)) {
+        xhr.setRequestHeader(key as string, value as string);
+        _form.append(key, value);
+      }
+      _form.append('file', options.sourceFile);
+      options.formData = _form;
+      xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
+      xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
+
+      xhr.onload = function() {
+      if (this.status >= 200 && this.status < 300) {
+          resolve(xhr.response);
+        } else {
+          reject();
+        }
+      };
+      xhr.onerror = function() {
+        reject();
+      };
+      xhr.send(options.formData)
+    });
+  }
   const { startUpload } = useSyncPhotos({
     bucketName,
     accessKeyId,

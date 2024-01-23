@@ -63,6 +63,26 @@
     <div class="detail_box">
       <div class="detail_box_toolbox">
         <div class="type_check_box type_check_box1" v-if="!mintType || mintType == 0">
+          <!-- <div
+            :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+            @click="getKey"
+          >
+            <div class="svg_box svg_box2 order-icon-recycle">
+              <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+            </div>
+            <p>S3 Service</p>
+          </div>
+          <div
+            class="type_item s3key"
+            @click="
+              router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })
+            "
+          >
+            <div class="svg_box svg_box2 order-icon-node-tree">
+              <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
+            </div>
+            <p>Miner Tool</p>
+          </div> -->
           <!-- <nut-swiper
             pagination-color="#496af2"
             :init-page="page"

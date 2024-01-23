@@ -19,7 +19,7 @@
       round
       pop-class="scanPopup"
       z-index="2001"
-      :style="{ minHeight: '40%',maxHeight:'80%' }"
+      :style="{ height: '80%' }"
       v-model:visible="isPopupShow"
     >
       <template v-if="total > 0">
@@ -85,7 +85,7 @@
         //扫描中
         console.log('扫描中');
         await stop();
-        html5QrCode.value.clear()
+        html5QrCode.value.clear();
         break;
       case 3:
         //暂停
@@ -337,7 +337,7 @@
       color: #fff;
       font-size: 24px;
       font-weight: 600;
-
+      z-index: 999;
       .imageBox {
         width: 80px;
         height: 80px;
@@ -346,7 +346,7 @@
         place-items: center;
         border-radius: 50%;
         margin-bottom: 10px;
-        z-index: 999;
+     
       }
     }
   }
@@ -355,6 +355,6 @@
     top: 50%;
     left: 0;
     transform: translateY(-50%);
-    position: absolute;
+    height: 100%;
   }
 </style>
