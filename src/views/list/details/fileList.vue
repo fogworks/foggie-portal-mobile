@@ -168,11 +168,11 @@
               <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
               <p>{{ item.date || '' }}</p>
             </div>
-            <div @click.stop v-if="item.isPin" class="ipfs_info">
+            <div @click.stop v-if="item.isPin || (item.nftInfoList && item.nftInfoList.length > 0)" class="ipfs_info">
               <!-- <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
               <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2> -->
               <IconNft v-if="item.nftInfoList && item.nftInfoList.length > 0"></IconNft>
-              <IconIPFS color="#496AF2"></IconIPFS>
+              <IconIPFS v-if="item.isPin" color="#496AF2"></IconIPFS>
             </div>
             <!-- <div @click.stop="showAction(item)" class="right_div">
             <IconMore v-show="!isCheckMode" class="right_more"></IconMore>
