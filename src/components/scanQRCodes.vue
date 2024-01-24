@@ -54,17 +54,19 @@
 </template>
 
 <script setup>
+  import { useUserStore } from '@/store/modules/user';
   import { useVibrate } from '@vueuse/core';
-  import { search_cloud } from '@/api';
+  import { search_cloud, generate_signInfoAPi, update_signInfoAPi } from '@/api';
   import { CloseLittle, Image } from '@nutui/icons-vue';
   import { Html5Qrcode } from 'html5-qrcode';
   import { ref, onBeforeUnmount, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
-  const { vibrate } = useVibrate({ pattern: [300, 100, 300] });
+  const userStore = useUserStore();
+  const { vibrate, isSupported } = useVibrate({ pattern: [300, 100, 300] });
   const router = useRouter();
   const isPopupShow = ref(false);
   const total = ref(0);
-
+  const userAvatar = computed(() => userStore.getUserInfo?.image_path);
   const goBack = async () => {
     if (html5QrCode.value && html5QrCode.value.getState() == 2) await stop();
     router.back();
@@ -119,6 +121,7 @@
       .then((devices) => {
         if (devices && devices.length) {
           html5QrCode.value = new Html5Qrcode('reader');
+          console.log(html5QrCode.value);
           start(); //扫码
         }
       })
@@ -159,14 +162,6 @@
         // Stop failed, handle it.
         console.log('Unable to stop scanning.');
       });
-  }
-
-  // 扫码成功
-
-  function scanQRSuccess(params) {
-    vibrate();
-    loadUserMedia();
-    isPopupShow.value = true;
   }
 
   function loadUserMedia() {
@@ -226,10 +221,63 @@
     loadBucketList();
   }
 
+  // 扫码成功
+
+  async function scanQRSuccess(params) {
+    vibrate();
+    // loadUserMedia();
+    await generate_signInfo(params);
+  }
+
+  /* 生成签名 */
+  const publicKey = ref(''); //公钥
+  const signature = ref(''); //签名
+
+  async function generate_signInfo(params) {
+    await generate_signInfoAPi(params)
+      .then((res) => {
+        if (res.code == 200) {
+          isPopupShow.value = true;
+          publicKey.value = res.data.public_key;
+          signature.value = res.data.signature;
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   /* 确认授权 */
   function ConfirmAuthorization(row) {
-    console.log(row);
+
+    let params = {
+      bucketName: row.domain,
+      amb_uuid: row.amb_uuid,
+      user_uuid: row.user_uuid,
+      uuid: row.uuid,
+      week: row.week,
+      order_id: row.order_id,
+      pst: row.pst,
+      total_space: row.total_space,
+      state: row.state,
+      userAvatar:userAvatar.value,
+    };
+
+    update_signInfoAPi(publicKey.value, params).then((res) => {
+      console.log(res);
+    });
   }
+
+  /* 弹窗弹起时停止扫码 防止重复扫码调用接口 */
+  watch(isPopupShow, (newVal) => {
+    if (html5QrCode.value) {
+      if (html5QrCode.value.getState() == 2) {
+        html5QrCode.value.pause();
+      } else if (html5QrCode.value.getState() == 3) {
+        html5QrCode.value.resume();
+      }
+    }
+  });
 
   onMounted(() => {
     getCameras();
@@ -346,7 +394,6 @@
         place-items: center;
         border-radius: 50%;
         margin-bottom: 10px;
-     
       }
     }
   }

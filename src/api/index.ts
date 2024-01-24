@@ -299,3 +299,23 @@ export const update_nft_sync = (data: any) => {
     data,
   });
 }
+
+/* 生成签名 */
+export const generate_signInfoAPi = (publicKey: string) => {
+  return request({
+    url: `/generate_sign/${publicKey}`,
+    method: 'GET',
+  });
+}
+
+/* 更新签名 */
+export const update_signInfoAPi = (publicKey: string, data:any) => {
+  return request({
+    url: `/session/${publicKey}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type': "application/json"
+    },
+    data,
+  });
+}

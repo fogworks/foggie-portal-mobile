@@ -201,6 +201,16 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           changeOrigin: true,
           secure: false,
         },
+        '^/session': {
+          target: 'http://154.31.41.36:9100',
+          changeOrigin: true,
+          secure: false,
+        },
+        '^/generate_sign': {
+          target: 'http://154.31.41.36:9100',
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
     plugins: [
