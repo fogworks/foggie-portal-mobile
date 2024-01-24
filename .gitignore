@@ -15,6 +15,7 @@ dist-ssr
 .vscode
 .history
 cordova/www
+.VsCodeCounter
 
 # Editor directories and files
 !.vscode/extensions.json
