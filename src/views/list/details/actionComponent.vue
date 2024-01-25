@@ -550,9 +550,19 @@
     detailShow,
     (val) => {
       detailShow1.value = val;
+      console.log(chooseItem.value, 'chooseItem.value');
+
       nextTick(() => {
         if (imgPreRef.value) {
           imgPreRef.value.swipeTo(imgStartIndex.value);
+        } else if (chooseItem.value.detailType == 'txt') {
+          console.log('chooseItem.value.imgUrlLarge', chooseItem.value.imgUrlLarge);
+
+          fetch(chooseItem.value.imgUrlLarge)
+            .then((response) => response.text())
+            .then((text) => {
+              document.getElementById('txtContainer').textContent = text;
+            });
         }
       });
     },
@@ -1266,6 +1276,16 @@
   }
 </style>
 <style scoped lang="scss">
+  #txtContainer {
+    color: #fff;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    max-height: calc(100% - 300px);
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
   .type_check_pop {
     /* padding-top: 120px; */
     height: 450px;

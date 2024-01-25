@@ -56,7 +56,7 @@
         </div>
       </div>
     </nut-infinite-loading>
-    <div class="bottom_btn">
+    <div class="bottom_btn" v-if="showBtn">
       <nut-button v-if="!checkedItem.value.name" block type="primary" @click="goToDapp">Mint New</nut-button>
       <nut-button v-else-if="checkedItem.value.name && activeTab == 2" block type="primary">Mint</nut-button>
       <nut-button v-else-if="checkedItem.value.name" block type="primary">Mint Again</nut-button>
@@ -114,9 +114,13 @@
       type: Boolean,
       default: false,
     },
+    showBtn: {
+      type: Boolean,
+      default: true,
+    },
   });
   const emits = defineEmits(['update:activeTab', 'itemClick', 'gotoMore', 'loadImgList', 'loadcontractList']);
-  const { tabList, activeTab, hasMore, imgList, contractList, chooseType, nftTotal, contractTotal } = toRefs(props);
+  const { showBtn, tabList, activeTab, hasMore, imgList, contractList, chooseType, nftTotal, contractTotal } = toRefs(props);
   const nftInfinityValue = ref(false);
   const contractInfinityValue = ref(false);
 
@@ -264,7 +268,7 @@
         img {
           width: 100%;
           height: 100%;
-          object-fit: contain;
+          object-fit: cover;
           vertical-align: middle;
         }
       }

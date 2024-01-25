@@ -1,11 +1,34 @@
 <template>
   <div>
-    <div class="img-content" v-if="isReady">
-      <div class="top_phpto_title">
-        <span class="title">My Photos</span>
-        <span class="more" @click="changeFlag('timeline')">TimeLine ></span>
+    <div class="out_show_box" @click="showImgList">
+      <p>Photograph</p>
+      <div class="out_img_box" v-if="tableData.length">
+        <!-- <nut-image fit="cover" v-for="index in 4" v-if="tableData?.[index]" :src="tableData?.[index].imgUrl">
+          <template #loading>
+            <Loading width="16px" height="16px" name="loading" />
+          </template>
+        </nut-image> -->
+        <nut-image fit="cover" v-for="(item, index) in tableData" v-show="index < 4" :src="item.imgUrl">
+          <template #loading>
+            <Loading width="16px" height="16px" name="loading" />
+          </template>
+        </nut-image>
       </div>
-      <!-- <div class="top_phpto_select" >
+      <div class="out_img_box" v-else>
+        <img src="@/assets/bucketPhoto0.svg" alt="" />
+        <img src="@/assets/bucketPhoto1.svg" alt="" />
+        <img src="@/assets/bucketPhoto2.svg" alt="" />
+        <img src="@/assets/bucketPhoto3.svg" alt="" />
+      </div>
+    </div>
+    <Teleport to="body">
+      <nut-popup v-if="showPop" position="bottom" closeable round :style="{ height: '100vh' }" v-model:visible="showPop">
+        <div class="img-content" v-if="isReady">
+          <div class="top_phpto_title">
+            <span class="title">My Photos</span>
+            <span class="more" @click="changeFlag(pageFlag == 'timeLineFlag' ? 'default' : 'timeline')">TimeLine ></span>
+          </div>
+          <!-- <div class="top_phpto_select" >
             <nut-menu active-color="#4524a3">
                 <nut-menu-item
                 :title="`List By ${currentTimeValue}`"
@@ -18,8 +41,8 @@
             </nut-menu>
         </div> -->
 
-      <!-- v-if="pageFlag==='timeFlag'" -->
-      <!-- <nut-infinite-loading
+          <!-- v-if="pageFlag==='timeFlag'" -->
+          <!-- <nut-infinite-loading
             ref="listRef"
             load-more-txt="No more content"
             v-model="infinityValue"
@@ -41,86 +64,21 @@
         <nut-empty v-else :image-size="200" description="No Data" image="error" />
         </nut-infinite-loading> -->
 
-      <nut-infinite-loading
-        ref="listRef"
-        load-more-txt="No more content"
-        v-model="infinityValue"
-        :has-more="!isEnd"
-        @load-more="getFileList"
-        class="photo_image_box"
-        v-if="pageFlag === 'timeFlag'"
-      >
-        <div class="photo_image_listP" v-for="(item, index) in imgData" v-if="imgData.length">
-          <p class="top-title">
-            <span>{{ item.time }}</span>
-          </p>
-          <div class="photo_image_listS" v-if="item.list.length">
-            <div :class="['img-item']" v-for="(img, index2) in item.list" @click="openImage(img)" class="photo_image_listItem">
-              <nut-image
-                :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
-                fit="cover"
-                :key="img.cid"
-                :src="img.imgUrl"
-              >
-                <template #loading>
-                  <Loading width="16px" height="16px" name="loading" />
-                </template>
-              </nut-image>
-            </div>
-          </div>
-        </div>
-      </nut-infinite-loading>
-
-      <!-- v-if="pageFlag==='timeDetailFlag' -->
-      <nut-infinite-loading
-        ref="listRef"
-        load-more-txt="No more content"
-        v-model="infinityValue"
-        :has-more="!isEnd"
-        @load-more="getFileList"
-        class="photo_image_box"
-        v-if="pageFlag === 'timeDetailFlag'"
-      >
-        <div class="photo_image_listP">
-          <p v-if="currentTimeList.list.length" class="top-title">
-            <span>{{ currentTimeList.time }}</span>
-          </p>
-          <div class="photo_image_listS">
-            <div :class="['img-item']" v-for="(img, index2) in currentTimeList.list" @click="openImage(img)" class="photo_image_listItem">
-              <nut-image
-                :class="[isCheckMode && itemChecked(img.cid, currentTimeList.dateId) ? 'imageItemChecked' : '']"
-                fit="cover"
-                :key="img.cid"
-                :src="img.imgUrl"
-              >
-                <template #loading>
-                  <Loading width="16px" height="16px" name="loading" />
-                </template>
-              </nut-image>
-            </div>
-          </div>
-        </div>
-      </nut-infinite-loading>
-
-      <!-- v-if="pageFlag==='timeLineFlag' -->
-      <nut-infinite-loading
-        ref="listRef"
-        load-more-txt="No more content"
-        v-model="infinityValue"
-        :has-more="!isEnd"
-        @load-more="getFileList"
-        class="photo_image_box photo_image_timeLineBox"
-        v-if="pageFlag === 'timeLineFlag'"
-      >
-        <div v-if="imgData.length" v-for="(item, index) in imgData" class="photo_image_listP">
-          <p v-if="item.list.length" class="top-title">
-            <span>{{ item.time }}</span>
-          </p>
-          <div class="photo_image_listS">
-            <nut-steps direction="vertical" :current="1">
-              <nut-step :title="img.fullName" v-for="(img, index2) in item.list" @click="openImage(img)">
-                <template #content>
-                  <span>{{ img.date }}</span>
+          <nut-infinite-loading
+            ref="listRef"
+            load-more-txt="No more content"
+            v-model="infinityValue"
+            :has-more="!isEnd"
+            @load-more="getFileList"
+            class="photo_image_box"
+            v-if="pageFlag === 'timeFlag'"
+          >
+            <!-- <div class="photo_image_listP" v-for="(item, index) in imgData" v-if="imgData.length">
+              <p class="top-title">
+                <span>{{ item.time }}</span>
+              </p>
+              <div class="photo_image_listS" v-if="item.list.length">
+                <div :class="['img-item']" v-for="(img, index2) in item.list" @click="openImage(img)" class="photo_image_listItem">
                   <nut-image
                     :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
                     fit="cover"
@@ -131,92 +89,104 @@
                       <Loading width="16px" height="16px" name="loading" />
                     </template>
                   </nut-image>
+                </div>
+              </div>
+            </div> -->
+            <div class="falls">
+              <nut-image
+                v-for="item in tableData"
+                @click="openImage(item)"
+                :class="[isCheckMode && itemChecked(item.cid, item.dateId) ? 'imageItemChecked' : '']"
+                fit="cover"
+                :key="item.cid"
+                :src="item.imgUrl"
+              >
+                <template #loading>
+                  <Loading width="16px" height="16px" name="loading" />
                 </template>
-              </nut-step>
-            </nut-steps>
-          </div>
-        </div>
-        <nut-empty v-else :image-size="200" description="No Data" image="error" />
-      </nut-infinite-loading>
-    </div>
-    <div class="img-content" v-else>
-      <nut-empty :image-size="200" description="No Data" image="error" />
-    </div>
+              </nut-image>
+            </div>
+          </nut-infinite-loading>
 
-    <!-- preview -->
+          <!-- v-if="pageFlag==='timeDetailFlag' -->
+          <nut-infinite-loading
+            ref="listRef"
+            load-more-txt="No more content"
+            v-model="infinityValue"
+            :has-more="!isEnd"
+            @load-more="getFileList"
+            class="photo_image_box"
+            v-if="pageFlag === 'timeDetailFlag'"
+          >
+            <div class="photo_image_listP">
+              <p v-if="currentTimeList.list.length" class="top-title">
+                <span>{{ currentTimeList.time }}</span>
+              </p>
+              <div class="photo_image_listS">
+                <div
+                  :class="['img-item']"
+                  v-for="(img, index2) in currentTimeList.list"
+                  @click="openImage(img)"
+                  class="photo_image_listItem"
+                >
+                  <nut-image
+                    :class="[isCheckMode && itemChecked(img.cid, currentTimeList.dateId) ? 'imageItemChecked' : '']"
+                    fit="cover"
+                    :key="img.cid"
+                    :src="img.imgUrl"
+                  >
+                    <template #loading>
+                      <Loading width="16px" height="16px" name="loading" />
+                    </template>
+                  </nut-image>
+                </div>
+              </div>
+            </div>
+          </nut-infinite-loading>
 
-    <!-- more -->
-    <!-- <nut-popup
-      teleport-disable
-      pop-class="photoBottomPop"
-      position="bottom"
-      safe-area-inset-bottom
-      closeable
-      round
-      z-index="2000"
-      :style="{ height: 'auto', minHeight: '40%' }"
-      v-model:visible="fileItemPopupIsShow"
-    >
-      <div class="fileItem_header">
-        <img v-if="(chooseItem.category == 1 || chooseItem.category == 2) && chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
-        <img v-else-if="chooseItem.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-        <img v-else-if="chooseItem.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-        <img v-else src="@/assets/svg/home/file.svg" alt="" />
-        <div class="fileItem_header_right">
-          <div>{{ chooseItem.fullName }}</div>
-          <div v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
+          <!-- v-if="pageFlag==='timeLineFlag' -->
+          <nut-infinite-loading
+            ref="listRef"
+            load-more-txt="No more content"
+            v-model="infinityValue"
+            :has-more="!isEnd"
+            @load-more="getFileList"
+            class="photo_image_box photo_image_timeLineBox"
+            v-if="pageFlag === 'timeLineFlag'"
+          >
+            <div v-if="imgData.length" v-for="(item, index) in imgData" class="photo_image_listP">
+              <p v-if="item.list.length" class="top-title">
+                <span>{{ item.time }}</span>
+              </p>
+              <div class="photo_image_listS">
+                <nut-steps direction="vertical" :current="1">
+                  <nut-step :title="img.fullName" v-for="(img, index2) in item.list" @click="openImage(img)">
+                    <template #content>
+                      <span>{{ img.date }}</span>
+                      <nut-image
+                        :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
+                        fit="cover"
+                        :key="img.cid"
+                        :src="img.imgUrl"
+                      >
+                        <template #loading>
+                          <Loading width="16px" height="16px" name="loading" />
+                        </template>
+                      </nut-image>
+                    </template>
+                  </nut-step>
+                </nut-steps>
+              </div>
+            </div>
+            <nut-empty v-else :image-size="200" description="No Data" image="error" />
+          </nut-infinite-loading>
         </div>
-      </div>
-      <div
-        class="fileItem_body"
-        :style="{
-          height: chooseItem.isPin ? '345px' : '300px',
-        }"
-      >
-        <div class="optionBox">
-          <div @click="handlerClick('share')">
-            <IconShare color="#222224 "></IconShare>
-            <span>Share</span>
-          </div>
-          <div @click="handlerClick('rename')">
-            <IconRename color="#222224"></IconRename>
-            Rename
-          </div>
-          <div @click="handlerClick(chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'pin' : 'un pin')">
-            <IconIPFS color="#222224"></IconIPFS>
-            {{ chooseItem && (!chooseItem.isPin || !chooseItem.cid) ? 'Pinned' : 'Unpin' }}
-          </div>
-          <div @click="handlerClick('move')">
-            <IconMove :color="category != 1 || !isMobileOrder ? '#222224' : '#ffffff5c'"></IconMove>
-            Move
-          </div>
-          <div @click="handlerClick('download')">
-            <IconDownload color="#222224"></IconDownload>
-            Download
-          </div>
+        <div class="img-content" v-else>
+          <nut-empty :image-size="200" description="No Data" image="error" />
         </div>
-        <div class="ipfs">
-          <p v-if="chooseItem.isPin">
-            <span>{{ handleID(`ipfs://${chooseItem.cid}`) }} </span>
-            <IconCopy color="#222224" @click="copyIPFS('ipfs', chooseItem)"></IconCopy>
-          </p>
-          <p>
-            <span> {{ handleID(`https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${chooseItem.cid}`) }} </span>
-            <IconCopy color="#222224" @click="copyIPFS('http', chooseItem)"></IconCopy>
-          </p>
-        </div>
+      </nut-popup>
+    </Teleport>
 
-        <nut-button
-          color="linear-gradient(to right, #ff6034, #ee0a24)"
-          block
-          type="danger"
-          style="margin-top: 40px"
-          @click="handlerClick('delete')"
-        >
-          <template #icon><IconDelete /> </template>Delete</nut-button
-        >
-      </div>
-    </nut-popup> -->
     <ActionComponent
       ref="actionRef"
       v-model:fileItemPopupIsShow="fileItemPopupIsShow"
@@ -250,7 +220,7 @@
   </div>
 </template>
 <script setup>
-  import { Checked } from '@nutui/icons-vue';
+  import { Checked, Loading } from '@nutui/icons-vue';
   import IconShare from '~icons/home/share.svg';
   import IconDownload from '~icons/home/download.svg';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
@@ -311,9 +281,13 @@
   const emits = defineEmits(['update:checkedData', 'touchRow', 'touchmoveRow', 'touchendRow']);
   const props = defineProps({
     isCheckMode: Boolean,
+    order_uuid: String,
+    handleImg: Function,
   });
-  const handleImg = inject('handleImg');
+  const { order_uuid, handleImg } = toRefs(props);
+  // const handleImg = inject('handleImg');
   const actionRef = ref('');
+  const showPop = ref(false);
   const infinityValue = ref(false);
   const tableLoading = ref(false);
   const isReady = ref(false);
@@ -326,13 +300,14 @@
   const dateTimeLine = ref([]);
   const continuationToken = ref('');
   const tableData = ref([]);
+
   const imgPreRef = ref('');
   const imgDetailShow = ref(false);
   const imgStartIndex = ref(0);
   const imgArray = ref([]);
   const state = reactive({
     imgData: [],
-    chooseItem: { name: '' },
+    chooseItem: { name: '', imgUrl: '' },
     currentTimeList: {},
     currentTimeArr: [],
   });
@@ -357,13 +332,43 @@
     header,
     metadata,
   );
-  onMounted(async () => {
-    await getOrderInfo();
-    init();
-  });
+  watch(
+    order_uuid,
+    async (val) => {
+      if (val) {
+        await getOrderInfo(true, val);
+        init();
+      }
+    },
+    {
+      deep: true,
+      immediate: true,
+    },
+  );
+  // onMounted(async () => {
+  //   await getOrderInfo(true, order_uuid.value);
+  //   init();
+  // });
+  const showImgList = async () => {
+    showPop.value = true;
+    if (!tableData.value.length) {
+      isReady.value = false;
+      await getOrderInfo(true, order_uuid.value);
+      init();
+    }
+  };
   const init = async () => {
+    tableData.value = [];
+    timeLine.value = [];
+    continuationToken.value = '';
+    imgArray.value = [];
+    imgData.value = [];
+    currentTimeList.value = {};
+
     await getTimeLine();
     isReady.value = true;
+    console.log('isReady', isReady.value);
+
     currentTimeArr.value = [];
   };
   const getFileCategories = () => {};
@@ -378,6 +383,8 @@
       pageFlag.value = 'timeDetailFlag';
     } else if (type === 'timeline') {
       pageFlag.value = 'timeLineFlag';
+    } else if (type == 'default') {
+      pageFlag.value = 'timeFlag';
     }
   };
   const getTimeLine = () => {
@@ -570,13 +577,13 @@
       imgData.value = [];
     }
     if (!accessKeyId.value) {
-      await getOrderInfo();
+      await getOrderInfo(true, order_uuid.value);
     }
     let promiseArray = data?.content?.map(async (el, index) => {
       let date = transferTime(el.lastModified);
       let isDir = false;
       const type = el.key.substring(el.key.lastIndexOf('.') + 1);
-      const imgData2 = await handleImg(el, type, isDir);
+      const imgData2 = await handleImg.value(el, type, isDir);
       const url = imgData2.imgHttpLink;
       const isSystemImg = imgData2.isSystemImg;
       const url_large = imgData2.imgHttpLarge;
@@ -850,16 +857,42 @@
 </script>
 
 <style lang="scss">
-  #app {
+  .out_show_box {
+    width: 100%;
+    height: 380px;
     background: #fff;
+    border-radius: 1rem;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    p {
+      padding: 0.5rem 1rem 0;
+      font-weight: 600;
+    }
+    .out_img_box {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      height: 280px;
+      .nut-image {
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      img {
+        width: 100%;
+      }
+    }
   }
+  // #app {
+  //   background: #fff;
+  // }
   .top_phpto_title {
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 50px;
     line-height: 50px;
-    margin: 0 8vw;
+    margin: 0 90px;
     margin-top: 30px;
     margin-bottom: 30px;
     .title {
@@ -904,7 +937,7 @@
     }
   }
   .photo_image_box {
-    padding: 20px;
+    padding: 20px 50px;
     box-sizing: border-box;
 
     .photo_image_listP {
@@ -934,6 +967,30 @@
             height: 200px;
             border-radius: 20px;
           }
+        }
+      }
+    }
+    .falls {
+      box-sizing: border-box;
+      width: 100%;
+      column-count: 2;
+      column-gap: 1.5rem;
+      & > div {
+        break-inside: avoid;
+        margin-bottom: 1rem;
+        border-radius: 1rem;
+        box-shadow:
+          rgba(0, 0, 0, 0.19) 0px 10px 20px,
+          rgba(0, 0, 0, 0.23) 0px 6px 6px;
+        overflow: hidden;
+      }
+      .nut-image {
+        display: flex;
+        justify-content: center;
+        min-height: 8rem;
+        max-height: 16rem;
+        .nut-img {
+          height: auto !important;
         }
       }
     }

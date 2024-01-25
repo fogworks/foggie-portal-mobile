@@ -2,262 +2,307 @@
   <div>
     <div class="dmc_account">
       <div class="dmc_account_box">
-        <div class="img-box">
-          <router-link to="/member">
-            <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
-          </router-link>
-        </div>
         Hello,
-        {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
+        <router-link to="/member">
+          {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
+        </router-link>
       </div>
-      <div class="Notice" @click="openGoogleSetting" v-if="userInfo.dmc">
-        <img src="@/assets/enableProtection.svg" alt="" srcset="" v-if="bindOtp" />
-        <img v-else-if="!withdrawalIsVerified" src="@/assets/yinhuanzhenggai.svg" alt="" srcset="" />
-        <img v-else-if="withdrawalIsVerified" class="nut-icon-am-blink nut-icon-am-infinite" src="@/assets/wTips.svg" alt="" srcset="" />
+      <div class="img-box">
+        <img @click="accountShow = true" :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
+        <IconMore @click="getList" v-if="curStepIndex == 4"></IconMore>
       </div>
     </div>
-    <div inset class="income-card">
-      <img src="@/assets/balance_right.svg" @click="gotoPage('analysisChart')" />
-      <div class="card_row_1 card_header">
-        <div class="total_income">
-          <div class="balance_text">
-            <span>{{ cloudBalanceNum?.integerPart }}</span>
-            <span style="font-size: 13px">.{{ cloudBalanceNum?.decimalPart }}</span>
-            <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
+
+    <van-swipe :loop="false" class="top_swipe" width="300">
+      <van-swipe-item>
+        <div inset class="income-card">
+          <img src="@/assets/balance_right.svg" @click="gotoPage('analysisChart')" />
+          <div class="card_row_1 card_header">
+            <div class="total_income">
+              <div class="balance_text">
+                <span>{{ cloudBalanceNum?.integerPart }}</span>
+                <span style="font-size: 13px">.{{ cloudBalanceNum?.decimalPart }}</span>
+                <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
+              </div>
+              <div class="usd_text" v-if="dmc2usdRate && cloudBalance && cloudBalance != '--'">
+                ≈ {{ formatNumber(dmc2usdRate * cloudBalance)?.integerPart
+                }}<span style="font-size: 13px">.{{ formatNumber(dmc2usdRate * cloudBalance)?.decimalPart }}</span> USD
+              </div>
+            </div>
           </div>
-          <div class="usd_text" v-if="dmc2usdRate && cloudBalance && cloudBalance != '--'">
-            ≈ {{ formatNumber(dmc2usdRate * cloudBalance)?.integerPart
-            }}<span style="font-size: 13px">.{{ formatNumber(dmc2usdRate * cloudBalance)?.decimalPart }}</span> USD
+          <div class="card_row_1 pst-row">
+            <div>
+              <p>Space</p>
+              <p class="column_value">{{ getfilesize2(cloudPst == '--' ? 0 : cloudPst) }}</p>
+            </div>
+
+            <div @click="gotoPage('analysis')">
+              <p>Today's new funds</p>
+              <p class="column_value today_income"
+                >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
+                <TriangleUp color="#fbd116" width="20px"></TriangleUp>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="card_row_1 pst-row">
-        <div>
-          <p>Space</p>
-          <p class="column_value">{{ getfilesize2(cloudPst == '--' ? 0 : cloudPst) }}</p>
-        </div>
-        <!-- <div @click="gotoPage('transactionRecords', '1')">
-          <p>Withdrawn</p>
-          <p class="column_value">{{ cloudWithdraw >= 0 ? cloudWithdraw.toFixed(4) : cloudWithdraw }}</p>
-        </div> -->
-        <div @click="gotoPage('analysis')">
-          <p>Today's new funds</p>
-          <p class="column_value today_income"
-            >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
-            <TriangleUp color="#fbd116" width="20px"></TriangleUp>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="withdraw-btn" direction="horizontal" align="center">
-      <div class="action_item" @click="toBuyOrder">
-        <img src="@/assets/shop.svg" alt="" />
-        Buy
-      </div>
-      <div class="action_item" @click="gotoPage('Assets')">
-        <img src="@/assets/homeTran.svg" alt="" />
-        Assets
-      </div>
-      <div class="action_item" @click="gotoPage('Bucket')">
-        <!-- <img src="@/assets/recharge.svg" alt="" /> -->
-        <img src="@/assets/home_bucket.png" alt="" />
-        Bucket
-      </div>
-      <div class="action_item" @click="gotoPage('NFT')">
-        <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
-        <img src="@/assets/home_NFT.png" alt="" />
-        NFT
-      </div>
-    </div>
-    <div class="DouArrowDown" v-if="!targetIsVisible && !ishaveProfit" @click="scrollIntoViewTo">
-      <DouArrowUp width="100" height="50" class="nut-icon-am-jump nut-icon-am-infinite" />
-    </div>
-    <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
-    <div class="tab_top_title" v-if="ishaveProfit"
-      >Reward and Expenditure <span style="font-size: 12px; display: inline-block">(for the last weeks)</span></div
-    >
-
-    <ErrorPage v-if="isError && !earningsList.length" @refresh="loadMore"></ErrorPage>
-    <template v-else-if="!ishaveProfit">
-      <div class="my_swipe">
-        <nut-swiper :init-page="1" :pagination-visible="true" pagination-color="#426543" auto-play="3000">
-          <nut-swiper-item>
-            <img src="@/assets/banner1.svg" alt="" />
-          </nut-swiper-item>
-          <nut-swiper-item>
-            <img src="@/assets/banner2.svg" alt="" />
-          </nut-swiper-item>
-          <nut-swiper-item>
-            <img src="@/assets/banner3.png" alt="" />
-          </nut-swiper-item>
-          <nut-swiper-item>
-            <img src="@/assets/banner4.svg" alt="" />
-          </nut-swiper-item>
-        </nut-swiper>
-      </div>
-
-      <div class="my_steps" ref="my_steps" id="my_steps">
-        <nut-steps direction="vertical" :current="curStepIndex">
-          <nut-step
-            title="Bind invitation code"
-            @click="gotoBindAmb"
-            content="Please confirm that you have filled out the invitation code before placing your order"
-            >1</nut-step
-          >
-          <nut-step
-            title="Waiting for approval"
-            :content="ambRefuse ? 'Your application has been rejected by the AGENT please reapply' : 'Your application has been approved.'"
-            >2</nut-step
-          >
-          <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
-          <nut-step title="Purchase Order" content="We provide you with the most rewardable order for your purchase" @click="toBuyOrder"
-            >3</nut-step
-          >
-          <nut-step
-            @click="gotoOrderList"
-            title="Ops, you haven't made a reward yet"
-            content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the reward for you."
-            >4</nut-step
-          >
-        </nut-steps>
-      </div>
-    </template>
-
-    <nut-infinite-loading
-      style="min-height: 280px; height: 600px; padding-bottom: 10px; overflow: auto"
-      v-else-if="cloudCodeIsBind && earningsList.length"
-      load-more-txt="No more content"
-      :has-more="hasMore"
-      v-model="infinityValue"
-      @load-more="loadMore"
-    >
-      <div
-        class="list_item"
-        v-for="(item, index) in earningsList"
-        @click="gotoOrderPage(item)"
-        :class="[isOpen(item.order_info.state) ? '' : 'history_item']"
-      >
-        <div class="order_status_flag open" v-if="isOpen(item.order_info.state)">Open Order</div>
-        <div class="order_status_flag history" v-if="!isOpen(item.order_info.state)">History Order</div>
-        <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-          <!-- <img src="@/assets/DMC_Token1.png" alt="" /> -->
-          <img v-if="item.order_info.electronic_type == 0" src="@/assets/mobile.svg" alt="" />
-          <img v-else src="@/assets/desktop.svg" alt="" />
-        </div>
-        <div style="width: 100%; justify-content: flex-end !important; margin-top: -2px">
-          <span>{{ transferUTCTime(item.created_at) }}</span>
-        </div>
-        <div>
-          <span style="font-weight: bold">Order:{{ item.order_id }}</span>
-          <span
-            :class="[
-              item.inner_user_trade_type == 'payout' ? 'expense' : '',
-              item.inner_user_trade_type == 'income' ? 'earnings' : '',
-              'trade_type',
-            ]"
-          >
-            <span v-if="item.inner_user_trade_type == 'payout'">-</span><span v-else-if="item.inner_user_trade_type == 'income'">+</span>
-            {{ formatNumber(item.quantity)?.integerPart
-            }}<span style="font-size: 13px">.{{ formatNumber(item.quantity)?.decimalPart }}</span>
-          </span>
-        </div>
-        <div>
-          <span class="time">{{ item.trx_id }}</span>
-          <!-- <span class="time">{{ transferUTCTime(item.created_at) }}</span> -->
-          <span style="text-align: right" class="my_status">{{ mapTypes[item.trade_type] }}</span>
-          <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
-        </div>
-      </div>
-    </nut-infinite-loading>
-
-    <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week">
-      <!-- <img src="@/assets/yinhuanzhenggai.svg" /> -->
-    </nut-empty>
-    <!-- <nut-backtop el-id="main-page" :z-index="999" :bottom="60"></nut-backtop> -->
-
-    <nut-popup
-      position="bottom"
-      teleport="body"
-      :safe-area-inset-bottom="true"
-      :lock-scroll="true"
-      closeable
-      round
-      :style="{ height: withdrawalIsVerified ? 'auto' : '60%' }"
-      v-model:visible="googleVerificationVisible"
-    >
-      <div class="googleVerificationBox" id="googleVerificationBox">
-        <div class="title">Multi factor authentication</div>
-
-        <div class="content">
-          <div style="padding: 10px">
-            <div class="content_title">Warning</div>
-            <div class="content_tips">{{
-              withdrawalIsVerified
-                ? 'You have enabled dual factor authentication, please bind OTP.'
-                : `You have turned off the two factor validation, which may pose risks. Do you want to
-              turn it on?`
-            }}</div>
+      </van-swipe-item>
+      <van-swipe-item>
+        <div inset class="income-card income-card2">
+          <img src="@/assets/balance_right.svg" />
+          <div class="card_row_1 card_header">
+            <div class="total_income">
+              <div class="balance_text">
+                <span>NFT</span>
+              </div>
+            </div>
           </div>
-          <img v-if="withdrawalIsVerified" src="@/assets/googleSrc/DM_20231129144005_001.png" alt="" srcset="" />
-          <img v-else src="@/assets/googleSrc/DM_20231129143906_001.png" alt="" srcset="" style="height: 100%" />
+          <div class="card_row_1 pst-row">
+            <div>
+              <p>Total</p>
+              <p class="column_value">{{ nftTotal }}</p>
+            </div>
+
+            <!-- <div @click="gotoPage('analysis')">
+              <p>Today's new funds</p>
+              <p class="column_value today_income"
+                >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
+                <TriangleUp color="#fbd116" width="20px"></TriangleUp>
+              </p>
+            </div> -->
+          </div>
         </div>
-        <div class="switchButton">
+      </van-swipe-item>
+    </van-swipe>
+
+    <div v-if="!order_uuid" style="margin-top: 2rem; text-align: center">
+      <nut-button type="primary" @click="choose({ name: 'Expansion' })">Buy Bucket</nut-button>
+    </div>
+    <div v-else-if="order_uuid" style="margin-top: 0.8rem">
+      <!-- <div class="bucket_tips">
+        The current display is the content of {{ bucketName }},click on the upper right corner of the page <IconMore></IconMore> to switch
+        the bucket
+      </div> -->
+      <div style="display: grid; grid-gap: 10px; justify-content: space-between; grid-template-columns: 1fr 1fr">
+        <ImgBox ref="imgListRef" :order_uuid="order_uuid" :handleImg="handleImg"></ImgBox>
+        <div class="type_check_box right_check_box">
           <div
-            >Is double factor verification enabled：
-            <span
-              style="font-style: italic; font-weight: 600"
-              :style="{
-                color: withdrawalIsVerified ? '#5758A0' : 'red',
-              }"
-              >{{ withdrawalIsVerified ? 'YES' : 'NO' }}
-            </span>
+            class="type_item"
+            @click="
+              router.push({
+                name: 'FileList',
+                query: {
+                  id: currentBucketData.order_id,
+                  uuid: currentBucketData.uuid,
+                  amb_uuid: currentBucketData.amb_uuid,
+                  domain: currentBucketData.domain,
+                  category: 1,
+                  bucketName,
+                },
+              })
+            "
+          >
+            <div class="svg_box">
+              <IconImage></IconImage>
+            </div>
+            <p>Images</p>
           </div>
-          <nut-switch :model-value="withdrawalIsVerified" :loading="withdrawalIsVerifiedLoadding" @change="changeIsVerified">
-            <template #icon>
-              <Loading name="loading" />
-            </template>
-          </nut-switch>
+          <div
+            class="type_item"
+            @click="
+              router.push({
+                name: 'FileList',
+                query: {
+                  id: currentBucketData.order_id,
+                  uuid: currentBucketData.uuid,
+                  amb_uuid: currentBucketData.amb_uuid,
+                  domain: currentBucketData.domain,
+                  category: 3,
+                  bucketName,
+                },
+              })
+            "
+          >
+            <div class="svg_box">
+              <IconAudio2></IconAudio2>
+            </div>
+            <p>Audio</p>
+          </div>
+          <div
+            class="type_item"
+            @click="
+              router.push({
+                name: 'FileList',
+                query: {
+                  id: currentBucketData.order_id,
+                  uuid: currentBucketData.uuid,
+                  amb_uuid: currentBucketData.amb_uuid,
+                  domain: currentBucketData.domain,
+                  category: 4,
+                  bucketName,
+                },
+              })
+            "
+          >
+            <div class="svg_box">
+              <IconDocument></IconDocument>
+            </div>
+            <p>Documents</p>
+          </div>
+          <div
+            class="type_item"
+            @click="
+              router.push({
+                name: 'FileList',
+                query: {
+                  id: currentBucketData.order_id,
+                  uuid: currentBucketData.uuid,
+                  amb_uuid: currentBucketData.amb_uuid,
+                  domain: currentBucketData.domain,
+                  category: 2,
+                  bucketName,
+                },
+              })
+            "
+          >
+            <div class="svg_box">
+              <IconVideo></IconVideo>
+            </div>
+            <p>Video</p>
+          </div>
         </div>
+      </div>
 
-        <template v-if="withdrawalIsVerified">
-          <div class="google-tips">
-            Please use Google Authenticator or other compatible programs on your phone to scan the QR code below, or manually enter a
-            manually enter a 16-digit key key.
+      <div class="recent_folder_box">
+        <div class="recent_folder_title">
+          <span>Recent Files</span>
+          <span class="more" @click="gotoOrderDetail(currentBucketData)">More</span>
+        </div>
+        <!-- <div class="recent_folder">
+          <div class="folder_item" v-for="item in floderData">
+            <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+            <span>{{ item.name }}</span>
           </div>
-          <div class="auth_qrcode" v-if="authQrcode">
-            <img :src="authQrcode" />
+        </div> -->
+        <template v-if="tableData.length">
+          <div class="file_list file_list_img" v-if="imgData.length">
+            <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
+              <nut-image show-loading show-error round radius="5px" :src="item.imgUrl" fit="cover" position="center">
+                <template #loading>
+                  <Loading width="16" height="16"></Loading>
+                </template>
+              </nut-image>
+              <!-- <img :src="item.imgUrl" alt="" /> -->
+            </div>
           </div>
+          <div class="file_list" v-if="otherData.length">
+            <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
+              <div :class="['left_icon_box']">
+                <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+                <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+                <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
+                <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
 
-          <div class="title_item">
-            <p>Please enter the Google verification </p>
-            <div class="keyWordBox" @click="shortPasswordIsShow = true" style="text-align: center; font-size: 24px; margin-top: 20px">{{
-              code
-            }}</div>
-            <nut-short-password
-              v-model="code"
-              v-model:visible="shortPasswordIsShow"
-              tips="Password length, ranging from 6"
-              desc="Please enter the verification code"
-              title="two-factor authentication"
-            >
-            </nut-short-password>
-
-            <nut-number-keyboard v-model="code" v-model:visible="shortPasswordIsShow"> </nut-number-keyboard>
-            <nut-button :loading="isLoading" style="margin-top: 20px" block type="primary" @click="ConfirmBindOtp">Confirm</nut-button>
+                <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
+                <img v-else src="@/assets/svg/home/file.svg" alt="" />
+              </div>
+              <div class="name_box">
+                <p>{{ item.name }}</p>
+                <p>{{ item.date || '' }}</p>
+              </div>
+            </div>
           </div>
         </template>
       </div>
+    </div>
+    <div class="recent_folder_box" style="padding: 1rem 0">
+      <div class="recent_folder_title" style="margin-left: 1rem">
+        <span>NFT Recent</span>
+        <span></span>
+      </div>
+      <ListComponent :showBtn="false" v-if="nftImgList.length" has-more :tabList="[]" :imgList="nftImgList"></ListComponent>
+    </div>
+
+    <!-- account show -->
+    <nut-action-sheet v-model:visible="accountShow" :menu-items="menuItems" @choose="choose" />
+    <nut-popup position="right" :style="{ width: '20%', height: '100%' }" v-model:visible="showRight">
+      <nut-infinite-loading
+        :load-more-txt="listData.length ? '' : 'No available buckets, please purchase order first!'"
+        class="file_list file_list_bucket"
+        ref="listRef"
+        v-model="infinityValue"
+        :has-more="hasMore"
+        @load-more="loadMoreFun"
+      >
+        <div class="list_item" v-for="item in listData" @click="setBucket(item)">
+          <div :class="['left_icon_box', item.checked ? 'is_checked' : '']">
+            <img src="@/assets/home_bucket.png" alt="" />
+          </div>
+          <div class="name_box">
+            <span :class="[bucketName == item.domain ? 'is_checked' : '']">{{ item.domain || item.order_id }}</span>
+          </div>
+        </div>
+      </nut-infinite-loading>
+      <nut-infinite-loading
+        :load-more-txt="noBucketData.length ? '' : 'please set bucket name first!'"
+        class="file_list file_list_bucket"
+        ref="listRef"
+        v-model="infinityValue"
+        :has-more="false"
+        @load-more="loadMoreFun"
+      >
+        <div class="list_item" v-for="item in noBucketData" @click="gotoOrderDetail(item)">
+          <div :class="['left_icon_box', item.checked ? 'is_checked' : '']">
+            <img src="@/assets/home_bucket.png" alt="" />
+          </div>
+          <div class="name_box">
+            <span :class="[bucketName == item.domain ? 'is_checked' : '']">{{ item.domain || item.order_id }}</span>
+          </div>
+        </div>
+      </nut-infinite-loading>
     </nut-popup>
-    <!-- <UploadSet v-if="curStepIndex == 4"></UploadSet> -->
+    <ActionComponent
+      v-model:fileItemPopupIsShow="fileItemPopupIsShow"
+      v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
+      v-model:renameShow="renameShow"
+      v-model:moveShow="moveShow"
+      v-model:detailShow="detailShow"
+      v-model:imgStartIndex="imgStartIndex"
+      :category="0"
+      :header="header"
+      :prefix="[]"
+      :isAvailableOrder="isAvailableOrder"
+      :chooseItem="detailRow.value"
+      :images="images"
+      :imgUrl="imgUrl"
+      :isMobileOrder="isMobileOrder"
+      :isNewFolder="false"
+      :selectArr="selectArr"
+      :bucketName="bucketName"
+      :metadata="metadata"
+      :orderInfo="orderInfo"
+      :isCheckMode="false"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      @refresh="refresh"
+      @handlerClick="handlerClick"
+      @swipeChange="swipeChange"
+      @clickFIleItemDetail="clickFIleItemDetail"
+      @clickFIleItem="clickFIleItem"
+    ></ActionComponent>
   </div>
 </template>
 
 <script lang="ts" setup name="HomePage">
+  import ImgBox from '@/views/photo/imageBox.vue';
   // import UploadSet from '@/views/nft/uploadSet.vue';
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
+  import IconMore from '~icons/home/more.svg';
+  import IconAudio2 from '~icons/home/audio2.svg';
+  import IconImage from '~icons/home/image.svg';
+  import IconDocument from '~icons/home/document.svg';
+  import IconVideo from '~icons/home/video.svg';
   import { Notice, TriangleUp, DouArrowUp, RectUp, Setting, Loading } from '@nutui/icons-vue';
   import { toRefs, computed, reactive, ref, watch, watchEffect, createVNode } from 'vue';
   import { useRouter } from 'vue-router';
@@ -271,28 +316,74 @@
   import '@nutui/nutui/dist/packages/toast/style';
   import { useIntersectionObserver } from '@vueuse/core';
   import { search_order_profit, search_user_asset_detail, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
-  import googleVerificationHook from './googleVerificationHook.ts';
-  //   import useOrderList from './useOrderList.ts';
+  import useOrderList from './useOrderList.ts';
+  import loadingImg from '@/components/loadingImg/index.vue';
+  import useOrderInfo from '@/views/list/details/useOrderInfo.js';
+  import useShare from '@/views/list/details/useShare.js';
+  import useDelete from '@/views/list/details/useDelete.js';
+  import ActionComponent from '@/views/list/details/actionComponent.vue';
+  import ListComponent from '@/views/nft/listComponent.vue';
+
+  import * as Prox from '@/pb/prox_pb.js';
+  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+  import { poolUrl } from '@/setting.js';
+  import moment from 'moment';
+  import { HmacSHA1, enc } from 'crypto-js';
+  import { search_mint } from '@/api/index.ts';
+  const tableLoading = ref(false);
 
   // const { loadMore as loadBucket, listData  } = useOrderList();
-
-  const {
-    bindOtp,
-    openGoogleSetting,
-    changeIsVerified,
-    isLoading,
-    withdrawalIsVerified,
-    googleVerificationVisible,
-    withdrawalIsVerifiedLoadding,
-    authQrcode,
-    code,
-    shortPasswordIsShow,
-    ConfirmBindOtp,
-  } = googleVerificationHook();
-
+  const { resetData, loadMore, listData, hasMore, infinityValue, total } = useOrderList();
+  const { isAvailableOrder, isError, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } =
+    useOrderInfo();
+  const { createNFT, doShare, getHttpShare, cloudPin } = useShare(orderInfo, header, deviceType, metadata);
+  const selectArr = computed(() => {
+    return [detailRow.value];
+  });
+  const images = computed(() => {
+    let arr = [];
+    imgData.value.filter((el) => {
+      arr.push(el.imgUrlLarge);
+    });
+    return arr;
+  });
+  const { deleteItem } = useDelete(
+    tableLoading,
+    () => {
+      refresh();
+    },
+    orderInfo,
+    header,
+    metadata,
+  );
+  const isMobileOrder = computed(() => {
+    if (orderInfo.value.electronic_type == '0') {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  let server, currentBucketData;
+  const moveShow = ref(false);
+  const accountShow = ref(false);
+  const showRight = ref(false);
+  const detailShow = ref(false);
+  const curSelectSrc = ref('');
+  const curSelectType = ref('');
+  const imgUrl = ref('');
+  const imgStartIndex = ref(0);
+  const menuItems = [
+    {
+      name: 'Assets',
+    },
+    {
+      name: 'Expansion',
+    },
+  ];
   const userInfo = computed(() => userStore.getUserInfo);
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+  const walletInfo = computed(() => userStore.getUserInfo?.wallet_info);
 
   const router = useRouter();
 
@@ -317,7 +408,12 @@
     OrderRefund: 'Order refund', // 订单退款
     OrderReceiptEnd: 12,
   };
-
+  const nftImgList = ref([]);
+  const nftTotal = ref(0);
+  const noBucketData = ref([]);
+  const tableData = ref([]);
+  const otherData = ref([]);
+  const imgData = ref([]);
   const userStore = useUserStore();
   const earningsList = ref([] as any);
   const { getUserAssets, getExchangeRate, dmc2usdRate, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } =
@@ -327,28 +423,110 @@
   const curStepIndex = computed(() => userStore.getCurStepIndex); // 1 绑定大使邀请码
   const bindAmbCode = inject('bindAmbCode');
   const openBindDMCDiaolg = inject('openBindDMCDiaolg');
-
-  const infinityValue = ref(false);
-  const hasMore = computed(() => {
-    if (total.value > earningsList.value.length) {
-      return true;
-    } else {
-      return false;
+  const fileItemPopupIsShow = ref(false);
+  const fileItemDetailPopupIsShow = ref(false);
+  const renameShow = ref(false);
+  function swipeChange(index) {
+    imgStartIndex.value = index;
+    detailRow.value = imgData.value[index];
+    if (detailRow.value.originalSize > 1024 * 1024 * 20) {
+      showToast.text('The file is too large, please download and view');
     }
-  });
-  const isError = ref(false);
+  }
+  function clickFIleItem(params) {
+    detailRow.value = params;
+    fileItemPopupIsShow.value = true;
+    if (detailRow.value.originalSize > 1024 * 1024 * 20) {
+      showToast.text('The file is too large, please download and view');
+    }
+  }
+
+  function clickFIleItemDetail(params) {
+    console.log(params);
+    fileItemDetailPopupIsShow.value = true;
+  }
+  watch(
+    tableData,
+    (val) => {
+      if (val.length) {
+        imgData.value = [];
+        otherData.value = [];
+        val.forEach((el) => {
+          if (el.category == 1) {
+            imgData.value.push(el);
+          } else {
+            otherData.value.push(el);
+            // if (floderData.value.length < 4) floderData.value.push(el);
+          }
+        });
+      }
+    },
+    { deep: true },
+  );
+  // const infinityValue = ref(false);
+  // const hasMore = computed(() => {
+  //   if (total.value > earningsList.value.length) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // });
+  // const isError = ref(false);
   const pageSize = ref(10);
   const pageNum = ref(1);
-  const total = ref(0);
-
+  // const total = ref(0);
+  const order_uuid = ref('');
   const pn = ref(1);
   const ps = ref(10);
+  const loadMoreFun = async () => {
+    try {
+      const postData = {
+        sort_type: 'created_at',
+        ascending: false,
+        is_domain: 1,
+        electronic_type: '0',
+        domain: '',
+      };
+      await loadMore([0, 1, 2, 3, 4, 5, 6], '', '', '', postData);
+      console.log('开始请求');
 
+      nextTick(() => {
+        if (hasMore.value && listRef?.value?.$el?.clientHeight >= listRef?.value?.$el?.scrollHeight) {
+          loadMoreFun();
+        }
+      });
+    } catch {}
+  };
+  const getList = async () => {
+    showRight.value = true;
+    nextTick(async () => {
+      resetData();
+      getNoBucketOrder();
+      await loadMoreFun();
+    });
+  };
+  const choose = (item) => {
+    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
+      bindAmbCode();
+      return false;
+    }
+    if (item.name == 'Assets') {
+      router.push({
+        name: 'AssetsInfo',
+      });
+    } else if (item.name == 'Expansion') {
+      router.push({
+        name: 'Shop',
+      });
+    }
+    accountShow.value = false;
+  };
   async function getOrder() {
     const order_state = null;
     const start_time = '';
     const end_time = '';
     const buy_result = 'success';
+
     await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result }).then((res) => {
       let total = res?.result?.total;
       if (total > 0) {
@@ -358,17 +536,23 @@
       }
     });
   }
+  async function getNoBucketOrder() {
+    const order_state = [0, 1, 2, 3, 6];
+    const start_time = '';
+    const end_time = '';
+    const buy_result = 'success';
+    const postData = {
+      sort_type: 'created_at',
+      ascending: false,
+      is_domain: 2,
+      electronic_type: '0',
+      domain: '',
+    };
+    await search_cloud({ ps: 4, pn: 1, order_state, start_time, end_time, buy_result, ...postData }).then((res) => {
+      noBucketData.value = res.result.data;
+    });
+  }
 
-  watch(
-    curStepIndex,
-    (val) => {
-      if (val === 4) {
-        searchOrderProfit();
-        searchAllOrderProfit();
-      }
-    },
-    { deep: true, immediate: true },
-  );
   const cloudBalanceNum = computed(() => {
     return formatNumber(cloudBalance.value);
   });
@@ -381,83 +565,70 @@
       return id.substring(0, 8) + '...' + id.substring(id.length - 8, id.length);
     }
   }
+  const detailRow = reactive({ value: {} });
 
-  function loadMore() {
-    if (cloudCodeIsBind.value) {
-      isError.value = false;
-      pageNum.value = pageNum.value + 1;
-      searchOrderProfit();
-    }
-  }
+  const handleRow = (row) => {
+    detailRow.value = row;
+    const type = row.name.substring(row.name.lastIndexOf('.') + 1);
+    console.log(row.imgUrlLarge);
+    console.log(type);
 
-  function searchOrderProfit() {
-    const end = new Date();
-    const start = new Date();
-    start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-    const postData = {
-      start_time: transferUTCTimeDay(start),
-      end_time: transferUTCTimeDay(end),
-      ps: pageSize.value,
-      pn: pageNum.value,
-    };
-    infinityValue.value = true;
-    search_user_asset_detail(postData)
-      .then((res) => {
-        infinityValue.value = false;
-        if (res && res.result && res.result.data.length) {
-          for (const item of res.result.data || []) {
-            item.trx_id = handleID(item.trx_id);
-          }
-          console.log('pnnnnnnnnnnn', pageNum.value);
+    if (type == 'pdf') {
+      curSelectSrc.value = row.imgUrlLarge;
+      curSelectType.value = 'pdf';
+      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'pdf' } });
+    } else if (type == 'txt') {
+      detailRow.value.detailType = 'txt';
+      detailShow.value = true;
+      // fetch(row.imgUrlLarge)
+      //   .then((response) => response.text())
+      //   .then((text) => {
+      //     document.getElementById('txtContainer').textContent = text;
+      //   });
+    } else if (['xls', 'xlsx'].includes(type)) {
+      curSelectSrc.value = row.imgUrlLarge;
+      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'excel' } });
+    } else if (['doc', 'docx'].includes(type)) {
+      detailRow.value.detailType = 'word';
+      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
+      // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+      console.log(row.imgUrlLarge);
+    } else if (['ppt', 'pptx'].includes(type)) {
+      curSelectSrc.value = row.imgUrlLarge;
+      curSelectType.value = 'ppt';
+      // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+      // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
 
-          earningsList.value = earningsList.value.concat(res.result.data);
-          // const newSetCloudList = [...earningsList.value, ...res.result.data];
-          // let arr = [];
-          // const filterList = newSetCloudList.filter((item) => !arr.includes(item.trx_id) && arr.push(item.trx_id));
-          // earningsList.value = filterList;
-          // console.log(earningsList.value );
+      console.log(row.imgUrlLarge);
+    } else if (row.imgUrlLarge) {
+      imgUrl.value = row.imgUrlLarge;
+      imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
+      detailShow.value = true;
+    } else {
+      let prefix;
+      if (row.isDir) {
+        prefix = detailRow.value.fullName.split('/').slice(0, -2);
+      } else {
+        prefix = detailRow.value.fullName.split('/').slice(0, -1);
+      }
+      console.log(detailRow.value.fullName, prefix);
 
-          total.value = res.result.total;
-        }
-        if (res.code != 200) {
-          pageNum.value = pageNum.value - 1;
-          isError.value = true;
-        }
-      })
-      .catch(() => {
-        isError.value = true;
-        pageNum.value = pageNum.value - 1;
-        infinityValue.value = false;
+      router.push({
+        name: 'FileList',
+        query: {
+          id: currentBucketData.order_id,
+          uuid: currentBucketData.uuid,
+          amb_uuid: currentBucketData.amb_uuid,
+          domain: currentBucketData.domain,
+          category: 0,
+          prefix: prefix.join('/'),
+          bucketName: bucketName.value,
+        },
       });
-  }
-
-  const ishaveProfit = ref(false); //是否订单已经产生过收益 如果有收益不展示引导页
-  function searchAllOrderProfit() {
-    const postData = { start_time: '', end_time: '' };
-    search_user_asset_detail(postData)
-      .then((res) => {
-        if (res.code == 200) {
-          if (res.result.data.length > 0) {
-            ishaveProfit.value = true;
-          } else {
-            ishaveProfit.value = false;
-          }
-        }
-      })
-      .finally(() => {});
-  }
-
-  // const showWithdraw = () => {
-  //   if (!userInfo.value.dmc) {
-  //     openBindDMCDiaolg();
-
-  //     return false;
-  //   } else if (!cloudCodeIsBind.value) {
-  //     bindAmbCode();
-  //   } else {
-  //     router.push({ name: 'Withdraw' });
-  //   }
-  // };
+    }
+  };
 
   const gotoPage = async (type, query = '') => {
     if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
@@ -480,7 +651,7 @@
         const postData = {
           sort_type: 'created_at',
           ascending: false,
-          is_domain: true,
+          is_domain: 1,
           electronic_type: '0',
         };
         // await loadBucket([0, 1, 2, 3, 6], '', '', '', postData);
@@ -520,74 +691,6 @@
       }
     }
   };
-  const isOpen = (state) => {
-    if (state === 4 || state === 5) {
-      return false;
-    } else {
-      return true;
-    }
-  };
-  const toBuyOrder = () => {
-    gotoPage('shop');
-  };
-  // const toRecharge = () => {
-  //   if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
-  //     bindAmbCode();
-  //     return false;
-  //   } else {
-  //     router.push({ name: 'Recharge' });
-  //   }
-  // };
-
-  function gotoBindAmb() {
-    if (curStepIndex.value !== 1) {
-      showToast.text('You have already bound an invitation code');
-      return;
-    }
-    bindAmbCode();
-  }
-
-  function gotoOrderList() {
-    if (curStepIndex.value !== 4) {
-      showToast.text('You do not have any available order records yet');
-      return;
-    }
-    router.push('/list');
-  }
-
-  onBeforeMount(() => {
-    if (cloudCodeIsBind.value) {
-      getOrder();
-    }
-  });
-
-  watch(
-    cloudCodeIsBind,
-    async (newVal) => {
-      if (newVal) {
-        userStore.setambRefuse(false);
-        getOrder();
-        getUserAssets();
-        getExchangeRate();
-      }
-    },
-    { deep: true, immediate: true },
-  );
-
-  const targetIsVisible = ref(false);
-  const my_steps = ref(null);
-  function loadMySwipeDom() {
-    const { stop } = useIntersectionObserver(my_steps, ([{ isIntersecting }]) => {
-      targetIsVisible.value = isIntersecting;
-    });
-  }
-
-  function scrollIntoViewTo() {
-    let my_steps = document.getElementById('my_steps');
-    if (my_steps) {
-      my_steps?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
 
   function gotoOrderPage(row) {
     console.log(row);
@@ -613,23 +716,931 @@
       });
     }
   }
-
-  onMounted(async () => {
-    loadMySwipeDom();
-    if (cloudCodeIsBind.value) {
-      getUserAssets();
-      getExchangeRate();
+  const gotoOrderDetail = (item) => {
+    router.push({
+      name: 'listDetails',
+      query: {
+        id: item.order_id,
+        uuid: item.uuid,
+        amb_uuid: item.amb_uuid,
+        domain: item.domain,
+      },
+    });
+  };
+  const setBucket = async (item) => {
+    // bucketName.value = item.domain
+    currentBucketData = item;
+    window.localStorage.homeChooseBucket = JSON.stringify(item);
+    order_uuid.value = item.uuid;
+    showRight.value = false;
+    if (order_uuid.value) {
+      await getOrderInfo(true, order_uuid.value);
+      getFileList();
     }
-  });
+  };
+  const refresh = async () => {
+    detailShow.value = false;
+    if (order_uuid.value) {
+      await getOrderInfo(true, order_uuid.value);
+      getFileList();
+    }
+  };
+  const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
+    let imgHttpLink = '';
+    let imgHttpLarge = '';
+    type = type.toLowerCase();
+    let isSystemImg = false;
+    let cid = item.cid;
+    let key = item.key;
+
+    let ip = orderInfo.value.rpc.split(':')[0];
+    let port = orderInfo.value.rpc.split(':')[1];
+    let Id = orderInfo.value.foggie_id;
+    let peerId = orderInfo.value.peer_id;
+    if (
+      type === 'png' ||
+      type === 'bmp' ||
+      type === 'gif' ||
+      type === 'jpeg' ||
+      type === 'jpg' ||
+      type === 'svg' ||
+      type === 'ico' ||
+      type === 'webp'
+    ) {
+      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+      imgHttpLink = getHttpShare(
+        accessKeyId.value,
+        secretAccessKey.value,
+        bucketName.value,
+        item.key,
+        type === 'ico' || type === 'svg' ? false : true,
+      );
+      // console.log('--------imgHttpLarge', imgHttpLarge);
+    } else if (type === 'mp3') {
+      type = 'audio';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
+      type = 'video';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+    } else {
+      isSystemImg = true;
+    }
+    if (isDir) {
+      isSystemImg = true;
+    }
+    return { imgHttpLink, isSystemImg, imgHttpLarge };
+  };
+  function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
+    console.log(11111);
+
+    showToast.loading('Loading', {
+      cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+      id: 'file_list',
+    });
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+    console.log('ip:', ip);
+    console.log('metadata.value:', metadata.value);
+    console.log('metadata.value:', JSON.stringify(metadata.value));
+
+    server = new grpcService.default.ServiceClient(ip, null, null);
+    let listObject = new Prox.default.ProxListObjectsRequest();
+    listObject.setPrefix('');
+    listObject.setDelimiter('');
+    listObject.setEncodingType('');
+    listObject.setMaxKeys(20);
+    listObject.setStartAfter('');
+    listObject.setContinuationToken(scroll || '');
+    listObject.setVersionIdMarker('');
+    listObject.setKeyMarker('');
+    listObject.setOrderby('lastmodifiedtime desc');
+    listObject.setTags('');
+    listObject.setCategory(0);
+    listObject.setDate('');
+    let requestReq = new Prox.default.ProxListObjectsReq();
+    requestReq.setHeader(header.value);
+    requestReq.setRequest(listObject);
+    server.listObjects(
+      requestReq,
+      metadata.value,
+      (
+        err: any,
+        res: {
+          getCommonprefixesList: () => any;
+          getContentList: () => any[];
+          getContinuationtoken: () => any;
+          getIstruncated: () => any;
+          getMaxkeys: () => any;
+          getNextmarker: () => any;
+          getPrefix: () => any;
+          getPrefixpinsList: () => any;
+        },
+      ) => {
+        if (res) {
+          const transferData = {
+            commonPrefixes: res.getCommonprefixesList(),
+            content: res
+              .getContentList()
+              .map(
+                (el: {
+                  getKey: () => any;
+                  getEtag: () => any;
+                  getLastmodified: () => any;
+                  getSize: () => any;
+                  getContenttype: () => any;
+                  getCid: () => any;
+                  getFileid: () => any;
+                  getIspin: () => any;
+                  getIspincyfs: () => any;
+                  getPinexp: () => any;
+                  getCyfsexp: () => any;
+                  getOod: () => any;
+                  getIspersistent: () => any;
+                  getCategory: () => any;
+                  getTags: () => any;
+                  getImages: () => any;
+                  getNftinfosList: () => any;
+                }) => {
+                  const imageObj = el.getImages().toObject();
+                  const imageInfo = {};
+                  let isShowDetail = false;
+                  if (imageObj.camerainfo?.make) {
+                    isShowDetail = true;
+                    imageInfo.aperture = imageObj.addition.aperture; //光圈
+                    imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+                    imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
+                    imageInfo.exptime = imageObj.addition.exptime; //曝光时间
+                    imageInfo.orientation = imageObj.addition.orientation; //方向
+                    imageInfo.focallength = imageObj.addition.focallength; //焦距
+                    imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
+                    imageInfo.software = imageObj.addition.software; // 使用软件
+                    imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
+                    imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
+                    imageInfo.gps = imageObj.gps; //经纬度
+                    imageInfo.resolution = imageObj.resolution; //像素
+                  }
+                  return {
+                    key: el.getKey(),
+                    etag: el.getEtag(),
+                    lastModified: el.getLastmodified(),
+                    size: el.getSize(),
+                    contentType: el.getContenttype(),
+                    cid: el.getCid(),
+                    fileId: el.getFileid(),
+                    isPin: el.getIspin(),
+                    isPinCyfs: el.getIspincyfs(),
+                    pinExp: el.getPinexp(),
+                    CyfsExp: el.getCyfsexp(),
+                    OOD: el.getOod(),
+                    isPersistent: el.getIspersistent(),
+                    category: el.getCategory(),
+                    tags: el.getTags(),
+                    imageInfo: imageInfo,
+                    isShowDetail,
+                    nftInfoList: el.getNftinfosList(),
+                  };
+                },
+              ),
+            continuationToken: res.getContinuationtoken(),
+            isTruncated: res.getIstruncated(),
+            maxKeys: res.getMaxkeys(),
+            nextMarker: res.getNextmarker(),
+            prefix: res.getPrefix(),
+            prefixpins: res.getPrefixpinsList(),
+          };
+          isError.value = false;
+          initRemoteData(transferData, reset, 0);
+          showToast.hide('file_list');
+        } else if (err) {
+          isError.value = true;
+          showToast.hide('file_list');
+          console.log('err----list', err);
+          console.log('err----list', JSON.stringify(err));
+        }
+      },
+    );
+  }
+  const initRemoteData = async (
+    data: {
+      commonPrefixes?: any;
+      content: any;
+      continuationToken?: any;
+      isTruncated?: any;
+      maxKeys?: any;
+      nextMarker?: any;
+      prefix?: any;
+      prefixpins?: any;
+      err?: any;
+    },
+    reset = false,
+    category: number,
+  ) => {
+    if (!data) {
+      return;
+    }
+    if (data.err) {
+      showToast.fail('Failed to  retrieve data. Please try again later');
+    }
+    if (!accessKeyId.value) {
+      await getOrderInfo(true, order_uuid.value);
+    }
+    tableData.value = [];
+    for (let i = 0; i < data.commonPrefixes?.length; i++) {
+      let name = data.commonPrefixes[i];
+      if (data.prefix) {
+        // name = name.split(data.prefix)[1];
+        name = name.split('/')[name.split('/').length - 2] + '/';
+      }
+
+      let cur_cid = '';
+      for (let i = 0; i < data.prefixpins?.length; i++) {
+        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
+          cur_cid = data.prefixpins[i].cid;
+        }
+      }
+
+      let item = {
+        isDir: true,
+        checked: false,
+        name,
+        category: 1,
+        fileType: 1,
+
+        fullName: data.commonPrefixes[i],
+        key: data.commonPrefixes[i],
+        idList: [
+          {
+            name: 'IPFS',
+            code: cur_cid,
+          },
+          {
+            name: 'CYFS',
+            code: '',
+          },
+        ],
+        date: '-',
+        size: '',
+        status: '-',
+        type: 'application/x-directory',
+        file_id: '',
+        pubkey: '',
+        cid: cur_cid,
+        imgUrl: '',
+        imgUrlLarge: '',
+        share: {},
+        isSystemImg: false,
+        canShare: false,
+      };
+
+      tableData.value.push(item);
+    }
+
+    for (let j = 0; j < data?.content?.length; j++) {
+      let date = transferUTCTime(data.content[j].lastModified);
+      let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
+      const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
+      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+      let cid = data.content[j].cid;
+      let file_id = data.content[j].fileId;
+
+      let name = data.content[j].key;
+      if (data.prefix) {
+        name = name.split(data.prefix)[1];
+      }
+      if (name.indexOf('/') > 0 && name[name.length - 1] != '/') {
+        name = name.split('/')[name.split('/').length - 1];
+      } else if (name.indexOf('/') > 0) {
+        name = name.split('/')[name.split('/').length - 2];
+      }
+      let isPersistent = data.content[j].isPersistent;
+      console.log(data.content[j], 'data.content[j]');
+
+      let item = {
+        imageInfo: data.content[j].imageInfo,
+        isShowDetail: data.content[j].isShowDetail,
+        isDir: isDir,
+        checked: false,
+        name,
+        category: data.content[j].category,
+        fileType: 2,
+        fullName: data.content[j].key,
+        key: data.content[j].key,
+        idList: [
+          {
+            name: 'IPFS',
+            code: data.content[j].isPin ? cid : '',
+          },
+          {
+            name: 'CYFS',
+            code: data.content[j].isPinCyfs ? file_id : '',
+          },
+        ],
+        date,
+        // size: getfilesize(data.content[j].size),
+        originalSize: data.content[j].size,
+        status: cid || file_id ? 'Published' : '-',
+        type: data.content[j].contentType,
+        file_id: file_id,
+        pubkey: cid,
+        cid,
+        imgUrl: url,
+        imgUrlLarge: url_large,
+        share: {},
+        isSystemImg,
+        canShare: cid ? true : false,
+        isPersistent,
+        isPin: data.content[j].isPin,
+        isPinCyfs: data.content[j].isPinCyfs,
+      };
+      // if (item.isDir || category == 1) {
+      tableData.value.push(item);
+      // }
+    }
+  };
+  const $cordovaPlugins = inject('$cordovaPlugins');
+
+  const getSignHeaders = (objectKey) => {
+    // const objectKey = encodeURIComponent(checkData[0].fullName);
+    const date = new Date().toUTCString();
+
+    const httpMethod = 'GET';
+    const contentType = '';
+    const contentMd5 = '';
+    const canonicalizedAmzHeaders = '';
+    // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
+    const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
+
+    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
+
+    let hmac = HmacSHA1(signature, secretAccessKey.value);
+    const signatureBase64 = enc.Base64.stringify(hmac);
+
+    const headers = {
+      'x-amz-date': date,
+      Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
+    };
+    return headers;
+  };
+  const handlerClick = async (type: string) => {
+    const checkData = JSON.parse(JSON.stringify(detailRow.value));
+    console.log(checkData, 'checkData');
+
+    if (type === 'download') {
+      const objectKey = encodeURIComponent(checkData.fullName);
+      const headers = getSignHeaders(objectKey);
+      console.log('headers:', headers);
+      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
+      if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+        $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
+      } else {
+        showToast.text('Coming soon for your download');
+        fetch(url, { method: 'GET', headers })
+          .then((response) => {
+            if (response.ok) {
+              // 创建一个 Blob 对象，并将响应数据写入其中
+              console.log('Success', response);
+              return response.blob();
+            } else {
+              showToast.fail('Download failed, please try again');
+              // 处理错误响应
+              console.error('Error:', response.status, response.statusText);
+            }
+          })
+          .then((blob) => {
+            console.log(blob, 'blob');
+            console.log('Blob type:', blob.type);
+
+            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+            const a = document.createElement('a');
+            console.log("document.createElement('a')");
+
+            a.href = URL.createObjectURL(blob);
+            console.log(a.href);
+
+            a.download = checkData.fullName;
+            console.log(a.download);
+
+            // 将 <a> 元素添加到文档中，并模拟点击
+            document.body.appendChild(a);
+            console.log('添加');
+            a.click();
+            console.log('点击');
+
+            document.body.removeChild(a);
+          })
+          .catch((error) => {
+            showToast.fail('Download failed, please try again');
+            // 处理网络错误
+            console.error('Network Error:', error);
+          });
+      }
+    } else if (type === 'share') {
+      await doShare(checkData);
+    } else if (type === 'move') {
+      moveShow.value = true;
+    } else if (type == 'rename') {
+      renameShow.value = true;
+    } else if (type === 'delete') {
+      const onOk = async () => {
+        deleteItem([checkData]);
+        fileItemPopupIsShow.value = false;
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to delete?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+        onOk,
+      });
+    } else if (type == 'nft') {
+      createNFT(checkData, accessKeyId.value, secretAccessKey.value, bucketName.value);
+    } else if (type === 'pin') {
+      const onOk = async () => {
+        await cloudPin(checkData, 'ipfs');
+        // detailRow.value.isPin = true;
+        detailShow.value = false;
+        getFileList();
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS PIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        onOk,
+      });
+    } else if (type === 'un pin') {
+      const onOk = async () => {
+        const d = await cloudPin(checkData, 'ipfs', 'unpin');
+        if (d) {
+          imgData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          otherData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          detailRow.value.isPin = false;
+        }
+        // doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS UNPIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+
+        onOk,
+      });
+    }
+  };
+  const initNFT = async () => {
+    let arr = [];
+    if (!walletInfo || !walletInfo.value || walletInfo.value.length === 0) {
+      return;
+    }
+    for (let i = 0; i < walletInfo.value.length; i++) {
+      arr.push(walletInfo.value[i].address);
+    }
+    const d = {
+      account: arr,
+    };
+    const r = await search_mint(d, 2, 1);
+    if (r?.result?.data) {
+      nftImgList.value = r.result.data;
+      nftTotal.value = r.result.total;
+    }
+
+    // const dd = {
+    //   account: arr,
+    //   sync_storage: 2,
+    // };
+    // const sync_data = await search_mint(dd, 100, 1);
+    // if (sync_data?.result?.data) {
+    //   const nft_info = [];
+    //   sync_data?.result.data.map(async (item) => {
+    //     const meta_image = item.meta_image;
+    //     const bucket = meta_image.split('://')[1]?.split('.')[0];
+    //     const cid = meta_image.split('/ipfs/')[1];
+    //     const contractAddress = item.contract;
+    //     const tokenId = item.token_id;
+    //     if (contractAddress && tokenId) {
+    //       let ip = `https://${bucket}.${poolUrl}:7007`;
+    //       let server = new grpcService.default.ServiceClient(ip, null, null);
+    //       let ProxUpdateNFTRequest = new Prox.default.ProxUpdateNFTRequest();
+    //       let ProxNFTInfo = new Prox.default.ProxNFTInfo();
+    //       const { header, metadata } = await getOrderInfo(bucket);
+    //       ProxUpdateNFTRequest.setHeader(header);
+    //       ProxNFTInfo.setCid(cid);
+    //       ProxNFTInfo.setContractid(contractAddress);
+    //       ProxNFTInfo.setTokenid(tokenId);
+    //       ProxUpdateNFTRequest.addNftinfos(ProxNFTInfo);
+
+    //       console.log('ProxUpdateNFTRequest----------', ProxUpdateNFTRequest, ProxNFTInfo);
+
+    //       const update_data = await server.updateNFT(ProxUpdateNFTRequest, metadata.value, (err, data) => {
+    //         if (err) {
+    //           console.log('err----------', err);
+    //         } else {
+    //           console.log('data----------', data);
+    //         }
+    //       });
+    //       if (update_data) {
+    //         console.log('update_data----------', update_data);
+    //         nft_info.push({
+    //           contract: contractAddress,
+    //           token_id: tokenId,
+    //         });
+    //       }
+    //     }
+    //   });
+    //   if (nft_info.length > 0) {
+    //     const _d = {
+    //       nft_info,
+    //     };
+    //     await update_nft_sync(_d);
+    //   }
+    // }
+  };
+  watch(
+    cloudCodeIsBind,
+    async (newVal) => {
+      if (newVal) {
+        userStore.setambRefuse(false);
+        getOrder();
+        getUserAssets();
+        getExchangeRate();
+        initNFT();
+        await loadMoreFun();
+        console.log(listData.value.length, 'listData.length');
+        if (window.localStorage.homeChooseBucket) {
+          setBucket(JSON.parse(window.localStorage.homeChooseBucket));
+        } else if (listData.value.length) {
+          setBucket(listData.value[0]);
+        }
+      }
+    },
+    { deep: true, immediate: true },
+  );
+
+  watch(
+    curStepIndex,
+    (val) => {
+      if (val === 4) {
+      }
+    },
+    { deep: true, immediate: true },
+  );
+  provide('handleImg', handleImg);
+
+  onMounted(async () => {});
 </script>
 
 <style lang="scss" scoped>
+  .file_list_bucket {
+    height: 50%;
+  }
+  .top_swipe {
+    :deep {
+      .van-swipe-item {
+      }
+    }
+  }
   ::v-deep {
     .nut-step-main {
       padding-bottom: 30px !important;
     }
   }
+  .bucket_tips {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    svg {
+      width: 45px;
+      height: 45px;
+      vertical-align: middle;
+    }
+  }
+  .type_check_box {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px;
+    background: #fff;
+    border-radius: 20px;
+    width: 100%;
+    height: 380px;
+    box-sizing: border-box;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 
+    .type_item {
+      width: 50%;
+      text-align: center;
+      height: 150px;
+      cursor: pointer;
+      font-weight: bold;
+      &.miner_tool {
+        height: 100px;
+        .svg_box {
+          margin: 0 auto;
+          img {
+            width: unset;
+            height: 60%;
+          }
+        }
+        p {
+          font-size: 0.8rem;
+        }
+      }
+
+      .svg_box {
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+        margin: 10px auto;
+        text-align: center;
+        border-radius: 20px;
+
+        svg {
+          width: 100%;
+          height: 100%;
+          vertical-align: middle;
+        }
+      }
+
+      &:nth-child(3),
+      &:nth-child(4) {
+        .svg_box {
+          svg {
+            width: 60px;
+            height: 60px;
+          }
+        }
+      }
+
+      .order-icon-recycle {
+        //   background-color: #ff8b00;
+        // background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
+        //   background-image: linear-gradient(120deg, #8ae9d7 0%, #483bb5 100%);
+        border-radius: 50%;
+
+        svg {
+          width: 80% !important;
+          height: 80% !important;
+          vertical-align: middle;
+        }
+      }
+
+      .order-icon-node-tree {
+        //   background-color: #34964f;
+        //   background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
+        border-radius: 50%;
+
+        svg {
+          width: 100%;
+          height: 100%;
+          vertical-align: middle;
+        }
+      }
+
+      .order-icon-send-to-back {
+        background-color: #fcd116;
+        background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
+        border-radius: 50%;
+
+        svg {
+          width: 60%;
+          height: 60%;
+          vertical-align: middle;
+        }
+      }
+
+      .order-icon-input-cursor-move {
+        background-color: #5f57ff;
+        background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
+        border-radius: 50%;
+
+        svg {
+          width: 60%;
+          height: 60%;
+          vertical-align: middle;
+        }
+      }
+
+      p {
+        color: #051e56;
+        white-space: nowrap;
+      }
+
+      // &:nth-child(1) {
+      //   .svg_box {
+      //     svg {
+      //       color: #aa5eff;
+      //     }
+      //   }
+      // }
+      // &:nth-child(2) {
+      //   .svg_box {
+      //     background: #e0f3ff;
+      //   }
+      // }
+      // &:nth-child(3) {
+      //   .svg_box {
+      //     background: #ffebef;
+      //   }
+      // }
+      // &:nth-child(4) {
+      //   .svg_box {
+      //     background: #e2e4ff;
+      //   }
+      // }
+    }
+  }
+  .recent_folder_box {
+    background: #fff;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 1rem;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    :deep {
+      .img_list_box {
+        height: unset;
+        padding-bottom: 0;
+      }
+      .nut-infinite__bottom {
+        display: none;
+      }
+    }
+    .recent_folder_title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      .more {
+        font-size: 0.8rem;
+        font-weight: normal;
+        color: #777;
+      }
+    }
+
+    .recent_folder {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      .folder_item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        img {
+          width: 80%;
+        }
+      }
+    }
+    .file_list {
+      // display: grid;
+      // grid-template-columns: repeat(4, 1fr);
+      // grid-gap: 0.5rem;
+      background: #fff;
+      border-radius: 16px;
+      .list_item {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 5px 0;
+        border-top: 1px solid #eee;
+
+        .type_icon {
+          width: 80px;
+          height: 80px;
+        }
+
+        .left_icon_box {
+          width: 80px;
+          height: 80px;
+
+          img {
+            width: 80px;
+            height: 80px;
+          }
+        }
+
+        .name_box {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          width: calc(100% - 180px);
+          margin-left: 30px;
+
+          p:first-child {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          p:last-child {
+            margin-top: 5px;
+            color: #a7a7a7;
+            font-size: 20px;
+          }
+        }
+      }
+    }
+    .file_list_img {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 0.2rem;
+      justify-items: center;
+      margin-top: 20px;
+      padding: 0.5rem 0;
+      background: #fff;
+      border-radius: 16px;
+      .list_item {
+        width: 120px;
+        height: 120px;
+        justify-content: center;
+        padding: 0 !important;
+        // padding: 20px 0;
+        :deep {
+          .nut-image {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 0.3rem;
+        }
+      }
+    }
+  }
+
+  .file_list {
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    // padding: 0.5rem;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 1rem;
+    overflow: auto;
+
+    :deep {
+      .nut-infinite__container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        // display: flex;
+        // justify-content: space-between;
+        // flex-wrap: wrap;
+      }
+
+      .nut-infinite__bottom {
+        display: none;
+        height: 2rem;
+        line-height: 2rem;
+      }
+    }
+
+    .list_item {
+      padding: 0;
+      height: unset;
+      margin: 0.2rem 0;
+      flex-direction: column;
+      justify-content: center;
+      box-sizing: border-box;
+      border: none;
+      box-shadow: none;
+      img {
+        width: 100%;
+        height: auto;
+      }
+
+      .name_box {
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        width: unset;
+        .is_checked {
+          color: $main_blue;
+        }
+      }
+    }
+  }
   .DouArrowDown {
     // transform: rotate(180deg);
     display: flex;
@@ -685,7 +1696,7 @@
     // background: #5758a0;
     // margin: 0 -4vw;
     display: grid;
-    grid-template-columns: auto 60px;
+    grid-template-columns: auto 120px;
     gap: 30px;
     align-items: center;
     height: 100px;
@@ -700,6 +1711,9 @@
 
       font-size: 40px;
       color: #5758a0;
+      a {
+        text-decoration: underline;
+      }
     }
 
     .Notice {
@@ -719,20 +1733,17 @@
 
     .img-box {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
 
-      width: 58px;
       height: 58px;
-      padding: 15px;
-      margin-right: 10px;
       //   background: #5758a0;
       box-sizing: border-box;
-      overflow: hidden;
-      border-radius: 50%;
 
+      svg,
       img {
         width: 45px;
+        height: 45px;
         margin: 0 auto;
         vertical-align: middle;
         border-radius: 10px;
@@ -846,7 +1857,12 @@
     color: #fff;
     border-radius: 30px;
     background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
-
+    &:first-child {
+      margin-right: 10px;
+    }
+    &:last-child {
+      margin-left: 10px;
+    }
     > img {
       top: 30px;
       position: absolute;
@@ -1000,51 +2016,8 @@
       }
     }
   }
-
-  .withdraw-btn {
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    justify-content: space-around;
-    transform: translateY(-80px);
-    width: 90%;
-    margin: 0 auto;
-    padding: 20px 0;
-    border-radius: 16px;
-    border: 4px solid transparent;
-    background: #fff;
-    // box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-    background:
-      linear-gradient(#fff, #fff) padding-box,
-      linear-gradient(145deg, #e81cff, #40c9ff) border-box;
-
-    .action_item {
-      z-index: 88;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      // color: #333333;
-      color: #5758a0;
-      font-size: 24px;
-      font-weight: bold;
-
-      img {
-        display: block;
-        width: 100px;
-        margin-bottom: 10px;
-      }
-    }
-  }
-
-  .withdraw-btn::before {
-    content: '';
-    position: absolute;
-    width: 140%;
-    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
-    height: 80%;
-    animation: rotBGimg 3s linear infinite;
-    transition: all 0.2s linear;
+  .income-card2 {
+    background-image: linear-gradient(260deg, #4474f1 0%, #2934bc 74%);
   }
 
   @keyframes rotBGimg {

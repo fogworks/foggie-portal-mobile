@@ -213,7 +213,7 @@
         </div>
       </nut-infinite-loading> -->
       <template v-else-if="tableData.length">
-        <div class="file_list file_list_img">
+        <div class="file_list file_list_img" v-if="imgData.length">
           <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
             <nut-image show-loading show-error round radius="5px" :src="item.imgUrl" fit="cover" position="center">
               <template #loading>
@@ -223,7 +223,7 @@
             <!-- <img :src="item.imgUrl" alt="" /> -->
           </div>
         </div>
-        <div class="file_list">
+        <div class="file_list" v-if="otherData.length">
           <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
             <div :class="['left_icon_box']">
               <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
@@ -314,7 +314,7 @@
           </p>
           <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
           <template #footer>
-            <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button>
+            <!-- <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button> -->
             <nut-button type="primary" @click="createName" :loading="isNameLoading">Confirm</nut-button>
           </template>
         </nut-dialog>

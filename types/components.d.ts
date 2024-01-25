@@ -39,6 +39,7 @@ declare module 'vue' {
     NutNumberKeyboard: typeof import('@nutui/nutui')['NumberKeyboard']
     NutOverlay: typeof import('@nutui/nutui')['Overlay']
     NutPicker: typeof import('@nutui/nutui')['Picker']
+    NutPopover: typeof import('@nutui/nutui')['Popover']
     NutPopup: typeof import('@nutui/nutui')['Popup']
     NutProgress: typeof import('@nutui/nutui')['Progress']
     NutRadio: typeof import('@nutui/nutui')['Radio']

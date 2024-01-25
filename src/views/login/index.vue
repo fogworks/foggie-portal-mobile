@@ -6,52 +6,74 @@
     </div>
 
     <!-- <h1>Login</h1> -->
-    <nut-form ref="ruleForm" :model-value="loginForm">
-      <nut-form-item required prop="email" :rules="[{ required: true, message: 'E-mail' }]">
-        <input v-model.trim="loginForm.email" name="email" class="nut-input-text" placeholder="Email" type="text" />
-      </nut-form-item>
-      <nut-form-item required prop="password" :rules="[{ required: true, message: 'Please enter password' }]">
-        <input v-model.trim="loginForm.password" class="nut-input-text" placeholder="Password" type="password" />
-      </nut-form-item>
-      <nut-form-item
-        required
-        prop="captcha_text"
-        v-if="showCaptcha"
-        :rules="[{ required: true, message: 'Please enter the verification code' }]"
-      >
-        <input
-          ref="captcha_text"
-          v-model.trim="loginForm.captcha_text"
-          :placeholder="'verification code!'"
-          name="captcha_text"
-          tabindex="5"
-          autocomplete="on"
-          style="width: 70%"
-          class="nut-input-text"
-        />
-        <img :src="codeSrc" class="code_src" @click="getCaptcha" />
-      </nut-form-item>
-      <nut-button block type="info" @click="submit" :loading="loading"> Sign In </nut-button>
-      <div class="Register_btn">
-        <span class="password_login" @click="router.push('/forget')"> Forgot password?</span>
-        <span class="password_login" @click="router.push('/register')">create an account?</span>
-      </div>
-      <!-- <div class="other_login_box" @click="loginWithMeta">
-        <MetaMask></MetaMask>
-        Sign In with MetaMask
-      </div> -->
-      <nut-divider :style="{ color: '#fff' }">Sign in with</nut-divider>
-      <div class="login-img">
-        <div class="img-metamask" @click="loginWithMeta"><MetaMask></MetaMask></div>
-        <img class="img-github" src="@/assets/github.png" @click="githubLogin" />
-        <img src="@/assets/google-logo.png" class="img-google" @click="googleLogin" />
-      </div>
-
-      <!-- <div v-if="!isMobileDevice" class="other_login_box" @click="loginWithUniSat">
-        <img src="@/assets/svg/home/unisat.svg" alt="" />
-        Sign In with UniSat 
-      </div> -->
-    </nut-form>
+    <nut-tabs v-model="activeType">
+      <template #titles>
+        <div class="tab_header">
+          <div :class="[activeType == 1 ? 'isChecked' : '']" @click="activeType = '1'">
+            <IconEth></IconEth>
+          </div>
+          <div :class="[activeType == 2 ? 'isChecked' : '']" @click="activeType = '2'">
+            <IconLink></IconLink>
+          </div>
+          <div :class="[activeType == 3 ? 'isChecked' : '']" @click="activeType = '3'">
+            <IconEmail></IconEmail>
+          </div>
+        </div>
+      </template>
+      <nut-tab-pane pane-key="1">
+        <p> Sign in with Ethereum </p>
+        <div class="login-img" @click.stop="loginWithMeta">
+          <span>Metamask</span>
+          <div class="img-metamask"><MetaMask></MetaMask></div>
+        </div>
+      </nut-tab-pane>
+      <nut-tab-pane pane-key="2">
+        <p> Sign in with Git Provider Or Google </p>
+        <div class="login-img" @click.stop="githubLogin">
+          <span>Github</span>
+          <img class="img-github" src="@/assets/github.svg" />
+        </div>
+        <div class="login-img" @click.stop="googleLogin">
+          <span>Google</span>
+          <img src="@/assets/google-logo.svg" class="img-google" />
+        </div>
+      </nut-tab-pane>
+      <nut-tab-pane pane-key="3">
+        <p> Sign in with Email </p>
+        <nut-form ref="ruleForm" :model-value="loginForm">
+          <nut-form-item required prop="email" :rules="[{ required: true, message: 'E-mail' }]">
+            <input v-model.trim="loginForm.email" name="email" class="nut-input-text" placeholder="Email" type="text" />
+          </nut-form-item>
+          <nut-form-item required prop="password" :rules="[{ required: true, message: 'Please enter password' }]">
+            <input v-model.trim="loginForm.password" class="nut-input-text" placeholder="Password" type="password" />
+          </nut-form-item>
+          <nut-form-item
+            required
+            prop="captcha_text"
+            v-if="showCaptcha"
+            :rules="[{ required: true, message: 'Please enter the verification code' }]"
+          >
+            <input
+              ref="captcha_text"
+              v-model.trim="loginForm.captcha_text"
+              :placeholder="'verification code!'"
+              name="captcha_text"
+              tabindex="5"
+              autocomplete="on"
+              style="width: 70%"
+              class="nut-input-text"
+            />
+            <img :src="codeSrc" class="code_src" @click="getCaptcha" />
+          </nut-form-item>
+          <nut-button block type="info" @click="submit" :loading="loading"> Sign In </nut-button>
+          <div class="Register_btn">
+            <span class="password_login" @click="router.push('/forget')"> Forgot password?</span>
+            <span class="password_login" @click="router.push('/register')">create an account?</span>
+          </div>
+        </nut-form>
+      </nut-tab-pane>
+    </nut-tabs>
+    <p class="power"> Powered by Fog Works, Inc. </p>
   </div>
 </template>
 
@@ -62,6 +84,9 @@
   import metamaskSDK from '@web3-onboard/metamask';
   import detectEthereumProvider from '@metamask/detect-provider';
   import MetaMask from '~icons/home/metamask.svg';
+  import IconEth from '~icons/home/eth.svg';
+  import IconLink from '~icons/home/link.svg';
+  import IconEmail from '~icons/ic/baseline-email.svg';
   // import UniSat from '~icons/home/unisat.svg';
   import loadingImg from '@/components/loadingImg/index.vue';
   import {
@@ -100,6 +125,7 @@
       },
     },
   });
+  const activeType = ref<any>('1');
   const infuraKey = '<INFURA_KEY>';
   const rpcUrl = `https://mainnet.infura.io/v3/${infuraKey}`;
   const web3Onboard = init({
@@ -187,6 +213,7 @@
     let res = await user();
     if (res.data) {
       userStore.setInfo(res.data);
+
       router.push({ path: '/home' });
     }
   }
@@ -243,6 +270,9 @@
                         let token = data.token_type + ' ' + data.access_token;
                         let refresh_token = data.token_type + ' ' + data.refresh_token;
                         let user_id = data.user_id;
+                        if (user_id && user_id != window.localStorage.getItem('user_id')) {
+                          window.localStorage.removeItem('homeChooseBucket');
+                        }
                         window.localStorage.setItem('user_id', user_id);
                         // window.localStorage.setItem('refresh_token', refresh_token);
                         // userStore.setToken(refresh_token);
@@ -334,6 +364,9 @@
           let token = data.token_type + ' ' + data.access_token;
           let refresh_token = data.token_type + ' ' + data.refresh_token;
           let user_id = data.user_id;
+          if (user_id && user_id != window.localStorage.getItem('user_id')) {
+            window.localStorage.removeItem('homeChooseBucket');
+          }
           window.localStorage.setItem('user_id', user_id);
 
           if (timer.value) {
@@ -510,8 +543,61 @@
 </style>
 <style lang="scss" scoped>
   .login {
+    position: relative;
     justify-content: center;
     height: 100vh;
+    .tab_header {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: center;
+      > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        svg {
+          color: hsl(0, 0%, 43.5%);
+        }
+        &.isChecked {
+          background: hsl(209, 95%, 90.1%);
+          svg {
+            color: hsl(211, 100%, 43.2%);
+          }
+        }
+      }
+    }
+    :deep {
+      .nut-tabs {
+        border-radius: 1rem;
+      }
+      .nut-tabs__titles {
+        background-color: #fff;
+        border-bottom: 1px solid #ccc;
+      }
+      .nut-tab-pane {
+        // background-color: transparent;
+        p {
+          font-weight: 700;
+        }
+      }
+      .nut-form-item {
+        border: 1px solid #ccc;
+      }
+    }
+    .Register_btn {
+      color: #777;
+    }
+    .power {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      text-align: center;
+      color: #d0d0d0;
+    }
   }
   .other_login_box {
     display: flex;
@@ -559,8 +645,16 @@
   }
   .login-img {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    height: 4rem;
+    padding: 0.5rem 1.5rem;
+    box-sizing: border-box;
+    cursor: pointer;
+    &:hover {
+      background: hsl(0, 0%, 95.1%);
+      border-radius: 0.5rem;
+    }
     img {
       margin: 0.5rem 1rem;
       width: 2.5rem;
@@ -573,11 +667,9 @@
       border-radius: 50%;
     }
     .img-metamask {
-      margin: 0.5rem 1rem;
       width: 2.5rem;
       cursor: pointer;
       svg {
-        margin-top: 0.5rem;
         width: 2.5rem;
       }
     }

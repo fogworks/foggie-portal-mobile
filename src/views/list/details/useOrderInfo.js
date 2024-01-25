@@ -55,7 +55,7 @@ export default function useOrderInfo() {
     }
   });
   const route = useRoute();
-  const getOrderInfo = async (getKey = true) => {
+  const getOrderInfo = async (getKey = true, uuid = '') => {
     showToast.loading('Loading', {
       cover: true,
       customClass: 'app_loading',
@@ -66,7 +66,7 @@ export default function useOrderInfo() {
       duration: 0,
     });
     try {
-      let res = await get_unique_order({ order_uuid: route?.query?.uuid });
+      let res = await get_unique_order({ order_uuid: uuid || route?.query?.uuid });
       orderInfo.value = res.result.data;
       bucketName.value = orderInfo.value.domain;
       orderInfo.value.used_space = 0;
@@ -75,7 +75,7 @@ export default function useOrderInfo() {
         return true;
       }
       let param = {
-        order_uuid: route?.query?.uuid,
+        order_uuid: uuid || route?.query?.uuid,
       };
       const signData = await get_order_sign(param);
 
@@ -96,7 +96,7 @@ export default function useOrderInfo() {
       // console.log('cur_token==11:', cur_token);
       headerProx.setToken(cur_token);
       orderSignInfo.value.header = headerProx;
-      await orderStore.setOrderInfoList(orderInfo.value.uuid, orderSignInfo.value);
+      await orderStore.setOrderInfoList(uuid || orderInfo.value.uuid, orderSignInfo.value);
       orderInfo.value.used_space = 0;
     } catch {
       isError.value = true;

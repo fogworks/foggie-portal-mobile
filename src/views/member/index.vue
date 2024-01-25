@@ -15,6 +15,7 @@
           <div class="email">Email: {{ email }}</div>
           <!-- <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div> -->
           <div class="email" v-if="promo_code">promoCode: {{ promo_code }}</div>
+          <!-- <div class="email" v-if="user_code">UserCode: {{ user_code }} <IconCopy @click="copyCode(user_code)"></IconCopy> </div> -->
         </div>
       </div>
       <div class="money">
@@ -161,6 +162,7 @@
   import '@nutui/nutui/dist/packages/toast/style';
   import { debounce } from 'lodash';
   import loadingImg from '@/components/loadingImg/index.vue';
+  import IconCopy from '~icons/home/copy.svg';
   import { createVNode, inject } from 'vue';
   import { useRouter } from 'vue-router';
   import { user, setUserAvatarApi, search_cloud } from '@/api/index';
@@ -177,7 +179,9 @@
   const email = computed(() => userStore.getUserInfo?.email);
   const dmcAccount = computed(() => userStore.getUserInfo?.dmc);
   const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
+  const user_code = computed(() => userStore.getUserInfo?.user_code);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+
   const visible = ref<boolean>(false);
 
   const bindAmbCode = inject('bindAmbCode');
@@ -211,7 +215,15 @@
     withdraw: <object>{ integerPart: 0, decimalPart: 0 },
     income: <object>{ integerPart: 0, decimalPart: 0 },
   });
-
+  function copyCode(text) {
+    var input = document.createElement('input');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('Copy');
+    document.body.removeChild(input);
+    showToast.success('Copy succeeded,Use this code to quickly associate wallet accounts in the Dapp');
+  }
   function loadUserDmc() {
     get_user_dmc()
       .then((res) => {
@@ -474,6 +486,9 @@
             color: #fff;
             font-weight: 500;
             font-size: 25px;
+            svg {
+              vertical-align: middle;
+            }
           }
 
           .balance {

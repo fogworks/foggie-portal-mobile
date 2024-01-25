@@ -198,7 +198,7 @@
     const postData = {
       sort_type: 'created_at',
       ascending: false,
-      is_domain: true,
+      is_domain: 1,
       electronic_type: '0',
     };
     infinityValue.value = true;
@@ -346,7 +346,6 @@
         place-items: center;
         border-radius: 50%;
         margin-bottom: 10px;
-     
       }
     }
   }

@@ -131,7 +131,7 @@
   const tabItem = [
   { key: 'home', icon: Home },
     { key: 'list', icon: Horizontal },
-    { key: 'photography', icon: Image },
+    { key: 'nft', icon: Image },
     { key: 'member', icon: My },
   ];
   
@@ -183,7 +183,7 @@
             router.push('/list');
             break;
         case 2:
-            router.push('/photography');
+            router.push('/allNFTList');
             break;
         case 3:
             router.push('/member');

@@ -141,7 +141,9 @@
               <div class="right_rate" v-if="handleRate(item) > 0">+{{ handleRate(item) }}%<TriangleUp></TriangleUp></div>
             </div>
           </div>
-          <div class="order_status">{{ statusTypes[item.state] }} </div>
+
+          <div class="order_status" v-if="item.domain">{{ statusTypes[item.state] }} </div>
+          <div class="order_status order_status2" v-else>To be activated </div>
         </div>
       </template>
     </nut-infinite-loading>
@@ -1020,6 +1022,9 @@
       color: #ff8b00;
       font-weight: bold;
       font-size: 28px;
+    }
+    .order_status2 {
+      color: red;
     }
   }
   .top_filter {

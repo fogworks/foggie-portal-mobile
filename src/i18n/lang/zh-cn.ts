@@ -13,6 +13,7 @@ export const lang: langType = {
     empty: '',
     analysis: '收益记录',
     transactionRecords: '交易记录',
+    nft: 'NFT',
   },
   language: {
     en: '英文',

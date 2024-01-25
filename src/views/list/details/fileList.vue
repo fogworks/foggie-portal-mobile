@@ -69,7 +69,7 @@
 
     <nut-sticky class="file_Top" top="0">
       <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
-        <div style="display: flex">
+        <div style="display: flex; width: 100%">
           <template v-if="!prefix.length">
             <div class="boxtop">
               <div style="display: flex; align-items: center; flex: 0 0 auto">
@@ -82,7 +82,6 @@
                   :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
                 ></TriangleUp>
               </div>
-              <nut-checkbox style="flex: 0 0 100px" v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
             </div>
           </template>
           <template v-else>
@@ -95,10 +94,11 @@
             >
               <!-- <TopBack> </TopBack> -->
             </div>
-            <span class="top_title">
+            <span class="top_title" style="flex: 1">
               {{ prefix.at(-1) || '' }}
             </span>
           </template>
+          <nut-checkbox style="flex: 0 0 100px" v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
         </div>
       </div>
       <div class="search_bar" v-if="category !== 1">
@@ -640,11 +640,11 @@
           } else if (type == 'txt') {
             chooseItem.value.detailType = 'txt';
             detailShow.value = true;
-            fetch(row.imgUrlLarge)
-              .then((response) => response.text())
-              .then((text) => {
-                document.getElementById('txtContainer').textContent = text;
-              });
+            // fetch(row.imgUrlLarge)
+            //   .then((response) => response.text())
+            //   .then((text) => {
+            //     document.getElementById('txtContainer').textContent = text;
+            //   });
           } else if (['xls', 'xlsx'].includes(type)) {
             router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
           } else if (['doc', 'docx'].includes(type)) {
@@ -1595,7 +1595,7 @@
                     category: el.getCategory(),
                     tags: el.getTags(),
                     nftInfoList: el.getNftinfosList(),
-                     // imageInfo,
+                    // imageInfo,
                     // isShowDetail,
                   };
                 },
@@ -1858,7 +1858,7 @@
           resolution: '', //像素
         };
         let isShowDetail = false;
-        
+
         if (fileInfo.image_infos && Object.keys(fileInfo.image_infos).length > 0) {
           let key = Object.keys(fileInfo.image_infos)[0];
           let imageObj = fileInfo.image_infos[key];
@@ -1879,7 +1879,6 @@
           }
           console.log('FILE_ADD-----------tableData', imageInfo);
         }
-        
 
         let item = {
           isDir: false,

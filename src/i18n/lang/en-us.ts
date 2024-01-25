@@ -4,7 +4,7 @@ export const lang: langType = {
   title: 'VUE H5 development template',
   tabbar: {
     home: 'Home',
-    list: 'Order',
+    list: 'Bucket',
     member: 'User',
     demo: 'demo',
     withdraw: 'Withdraw',
@@ -13,7 +13,8 @@ export const lang: langType = {
     empty: '',
     analysis: 'Reward Records',
     transactionRecords: 'Transaction Records',
-    photography: 'photography',
+    photography: 'Photography',
+    nft: 'NFT',
   },
   language: {
     en: 'English',
