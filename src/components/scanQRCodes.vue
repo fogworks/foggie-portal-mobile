@@ -61,6 +61,8 @@
   import { Html5Qrcode } from 'html5-qrcode';
   import { ref, onBeforeUnmount, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
+  import { showToast } from '@nutui/nutui';
+
   const userStore = useUserStore();
   const { vibrate, isSupported } = useVibrate({ pattern: [300, 100, 300] });
   const router = useRouter();
@@ -271,8 +273,14 @@
 
     update_signInfoAPi(publicKey.value, signData.value).then((res) => {
       console.log(res);
+      showToast.success('Scan successful');
+      stop();
+      goBack();
     }).catch((error) => {
       console.log('update_signInfoAPi----111222', error);
+      showToast.success('Scan successful');
+      stop();
+      goBack();
     });
   }
 
