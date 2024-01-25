@@ -1732,7 +1732,7 @@
         dirFile === decodeURIComponent(currentFolderStr),
         dirFileName !== uploadFileName,
       );
-      if (dirFile === decodeURIComponent(currentFolderStr)) {
+      if (dirFile === decodeURIComponent(currentFolderStr) || (message.action === 'FILE_DELETE' && dirFile.charAt(dirFile.length - 1) === "/")) {
         if (detailShow.value) {
           setTimeout(() => {
             initWebSocket();
