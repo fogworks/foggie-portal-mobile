@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <div class="top_div" style="margin-bottom: 40px">
+    <div class="top_div">
       <!-- <h1>SIGN IN</h1> -->
       <img src="@/assets/logo-top-left-dark.png" alt="" />
     </div>
@@ -547,7 +547,7 @@
 <style lang="scss" scoped>
   .login {
     position: relative;
-    justify-content: center;
+    justify-content: flex-start;
     height: 100vh;
     .tab_header {
       width: 100%;
@@ -603,7 +603,7 @@
       }
     }
     .Register_btn {
-      color: #777;
+      color: #fff;
     }
     .power {
       position: absolute;
