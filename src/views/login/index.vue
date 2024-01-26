@@ -26,12 +26,15 @@
           <span>Metamask</span>
           <div class="img-metamask"><MetaMask></MetaMask></div>
         </div>
+        <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
+          Sign in with Metamask</nut-button
+        >
       </nut-tab-pane>
       <nut-tab-pane pane-key="2">
         <p> Sign in with Git Provider Or Google </p>
         <div class="login-img" @click.stop="githubLogin">
           <span>Github</span>
-          <img class="img-github" src="@/assets/github.svg" />
+          <img class="img-github" src="@/assets/Github1.svg" />
         </div>
         <div class="login-img" @click.stop="googleLogin">
           <span>Google</span>
@@ -551,6 +554,9 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       align-items: center;
+      box-shadow: rgb(14 28 232 / 30%) 0px 0px 0px 3px;
+      color: #fff;
+      background-color: #ffffff1c;
       > div {
         display: flex;
         justify-content: center;
@@ -559,11 +565,14 @@
         width: 100%;
         svg {
           color: hsl(0, 0%, 43.5%);
+          color: #fff;
         }
         &.isChecked {
           background: hsl(209, 95%, 90.1%);
+          background: hsl(242.31deg 79.6% 82.69%);
           svg {
             color: hsl(211, 100%, 43.2%);
+            color: #fff;
           }
         }
       }
@@ -574,13 +583,20 @@
       }
       .nut-tabs__titles {
         background-color: #fff;
-        border-bottom: 1px solid #ccc;
+        background-color: #ffffff1c;
+        // border-bottom: 1px solid #ccc;
       }
       .nut-tab-pane {
         // background-color: transparent;
         p {
           font-weight: 700;
         }
+        box-shadow:
+          rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+          rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+          rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+        color: #fff;
+        background-color: #ffffff1c;
       }
       .nut-form-item {
         border: 1px solid #ccc;
@@ -597,6 +613,8 @@
       width: 100%;
       text-align: center;
       color: #d0d0d0;
+      color: #fff;
+      font-weight: bold;
     }
   }
   .other_login_box {
@@ -651,9 +669,15 @@
     padding: 0.5rem 1.5rem;
     box-sizing: border-box;
     cursor: pointer;
+    font-weight: bold;
+    // border-bottom: 0.1px solid #fff;
+    box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
+    margin: 14px 0;
+    cursor: pointer;
     &:hover {
-      background: hsl(0, 0%, 95.1%);
+      //   background: hsl(0, 0%, 95.1%);
       border-radius: 0.5rem;
+      transform: scale(1.1);
     }
     img {
       margin: 0.5rem 1rem;
