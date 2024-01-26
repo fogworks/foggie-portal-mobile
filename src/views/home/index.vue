@@ -8,13 +8,25 @@
         </router-link>
       </div>
       <div class="img-box">
-        <img @click="accountShow = true" :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
-        <IconMore @click="getList" v-if="curStepIndex == 4"></IconMore>
+        <nut-popover
+          overlay
+          :arrow-offset="40"
+          :offset="[-40, 12]"
+          v-model:visible="accountShow"
+          :list="menuItems"
+          location="bottom-start"
+          @choose="choose"
+        >
+          <template #reference>
+            <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
+          </template>
+        </nut-popover>
+        <IconSwitch @click="getList" v-if="curStepIndex == 4"></IconSwitch>
       </div>
     </div>
 
-    <van-swipe :loop="false" class="top_swipe" width="300">
-      <van-swipe-item>
+    <van-swipe :loop="false" class="top_swipe" :width="swipeWidth" ref="swipeRef">
+      <van-swipe-item @click="swipeRef.swipeTo(0)">
         <div inset class="income-card">
           <img src="@/assets/balance_right.svg" @click="gotoPage('analysisChart')" />
           <div class="card_row_1 card_header">
@@ -46,13 +58,13 @@
           </div>
         </div>
       </van-swipe-item>
-      <van-swipe-item>
+      <van-swipe-item @click="swipeRef.swipeTo(1)">
         <div inset class="income-card income-card2">
           <img src="@/assets/balance_right.svg" />
           <div class="card_row_1 card_header">
             <div class="total_income">
               <div class="balance_text">
-                <span>NFT</span>
+                <IconNFT></IconNFT>
               </div>
             </div>
           </div>
@@ -62,13 +74,12 @@
               <p class="column_value">{{ nftTotal }}</p>
             </div>
 
-            <!-- <div @click="gotoPage('analysis')">
-              <p>Today's new funds</p>
-              <p class="column_value today_income"
-                >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
-                <TriangleUp color="#fbd116" width="20px"></TriangleUp>
+            <div @click="gotoPage('PersonalInfo')">
+              <p>Wallets</p>
+              <p class="column_value">
+                {{ walletInfo?.length || 0 }}
               </p>
-            </div> -->
+            </div>
           </div>
         </div>
       </van-swipe-item>
@@ -172,7 +183,7 @@
         </div>
       </div>
 
-      <div class="recent_folder_box">
+      <div class="recent_folder_box" v-if="tableData.length">
         <div class="recent_folder_title">
           <span>Recent Files</span>
           <span class="more" @click="gotoOrderDetail(currentBucketData)">More</span>
@@ -183,48 +194,47 @@
             <span>{{ item.name }}</span>
           </div>
         </div> -->
-        <template v-if="tableData.length">
-          <div class="file_list file_list_img" v-if="imgData.length">
-            <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
-              <nut-image show-loading show-error round radius="5px" :src="item.imgUrl" fit="cover" position="center">
-                <template #loading>
-                  <Loading width="16" height="16"></Loading>
-                </template>
-              </nut-image>
-              <!-- <img :src="item.imgUrl" alt="" /> -->
-            </div>
+        <div class="file_list file_list_img" v-if="imgData.length">
+          <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
+            <nut-image show-loading show-error round radius="5px" :src="item.imgUrl" fit="cover" position="center">
+              <template #loading>
+                <Loading width="16" height="16"></Loading>
+              </template>
+            </nut-image>
+            <!-- <img :src="item.imgUrl" alt="" /> -->
           </div>
-          <div class="file_list" v-if="otherData.length">
-            <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
-              <div :class="['left_icon_box']">
-                <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
-                <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-                <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
-                <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+        </div>
+        <div class="file_list" v-if="otherData.length">
+          <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
+            <div :class="['left_icon_box']">
+              <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+              <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+              <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
+              <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
 
-                <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
-                <img v-else src="@/assets/svg/home/file.svg" alt="" />
-              </div>
-              <div class="name_box">
-                <p>{{ item.name }}</p>
-                <p>{{ item.date || '' }}</p>
-              </div>
+              <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
+              <img v-else src="@/assets/svg/home/file.svg" alt="" />
+            </div>
+            <div class="name_box">
+              <p>{{ item.name }}</p>
+              <p>{{ item.date || '' }}</p>
             </div>
           </div>
-        </template>
+        </div>
       </div>
     </div>
-    <div class="recent_folder_box" style="padding: 1rem 0">
+    <div class="recent_folder_box" v-if="nftImgList.length" style="padding: 1rem 0">
       <div class="recent_folder_title" style="margin-left: 1rem">
         <span>NFT Recent</span>
         <span></span>
       </div>
-      <ListComponent :showBtn="false" v-if="nftImgList.length" has-more :tabList="[]" :imgList="nftImgList"></ListComponent>
+      <ListComponent :showBtn="false" has-more :tabList="[]" :imgList="nftImgList"></ListComponent>
     </div>
 
     <!-- account show -->
-    <nut-action-sheet v-model:visible="accountShow" :menu-items="menuItems" @choose="choose" />
-    <nut-popup position="right" :style="{ width: '20%', height: '100%' }" v-model:visible="showRight">
+    <!-- <nut-action-sheet v-model:visible="accountShow" :menu-items="menuItems" @choose="choose" /> -->
+    <nut-popup position="right" :style="{ width: '50%', height: '100%' }" v-model:visible="showRight">
+      <span class="draw_title"> Select the bucket to view </span>
       <nut-infinite-loading
         :load-more-txt="listData.length ? '' : 'No available buckets, please purchase order first!'"
         class="file_list file_list_bucket"
@@ -233,19 +243,19 @@
         :has-more="hasMore"
         @load-more="loadMoreFun"
       >
-        <div class="list_item" v-for="item in listData" @click="setBucket(item)">
+        <div :class="[bucketName == item.domain ? 'is_checked' : '', 'list_item']" v-for="item in listData" @click="setBucket(item)">
           <div :class="['left_icon_box', item.checked ? 'is_checked' : '']">
             <img src="@/assets/home_bucket.png" alt="" />
           </div>
           <div class="name_box">
-            <span :class="[bucketName == item.domain ? 'is_checked' : '']">{{ item.domain || item.order_id }}</span>
+            <span>{{ item.domain || item.order_id }}</span>
           </div>
         </div>
       </nut-infinite-loading>
-      <nut-infinite-loading
+      <!-- <nut-infinite-loading
         :load-more-txt="noBucketData.length ? '' : 'please set bucket name first!'"
         class="file_list file_list_bucket"
-        ref="listRef"
+        ref="listRef1"
         v-model="infinityValue"
         :has-more="false"
         @load-more="loadMoreFun"
@@ -258,7 +268,7 @@
             <span :class="[bucketName == item.domain ? 'is_checked' : '']">{{ item.domain || item.order_id }}</span>
           </div>
         </div>
-      </nut-infinite-loading>
+      </nut-infinite-loading> -->
     </nut-popup>
     <ActionComponent
       v-model:fileItemPopupIsShow="fileItemPopupIsShow"
@@ -298,12 +308,15 @@
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
+  import IconAssets from '~icons/home/assets.svg';
+  import IconNFT from '~icons/home/nft2.svg';
   import IconMore from '~icons/home/more.svg';
+  import IconSwitch from '~icons/home/switch2.svg';
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
   import IconVideo from '~icons/home/video.svg';
-  import { Notice, TriangleUp, DouArrowUp, RectUp, Setting, Loading } from '@nutui/icons-vue';
+  import { Notice, TriangleUp, DouArrowUp, RectUp, Setting, Loading, Shop, Scan2 } from '@nutui/icons-vue';
   import { toRefs, computed, reactive, ref, watch, watchEffect, createVNode } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
@@ -364,20 +377,29 @@
     }
   });
   let server, currentBucketData;
+  const swipeWidth = ref(300);
+  const swipeRef = ref('');
   const moveShow = ref(false);
   const accountShow = ref(false);
   const showRight = ref(false);
   const detailShow = ref(false);
   const curSelectSrc = ref('');
   const curSelectType = ref('');
+  const listRef = ref('');
   const imgUrl = ref('');
   const imgStartIndex = ref(0);
   const menuItems = [
     {
       name: 'Assets',
+      icon: IconAssets,
     },
     {
       name: 'Expansion',
+      icon: Shop,
+    },
+    {
+      name: 'Scan',
+      icon: Scan2,
     },
   ];
   const userInfo = computed(() => userStore.getUserInfo);
@@ -448,9 +470,9 @@
   watch(
     tableData,
     (val) => {
+      imgData.value = [];
+      otherData.value = [];
       if (val.length) {
-        imgData.value = [];
-        otherData.value = [];
         val.forEach((el) => {
           if (el.category == 1) {
             imgData.value.push(el);
@@ -490,20 +512,22 @@
       await loadMore([0, 1, 2, 3, 4, 5, 6], '', '', '', postData);
       console.log('开始请求');
 
-      nextTick(() => {
-        if (hasMore.value && listRef?.value?.$el?.clientHeight >= listRef?.value?.$el?.scrollHeight) {
-          loadMoreFun();
-        }
-      });
+      // nextTick(() => {
+      //   if (hasMore.value && listRef?.value?.$el?.clientHeight >= listRef?.value?.$el?.scrollHeight) {
+      //     loadMoreFun();
+      //   }
+      // });
     } catch {}
   };
   const getList = async () => {
     showRight.value = true;
-    nextTick(async () => {
-      resetData();
-      getNoBucketOrder();
-      await loadMoreFun();
-    });
+    if (!listData.value.length) {
+      nextTick(async () => {
+        resetData();
+        getNoBucketOrder();
+        await loadMoreFun();
+      });
+    }
   };
   const choose = (item) => {
     if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
@@ -518,6 +542,8 @@
       router.push({
         name: 'Shop',
       });
+    } else if (item.name == 'Scan') {
+      router.push({ path: '/scanQRCodes' });
     }
     accountShow.value = false;
   };
@@ -688,6 +714,8 @@
         router.push('/nft');
       } else if (type == 'Assets') {
         router.push('/assetsInfo');
+      } else if (type == 'PersonalInfo') {
+        router.push('/personalInfo');
       }
     }
   };
@@ -718,7 +746,7 @@
   }
   const gotoOrderDetail = (item) => {
     router.push({
-      name: 'listDetails',
+      name: 'FileList',
       query: {
         id: item.order_id,
         uuid: item.uuid,
@@ -1276,6 +1304,19 @@
   watch(
     cloudCodeIsBind,
     async (newVal) => {
+      nextTick(() => {
+        const swipe = document.getElementsByClassName('top_swipe')[0];
+        swipeWidth.value = swipe.clientWidth * 0.8;
+        if (swipeRef.value) {
+          swipeRef.value.resize();
+        }
+        window.addEventListener('resize', (event) => {
+          swipeWidth.value = swipe.clientWidth * 0.8;
+          if (swipeRef.value) {
+            swipeRef.value.resize();
+          }
+        });
+      });
       if (newVal) {
         userStore.setambRefuse(false);
         getOrder();
@@ -1294,22 +1335,41 @@
     { deep: true, immediate: true },
   );
 
-  watch(
-    curStepIndex,
-    (val) => {
-      if (val === 4) {
-      }
-    },
-    { deep: true, immediate: true },
-  );
+  // watch(
+  //   curStepIndex,
+  //   (val) => {
+  //     if (val === 4) {
+  //     }
+  //   },
+  //   { deep: true, immediate: true },
+  // );
   provide('handleImg', handleImg);
-
-  onMounted(async () => {});
 </script>
 
 <style lang="scss" scoped>
+  .draw_title {
+    display: block;
+    padding: 0.5rem;
+    font-weight: 600;
+  }
   .file_list_bucket {
-    height: 50%;
+    height: calc(100% - 3rem);
+    padding: 0 0.5rem;
+    .list_item {
+      padding: 0.5rem !important;
+    }
+    :deep {
+      .nut-infinite__container {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    .left_icon_box {
+      img {
+        width: 60% !important;
+        margin: 0 auto;
+      }
+    }
   }
   .top_swipe {
     :deep {
@@ -1625,6 +1685,11 @@
       box-sizing: border-box;
       border: none;
       box-shadow: none;
+      &.is_checked {
+        background: hsl(209, 95%, 90.1%);
+
+        color: $main_blue;
+      }
       img {
         width: 100%;
         height: auto;
@@ -1635,9 +1700,6 @@
         justify-content: center;
         margin: 0;
         width: unset;
-        .is_checked {
-          color: $main_blue;
-        }
       }
     }
   }
@@ -1696,7 +1758,7 @@
     // background: #5758a0;
     // margin: 0 -4vw;
     display: grid;
-    grid-template-columns: auto 120px;
+    grid-template-columns: auto 180px;
     gap: 30px;
     align-items: center;
     height: 100px;
@@ -1736,17 +1798,29 @@
       justify-content: space-between;
       align-items: center;
 
-      height: 58px;
       //   background: #5758a0;
       box-sizing: border-box;
 
       svg,
       img {
-        width: 45px;
-        height: 45px;
-        margin: 0 auto;
+        width: 60px;
+        height: 60px;
+        margin-left: 0.5rem;
         vertical-align: middle;
         border-radius: 10px;
+      }
+      :deep {
+        .nut-popover-menu-item {
+          display: flex;
+          svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            line-height: 1.5rem;
+          }
+          .nut-popover-menu-item-name {
+            font-size: 1.2rem;
+          }
+        }
       }
     }
 
@@ -1928,6 +2002,10 @@
               height: 50px;
               width: 100px;
               vertical-align: sub;
+            }
+            svg {
+              width: 120px;
+              height: auto;
             }
           }
 

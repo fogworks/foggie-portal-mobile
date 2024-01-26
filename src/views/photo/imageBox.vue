@@ -22,7 +22,7 @@
       </div>
     </div>
     <Teleport to="body">
-      <nut-popup v-if="showPop" position="bottom" closeable round :style="{ height: '100vh' }" v-model:visible="showPop">
+      <nut-popup position="bottom" closeable round :style="{ height: '90vh' }" v-model:visible="showPop">
         <div class="img-content" v-if="isReady">
           <div class="top_phpto_title">
             <span class="title">My Photos</span>

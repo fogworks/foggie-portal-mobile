@@ -146,6 +146,9 @@
           <div class="order_status order_status2" v-else>To be activated </div>
         </div>
       </template>
+      <div style="text-align: center">
+        <nut-button type="primary" @click="$router.push('/shop')">Buy Bucket</nut-button>
+      </div>
     </nut-infinite-loading>
     <nut-empty v-else description=" " image="error">
       <div style="margin-top: 10px" v-if="!listData.length">

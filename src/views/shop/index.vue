@@ -3,7 +3,7 @@
     <div class="out_blue">
       <div class="inside_blue">
         <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
-        <p class="title">Buy</p>
+        <p class="title">Require space</p>
         <p class="total_balance">Available Amount</p>
         <p class="total_balance_value" v-if="cloudBalance">{{ cloudBalance }} DMC</p>
 
