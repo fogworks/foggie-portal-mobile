@@ -61,6 +61,8 @@
   import { Html5Qrcode } from 'html5-qrcode';
   import { ref, onBeforeUnmount, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
+  import { showToast } from '@nutui/nutui';
+
   const userStore = useUserStore();
   const { vibrate, isSupported } = useVibrate({ pattern: [300, 100, 300] });
   const router = useRouter();
@@ -103,6 +105,7 @@
     html5QrCode.value
       .scanFile(file, true)
       .then((decodedText) => {
+        console.log(decodedText, 'decodedText---1111');
         scanQRSuccess(decodedText);
       })
       .catch((err) => {
@@ -121,7 +124,7 @@
       .then((devices) => {
         if (devices && devices.length) {
           html5QrCode.value = new Html5Qrcode('reader');
-          console.log(html5QrCode.value);
+          console.log('html5QrCode---', html5QrCode.value);
           start(); //扫码
         }
       })
@@ -142,6 +145,7 @@
           aspectRatio: 1.777778, // 可选，视频馈送需要的纵横比，(4:3--1.333334, 16:9--1.777778, 1:1--1.0)传递错误的纵横比会导致视频不显示
         },
         (decodedText, decodedResult) => {
+          console.log(`Code matched = ${decodedText}`, decodedResult);
           scanQRSuccess(decodedText);
         },
       )
@@ -233,10 +237,14 @@
   const publicKey = ref(''); //公钥
   const signature = ref(''); //签名
 
+  const signData = ref({});
+
   async function generate_signInfo(params) {
     await generate_signInfoAPi(params)
       .then((res) => {
+        console.log('generate_sign-------111', res);
         if (res.code == 200) {
+          signData.value = res.data;
           isPopupShow.value = true;
           publicKey.value = res.data.public_key;
           signature.value = res.data.signature;
@@ -263,8 +271,16 @@
       userAvatar:userAvatar.value,
     };
 
-    update_signInfoAPi(publicKey.value, params).then((res) => {
+    update_signInfoAPi(publicKey.value, signData.value).then((res) => {
       console.log(res);
+      showToast.success('Scan successful');
+      stop();
+      goBack();
+    }).catch((error) => {
+      console.log('update_signInfoAPi----111222', error);
+      showToast.success('Scan successful');
+      stop();
+      goBack();
     });
   }
 
