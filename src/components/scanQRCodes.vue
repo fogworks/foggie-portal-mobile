@@ -46,7 +46,7 @@
       <template v-else>
         <div class="title">Do you want to log in? Currently, you don't have any available OOD. Please proceed to purchase.</div>
         <router-link to="shop">
-          <nut-button shape="round" size="large" class="scanQRButton" type="primary">Buy Order</nut-button>
+          <nut-button shape="round" size="large" class="scanQRButton" type="primary">Require space</nut-button>
         </router-link>
       </template>
     </nut-popup>
@@ -257,7 +257,6 @@
 
   /* 确认授权 */
   function ConfirmAuthorization(row) {
-
     let params = {
       bucketName: row.domain,
       amb_uuid: row.amb_uuid,
@@ -268,20 +267,22 @@
       pst: row.pst,
       total_space: row.total_space,
       state: row.state,
-      userAvatar:userAvatar.value,
+      userAvatar: userAvatar.value,
     };
 
-    update_signInfoAPi(publicKey.value, signData.value).then((res) => {
-      console.log(res);
-      showToast.success('Scan successful');
-      stop();
-      goBack();
-    }).catch((error) => {
-      console.log('update_signInfoAPi----111222', error);
-      showToast.success('Scan successful');
-      stop();
-      goBack();
-    });
+    update_signInfoAPi(publicKey.value, signData.value)
+      .then((res) => {
+        console.log(res);
+        showToast.success('Scan successful');
+        stop();
+        goBack();
+      })
+      .catch((error) => {
+        console.log('update_signInfoAPi----111222', error);
+        showToast.success('Scan successful');
+        stop();
+        goBack();
+      });
   }
 
   /* 弹窗弹起时停止扫码 防止重复扫码调用接口 */

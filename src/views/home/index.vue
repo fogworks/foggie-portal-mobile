@@ -86,7 +86,7 @@
     </van-swipe>
 
     <div v-if="!order_uuid" style="margin-top: 2rem; text-align: center">
-      <nut-button type="primary" @click="choose({ name: 'Expansion' })">Buy Bucket</nut-button>
+      <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button>
     </div>
     <div v-else-if="order_uuid" style="margin-top: 0.8rem">
       <!-- <div class="bucket_tips">
@@ -94,7 +94,19 @@
         the bucket
       </div> -->
       <div style="display: grid; grid-gap: 10px; justify-content: space-between; grid-template-columns: 1fr 1fr">
-        <ImgBox ref="imgListRef" :order_uuid="order_uuid" :handleImg="handleImg"></ImgBox>
+        <ImgBox class="" ref="imgListRef" :order_uuid="order_uuid" :handleImg="handleImg">
+          <Uploader
+            v-if="isAvailableOrder && accessKeyId && orderInfo.value.uuid"
+            class="img_upload"
+            :isMobileOrder="isMobileOrder"
+            :bucketName="bucketName"
+            :accessKeyId="accessKeyId"
+            :secretAccessKey="secretAccessKey"
+            :orderInfo="orderInfo"
+            @uploadComplete="uploadComplete"
+          ></Uploader>
+        </ImgBox>
+
         <div class="type_check_box right_check_box">
           <div
             class="type_item"
@@ -244,6 +256,11 @@
         @load-more="loadMoreFun"
       >
         <div :class="[bucketName == item.domain ? 'is_checked' : '', 'list_item']" v-for="item in listData" @click="setBucket(item)">
+          <div class="order_img">
+            <!-- <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" /> -->
+            <img v-if="item.electronic_type == 1" src="@/assets/desktop1.svg" alt="" />
+          </div>
+          <IconHistory class="history" v-if="[4, 5].includes(item.state)"></IconHistory>
           <div :class="['left_icon_box', item.checked ? 'is_checked' : '']">
             <img src="@/assets/home_bucket.png" alt="" />
           </div>
@@ -309,6 +326,7 @@
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
   import IconAssets from '~icons/home/assets.svg';
+  import IconHistory from '~icons/home/history.svg';
   import IconNFT from '~icons/home/nft2.svg';
   import IconMore from '~icons/home/more.svg';
   import IconSwitch from '~icons/home/switch2.svg';
@@ -331,6 +349,7 @@
   import { search_order_profit, search_user_asset_detail, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
   import useOrderList from './useOrderList.ts';
   import loadingImg from '@/components/loadingImg/index.vue';
+  import Uploader from '@/views/list/details/uploader.vue';
   import useOrderInfo from '@/views/list/details/useOrderInfo.js';
   import useShare from '@/views/list/details/useShare.js';
   import useDelete from '@/views/list/details/useDelete.js';
@@ -347,8 +366,19 @@
 
   // const { loadMore as loadBucket, listData  } = useOrderList();
   const { resetData, loadMore, listData, hasMore, infinityValue, total } = useOrderList();
-  const { isAvailableOrder, isError, bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } =
-    useOrderInfo();
+  const {
+    isAvailableOrder,
+    getSummary,
+    isError,
+    bucketName,
+    header,
+    metadata,
+    deviceType,
+    orderInfo,
+    accessKeyId,
+    secretAccessKey,
+    getOrderInfo,
+  } = useOrderInfo();
   const { createNFT, doShare, getHttpShare, cloudPin } = useShare(orderInfo, header, deviceType, metadata);
   const selectArr = computed(() => {
     return [detailRow.value];
@@ -394,7 +424,7 @@
       icon: IconAssets,
     },
     {
-      name: 'Expansion',
+      name: 'Require space',
       icon: Shop,
     },
     {
@@ -430,6 +460,7 @@
     OrderRefund: 'Order refund', // 订单退款
     OrderReceiptEnd: 12,
   };
+  const imgListRef =ref('')
   const nftImgList = ref([]);
   const nftTotal = ref(0);
   const noBucketData = ref([]);
@@ -538,7 +569,7 @@
       router.push({
         name: 'AssetsInfo',
       });
-    } else if (item.name == 'Expansion') {
+    } else if (item.name == 'Require space') {
       router.push({
         name: 'Shop',
       });
@@ -754,6 +785,10 @@
         domain: item.domain,
       },
     });
+  };
+  const uploadComplete = () => {
+    imgListRef?.value?.refresh();
+    getFileList();
   };
   const setBucket = async (item) => {
     // bucketName.value = item.domain
@@ -1344,9 +1379,54 @@
   //   { deep: true, immediate: true },
   // );
   provide('handleImg', handleImg);
+  provide('getSummary', getSummary);
 </script>
 
 <style lang="scss" scoped>
+  :deep {
+    .out_img_box {
+      .upload_out_box {
+        height: 100%;
+      }
+      .nut-uploader__input {
+        position: absolute !important;
+        width: 100% !important;
+        height: 100% !important;
+        left: 0 !important;
+        top: unset !important;
+        right: unset !important;
+        bottom: unset !important;
+      }
+      .upload_btn {
+        position: relative;
+        left: unset;
+        top: unset;
+        right: unset;
+        bottom: unset;
+        width: 100%;
+        height: 100%;
+        border-radius: 1rem;
+        background: unset;
+        border: 1px dashed #ccc;
+        color: #666;
+        cursor: pointer;
+      }
+      .nut-uploader__preview {
+        display: none;
+      }
+      .nut-uploader {
+        width: 100%;
+        height: 100%;
+      }
+      .nut-uploader__slot {
+        width: 100%;
+      }
+      .upload_progress {
+        left: 0;
+      }
+    }
+  }
+
   .draw_title {
     display: block;
     padding: 0.5rem;
@@ -1356,7 +1436,25 @@
     height: calc(100% - 3rem);
     padding: 0 0.5rem;
     .list_item {
+      position: relative;
       padding: 0.5rem !important;
+      .order_img {
+        position: absolute;
+        left: 0.3rem;
+        top: 0.3rem;
+        img {
+          width: 1rem;
+          height: auto;
+        }
+      }
+      .history {
+        position: absolute;
+        right: 0.3rem;
+        top: 0.3rem;
+        width: 1rem;
+        height: auto;
+        opacity: 0.4;
+      }
     }
     :deep {
       .nut-infinite__container {

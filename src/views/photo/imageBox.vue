@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="out_show_box" @click="showImgList">
+    <div class="out_show_box">
       <p>Photograph</p>
       <div class="out_img_box" v-if="tableData.length">
         <!-- <nut-image fit="cover" v-for="index in 4" v-if="tableData?.[index]" :src="tableData?.[index].imgUrl">
@@ -8,17 +8,21 @@
             <Loading width="16px" height="16px" name="loading" />
           </template>
         </nut-image> -->
-        <nut-image fit="cover" v-for="(item, index) in tableData" v-show="index < 4" :src="item.imgUrl">
-          <template #loading>
-            <Loading width="16px" height="16px" name="loading" />
-          </template>
-        </nut-image>
+        <div v-for="index in 4">
+          <nut-image @click="showImgList" fit="cover" v-if="index <= 3 && tableData[index - 1]" :src="tableData[index - 1].imgUrl">
+            <template #loading>
+              <Loading width="16px" height="16px" name="loading" />
+            </template>
+          </nut-image>
+          <slot v-if="index == 4"></slot>
+        </div>
       </div>
       <div class="out_img_box" v-else>
-        <img src="@/assets/bucketPhoto0.svg" alt="" />
-        <img src="@/assets/bucketPhoto1.svg" alt="" />
-        <img src="@/assets/bucketPhoto2.svg" alt="" />
-        <img src="@/assets/bucketPhoto3.svg" alt="" />
+        <img @click="showImgList" src="@/assets/bucketPhoto0.svg" alt="" />
+        <img @click="showImgList" src="@/assets/bucketPhoto1.svg" alt="" />
+        <img @click="showImgList" src="@/assets/bucketPhoto2.svg" alt="" />
+        <!-- <img src="@/assets/bucketPhoto3.svg" alt="" /> -->
+        <slot></slot>
       </div>
     </div>
     <Teleport to="body">
@@ -846,6 +850,7 @@
       return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
     }
   }
+  defineExpose({ refresh });
   watch(
     isReady,
     (val) => {
@@ -868,6 +873,7 @@
       font-weight: 600;
     }
     .out_img_box {
+      position: relative;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: repeat(2, 1fr);
@@ -875,6 +881,7 @@
       padding: 0.5rem 1rem;
       height: 280px;
       .nut-image {
+        height: 130px;
         border-radius: 10px;
         overflow: hidden;
       }

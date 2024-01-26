@@ -219,7 +219,7 @@ const setDefaultBucketAndPath = (isAuto = false) => {
       uploadPath.value = 'NFT';
       setBucketAndPath(isAuto);
     } else {
-      showToast.text("You don't have a bucket available, please set the bucket name for the order or buy a new order and set the bucket name.")
+      showToast.text("You don't have a bucket available, please set the bucket name for the order or require space and set the bucket name.")
     }
   } else if (listData.value.length && !bucketName.value) {
     bucketName.value = listData.value[0].domain;

@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="upload_out_box">
     <nut-uploader
       v-if="isMobileOrder && !isAndroid"
       :url="uploadUri"
@@ -112,9 +112,7 @@
   const memo = ref<any>('');
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
-  memo.value = route.query.uuid;
-  order_id.value = route.query.id;
-  amb_uuid.value = route.query.amb_uuid;
+
   let merkleTimeOut = null;
   const getMerkleState = (timeout = true) => {
     const d = {
@@ -145,8 +143,6 @@
       let fileArr: any = [];
 
       for (let i = 0; i < file.length; i++) {
-        
-
         let fileCopy = file[i];
         if (fileCopy.name == 'image.jpg') {
           const timestamp = Date.now();
@@ -189,7 +185,8 @@
         uploadList.value.push(fileCopy);
         fileArr.push(fileCopy);
       }
-
+      console.log(orderInfo.value.orderId, 'orderinfo');
+      console.log(order_id.value, 'orderinfo');
 
       const d = { orderId: order_id.value };
       let merkleRes = await valid_upload(d);
@@ -335,23 +332,22 @@
   };
 
   const onChange = ({ fileList, event }: any) => {
-    console.log('onChange--------------22',  fileList.length, fileList);
-        
+    console.log('onChange--------------22', fileList.length, fileList);
   };
 
   const xhrArray = ref<any[]>([]);
 
   const beforeXhrUpload = async (xhr: XMLHttpRequest, options: any) => {
-    xhrArray.value.push({xhr, options} as never);
+    xhrArray.value.push({ xhr, options } as never);
     if (xhrArray.value.length === uploaderList.value.length) {
       isUploadComplete.value = false;
       sendAllRequests();
     }
   };
-  
+
   const isUploadComplete = ref(false);
-  const sendAllRequests = async()=> {
-    for (let i = 0; i < xhrArray.value.length; i++) {  
+  const sendAllRequests = async () => {
+    for (let i = 0; i < xhrArray.value.length; i++) {
       if (i === xhrArray.value.length - 1) {
         isUploadComplete.value = true;
       }
@@ -363,7 +359,7 @@
       }
     }
     xhrArray.value = [];
-  }
+  };
 
   const getHeaders = async (options) => {
     const { bucketName, accessKeyId, secretAccessKey, prefix } = props;
@@ -398,11 +394,11 @@
       'Content-Md5': md5Hash,
       'App-Type': appType,
     };
-  }
-  const sendRequest = async (xhr, options)=> {
+  };
+  const sendRequest = async (xhr, options) => {
     return new Promise(async (resolve, reject) => {
       await getHeaders(options);
-    
+
       options.headers = {
         ...options.headers,
         ...formData.value,
@@ -417,19 +413,19 @@
       xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
       xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
 
-      xhr.onload = function() {
-      if (this.status >= 200 && this.status < 300) {
+      xhr.onload = function () {
+        if (this.status >= 200 && this.status < 300) {
           resolve(xhr.response);
         } else {
           reject();
         }
       };
-      xhr.onerror = function() {
+      xhr.onerror = function () {
         reject();
       };
-      xhr.send(options.formData)
+      xhr.send(options.formData);
     });
-  }
+  };
   const { startUpload } = useSyncPhotos({
     bucketName,
     accessKeyId,
@@ -443,6 +439,14 @@
     isDisabled,
   });
   onMounted(() => {
+    console.log(11111111111111111);
+    console.log(orderInfo.value, 'orderInfo.value.orderId');
+
+    memo.value = route.query.uuid || orderInfo.value.value.uuid;
+    order_id.value = route.query.id || orderInfo.value.value.orderId;
+    amb_uuid.value = route.query.amb_uuid || orderInfo.value.value.amb_uuid;
+    console.log(order_id.value, 'order_id');
+
     // document.querySelector('.nut-uploader__input')?.addEventListener('click', () => {
     //   showNotify.primary('Sensitive information is recommended to be encrypted and uploaded', {
     //     'class-name': 'notify_primary',

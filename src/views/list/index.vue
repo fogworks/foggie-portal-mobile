@@ -147,12 +147,12 @@
         </div>
       </template>
       <div style="text-align: center">
-        <nut-button type="primary" @click="$router.push('/shop')">Buy Bucket</nut-button>
+        <nut-button type="primary" @click="$router.push('/shop')">Require space</nut-button>
       </div>
     </nut-infinite-loading>
     <nut-empty v-else description=" " image="error">
       <div style="margin-top: 10px" v-if="!listData.length">
-        <nut-button icon="refresh" type="primary" @click="toBuy">Buy Order</nut-button>
+        <nut-button icon="refresh" type="primary" @click="toBuy">Require space</nut-button>
       </div>
     </nut-empty>
     <Teleport to="body">
