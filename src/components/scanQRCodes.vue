@@ -257,32 +257,38 @@
 
   /* 确认授权 */
   function ConfirmAuthorization(row) {
-    let params = {
-      bucketName: row.domain,
-      amb_uuid: row.amb_uuid,
-      user_uuid: row.user_uuid,
-      uuid: row.uuid,
-      week: row.week,
-      order_id: row.order_id,
-      pst: row.pst,
-      total_space: row.total_space,
-      state: row.state,
-      userAvatar: userAvatar.value,
-    };
 
-    update_signInfoAPi(publicKey.value, signData.value)
-      .then((res) => {
-        console.log(res);
-        showToast.success('Scan successful');
-        stop();
-        goBack();
-      })
-      .catch((error) => {
-        console.log('update_signInfoAPi----111222', error);
-        showToast.success('Scan successful');
-        stop();
-        goBack();
-      });
+    // let params = {
+    //   bucketName: row.domain,
+    //   amb_uuid: row.amb_uuid,
+    //   user_uuid: row.user_uuid,
+    //   uuid: row.uuid,
+    //   week: row.week,
+    //   order_id: row.order_id,
+    //   pst: row.pst,
+    //   total_space: row.total_space,
+    //   state: row.state,
+    //   userAvatar:userAvatar.value,
+    // };
+    // let params = {
+    //   domain: row.domain,
+    //   order_uuid: row.uuid,
+    // };
+    // params = Object.assign(params, signData.value);
+    // console.log(params, 'params-------------');
+    signData.value.payload.domain = row.domain;
+    signData.value.payload.order_uuid = row.uuid;
+    update_signInfoAPi(publicKey.value, signData.value).then((res) => {
+      console.log(res);
+      showToast.success('Scan successful');
+      stop();
+      goBack();
+    }).catch((error) => {
+      console.log('update_signInfoAPi----111222', error);
+      showToast.success('Scan successful');
+      stop();
+      goBack();
+    });
   }
 
   /* 弹窗弹起时停止扫码 防止重复扫码调用接口 */

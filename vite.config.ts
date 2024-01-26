@@ -202,7 +202,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           secure: false,
         },
         '^/session': {
-          target: 'https://amb.dev.u2i.net',
+          target: 'http://154.31.41.36:9100',
           changeOrigin: true,
           secure: false,
         },
