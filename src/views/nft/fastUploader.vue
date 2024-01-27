@@ -238,7 +238,7 @@
       if (merkleRes?.data) {
         isDisabled.value = false;
       } else {
-        showToast.fail(merkleRes.msg || 'Merkle is being built, not allowed to upload file.');
+        showToast.warn(merkleRes.msg || 'Merkle is being built, not allowed to upload file.');
         if (!merkleTimeOut) {
           merkleTimeOut = setTimeout(() => {
             getMerkleState(true);

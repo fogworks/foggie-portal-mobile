@@ -143,6 +143,12 @@
               <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
               <template v-else>
                 <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+                <img
+                  v-if="item.isDir && item.name.slice(0, item.name.length - 1) == 'pinning'"
+                  class="cloud_pin"
+                  src="@/assets/cloud_pin.png"
+                  alt=""
+                />
                 <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
                 <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
                 <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
@@ -284,6 +290,7 @@
 
     <uploader
       v-if="isMobileOrder && isAvailableOrder"
+      :getSummary="getSummary"
       :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
@@ -1732,7 +1739,10 @@
         dirFile === decodeURIComponent(currentFolderStr),
         dirFileName !== uploadFileName,
       );
-      if (dirFile === decodeURIComponent(currentFolderStr) || (message.action === 'FILE_DELETE' && dirFile.charAt(dirFile.length - 1) === "/")) {
+      if (
+        dirFile === decodeURIComponent(currentFolderStr) ||
+        (message.action === 'FILE_DELETE' && dirFile.charAt(dirFile.length - 1) === '/')
+      ) {
         if (detailShow.value) {
           setTimeout(() => {
             initWebSocket();
@@ -2470,6 +2480,7 @@
       height: 80px;
     }
     .left_icon_box {
+      position: relative;
       width: 80px;
       height: 80px;
       img {

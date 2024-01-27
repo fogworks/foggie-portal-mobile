@@ -7,7 +7,7 @@
       safe-area-inset-bottom
       closeable
       round
-      z-index="2000"
+      z-index="1802"
       @close="emits('update:fileItemPopupIsShow', false)"
       :style="{ height: 'auto', minHeight: chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0 ? '80%' : '40%' }"
       v-model:visible="fileItemPopupIsShow1"
@@ -90,7 +90,7 @@
       safe-area-inset-bottom
       closeable
       round
-      z-index="2000"
+      z-index="1801"
       @close="emits('update:fileItemDetailPopupIsShow', false)"
       :style="{ height: 'auto', minHeight: '35%' }"
       v-model:visible="fileItemDetailPopupIsShow1"
@@ -135,7 +135,7 @@
       position="bottom"
       closeable
       round
-      z-index="2100"
+      z-index="1801"
       :style="{ height: '90%' }"
       v-model:visible="renameShow1"
     >
@@ -167,7 +167,7 @@
     <nut-popup
       teleport-disable
       v-if="moveShow"
-      z-index="2100"
+      z-index="1801"
       position="bottom"
       closeable
       round
@@ -211,7 +211,7 @@
     <nut-popup
       teleport-disable
       v-if="showShareDialog"
-      z-index="2100"
+      z-index="1801"
       @closed="
         isReady = false;
         shareType = '';
@@ -309,7 +309,7 @@
       </div>
     </nut-popup>
     <Teleport to="body">
-      <nut-overlay overlay-class="detail_over" v-model:visible="detailShow1" :close-on-click-overlay="false">
+      <nut-overlay z-index="1800" overlay-class="detail_over" v-model:visible="detailShow1" :close-on-click-overlay="false">
         <div class="detail_top" v-if="chooseItem.category !== 1">
           <IconArrowLeft @click="emits('update:detailShow', false)" class="detail_back" color="#fff"></IconArrowLeft>
           <IconMore @click="clickFIleItem(chooseItem)" class="detail_back" color="#fff"></IconMore>

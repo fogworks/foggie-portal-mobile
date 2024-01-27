@@ -10,8 +10,8 @@
       <div class="img-box">
         <nut-popover
           overlay
-          :arrow-offset="40"
-          :offset="[-40, 12]"
+          :arrow-offset="70"
+          :offset="[-70, 12]"
           v-model:visible="accountShow"
           :list="menuItems"
           location="bottom-start"
@@ -73,6 +73,10 @@
               <p>Total</p>
               <p class="column_value">{{ nftTotal }}</p>
             </div>
+            <div>
+              <p>Contracts</p>
+              <p class="column_value">{{ contractTotal }}</p>
+            </div>
 
             <div @click="gotoPage('PersonalInfo')">
               <p>Wallets</p>
@@ -86,7 +90,11 @@
     </van-swipe>
 
     <div v-if="!order_uuid" style="margin-top: 2rem; text-align: center">
-      <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button>
+      <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button> -->
+      <div class="plus_bucket" @click="choose({ name: 'Require space' })">
+        <IconPlus></IconPlus>
+      </div>
+      <p>Require space</p>
     </div>
     <div v-else-if="order_uuid" style="margin-top: 0.8rem">
       <!-- <div class="bucket_tips">
@@ -94,8 +102,9 @@
         the bucket
       </div> -->
       <div style="display: grid; grid-gap: 10px; justify-content: space-between; grid-template-columns: 1fr 1fr">
-        <ImgBox class="" ref="imgListRef" :order_uuid="order_uuid" :handleImg="handleImg">
+        <ImgBox class="" ref="imgListRef" :order_uuid="order_uuid" @refresh="refresh" :handleImg="handleImg">
           <Uploader
+            :getSummary="getSummary"
             v-if="isAvailableOrder && accessKeyId && orderInfo.value.uuid"
             class="img_upload"
             :isMobileOrder="isMobileOrder"
@@ -104,6 +113,7 @@
             :secretAccessKey="secretAccessKey"
             :orderInfo="orderInfo"
             @uploadComplete="uploadComplete"
+            @refresh="refresh"
           ></Uploader>
         </ImgBox>
 
@@ -219,6 +229,7 @@
         <div class="file_list" v-if="otherData.length">
           <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
             <div :class="['left_icon_box']">
+              <img v-if="item.isDir && item.name == 'pinning'" class="cloud_pin" src="@/assets/cloud_pin.png" alt="" />
               <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
               <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
               <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
@@ -325,6 +336,7 @@
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
+  import IconPlus from '~icons/home/plus.svg';
   import IconAssets from '~icons/home/assets.svg';
   import IconHistory from '~icons/home/history.svg';
   import IconNFT from '~icons/home/nft2.svg';
@@ -361,7 +373,7 @@
   import { poolUrl } from '@/setting.js';
   import moment from 'moment';
   import { HmacSHA1, enc } from 'crypto-js';
-  import { search_mint } from '@/api/index.ts';
+  import { search_mint, search_deploy } from '@/api/index.ts';
   const tableLoading = ref(false);
 
   // const { loadMore as loadBucket, listData  } = useOrderList();
@@ -418,6 +430,7 @@
   const listRef = ref('');
   const imgUrl = ref('');
   const imgStartIndex = ref(0);
+  const contractTotal = ref(0);
   const menuItems = [
     {
       name: 'Assets',
@@ -460,7 +473,7 @@
     OrderRefund: 'Order refund', // 订单退款
     OrderReceiptEnd: 12,
   };
-  const imgListRef =ref('')
+  const imgListRef = ref('');
   const nftImgList = ref([]);
   const nftTotal = ref(0);
   const noBucketData = ref([]);
@@ -543,11 +556,11 @@
       await loadMore([0, 1, 2, 3, 4, 5, 6], '', '', '', postData);
       console.log('开始请求');
 
-      // nextTick(() => {
-      //   if (hasMore.value && listRef?.value?.$el?.clientHeight >= listRef?.value?.$el?.scrollHeight) {
-      //     loadMoreFun();
-      //   }
-      // });
+      nextTick(() => {
+        if (hasMore.value && listData.value.length <= 20) {
+          loadMoreFun();
+        }
+      });
     } catch {}
   };
   const getList = async () => {
@@ -804,6 +817,7 @@
   const refresh = async () => {
     detailShow.value = false;
     if (order_uuid.value) {
+      imgListRef?.value?.refresh();
       await getOrderInfo(true, order_uuid.value);
       getFileList();
     }
@@ -1284,7 +1298,10 @@
       nftImgList.value = r.result.data;
       nftTotal.value = r.result.total;
     }
-
+    const r2 = await search_deploy(d, 2, 1);
+    if (r2?.result?.data) {
+      contractTotal.value = r2.result.total;
+    }
     // const dd = {
     //   account: arr,
     //   sync_storage: 2,
@@ -1383,6 +1400,21 @@
 </script>
 
 <style lang="scss" scoped>
+  .plus_bucket {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto;
+    border-radius: 50%;
+    border: 1px dashed #777;
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: #777;
+    }
+  }
   :deep {
     .out_img_box {
       .upload_out_box {
@@ -1433,7 +1465,7 @@
     font-weight: 600;
   }
   .file_list_bucket {
-    height: calc(100% - 3rem);
+    height: calc(100% - 4rem);
     padding: 0 0.5rem;
     .list_item {
       position: relative;
@@ -1460,6 +1492,9 @@
       .nut-infinite__container {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr);
+      }
+      .nut-infinite__bottom {
+        display: block !important;
       }
     }
     .left_icon_box {
@@ -1636,6 +1671,12 @@
       .img_list_box {
         height: unset;
         padding-bottom: 0;
+        .img_item {
+          height: unset;
+          .img_box {
+            height: 150px;
+          }
+        }
       }
       .nut-infinite__bottom {
         display: none;
@@ -1679,6 +1720,9 @@
         align-items: center;
         padding: 5px 0;
         border-top: 1px solid #eee;
+        .left_icon_box {
+          position: relative;
+        }
 
         .type_icon {
           width: 80px;
@@ -1916,6 +1960,7 @@
             line-height: 1.5rem;
           }
           .nut-popover-menu-item-name {
+            white-space: noWrap;
             font-size: 1.2rem;
           }
         }
@@ -2038,8 +2083,8 @@
     > img {
       top: 30px;
       position: absolute;
-      right: 40px;
-      width: 100px;
+      right: 20px;
+      width: 60px;
       cursor: pointer;
       transform-style: preserve-3d;
       -webkit-transform-origin: 50%;

@@ -226,6 +226,7 @@
         <div class="file_list" v-if="otherData.length">
           <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
             <div :class="['left_icon_box']">
+              <img v-if="item.isDir && item.name == 'pinning'" class="cloud_pin" src="@/assets/cloud_pin.png" alt="" />
               <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
               <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
               <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
@@ -322,6 +323,7 @@
     </div>
     <uploader
       v-if="isMobileOrder && isAvailableOrder"
+      :getSummary="getSummary"
       :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
@@ -2214,6 +2216,11 @@
       margin-top: 20px;
       background: #fff;
       border-radius: 16px;
+      .list_item {
+        .left_icon_box {
+          position: relative;
+        }
+      }
     }
     .file_list_img {
       display: grid;
@@ -2694,6 +2701,7 @@
         }
 
         .left_icon_box {
+          position: relative;
           width: 80px;
           height: 80px;
 

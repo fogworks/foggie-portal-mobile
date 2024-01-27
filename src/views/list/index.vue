@@ -146,8 +146,12 @@
           <div class="order_status order_status2" v-else>To be activated </div>
         </div>
       </template>
-      <div style="text-align: center">
-        <nut-button type="primary" @click="$router.push('/shop')">Require space</nut-button>
+      <div v-if="!order_uuid" style="margin-top: 2rem; text-align: center">
+        <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button> -->
+        <div class="plus_bucket" @click="choose({ name: 'Require space' })">
+          <IconPlus></IconPlus>
+        </div>
+        <p>Require space</p>
       </div>
     </nut-infinite-loading>
     <nut-empty v-else description=" " image="error">
@@ -227,6 +231,7 @@
 </template>
 
 <script lang="ts" setup name="ListPage">
+  import IconPlus from '~icons/home/plus.svg';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconSwitch from '~icons/home/switch.svg';
   import IconHistory from '~icons/home/history.svg';
@@ -589,6 +594,21 @@
 </script>
 
 <style lang="scss" scoped>
+  .plus_bucket {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto;
+    border-radius: 50%;
+    border: 1px dashed #777;
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: #777;
+    }
+  }
   .order_num {
     margin-top: 10px;
     font-weight: bold;

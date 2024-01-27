@@ -61,6 +61,15 @@
 </script>
 
 <style lang="scss">
+  .cloud_pin {
+    position: absolute;
+    left: 50% !important;
+    top: 56% !important;
+    width: 50% !important;
+    height: auto !important;
+    border-radius: 50% !important;
+    transform: translate(-50%, -50%);
+  }
   // body {
   //   padding-bottom: 90px !important;
   // }

@@ -80,10 +80,11 @@
     prefix?: any;
     orderInfo?: any;
     isMobileOrder?: boolean;
+    getSummary?: any;
   }
-  const getSummary = inject('getSummary');
+  // const getSummary = inject('getSummary');
   const props = defineProps<Props>();
-  const { bucketName, prefix, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
+  const { getSummary, bucketName, prefix, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
 
   const uploadList = ref<any[]>([]);
 
@@ -194,7 +195,7 @@
         isDisabled.value = false;
       } else {
         isDisabled.value = true;
-        showToast.fail(merkleRes.msg || 'Merkle is being built, not allowed to upload file.');
+        showToast.warn(merkleRes.msg || 'Merkle is being built, not allowed to upload file.');
         if (!merkleTimeOut) {
           merkleTimeOut = setTimeout(() => {
             getMerkleState(true);
@@ -274,7 +275,7 @@
 
       // emits('getFileList');
 
-      let used_space = await getSummary();
+      let used_space = await getSummary.value();
       if (!amb_uuid.value) {
         let res = await get_unique_order({ order_uuid: route?.query?.uuid });
         amb_uuid.value = res?.result?.data?.amb_uuid;

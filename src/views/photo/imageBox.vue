@@ -26,7 +26,7 @@
       </div>
     </div>
     <Teleport to="body">
-      <nut-popup position="bottom" closeable round :style="{ height: '90vh' }" v-model:visible="showPop">
+      <nut-popup z-index="1799" position="bottom" closeable round :style="{ height: '90vh' }" v-model:visible="showPop">
         <div class="img-content" v-if="isReady">
           <div class="top_phpto_title">
             <span class="title">My Photos</span>
@@ -215,7 +215,7 @@
       :isCheckMode="false"
       :accessKeyId="accessKeyId"
       :secretAccessKey="secretAccessKey"
-      @refresh="refresh"
+      @refresh="refresh2"
       @handlerClick="handlerClick"
       @swipeChange="swipeChange"
       @clickFIleItemDetail="clickFIleItemDetail"
@@ -282,7 +282,7 @@
   const imgCheckedData = reactive({
     value: {},
   });
-  const emits = defineEmits(['update:checkedData', 'touchRow', 'touchmoveRow', 'touchendRow']);
+  const emits = defineEmits(['update:checkedData', 'refresh', 'touchRow', 'touchmoveRow', 'touchendRow']);
   const props = defineProps({
     isCheckMode: Boolean,
     order_uuid: String,
@@ -330,7 +330,7 @@
   const { deleteItem } = useDelete(
     tableLoading,
     () => {
-      refresh();
+      refresh2();
     },
     orderInfo,
     header,
@@ -340,8 +340,17 @@
     order_uuid,
     async (val) => {
       if (val) {
+        imgDetailShow.value = false;
+        timeLine.value = [];
+        dateTimeLine.value = [];
+        tableData.value = [];
+        imgData.value = [];
+        imgArray.value = [];
+        imgCheckedData.value = {};
+        isReady.value = false;
+        imgIndex.value = 0;
         await getOrderInfo(true, val);
-        init();
+        refresh();
       }
     },
     {
@@ -355,11 +364,9 @@
   // });
   const showImgList = async () => {
     showPop.value = true;
-    if (!tableData.value.length) {
-      isReady.value = false;
-      await getOrderInfo(true, order_uuid.value);
-      init();
-    }
+    isReady.value = false;
+    await getOrderInfo(true, order_uuid.value);
+    init();
   };
   const init = async () => {
     tableData.value = [];
@@ -680,6 +687,9 @@
       isReady.value = true;
     });
   };
+  const refresh2 = () => {
+    emits('refresh');
+  };
   const images = computed(() => {
     let arr = [];
     imgArray.value.filter((el) => {
@@ -784,7 +794,7 @@
       const onOk = async () => {
         await cloudPin(checkData[0], 'ipfs');
         // doSearch('', prefix.value, true);
-        refresh();
+        refresh2();
       };
       showDialog({
         title: 'Warning',
@@ -802,7 +812,7 @@
               el.isPin = false;
             }
           });
-          refresh();
+          refresh2();
         }
 
         // doSearch('', prefix.value, true);
@@ -982,13 +992,14 @@
       width: 100%;
       column-count: 2;
       column-gap: 1.5rem;
+      padding-bottom: 1rem;
       & > div {
         break-inside: avoid;
         margin-bottom: 1rem;
         border-radius: 1rem;
-        box-shadow:
-          rgba(0, 0, 0, 0.19) 0px 10px 20px,
-          rgba(0, 0, 0, 0.23) 0px 6px 6px;
+        // box-shadow:
+        //   rgba(0, 0, 0, 0.19) 0px 10px 20px,
+        //   rgba(0, 0, 0, 0.23) 0px 6px 6px;
         overflow: hidden;
       }
       .nut-image {
@@ -996,6 +1007,7 @@
         justify-content: center;
         min-height: 8rem;
         max-height: 16rem;
+        overflow: hidden;
         .nut-img {
           height: auto !important;
         }
