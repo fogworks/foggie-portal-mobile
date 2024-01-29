@@ -146,17 +146,27 @@
           <div class="order_status order_status2" v-else>To be activated </div>
         </div>
       </template>
-      <div v-if="!order_uuid" style="margin-top: 2rem; text-align: center">
+      <div style="margin-top: 2rem; text-align: center">
         <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button> -->
-        <div class="plus_bucket" @click="choose({ name: 'Require space' })">
-          <IconPlus></IconPlus>
+        <div style="display: flex; justify-content: center; align-items: center">
+          <div class="plus_bucket" @click="toBuy">
+            <IconPlus></IconPlus>
+          </div>
+          <img src="@/assets/home_bucket.png" alt="" />
         </div>
-        <p>Require space</p>
+        <p>Buy Bucket</p>
       </div>
     </nut-infinite-loading>
     <nut-empty v-else description=" " image="error">
-      <div style="margin-top: 10px" v-if="!listData.length">
-        <nut-button icon="refresh" type="primary" @click="toBuy">Require space</nut-button>
+      <div style="margin-top: 2rem; text-align: center" v-if="!listData.length">
+        <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button> -->
+        <div style="display: flex; justify-content: center; align-items: center">
+          <div class="plus_bucket" @click="toBuy">
+            <IconPlus></IconPlus>
+          </div>
+          <img src="@/assets/home_bucket.png" alt="" />
+        </div>
+        <p>Buy a new Bucket</p>
       </div>
     </nut-empty>
     <Teleport to="body">
@@ -219,7 +229,6 @@
             -
             <nut-input placeholder="Max Price" v-model="searchForm.max" type="number" />
           </nut-form-item>
-
           <div class="bottom_btn">
             <nut-button type="warning" plain :loading="SearchLoading" @click="toReset"> Reset </nut-button>
             <nut-button type="warning" @click="toSearch" :disabled="searchDisabled" :loading="SearchLoading"> Search </nut-button>
@@ -595,18 +604,30 @@
 
 <style lang="scss" scoped>
   .plus_bucket {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 3rem;
     height: 3rem;
-    margin: 0 auto;
+    margin: 0 0.2rem;
     border-radius: 50%;
     border: 1px dashed #777;
     svg {
       width: 1.5rem;
       height: 1.5rem;
       color: #777;
+    }
+    & + img {
+      width: 3rem;
+      height: 3rem;
+      margin: 0 0.2rem;
+      border-radius: 50%;
+    }
+    & + p {
+      margin-top: 0.5rem;
+      margin: 0.5rem;
+      text-align: left;
     }
   }
   .order_num {

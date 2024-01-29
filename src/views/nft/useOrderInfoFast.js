@@ -29,42 +29,48 @@ export default function useOrderInfo() {
   });
   const route = useRoute();
   const getOrderInfo = async (getKey = true, uuid) => {
-    showToast.loading('Loading', {
-      cover: true,
-      customClass: 'app_loading',
-      icon: loadingImg,
-      loadingRotate: false,
-      id: 'order_info_id',
-    });
-    let res = await get_unique_order({ order_uuid: uuid });
+    try {
+      showToast.loading('Loading', {
+        cover: true,
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
+        id: 'order_info_id',
+      });
+      let res = await get_unique_order({ order_uuid: uuid });
 
-    let param = {
-      order_uuid: uuid,
-    };
-    const signData = await get_order_sign(param);
+      let param = {
+        order_uuid: uuid,
+      };
+      const signData = await get_order_sign(param);
 
-    orderInfo.value = res.result.data;
-    orderInfo.value.used_space = 0;
-    // orderInfo.value.rpc = '218.2.96.99:6007';
-    header.setPeerid(orderInfo.value.peer_id);
-    header.setId(orderInfo.value.foggie_id);
-    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-    header.setApptype(appType);
-    
-    // header.setId('baeqacmjq');
-    // header.setToken(orderInfo.value.sign);
-    // console.log('signData==11:', signData);
-    let cur_token = signData?.result?.data?.sign;
-    const date = signData?.result?.data?.timestamp;
-    metadata.value = {
-      'X-Custom-Date': date,
-    };
+      orderInfo.value = res.result.data;
+      orderInfo.value.used_space = 0;
+      // orderInfo.value.rpc = '218.2.96.99:6007';
+      header.setPeerid(orderInfo.value.peer_id);
+      header.setId(orderInfo.value.foggie_id);
+      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+      header.setApptype(appType);
 
-    // console.log('cur_token==11:', cur_token);
-    header.setToken(cur_token);
+      // header.setId('baeqacmjq');
+      // header.setToken(orderInfo.value.sign);
+      // console.log('signData==11:', signData);
+      let cur_token = signData?.result?.data?.sign;
+      const date = signData?.result?.data?.timestamp;
+      metadata.value = {
+        'X-Custom-Date': date,
+      };
 
-    bucketName.value = orderInfo.value.domain;
-    orderInfo.value.used_space = 0;
+      // console.log('cur_token==11:', cur_token);
+      header.setToken(cur_token);
+
+      bucketName.value = orderInfo.value.domain;
+      orderInfo.value.used_space = 0;
+    } catch {
+      showToast.hide('order_info_id');
+      showToast.warn('Data acquisition failed, please try again later');
+    }
+
     if (bucketName.value && getKey) {
       return new Promise((resolve, reject) => {
         let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
@@ -74,6 +80,8 @@ export default function useOrderInfo() {
           if (err) {
             console.log('err------111222:', err);
             showToast.hide('order_info_id');
+            showToast.warn('Data acquisition failed, please try again later');
+
             reject(false);
           } else if (res.array.length > 0) {
             accessKeyId.value = res.array[0][0][0];

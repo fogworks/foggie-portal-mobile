@@ -269,6 +269,9 @@
                     let token = data.token_type + ' ' + data.access_token;
                     let refresh_token = data.token_type + ' ' + data.refresh_token;
                     let user_id = data.user_id;
+                    if (user_id && user_id != window.localStorage.getItem('user_id')) {
+                      window.localStorage.removeItem('homeChooseBucket');
+                    }
                     window.localStorage.setItem('user_id', user_id);
                     userStore.setToken(token);
                     userStore.setRefreshToken(refresh_token);
