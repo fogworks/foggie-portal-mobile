@@ -351,7 +351,7 @@
           </div>
         </nut-infinite-loading>
         <div style="margin-top: 1rem; text-align: center">
-          <div class="plus_bucket" @click="choose({ name: 'Buy Bucket' })">
+          <div class="plus_bucket" style="margin: 0 auto" @click="choose({ name: 'Buy Bucket' })">
             <IconPlus></IconPlus>
           </div>
         </div>
