@@ -11,9 +11,9 @@
         </router-link>
         <div class="img-box">
           <nut-popover
-            overlay
-            :arrow-offset="100"
-            :offset="[-100, 12]"
+            theme="dark"
+            :arrow-offset="60"
+            :offset="[-60, 12]"
             v-model:visible="accountShow"
             :list="menuItems"
             location="bottom-start"
@@ -92,9 +92,9 @@
     </van-swipe>
 
     <div v-if="!listData.length" style="margin-top: 2rem; text-align: center">
-      <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Buy Bucket</nut-button> -->
+      <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Bucket</nut-button> -->
       <div style="display: flex; justify-content: center; align-items: center">
-        <div class="plus_bucket" @click="choose({ name: 'Buy Bucket' })">
+        <div class="plus_bucket" @click="choose({ name: 'Bucket' })">
           <IconPlus></IconPlus>
         </div>
         <img src="@/assets/home_bucket.png" alt="" />
@@ -351,7 +351,7 @@
           </div>
         </nut-infinite-loading>
         <div style="margin-top: 1rem; text-align: center">
-          <div class="plus_bucket" style="margin: 0 auto" @click="choose({ name: 'Buy Bucket' })">
+          <div class="plus_bucket" style="margin: 0 auto" @click="choose({ name: 'Bucket' })">
             <IconPlus></IconPlus>
           </div>
         </div>
@@ -397,6 +397,7 @@
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
   import IconPlus from '~icons/home/plus.svg';
+  import IconPlus2 from '~icons/home/add.svg';
   import IconAssets from '~icons/home/assets.svg';
   import IconHistory from '~icons/home/history.svg';
   import IconNFT from '~icons/home/nft2.svg';
@@ -505,8 +506,8 @@
       icon: IconAssets,
     },
     {
-      name: 'Buy Bucket',
-      icon: Shop,
+      name: 'Bucket',
+      icon: IconPlus2,
     },
     {
       name: 'Scan',
@@ -659,7 +660,7 @@
       router.push({
         name: 'AssetsInfo',
       });
-    } else if (item.name == 'Buy Bucket') {
+    } else if (item.name == 'Bucket') {
       router.push({
         name: 'Shop',
       });
@@ -2130,10 +2131,13 @@
       :deep {
         .nut-popover-menu-item {
           display: flex;
+          align-items: center;
+          padding: 0.5rem 0.5rem 0.5rem 1rem;
           svg {
             width: 1.5rem;
             height: 1.5rem;
             line-height: 1.5rem;
+            margin-right: 0.5rem;
           }
           .nut-popover-menu-item-name {
             white-space: noWrap;
