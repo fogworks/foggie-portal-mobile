@@ -5,7 +5,7 @@
       <!-- <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search by order number">
         <template #left> <Search></Search> </template>
       </nut-input> -->
-      <nut-searchbar v-model="keyWord" placeholder="Search by Bucket number" clearable class="my_top_search">
+      <nut-searchbar v-model="keyWord" placeholder="Search by Bucket Name" clearable class="my_top_search">
         <template #leftin>
           <Search />
         </template>
@@ -163,7 +163,7 @@
           </div>
           <img src="@/assets/home_bucket.png" alt="" />
         </div>
-        <p>Buy Bucket</p>
+        <!-- <p>Buy Bucket</p> -->
       </div>
     </nut-infinite-loading>
     <nut-empty v-else description=" " image="error">
@@ -924,6 +924,11 @@
       span {
         color: #fff !important;
       }
+      .order_name_time {
+        color: #000;
+        background: #f5ba19 !important;
+        border-radius: 4px;
+      }
     }
   }
 </style>
@@ -1104,7 +1109,7 @@
       height: auto;
       //   width: 100px !important;
       position: absolute;
-      bottom: 10px;
+      bottom: 24px;
       right: 0;
     }
   }
