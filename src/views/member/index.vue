@@ -247,7 +247,7 @@
   const logout = (): void => {
     showDialog({
       title: 'Logout',
-      content: createVNode('span', { style: {} }, 'Are you sure you want to Logout?'),
+      content: createVNode('span', { style: {} }, 'Are you sure you want to logout?'),
       cancelText: 'Cancel',
       okText: 'Yes',
       onCancel: () => {
