@@ -13,7 +13,6 @@ declare module 'vue' {
     MyEcharts: typeof import('./../src/components/echarts/myEcharts.vue')['default']
     MyTransition: typeof import('./../src/components/myTransition/index.vue')['default']
     NutActionSheet: typeof import('@nutui/nutui')['ActionSheet']
-    NutBacktop: typeof import('@nutui/nutui')['Backtop']
     NutBadge: typeof import('@nutui/nutui')['Badge']
     NutButton: typeof import('@nutui/nutui')['Button']
     NutCalendar: typeof import('@nutui/nutui')['Calendar']
