@@ -111,18 +111,25 @@
           @click="gotoOrder(item)"
           :class="[isOpen(item.state) ? '' : 'history_item']"
         >
-          <div class="order_time">{{ transferUTCTime(item.order_created_at) }}</div>
+          <!-- <div class="order_time">{{ transferUTCTime(item.order_created_at) }}</div> -->
+          <div v-if="item.expire" class="order_time order_expTime" style="color: #ff8b00; margin-bottom: 10px">
+            <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferUTCTime(item.expire) }}</div
+          >
           <div class="order_head">
             <div class="order_img">
-              <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" />
-              <img v-else src="@/assets/desktop1.svg" alt="" />
-              <div class="order_name">{{ index + 1 }}-{{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
+              <img src="@/assets/home_bucket.png" class="bucket_img" />
+              <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" class="right_img" />
+              <img v-else src="@/assets/desktop1.svg" alt="" class="right_img" />
+              <div class="order_name_box">
+                <div class="order_name_time">{{ transferUTCTime(item.order_created_at) }}</div>
+                <div class="order_name"> {{ index + 1 }}-{{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
+              </div>
             </div>
             <!-- <img src="@/assets/exprie.svg" alt="" /> -->
             <!-- {{ handleExprie(item) }} -->
-            <div v-if="item.expire" class="order_expTime">
+            <!-- <div v-if="item.expire" class="order_expTime">
               <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferUTCTime(item.expire) }}</div
-            >
+            > -->
           </div>
           <div class="order_content">
             <div class="order_content_left">
@@ -146,7 +153,7 @@
           <div class="order_status order_status2" v-else>To be activated </div>
         </div>
       </template>
-      <div v-if="!order_uuid" style="margin-top: 2rem; text-align: center">
+      <div v-if="!order_uuid" style="margin-top: 2rem; text-align: center" class="list_item order_item order_not">
         <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button> -->
         <div class="plus_bucket" @click="choose({ name: 'Require space' })">
           <IconPlus></IconPlus>
@@ -963,7 +970,7 @@
   }
   .list_box .order_item {
     position: relative;
-    margin: 50px 0 !important;
+    margin: 70px 0 !important;
     padding: 20px !important;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     // overflow: hidden;
@@ -989,7 +996,7 @@
       justify-content: space-between;
       z-index: 99;
       img {
-        width: 42px;
+        width: 52px;
         margin: 0 auto;
         margin-right: 10px;
       }
@@ -1002,13 +1009,26 @@
         // color: #ff7d24;
 
         .order_name {
-          font-size: 30px;
+          font-size: 36px;
+          color: #f88b02;
+          font-weight: bold;
+          padding-left: 10px;
+        }
+      }
+      .order_name_box {
+        padding-left: 120px;
+        .order_name_time {
+          background: #f6f7fb;
+          padding: 4px 10px;
+          margin-top: -10px;
+          margin-bottom: 10px;
         }
       }
     }
     .order_content {
       display: flex;
       z-index: 99;
+      border-bottom: 1px solid #ccc;
       .order_content_left,
       .order_content_right {
         width: 50%;
@@ -1048,6 +1068,27 @@
     }
     .order_status2 {
       color: red;
+    }
+    .bucket_img {
+      height: auto;
+      width: 130px !important;
+      position: absolute;
+      top: -30px;
+      left: 0;
+    }
+    .right_img {
+      height: auto;
+      //   width: 100px !important;
+      position: absolute;
+      bottom: 10px;
+      right: 0;
+    }
+  }
+  .order_not {
+    align-items: center;
+    justify-content: center;
+    .plus_bucket {
+      justify-content: center !important;
     }
   }
   .top_filter {
