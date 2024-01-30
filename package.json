@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "scripts": {
     "dev": "vite --mode development",
+    "dev:scan": "set VITE_IS_HTTPS=true && vite --https --host 0.0.0.0",
     "dev:test": "vite --mode test",
     "dev:prod": "vite --mode production",
     "build": "vite build",
@@ -78,6 +79,7 @@
     "@types/bcryptjs": "^2.4.3",
     "@types/crypto-js": "^4.1.2",
     "@types/google-protobuf": "^3.15.7",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "@vitejs/plugin-legacy": "^4.1.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vitejs/plugin-vue-jsx": "^3.0.1",

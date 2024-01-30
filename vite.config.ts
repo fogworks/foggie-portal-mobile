@@ -9,6 +9,7 @@ import IconsResolver from 'unplugin-icons/resolver';
 import Components from 'unplugin-vue-components/vite';
 import commonjs from 'vite-plugin-commonjs';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 const { FileSystemIconLoader } = require('unplugin-icons/loaders');
 
@@ -22,6 +23,9 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
   const root = process.cwd();
   const env = loadEnv(mode, root);
   const buildType = env.VITE_BUILD_TYPE;
+  const ISHttps = env.VITE_IS_HTTPS
+
+
   const viteEnv = wrapperEnv(env);
   return {
     root,
@@ -46,6 +50,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
     server: {
       host: true,
       hmr: true,
+      https: ISHttps ? true : false,
       proxy: {
         '^/assets': {
           target: 'https://devlop.fogworks.io',
@@ -215,6 +220,14 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
     },
     plugins: [
       commonjs(),
+      basicSsl({
+        /** name of certification */
+        name: 'test',
+        /** custom trust domains */
+        domains: ['*.custom.com'],
+        // /** custom certification directory */
+        // certDir: '/Users/.../.devServer/cert'
+      }),
       createVitePlugins(viteEnv, isProduction),
       requireTransform({
         fileRegex: /.ts$|.tsx$|.vue$/,
@@ -254,11 +267,11 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
         },
       }),
       mode == 'development' &&
-        nodePolyfills({
-          include: ['node_modules/**/*.js', new RegExp('node_modules/.vite/.*js')],
-          http: true,
-          crypto: true,
-        }),
+      nodePolyfills({
+        include: ['node_modules/**/*.js', new RegExp('node_modules/.vite/.*js')],
+        http: true,
+        crypto: true,
+      }),
     ],
     build: {
       rollupOptions: {
