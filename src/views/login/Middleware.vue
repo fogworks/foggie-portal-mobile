@@ -13,7 +13,7 @@
         <p>Please select the authorization method</p>
       </div>
       <div class="optionsBtn">
-        <div>
+        <div @click="skipTo('H5')">
           <img src="@/assets/H5.svg" alt="" srcset="" />
           <div>H5</div>
         </div>
@@ -26,7 +26,24 @@
   </div>
 </template>
 
-<script setup lang="ts" name="middleware"></script>
+<script setup lang="ts" name="middleware">
+  import { ref } from 'vue';
+  import { useRoute, useRouter } from 'vue-router';
+  import { showToast } from '@nutui/nutui';
+  const route = useRoute();
+  const router = useRouter();
+  function skipTo(type) {
+    if (route.query?.publicKey) {
+      if (type == 'H5') {
+        router.push({ path: '/scanQRCodes', query: { publicKey: route.query?.publicKey } });
+      } else {
+        showToast.text('');
+      }
+    } else {
+      console.log('缺少参数');
+    }
+  }
+</script>
 
 <style lang="scss" scoped>
   .MiddlewareBox {

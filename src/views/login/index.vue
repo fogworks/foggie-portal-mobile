@@ -129,7 +129,7 @@
     oauth_url,
   } from '@/api';
   // import router from '@/router';
-  import { useRouter } from 'vue-router';
+  import { useRouter, useRoute } from 'vue-router';
   import { reactive, ref, onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
@@ -197,6 +197,7 @@
 
   const { wallets, connectWallet, disconnectConnectedWallet, connectedWallet } = useOnboard();
   const router = useRouter();
+  const route = useRoute();
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
   const userStore = useUserStore();
@@ -318,8 +319,11 @@
                         userStore.setRefreshToken(refresh_token);
                         // getUserInfo();
                         loading.value = false;
-
-                        router.push({ path: '/home' });
+                        if (route.query?.publicKey) {
+                          router.push({ path: '/scanQRCodes', query: { publicKey: route.query?.publicKey } });
+                        } else {
+                          router.push({ path: '/home' });
+                        }
 
                         // this.getUserInfo();
                         // this.$emit("login");
