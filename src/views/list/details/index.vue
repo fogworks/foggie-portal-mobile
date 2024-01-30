@@ -7,7 +7,7 @@
           {{ bucketName }}
           <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
         </div>
-        <div v-else> Order:{{ order_id }} </div>
+        <div v-else> Bucket({{ order_id }}) </div>
         <span class="benefit_analysis" v-if="orderInfo.value.state == '0' && mintType == 0" @click="closedOrder">
           <img src="@/assets/cancel.svg" class="bucket_detail_smal cancel_svg" />
         </span>
@@ -423,7 +423,7 @@
     1: 'Consensus reached',
     2: 'Insufficient advance deposit to cancel the next cycle',
     3: 'Sufficient funds in advance',
-    4: 'Order over',
+    4: 'Bucket over',
     5: 'Canceled',
     6: 'Cancellation of the next cycle',
   };
@@ -1574,8 +1574,8 @@
   });
   function closedOrder() {
     showDialog({
-      title: 'Cancel order',
-      content: createVNode('span', { style: {} }, 'Are you sure you want to cancel this order?'),
+      title: 'Cancel Bucket',
+      content: createVNode('span', { style: {} }, 'Are you sure you want to cancel this Bucket?'),
       cancelText: 'Cancel',
       okText: 'Yes',
       popClass: 'dialog_class',

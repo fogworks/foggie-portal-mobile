@@ -352,9 +352,9 @@
   // });
   const showImgList = async () => {
     showPop.value = true;
-    isReady.value = false;
+    // isReady.value = false;
     // await getOrderInfo(true, order_uuid.value);
-    init();
+    // init();
   };
   const init = async () => {
     tableData.value = [];
