@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <nut-drag class="button_drag" attract>
+    <nut-drag class="button_drag" attract v-if="!popShow">
       <nut-button class="upload_btn" type="primary" @click="popShow = !popShow">
       <IconPlus></IconPlus>
       </nut-button>
