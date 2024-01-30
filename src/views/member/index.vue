@@ -424,6 +424,7 @@
       padding-bottom: 120px;
 
       .scanQR {
+        display: none;
         position: absolute;
         right: 30px;
         top: 30px;
