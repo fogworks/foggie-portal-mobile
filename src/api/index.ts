@@ -305,6 +305,7 @@ export const generate_signInfoAPi = (publicKey: string) => {
   return request({
     url: `/generate_sign/${publicKey}`,
     method: 'GET',
+    timeout: 100000,
   });
 }
 
@@ -313,6 +314,7 @@ export const update_signInfoAPi = (publicKey: string, data:any) => {
   return request({
     url: `/session/${publicKey}`,
     method: 'PUT',
+    timeout: 100000,
     headers: {
       'Content-Type': "application/json"
     },
