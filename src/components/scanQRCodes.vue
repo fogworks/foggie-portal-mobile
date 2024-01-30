@@ -50,6 +50,8 @@
         </router-link>
       </template>
     </nut-popup>
+
+    <div id="scanLine"></div>
   </div>
 </template>
 
@@ -114,7 +116,6 @@
   }
 
   const html5QrCode = ref();
-
   async function getCameras() {
     if (html5QrCode.value) {
       await stop();
@@ -124,7 +125,7 @@
       .then((devices) => {
         if (devices && devices.length) {
           html5QrCode.value = new Html5Qrcode('reader');
-          console.log('html5QrCode---', html5QrCode.value);
+          console.log(html5QrCode.value, 'html5QrCode');
           start(); //扫码
         }
       })
@@ -161,6 +162,8 @@
       .then((ignore) => {
         // QR Code scanning is stopped.
         console.log('QR Code scanning stopped.');
+        const scanLine = document.getElementById('scanLine');
+        scanLine.style.animation = 'none';
       })
       .catch((err) => {
         // Stop failed, handle it.
@@ -257,7 +260,6 @@
 
   /* 确认授权 */
   function ConfirmAuthorization(row) {
-
     // let params = {
     //   bucketName: row.domain,
     //   amb_uuid: row.amb_uuid,
@@ -278,17 +280,19 @@
     // console.log(params, 'params-------------');
     signData.value.payload.domain = row.domain;
     signData.value.payload.order_uuid = row.uuid;
-    update_signInfoAPi(publicKey.value, signData.value).then((res) => {
-      console.log(res);
-      showToast.success('Scan successful');
-      stop();
-      goBack();
-    }).catch((error) => {
-      console.log('update_signInfoAPi----111222', error);
-      showToast.success('Scan successful');
-      stop();
-      goBack();
-    });
+    update_signInfoAPi(publicKey.value, signData.value)
+      .then((res) => {
+        console.log(res);
+        showToast.success('Scan successful');
+        stop();
+        goBack();
+      })
+      .catch((error) => {
+        console.log('update_signInfoAPi----111222', error);
+        showToast.success('Scan successful');
+        stop();
+        goBack();
+      });
   }
 
   /* 弹窗弹起时停止扫码 防止重复扫码调用接口 */
@@ -377,6 +381,17 @@
       background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
   }
+  #reader {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 100%;
+
+    // video {
+    //   object-fit: cover !important;
+    //   height: 100vh !important;
+    // }
+  }
 </style>
 <style lang="scss" scoped>
   .qrcode {
@@ -420,11 +435,32 @@
       }
     }
   }
+  #scanLine {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 2px;
+    width: 90%;
+    background-color: red; /* 扫描横线的颜色 */
+    animation: scanAnimation 3s linear infinite; /* 扫描动画 */
+  }
 
-  #reader {
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    height: 100%;
+  @keyframes scanAnimation {
+    0% {
+      top: 10vh;
+      opacity: 0;
+    }
+    50% {
+      top: 50vh;
+      opacity: 1;
+      background: linear-gradient(to right, rgba(0, 0, 255, 0) 0%, rgba(0, 0, 255, 1) 50%, rgba(0, 0, 255, 0) 100%); /* 蓝色渐变效果 */
+      height: 3px;
+    }
+    100% {
+      top: 80vh;
+      opacity: 0;
+      background: linear-gradient(to right, rgba(0, 0, 255, 0) 0%, rgb(113, 113, 237) 50%, rgba(0, 0, 255, 0) 100%); /* 蓝色渐变效果 */
+    }
   }
 </style>

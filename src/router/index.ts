@@ -33,7 +33,7 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     userStore.setCloudCodeIsBind(false);
-    if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget' || to.name == 'Guide') {
+    if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget' || to.name == 'Guide' || to.name == 'Middleware') {
       next();
     } else {
       if (localStorage.getItem('ByBootstrapping')) {

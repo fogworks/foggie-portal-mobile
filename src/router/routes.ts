@@ -281,6 +281,14 @@ export const routes = [
     },
   },
   {
+    name: 'Middleware',
+    path: '/middleware',
+    component: () => import('@/views/login/middleware.vue'),
+    meta: {
+      notKeepAlive: true,
+    },
+  },
+  {
     name: 'Login',
     path: '/login',
     component: () => import('@/views/login/index.vue'),
