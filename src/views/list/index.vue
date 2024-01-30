@@ -122,7 +122,7 @@
               <img v-else src="@/assets/desktop1.svg" alt="" class="right_img" />
               <div class="order_name_box">
                 <div class="order_name_time">{{ transferUTCTime(item.order_created_at) }}</div>
-                <div class="order_name"> {{ index + 1 }}-{{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
+                <div class="order_name"> {{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
               </div>
             </div>
             <!-- <img src="@/assets/exprie.svg" alt="" /> -->
@@ -149,8 +149,10 @@
             </div>
           </div>
 
-          <div class="order_status" v-if="item.domain">{{ statusTypes[item.state] }} </div>
-          <div class="order_status order_status2" v-else>To be activated </div>
+          <div class="order_status" v-if="item.domain">
+            {{ statusTypes[item.state] }}
+          </div>
+          <div class="order_status order_status2" v-else> To be activated </div>
         </div>
       </template>
       <div style="margin-top: 2rem; text-align: center">
@@ -1017,7 +1019,7 @@
       justify-content: space-between;
       z-index: 99;
       img {
-        width: 52px;
+        width: 30px;
         margin: 0 auto;
         margin-right: 10px;
       }
@@ -1030,7 +1032,7 @@
         // color: #ff7d24;
 
         .order_name {
-          font-size: 36px;
+          font-size: 40px;
           color: #f88b02;
           font-weight: bold;
           padding-left: 10px;
@@ -1086,6 +1088,7 @@
       color: #ff8b00;
       font-weight: bold;
       font-size: 28px;
+      justify-content: start;
     }
     .order_status2 {
       color: red;
