@@ -69,7 +69,7 @@
   const { vibrate, isSupported } = useVibrate({ pattern: [300, 100, 300] });
   const router = useRouter();
   const route = useRoute();
-  const isPopupShow = ref(route.query?.publicKey ? true : false);
+  const isPopupShow = ref(false);
   const total = ref(0);
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
   const goBack = async () => {
@@ -251,22 +251,35 @@
     payload: {},
   });
 
+  watch(
+    () => route.fullPath,
+    (newVal) => {
+      console.log(newVal);
+      if (newVal) {
+        scanQRSuccess(newVal);
+      }
+    },
+    { immediate: true },
+  );
+
   async function generate_signInfo(params) {
     await generate_signInfoAPi(params)
       .then((res) => {
         console.log('generate_sign-------111', res);
         if (res.code == 200) {
           signData.value = res.data;
-          isPopupShow.value = true;
+
           publicKey.value = res.data.public_key;
           signature.value = res.data.signature;
           signData.value.payload.user_info = true;
-
-          update_signInfoAPi(publicKey.value, signData.value).then((res) => {
-            console.log('update_signInfoAPi--success-1');
-          }).catch((error) => {
-            console.log('update_signInfoAPi--error---1', error);
-          });
+          update_signInfoAPi(publicKey.value, signData.value)
+            .then((res) => {
+              isPopupShow.value = true;
+              console.log('update_signInfoAPi--success-1');
+            })
+            .catch((error) => {
+              console.log('update_signInfoAPi--error---1', error);
+            });
         }
       })
       .catch((error) => {
@@ -281,8 +294,7 @@
     signData.value.payload.user_info = false;
     update_signInfoAPi(publicKey.value || route.query?.publicKey, signData.value)
       .then((res) => {
-        console.log(res);
-        showToast.success('Scan successful');
+        router.push({ name: 'Home' });
         stop();
         goBack();
       })
