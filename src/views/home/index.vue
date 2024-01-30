@@ -100,7 +100,7 @@
         <img src="@/assets/home_bucket.png" alt="" />
       </div>
 
-      <p>Welcome to foggiest, you don't have a bucket yet, please select one. Click on the + to make your selection!</p>
+      <p>Welcome to foggie mobile, you don't have a bucket yet, please select one. Click on the + to make your selection!</p>
     </div>
     <div v-if="order_uuid && leftBucketList.length" style="margin-top: 0.8rem">
       <!-- <div class="bucket_tips">
@@ -228,7 +228,7 @@
       <div class="recent_folder_box" v-if="tableData.length">
         <div class="recent_folder_title">
           <span>Recent Files</span>
-          <span class="more" @click="gotoOrderDetail(currentBucketData)">More</span>
+          <span class="more" @click="gotoOrderDetail(currentBucketData)">See All</span>
         </div>
         <!-- <div class="recent_folder">
           <div class="folder_item" v-for="item in floderData">
