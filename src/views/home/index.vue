@@ -20,7 +20,7 @@
             @choose="choose"
           >
             <template #reference>
-              <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" />
+              <nut-image show-error :src="userAvatar ? userAvatar : require('@/assets/user.png')" />
             </template>
           </nut-popover>
         </div>
@@ -91,7 +91,7 @@
       </van-swipe-item>
     </van-swipe>
 
-    <div v-if="!listData.length" style="margin-top: 2rem; text-align: center">
+    <div v-if="!leftBucketList.length" style="margin-top: 2rem; text-align: center">
       <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Bucket</nut-button> -->
       <div style="display: flex; justify-content: center; align-items: center">
         <div class="plus_bucket" @click="choose({ name: 'Bucket' })">
@@ -102,7 +102,7 @@
 
       <p>Welcome to foggiest, you don't have a bucket yet, please select one. Click on the + to make your selection!</p>
     </div>
-    <div v-if="order_uuid && listData.length" style="margin-top: 0.8rem">
+    <div v-if="order_uuid && leftBucketList.length" style="margin-top: 0.8rem">
       <!-- <div class="bucket_tips">
         The current display is the content of {{ bucketName }},click on the upper right corner of the page <IconMore></IconMore> to switch
         the bucket
@@ -266,6 +266,9 @@
         </div>
       </div>
     </div>
+    <!-- <div v-else-if="!order_uuid && listData.length">
+      <p>Please set the bucket name first</p>
+    </div> -->
     <div class="recent_folder_box" v-if="nftImgList.length" style="padding: 1rem 0">
       <div class="recent_folder_title" style="margin-left: 1rem">
         <span>NFT Recent</span>
@@ -273,6 +276,9 @@
       </div>
       <ListComponent :showBtn="false" has-more :tabList="[]" :imgList="nftImgList"></ListComponent>
     </div>
+    <div class="tab_top_title" v-if="ishaveProfit"
+      >Reward and Expenditure <span style="font-size: 12px; display: inline-block">(for the last weeks)</span></div
+    >
     <nut-infinite-loading
       style="margin-top: 1rem; min-height: 280px; height: 600px; padding-bottom: 10px; overflow: auto"
       v-if="cloudCodeIsBind && earningsList.length"
@@ -288,8 +294,8 @@
         :class="[isOpen(item.order_info.state) ? '' : 'history_item']"
       >
         <div class="order_status_flag open" v-if="isOpen(item.order_info.state) && !item.order_info.domain">To be activated</div>
-        <div class="order_status_flag open" v-else-if="isOpen(item.order_info.state)">Open Order</div>
-        <div class="order_status_flag history" v-if="!isOpen(item.order_info.state)">History Order</div>
+        <div class="order_status_flag open" v-else-if="isOpen(item.order_info.state)">Open Bucket</div>
+        <div class="order_status_flag history" v-if="!isOpen(item.order_info.state)">History Bucket</div>
         <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
           <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
           <!-- <img src="@/assets/DMC_Token1.png" alt="" /> -->
@@ -322,11 +328,13 @@
         </div>
       </div>
     </nut-infinite-loading>
+    <!-- <nut-backtop el-id="app" :distance="200"></nut-backtop> -->
+    <van-back-top target="#app" offset="200" right="0" bottom="15vh" />
 
     <!-- account show -->
     <!-- <nut-action-sheet v-model:visible="accountShow" :menu-items="menuItems" @choose="choose" /> -->
     <Teleport to="body">
-      <nut-popup position="left" :style="{ width: '5.5rem', height: '100%' }" v-model:visible="showRight">
+      <nut-popup position="left" :style="{ width: '6rem', height: '100%' }" v-model:visible="showRight">
         <!-- <span class="draw_title"> Select a bucket to display on the home page </span> -->
         <nut-infinite-loading
           :load-more-txt="'Is Bottom'"
@@ -336,7 +344,11 @@
           :has-more="hasMore"
           @load-more="loadMoreFun"
         >
-          <div :class="[bucketName == item.domain ? 'is_checked' : '', 'list_item']" v-for="item in listData" @click="setBucket(item)">
+          <div
+            :class="[bucketName && bucketName == item.domain ? 'is_checked' : '', 'list_item']"
+            v-for="item in leftBucketList"
+            @click="setBucket(item)"
+          >
             <div class="order_img">
               <!-- <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" /> -->
               <img v-if="item.electronic_type == 1" src="@/assets/desktop1.svg" alt="" />
@@ -523,23 +535,23 @@
 
   const mapTypes = {
     user_delivery_income: 'UserDeliveryReward',
-    buy_order: 'Purchased Order',
-    challenge: 'Order Challenge',
-    arbitration: 'Order Arbitration',
-    OrderReceiptAddReserve: 'Increase order deposit', // 增加订单预存金
-    OrderReceiptSubReserve: 'Reduce order deposit', // 减少订单预存金
-    OrderReceiptDeposit: 'Order deposit', // 押金
-    OrderReceiptClaim: 'Order deliver', // 交付
-    OrderReceiptReward: 'Order incentive', // 激励
-    OrderReceiptRenew: 'Order Update', // 订单更新
+    buy_order: 'Purchased Bucket',
+    challenge: 'Bucket Challenge',
+    arbitration: 'Bucket Arbitration',
+    OrderReceiptAddReserve: 'Increase Bucket deposit', // 增加订单预存金
+    OrderReceiptSubReserve: 'Reduce Bucket deposit', // 减少订单预存金
+    OrderReceiptDeposit: 'Bucket deposit', // 押金
+    OrderReceiptClaim: 'Bucket deliver', // 交付
+    OrderReceiptReward: 'Bucket incentive', // 激励
+    OrderReceiptRenew: 'Bucket Update', // 订单更新
     OrderReceiptChallengeReq: 'Initiate a Challenge', // 发起挑战
     OrderReceiptChallengeAns: 'Responding to challenges', // 响应挑战
     OrderReceiptChallengeArb: 'arbitrate', // 仲裁
     OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
-    OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
-    user_cancel_order: 'Order Cancellation Refund', // 订单取消
-    user_OrderReceiptDeposit: 'Order expires. Deposit refunded', // 订单到期退还押金
-    OrderRefund: 'Order refund', // 订单退款
+    OrderReceiptLockRet: 'Bucket lock return', // 订单锁定返还
+    user_cancel_order: 'Bucket Cancellation Refund', // 订单取消
+    user_OrderReceiptDeposit: 'Bucket expires. Deposit refunded', // 订单到期退还押金
+    OrderRefund: 'Bucket refund', // 订单退款
     OrderReceiptEnd: 12,
   };
   const imgListRef = ref('');
@@ -610,6 +622,9 @@
       return false;
     }
   });
+  const leftBucketList = computed(() => {
+    return noBucketData.value.concat(listData.value);
+  });
   const isError2 = ref(false);
   const pageSize = ref(10);
   const pageNum = ref(1);
@@ -622,7 +637,7 @@
       const postData = {
         sort_type: 'expire',
         ascending: false,
-        is_domain: 0,
+        is_domain: 1,
         electronic_type: '0',
         domain: '',
       };
@@ -636,9 +651,25 @@
       });
     } catch {}
   };
+  const ishaveProfit = ref(false); //是否订单已经产生过收益 如果有收益不展示引导页
+  function searchAllOrderProfit() {
+    const postData = { start_time: '', end_time: '' };
+    search_user_asset_detail(postData)
+      .then((res) => {
+        if (res.code == 200) {
+          if (res.result.data.length > 0) {
+            ishaveProfit.value = true;
+          } else {
+            ishaveProfit.value = false;
+          }
+        }
+      })
+      .finally(() => {});
+  }
+
   const getList = async () => {
     showRight.value = true;
-    if (!listData.value.length) {
+    if (!leftBucketList.value.length) {
       nextTick(async () => {
         resetData();
         getNoBucketOrder();
@@ -683,7 +714,7 @@
     });
   }
   async function getNoBucketOrder() {
-    const order_state = [0, 1, 2, 3, 6];
+    const order_state = [0];
     const start_time = '';
     const end_time = '';
     const buy_result = 'success';
@@ -694,7 +725,7 @@
       electronic_type: '0',
       domain: '',
     };
-    await search_cloud({ ps: 4, pn: 1, order_state, start_time, end_time, buy_result, ...postData }).then((res) => {
+    await search_cloud({ ps: 30, pn: 1, order_state, start_time, end_time, buy_result, ...postData }).then((res) => {
       noBucketData.value = res.result.data;
     });
   }
@@ -1514,14 +1545,18 @@
         getUserAssets();
         getExchangeRate();
         initNFT();
+        getNoBucketOrder();
         await loadMoreFun();
         console.log(listData.value.length, 'listData.length');
         if (window.localStorage.homeChooseBucket) {
           setBucket(JSON.parse(window.localStorage.homeChooseBucket));
-        } else if (listData.value.length) {
-          let bucketList = listData.value.filter((el) => el.domain);
+        } else if (leftBucketList.value.length) {
+          let bucketList = leftBucketList.value.filter((el) => el.domain);
           if (bucketList.length) {
             setBucket(bucketList[0]);
+          } else {
+            showRight.value = true;
+            showToast.text('Please select a bucket and set the bucket name.');
           }
         }
       }
@@ -1533,6 +1568,7 @@
     (val) => {
       if (val === 4) {
         searchOrderProfit();
+        searchAllOrderProfit();
       }
     },
     { deep: true, immediate: true },
@@ -1860,7 +1896,7 @@
       .more {
         font-size: 0.8rem;
         font-weight: normal;
-        color: #777;
+        color: $main_blue;
       }
     }
 
@@ -2129,6 +2165,12 @@
         border-radius: 10px;
       }
       :deep {
+        .nut-image {
+          width: 60px;
+          height: 60px;
+          margin-left: 0.5rem;
+          border-radius: 10px;
+        }
         .nut-popover-menu-item {
           display: flex;
           align-items: center;
@@ -2440,8 +2482,8 @@
   }
 
   .tab_top_title {
-    // margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
     // font-style: italic;
     font-size: 35px;
     font-weight: 600;

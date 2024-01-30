@@ -260,6 +260,13 @@
           isPopupShow.value = true;
           publicKey.value = res.data.public_key;
           signature.value = res.data.signature;
+          signData.value.payload.user_info = true;
+
+          update_signInfoAPi(publicKey.value, signData.value).then((res) => {
+            console.log('update_signInfoAPi--success-1');
+          }).catch((error) => {
+            console.log('update_signInfoAPi--error---1', error);
+          });
         }
       })
       .catch((error) => {
@@ -271,6 +278,7 @@
   function ConfirmAuthorization(row) {
     signData.value.payload.domain = row.domain;
     signData.value.payload.order_uuid = row.uuid;
+    signData.value.payload.user_info = false;
     update_signInfoAPi(publicKey.value || route.query?.publicKey, signData.value)
       .then((res) => {
         console.log(res);

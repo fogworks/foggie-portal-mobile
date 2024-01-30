@@ -268,7 +268,7 @@
     1: 'Consensus reached',
     2: 'Insufficient advance deposit to cancel the next cycle',
     3: 'Sufficient funds in advance',
-    4: 'Order over',
+    4: 'Bucket over',
     5: 'Canceled',
     6: 'Cancellation of the next cycle',
   };
@@ -277,7 +277,7 @@
     { text: 'Consensus reached', value: 1 },
     { text: 'Insufficient advance deposit to cancel the next cycle', value: 2 },
     { text: 'Sufficient funds in advance', value: 3 },
-    { text: 'Order over', value: 4 },
+    { text: 'Bucket over', value: 4 },
     { text: 'Canceled', value: 5 },
     { text: 'Cancellation of the next cycle', value: 6 },
   ];

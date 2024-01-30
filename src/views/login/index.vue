@@ -462,18 +462,9 @@
       duration: 0,
     });
     const provider = await detectEthereumProvider();
-    // if (provider == window.ethereum && provider) {
-    //   if (!connectedWallet?.value?.accounts?.[0]?.address) await connectWallet();
-    //   let address = connectedWallet?.value?.accounts?.[0]?.address;
-    //   if (!address) {
-    //     disconnectConnectedWallet();
-    //     return false;
-    //   }
-    //   await checkWallet(address);
-    // } else {
-    //   window.open('https://metamask.app.link/dapp/https://amb.u2i.net');
-    //   // metaOpen();
-    // }
+    //  const ethereum = MMSDK.getProvider() // You can also access via window.ethereum
+
+    //     ethereum.request({ method: 'eth_requestAccounts' })
 
     if (provider == window.ethereum && provider) {
       try {
