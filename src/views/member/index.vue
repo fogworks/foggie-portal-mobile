@@ -15,7 +15,8 @@
           <div class="email">Email: {{ email }}</div>
           <!-- <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div> -->
           <!-- <div class="email" v-if="promo_code">promoCode: {{ promo_code }}</div> -->
-          <div class="email" v-if="user_code">UserCode: {{ user_code }} <IconCopy @click="copyCode(user_code)"></IconCopy> </div>
+          <div class="email" v-if="user_code">UserCode: {{ user_code }} <IconCopy @click="copyCode(user_code)"></IconCopy></div>
+          <div class="email" v-if="user_code">(Use this string to login dapp directly)</div>
         </div>
       </div>
       <div class="money">
@@ -109,7 +110,7 @@
           </div>
           <div
             >About
-            <div>Fog Works</div>
+            <!-- <div>Fog Works</div> -->
           </div>
         </nut-col>
       </nut-row>
