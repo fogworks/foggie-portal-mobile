@@ -5,10 +5,12 @@
         <IconSwitch @click="getList" v-show="curStepIndex == 4"></IconSwitch>
       </div>
       <div class="dmc_account_box">
-        Hello,
-        <router-link to="/member">
-          {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
-        </router-link>
+        <div>
+          Hello,
+          <router-link to="/member">
+            {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
+          </router-link>
+        </div>
         <div class="img-box">
           <nut-popover
             theme="dark"
@@ -2139,7 +2141,8 @@
       font-weight: bold;
 
       display: flex;
-      justify-content: flex-end;
+      // justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
 
       font-size: 40px;
