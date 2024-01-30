@@ -14,8 +14,8 @@
           <div class="accTitle">{{ dmcAccount }}</div>
           <div class="email">Email: {{ email }}</div>
           <!-- <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div> -->
-          <div class="email" v-if="promo_code">promoCode: {{ promo_code }}</div>
-          <!-- <div class="email" v-if="user_code">UserCode: {{ user_code }} <IconCopy @click="copyCode(user_code)"></IconCopy> </div> -->
+          <!-- <div class="email" v-if="promo_code">promoCode: {{ promo_code }}</div> -->
+          <div class="email" v-if="user_code">UserCode: {{ user_code }} <IconCopy @click="copyCode(user_code)"></IconCopy> </div>
         </div>
       </div>
       <div class="money">

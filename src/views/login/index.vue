@@ -96,7 +96,7 @@
           <nut-button block type="info" @click="submit" :loading="loading"> Sign In </nut-button>
           <div class="Register_btn">
             <span class="password_login" @click="router.push('/forget')"> Forgot password?</span>
-            <span class="password_login" @click="router.push('/register')">create an account?</span>
+            <span class="password_login" @click="router.push('/register')">Create an account?</span>
           </div>
         </nut-form>
       </van-tab>
