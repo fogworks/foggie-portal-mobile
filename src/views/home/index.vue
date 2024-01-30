@@ -2124,8 +2124,8 @@
     // background: #5758a0;
     // margin: 0 -4vw;
     display: grid;
-    grid-template-columns: 100px auto;
-    gap: 30px;
+    grid-template-columns: 80px auto;
+    gap: 0px;
     align-items: center;
     height: 100px;
     padding: 10px 0 0 10px;
