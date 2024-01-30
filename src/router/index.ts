@@ -24,6 +24,7 @@ router.beforeEach((to, from, next) => {
 
   const userStore = useUserStore();
   const orderStore = useOrderStore();
+
   // orderStore.setOrderList([]);
   if (userStore.getToken) {
     if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget') {
@@ -32,14 +33,23 @@ router.beforeEach((to, from, next) => {
       next();
     }
   } else {
-    userStore.setCloudCodeIsBind(false);
+    userStore.setCloudCodeIsBind(false);    
     if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget' || to.name == 'Guide' || to.name == 'Middleware') {
       next();
     } else {
+
       if (localStorage.getItem('ByBootstrapping')) {
-        next({ name: 'Login' });
+        next({
+          name: 'Login', query: {
+            publicKey: to.query?.publicKey
+          }
+        });
       } else {
-        next({ name: 'Guide' });
+        next({
+          name: 'Guide', query: {
+            publicKey: to.query?.publicKey
+          }
+        });
       }
     }
   }

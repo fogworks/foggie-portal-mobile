@@ -31,12 +31,13 @@
 </template>
 
 <script lang="ts" setup>
-  import { useRouter } from 'vue-router';
+  import { useRouter, useRoute } from 'vue-router';
   const router = useRouter();
+  const route = useRoute();
   console.log('aaa-----------');
   function gotoLogin() {
     window.localStorage.setItem('ByBootstrapping', 'yes');
-    router.push({ path: '/login' });
+    router.push({ path: '/login', query: { publicKey: route.query?.publicKey } });
   }
   const swipeChange = (index) => {
     console.log(index);
