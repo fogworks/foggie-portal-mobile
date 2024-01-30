@@ -5,7 +5,7 @@
       <!-- <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search by order number">
         <template #left> <Search></Search> </template>
       </nut-input> -->
-      <nut-searchbar v-model="keyWord" placeholder="Search by order number" clearable class="my_top_search">
+      <nut-searchbar v-model="keyWord" placeholder="Search by Bucket number" clearable class="my_top_search">
         <template #leftin>
           <Search />
         </template>
