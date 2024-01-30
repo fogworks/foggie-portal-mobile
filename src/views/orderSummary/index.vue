@@ -22,7 +22,7 @@
       </span>
 
       <nut-grid class="my_summary_grid" :column-num="3">
-        <nut-grid-item text="Profit">
+        <nut-grid-item text="Reward">
           <div>
             <IconCions class="top_icon"></IconCions>
             <p style="color: #5154f9; font-weight: bold">{{ cloudBalanceNum?.integerPart }}<span
@@ -30,7 +30,7 @@
             </p>
           </div>
         </nut-grid-item>
-        <nut-grid-item class="top_icon" text="Earnings">
+        <nut-grid-item class="top_icon" text="Reward">
           <div>
             <IconIncome class="top_icon"></IconIncome>
             <p style="color: green; font-weight: bold">+ {{ cloudProfitNum?.integerPart }}<span

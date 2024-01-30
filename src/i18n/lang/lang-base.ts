@@ -11,6 +11,8 @@ export type langType = {
     empty: string;
     analysis: string;
     transactionRecords: string;
+    photography: string;
+    nft: string;
   };
   language: {
     en: string;

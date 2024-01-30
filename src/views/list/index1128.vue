@@ -127,7 +127,7 @@
     </nut-infinite-loading>
     <nut-empty v-else description=" " image="error">
       <div style="margin-top: 10px" v-if="!listData.length">
-        <nut-button icon="refresh" type="primary" @click="toBuy">Buy Order</nut-button>
+        <nut-button icon="refresh" type="primary" @click="toBuy">Require space</nut-button>
       </div>
     </nut-empty>
     <Teleport to="body">

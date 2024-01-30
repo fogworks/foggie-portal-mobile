@@ -8,6 +8,8 @@ import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 import Components from 'unplugin-vue-components/vite';
 import commonjs from 'vite-plugin-commonjs';
+import nodePolyfills from 'rollup-plugin-polyfill-node';
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 const { FileSystemIconLoader } = require('unplugin-icons/loaders');
 
@@ -21,6 +23,9 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
   const root = process.cwd();
   const env = loadEnv(mode, root);
   const buildType = env.VITE_BUILD_TYPE;
+  const ISHttps = env.VITE_IS_HTTPS
+
+
   const viteEnv = wrapperEnv(env);
   return {
     root,
@@ -45,6 +50,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
     server: {
       host: true,
       hmr: true,
+      https: ISHttps ? true : false,
       proxy: {
         '^/assets': {
           target: 'https://devlop.fogworks.io',
@@ -195,10 +201,33 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           changeOrigin: true,
           secure: false,
         },
+        '^/nft_scanner': {
+          target: 'http://154.31.41.124:9102',
+          changeOrigin: true,
+          secure: false,
+        },
+        '^/session': {
+          target: 'http://154.31.41.36:9100',
+          changeOrigin: true,
+          secure: false,
+        },
+        '^/generate_sign': {
+          target: 'http://154.31.41.36:9100',
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
     plugins: [
       commonjs(),
+      basicSsl({
+        /** name of certification */
+        name: 'test',
+        /** custom trust domains */
+        domains: ['*.custom.com'],
+        // /** custom certification directory */
+        // certDir: '/Users/.../.devServer/cert'
+      }),
       createVitePlugins(viteEnv, isProduction),
       requireTransform({
         fileRegex: /.ts$|.tsx$|.vue$/,
@@ -237,16 +266,28 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
           home: FileSystemIconLoader('src/assets/svg/home', (svg: string) => svg.replace(/^<svg /, '<svg fill="currentColor" ')),
         },
       }),
+      mode == 'development' &&
+      nodePolyfills({
+        include: ['node_modules/**/*.js', new RegExp('node_modules/.vite/.*js')],
+        http: true,
+        crypto: true,
+      }),
     ],
     build: {
+      rollupOptions: {
+        plugins: [nodePolyfills({ crypto: true, http: true })],
+      },
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
       minify: buildType ? false : 'terser',
       outDir: buildType ? 'cordova/www' : 'dist',
       reportCompressedSize: false,
       terserOptions: {
         compress: {
           //生产环境时移除console
-          // drop_console: true,
-          // drop_debugger: true,
+          drop_console: true,
+          drop_debugger: true,
         },
       },
     },

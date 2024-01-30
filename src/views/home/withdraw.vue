@@ -5,12 +5,24 @@
     </div>
     <div v-if="canWithDraw && !loading" :class="['middle_box', showKeyboard ? 'full_height' : '']">
       <!-- <img class="top_img nut-icon-am-jump nut-icon-am-infinite" src="@/assets/DMC_Token1.png" alt="" /> -->
+      <div inset class="withdraw-card">
+        <div class="card_row_1 card_header">
+          <div class="total_income_text">Your have Withdrawn:</div>
+          <div class="rechargeRecord" @click="router.push(`/transactionRecords?type=1`)">Withdraw Record</div>
+          <div class="total_income">
+            <div class="balance_text">
+              <span>{{ cloudWithdraw >= 0 ? cloudWithdraw.toFixed(4) : cloudWithdraw }}</span>
+              <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="recharge_box">
         <div class="recharge_contact">
           <div class="dot">
             <img class="top_img" src="@/assets/DMC_Token1.png" alt="" />
             <span>DMC Account</span>
-            <span class="small">(Payment Account)</span>
+            <span class="small">(Agent Account)</span>
           </div>
           <div class="line"
             >{{ amount }}
@@ -64,9 +76,9 @@
           </div>
           <div class="real_amount balance"> Balance: {{ cloudBalance }} DMC </div>
           <div v-if="realAmount != '--'" class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
-          <div v-else class="real_amount">Failed to get ambassador pumping rate, please retry </div>
+          <div v-else class="real_amount">Failed to get agent pumping rate, please retry </div>
           <div class="tips">
-            Please be aware that withdrawals incur a handling fee of {{ (commissionRate * 100).toFixed(2) }}% for ambassadors and 2% for DMC
+            Please be aware that withdrawals incur a handling fee of {{ (commissionRate * 100).toFixed(2) }}% for agent and 2% for DMC
             Foundation
           </div>
         </div>
@@ -74,7 +86,7 @@
       <!-- <nut-noticebar
         :text="`Please be aware that withdrawals incur a handling fee of  ${(commissionRate * 100).toFixed(
           2,
-        )}% for ambassadors and 2% for DMC Foundation`"
+        )}% for agent and 2% for DMC Foundation`"
         wrapable
       ></nut-noticebar> -->
 
@@ -151,7 +163,6 @@
 
 <script setup lang="ts" name="Withdraw">
   import loadingImg from '@/components/loadingImg/index.vue';
-
   import IconCopy from '~icons/home/copy.svg';
   import { reactive, toRefs, computed } from 'vue';
   import { check_account, transfer_valid, bind_valid } from '@/api';
@@ -238,7 +249,7 @@
     if (!res.result.bind_secret) {
       response = await getIsVerifiedAPI();
     }
-    if (res.result.bind_secret ) {
+    if (res.result.bind_secret) {
       isBind.value = true;
       canWithDraw.value = true;
       loading.value = false;
@@ -494,13 +505,14 @@
 
 <style scoped lang="scss">
   .recharge_box {
+    margin: 20px;
     background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
     color: #fff;
     padding: 20px;
     border-radius: 20px;
     height: auto;
     font-weight: bold;
-    margin-top: 50px;
+    // margin-top: 50px;
     .recharge_contact {
       margin-top: 12px;
       display: flex;
@@ -570,6 +582,108 @@
       .tips {
         color: #ff8b00;
         // font-weight: bold;
+      }
+    }
+  }
+  .withdraw-card {
+    margin: 20px;
+    position: relative;
+    padding: 40px;
+    // height: 410px;
+    box-sizing: border-box;
+    background: $primary-color;
+    color: #fff;
+    border-radius: 30px;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    // margin-top: 150px;
+
+    > div {
+      min-height: 60px;
+      line-height: 60px;
+      text-align: center;
+    }
+
+    .card_row_1 {
+      display: flex;
+      justify-content: space-between;
+
+      &.card_header {
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-content: space-between;
+        // margin-right: 100px;
+
+        span {
+          text-align: left;
+        }
+
+        .total_income {
+          > div {
+            font-size: 30px;
+            text-align: left;
+          }
+
+          .balance_text {
+            font-size: 60px;
+
+            img {
+              height: 50px;
+              width: 100px;
+              vertical-align: sub;
+            }
+          }
+
+          .usd_text {
+            color: #ccc;
+          }
+        }
+      }
+      .total_income_text {
+        text-align: left;
+        margin-top: -20px;
+        font-size: 26px;
+      }
+      .rechargeRecord {
+        position: absolute;
+        top: 20px;
+        right: 10px;
+        font-size: 20px;
+        text-decoration: underline;
+        font-weight: bold;
+      }
+    }
+
+    .card_row_top {
+      font-weight: bold;
+      font-size: 32px;
+    }
+
+    .pst-row {
+      margin-top: 20px;
+      font-size: 28px;
+      text-align: left;
+      font-weight: bold;
+
+      .column_value {
+        font-size: 28px;
+      }
+
+      .today_income {
+        color: #ff8b00;
+        color: #fbd116;
+
+        svg {
+          vertical-align: sub;
+        }
+      }
+    }
+
+    .total_income {
+      font-size: 55px;
+      font-weight: 700;
+
+      .about_income {
+        font-size: 35px;
       }
     }
   }

@@ -1,14 +1,14 @@
 <template>
   <div>
-    <div class="top_box">
+    <div :class="['top_box', isAvailableOrder ? '' : 'isHistory']">
       <TopBack class="detail_top">
-        <div v-if="bucketName">
+        <div v-if="bucketName" style="text-decoration: underline; cursor: pointer" @click="dialogShow = true">
           <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
           {{ bucketName }}
           <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
         </div>
-        <div v-else> Order:{{ order_id }} </div>
-        <span class="benefit_analysis" v-if="orderInfo.value.state == '0'" @click="closedOrder">
+        <div v-else> Bucket({{ order_id }}) </div>
+        <span class="benefit_analysis" v-if="orderInfo.value.state == '0' && mintType == 0" @click="closedOrder">
           <img src="@/assets/cancel.svg" class="bucket_detail_smal cancel_svg" />
         </span>
         <span class="benefit_analysis" v-else @click="gotoSummary(order_id, orderInfo.value.state)">
@@ -18,7 +18,7 @@
       <nut-row class="order-detail">
         <div class="main_detail_box">
           <div class="profit_box">
-            <div class="title">Profit</div>
+            <div class="title">Miner Reward</div>
             <div class="value">+ {{ income }} DMC</div>
           </div>
           <div class="progress_box">
@@ -31,121 +31,176 @@
         <nut-col :span="24" class="order-content_wrap" :class="[showText ? 'showHight' : 'hideHight']">
           <TriangleDown v-if="!showText" @click="showText = true" class="my_svg_icon show_avg" color="#fff"></TriangleDown>
           <TriangleUp v-if="showText" @click="showText = false" class="my_svg_icon" color="#fff"></TriangleUp>
-          <nut-col :span="12" class="order-count left_count">
+          <nut-col :span="12" class="order-count left_count" v-if="showText">
             <nut-cell>
               <IconMdiF color="#9F9BEF" />
-              File:{{ filesCount }}
+              File:&nbsp;<span>{{ filesCount }}</span>
             </nut-cell>
             <nut-cell>
               <IconSpace color="#7F7AE9" />
-              Space: {{ getfilesize(orderInfo.value.total_space, 'B') }}
+              Space:&nbsp;<span>{{ getfilesize(orderInfo.value.total_space, 'B') }}</span>
             </nut-cell>
             <nut-cell>
               <IconRiPie color="#7F7AE9" />
-              Used: {{ getfilesize(usedSize, 'B') }}
+              Used:&nbsp;<span>{{ getfilesize(usedSize, 'B') }}</span>
             </nut-cell>
             <nut-cell>
               <Order />
-              ID:{{ orderInfo.value?.foggie_id }}
+              ID:&nbsp;{{ orderInfo.value?.foggie_id }}
             </nut-cell>
             <nut-cell>
               <Clock />
-              Expiration: {{ transferUTCTime(orderInfo.value.expire) }}
+              Expiration:&nbsp;{{ transferUTCTime(orderInfo.value.expire) }}
             </nut-cell>
             <nut-cell>
               <Refresh />
-              Status: {{ statusTypes[orderInfo.value.state] }}
+              Status:&nbsp;{{ statusTypes[orderInfo.value.state] }}
             </nut-cell>
           </nut-col>
         </nut-col>
-
-        <!-- <nut-col :span="12" class="order-count">
-            <nut-cell>
-              <IconMdiF color="#9F9BEF" />
-              File:{{ filesCount }}
-            </nut-cell>
-            <nut-cell>
-              <IconSpace color="#7F7AE9" />
-              Space: {{ getfilesize(orderInfo.value.total_space, 'B') }}
-            </nut-cell>
-            <nut-cell>
-              <IconRiPie color="#7F7AE9" />
-              Used: {{ getfilesize(usedSize, 'B') }}
-            </nut-cell>
-          </nut-col> -->
       </nut-row>
     </div>
     <div class="detail_box">
-      <div class="type_check_box type_check_box1">
-        <div class="type_check">
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 1 } })">
+      <div class="detail_box_toolbox">
+        <div class="type_check_box type_check_box1" v-if="!mintType || mintType == 0">
+          <!-- <div
+            :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+            @click="getKey"
+          >
+            <div class="svg_box svg_box2 order-icon-recycle">
+              <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+            </div>
+            <p>S3 Service</p>
+          </div>
+          <div
+            class="type_item s3key"
+            @click="
+              router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })
+            "
+          >
             <div class="svg_box svg_box2 order-icon-node-tree">
-              <!-- <IconRiNodeTree color="#fff" /> -->
-              <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 60%; height: 60%; vertical-align: middle" />
+              <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
             </div>
-            <p>Merkle</p>
+            <p>Miner Tool</p>
+          </div> -->
+          <!-- <nut-swiper
+            pagination-color="#496af2"
+            :init-page="page"
+            :loop="true"
+            auto-play="0"
+            height="150"
+            :pagination-visible="true"
+            :is-prevent-default="false"
+          >
+            <nut-swiper-item>
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getKey"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                </div>
+                <p>S3 Service</p>
+              </div>
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getIPFSService"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <img src="@/assets/ipfs.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                </div>
+                <p>IPFS Pinning</p>
+              </div>
+            </nut-swiper-item>
+            <nut-swiper-item>
+              <div
+                class="type_item s3key"
+                @click="
+                  router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })
+                "
+              >
+                <div class="svg_box svg_box2 order-icon-node-tree">
+                  <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
+                </div>
+                <p>Miner Tool</p>
+              </div>
+            </nut-swiper-item>
+          </nut-swiper> -->
+          <van-swipe :loop="true">
+            <van-swipe-item>
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getKey"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                </div>
+                <p>S3 Service</p>
+              </div>
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getIPFSService"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <img src="@/assets/ipfs.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                </div>
+                <p>IPFS Pinning</p>
+              </div>
+            </van-swipe-item>
+            <van-swipe-item>
+              <div
+                class="type_item s3key"
+                @click="
+                  router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })
+                "
+              >
+                <div class="svg_box svg_box2 order-icon-node-tree">
+                  <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
+                </div>
+                <p>Miner Tool</p>
+              </div>
+            </van-swipe-item>
+          </van-swipe>
+        </div>
+        <div class="type_check_box right_check_box">
+          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1, bucketName } })">
+            <div class="svg_box">
+              <IconImage></IconImage>
+            </div>
+            <p>Images</p>
           </div>
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 2 } })">
-            <div class="svg_box svg_box2 order-icon-send-to-back">
-              <IconRiSendToBack color="#fff" />
+          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3, bucketName } })">
+            <div class="svg_box">
+              <IconAudio2></IconAudio2>
             </div>
-            <p>Challenge</p>
+            <p>Audio</p>
           </div>
-          <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query,amb_uuid:orderInfo.value.amb_uuid, category: 3 } })">
-            <div class="svg_box svg_box2 order-icon-input-cursor-move">
-              <IconRiInputCursorMove color="#fff" />
+          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4, bucketName } })">
+            <div class="svg_box">
+              <IconDocument></IconDocument>
             </div>
-            <p>Arbitrate</p>
+            <p>Documents</p>
+          </div>
+          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 2, bucketName } })">
+            <div class="svg_box">
+              <IconVideo></IconVideo>
+            </div>
+            <p>Video</p>
           </div>
         </div>
+      </div>
 
-        <div :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' ? 'router_disabled' : '']" @click="getKey">
-          <div class="svg_box svg_box2 order-icon-recycle">
-            <keySolid color="#fff" />
-          </div>
-          <p>S3 Access</p>
-        </div>
-      </div>
-      <div class="type_check_box" style="margin-top: 5px; border-radius: 10px; background-color: #fff">
-        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1, bucketName } })">
-          <div class="svg_box">
-            <IconImage></IconImage>
-          </div>
-          <p>Images</p>
-        </div>
-        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3, bucketName } })">
-          <div class="svg_box">
-            <IconAudio2></IconAudio2>
-          </div>
-          <p>Audio</p>
-        </div>
-        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4, bucketName } })">
-          <div class="svg_box">
-            <IconDocument></IconDocument>
-          </div>
-          <p>Documents</p>
-        </div>
-        <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 2, bucketName } })">
-          <div class="svg_box">
-            <IconVideo></IconVideo>
-          </div>
-          <p>Video</p>
-        </div>
-      </div>
       <div class="today_file">
         <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
-        <!-- <span class="see_all" @click="syncPhotos">Sync Photos</span> -->
-        <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })"
-          >See All ></span
-        >
+        <!-- <span class="see_all" @click="syncPhotos">Sync Photos {{ syncImgList.length }}</span> -->
       </div>
-      <ErrorPage v-if="isError" @refresh="getFileList"></ErrorPage>
-      <nut-infinite-loading load-more-txt="No more content" v-else-if="tableData.length" :has-more="false" class="file_list">
+      <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
+      <!-- <nut-infinite-loading load-more-txt="No more content" v-else-if="tableData.length" :has-more="false" class="file_list">
         <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
           <div :class="['left_icon_box']">
-            <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+          
             <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-            <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
+          
             <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
 
             <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
@@ -156,140 +211,68 @@
             <p>{{ item.date || '' }}</p>
           </div>
         </div>
-      </nut-infinite-loading>
-      <nut-empty v-else style="padding: 10px 0 50px 0" description="No data,Go ahead and upload it." image="error"> </nut-empty>
-      <Teleport to="body">
-        <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
-          <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-          <HLSVideo v-if="detailRow.value.type && detailRow.value.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
-          <pre v-else-if="detailRow.value.detailType == 'txt'" id="txtContainer"></pre>
-          <MyAudio v-else-if="detailRow.value.category == 3" :audioUrl="detailRow.value.imgUrl"></MyAudio>
-          <div v-else-if="imgUrl" class="middle_img">
-            <nut-image :src="imgUrl" fit="contain" position="center">
+      </nut-infinite-loading> -->
+      <template v-else-if="tableData.length">
+        <div class="file_list file_list_img" v-if="imgData.length">
+          <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
+            <nut-image show-loading show-error round radius="5px" :src="item.imgUrl" fit="cover" position="center">
               <template #loading>
-                <Loading width="16px" height="16px" name="loading" />
+                <Loading width="16" height="16"></Loading>
               </template>
             </nut-image>
+            <!-- <img :src="item.imgUrl" alt="" /> -->
           </div>
-          <div class="bottom_action">
-            <div>
-              <IconShare @click="handlerClick('share')"></IconShare>
-              <p>Share</p>
-            </div>
-            <div>
-              <IconDownload @click="handlerClick('download')"></IconDownload>
-              <p>Download</p>
-            </div>
-          </div>
-        </nut-overlay>
-      </Teleport>
+        </div>
+        <div class="file_list" v-if="otherData.length">
+          <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
+            <div :class="['left_icon_box']">
+              <img v-if="item.isDir && item.name == 'pinning'" class="cloud_pin" src="@/assets/cloud_pin.png" alt="" />
+              <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+              <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+              <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
+              <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
 
-      <!-- share -->
-      <Teleport to="body">
-        <nut-popup
-          v-if="showShareDialog"
-          @closed="
-            isReady = false;
-            shareType = '';
-          "
-          position="bottom"
-          closeable
-          round
-          :style="{ height: httpCopyLink ? '150px' : '300px' }"
-          v-model:visible="showShareDialog"
-        >
-          <!-- <div style="display: flex; align-items: center; justify-content: center; height: 100%" v-if="httpCopyLink">
-          <span>
-            {{ httpCopyLink.substring(0, 30) + '...' }}
-          </span>
-          <IconCopy color="#5f57ff" @click="copyLink(httpCopyLink)"></IconCopy>
-        </div> -->
-          <div v-if="isReady" class="rename_box move_box">
-            <nut-cell style="margin-top: 50px" title="Access Period:">
-              <template #link>
-                <span style="display: flex"
-                  >{{ desc }} <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
-                ></span>
-              </template>
-            </nut-cell>
-            <template v-if="shareType">
-              <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
-              <nut-textarea rows="3" v-model="imgDesc" />
-            </template>
-            <nut-popup position="bottom" v-model:visible="periodShow">
-              <nut-picker
-                v-model="periodValue"
-                :columns="options"
-                title="Select expiration time"
-                @confirm="confirmPeriod"
-                @cancel="periodShow = false"
-              >
-              </nut-picker>
-            </nut-popup>
-            <nut-button
-              type="info"
-              block
-              @click="() => confirmHttpShare(shareType, detailRow.value, accessKeyId, secretAccessKey, bucketName)"
-              >Confirm</nut-button
-            >
-          </div>
-          <div class="share_info_box" v-else>
-            <div v-if="shareRefContent.ipfsStr && +detailRow.value.originalSize <= orderInfo.value.total_space * 0.01">
-              <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
-              IPFS Link
-              <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
+              <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
+              <img v-else src="@/assets/svg/home/file.svg" alt="" />
             </div>
-            <div v-if="shareRefContent.httpStr">
-              <IconHttp
-                @click="
-                  shareType = '';
-                  isReady = true;
-                "
-              ></IconHttp>
-              HTTP Link
-              <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-            </div>
-            <div v-if="shareRefContent.httpStr">
-              <IconTwitter
-                @click="
-                  shareType = 'twitter';
-                  isReady = true;
-                "
-              ></IconTwitter>
-              Twitter
-              <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-            </div>
-            <div v-if="shareRefContent.httpStr">
-              <IconFacebook
-                @click="
-                  shareType = 'faceBook';
-                  isReady = true;
-                "
-              ></IconFacebook>
-              Facebook
-              <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-            </div>
-            <div v-if="shareRefContent.httpStr">
-              <IconSlack
-                @click="
-                  shareType = 'slack';
-                  isReady = true;
-                "
-              ></IconSlack>
-              Slack
-            </div>
-            <div v-if="shareRefContent.httpStr">
-              <IconPinterest
-                @click="
-                  shareType = 'pinterest';
-                  isReady = true;
-                "
-              ></IconPinterest>
-              Pinterest
+            <div class="name_box">
+              <p>{{ item.name }}</p>
+              <p>{{ item.date || '' }}</p>
             </div>
           </div>
-        </nut-popup>
-      </Teleport>
+        </div>
+      </template>
+      <nut-empty v-else style="padding: 10px 0 50px 0" description="No data,Go ahead and upload it." image="error"> </nut-empty>
+      <p class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></p>
+      <ActionComponent
+        v-model:fileItemPopupIsShow="fileItemPopupIsShow"
+        v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
+        v-model:renameShow="renameShow"
+        v-model:moveShow="moveShow"
+        v-model:detailShow="detailShow"
+        v-model:imgStartIndex="imgStartIndex"
+        :category="0"
+        :header="header"
+        :prefix="[]"
+        :isAvailableOrder="isAvailableOrder"
+        :chooseItem="detailRow.value"
+        :images="images"
+        :imgUrl="imgUrl"
+        :isMobileOrder="isMobileOrder"
+        :isNewFolder="false"
+        :selectArr="selectArr"
+        :bucketName="bucketName"
+        :metadata="metadata"
+        :orderInfo="orderInfo"
+        :isCheckMode="false"
+        :accessKeyId="accessKeyId"
+        :secretAccessKey="secretAccessKey"
+        @refresh="refresh"
+        @handlerClick="handlerClick"
+        @swipeChange="swipeChange"
+        @clickFIleItemDetail="clickFIleItemDetail"
+        @clickFIleItem="clickFIleItem"
+      ></ActionComponent>
 
       <Teleport to="body">
         <nut-dialog
@@ -308,10 +291,15 @@
             </span>
             Create a Bucket
           </template>
+
           <p class="bucket_tip" style="text-align: left; word-break: break-word"
             >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
-            (-), and must start and end with lowercase letters or numbers</p
-          >
+            (-), and must start and end with lowercase letters or numbers.Sensitive information is recommended to be encrypted and uploaded.
+            <span @click="dialogShow = true" style="text-align: right; width: 100%; display: inline-block; text-decoration: underline"
+              >what is Bucket?</span
+            >
+          </p>
+
           <p
             style="
               margin-top: 10px;
@@ -327,14 +315,15 @@
           </p>
           <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
           <template #footer>
-            <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button>
+            <!-- <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button> -->
             <nut-button type="primary" @click="createName" :loading="isNameLoading">Confirm</nut-button>
           </template>
         </nut-dialog>
       </Teleport>
     </div>
     <uploader
-      v-if="isMobileOrder"
+      v-if="isMobileOrder && isAvailableOrder"
+      :getSummary="getSummary"
       :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
@@ -342,10 +331,34 @@
       :orderInfo="orderInfo"
       @uploadComplete="uploadComplete"
     ></uploader>
+    <BasicModal :show="dialogShow" @update:show="dialogShow = false">
+      <div class="my_dialog_content_box">
+        <img src="@/assets/bucketIcon.svg" class="bucketImg1" />
+        <img src="@/assets/bucketInfo.svg" class="bucketImg" />
+        <div class="my_dialog_title">what is S3 Bucket?</div>
+        <div class="my_dialog_content" style="margin-top: 16px">
+          <div class="my_dialog_content_pText" style="text-indent: 20px; line-height: 18px">
+            S3 (Simple Storage Service) is a cloud storage service provided by Amazon Web Services (AWS). An S3 bucket is a container for
+            objects stored in S3. It's similar to a folder in a file system, and it can store an unlimited number of objects, including
+            data, images, videos, and documents.
+          </div>
+          <div class="my_dialog_content_pText" style="text-indent: 20px; line-height: 18px"
+            >They provide features for data protection, encryption, and access control. Overall, S3 buckets are a versatile and scalable
+            storage solution for a wide range of applications.</div
+          >
+        </div>
+        <div class="my_dialog_title" v-if="orderInfo.value.electronic_type == '0' && isAvailableOrder">
+          <nut-button type="primary" @click="getKey">S3 Endpoint</nut-button>
+        </div>
+      </div>
+    </BasicModal>
   </div>
 </template>
 
 <script setup lang="ts">
+  import ActionComponent from './actionComponent.vue';
+  import { Loading } from '@nutui/icons-vue';
+  import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
@@ -394,20 +407,23 @@
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
-  import { getSecondTime } from '@/utils/util';
+  import { getSecondTime, getType } from '@/utils/util';
   import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
   import ErrorPage from '@/views/errorPage/index.vue';
-  import { status } from 'grpc';
-  import HLSVideo from './hlsVideo.vue';
+  import useDelete from './useDelete.js';
+  import moment from 'moment';
+  // import { status } from 'grpc';
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
+  const dialogShow = ref(false);
   const showText = ref(false);
+  const page = ref(0);
   const statusTypes = {
     0: 'Consensus not reached',
     1: 'Consensus reached',
     2: 'Insufficient advance deposit to cancel the next cycle',
     3: 'Sufficient funds in advance',
-    4: 'Order over',
+    4: 'Bucket over',
     5: 'Canceled',
     6: 'Cancellation of the next cycle',
   };
@@ -423,6 +439,8 @@
     deviceType,
     orderInfo,
     getOrderInfo,
+    isAvailableOrder,
+    isError,
   } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
   const {
@@ -444,14 +462,19 @@
     copyContent,
     confirmHttpShare,
     getHttpShare,
-  } = useShare(orderInfo, header, deviceType);
+    cloudPin,
+    copyIPFS,
+    copyNft,
+  } = useShare(orderInfo, header, deviceType, metadata);
+
   let server;
   const route = useRoute();
   const router = useRouter();
+  const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const successStatus = ref<number>(204);
   const isNameLoading = ref(false);
   // const sheetVisible = ref(false);
-
+  const imgPreRef = ref('');
   const userStore = useUserStore();
   const uuid = computed(() => userStore.getUserInfo.uuid);
   const dmcName = computed(() => userStore.getUserInfo.dmc);
@@ -464,7 +487,7 @@
   });
 
   const dialogVisible = ref<boolean>(false);
-
+  const moveShow = ref<boolean>(false);
   // let details = reactive<any>({ data: {} });
 
   // import { get_order_node } from '@/api/amb';
@@ -477,6 +500,8 @@
   const showCreateName = ref<boolean>(true);
   const newBucketName = ref<string>('');
   const tableData = ref<array>([]);
+  const imgData = ref([]);
+  const otherData = ref([]);
   const tableLoading = ref<boolean>(false);
   const isDisabled = ref<boolean>(false);
   const btnLoading = ref<boolean>(false);
@@ -486,16 +511,82 @@
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
   const minerIp = ref<string>('');
-  const isError = ref(false);
   const income = ref(0);
+  const fileItemPopupIsShow = ref(false);
+  const fileItemDetailPopupIsShow = ref(false);
+  const renameShow = ref(false);
+  const detailShow = ref(false);
+  const imgStartIndex = ref(false);
+
+  const images = computed(() => {
+    let arr = [];
+    imgData.value.filter((el) => {
+      arr.push(el.imgUrlLarge);
+    });
+    return arr;
+  });
+  const selectArr = computed(() => {
+    return [detailRow.value];
+  });
+  const { deleteItem } = useDelete(
+    tableLoading,
+    () => {
+      refresh();
+    },
+    orderInfo,
+    header,
+    metadata,
+  );
+  function swipeChange(index) {
+    imgStartIndex.value = index;
+    detailRow.value = imgData.value[index];
+    if (detailRow.value.originalSize > 1024 * 1024 * 20) {
+      showToast.text('The file is too large, please download and view');
+    }
+  }
+  function clickFIleItem(params) {
+    detailRow.value = params;
+    fileItemPopupIsShow.value = true;
+    if (detailRow.value.originalSize > 1024 * 1024 * 20) {
+      showToast.text('The file is too large, please download and view');
+    }
+  }
+
+  function clickFIleItemDetail(params) {
+    console.log(params);
+    fileItemDetailPopupIsShow.value = true;
+  }
   // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
   // order_id.value = '1281';
   memo.value = route.query.uuid;
   order_id.value = route.query.id;
   amb_uuid.value = route.query.amb_uuid;
   income.value = route.query.income;
+  const isMobileDevice = computed(() => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    // 此正则表达式涵盖了大多数使用的手机和平板设备
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+  });
 
   let merkleTimeOut;
+  watch(
+    tableData,
+    (val) => {
+      if (val.length) {
+        imgData.value = [];
+        otherData.value = [];
+        val.forEach((el) => {
+          if (el.category == 1) {
+            imgData.value.push(el);
+          } else {
+            otherData.value.push(el);
+          }
+        });
+      }
+    },
+    { deep: true },
+  );
   const getMerkleState = (timeout = true) => {
     const d = {
       orderId: order_id.value,
@@ -571,38 +662,6 @@
     });
   };
 
-  const getType = (fileName: string) => {
-    if (fileName.endsWith('.jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.svg')) {
-      return 1;
-    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mp4')) {
-      return 2;
-    } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
-      return 4;
-    } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar') || fileName.endsWith('.gz') || fileName.endsWith('.tar')) {
-      return 5;
-    } else if (fileName.endsWith('.cmd')) {
-      return 5;
-    } else if (fileName.endsWith('.css')) {
-      return 5;
-    } else if (fileName.endsWith('.mp3')) {
-      return 3;
-    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      return 4;
-    } else if (fileName.endsWith('.pdf')) {
-      return 4;
-    } else if (fileName.endsWith('.ppt')) {
-      return 4;
-    } else if (fileName.endsWith('.text') || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
-      return 4;
-    } else if (fileName.endsWith('.html')) {
-      return 5;
-    } else if (fileName.endsWith('/')) {
-      return 5;
-    } else {
-      return 5;
-    }
-  };
-  const detailShow = ref(false);
   const imgUrl = ref('');
   const detailRow = reactive({ value: {} });
 
@@ -646,7 +705,13 @@
       console.log(row.imgUrlLarge);
     } else if (row.imgUrlLarge) {
       imgUrl.value = row.imgUrlLarge;
+      imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
       detailShow.value = true;
+      nextTick(() => {
+        if (imgPreRef.value) {
+          imgPreRef.value.swipeTo(imgStartIndex.value);
+        }
+      });
     } else {
       let prefix;
       if (row.isDir) {
@@ -693,6 +758,7 @@
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
         $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
       } else {
+        showToast.text('Coming soon for your download');
         fetch(url, { method: 'GET', headers })
           .then((response) => {
             if (response.ok) {
@@ -700,6 +766,7 @@
               console.log('Success', response);
               return response.blob();
             } else {
+              showToast.fail('Download failed, please try again');
               // 处理错误响应
               console.error('Error:', response.status, response.statusText);
             }
@@ -727,16 +794,100 @@
             document.body.removeChild(a);
           })
           .catch((error) => {
+            showToast.fail('Download failed, please try again');
             // 处理网络错误
             console.error('Network Error:', error);
           });
       }
     } else if (type === 'share') {
       await doShare(checkData);
+    } else if (type === 'move') {
+      moveShow.value = true;
+    } else if (type == 'rename') {
+      renameShow.value = true;
+    } else if (type === 'delete') {
+      const onOk = async () => {
+        deleteItem([checkData]);
+        fileItemPopupIsShow.value = false;
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to delete?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+        onOk,
+      });
+    } else if (type == 'nft') {
+      createNFT(checkData, accessKeyId.value, secretAccessKey.value, bucketName.value);
+    } else if (type === 'pin') {
+      const onOk = async () => {
+        await cloudPin(checkData, 'ipfs');
+        // detailRow.value.isPin = true;
+        detailShow.value = false;
+        getFileList();
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS PIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        onOk,
+      });
+    } else if (type === 'un pin') {
+      const onOk = async () => {
+        const d = await cloudPin(checkData, 'ipfs', 'unpin');
+        if (d) {
+          imgData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          otherData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          detailRow.value.isPin = false;
+        }
+        // doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS UNPIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+
+        onOk,
+      });
     }
   };
+  const syncImgList = ref([]);
+  const syncIndex = ref(0);
   const syncPhotos = () => {
-    $cordovaPlugins.syncPhotos();
+    let nowTime = Date.now();
+    let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
+    let time = Math.round((endTime - nowTime) / 1000);
+    if (time > 6 * 60) {
+      time -= 60 * 60;
+    }
+    if (time > 0) {
+      const content = `Upload files after ${getSecondTime(time)}`;
+      showToast.fail(content);
+      return false;
+    }
+    const uploadUrl = `https://${bucketName.value}.${poolUrl}:6008/o/`;
+    const options = {
+      serviceUrl: uploadUrl,
+      syncImgList,
+      syncIndex,
+      bucketName: bucketName.value,
+      accessKeyId: accessKeyId.value,
+      secretAccessKey: secretAccessKey.value,
+      prefixStr: '',
+    };
+    $cordovaPlugins.syncPhotos(options);
   };
   const getSignHeaders = (objectKey) => {
     // const objectKey = encodeURIComponent(checkData[0].fullName);
@@ -913,11 +1064,21 @@
     xhr.send(options.formData);
   };
   const getKey = () => {
-    if (orderInfo.value.electronic_type == '1') {
+    if (orderInfo.value.electronic_type == '1' || !isAvailableOrder.value) {
       return false;
     } else {
       router.push({
         name: 'getKey',
+        query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain },
+      });
+    }
+  };
+  const getIPFSService = () => {
+    if (orderInfo.value.electronic_type == '1' || !isAvailableOrder.value) {
+      return false;
+    } else {
+      router.push({
+        name: 'IPFSService',
         query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain },
       });
     }
@@ -1038,17 +1199,31 @@
     let port = orderInfo.value.rpc.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
-    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
-      type = 'img';
+    if (
+      type === 'png' ||
+      type === 'bmp' ||
+      type === 'gif' ||
+      type === 'jpeg' ||
+      type === 'jpg' ||
+      type === 'svg' ||
+      type === 'ico' ||
+      type === 'webp'
+    ) {
       console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLink = getHttpShare(
+        accessKeyId.value,
+        secretAccessKey.value,
+        bucketName.value,
+        item.key,
+        type === 'ico' || type === 'svg' ? false : true,
+      );
       // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
@@ -1082,7 +1257,7 @@
     listObject.setPrefix('');
     listObject.setDelimiter('');
     listObject.setEncodingType('');
-    listObject.setMaxKeys(5);
+    listObject.setMaxKeys(20);
     listObject.setStartAfter('');
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
@@ -1092,7 +1267,7 @@
     listObject.setCategory(0);
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
@@ -1132,7 +1307,27 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
+                  getImages: () => any;
+                  getNftinfosList: () => any;
                 }) => {
+                  const imageObj = el.getImages().toObject();
+                  const imageInfo = {};
+                  let isShowDetail = false;
+                  if (imageObj.camerainfo?.make) {
+                    isShowDetail = true;
+                    imageInfo.aperture = imageObj.addition.aperture; //光圈
+                    imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+                    imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
+                    imageInfo.exptime = imageObj.addition.exptime; //曝光时间
+                    imageInfo.orientation = imageObj.addition.orientation; //方向
+                    imageInfo.focallength = imageObj.addition.focallength; //焦距
+                    imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
+                    imageInfo.software = imageObj.addition.software; // 使用软件
+                    imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
+                    imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
+                    imageInfo.gps = imageObj.gps; //经纬度
+                    imageInfo.resolution = imageObj.resolution; //像素
+                  }
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1149,6 +1344,9 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
+                    imageInfo: imageInfo,
+                    isShowDetail,
+                    nftInfoList: el.getNftinfosList(),
                   };
                 },
               ),
@@ -1171,7 +1369,7 @@
       },
     );
   }
-  const initRemoteData = (
+  const initRemoteData = async (
     data: {
       commonPrefixes?: any;
       content: any;
@@ -1196,6 +1394,9 @@
     let dir = [].join('/');
     if (reset) {
       tableData.value = [];
+    }
+    if (!accessKeyId.value) {
+      await getOrderInfo();
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
@@ -1268,11 +1469,13 @@
       console.log(data.content[j], 'data.content[j]');
 
       let item = {
+        imageInfo: data.content[j].imageInfo,
+        isShowDetail: data.content[j].isShowDetail,
         isDir: isDir,
         checked: false,
         name,
         category: data.content[j].category,
-        fileType: data.content[j].contentType,
+        fileType: 2,
         fullName: data.content[j].key,
         key: data.content[j].key,
         idList: [
@@ -1326,10 +1529,11 @@
         id: order_id,
         status: state,
         createdTime: transferUTCTime(orderInfo.value.order_created_at),
-        endTime: transferUTCTime(orderInfo.value.expire),
+        endTime: orderInfo.value.expire ? transferUTCTime(orderInfo.value.expire) : '- -',
         uuid: orderInfo.value.uuid,
         amb_uuid: orderInfo.value.amb_uuid,
         domain: orderInfo.value.domain,
+        type: isAvailableOrder.value ? '' : 'history',
       },
     });
     window.sessionStorage.removeItem('myHistoryOrder');
@@ -1343,6 +1547,12 @@
     sync_challenge(data).then((res) => {
       console.log('------sync challenge', res);
     });
+  };
+  const refresh = async () => {
+    detailShow.value = false;
+    await getOrderInfo();
+    getFileList();
+    getSummary();
   };
   onMounted(async () => {
     await getOrderInfo();
@@ -1364,26 +1574,32 @@
   });
   function closedOrder() {
     showDialog({
-      title: 'Cancel order',
-      content: createVNode('span', { style: {} }, 'Are you sure you want to cancel this order?'),
+      title: 'Cancel Bucket',
+      content: createVNode('span', { style: {} }, 'Are you sure you want to cancel this Bucket?'),
       cancelText: 'Cancel',
       okText: 'Yes',
+      popClass: 'dialog_class',
+
       onCancel: () => {
         // console.log('取消');
       },
       onOk: () => {
         closedOrderApi({ uuid: orderInfo.value.amb_uuid, orderId: orderInfo.value.orderId }).then((res) => {
           if (res.code == 200) {
-            router.replace({ name: 'orderSummary', query: { id: orderInfo.value.orderId,
-               type: 'history', 
-               status: 5 ,
-               createdTime:orderInfo.value.created_at,
-               endTime:'- -',
-               uuid:orderInfo.value.uuid,
-               amb_uuid:orderInfo.value.amb_uuid,
-               domain:orderInfo.value.domain,
-               electronic_type:orderInfo.value.electronic_type,
-              } });
+            router.replace({
+              name: 'orderSummary',
+              query: {
+                id: orderInfo.value.orderId,
+                type: 'history',
+                status: 5,
+                createdTime: orderInfo.value.created_at,
+                endTime: '- -',
+                uuid: orderInfo.value.uuid,
+                amb_uuid: orderInfo.value.amb_uuid,
+                domain: orderInfo.value.domain,
+                electronic_type: orderInfo.value.electronic_type,
+              },
+            });
           } else {
             showToast.fail('Cancel failed please try again');
           }
@@ -1420,23 +1636,6 @@
 </script>
 
 <style lang="scss" scoped>
-  .upload_btn {
-    position: fixed;
-    bottom: 150px;
-    right: 50px;
-    font-size: 80px;
-    border-radius: 50%;
-    padding: 10px;
-    width: 80px;
-    height: 80px;
-    cursor: pointer;
-    display: grid;
-    place-items: center;
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
   #txtContainer {
     color: #fff;
     width: 100%;
@@ -1511,19 +1710,55 @@
     padding: 30px 10px;
     background: #000;
     box-sizing: border-box;
+    .detail_top {
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(180deg, #00000059, transparent);
+      z-index: 99;
+    }
     .middle_img {
-      max-height: calc(100vh - 500px);
-
+      max-height: 100%;
+      :deep {
+        .van-swipe {
+          width: 100%;
+          height: 100%;
+          .van-swipe__track {
+            align-items: center;
+            width: 100% !important;
+            img {
+              // width: 100%;
+              width: unset;
+              max-width: 100%;
+              margin: 0 auto;
+            }
+          }
+          .van-image-preview__swipe-item {
+            background: #000;
+          }
+        }
+      }
       .nut-image {
         width: 100%;
         height: 100%;
       }
     }
     .bottom_action {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
       display: flex;
       justify-content: space-evenly;
-      height: 200px;
-      margin-top: 20px;
+      height: 140px;
+      background: linear-gradient(0deg, #00000059, transparent);
       div {
         text-align: center;
         color: #fff;
@@ -1555,6 +1790,8 @@
       color: #fff;
       width: 70%;
       .title {
+        color: #fff;
+        font-weight: bold;
       }
       .value {
         font-size: 50px;
@@ -1584,32 +1821,6 @@
       }
 
       .user_circle {
-      }
-    }
-  }
-
-  .upload_btn {
-    position: fixed;
-    bottom: 150px;
-    right: 50px;
-    font-size: 80px;
-    border-radius: 50%;
-    padding: 10px;
-    width: 80px;
-    height: 80px;
-    cursor: pointer;
-  }
-
-  .upload_class {
-    :deep {
-      .nut-uploader__input {
-        position: fixed !important;
-        top: unset !important;
-        left: unset !important;
-        bottom: 150px !important;
-        right: 50px !important;
-        width: 80px !important;
-        height: 80px !important;
       }
     }
   }
@@ -1736,7 +1947,11 @@
         margin: 0px 0;
         padding: 13px 10px 13px 52px;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        span {
+          // color: #ff7b1d;
+          color: #9cb77d;
+        }
       }
 
       svg {
@@ -1752,30 +1967,78 @@
       //   border-right: 2px solid #fff;
       width: auto;
       padding-right: 10px !important;
+      //   transition: all 0.3s;
     }
+  }
+  .isHistory {
+    background: #2b2929;
   }
 
   .detail_box {
     box-sizing: border-box;
     height: 100%;
     padding: 20px;
-    margin-top: -40px;
-    background: #fff;
+    margin-top: -60px;
+    padding-bottom: 5rem;
+    // background: #fff;
     border-radius: 40px 40px 0 0;
     z-index: 99;
     position: relative;
 
     .type_check_box {
+      position: relative;
       display: flex;
       justify-content: flex-start;
       align-items: center;
       flex-wrap: wrap;
       padding: 10px;
-
+      background: #fff;
+      border-radius: 20px;
+      width: 40%;
+      :deep {
+        .nut-swiper {
+          width: 100% !important;
+          .nut-swiper-inner {
+            // width: 200% !important;
+          }
+          .nut-swiper-item {
+            width: 100% !important;
+          }
+        }
+        .nut-swiper-pagination {
+          position: absolute;
+          left: 1rem;
+          top: 1rem;
+        }
+        .van-swipe {
+          width: 100%;
+        }
+        .van-swipe__indicators {
+          position: absolute;
+          bottom: unset;
+          left: 1rem;
+          top: 1rem;
+        }
+      }
       .type_item {
-        width: 25%;
+        width: 50%;
         text-align: center;
         height: 150px;
+        cursor: pointer;
+        font-weight: bold;
+        &.miner_tool {
+          height: 100px;
+          .svg_box {
+            margin: 0 auto;
+            img {
+              width: unset;
+              height: 60%;
+            }
+          }
+          p {
+            font-size: 0.8rem;
+          }
+        }
 
         .svg_box {
           width: 80px;
@@ -1803,25 +2066,26 @@
         }
 
         .order-icon-recycle {
-          background-color: #ff8b00;
-          background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
+          //   background-color: #ff8b00;
+          // background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
+          //   background-image: linear-gradient(120deg, #8ae9d7 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
-            width: 60% !important;
-            height: 60% !important;
+            width: 80% !important;
+            height: 80% !important;
             vertical-align: middle;
           }
         }
 
         .order-icon-node-tree {
-          background-color: #34964f;
-          background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
+          //   background-color: #34964f;
+          //   background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
-            width: 60%;
-            height: 60%;
+            width: 100%;
+            height: 100%;
             vertical-align: middle;
           }
         }
@@ -1852,6 +2116,7 @@
 
         p {
           color: #051e56;
+          white-space: nowrap;
         }
 
         // &:nth-child(1) {
@@ -1878,10 +2143,19 @@
         // }
       }
     }
+    .right_check_box {
+      width: 60%;
+      background: #e9e9f8;
+      margin-left: 40px;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      background: #fff;
+    }
 
     .type_check_box1 {
-      display: grid;
-      grid-template-columns: 3fr 1fr;
+      flex-direction: column;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      //   display: grid;
+      //   grid-template-columns: 3fr 1fr;
 
       .type_check {
         display: flex;
@@ -1903,7 +2177,7 @@
         width: 100%;
         background: #fff;
         border-radius: 10px;
-        margin-left: 10px;
+        // margin-left: 10px;
         &.router_disabled {
           .order-icon-recycle {
             background-color: #ccc;
@@ -1930,66 +2204,75 @@
       .see_all {
         color: #5460fe;
         font-size: 30px;
+        cursor: pointer;
         // text-decoration: underline;
       }
     }
 
     .file_list {
+      // display: grid;
+      // grid-template-columns: repeat(4, 1fr);
+      // grid-gap: 0.5rem;
       margin-top: 20px;
       background: #fff;
       border-radius: 16px;
+      .list_item {
+        .left_icon_box {
+          position: relative;
+        }
+      }
+    }
+    .file_list_img {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 0.2rem;
+      justify-items: center;
+      margin-top: 20px;
+      padding: 0.5rem;
+      background: #fff;
+      border-radius: 16px;
+      .list_item {
+        width: 120px;
+        height: 120px;
+        justify-content: center;
+        padding: 0 !important;
+        // padding: 20px 0;
+        :deep {
+          .nut-image {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 0.3rem;
+        }
+      }
     }
 
     .list_item {
       display: flex;
+      // flex-direction: column;
       justify-content: flex-start;
       align-items: center;
       padding: 20px;
-      border-top: 1px solid #eee;
-
-      &:active {
-        background: #cde3f5;
-      }
-
-      .left_checkMode {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+      // border-top: 1px solid #eee;
+      img {
         width: 80px;
         height: 80px;
-        background: #f1f1f1;
-        border-radius: 50%;
-
-        img {
-          width: 50px !important;
-          height: 50px !important;
-        }
-
-        &.is_checked {
-          width: 60px;
-          height: 60px;
-          margin: 10px;
-          background: #2e70ff;
-        }
-
-        .ok_icon {
-          color: #fff;
-        }
+      }
+      p {
+        word-break: break-all;
+      }
+      &:active {
+        background: #cde3f5;
       }
 
       .type_icon {
         width: 80px;
         height: 80px;
-      }
-
-      .left_icon_box {
-        width: 80px;
-        height: 80px;
-
-        img {
-          width: 80px;
-          height: 80px;
-        }
       }
 
       .name_box {
@@ -2014,6 +2297,14 @@
         height: 50px;
         color: #ccc;
       }
+    }
+    .see_all {
+      margin-top: 1rem;
+      color: #5460fe;
+      font-size: 30px;
+      text-align: center;
+      cursor: pointer;
+      // text-decoration: underline;
     }
 
     .top_grid {
@@ -2063,6 +2354,9 @@
       }
     }
   }
+  .detail_box_toolbox {
+    display: flex;
+  }
 
   .creat-name {
     background: #f5f8fd;
@@ -2107,43 +2401,6 @@
     }
   }
 
-  .move_box {
-    .top_back {
-      margin-bottom: 10px;
-
-      p {
-        margin: 0 5px;
-        color: #000;
-      }
-    }
-
-    .file_list {
-      height: 950px;
-      overflow-y: auto;
-
-      .list_item {
-        width: 100%;
-      }
-
-      .left_icon_box {
-        width: 80px;
-        height: 80px;
-
-        svg {
-          width: 100px;
-          height: 100px;
-        }
-      }
-
-      .name_box {
-        p {
-          text-align: right;
-          margin: 0;
-        }
-      }
-    }
-  }
-
   .share_info_box {
     display: flex;
     justify-content: flex-start;
@@ -2163,6 +2420,472 @@
         margin: 0 auto;
         width: 80px;
         height: 80px;
+      }
+    }
+  }
+
+  @media screen and (min-width: 500px) {
+    #txtContainer {
+      color: #fff;
+      width: 100%;
+      padding: 0 20px;
+      max-height: calc(100% - 300px);
+    }
+    .benefit_analysis {
+      // font-size: 16px;
+      right: 10px;
+      width: 60px;
+      height: 60px;
+
+      box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+      box-shadow:
+        rgb(204, 219, 232) 3px 3px 6px 0px inset,
+        rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+
+      img {
+        width: 42px;
+        height: 42px;
+      }
+    }
+    .bucket_detail_smal {
+      width: 36px;
+      height: 36px;
+    }
+    .cancel_svg {
+      height: 30px !important;
+      width: 30px !important;
+    }
+    .bucket_name_tip {
+      font-size: 30px;
+    }
+    .detail_over {
+      padding: 30px 10px;
+      .middle_img {
+        max-height: calc(100vh - 500px);
+      }
+      .bottom_action {
+        height: 200px;
+        margin-top: 20px;
+
+        svg {
+          width: 80px;
+          height: 80px;
+        }
+      }
+    }
+    .detail_back {
+      width: 60px;
+      height: 60px;
+    }
+    .order-detail {
+      margin-top: 30px;
+    }
+    .main_detail_box {
+      height: auto;
+      width: 100%;
+      padding: 5px 0;
+      .profit_box {
+        width: 70%;
+        .title {
+        }
+        .value {
+          font-size: 28px;
+        }
+      }
+      .progress_box {
+        width: 90px;
+        height: 90px;
+        font-size: 18px;
+        box-shadow:
+          rgb(204, 219, 232) 0.4vw 0.4vw 0.8vw 0px inset,
+          rgba(255, 255, 255, 0.5) -0.4vw -0.4vw 0.8vw 1px inset;
+        .text {
+          font-size: 18px;
+        }
+      }
+    }
+    .top_box {
+      // margin: 0 30px;
+      padding: 20px 10px;
+      border-radius: 0px !important;
+      padding-bottom: 50px;
+      .order-content_wrap {
+        margin-top: 10px;
+        height: 0;
+        border-top: 1px dashed #ccc;
+        opacity: 1;
+        max-height: 500px;
+      }
+      .showHight {
+        height: unset;
+        max-height: 140px;
+      }
+      .hideHight {
+        height: 0;
+        max-height: 0;
+      }
+      .my_svg_icon {
+        position: absolute;
+        top: -16px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+      }
+      .show_avg {
+        top: -36px;
+      }
+      .order-des {
+        height: 60px;
+
+        .span1 {
+          float: left;
+          padding: 13px 0;
+          font-size: 24px;
+          svg {
+            margin-right: 8px;
+          }
+        }
+
+        .span2 {
+          float: right;
+          font-size: 20px;
+          padding: 13px 0;
+          svg {
+            margin-right: 8px;
+          }
+        }
+      }
+
+      .order-circle {
+        //   padding: 2vw;
+        margin-top: 10px;
+
+        .nut-circle-progress {
+          margin-left: 3vw;
+          border: 30px solid #7f7ae9;
+          border-radius: 50%;
+          font-size: 12px;
+          box-shadow:
+            rgba(0, 0, 0, 0.3) 0px 19px 38px,
+            rgba(0, 0, 0, 0.22) 0px 15px 12px;
+        }
+      }
+
+      .order-count {
+        .nut-cell {
+          width: auto;
+          // height: vw;
+          // margin-left: 10%;
+          // border-bottom: 1px solid #fff;
+          border-radius: 0;
+          font-size: 24px;
+          line-height: 32px;
+          margin: 0px 0;
+          padding: 13px 10px 13px 52px;
+        }
+
+        svg {
+          position: absolute;
+          left: 15px;
+          width: 30px;
+          height: 30px;
+        }
+      }
+      .left_count {
+        padding-right: 10px !important;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+    }
+    .detail_box {
+      height: 100%;
+      padding: 20px;
+      margin-top: -40px;
+      border-radius: 40px 40px 0 0;
+      padding-bottom: 5rem;
+
+      .type_check_box {
+        float: left;
+        display: flex;
+        margin-top: 0 !important;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        padding: 10px 5px;
+        border-radius: 0 !important;
+        // border-right: 1px solid #e2e2e2;
+        .type_item {
+          width: 80px;
+          height: 100px;
+
+          .svg_box {
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            margin: 10px auto;
+            border-radius: 20px;
+
+            svg {
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          &:nth-child(3),
+          &:nth-child(4) {
+            .svg_box {
+              svg {
+                width: 60px;
+                height: 60px;
+              }
+            }
+          }
+        }
+      }
+
+      .type_check_box1 {
+        border: none;
+        .type_check {
+          flex-direction: column;
+          margin-right: 0;
+          border-radius: 10px;
+
+          .type_item {
+            width: 80px;
+          }
+        }
+
+        .s3key {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+          width: 80px;
+          border-radius: 10px;
+          margin-left: 0;
+        }
+      }
+
+      .today_file {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+        padding: 0 10px;
+        font-size: 24px;
+
+        .see_all {
+          font-size: 24px;
+          // text-decoration: underline;
+        }
+      }
+
+      .file_list {
+        width: unset;
+        // margin-left: 190px;
+        margin-top: 20px;
+        border-radius: 16px;
+      }
+
+      .list_item {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 20px;
+        border-top: 1px solid #eee;
+
+        .type_icon {
+          width: 80px;
+          height: 80px;
+        }
+
+        .left_icon_box {
+          position: relative;
+          width: 80px;
+          height: 80px;
+
+          img {
+            width: 80px;
+            height: 80px;
+          }
+        }
+
+        .name_box {
+          width: calc(100% - 180px);
+          margin-left: 30px;
+
+          p:first-child {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          p:last-child {
+            margin-top: 5px;
+            color: #a7a7a7;
+            font-size: 20px;
+          }
+        }
+
+        .right_more {
+          width: 50px;
+          height: 50px;
+          color: #ccc;
+        }
+      }
+
+      .top_grid {
+        :deep {
+          .nut-grid-item__content {
+            height: unset;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 40px;
+
+            img {
+              width: 100px;
+            }
+          }
+        }
+      }
+
+      .order-icons {
+        .nut-col {
+          width: 13vw;
+          height: 13vw;
+          margin: 5vw;
+          border-radius: 50%;
+
+          svg {
+            width: 7vw;
+            height: 7vw;
+            margin: 3vw;
+          }
+        }
+      }
+    }
+
+    :deep {
+      .nut-popup {
+        .nut-icon {
+          min-height: 20px;
+        }
+      }
+    }
+    .rename_box {
+      margin-top: 40px;
+      padding: 0 40px;
+      :deep {
+        .nut-cell {
+          padding-left: 0;
+          padding-right: 0;
+          box-shadow: none;
+        }
+        .nut-textarea {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+      p {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      svg {
+        display: block;
+        margin: 0 auto;
+      }
+      :deep {
+        .nut-searchbar {
+          margin: 0 auto;
+          padding: 20px 0;
+          --nut-searchbar-width: 600px;
+          --nut-searchbar-input-height: 70px;
+        }
+        .nut-button {
+          width: 300px;
+          margin: 0 auto;
+          margin-top: 40px;
+          --nut-button-default-height: 70px;
+          --nut-button-default-font-size: 1.5rem;
+        }
+        .nut-searchbar__search-input .nut-searchbar__input-bar {
+          font-size: 1.5rem;
+        }
+        .nut-icon {
+          --nut-icon-width: 30px;
+          --nut-icon-height: 30px;
+          --nut-icon-line-height: 30px;
+        }
+      }
+    }
+
+    .share_info_box {
+      margin-top: 30px;
+      margin: 30px 120px 0;
+      justify-content: space-around;
+      div {
+        min-width: 150px;
+        margin-top: 20px;
+
+        img,
+        svg {
+          width: 80px;
+          height: 80px;
+        }
+      }
+    }
+    .custom-content {
+      p {
+        padding: 10px 20px;
+        color: #909090;
+        border-bottom: 1px solid #eee;
+        svg {
+          width: 60px;
+          height: 60px;
+          margin-right: 20px;
+          vertical-align: middle;
+        }
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        li {
+          padding: 10px 20px;
+          svg {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            vertical-align: middle;
+          }
+          &:active,
+          &:hover {
+            background: #cde3f5;
+          }
+        }
+      }
+      .cancel_btn {
+        padding: 10px;
+        font-size: 24px;
+      }
+    }
+    .timeSelect {
+      z-index: 9999;
+    }
+    :deep {
+      .van-dropdown-menu__bar {
+        background-color: transparent;
+        box-shadow: none;
+      }
+      .van-dropdown-menu__title:after {
+        transform: rotate(-45deg) scale(0.8);
+      }
+      .van-dropdown-menu__title--down:after {
+        transform: rotate(135deg) scale(0.8);
+      }
+      .van-dropdown-item__option {
+        padding: 20px;
       }
     }
   }

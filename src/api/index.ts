@@ -210,10 +210,113 @@ export const get_order_sign = (data) => {
 };
 export function setUserAvatarApi(data) {
   return request({
-    url:  `${apiUrl}/api_accounts/accounts/upload_user_image`,
+    url: `${apiUrl}/api_accounts/accounts/upload_user_image`,
     method: 'POST',
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
+    },
+    data,
+  });
+}
+export function generate_nonce(params) {
+  return request({
+    url: `${apiUrl}/api_accounts/accounts/generate_nonce`,
+    method: 'GET',
+    params,
+  });
+}
+export function wallet_login(data) {
+  return request({
+    url: `${apiUrl}/api_accounts/accounts/wallet_login`,
+    method: 'POST',
+    data,
+  });
+}
+export function check_wallet(params) {
+  return request({
+    url: `${apiUrl}/api_accounts/accounts/check_wallet`,
+    method: 'GET',
+    params,
+  });
+}
+export function wallet_register(data) {
+  return request({
+    url: `${apiUrl}/api_accounts/accounts/wallet_register`,
+    method: 'POST',
+    data,
+  });
+}
+export const wallet_bind_email = (data: any) => {
+  let url = `${apiUrl}/api_accounts/accounts/wallet_bind_email`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+};
+export const wallet_bind_uuid = (data: any) => {
+  let url = `${apiUrl}/api_accounts/accounts/wallet_bind_uuid`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+};
+
+
+export const search_mint = (data: any, ps: any, pn: any) => {
+  let url = `${apiUrl}/nft_scanner/nft/search_mint?ps=${ps}&pn=${pn}`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+}
+
+export const search_deploy = (data: any, ps: any, pn: any) => {
+  let url = `${apiUrl}/nft_scanner/nft/search_deploy?ps=${ps}&pn=${pn}`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+}
+
+export const oauth_url = (data) => {
+  return request({
+    url: `${apiUrl}/api_accounts/accounts/oauth_url`,
+    method: 'POST',
+    data,
+  });
+}
+
+
+export const update_nft_sync = (data: any) => {
+  let url = `/nft_scanner/nft/update_nft_sync`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+}
+
+/* 生成签名 */
+export const generate_signInfoAPi = (publicKey: string) => {
+  return request({
+    url: `/generate_sign/${publicKey}`,
+    method: 'GET',
+    timeout: 100000,
+  });
+}
+
+/* 更新签名 */
+export const update_signInfoAPi = (publicKey: string, data:any) => {
+  return request({
+    url: `/session/${publicKey}`,
+    method: 'PUT',
+    timeout: 100000,
+    headers: {
+      'Content-Type': "application/json"
     },
     data,
   });

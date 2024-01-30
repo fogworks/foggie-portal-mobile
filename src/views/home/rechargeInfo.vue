@@ -10,6 +10,7 @@
         2.Copy the provided receiving account name and memo from your Foggie Mobile, then proceed with the transaction on your DMC Wallet
         App.
       </div>
+      <img src="@/assets/withdrawal_copy.png" />
       <img src="@/assets/dmcTrans.jpg" />
     </div>
   </div>

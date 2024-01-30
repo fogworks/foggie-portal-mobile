@@ -10,6 +10,11 @@ export const routes = [
         component: () => import('@/views/home/index.vue'),
       },
       {
+        path: 'assetsInfo',
+        name: 'AssetsInfo',
+        component: () => import('@/views/home/assetsInfo.vue'),
+      },
+      {
         path: 'transactionRecords',
         name: 'TransactionRecords',
         component: () => import('@/views/home/transactionRecords.vue'),
@@ -26,6 +31,7 @@ export const routes = [
           // keepAlive: true,
         },
       },
+
       {
         path: 'filePreview',
         name: 'filePreview',
@@ -41,6 +47,23 @@ export const routes = [
         meta: {
           title: 'tabbar.member',
           keepAlive: true,
+        },
+      },
+      {
+        path: 'photography',
+        component: () => import('@/views/photo/index.vue'),
+        meta: {
+          title: 'tabbar.photography',
+          keepAlive: false,
+        },
+      },
+      {
+        name: 'photoList',
+        path: 'photoList',
+        component: () => import('@/views/photo/photoList.vue'),
+        meta: {
+          title: 'tabbar.photoList',
+          keepAlive: false,
         },
       },
 
@@ -82,6 +105,16 @@ export const routes = [
         },
       },
       {
+        name: 'IPFSService',
+        path: 'ipfsService',
+        component: () => import('@/views/list/details/ipfsService.vue'),
+        meta: {
+          title: 'list.getKey',
+          border: false,
+          notKeepAlive: true,
+        },
+      },
+      {
         path: 'fileList',
         name: 'FileList',
         component: () => import('@/views/list/details/fileList.vue'),
@@ -94,6 +127,15 @@ export const routes = [
         path: 'recordsList',
         name: 'RecordsList',
         component: () => import('@/views/list/details/recordsList.vue'),
+        meta: {
+          notBar: true,
+          notKeepAlive: true,
+        },
+      },
+      {
+        path: 'recordsListGuid',
+        name: 'RecordsListGuid',
+        component: () => import('@/views/list/details/recordListGuid.vue'),
         meta: {
           notBar: true,
           notKeepAlive: true,
@@ -137,11 +179,6 @@ export const routes = [
         meta: {},
       },
       {
-        path: 'bindDmc',
-        name: 'BindDmc',
-        component: () => import('@/views/bindDmc/index.vue'),
-      },
-      {
         name: 'orderSummary',
         path: 'orderSummary',
         component: () => import('@/views/orderSummary/index.vue'),
@@ -173,12 +210,80 @@ export const routes = [
         component: () => import('@/views/list/details/s3Info.vue'),
         meta: {},
       },
+      {
+        path: 'bucketList',
+        name: 'BucketList',
+        component: () => import('@/views/nft/bucketList.vue'),
+        meta: {
+          title: 'tabbar.list',
+          // keepAlive: true,
+        },
+      },
+      {
+        path: 'nft',
+        component: () => import('@/views/nft/index.vue'),
+        meta: {
+          title: 'tabbar.list',
+          // keepAlive: true,
+        },
+        redirect: 'AllNFTList',
+        children: [
+          {
+            path: '/allNFTList',
+            name: 'AllNFTList',
+            component: () => import('@/views/nft/allNFTList.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+          {
+            path: '/nftList',
+            name: 'NFTList',
+            component: () => import('@/views/nft/nftList.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+          {
+            path: '/welcome',
+            name: 'Welcome',
+            component: () => import('@/views/nft/welcome.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+          {
+            path: '/walletConnect',
+            name: 'WalletConnect',
+            component: () => import('@/views/nft/walletConnect.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+          {
+            path: '/scanQRCodes',
+            name: 'scanQRCodes',
+            component: () => import('@/components/scanQRCodes.vue'),
+            meta: {
+              notBar: true,
+            },
+          },
+        ],
+      },
     ],
   },
   {
     name: 'Guide',
     path: '/guide',
     component: () => import('@/views/login/first.vue'),
+    meta: {
+      notKeepAlive: true,
+    },
+  },
+  {
+    name: 'Middleware',
+    path: '/middleware',
+    component: () => import('@/views/login/middleware.vue'),
     meta: {
       notKeepAlive: true,
     },
@@ -195,6 +300,14 @@ export const routes = [
     path: '/register',
     name: 'Register',
     component: () => import('@/views/login/register.vue'),
+    meta: {
+      notKeepAlive: true,
+    },
+  },
+  {
+    path: '/linkAccount',
+    name: 'LinkAccount',
+    component: () => import('@/views/login/linkAccount.vue'),
     meta: {
       notKeepAlive: true,
     },

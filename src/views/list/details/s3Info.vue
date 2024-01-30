@@ -4,7 +4,9 @@
       <div class="top_back" @click="router.go(-1)">How to use S3 Browser?</div>
     </div>
     <div class="recharge_info">
-      <div class="h_title h1_title"> We recommend 2 commonly used S3 third-party products for you.namely CloudBerry and S3 Browser. </div>
+      <div class="h_title h1_title">
+        We recommend 3 commonly used S3 third-party products for you.namely CloudBerry,S3 Browser and Cyberduck.
+      </div>
       <div class="h_title h1_title"> 1.CloudBerry</div>
       <div class="title">
         CloudBerry Explorer is a file browser developed in the industry for accessing and managing object storage directly through
@@ -29,6 +31,18 @@
       <div class="title"> Window installation package: <span class="title_click" @click="gotoLink('install')">click to install </span></div>
       <div class="h_title"> 2.2 How to use S3 Browser? </div>
       <img src="@/assets/s3Use1.jpg" />
+
+      <div class="h_title h1_title"> 3.Cyberduck</div>
+      <div class="title"> Cyberduck is free software, but it still costs money to write, support, and distribute it. </div>
+      <div class="h_title"> 2.1 How to download Cyberduck? </div>
+      <div class="title"
+        >Official website address: <span class="title_click" @click="gotoLink('duckDownload')">Click to download</span></div
+      >
+      <div class="title">
+        Window installation package: <span class="title_click" @click="gotoLink('duckInstall')">click to install </span></div
+      >
+      <div class="h_title"> 2.2 How to use Cyberduck? </div>
+      <img src="@/assets/s3Use3.jpg" />
     </div>
   </div>
 </template>
@@ -40,10 +54,14 @@
       window.open('https://s3browser.com/download.aspx');
     } else if (type === 'install') {
       window.open('https://tools-bucket.ks3-cn-beijing.ksyuncs.com/s3browser-10-7-1.exe');
-    } else if ('Cdownload') {
+    } else if (type == 'Cdownload') {
       window.open('https://www.msp360.com/cloudberry-backup/download/cbes3free&src=ms/');
-    } else if ('Cinstall') {
+    } else if (type == 'Cinstall') {
       window.open('https://tools-bucket.ks3-cn-beijing.ksyuncs.com/CloudBerryExplorerSetup_v5.9.1.192_netv4.0_c421412.exe');
+    } else if (type == 'duckDownload') {
+      window.open('https://cyberduck.io/download/');
+    } else if (type == 'duckInstall') {
+      window.open('https://update.cyberduck.io/windows/Cyberduck-Installer-8.7.1.40770.exe');
     }
   };
 </script>
@@ -52,7 +70,7 @@
   .recharge_info {
     width: 100%;
     padding: 20px;
-    padding-bottom: 40px;
+    padding-bottom: 5rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;

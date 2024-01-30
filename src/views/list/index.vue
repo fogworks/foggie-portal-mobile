@@ -5,7 +5,7 @@
       <!-- <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search by order number">
         <template #left> <Search></Search> </template>
       </nut-input> -->
-      <nut-searchbar v-model="keyWord" placeholder="Search by order number" clearable class="my_top_search">
+      <nut-searchbar v-model="keyWord" placeholder="Search by Bucket Name" clearable class="my_top_search">
         <template #leftin>
           <Search />
         </template>
@@ -51,9 +51,10 @@
       </nut-row>
     </div>
 
-    <div class="top_filter">
+    <div v-if="total > 8" class="top_filter">
       <nut-menu active-color="#4524a3">
         <nut-menu-item
+          :title="`Sort By ${searchForm.sortTypeOptions.find((el) => el.value == searchForm.sortType).text}`"
           v-model="searchForm.sortType"
           :options="searchForm.sortTypeOptions"
           @change="sortChange(searchForm.sortType, 'sortType')"
@@ -92,7 +93,7 @@
         :close-mode="true"
       ></nut-noticebar>
     </div> -->
-    <div class="find_tips">Based on your search criteria,We found {{ total }} items for you.</div>
+    <div v-if="total > 8" class="find_tips">Based on your search criteria,We found {{ total }} items for you.</div>
     <ErrorPage v-if="isError && !list.length" @refresh="loadMoreFun"></ErrorPage>
     <nut-infinite-loading
       v-else-if="list.length"
@@ -110,18 +111,25 @@
           @click="gotoOrder(item)"
           :class="[isOpen(item.state) ? '' : 'history_item']"
         >
-          <div class="order_time">{{ transferUTCTime(item.order_created_at) }}</div>
+          <!-- <div class="order_time">{{ transferUTCTime(item.order_created_at) }}</div> -->
+          <div v-if="item.expire" class="order_time order_expTime" style="color: #ff8b00; margin-bottom: 10px">
+            <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferUTCTime(item.expire) }}</div
+          >
           <div class="order_head">
             <div class="order_img">
-              <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" />
-              <img v-else src="@/assets/desktop1.svg" alt="" />
-              <div class="order_name">{{ index + 1 }}-{{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
+              <img src="@/assets/home_bucket.png" class="bucket_img" />
+              <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" class="right_img" />
+              <img v-else src="@/assets/desktop1.svg" alt="" class="right_img" />
+              <div class="order_name_box">
+                <div class="order_name_time">{{ transferUTCTime(item.order_created_at) }}</div>
+                <div class="order_name"> {{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
+              </div>
             </div>
             <!-- <img src="@/assets/exprie.svg" alt="" /> -->
             <!-- {{ handleExprie(item) }} -->
-            <div v-if="item.expire" class="order_expTime">
+            <!-- <div v-if="item.expire" class="order_expTime">
               <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferUTCTime(item.expire) }}</div
-            >
+            > -->
           </div>
           <div class="order_content">
             <div class="order_content_left">
@@ -140,13 +148,34 @@
               <div class="right_rate" v-if="handleRate(item) > 0">+{{ handleRate(item) }}%<TriangleUp></TriangleUp></div>
             </div>
           </div>
-          <div class="order_status">{{ statusTypes[item.state] }} </div>
+
+          <div class="order_status" v-if="item.domain">
+            {{ statusTypes[item.state] }}
+          </div>
+          <div class="order_status order_status2" v-else> To be activated </div>
         </div>
       </template>
+      <div style="margin-top: 2rem; text-align: center">
+        <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button> -->
+        <div style="display: flex; justify-content: center; align-items: center">
+          <div class="plus_bucket" @click="toBuy">
+            <IconPlus></IconPlus>
+          </div>
+          <img src="@/assets/home_bucket.png" alt="" />
+        </div>
+        <!-- <p>Buy Bucket</p> -->
+      </div>
     </nut-infinite-loading>
     <nut-empty v-else description=" " image="error">
-      <div style="margin-top: 10px" v-if="!listData.length">
-        <nut-button icon="refresh" type="primary" @click="toBuy">Buy Order</nut-button>
+      <div style="margin-top: 2rem; text-align: center" v-if="!listData.length">
+        <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button> -->
+        <div style="display: flex; justify-content: center; align-items: center">
+          <div class="plus_bucket" @click="toBuy">
+            <IconPlus></IconPlus>
+          </div>
+          <img src="@/assets/home_bucket.png" alt="" />
+        </div>
+        <p>Buy a new Bucket</p>
       </div>
     </nut-empty>
     <Teleport to="body">
@@ -201,7 +230,7 @@
           <nut-form-item label="">
             <nut-radio-group direction="horizontal" v-model="searchForm.priceType" @change="changePrice">
               <nut-radio label="purchase">Purchase Price Range</nut-radio>
-              <nut-radio label="income">Income Range</nut-radio>
+              <nut-radio label="income">Reward Range</nut-radio>
             </nut-radio-group>
           </nut-form-item>
           <nut-form-item label="" direction="horizontal" class="range_number">
@@ -209,7 +238,6 @@
             -
             <nut-input placeholder="Max Price" v-model="searchForm.max" type="number" />
           </nut-form-item>
-
           <div class="bottom_btn">
             <nut-button type="warning" plain :loading="SearchLoading" @click="toReset"> Reset </nut-button>
             <nut-button type="warning" @click="toSearch" :disabled="searchDisabled" :loading="SearchLoading"> Search </nut-button>
@@ -221,6 +249,7 @@
 </template>
 
 <script lang="ts" setup name="ListPage">
+  import IconPlus from '~icons/home/plus.svg';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconSwitch from '~icons/home/switch.svg';
   import IconHistory from '~icons/home/history.svg';
@@ -248,7 +277,7 @@
     1: 'Consensus reached',
     2: 'Insufficient advance deposit to cancel the next cycle',
     3: 'Sufficient funds in advance',
-    4: 'Order over',
+    4: 'Bucket over',
     5: 'Canceled',
     6: 'Cancellation of the next cycle',
   };
@@ -257,7 +286,7 @@
     { text: 'Consensus reached', value: 1 },
     { text: 'Insufficient advance deposit to cancel the next cycle', value: 2 },
     { text: 'Sufficient funds in advance', value: 3 },
-    { text: 'Order over', value: 4 },
+    { text: 'Bucket over', value: 4 },
     { text: 'Canceled', value: 5 },
     { text: 'Cancellation of the next cycle', value: 6 },
   ];
@@ -281,18 +310,18 @@
       statusArr: [],
       createDate: [],
       timeType: 'create',
-      min: '',
-      max: '',
+      min: '0',
+      max: '100',
       priceType: 'purchase',
       sortTypeOptions: [
         { text: 'Payment Time', value: 'created_at' },
         { text: 'Expiration Time', value: 'expire' },
-        { text: 'Revenue Price', value: 'profit' },
+        { text: 'Reward Price', value: 'Reward' },
         { text: 'Purchase Price', value: 'total_price' },
       ],
       sortTypeOptions1: [
-        { text: 'Descending', value: 'descending' },
-        { text: 'Ascending', value: 'ascending' },
+        { text: '↓ Descending', value: 'descending' },
+        { text: '↑ Ascending', value: 'ascending' },
       ],
       sortType: 'created_at',
       sortValue: 'descending',
@@ -455,7 +484,7 @@
         window.sessionStorage.removeItem('myHistoryOrder');
         window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(item));
         router.push({
-          name: 'orderSummary',
+          name: 'listDetails',
           query: {
             id: item.order_id,
             type: 'history',
@@ -489,17 +518,17 @@
           arr = arr.concat(statusArr);
         }
         const uniqueArray = [...new Set(arr)];
-        loadMore(uniqueArray, '', '', '', postData);
+        loadMore(uniqueArray, '', '', '', postData, '', true);
       } else if (searchType.value == 'History') {
         let arr = [4, 5];
         if (statusArr.length > 0) {
           arr = arr.concat(statusArr);
         }
         const uniqueArray = [...new Set(arr)];
-        loadMore(uniqueArray, '', '', '', postData);
+        loadMore(uniqueArray, '', '', '', postData, '', true);
       } else {
         let arr = statusArr;
-        loadMore(arr, '', '', '', postData);
+        loadMore(arr, '', '', '', postData, '', true);
       }
       //   if (searchType.value == 'Open') {
       //     loadMore([0, 1, 2, 3, 6]);
@@ -525,17 +554,17 @@
             arr = arr.concat(statusArr);
           }
           const uniqueArray = [...new Set(arr)];
-          loadMore(uniqueArray, '', '', '', postData);
+          loadMore(uniqueArray, '', '', '', postData, 'search', true);
         } else if (searchType.value == 'History') {
           let arr = [4, 5];
           if (statusArr.length > 0) {
             arr = arr.concat(statusArr);
           }
           const uniqueArray = [...new Set(arr)];
-          loadMore(uniqueArray, '', '', '', postData);
+          loadMore(uniqueArray, '', '', '', postData, 'search', true);
         } else {
           let arr = statusArr;
-          loadMore(arr, '', '', '', postData);
+          loadMore(arr, '', '', '', postData, 'search', true);
         }
         // if (searchType.value == 'Open') {
         //   loadMore([0, 1, 2, 3, 6]);
@@ -560,14 +589,14 @@
         if (val == 'Open') {
           let arr = [0, 1, 2, 3, 6];
           searchForm.value.statusArr = [0, 1, 2, 3, 6];
-          loadMore(arr, '', '', '', postData);
+          loadMore(arr, '', '', '', postData, 'search', true);
         } else if (val == 'History') {
           let arr = [4, 5];
           searchForm.value.statusArr = arr;
-          loadMore(arr, '', '', '', postData);
+          loadMore(arr, '', '', '', postData, 'search', true);
         } else {
           let statusArr = searchForm.value.statusArr;
-          loadMore(statusArr, '', '', '', postData);
+          loadMore(statusArr, '', '', '', postData, 'search', true);
         }
         // if (val == 'Open') {
         //   loadMore([0, 1, 2, 3, 6]);
@@ -583,6 +612,33 @@
 </script>
 
 <style lang="scss" scoped>
+  .plus_bucket {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin: 0 0.2rem;
+    border-radius: 50%;
+    border: 1px dashed #777;
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: #777;
+    }
+    & + img {
+      width: 3rem;
+      height: 3rem;
+      margin: 0 0.2rem;
+      border-radius: 50%;
+    }
+    & + p {
+      margin-top: 0.5rem;
+      margin: 0.5rem;
+      text-align: left;
+    }
+  }
   .order_num {
     margin-top: 10px;
     font-weight: bold;
@@ -868,6 +924,11 @@
       span {
         color: #fff !important;
       }
+      .order_name_time {
+        color: #000;
+        background: #f5ba19 !important;
+        border-radius: 4px;
+      }
     }
   }
 </style>
@@ -937,7 +998,7 @@
   }
   .list_box .order_item {
     position: relative;
-    margin: 50px 0 !important;
+    margin: 70px 0 !important;
     padding: 20px !important;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     // overflow: hidden;
@@ -963,7 +1024,7 @@
       justify-content: space-between;
       z-index: 99;
       img {
-        width: 42px;
+        width: 30px;
         margin: 0 auto;
         margin-right: 10px;
       }
@@ -976,13 +1037,26 @@
         // color: #ff7d24;
 
         .order_name {
-          font-size: 30px;
+          font-size: 40px;
+          color: #f88b02;
+          font-weight: bold;
+          padding-left: 10px;
+        }
+      }
+      .order_name_box {
+        padding-left: 120px;
+        .order_name_time {
+          background: #f6f7fb;
+          padding: 4px 10px;
+          margin-top: -10px;
+          margin-bottom: 10px;
         }
       }
     }
     .order_content {
       display: flex;
       z-index: 99;
+      border-bottom: 1px solid #ccc;
       .order_content_left,
       .order_content_right {
         width: 50%;
@@ -1019,6 +1093,31 @@
       color: #ff8b00;
       font-weight: bold;
       font-size: 28px;
+      justify-content: start;
+    }
+    .order_status2 {
+      color: red;
+    }
+    .bucket_img {
+      height: auto;
+      width: 130px !important;
+      position: absolute;
+      top: -30px;
+      left: 0;
+    }
+    .right_img {
+      height: auto;
+      //   width: 100px !important;
+      position: absolute;
+      bottom: 24px;
+      right: 0;
+    }
+  }
+  .order_not {
+    align-items: center;
+    justify-content: center;
+    .plus_bucket {
+      justify-content: center !important;
     }
   }
   .top_filter {
@@ -1035,6 +1134,9 @@
     .nut-menu {
       width: calc(100% - 100px);
       width: 100%;
+      .nut-menu__bar .nut-menu__item {
+        --nut-menu-item-font-size: 0.8rem;
+      }
     }
     .my_category_icon_box {
       width: 100px;
@@ -1047,6 +1149,7 @@
       color: #000;
       cursor: pointer;
     }
+
     .my_category_icon_active {
       color: #4916a1;
       color: #ff8b00;
@@ -1063,7 +1166,6 @@
         // transform: rotate(0deg);
         transform: scale(1.3);
       }
-
       100% {
         transform: scale(1);
       }

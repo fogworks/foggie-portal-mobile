@@ -75,7 +75,7 @@
   } = useOrderList();
 
   const state = reactive({
-    queryType: 'Earnings',
+    queryType: 'Reward',
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
@@ -149,7 +149,9 @@
     const [start, end] = shortcuts[timeType.value]();
     const postData = !start && !end ? {} : { start_time: start, end_time: end };
     search_order_profit(postData).then((res) => {
-      earnListData.value = res.result.map((el) => {
+    console.log(res,'11111111');
+    
+      earnListData.value = (res.result ?? []).map((el) => {
         return {
           quantity: el.profit,
           order_id: el.order_id,
@@ -212,7 +214,7 @@
         queryType.value = 'Withdrawn';
         break;
       case '1':
-        queryType.value = 'Earnings';
+        queryType.value = 'Reward';
         break;
       case '2':
         queryType.value = 'Recharge';
@@ -233,7 +235,7 @@
         queryType.value = 'Withdrawn';
         break;
       case '1':
-        queryType.value = 'Earnings';
+        queryType.value = 'Reward';
         break;
       case '2':
         queryType.value = 'Recharge';

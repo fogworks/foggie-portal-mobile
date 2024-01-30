@@ -1526,6 +1526,67 @@ proto.proto.ServicePromiseClient.prototype.listCreds =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxGeneratePinCredRequest,
+ *   !proto.proto.ProxGeneratePinCredResp>}
+ */
+const methodDescriptor_Service_GenPinningCred = new grpc.web.MethodDescriptor(
+  '/proto.Service/GenPinningCred',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxGeneratePinCredRequest,
+  proto.proto.ProxGeneratePinCredResp,
+  /**
+   * @param {!proto.proto.ProxGeneratePinCredRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxGeneratePinCredResp.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxGeneratePinCredRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxGeneratePinCredResp)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxGeneratePinCredResp>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.genPinningCred =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/GenPinningCred',
+      request,
+      metadata || {},
+      methodDescriptor_Service_GenPinningCred,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxGeneratePinCredRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxGeneratePinCredResp>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.genPinningCred =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/GenPinningCred',
+      request,
+      metadata || {},
+      methodDescriptor_Service_GenPinningCred);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.ProxCredRequest,
  *   !proto.proto.ProxCredResp>}
  */
@@ -1581,6 +1642,67 @@ proto.proto.ServicePromiseClient.prototype.deleteCred =
       request,
       metadata || {},
       methodDescriptor_Service_DeleteCred);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxUpdateNFTRequest,
+ *   !proto.proto.ProxUpdateNFTResp>}
+ */
+const methodDescriptor_Service_UpdateNFT = new grpc.web.MethodDescriptor(
+  '/proto.Service/UpdateNFT',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxUpdateNFTRequest,
+  proto.proto.ProxUpdateNFTResp,
+  /**
+   * @param {!proto.proto.ProxUpdateNFTRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxUpdateNFTResp.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxUpdateNFTRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxUpdateNFTResp)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxUpdateNFTResp>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.updateNFT =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/UpdateNFT',
+      request,
+      metadata || {},
+      methodDescriptor_Service_UpdateNFT,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxUpdateNFTRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxUpdateNFTResp>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.updateNFT =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/UpdateNFT',
+      request,
+      metadata || {},
+      methodDescriptor_Service_UpdateNFT);
 };
 
 

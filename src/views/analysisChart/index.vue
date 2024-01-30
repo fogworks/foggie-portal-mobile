@@ -2,33 +2,52 @@
   <div class="analysis_box analysis_charts_box">
     <div style="background: #fff; margin-bottom: 10px">
       <div class="top_box">
-        <TopBack> Data Analysis</TopBack>
-
+        <TopBack> Assets Data Analysis</TopBack>
+        <div class="Analysis_title">{{ timeType }} Data Analysis </div>
         <div class="top_assets">
           <div class="right_img"><img src="@/assets/Trading.svg" alt="" /> </div>
           <nut-grid class="top_grid" :column-num="3">
-            <nut-grid-item text="Balance">
-              <div>
+            <nut-grid-item text="Balance" @click="dialogShow = true">
+              <div class="top_grid_item">
                 <IconCions class="top_icon"></IconCions>
                 <p class="banlance_text">{{ cloudBalance }}</p>
+                <div class="question_tips"><img src="@/assets/tips.svg" /></div>
               </div>
             </nut-grid-item>
-            <nut-grid-item class="top_icon" text="Earnings" @click="router.push('/analysisCate?type=1')">
-              <div>
+            <nut-grid-item class="top_icon" text="Reward" @click="dialogShow = true">
+              <div class="top_grid_item">
                 <IconIncome class="top_icon"></IconIncome>
-                <p class="banlance_text">{{ cloudIncome }}<Search2></Search2> </p>
+                <p class="banlance_text2"
+                  >{{ cloudIncome }}
+                  <!-- <Search2></Search2> -->
+                </p>
+                <div class="question_tips"><img src="@/assets/tips.svg" /></div>
               </div>
             </nut-grid-item>
-            <nut-grid-item class="top_icon" text="Expenses" @click="router.push('/analysisCate?type=3')">
-              <div>
+            <nut-grid-item class="top_icon" text="Expenses" @click="dialogShow = true">
+              <div class="top_grid_item">
                 <IconOutCome class="top_icon"></IconOutCome>
-                <p class="banlance_text1">{{ cloudExpense > 0 ? '-' : '' }}{{ cloudExpense }}<Search2></Search2> </p>
+                <p class="banlance_text1"
+                  >{{ cloudExpense > 0 ? '-' : '' }}{{ cloudExpense }}
+                  <!-- <Search2></Search2>  -->
+                </p>
+                <div class="question_tips"><img src="@/assets/tips.svg" /></div>
               </div>
             </nut-grid-item>
           </nut-grid>
         </div>
       </div>
     </div>
+    <!-- <div class="analysis_assets_tab">
+      <div class="segmented-control">
+        <input type="radio" name="radio2" value="3" id="tab-1" :checked="currentAssetsType === 'Profit'" />
+        <label for="tab-1" class="segmented-control__1"> <p>Profit</p></label>
+
+        <input type="radio" name="radio2" value="4" id="tab-2" :checked="currentAssetsType === 'Expenses'" />
+        <label for="tab-2" class="segmented-control__2"> <p>Expenses</p></label>
+        <div class="segmented-control__color"></div>
+      </div>
+    </div> -->
     <div class="analysis_content">
       <nut-tabs v-model="timeType" class="time_tabs" direction="horizontal">
         <nut-tab-pane title="By Day" pane-key="Day"></nut-tab-pane>
@@ -37,49 +56,82 @@
         <nut-tab-pane title="By 3 Months" pane-key="3Months"></nut-tab-pane>
         <nut-tab-pane title="All" pane-key="All"></nut-tab-pane>
       </nut-tabs>
+      <div class="balance_chart" v-if="timeType === 'All'">
+        <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
+      </div>
       <div class="balance_chart">
         <MyEcharts :options="chartOptions0" class="income_charts"></MyEcharts>
       </div>
       <div class="balance_chart">
-        <MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts>
+        <MyEcharts :options="chartOptions1" class="income_charts"></MyEcharts>
       </div>
       <div class="balance_chart">
+        <MyEcharts :options="chartOptions2" class="income_charts"></MyEcharts>
+      </div>
+
+      <div class="balance_chart" v-if="_listData.length">
         <MyEcharts style="width: 100%; height: 200px" :options="orderChartOption"></MyEcharts>
       </div>
-      <nut-infinite-loading v-if="listData.length" class="list_box" load-more-txt="No more content" :has-more="false">
-        <div class="list_item" v-for="(item, index) in listData">
-          <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-            <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
+      <div v-if="_listData.length">
+        <div class="order_profit_title"
+          >Bucket Reward List <span>({{ queryParmas[0] }}-{{ queryParmas[1] }})</span></div
+        >
+        <nut-infinite-loading v-if="listData.length" class="list_box" load-more-txt="No more content" :has-more="false">
+          <div class="list_item" v-for="(item, index) in listData">
+            <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+              <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
           <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
           <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
-            <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-            <img src="@/assets/DMC_Token1.png" alt="" />
-          </div>
+              <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+              <img src="@/assets/DMC_Token1.png" alt="" />
+            </div>
 
-          <div>
-            <span>Order:{{ item.order_id }}</span>
+            <div>
+              <span>Order:{{ item.order_id }}</span>
 
-            <span :class="['earnings']">
-              <span v-if="item.profit > 0">+{{ item.profit }}</span>
-              <span v-else style="font-size: 12px">No gain for now</span>
-              <!-- <IconArrowRight style="vertical-align: text-top" width="1.1rem" height="1.1rem" color="#5F57FF"></IconArrowRight
+              <span :class="['earnings']">
+                <span v-if="item.profit > 0">+{{ item.profit }}</span>
+                <span v-else style="font-size: 12px">No gain for now</span>
+                <!-- <IconArrowRight style="vertical-align: text-top" width="1.1rem" height="1.1rem" color="#5F57FF"></IconArrowRight
           > -->
-            </span>
-          </div>
-          <!-- <div
+              </span>
+            </div>
+            <!-- <div
           ><span>{{ item.pst }} PST</span> <span class="time">{{ transferUTCTime(item.order_created_at) }}</span>
         </div> -->
-        </div>
-      </nut-infinite-loading>
-      <nut-empty v-else description="No data" image="error"></nut-empty>
-      <!-- <div class="balance_chart">
-        <MyEcharts style="width: 100%; height: 200px" :options=""></MyEcharts>
-      </div> -->
+          </div>
+        </nut-infinite-loading>
+        <nut-empty v-else description="No data" image="error"></nut-empty>
+      </div>
     </div>
+    <BasicModal :show="dialogShow" @update:show="dialogShow = false">
+      <div class="my_dialog_content_box">
+        <div class="my_dialog_title" style="margin: 20px 0">what is Data Analysis By {{ timeType }}?</div>
+        <div class="my_dialog_content">
+          <div class="my_dialog_content_p" style="font-weight: bold">Balance</div>
+
+          <div class="my_dialog_content_p my_dialog_content_pText">
+            Statistics your available balance within a certain time range.(Balance = Reward - Expenses).</div
+          >
+          <div class="my_dialog_content_p" style="font-weight: bold"> Reward</div>
+          <div class="my_dialog_content_p my_dialog_content_pText">
+            Statistics for you the total reward brought by all your orders within a certain time range</div
+          >
+
+          <div class="my_dialog_content_p" style="font-weight: bold"> Expenses</div>
+          <div class="my_dialog_content_p my_dialog_content_pText">
+            Statistics of all your expenditures within a certain time range, including but not limited to bill consumption
+            expenditures.</div
+          >
+        </div>
+      </div>
+    </BasicModal>
   </div>
 </template>
 
 <script setup lang="ts" name="analysis">
+  import BasicModal from '@/components/Modal/src/BasicModal.vue';
+  const dialogShow = ref(false);
   import moment from 'moment';
   import { reactive, toRefs, onMounted, watch, computed } from 'vue';
   import { barOption } from '@/components/echarts/util';
@@ -96,29 +148,46 @@
   import { Type } from '@varlet/ui';
   import { showToast } from '@nutui/nutui';
   import useOrderList from '../home/useOrderList.ts';
+  import { useUserStore } from '@/store/modules/user';
+
+  const currentAssetsType = ref('Reward');
 
   // import { useUserStore } from '@/store/modules/user';
   // const useStore = useUserStore();
   const route = useRoute();
   const router = useRouter();
-
+  const userStore = useUserStore();
+  const userCreatedAt = computed(() => userStore.getUserInfo.created_at);
   const state = reactive({
-    queryType: 'Earnings',
+    queryType: 'Reward',
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
 
     chartOptions0: {},
-    timeType: 'Week',
+    chartOptions1: {},
+    chartOptions2: {},
+    timeType: '',
 
     earnListData: [],
+    _listData: [],
+    queryParmas: [],
   });
-  const { timeType, chartOptions, chartOptions0 } = toRefs(state);
+  const { timeType, chartOptions, chartOptions0, chartOptions1, chartOptions2, _listData, queryParmas } = toRefs(state);
   const orderChartOption = ref({});
   const listData = ref([]);
 
   const dmcCount = ref({});
   const { shortcuts } = useOrderList();
+  watch(
+    userCreatedAt,
+    (val) => {
+      if (val) {
+        timeType.value = 'All';
+      }
+    },
+    { deep: true, immediate: true },
+  );
   watch(
     timeType,
     (newValue) => {
@@ -127,19 +196,39 @@
       };
 
       if (newValue == 'All') {
-        let year = moment().format('YYYY');
-        for (let index = 1; index <= 12; index++) {
-          const nowMonth = new Date().getMonth() + 1;
-          if (index > nowMonth) {
-            break;
-          }
+        if (!userCreatedAt.value) return false;
+        let startDate = moment(userCreatedAt.value);
+        // 当前日期
+        let currentDate = moment();
+
+        // 初始化参数对象，用于存储查询时间
+
+        // 从起始日期开始遍历，直到当前日期
+        while (startDate.isBefore(currentDate, 'month') || startDate.isSame(currentDate, 'month')) {
           // 获取指定年月的第一天
-          const firstDayOfMonth = moment(`${year}-${index}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD');
+          let firstDayOfMonth = startDate.clone().startOf('month').format('YYYY-MM-DD');
           // 获取该月的最后一天
-          const lastDayOfMonth = moment(`${year}-${index}`, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
+          let lastDayOfMonth = startDate.clone().endOf('month').format('YYYY-MM-DD');
+          // 将时间范围添加到参数中
           params.query_time.push({ start_time: firstDayOfMonth, end_time: lastDayOfMonth });
+
+          // 移动到下一个月
+          startDate.add(1, 'months');
         }
-        console.log(params.query_time, 'params.query_time');
+
+        // let year = moment().format('YYYY');
+        // for (let index = 1; index <= 12; index++) {
+        //   const nowMonth = new Date().getMonth() + 1;
+        //   if (index > nowMonth) {
+        //     break;
+        //   }
+        //   // 获取指定年月的第一天
+        //   const firstDayOfMonth = moment(`${year}-${index}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD');
+        //   // 获取该月的最后一天
+        //   const lastDayOfMonth = moment(`${year}-${index}`, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
+        //   params.query_time.push({ start_time: firstDayOfMonth, end_time: lastDayOfMonth });
+        // }
+        // console.log(params.query_time, 'params.query_time');
       } else if (newValue == '3Months') {
         // let year_month = moment().subtract(2, 'month').format('YYYY-MM');
 
@@ -201,7 +290,9 @@
         const yesterday = moment().add(1, 'days').format('YYYY-MM-DD');
         params.query_time.push({ start_time: today, end_time: yesterday });
       }
+      console.log(params.query_time);
 
+      queryParmas.value = [params.query_time?.[0]?.start_time, params.query_time?.[params.query_time.length - 1]?.start_time];
       loadUserDmc();
       loadSearchUserAssetCount(params);
       searchOrderProfit(newValue);
@@ -250,19 +341,19 @@
             },
             series: [
               {
-                name: 'Assets Analysis',
+                name: 'Miner Reward',
                 type: 'pie',
                 radius: [10, 50],
                 center: ['50%', '50%'],
-                roseType: 'radius',
+                // roseType: 'radius',
                 itemStyle: {
                   borderRadius: 1,
                 },
                 data: [
-                  { value: data?.income, name: 'Income' },
-                  { value: data?.withdraw, name: 'Withdraw' },
-                  { value: data?.balance, name: 'Balance' },
-                  { value: data?.Recharge, name: 'Recharge' },
+                  { value: data?.income.toFixed(4), name: 'Reward' },
+                  { value: data?.withdraw.toFixed(4), name: 'Withdraw' },
+                  { value: data?.balance.toFixed(4), name: 'Balance' },
+                  { value: data?.Recharge.toFixed(4), name: 'Recharge' },
                 ],
               },
             ],
@@ -288,7 +379,7 @@
           chartOptions0.value = {
             backgroundColor: '#fff',
             title: {
-              text: `Earnings analysis`,
+              text: `Reward Analysis`,
               textStyle: {
                 fontSize: '14px',
                 color: '#4c5093',
@@ -296,7 +387,7 @@
               },
             },
             legend: {
-              top: '10%',
+              top: '0%',
               right: '5%',
               icon: 'circle',
             },
@@ -344,18 +435,19 @@
                 fontSize: 10,
               },
               data: Object.keys(dmcCount.value).map((item) => {
-                let start_time = moment(item.split('~')[0]).format('MMM-D');
-                let end_time = moment(item.split('~')[1]).format('MMM-D');
+                let start_time = moment(item.split('~')[0]).format('MM-D');
+                let end_time = moment(item.split('~')[1]).format('MM-D');
+                // console.log(item, 'aaa', start_time, end_time);
                 if (timeType.value == 'Week' || timeType.value == 'Day') {
                   return start_time;
                 } else {
-                  return start_time + '~' + end_time;
+                  return start_time + '/' + end_time;
                 }
               }),
             },
             yAxis: {
               type: 'value',
-              name: 'Amount',
+              name: 'DMC',
               axisLabel: {
                 show: true,
                 inside: true, // 指定刻度显示在右侧,
@@ -382,7 +474,8 @@
 
             series: [
               {
-                name: 'Balance',
+                areaStyle: {},
+                name: 'Reward',
                 type: 'line',
                 zlevel: 11,
                 yAxisIndex: 0, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
@@ -393,7 +486,7 @@
                   normal: {
                     color: '#34b063',
                     borderColor: 'rgba(52,176,99, 0.5)', //圆点透明 边框
-                    borderWidth: 7,
+                    borderWidth: 5,
                     label: {
                       show: false, //开启显示
                       position: 'top', //在上方显示
@@ -416,24 +509,287 @@
                 lineStyle: {
                   color: '#50c878',
                 },
-                data: Object.values(dmcCount.value).map((item) => item.balance),
-              },
-              {
-                name: 'Income',
-                type: 'bar',
-                miniBarWidth: 20,
-                yAxisIndex: 0,
-
                 data: Object.values(dmcCount.value).map((item) => item.income),
               },
+            ],
+            color: ['#4474c4', '#d71309'],
+          };
+
+          //   chartOptions1
+          chartOptions1.value = {
+            backgroundColor: '#fff',
+            title: {
+              text: `Expenses Analysis`,
+              textStyle: {
+                fontSize: '14px',
+                color: '#4c5093',
+                fontWeight: 'bold',
+              },
+            },
+            legend: {
+              top: '0%',
+              right: '5%',
+              icon: 'circle',
+            },
+            tooltip: {
+              show: true,
+              trigger: 'axis',
+              backgroundColor: 'rgba(255,255,255)',
+              axisPointer: {
+                lineStyle: {
+                  color: {
+                    type: 'linear',
+                    x: 0,
+                    y: 0,
+                    x2: 0,
+                    y2: 1,
+                    colorStops: [
+                      {
+                        offset: 0,
+                        color: '#A7D6FF',
+                      },
+                      {
+                        offset: 0.5,
+                        color: '#fff',
+                      },
+                      {
+                        offset: 1,
+                        color: '#A7D6FF',
+                      },
+                    ],
+                    global: false,
+                  },
+                },
+              },
+            },
+            grid: {
+              top: '20%',
+              left: '30px',
+              right: '8%',
+              bottom: '20%',
+            },
+            xAxis: {
+              type: 'category',
+              axisLabel: {
+                rotate: 45,
+                fontSize: 10,
+              },
+              data: Object.keys(dmcCount.value).map((item) => {
+                let start_time = moment(item.split('~')[0]).format('MM-D');
+                let end_time = moment(item.split('~')[1]).format('MM-D');
+                if (timeType.value == 'Week' || timeType.value == 'Day') {
+                  return start_time;
+                } else {
+                  return start_time + '/' + end_time;
+                }
+              }),
+            },
+            yAxis: {
+              type: 'value',
+              name: 'DMC',
+              axisLabel: {
+                show: true,
+                inside: true, // 指定刻度显示在右侧,
+                margin: -20,
+                textStyle: {
+                  color: '#d71309',
+                  fontSize: 10,
+                },
+              },
+              axisLine: {
+                show: false,
+              },
+              axisTick: {
+                show: false,
+              },
+              splitLine: {
+                lineStyle: {
+                  color: 'rgba(131,101,101,0.2)',
+                  type: 'dashed',
+                },
+              },
+              show: true,
+            },
+
+            series: [
               {
+                areaStyle: {},
                 name: 'Expenses',
-                type: 'bar',
-                miniBarWidth: 20,
-                z: '-1',
-                barGap: '-100%',
-                yAxisIndex: 0,
+                type: 'line',
+                zlevel: 11,
+                yAxisIndex: 0, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
+                smooth: true, //平滑曲线显示
+                symbol: 'circle', //标记的图形为实心圆
+                symbolSize: 8, //标记的大小
+                itemStyle: {
+                  normal: {
+                    color: '#d71309',
+                    borderColor: 'rgb(228, 93, 90,0.5)', //圆点透明 边框
+                    borderWidth: 5,
+                    label: {
+                      show: false, //开启显示
+                      position: 'top', //在上方显示
+                      textStyle: {
+                        //数值样式
+                        color: '#d71309',
+                        fontSize: 12,
+                        fontWeight: 400,
+                      },
+                      formatter: function (res) {
+                        console.log(res, res.value, '666');
+                        if (res.value) {
+                          return res.value + '%';
+                        } else {
+                          return 0;
+                        }
+                      },
+                    },
+                  },
+                },
+                lineStyle: {
+                  color: '#d71309',
+                },
                 data: Object.values(dmcCount.value).map((item) => item.payout),
+              },
+            ],
+            color: ['#4474c4', '#d71309'],
+          };
+
+          //   chartOptions2
+          chartOptions2.value = {
+            backgroundColor: '#fff',
+            title: {
+              text: `Balance Analysis`,
+              textStyle: {
+                fontSize: '14px',
+                color: '#4c5093',
+                fontWeight: 'bold',
+              },
+            },
+            legend: {
+              top: '0%',
+              right: '5%',
+              icon: 'circle',
+            },
+            tooltip: {
+              show: true,
+              trigger: 'axis',
+              backgroundColor: 'rgba(255,255,255)',
+              axisPointer: {
+                lineStyle: {
+                  color: {
+                    type: 'linear',
+                    x: 0,
+                    y: 0,
+                    x2: 0,
+                    y2: 1,
+                    colorStops: [
+                      {
+                        offset: 0,
+                        color: '#A7D6FF',
+                      },
+                      {
+                        offset: 0.5,
+                        color: '#fff',
+                      },
+                      {
+                        offset: 1,
+                        color: '#A7D6FF',
+                      },
+                    ],
+                    global: false,
+                  },
+                },
+              },
+            },
+            grid: {
+              top: '20%',
+              left: '30px',
+              right: '8%',
+              bottom: '20%',
+            },
+            xAxis: {
+              type: 'category',
+              axisLabel: {
+                rotate: 45,
+                fontSize: 10,
+              },
+              data: Object.keys(dmcCount.value).map((item) => {
+                let start_time = moment(item.split('~')[0]).format('MM-D');
+                let end_time = moment(item.split('~')[1]).format('MM-D');
+                if (timeType.value == 'Week' || timeType.value == 'Day') {
+                  return start_time;
+                } else {
+                  return start_time + '/' + end_time;
+                }
+              }),
+            },
+            yAxis: {
+              type: 'value',
+              name: 'DMC',
+              axisLabel: {
+                show: true,
+                inside: true, // 指定刻度显示在右侧,
+                margin: -20,
+                textStyle: {
+                  color: '#4816a0',
+                  fontSize: 10,
+                },
+              },
+              axisLine: {
+                show: false,
+              },
+              axisTick: {
+                show: false,
+              },
+              splitLine: {
+                lineStyle: {
+                  color: 'rgba(131,101,101,0.2)',
+                  type: 'dashed',
+                },
+              },
+              show: true,
+            },
+
+            series: [
+              {
+                areaStyle: {},
+                name: 'Balance',
+                type: 'line',
+                zlevel: 11,
+                yAxisIndex: 0, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
+                smooth: true, //平滑曲线显示
+                symbol: 'circle', //标记的图形为实心圆
+                symbolSize: 8, //标记的大小
+                itemStyle: {
+                  normal: {
+                    color: '#4816a0',
+                    borderColor: 'rgb(63, 30, 146,0.5)', //圆点透明 边框
+                    borderWidth: 5,
+                    label: {
+                      show: false, //开启显示
+                      position: 'top', //在上方显示
+                      textStyle: {
+                        //数值样式
+                        color: '#d71309',
+                        fontSize: 12,
+                        fontWeight: 400,
+                      },
+                      formatter: function (res) {
+                        console.log(res, res.value, '666');
+                        if (res.value) {
+                          return res.value + '%';
+                        } else {
+                          return 0;
+                        }
+                      },
+                    },
+                  },
+                },
+                lineStyle: {
+                  color: '#4816a0',
+                },
+                data: Object.values(dmcCount.value).map((item) => item.balance),
               },
             ],
             color: ['#4474c4', '#d71309'],
@@ -474,14 +830,24 @@
   }
 
   const getLineOptions = () => {
-    const dateList = listData.value.map((el) => 'Order: ' + el.order_id);
-    const valueList = listData.value.map((el) => el.profit);
-    orderChartOption.value = barOption(dateList, valueList, 'Earn Analysis');
+    _listData.value = listData.value.filter((el) => el.profit > 0);
+    const dateList = _listData.value.map((el) => 'Order: ' + el.order_id);
+    const valueList = _listData.value.map((el) => el.profit);
+    orderChartOption.value = barOption(dateList, valueList, 'Bucket Reward Analysis');
     orderChartOption.value.xAxis[0].show = true;
     orderChartOption.value.grid[0] = {
       left: '30px',
       right: '10px',
       bottom: '30px',
+    };
+    orderChartOption.value.tooltip = {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow',
+      },
+      formatter: function (params) {
+        return params[0].axisValueLabel + '<br/>' + 'Reward' + ' : + ' + params[0].data + ' DMC';
+      },
     };
   };
 
@@ -517,14 +883,22 @@
     border-radius: 20px;
     background: $primary-color;
     background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
-
+    .Analysis_title {
+      color: #fff;
+      font-weight: bold;
+      height: 50px;
+      line-height: 50px;
+      padding-left: 10px;
+      margin: 30px 0 0px 0;
+    }
     .top_assets {
       display: flex;
       width: 100%;
       justify-content: flex-end;
       align-items: flex-end;
+      align-items: center;
       color: #fff;
-      height: 250px;
+      //   height: 250px;
 
       .top_grid {
         border: none;
@@ -540,6 +914,7 @@
           //   max-width: 25%;
           // }
           .nut-grid-item__content {
+            position: relative;
             border-radius: 16px;
             margin: 5px;
             padding: 10px 12px;
@@ -579,11 +954,35 @@
             .banlance_text {
               text-decoration: none;
               color: var(--nut-grid-item-text-color, var(--nut-title-color2, #666666));
+              color: #4c5093;
+              font-size: 28px;
+            }
+            .banlance_text2 {
+              color: green;
+              text-decoration: none;
+              font-size: 28px;
             }
 
             .banlance_text1 {
               text-decoration: none;
-              color: #dfa1a1;
+              font-size: 28px;
+              color: red;
+            }
+          }
+        }
+        .top_grid_item {
+          .question_tips {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: #000;
+            cursor: pointer;
+            &:hover {
+              transform: scale(1.1);
+            }
+            img {
+              width: 40px;
+              height: 40px;
             }
           }
         }
@@ -669,7 +1068,7 @@
   .income_charts {
     width: 100%;
     min-height: 400px;
-    height: 800px;
+    height: 500px;
   }
 
   .list_box {
@@ -764,6 +1163,104 @@
       &:last-child {
         border-bottom: none;
       }
+    }
+  }
+</style>
+<style lang="scss">
+  :root {
+    --primary-light: #8abdff;
+    --primary: #6d5dfc;
+    --primary-dark: #5b0eeb;
+
+    --white: #ffffff;
+    --greyLight-1: #e4ebf5;
+    --greyLight-2: #c8d0e7;
+    --greyLight-3: #bec8e4;
+    --greyDark: #9baacf;
+  }
+  $shadow:
+    0.3rem 0.3rem 0.6rem var(--greyLight-2),
+    -0.2rem -0.2rem 0.5rem var(--white);
+  $inner-shadow:
+    inset 0.2rem 0.2rem 0.5rem var(--greyLight-2),
+    inset -0.2rem -0.2rem 0.5rem var(--white);
+  .analysis_assets_tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.8);
+    .segmented-control {
+      width: 18.4rem;
+      height: 4rem;
+      box-shadow: $shadow;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      position: relative;
+      box-shadow:
+        0.3rem 0.3rem 0.6rem #4a35b4,
+        -0.2rem -0.2rem 0.5rem #5758a0;
+      font-weight: bold;
+
+      input {
+        display: none;
+        font-weight: bold;
+      }
+
+      > input:checked + label {
+        transition: all 0.5s ease;
+        color: var(--primary);
+        font-weight: bold;
+      }
+
+      &__1,
+      &__2,
+      &__3 {
+        width: 8.8rem;
+        height: 3.6rem;
+        font-size: 1.4rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        color: var(--greyDark);
+        transition: all 0.5s ease;
+
+        &:hover {
+          color: var(--primary);
+        }
+      }
+
+      &__color {
+        position: absolute;
+        height: 3.4rem;
+        width: 8.8rem;
+        margin-left: 0.3rem;
+        border-radius: 0.8rem;
+        box-shadow: $inner-shadow;
+        pointer-events: none;
+      }
+    }
+
+    #tab-1:checked ~ .segmented-control__color {
+      transform: translateX(0);
+      transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    #tab-2:checked ~ .segmented-control__color {
+      transform: translateX(8.8rem);
+      transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    #tab-3:checked ~ .segmented-control__color {
+      transform: translateX(13.6rem);
+      transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+  }
+  .order_profit_title {
+    padding-left: 20px;
+    font-weight: bold;
+    span {
+      font-size: 20px;
+      font-weight: normal;
     }
   }
 </style>

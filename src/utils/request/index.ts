@@ -52,6 +52,7 @@ service.interceptors.response.use(
         userStore.setToken('');
         userStore.setRefreshToken('');
         userStore.setCloudCodeIsBind(false);
+        userStore.setcurStepIndex(1);
         router.push('/login');
         return;
       } else if (code === 420) {
@@ -90,7 +91,6 @@ service.interceptors.response.use(
     if (ignoreUrl.indexOf(error.config.url) > -1) {
       return Promise.reject(error.message);
     }
-    showToast.fail(error.config.url, error.message);
     return Promise.reject(error.message);
   },
 );
