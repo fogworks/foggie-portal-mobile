@@ -25,7 +25,14 @@ export default function useOrderInfo() {
   const orderInfo2 = computed(() => getOrderInfoList.value(orderInfo.value?.uuid));
   let headerProx = new Prox.default.ProxHeader();
   // let header = new Prox.default.ProxHeader();
-  const header = computed(() => orderInfo2.value?.header);
+  const header = computed(() => {
+    let headerProx2 = new Prox.default.ProxHeader();
+    headerProx2.setPeerid(orderInfo2.value?.header?.array?.[0]);
+    headerProx2.setId(orderInfo2.value?.header?.array?.[1]);
+    headerProx2.setToken(orderInfo2.value?.header?.array?.[2]);
+    headerProx2.setApptype(orderInfo2.value?.header?.array?.[3]);
+    return headerProx2;
+  });
   const secretAccessKey = computed(() => orderInfo2.value?.secretAccessKey);
   const accessKeyId = computed(() => orderInfo2.value?.accessKeyId);
   const metadata = computed(() => orderInfo2.value?.metadata);
@@ -67,10 +74,48 @@ export default function useOrderInfo() {
     });
     try {
       let res = await get_unique_order({ order_uuid: uuid || route?.query?.uuid });
-      orderInfo.value = res.result.data;
+      const resData = res.result.data;
+      // orderInfo.value.amb_uuid = resData.amb_uuid;
+      // orderInfo.value.benchmark = resData.benchmark;
+      // orderInfo.value.bill_id = resData.bill_id;
+      // orderInfo.value.created_at = resData.created_at;
+      // orderInfo.value.device_type = resData.device_type;
+      // orderInfo.value.domain = resData.domain;
+      // orderInfo.value.electronic_type = resData.electronic_type;
+      // orderInfo.value.expire = resData.expire;
+      // orderInfo.value.fault = resData.fault;
+      // orderInfo.value.foggie_id = resData.foggie_id;
+      // orderInfo.value.foggie_version = resData.foggie_version;
+      // orderInfo.value.id = resData.id;
+      // orderInfo.value.income = resData.income;
+      // orderInfo.value.is_domain = resData.is_domain;
+      // orderInfo.value.memo = resData.memo;
+      // orderInfo.value.miner = resData.miner;
+      // orderInfo.value.mp_address = resData.mp_address;
+      // orderInfo.value.mp_domain = resData.mp_domain;
+      // orderInfo.value.orderId = resData.orderId;
+      // orderInfo.value.order_created_at = resData.order_created_at;
+      // orderInfo.value.peer_id = resData.peer_id;
+      // orderInfo.value.pool_type = resData.pool_type;
+      // orderInfo.value.pool_wallet_acc = resData.pool_wallet_acc;
+      // orderInfo.value.price = resData.price;
+      // orderInfo.value.pst = resData.pst;
+      // orderInfo.value.result = resData.result;
+      // orderInfo.value.rpc = resData.rpc;
+      // orderInfo.value.sign = resData.sign;
+      // orderInfo.value.state = resData.state;
+      // orderInfo.value.total_price = resData.total_price;
+      // orderInfo.value.total_space = resData.total_space;
+      // orderInfo.value.transaction_id = resData.transaction_id;
+      // orderInfo.value.used_space = resData.used_space;
+      // orderInfo.value.user = resData.user;
+      // orderInfo.value.uuid = resData.uuid;
+      orderInfo.value = resData;
       bucketName.value = orderInfo.value.domain;
       orderInfo.value.used_space = 0;
       if (!isError.value && header.value && accessKeyId.value && secretAccessKey.value && metadata.value) {
+        console.log(orderInfo.value?.uuid, 'orderInfo.value?.uuid;');
+        console.log(orderInfo2.value, 'orderInfo2');
         showToast.hide('order_info_id');
         return true;
       }
@@ -119,9 +164,11 @@ export default function useOrderInfo() {
             // secretAccessKey.value = res.array[0][0][1];
             orderSignInfo.value.accessKeyId = res.array[0][0][0];
             orderSignInfo.value.secretAccessKey = res.array[0][0][1];
-            await orderStore.setOrderInfoList(orderInfo.value.uuid, orderSignInfo.value);
+            console.log(orderSignInfo.value, 'orderSignInfo.value');
+            await orderStore.setOrderInfoList(orderInfo.value.uuid, JSON.parse(JSON.stringify(orderSignInfo.value)));
+            // await orderStore.setOrderInfoList(orderInfo.value.uuid, orderSignInfo.value);
             showToast.hide('order_info_id');
-            console.log(secretAccessKey.value, 'secretAccessKey111111111');
+            console.log(res.array[0][0][1], 'secretAccessKey111111111');
             resolve(true);
           }
         });

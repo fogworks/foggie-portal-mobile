@@ -677,6 +677,17 @@
       isReady.value = true;
     });
   };
+  const refresh3 = () => {
+    imgDetailShow.value = false;
+    timeLine.value = [];
+    dateTimeLine.value = [];
+    tableData.value = [];
+    imgData.value = [];
+    imgArray.value = [];
+    imgCheckedData.value = {};
+    isReady.value = false;
+    imgIndex.value = 0;
+  };
   const refresh2 = () => {
     emits('refresh');
   };
@@ -850,7 +861,8 @@
       return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
     }
   }
-  defineExpose({ refresh });
+
+  defineExpose({ refresh, refresh3 });
   watch(
     isReady,
     (val) => {
@@ -883,6 +895,7 @@
   watch(
     secretAccessKey,
     (val) => {
+      console.log(val, 'secretAccessKeysecretAccessKey');
       if (val) {
         imgDetailShow.value = false;
         timeLine.value = [];

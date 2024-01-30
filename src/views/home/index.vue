@@ -369,7 +369,7 @@
         </div>
       </nut-popup>
     </Teleport>
-
+    <!-- 
     <ActionComponent
       v-model:fileItemPopupIsShow="fileItemPopupIsShow"
       v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
@@ -398,7 +398,7 @@
       @swipeChange="swipeChange"
       @clickFIleItemDetail="clickFIleItemDetail"
       @clickFIleItem="clickFIleItem"
-    ></ActionComponent>
+    ></ActionComponent> -->
   </div>
 </template>
 
@@ -932,10 +932,23 @@
     order_uuid.value = item.uuid;
     showRight.value = false;
     if (order_uuid.value) {
+      if (imgListRef?.value) {
+        imgListRef?.value?.refresh3();
+      }
       await getOrderInfo(true, order_uuid.value);
       getFileList();
+      // if (imgListRef?.value) {
+      //   imgListRef?.value?.refresh();
+      // }
     }
   };
+  watch(
+    secretAccessKey,
+    (val) => {
+      console.log(val, 'secretAccessKey');
+    },
+    { deep: true, immediate: true },
+  );
   const refresh = async () => {
     detailShow.value = false;
     if (order_uuid.value) {
@@ -1008,6 +1021,7 @@
     console.log('ip:', ip);
     console.log('metadata.value:', metadata.value);
     console.log('metadata.value:', JSON.stringify(metadata.value));
+    console.log('header.value:', header.value);
 
     server = new grpcService.default.ServiceClient(ip, null, null);
     let listObject = new Prox.default.ProxListObjectsRequest();
@@ -1026,6 +1040,8 @@
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
+    console.log('requestReq.value:', requestReq);
+
     server.listObjects(
       requestReq,
       metadata.value,
