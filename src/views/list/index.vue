@@ -153,17 +153,27 @@
           <div class="order_status order_status2" v-else>To be activated </div>
         </div>
       </template>
-      <div v-if="!order_uuid" style="margin-top: 2rem; text-align: center" class="list_item order_item order_not">
+      <div style="margin-top: 2rem; text-align: center">
         <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button> -->
-        <div class="plus_bucket" @click="choose({ name: 'Require space' })">
-          <IconPlus></IconPlus>
+        <div style="display: flex; justify-content: center; align-items: center">
+          <div class="plus_bucket" @click="toBuy">
+            <IconPlus></IconPlus>
+          </div>
+          <img src="@/assets/home_bucket.png" alt="" />
         </div>
-        <p>Require space</p>
+        <p>Buy Bucket</p>
       </div>
     </nut-infinite-loading>
     <nut-empty v-else description=" " image="error">
-      <div style="margin-top: 10px" v-if="!listData.length">
-        <nut-button icon="refresh" type="primary" @click="toBuy">Require space</nut-button>
+      <div style="margin-top: 2rem; text-align: center" v-if="!listData.length">
+        <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button> -->
+        <div style="display: flex; justify-content: center; align-items: center">
+          <div class="plus_bucket" @click="toBuy">
+            <IconPlus></IconPlus>
+          </div>
+          <img src="@/assets/home_bucket.png" alt="" />
+        </div>
+        <p>Buy a new Bucket</p>
       </div>
     </nut-empty>
     <Teleport to="body">
@@ -226,7 +236,6 @@
             -
             <nut-input placeholder="Max Price" v-model="searchForm.max" type="number" />
           </nut-form-item>
-
           <div class="bottom_btn">
             <nut-button type="warning" plain :loading="SearchLoading" @click="toReset"> Reset </nut-button>
             <nut-button type="warning" @click="toSearch" :disabled="searchDisabled" :loading="SearchLoading"> Search </nut-button>
@@ -266,7 +275,7 @@
     1: 'Consensus reached',
     2: 'Insufficient advance deposit to cancel the next cycle',
     3: 'Sufficient funds in advance',
-    4: 'Order over',
+    4: 'Bucket over',
     5: 'Canceled',
     6: 'Cancellation of the next cycle',
   };
@@ -275,7 +284,7 @@
     { text: 'Consensus reached', value: 1 },
     { text: 'Insufficient advance deposit to cancel the next cycle', value: 2 },
     { text: 'Sufficient funds in advance', value: 3 },
-    { text: 'Order over', value: 4 },
+    { text: 'Bucket over', value: 4 },
     { text: 'Canceled', value: 5 },
     { text: 'Cancellation of the next cycle', value: 6 },
   ];
@@ -602,18 +611,30 @@
 
 <style lang="scss" scoped>
   .plus_bucket {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 3rem;
     height: 3rem;
-    margin: 0 auto;
+    margin: 0 0.2rem;
     border-radius: 50%;
     border: 1px dashed #777;
     svg {
       width: 1.5rem;
       height: 1.5rem;
       color: #777;
+    }
+    & + img {
+      width: 3rem;
+      height: 3rem;
+      margin: 0 0.2rem;
+      border-radius: 50%;
+    }
+    & + p {
+      margin-top: 0.5rem;
+      margin: 0.5rem;
+      text-align: left;
     }
   }
   .order_num {

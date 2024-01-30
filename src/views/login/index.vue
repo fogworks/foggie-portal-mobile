@@ -6,8 +6,8 @@
     </div>
 
     <!-- <h1>Login</h1> -->
-    <nut-tabs v-model="activeType">
-      <template #titles>
+    <van-tabs animated v-model:active="activeType">
+      <template #title>
         <div class="tab_header">
           <div :class="[activeType == 1 ? 'isChecked' : '']" @click="activeType = '1'">
             <IconEth></IconEth>
@@ -20,7 +20,14 @@
           </div>
         </div>
       </template>
-      <nut-tab-pane pane-key="1">
+      <van-tab name="1">
+        <template #title>
+          <div class="tab_header">
+            <div :class="[activeType == 1 ? 'isChecked' : '']" @click="activeType = '1'">
+              <IconEth></IconEth>
+            </div>
+          </div>
+        </template>
         <p> Sign in with Ethereum </p>
         <div class="login-img" @click.stop="loginWithMeta">
           <span>Metamask</span>
@@ -29,8 +36,15 @@
         <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
           Sign in with Metamask</nut-button
         >
-      </nut-tab-pane>
-      <nut-tab-pane pane-key="2">
+      </van-tab>
+      <van-tab name="2">
+        <template #title>
+          <div class="tab_header">
+            <div :class="[activeType == 2 ? 'isChecked' : '']" @click="activeType = '2'">
+              <IconLink></IconLink>
+            </div>
+          </div>
+        </template>
         <p> Sign in with Git Provider Or Google </p>
         <div class="login-img" @click.stop="githubLogin">
           <span>Github</span>
@@ -40,8 +54,19 @@
           <span>Google</span>
           <img src="@/assets/google-logo.svg" class="img-google" />
         </div>
-      </nut-tab-pane>
-      <nut-tab-pane pane-key="3">
+        <!-- <div class="login-img" @click.stop="weChatLogin">
+          <span>WeChat</span>
+          <img src="@/assets/wechat.png" class="img-google" />
+        </div> -->
+      </van-tab>
+      <van-tab name="3">
+        <template #title>
+          <div class="tab_header">
+            <div :class="[activeType == 3 ? 'isChecked' : '']" @click="activeType = '3'">
+              <IconEmail></IconEmail>
+            </div>
+          </div>
+        </template>
         <p> Sign in with Email </p>
         <nut-form ref="ruleForm" :model-value="loginForm">
           <nut-form-item required prop="email" :rules="[{ required: true, message: 'E-mail' }]">
@@ -74,8 +99,8 @@
             <span class="password_login" @click="router.push('/register')">create an account?</span>
           </div>
         </nut-form>
-      </nut-tab-pane>
-    </nut-tabs>
+      </van-tab>
+    </van-tabs>
     <p class="power"> Powered by Fog Works, Inc. </p>
   </div>
 </template>
@@ -104,7 +129,7 @@
     oauth_url,
   } from '@/api';
   // import router from '@/router';
-  import { useRouter } from 'vue-router';
+  import { useRouter, useRoute } from 'vue-router';
   import { reactive, ref, onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { showToast } from '@nutui/nutui';
@@ -172,6 +197,7 @@
 
   const { wallets, connectWallet, disconnectConnectedWallet, connectedWallet } = useOnboard();
   const router = useRouter();
+  const route = useRoute();
   const bcryptjs = require('bcryptjs');
   // import bcryptjs from 'bcryptjs';
   const userStore = useUserStore();
@@ -293,8 +319,11 @@
                         userStore.setRefreshToken(refresh_token);
                         // getUserInfo();
                         loading.value = false;
-
-                        router.push({ path: '/home' });
+                        if (route.query?.publicKey) {
+                          router.push({ path: '/scanQRCodes', query: { publicKey: route.query?.publicKey } });
+                        } else {
+                          router.push({ path: '/home' });
+                        }
 
                         // this.getUserInfo();
                         // this.$emit("login");
@@ -433,18 +462,9 @@
       duration: 0,
     });
     const provider = await detectEthereumProvider();
-    // if (provider == window.ethereum && provider) {
-    //   if (!connectedWallet?.value?.accounts?.[0]?.address) await connectWallet();
-    //   let address = connectedWallet?.value?.accounts?.[0]?.address;
-    //   if (!address) {
-    //     disconnectConnectedWallet();
-    //     return false;
-    //   }
-    //   await checkWallet(address);
-    // } else {
-    //   window.open('https://metamask.app.link/dapp/https://amb.u2i.net');
-    //   // metaOpen();
-    // }
+    //  const ethereum = MMSDK.getProvider() // You can also access via window.ethereum
+
+    //     ethereum.request({ method: 'eth_requestAccounts' })
 
     if (provider == window.ethereum && provider) {
       try {
@@ -518,6 +538,20 @@
       }
     });
   };
+  const weChatLogin = () => {
+    const data = {
+      redirect: redirectUrl,
+      state: {},
+      device_type: 1,
+      login_type: 2,
+    };
+    oauth_url(data).then((res) => {
+      if (res?.data.redirect_url) {
+        console.log('-------google', res.data.redirect_url);
+        window.location.href = res.data.redirect_url;
+      }
+    });
+  };
 
   onMounted(async () => {
     setTimeout(() => {
@@ -548,15 +582,15 @@
   .login {
     position: relative;
     justify-content: flex-start;
-    height: 100vh;
+    height: 100%;
     .tab_header {
       width: 100%;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      align-items: center;
-      box-shadow: rgb(14 28 232 / 30%) 0px 0px 0px 3px;
+      // display: grid;
+      // grid-template-columns: repeat(3, 1fr);
+      // align-items: center;
+      // box-shadow: rgb(14 28 232 / 30%) 0px 0px 0px 3px;
       color: #fff;
-      background-color: #ffffff1c;
+      // background-color: #ffffff1c;
       > div {
         display: flex;
         justify-content: center;
@@ -567,36 +601,58 @@
           color: hsl(0, 0%, 43.5%);
           color: #fff;
         }
-        &.isChecked {
-          background: hsl(209, 95%, 90.1%);
-          background: hsl(242.31deg 79.6% 82.69%);
-          svg {
-            color: hsl(211, 100%, 43.2%);
-            color: #fff;
-          }
-        }
+        // &.isChecked {
+        //   background: hsl(209, 95%, 90.1%);
+        //   background: hsl(242.31deg 79.6% 82.69%);
+        //   svg {
+        //     color: hsl(211, 100%, 43.2%);
+        //     color: #fff;
+        //   }
+        // }
       }
     }
     :deep {
-      .nut-tabs {
-        border-radius: 1rem;
+      .van-tabs__line {
+        display: none;
       }
-      .nut-tabs__titles {
-        background-color: #fff;
-        background-color: #ffffff1c;
-        // border-bottom: 1px solid #ccc;
-      }
-      .nut-tab-pane {
-        // background-color: transparent;
-        p {
-          font-weight: 700;
+      .van-tab--active {
+        background: hsl(209, 95%, 90.1%);
+        background: hsl(242.31deg 79.6% 82.69%);
+        svg {
+          color: hsl(211, 100%, 43.2%);
+          color: #fff;
         }
+      }
+      .van-tabs {
+        border-radius: 1rem;
+        overflow: hidden;
         box-shadow:
           rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
           rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
           rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-        color: #fff;
+      }
+      .van-tabs__nav {
+        // background-color: #fff;
         background-color: #ffffff1c;
+        // border-bottom: 1px solid #ccc;
+      }
+      .van-tabs__content {
+        padding: 1.5rem 1rem;
+        color: #fff;
+      }
+      .van-tab {
+        // background-color: transparent;
+        //  box-shadow:
+        //   rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+        //   rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+        //   rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+        color: #fff;
+
+        p {
+          font-weight: 700;
+        }
+
+        // background-color: #ffffff1c;
       }
       .nut-form-item {
         border: 1px solid #ccc;
@@ -606,11 +662,12 @@
       color: #fff;
     }
     .power {
-      position: absolute;
+      position: fixed;
       bottom: 2rem;
       left: 50%;
       transform: translateX(-50%);
       width: 100%;
+      margin-top: 2rem;
       text-align: center;
       color: #d0d0d0;
       color: #fff;
@@ -671,7 +728,7 @@
     cursor: pointer;
     font-weight: bold;
     // border-bottom: 0.1px solid #fff;
-    box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
+    // box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
     margin: 14px 0;
     cursor: pointer;
     &:hover {

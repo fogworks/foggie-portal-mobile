@@ -50,6 +50,8 @@
         </router-link>
       </template>
     </nut-popup>
+
+    <div id="scanLine"></div>
   </div>
 </template>
 
@@ -60,13 +62,14 @@
   import { CloseLittle, Image } from '@nutui/icons-vue';
   import { Html5Qrcode } from 'html5-qrcode';
   import { ref, onBeforeUnmount, onMounted } from 'vue';
-  import { useRouter } from 'vue-router';
+  import { useRouter, useRoute } from 'vue-router';
   import { showToast } from '@nutui/nutui';
 
   const userStore = useUserStore();
   const { vibrate, isSupported } = useVibrate({ pattern: [300, 100, 300] });
   const router = useRouter();
-  const isPopupShow = ref(false);
+  const route = useRoute();
+  const isPopupShow = ref(route.query?.publicKey ? true : false);
   const total = ref(0);
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
   const goBack = async () => {
@@ -114,7 +117,6 @@
   }
 
   const html5QrCode = ref();
-
   async function getCameras() {
     if (html5QrCode.value) {
       await stop();
@@ -124,8 +126,9 @@
       .then((devices) => {
         if (devices && devices.length) {
           html5QrCode.value = new Html5Qrcode('reader');
-          console.log('html5QrCode---', html5QrCode.value);
-          start(); //扫码
+          if (!route.query?.publicKey) {
+            start(); //扫码
+          }
         }
       })
       .catch((err) => {
@@ -161,6 +164,8 @@
       .then((ignore) => {
         // QR Code scanning is stopped.
         console.log('QR Code scanning stopped.');
+        const scanLine = document.getElementById('scanLine');
+        scanLine.style.animation = 'none';
       })
       .catch((err) => {
         // Stop failed, handle it.
@@ -228,16 +233,23 @@
   // 扫码成功
 
   async function scanQRSuccess(params) {
-    vibrate();
-    // loadUserMedia();
-    await generate_signInfo(params);
+    const regex = /publicKey=([^&]+)/;
+    const match = params.match(regex);
+    const publicKey = match ? match[1] : null;
+    if (publicKey) {
+      vibrate();
+      // loadUserMedia();
+      await generate_signInfo(publicKey);
+    }
   }
 
   /* 生成签名 */
   const publicKey = ref(''); //公钥
   const signature = ref(''); //签名
 
-  const signData = ref({});
+  const signData = ref({
+    payload: {},
+  });
 
   async function generate_signInfo(params) {
     await generate_signInfoAPi(params)
@@ -248,6 +260,13 @@
           isPopupShow.value = true;
           publicKey.value = res.data.public_key;
           signature.value = res.data.signature;
+          signData.value.payload.user_info = true;
+
+          update_signInfoAPi(publicKey.value, signData.value).then((res) => {
+            console.log('update_signInfoAPi--success-1');
+          }).catch((error) => {
+            console.log('update_signInfoAPi--error---1', error);
+          });
         }
       })
       .catch((error) => {
@@ -257,47 +276,37 @@
 
   /* 确认授权 */
   function ConfirmAuthorization(row) {
-
-    // let params = {
-    //   bucketName: row.domain,
-    //   amb_uuid: row.amb_uuid,
-    //   user_uuid: row.user_uuid,
-    //   uuid: row.uuid,
-    //   week: row.week,
-    //   order_id: row.order_id,
-    //   pst: row.pst,
-    //   total_space: row.total_space,
-    //   state: row.state,
-    //   userAvatar:userAvatar.value,
-    // };
-    // let params = {
-    //   domain: row.domain,
-    //   order_uuid: row.uuid,
-    // };
-    // params = Object.assign(params, signData.value);
-    // console.log(params, 'params-------------');
     signData.value.payload.domain = row.domain;
     signData.value.payload.order_uuid = row.uuid;
-    update_signInfoAPi(publicKey.value, signData.value).then((res) => {
-      console.log(res);
-      showToast.success('Scan successful');
-      stop();
-      goBack();
-    }).catch((error) => {
-      console.log('update_signInfoAPi----111222', error);
-      showToast.success('Scan successful');
-      stop();
-      goBack();
-    });
+    signData.value.payload.user_info = false;
+    update_signInfoAPi(publicKey.value || route.query?.publicKey, signData.value)
+      .then((res) => {
+        console.log(res);
+        showToast.success('Scan successful');
+        stop();
+        goBack();
+      })
+      .catch((error) => {
+        console.log('update_signInfoAPi----111222', error);
+        showToast.success('Scan successful');
+        stop();
+        goBack();
+      });
   }
 
   /* 弹窗弹起时停止扫码 防止重复扫码调用接口 */
   watch(isPopupShow, (newVal) => {
     if (html5QrCode.value) {
-      if (html5QrCode.value.getState() == 2) {
-        html5QrCode.value.pause();
-      } else if (html5QrCode.value.getState() == 3) {
-        html5QrCode.value.resume();
+      if (newVal) {
+        if (html5QrCode.value.getState() == 2) {
+          html5QrCode.value.pause();
+        }
+      } else {
+        if (html5QrCode.value.getState() == 3) {
+          html5QrCode.value.resume();
+        } else if (html5QrCode.value.getState() == 1) {
+          start();
+        }
       }
     }
   });
@@ -377,6 +386,17 @@
       background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
   }
+  #reader {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 100%;
+
+    // video {
+    //   object-fit: cover !important;
+    //   height: 100vh !important;
+    // }
+  }
 </style>
 <style lang="scss" scoped>
   .qrcode {
@@ -420,11 +440,32 @@
       }
     }
   }
+  #scanLine {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 2px;
+    width: 90%;
+    background-color: red; /* 扫描横线的颜色 */
+    animation: scanAnimation 3s linear infinite; /* 扫描动画 */
+  }
 
-  #reader {
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    height: 100%;
+  @keyframes scanAnimation {
+    0% {
+      top: 10vh;
+      opacity: 0;
+    }
+    50% {
+      top: 50vh;
+      opacity: 1;
+      background: linear-gradient(to right, rgba(0, 0, 255, 0) 0%, rgba(0, 0, 255, 1) 50%, rgba(0, 0, 255, 0) 100%); /* 蓝色渐变效果 */
+      height: 3px;
+    }
+    100% {
+      top: 80vh;
+      opacity: 0;
+      background: linear-gradient(to right, rgba(0, 0, 255, 0) 0%, rgb(113, 113, 237) 50%, rgba(0, 0, 255, 0) 100%); /* 蓝色渐变效果 */
+    }
   }
 </style>

@@ -392,7 +392,7 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3) {
       if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
         shareRefContent.ipfsStr = '';
-        showToast.fail('File size exceeds 1% of the order space size, sharing is not supported');
+        showToast.fail('File size exceeds 1% of the bucket space size, sharing is not supported');
       } else {
         if (!pinData.item.isPin) {
           cloudPin(pinData.item, 'ipfs', '', isMobileDevice.value ? periodValue.value[0] : periodValue.value);

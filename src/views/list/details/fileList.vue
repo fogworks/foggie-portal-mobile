@@ -1741,7 +1741,7 @@
       );
       if (
         dirFile === decodeURIComponent(currentFolderStr) ||
-        (message.action === 'FILE_DELETE' && dirFile.charAt(dirFile.length - 1) === '/')
+        dirFile.charAt(dirFile.length - 1) === '/'
       ) {
         if (detailShow.value) {
           setTimeout(() => {
@@ -1929,8 +1929,12 @@
         }
       }
     } else if (action === 'FILE_PIN') {
-      tableData.value.map((el: { cid: any; isPin: boolean }) => {
+      const  curName = fileInfo.keys[0];
+      const curDir = window.sessionStorage.getItem('currentFolder')
+      tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
         if (el.cid === cid[0]) {
+          el.isPin = true;
+        } else if (curName.charAt(curName.length - 1) === '/' && decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)) {
           el.isPin = true;
         }
       });

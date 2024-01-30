@@ -246,9 +246,28 @@
   import moment from 'moment';
 
   let server;
-  const { isAvailableOrder, header, metadata, deviceType, orderInfo, bucketName, accessKeyId, secretAccessKey, getOrderInfo } =
-    useOrderInfo();
+  // const { isAvailableOrder, header, metadata, deviceType, orderInfo, bucketName, accessKeyId, secretAccessKey, getOrderInfo } =
+  //   useOrderInfo();
 
+  const imgCheckedData = reactive({
+    value: {},
+  });
+  const emits = defineEmits(['update:checkedData', 'refresh', 'touchRow', 'touchmoveRow', 'touchendRow']);
+  const props = defineProps({
+    isCheckMode: Boolean,
+    order_uuid: String,
+    handleImg: Function,
+    isAvailableOrder: Boolean,
+    header: Object,
+    metadata: Object,
+    orderInfo: Object,
+    bucketName: String,
+    accessKeyId: String,
+    secretAccessKey: String,
+    deviceType: String,
+  });
+  const { order_uuid, handleImg, isAvailableOrder, header, metadata, orderInfo, bucketName, accessKeyId, secretAccessKey, deviceType } =
+    toRefs(props);
   const {
     httpCopyLink,
     copyLink,
@@ -271,24 +290,14 @@
     cloudPin,
     copyIPFS,
     copyNft,
-  } = useShare(orderInfo, header, deviceType, metadata);
+  } = useShare(orderInfo.value, header, deviceType, metadata);
   const isMobileOrder = computed(() => {
-    if (orderInfo.value.electronic_type == '0') {
+    if (orderInfo.value.value.electronic_type == '0') {
       return true;
     } else {
       return false;
     }
   });
-  const imgCheckedData = reactive({
-    value: {},
-  });
-  const emits = defineEmits(['update:checkedData', 'refresh', 'touchRow', 'touchmoveRow', 'touchendRow']);
-  const props = defineProps({
-    isCheckMode: Boolean,
-    order_uuid: String,
-    handleImg: Function,
-  });
-  const { order_uuid, handleImg } = toRefs(props);
   // const handleImg = inject('handleImg');
   const actionRef = ref('');
   const showPop = ref(false);
@@ -332,41 +341,20 @@
     () => {
       refresh2();
     },
-    orderInfo,
+    orderInfo.value,
     header,
     metadata,
   );
-  watch(
-    order_uuid,
-    async (val) => {
-      if (val) {
-        imgDetailShow.value = false;
-        timeLine.value = [];
-        dateTimeLine.value = [];
-        tableData.value = [];
-        imgData.value = [];
-        imgArray.value = [];
-        imgCheckedData.value = {};
-        isReady.value = false;
-        imgIndex.value = 0;
-        await getOrderInfo(true, val);
-        refresh();
-      }
-    },
-    {
-      deep: true,
-      immediate: true,
-    },
-  );
+
   // onMounted(async () => {
   //   await getOrderInfo(true, order_uuid.value);
   //   init();
   // });
   const showImgList = async () => {
     showPop.value = true;
-    isReady.value = false;
-    await getOrderInfo(true, order_uuid.value);
-    init();
+    // isReady.value = false;
+    // await getOrderInfo(true, order_uuid.value);
+    // init();
   };
   const init = async () => {
     tableData.value = [];
@@ -426,6 +414,8 @@
         ProxTimeLine.setInterval(interval);
         ProxTimeLine.setDate(date);
         ProxTimeLine.setCategory(1);
+        console.log(ip, 'ip');
+        console.log(ProxTimeLine, 'ProxTimeLine');
         server.getTimeLine(ProxTimeLine, metadata.value, (err, data) => {
           if (data) {
             const content = data.getContentsList().map((el) => {
@@ -588,7 +578,7 @@
       imgData.value = [];
     }
     if (!accessKeyId.value) {
-      await getOrderInfo(true, order_uuid.value);
+      // await getOrderInfo(true, order_uuid.value);
     }
     let promiseArray = data?.content?.map(async (el, index) => {
       let date = transferTime(el.lastModified);
@@ -868,6 +858,49 @@
       getFileList();
     },
     { deep: true },
+  );
+  watch(
+    order_uuid,
+    async (val) => {
+      if (val) {
+        imgDetailShow.value = false;
+        timeLine.value = [];
+        dateTimeLine.value = [];
+        tableData.value = [];
+        imgData.value = [];
+        imgArray.value = [];
+        imgCheckedData.value = {};
+        isReady.value = false;
+        imgIndex.value = 0;
+        // await getOrderInfo(true, val);
+      }
+    },
+    {
+      deep: true,
+      immediate: true,
+    },
+  );
+  watch(
+    secretAccessKey,
+    (val) => {
+      if (val) {
+        imgDetailShow.value = false;
+        timeLine.value = [];
+        dateTimeLine.value = [];
+        tableData.value = [];
+        imgData.value = [];
+        imgArray.value = [];
+        imgCheckedData.value = {};
+        isReady.value = false;
+        imgIndex.value = 0;
+        // await getOrderInfo(true, val);
+        refresh();
+      }
+    },
+    {
+      deep: true,
+      immediate: true,
+    },
   );
 </script>
 
