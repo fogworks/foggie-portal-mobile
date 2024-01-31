@@ -30,7 +30,7 @@
       >
         <div class="optionBox">
           <template v-if="isAvailableOrder">
-            <div @click="handlerClick('share')">
+            <div @click="handlerClick('share')" v-if="!chooseItem.isDir">
               <IconShare color="#222224 "></IconShare>
               <span>Share</span>
             </div>

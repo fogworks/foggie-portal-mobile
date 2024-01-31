@@ -124,6 +124,7 @@
             <nut-input-number
               @focus="buyDisabled = true"
               @blur="buyDisabled = false"
+              :max="9999999999"
               :min="100"
               decimal-places="0"
               v-model="shopForm.quantity"
@@ -404,6 +405,7 @@
       // showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
       showBuy.value = false;
       loading.value = false;
+      showTop.value = false;
       const dmcOk = () => {
         router.push({ path: '/recharge', query: { rechargeDMC } });
       };
@@ -694,6 +696,13 @@
   }
 </style>
 <style lang="scss" scoped>
+  .nut-input-text {
+    :deep {
+      input {
+        width: 5rem;
+      }
+    }
+  }
   .price_box_text {
     width: 100%;
     display: inline-block;

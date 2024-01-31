@@ -713,14 +713,7 @@
         }
       });
     } else {
-      let prefix;
-      if (row.isDir) {
-        prefix = detailRow.value.fullName.split('/').slice(0, -2);
-      } else {
-        prefix = detailRow.value.fullName.split('/').slice(0, -1);
-      }
-      console.log(detailRow.value.fullName, prefix);
-
+      let prefix = detailRow.value.fullName.split('/').slice(0, -1);
       router.push({
         name: 'FileList',
         query: { ...route.query, category: 0, prefix: prefix.join('/'), bucketName: bucketName.value },
@@ -1416,7 +1409,7 @@
         isDir: true,
         checked: false,
         name,
-        category: 1,
+        category: 0,
         fileType: 1,
 
         fullName: data.commonPrefixes[i],

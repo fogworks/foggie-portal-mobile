@@ -9,20 +9,25 @@
           </template>
         </nut-image> -->
         <div v-for="index in 4">
-          <nut-image @click="showImgList" fit="cover" v-if="index <= 3 && tableData[index - 1]" :src="tableData[index - 1].imgUrl">
+          <nut-image
+            @click="showImgList"
+            fit="cover"
+            v-if="index <= isAvailableOrder ? 3 : 4 && tableData[index - 1]"
+            :src="tableData[index - 1].imgUrl"
+          >
             <template #loading>
               <Loading width="16px" height="16px" name="loading" />
             </template>
           </nut-image>
-          <slot v-if="index == 4"></slot>
+          <slot v-if="index == 4 && isAvailableOrder"></slot>
         </div>
       </div>
       <div class="out_img_box" v-else>
         <img @click="showImgList" src="@/assets/bucketPhoto0.svg" alt="" />
         <img @click="showImgList" src="@/assets/bucketPhoto1.svg" alt="" />
         <img @click="showImgList" src="@/assets/bucketPhoto2.svg" alt="" />
-        <!-- <img src="@/assets/bucketPhoto3.svg" alt="" /> -->
-        <slot></slot>
+        <img @click="showImgList" v-if="!isAvailableOrder" src="@/assets/bucketPhoto3.svg" alt="" />
+        <slot v-else></slot>
       </div>
     </div>
     <Teleport to="body">
@@ -685,7 +690,6 @@
     imgData.value = [];
     imgArray.value = [];
     imgCheckedData.value = {};
-    isReady.value = false;
     imgIndex.value = 0;
   };
   const refresh2 = () => {
@@ -867,7 +871,10 @@
     isReady,
     (val) => {
       // getFileList('', '', true);
-      getFileList();
+      if (val) {
+        console.log(val, 'readyyyyyyyyyyyyy');
+        getFileList();
+      }
     },
     { deep: true },
   );
@@ -882,7 +889,7 @@
         imgData.value = [];
         imgArray.value = [];
         imgCheckedData.value = {};
-        isReady.value = false;
+        // isReady.value = false;
         imgIndex.value = 0;
         // await getOrderInfo(true, val);
       }
@@ -895,8 +902,8 @@
   watch(
     secretAccessKey,
     (val) => {
-      console.log(val, 'secretAccessKeysecretAccessKey');
       if (val) {
+        console.log(val, 'secretAccessKeysecretAccessKey');
         imgDetailShow.value = false;
         timeLine.value = [];
         dateTimeLine.value = [];

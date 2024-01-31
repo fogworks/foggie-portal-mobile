@@ -27,13 +27,7 @@
             v-model="imgCheckedData.value[item.dateId]"
             @change="(val) => handleCheckedItemsChange(val, item)"
           >
-            <div
-              :class="['img-item']"
-              v-for="(img, index2) in item.list"
-              @pointerdown="emits('touchRow', img)"
-              @pointermove="emits('touchmoveRow', img)"
-              @pointerup="emits('touchendRow', img)"
-            >
+            <div :class="['img-item']" v-for="(img, index2) in item.list" @click="imgClick(img)">
               <div :class="['mask', isCheckMode ? 'isChecking' : '']">
                 <nut-checkbox
                   :class="['mask-checkbox', isCheckMode && itemChecked(img.cid, item.dateId) ? 'itemChecked' : '']"
@@ -87,14 +81,14 @@
     value: {},
   });
   const isMobileOrder = inject('isMobileOrder');
-  const emits = defineEmits(['update:checkedData', 'touchRow', 'touchmoveRow', 'touchendRow']);
+  const emits = defineEmits(['update:checkedData', 'rowClick', 'touchRow', 'touchmoveRow', 'touchendRow']);
   const props = defineProps({
     orderId: [String, Number],
     isCheckMode: Boolean,
     mintType: String,
   });
   const handleImg = inject('handleImg');
-  const { orderId, mintType } = toRefs(props);
+  const { orderId, mintType, isCheckMode } = toRefs(props);
   const resetChecked = () => {
     imgCheckedData.value = {};
     refCheckAll();
@@ -123,6 +117,12 @@
     } else {
       return false;
     }
+  };
+  const imgClick = (item) => {
+    if (isCheckMode.value) {
+      return false;
+    }
+    emits('rowClick', item);
   };
   const timeLine = ref([]);
   const dateTimeLine = ref([]);

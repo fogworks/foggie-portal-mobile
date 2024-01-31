@@ -371,7 +371,7 @@
         </div>
       </nut-popup>
     </Teleport>
-    <!-- 
+
     <ActionComponent
       v-model:fileItemPopupIsShow="fileItemPopupIsShow"
       v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
@@ -400,7 +400,7 @@
       @swipeChange="swipeChange"
       @clickFIleItemDetail="clickFIleItemDetail"
       @clickFIleItem="clickFIleItem"
-    ></ActionComponent> -->
+    ></ActionComponent>
   </div>
 </template>
 
@@ -786,12 +786,7 @@
       imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
       detailShow.value = true;
     } else {
-      let prefix;
-      if (row.isDir) {
-        prefix = detailRow.value.fullName.split('/').slice(0, -2);
-      } else {
-        prefix = detailRow.value.fullName.split('/').slice(0, -1);
-      }
+      let prefix = detailRow.value.fullName.split('/').slice(0, -1);
       console.log(detailRow.value.fullName, prefix);
 
       router.push({
@@ -934,9 +929,6 @@
     order_uuid.value = item.uuid;
     showRight.value = false;
     if (order_uuid.value) {
-      if (imgListRef?.value) {
-        imgListRef?.value?.refresh3();
-      }
       await getOrderInfo(true, order_uuid.value);
       getFileList();
       // if (imgListRef?.value) {
@@ -1187,7 +1179,7 @@
         isDir: true,
         checked: false,
         name,
-        category: 1,
+        category: 0,
         fileType: 1,
 
         fullName: data.commonPrefixes[i],

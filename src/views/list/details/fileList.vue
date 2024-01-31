@@ -202,6 +202,7 @@
       v-model:checkedData="imgCheckedData"
       @cancelSelect="cancelSelect"
       @selectAll="selectAll"
+      @rowClick="rowClick"
       @touchRow="touchRow"
       @touchmoveRow="touchmoveRow"
       @touchendRow="touchendRow"
@@ -684,6 +685,8 @@
     });
   };
   const rowClick = (row) => {
+    console.log(row, 'row');
+
     if (row.isDir) {
       checkedItem.value = [];
       keyWord.value = '';
@@ -1354,7 +1357,7 @@
         isDir: true,
         checked: false,
         name,
-        category: 1,
+        category: 0,
         fileType: 1,
 
         fullName: data.commonPrefixes[i],
@@ -1739,10 +1742,7 @@
         dirFile === decodeURIComponent(currentFolderStr),
         dirFileName !== uploadFileName,
       );
-      if (
-        dirFile === decodeURIComponent(currentFolderStr) ||
-        dirFile.charAt(dirFile.length - 1) === '/'
-      ) {
+      if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
         if (detailShow.value) {
           setTimeout(() => {
             initWebSocket();
@@ -1929,12 +1929,15 @@
         }
       }
     } else if (action === 'FILE_PIN') {
-      const  curName = fileInfo.keys[0];
-      const curDir = window.sessionStorage.getItem('currentFolder')
+      const curName = fileInfo.keys[0];
+      const curDir = window.sessionStorage.getItem('currentFolder');
       tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
         if (el.cid === cid[0]) {
           el.isPin = true;
-        } else if (curName.charAt(curName.length - 1) === '/' && decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)) {
+        } else if (
+          curName.charAt(curName.length - 1) === '/' &&
+          decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
+        ) {
           el.isPin = true;
         }
       });
