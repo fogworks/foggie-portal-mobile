@@ -44,6 +44,7 @@ declare module 'vue' {
     NutSticky: typeof import('@nutui/nutui')['Sticky']
     NutTabbar: typeof import('@nutui/nutui')['Tabbar']
     NutTabbarItem: typeof import('@nutui/nutui')['TabbarItem']
+    NutTag: typeof import('@nutui/nutui')['Tag']
     NutTextarea: typeof import('@nutui/nutui')['Textarea']
     NutUploader: typeof import('@nutui/nutui')['Uploader']
     NutVideo: typeof import('@nutui/nutui')['Video']
@@ -58,5 +59,7 @@ declare module 'vue' {
     VanImagePreview: typeof import('vant/es')['ImagePreview']
     VanSwipe: typeof import('vant/es')['Swipe']
     VanSwipeItem: typeof import('vant/es')['SwipeItem']
+    VanTab: typeof import('vant/es')['Tab']
+    VanTabs: typeof import('vant/es')['Tabs']
   }
 }
