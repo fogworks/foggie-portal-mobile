@@ -33,9 +33,16 @@
           <span>Metamask</span>
           <div class="img-metamask"><MetaMask></MetaMask></div>
         </div>
-        <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
+        <div class="login-img" @click.stop="loginWithOKX">
+          <span>OKX</span>
+          <div class="img-metamask">
+            <img style="margin: 0; border-radius: 10px" src="@/assets/okx.webp" alt="" />
+          </div>
+        </div>
+
+        <!-- <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
           Sign in with Metamask</nut-button
-        >
+        > -->
       </van-tab>
       <van-tab name="2">
         <template #title>
@@ -54,10 +61,10 @@
           <span>Google</span>
           <img src="@/assets/google-logo.svg" class="img-google" />
         </div>
-        <!-- <div class="login-img" @click.stop="weChatLogin">
+        <div class="login-img" @click.stop="weChatLogin">
           <span>WeChat</span>
           <img src="@/assets/wechat.png" class="img-google" />
-        </div> -->
+        </div>
       </van-tab>
       <van-tab name="3">
         <template #title>
@@ -208,6 +215,7 @@
     captcha_id: '',
     login_type: 'password',
   });
+  const wallet_type = ref<any>('');
   const timer = ref<any>('');
   const nonce = ref<string>('');
   const codeSrc = ref<any>('');
@@ -252,8 +260,8 @@
 
     ruleForm.value.validate().then(async ({ valid, errors }: any) => {
       if (valid) {
-        let isPass = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? true : false;
-        // let isPass = true;
+        // let isPass = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? true : false;
+        let isPass = true;
         if (!isPass) {
           try {
             loading.value = true;
@@ -451,7 +459,10 @@
       });
   };
   const metaOpen = inject('metaOpen');
+  const OKXOpen = inject('OKXOpen');
+
   const loginWithMeta = async () => {
+    wallet_type.value = 'metamask';
     showToast.loading('Connecting', {
       cover: true,
       customClass: 'app_loading',
@@ -486,6 +497,38 @@
       metaOpen();
     }
   };
+  const loginWithOKX = async () => {
+    wallet_type.value = 'okx';
+    showToast.loading('Connecting', {
+      cover: true,
+      customClass: 'app_loading',
+      coverColor: 'rgba(0,0,0,0.45)',
+      icon: loadingImg,
+      loadingRotate: false,
+      id: 'login',
+      duration: 0,
+    });
+
+    if (typeof window.okxwallet !== 'undefined') {
+      try {
+        await window.okxwallet.request({
+          method: 'eth_requestAccounts',
+          params: [],
+        });
+        accountsList.value = await window.okxwallet.request({
+          method: 'eth_accounts',
+          params: [],
+        });
+      } catch (err) {
+        showToast.hide('login');
+      }
+      await checkWallet(accountsList.value[0]);
+    } else {
+      showToast.hide('login');
+      OKXOpen();
+    }
+  };
+
   const signUniSatMessage = async (message = 'qianming') => {
     try {
       let res = await window.unisat.signMessage(message);
@@ -628,7 +671,7 @@
         overflow: hidden;
         box-shadow:
           rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
-          rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+          rgba(0, 0, 0, 0.3) 0px 30px 30px -30px,
           rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
       }
       .van-tabs__nav {
@@ -639,6 +682,7 @@
       .van-tabs__content {
         padding: 1.5rem 1rem;
         color: #fff;
+        min-height: 15rem;
       }
       .van-tab {
         // background-color: transparent;
