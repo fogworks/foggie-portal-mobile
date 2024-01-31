@@ -234,10 +234,14 @@
 
               <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else src="@/assets/svg/home/file.svg" alt="" />
+              <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
             </div>
             <div class="name_box">
               <p>{{ item.name }}</p>
               <p>{{ item.date || '' }}</p>
+            </div>
+            <div class="right_radio" @click.stop>
+              <MoreX @click="clickFIleItem(item)" width="40px" height="25px" />
             </div>
           </div>
         </div>
@@ -357,7 +361,7 @@
 
 <script setup lang="ts">
   import ActionComponent from './actionComponent.vue';
-  import { Loading } from '@nutui/icons-vue';
+  import { Loading, MoreX } from '@nutui/icons-vue';
   import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
   // import recycleFill from '~icons/home/recycle-fill';
@@ -378,6 +382,7 @@
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconMore from '~icons/home/more.svg';
   import IconImage from '~icons/home/image.svg';
+  import IconPlay from '~icons/home/play.svg';
   import IconDocument from '~icons/home/document.svg';
   import IconVideo from '~icons/home/video.svg';
   //   import IconMdiF from '~icons/mdi/file-cloud';
@@ -2212,6 +2217,17 @@
       .list_item {
         .left_icon_box {
           position: relative;
+          img {
+            vertical-align: middle;
+          }
+          .play_icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.2rem;
+            height: 1.2rem;
+          }
         }
       }
     }
@@ -2269,7 +2285,7 @@
       }
 
       .name_box {
-        width: calc(100% - 180px);
+        width: calc(100% - 200px);
         margin-left: 30px;
 
         p:first-child {
@@ -2702,10 +2718,18 @@
             width: 80px;
             height: 80px;
           }
+          .play_icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.2rem;
+            height: 1.2rem;
+          }
         }
 
         .name_box {
-          width: calc(100% - 180px);
+          width: calc(100% - 200px);
           margin-left: 30px;
 
           p:first-child {

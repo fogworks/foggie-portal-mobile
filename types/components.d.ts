@@ -28,7 +28,6 @@ declare module 'vue' {
     NutImage: typeof import('@nutui/nutui')['Image']
     NutInfiniteLoading: typeof import('@nutui/nutui')['InfiniteLoading']
     NutInput: typeof import('@nutui/nutui')['Input']
-    NutInputNumber: typeof import('@nutui/nutui')['InputNumber']
     NutMenu: typeof import('@nutui/nutui')['Menu']
     NutMenuItem: typeof import('@nutui/nutui')['MenuItem']
     NutOverlay: typeof import('@nutui/nutui')['Overlay']
@@ -38,7 +37,6 @@ declare module 'vue' {
     NutProgress: typeof import('@nutui/nutui')['Progress']
     NutRadio: typeof import('@nutui/nutui')['Radio']
     NutRadioGroup: typeof import('@nutui/nutui')['RadioGroup']
-    NutRange: typeof import('@nutui/nutui')['Range']
     NutRow: typeof import('@nutui/nutui')['Row']
     NutSearchbar: typeof import('@nutui/nutui')['Searchbar']
     NutStep: typeof import('@nutui/nutui')['Step']
@@ -46,7 +44,6 @@ declare module 'vue' {
     NutSticky: typeof import('@nutui/nutui')['Sticky']
     NutTabbar: typeof import('@nutui/nutui')['Tabbar']
     NutTabbarItem: typeof import('@nutui/nutui')['TabbarItem']
-    NutTag: typeof import('@nutui/nutui')['Tag']
     NutTextarea: typeof import('@nutui/nutui')['Textarea']
     NutUploader: typeof import('@nutui/nutui')['Uploader']
     NutVideo: typeof import('@nutui/nutui')['Video']
@@ -61,7 +58,5 @@ declare module 'vue' {
     VanImagePreview: typeof import('vant/es')['ImagePreview']
     VanSwipe: typeof import('vant/es')['Swipe']
     VanSwipeItem: typeof import('vant/es')['SwipeItem']
-    VanTab: typeof import('vant/es')['Tab']
-    VanTabs: typeof import('vant/es')['Tabs']
   }
 }

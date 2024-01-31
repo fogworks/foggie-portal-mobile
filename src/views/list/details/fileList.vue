@@ -168,6 +168,7 @@
                 </nut-image>
                 <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
                 <img v-else src="@/assets/svg/home/file.svg" alt="" />
+                <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
               </template>
             </div>
             <div class="name_box">
@@ -198,14 +199,12 @@
       ref="imgListRef"
       :orderId="route.query.id"
       :mintType="mintType"
+      v-model:imgArray="imgArray"
       v-model:isCheckMode="isCheckMode"
       v-model:checkedData="imgCheckedData"
       @cancelSelect="cancelSelect"
       @selectAll="selectAll"
       @rowClick="rowClick"
-      @touchRow="touchRow"
-      @touchmoveRow="touchmoveRow"
-      @touchendRow="touchendRow"
       v-else
     ></ImgList>
 
@@ -334,13 +333,12 @@
   import ActionComponent from './actionComponent.vue';
   import IconCopy from '~icons/home/copy.svg';
   import IconBucket from '~icons/home/bucket.svg';
+  import IconPlay from '~icons/home/play.svg';
   import IconHttp2 from '~icons/home/http2.svg';
   // import IconIPFS from '~icons/home/ipfs.svg';
   import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
-
   import ErrorPage from '@/views/errorPage/index.vue';
   import FlashLight from '~icons/ri/flashlight-fill';
-
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNft from '~icons/home/nft.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
@@ -685,8 +683,6 @@
     });
   };
   const rowClick = (row) => {
-    console.log(row, 'row');
-
     if (row.isDir) {
       checkedItem.value = [];
       keyWord.value = '';
@@ -2497,6 +2493,15 @@
         width: 80px;
         height: 80px;
         border-radius: 0.3rem;
+        vertical-align: middle;
+      }
+      .play_icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1.2rem;
+        height: 1.2rem;
       }
     }
     .name_box {

@@ -81,14 +81,15 @@
     value: {},
   });
   const isMobileOrder = inject('isMobileOrder');
-  const emits = defineEmits(['update:checkedData', 'rowClick', 'touchRow', 'touchmoveRow', 'touchendRow']);
+  const emits = defineEmits(['update:checkedData', 'rowClick', 'update:imgArray']);
   const props = defineProps({
     orderId: [String, Number],
     isCheckMode: Boolean,
     mintType: String,
+    imgArray: Array,
   });
   const handleImg = inject('handleImg');
-  const { orderId, mintType, isCheckMode } = toRefs(props);
+  const { orderId, mintType, isCheckMode, imgArray } = toRefs(props);
   const resetChecked = () => {
     imgCheckedData.value = {};
     refCheckAll();
@@ -338,6 +339,7 @@
         status: cid || file_id ? 'Published' : '-',
         type: el.contentType,
         file_id: file_id,
+        originalSize: el.size,
         pubkey: cid,
         cid,
         imgUrl: url,
@@ -347,6 +349,11 @@
         canShare: cid ? true : false,
         isPersistent,
       };
+      if (item.originalSize > 1024 * 1024 * 20) {
+        item.src = item.imgUrl;
+      } else {
+        item.src = item.imgUrlLarge;
+      }
       return item;
     });
     let content = await Promise.all(promiseArray);
@@ -358,6 +365,7 @@
       console.log(content, 'content');
       target.list = [...target.list, ...content];
       tableData.value = [...tableData.value, ...content];
+      emits('update:imgArray', tableData.value);
     }
     console.log(tableData.value, 'tableDatatableData');
     isEnd.value = dateTimeLine.value.findIndex((el) => el.date == dateKey) == dateTimeLine.value.length - 1;

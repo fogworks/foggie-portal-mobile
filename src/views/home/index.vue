@@ -239,7 +239,14 @@
           </div>
         </div> -->
         <div class="file_list file_list_img" v-if="imgData.length">
-          <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
+          <div
+            @click="handleRow(item)"
+            class="list_item"
+            style="border: none"
+            v-show="index < 10"
+            v-for="(item, index) in imgData"
+            :key="index"
+          >
             <nut-image show-loading show-error round radius="5px" :src="item.imgUrl" fit="cover" position="center">
               <template #loading>
                 <Loading width="16" height="16"></Loading>
@@ -256,13 +263,16 @@
               <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
               <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
               <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-
               <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else src="@/assets/svg/home/file.svg" alt="" />
+              <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
             </div>
             <div class="name_box">
               <p>{{ item.name }}</p>
               <p>{{ item.date || '' }}</p>
+            </div>
+            <div class="right_radio" @click.stop>
+              <MoreX @click="clickFIleItem(item)" width="40px" height="25px" />
             </div>
           </div>
         </div>
@@ -411,6 +421,7 @@
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
   import IconPlus from '~icons/home/plus.svg';
+  import IconPlay from '~icons/home/play.svg';
   import IconPlus2 from '~icons/home/add.svg';
   import IconAssets from '~icons/home/assets.svg';
   import IconHistory from '~icons/home/history.svg';
@@ -421,7 +432,7 @@
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
   import IconVideo from '~icons/home/video.svg';
-  import { Notice, TriangleUp, DouArrowUp, RectUp, Setting, Loading, Shop, Scan2 } from '@nutui/icons-vue';
+  import { Notice, TriangleUp, DouArrowUp, MoreX, RectUp, Setting, Loading, Shop, Scan2 } from '@nutui/icons-vue';
   import { toRefs, computed, reactive, ref, watch, watchEffect, createVNode } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
@@ -1938,6 +1949,14 @@
         border-top: 1px solid #eee;
         .left_icon_box {
           position: relative;
+          .play_icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.2rem;
+            height: 1.2rem;
+          }
         }
 
         .type_icon {
@@ -1959,10 +1978,11 @@
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          width: calc(100% - 180px);
+          width: calc(100% - 200px);
           margin-left: 30px;
 
           p:first-child {
+            width: 100%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
