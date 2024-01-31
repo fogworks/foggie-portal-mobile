@@ -2296,7 +2296,7 @@
 
   .income-card {
     position: relative;
-    padding: 40px;
+    padding: 40px 0 40px 40px;
     height: 410px;
     box-sizing: border-box;
     margin: 0;
@@ -2314,7 +2314,7 @@
       margin-left: 10px;
     }
     > img {
-      top: 30px;
+      top: 110px;
       position: absolute;
       right: 20px;
       width: 60px;
