@@ -518,6 +518,7 @@
   watch(
     fileItemPopupIsShow,
     (val) => {
+      console.log('111--------', chooseItem.value)
       fileItemPopupIsShow1.value = val;
     },
     { deep: true, immediate: true },

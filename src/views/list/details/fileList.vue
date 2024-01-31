@@ -1939,6 +1939,9 @@
           decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
         ) {
           el.isPin = true;
+          if (!el.cid && cid[0]) {
+            el.cid = cid[0];
+          }
         }
       });
     } else if (action === 'FILE_CHANGE') {
