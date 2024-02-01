@@ -30,11 +30,12 @@
       <!-- <IconSetting @click="showTop = true"></IconSetting> -->
       <!-- </p> -->
       <div class="price_box">
-        Annual Purchase Price: <br />
+        <span style="white-space: nowrap"> Estimated 24 weeks purchase price: </span>
+        <br />
         <span style="text-align: center; margin-bottom: 10px; color: #e5960f" class="price_box_text">
           100 GB = {{ middleTotalPrice }} DMC</span
         >
-        Estimated Annual Reward: <br />
+        Estimated 24 weeks reward: <br />
         <span style="text-align: center; color: #e5960f" class="price_box_text">
           + {{ (perGoldenPSTIncome * 100).toFixed(0) }} DMC/<span>100 GB </span></span
         >
