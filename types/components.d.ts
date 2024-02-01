@@ -57,6 +57,7 @@ declare module 'vue' {
     VanBackTop: typeof import('vant/es')['BackTop']
     VanDropdownItem: typeof import('vant/es')['DropdownItem']
     VanDropdownMenu: typeof import('vant/es')['DropdownMenu']
+    VanIcon: typeof import('vant/es')['Icon']
     VanImagePreview: typeof import('vant/es')['ImagePreview']
     VanSwipe: typeof import('vant/es')['Swipe']
     VanSwipeItem: typeof import('vant/es')['SwipeItem']

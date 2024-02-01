@@ -52,7 +52,7 @@
         min-length="12"></nut-input>
       <nut-checkbox v-model="isConfirm" class="isConfirmCheckbox" style="text-align: left;" icon-size="24">I understand the
         usage scenario of this
-        invitation code(official code is used by default)</nut-checkbox>
+        invitation code(official code is used by default,in case you don't have other code)</nut-checkbox>
       <template #footer>
         <nut-button type="primary" @click="bindAmbCodeDialogIsShow = false">Operate Later</nut-button>
         <nut-button type="primary" @click="bindUserAmbCode" :loading="userBindLoading"
@@ -113,19 +113,23 @@
   const curStepIndex = computed(() => userStore.getCurStepIndex); // 1 绑定大使邀请码
 
   watch(amb_promo_code, (newVal) => {
+      if (newVal) {
     userBindAmbCode.value = newVal
-  })
+    }
+  },{deep:true})
   // watchEffect(() => {
   //   if (uuid.value && !cloudCodeIsBind.value) {
   //     bindAmbCode()
   //   }
   // })
   const bindAmbCodeDialogIsShow = ref(false)
-  const userBindAmbCode = ref('amb8CYt0p')  // 用户想要绑定的ambcode
+  const userBindAmbCode = ref('')  // 用户想要绑定的ambcode
   const userBindLoading = ref(false)  // 用户绑定ambcode的 loading
   const isConfirm = ref(false)  //用户是否勾选已知 
   watch(bindAmbCodeDialogIsShow, () => {
+      if (!amb_promo_code.value) {
     userBindAmbCode.value='amb8CYt0p'
+}
   },{deep:true,immediate:true})
   
   const tabItem = [
