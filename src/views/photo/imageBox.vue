@@ -12,7 +12,7 @@
           <nut-image
             @click="showImgList"
             fit="cover"
-            v-if="index <= isAvailableOrder ? 3 : 4 && tableData[index - 1]"
+            v-if="index <= (isAvailableOrder ? 3 : 4) && tableData[index - 1]"
             :src="tableData[index - 1].imgUrl"
           >
             <template #loading>

@@ -44,6 +44,7 @@ declare module 'vue' {
     NutSticky: typeof import('@nutui/nutui')['Sticky']
     NutTabbar: typeof import('@nutui/nutui')['Tabbar']
     NutTabbarItem: typeof import('@nutui/nutui')['TabbarItem']
+    NutTag: typeof import('@nutui/nutui')['Tag']
     NutTextarea: typeof import('@nutui/nutui')['Textarea']
     NutUploader: typeof import('@nutui/nutui')['Uploader']
     NutVideo: typeof import('@nutui/nutui')['Video']
