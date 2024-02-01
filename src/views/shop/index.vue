@@ -33,7 +33,7 @@
         <span style="white-space: nowrap"> Estimated 24 weeks purchase price: </span>
         <br />
         <span style="text-align: center; margin-bottom: 10px; color: #e5960f" class="price_box_text">
-          100 GB = {{ middleTotalPrice }} DMC</span
+          100 GB = {{ middleTotalPrice2 }} DMC</span
         >
         Estimated 24 weeks reward: <br />
         <span style="text-align: center; color: #e5960f" class="price_box_text">
@@ -364,7 +364,14 @@
       (1 + state.shopForm.floating_ratio / 100);
     return total.toFixed(4);
   });
+  const middleTotalPrice2 = computed(() => {
+    console.log(middle_price.value);
 
+    let total =
+      (middle_price.value / 10000) * state.shopForm.week * state.shopForm.quantity +
+      (middle_price.value / 10000) * 1 * state.shopForm.quantity;
+    return total.toFixed(4);
+  });
   async function submit() {
     if (state.shopForm.quantity < 100) {
       showToast.text('Minimum number of spaces is 100');
