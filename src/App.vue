@@ -27,8 +27,6 @@
   provide('isMobileDevice', isMobileDevice);
   const metaOpen = () => {
     if (isMobileDevice.value) {
-      showToast.text(`https://metamask.app.link/dapp/${redirectUrl}`);
-
       window.open(`https://metamask.app.link/dapp/${redirectUrl}`);
       // window.open('https://metamask.app.link/dapp/https://amb.u2i.net');
     } else {

@@ -107,7 +107,7 @@
 
 <script lang="ts" setup name="LoginPage">
   // import { MetaMaskSDK } from '@metamask/sdk';
-  import injectedModule from '@web3-onboard/injected-wallets';
+  // import injectedModule from '@web3-onboard/injected-wallets';
   import { init, useOnboard } from '@web3-onboard/vue';
   import metamaskSDK from '@web3-onboard/metamask';
   import detectEthereumProvider from '@metamask/detect-provider';
@@ -137,6 +137,15 @@
   import { load_gpa_token } from '@/utils/util.ts';
   import { redirectUrl } from '@/setting.js';
   import Cookies from 'js-cookie';
+  // const MMSDK = new MetaMaskSDK(
+  //   {
+  //     dappMetadata: {
+  //       name: 'Example Pure JS Dapp',
+  //       url: window.location.href,
+  //     },
+  //   },
+  //   // Other options
+  // );
 
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -252,8 +261,8 @@
 
     ruleForm.value.validate().then(async ({ valid, errors }: any) => {
       if (valid) {
-        let isPass = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? true : false;
-        // let isPass = true;
+        // let isPass = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? true : false;
+        let isPass = true;
         if (!isPass) {
           try {
             loading.value = true;
@@ -462,12 +471,14 @@
       duration: 0,
     });
     const provider = await detectEthereumProvider();
+    // const ethereum = MMSDK.getProvider();
     //  const ethereum = MMSDK.getProvider() // You can also access via window.ethereum
 
     //     ethereum.request({ method: 'eth_requestAccounts' })
 
-    if (provider == window.ethereum && provider) {
+    if (provider == window.ethereum && provider && window.ethereum.isMetaMask) {
       try {
+        // await ethereum.request({ method: 'eth_requestAccounts' });
         await window.ethereum.request({
           method: 'eth_requestAccounts',
           params: [],
@@ -478,7 +489,6 @@
         });
       } catch (err) {
         showToast.hide('login');
-        showToast.text(err);
       }
       await checkWallet(accountsList.value[0]);
     } else {

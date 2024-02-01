@@ -245,9 +245,9 @@
           </nut-tabbar-item>
         </template>
 
-        <nut-tabbar-item tab-title="Download" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
+        <nut-tabbar-item tab-title="Download" :class="[selectArr.length < 1 || !isMobileOrder ? 'is-disable' : '']">
           <template #icon="props">
-            <IconDownload :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconDownload>
+            <IconDownload :color="selectArr.length >= 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconDownload>
           </template>
         </nut-tabbar-item>
         <nut-tabbar-item v-if="isAvailableOrder" tab-title="Delete" :class="[selectArr.length < 1 ? 'is-disable' : 'delete-item']">
@@ -964,7 +964,6 @@
       moveShow.value = true;
       // doSearch('', movePrefix.value, true);
     } else if (type === 'download') {
-      if (checkData.length > 1) return false;
       //   downLoad();
 
       // const bucketName = 'test11111';
@@ -974,35 +973,114 @@
 
       const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+        if (checkData.length > 1) return false;
+
         $cordovaPlugins.downloadFileHH(url, checkData[0].fullName, headers);
       } else {
         showToast.text('Coming soon for your download');
-        fetch(url, { method: 'GET', headers })
-          .then((response) => {
-            if (response.ok) {
-              // 创建一个 Blob 对象，并将响应数据写入其中
-              return response.blob();
-            } else {
-              // 处理错误响应
-              console.error('Error:', response.status, response.statusText);
-            }
-          })
-          .then((blob) => {
-            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = checkData[0].fullName;
+        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+        server = new grpcService.default.ServiceClient(ip, null, null);
+        let range = new Prox.default.ProxRangeRequest();
+        let request = null;
+        let stream;
+        let downloadName;
+        if (checkData.length == 1 && !checkData[0].isDir) {
+          request = new Prox.default.ProxGetRequest();
+          request.setHeader(header.value);
+          request.setRange(range);
+          request.setCid(checkData[0].cid);
+          request.setKey(encodeURIComponent(checkData[0].key));
+          request.setThumb(false);
+          console.log(request, 'request');
+          downloadName = checkData[0].name;
+          stream = server.getObject(request, metadata.value);
+        } else {
+          downloadName = 'download.zip';
+          let infoList = [];
 
-            // 将 <a> 元素添加到文档中，并模拟点击
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          })
-          .catch((error) => {
-            // 处理网络错误
-            console.error('Network Error:', error);
+          for (const item of checkData) {
+            let objs = new Prox.default.ProxGetInfo();
+            objs.setCid(item.cid);
+            objs.setKey(item.key);
+            infoList.push(objs);
+          }
+          request = new Prox.default.ProxGetRequests();
+          request.setHeader(header.value);
+          request.setRange(range);
+          request.setObjsList(infoList);
+          let prefixes = [];
+          let data = [];
+
+          checkData.forEach((el) => {
+            if (el.cid && !el.isDir) {
+              data.push({
+                cid: el.cid,
+                key: encodeURIComponent(el.fullName),
+              });
+            } else {
+              // prefixes.push(encodeURIComponent(el.fullName));
+              prefixes.push(el.fullName.replace('/', ''));
+            }
           });
+          request.setPrefixesList(JSON.parse(JSON.stringify(prefixes)));
+          stream = server.getObjects(request, metadata.value);
+        }
+        let chunks = [];
+        stream.on('data', (response) => {
+          console.log(response, 'response');
+
+          chunks.push(response.getChunk_asU8()); // 收集数据块
+        });
+
+        stream.on('status', (status) => {
+          console.log('Stream status:', status);
+        });
+
+        stream.on('end', (end) => {
+          let blob = new Blob(chunks, { type: 'application/octet-stream' }); // 创建 Blob 对象
+          let url = URL.createObjectURL(blob); // 为 Blob 创建 URL
+
+          // 创建隐藏的下载链接并触发点击
+          let a = document.createElement('a');
+          a.href = url;
+          a.download = downloadName; // 指定下载文件的名称
+          document.body.appendChild(a); // 将链接添加到文档中
+          a.click(); // 模拟点击进行下载
+          // 清理
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url); // 释放 Blob 对象的 URL
+          console.log('Stream end!', end);
+        });
+
+        stream.on('error', (error) => {
+          console.log('error----------upload', error);
+        });
       }
+      // fetch(url, { method: 'GET', headers })
+      //   .then((response) => {
+      //     if (response.ok) {
+      //       // 创建一个 Blob 对象，并将响应数据写入其中
+      //       return response.blob();
+      //     } else {
+      //       // 处理错误响应
+      //       console.error('Error:', response.status, response.statusText);
+      //     }
+      //   })
+      //   .then((blob) => {
+      //     // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+      //     const a = document.createElement('a');
+      //     a.href = URL.createObjectURL(blob);
+      //     a.download = checkData[0].fullName;
+
+      //     // 将 <a> 元素添加到文档中，并模拟点击
+      //     document.body.appendChild(a);
+      //     a.click();
+      //     document.body.removeChild(a);
+      //   })
+      //   .catch((error) => {
+      //     // 处理网络错误
+      //     console.error('Network Error:', error);
+      //   });
     } else if (type === 'delete') {
       const onOk = async () => {
         deleteItem(checkData);
@@ -1772,7 +1850,7 @@
     (val) => {
       if (val) {
         nextTick(() => {
-          if (chooseItem.value.originalSize > 1024 * 1024 * 20) {
+          if (chooseItem.value.originalSize > 1024 * 1024 * 20 && chooseItem.value.category == 1) {
             showToast.text('The file is too large, please download and view');
           }
         });

@@ -552,7 +552,7 @@
   function clickFIleItem(params) {
     detailRow.value = params;
     fileItemPopupIsShow.value = true;
-    if (detailRow.value.originalSize > 1024 * 1024 * 20) {
+    if (detailRow.value.originalSize > 1024 * 1024 * 200 && detailRow.value.category == 1) {
       showToast.text('The file is too large, please download and view');
     }
   }
