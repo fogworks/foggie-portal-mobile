@@ -29,13 +29,28 @@
           </div>
         </template>
         <p> Sign in with Ethereum </p>
-        <div class="login-img" @click.stop="loginWithMeta">
-          <span>Metamask</span>
-          <div class="img-metamask"><MetaMask></MetaMask></div>
-        </div>
-        <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
-          Sign in with Metamask</nut-button
-        >
+        <template v-if="isMobileDevice && !hasProvider">
+          <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
+            <div class="login-img">
+              <span style="color: #fff">Metamask</span>
+              <div class="img-metamask"><MetaMask></MetaMask></div>
+            </div>
+          </a>
+          <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
+            <nut-button block type="info" :loading="loading" style="margin-top: 30px; font-size: 16px">
+              Sign in with Metamask</nut-button
+            ></a
+          >
+        </template>
+        <template v-else>
+          <div class="login-img" @click.stop="loginWithMeta">
+            <span>Metamask</span>
+            <div class="img-metamask"><MetaMask></MetaMask></div>
+          </div>
+          <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
+            Sign in with Metamask</nut-button
+          >
+        </template>
       </van-tab>
       <van-tab name="2">
         <template #title>
@@ -217,6 +232,7 @@
     captcha_id: '',
     login_type: 'password',
   });
+  const hasProvider = ref<any>('');
   const timer = ref<any>('');
   const nonce = ref<string>('');
   const codeSrc = ref<any>('');
@@ -459,6 +475,7 @@
         showToast.hide('login');
       });
   };
+
   const metaOpen = inject('metaOpen');
   const loginWithMeta = async () => {
     showToast.loading('Connecting', {
@@ -564,6 +581,7 @@
   };
 
   onMounted(async () => {
+    hasProvider.value = await detectEthereumProvider();
     setTimeout(() => {
       const access_token = Cookies.get('access_token');
       const refresh_token = Cookies.get('refresh_token');

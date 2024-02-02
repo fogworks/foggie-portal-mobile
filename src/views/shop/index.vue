@@ -193,6 +193,10 @@
               >
             </div>
             <div class="row_box">
+              <span class="row_box_title">Lowest Limit Total</span>
+              <span class="row_box_value">{{ (+base_Price + +deposit_ratio_Price).toFixed(4) }} <span>DMC</span></span>
+            </div>
+            <div class="row_box">
               <span class="row_box_title">Upper Limit Total</span>
               <span class="row_box_value">{{ totalPrice }} <span>DMC</span></span>
             </div>
@@ -335,7 +339,7 @@
       .finally(() => {});
   };
   const deposit_ratio_Price = computed(() => {
-    return ((curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity).toFixed(4);
+    return ((curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity).toFixed(4) || '0';
   });
   const totalPrice = computed(() => {
     let baseTotal = (
@@ -352,7 +356,7 @@
   });
   const base_Price = computed(() => {
     let total = (curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity;
-    return total.toFixed(4);
+    return total.toFixed(4) || '0';
   });
 
   const middleTotalPrice = computed(() => {

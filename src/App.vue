@@ -27,7 +27,10 @@
   provide('isMobileDevice', isMobileDevice);
   const metaOpen = () => {
     if (isMobileDevice.value) {
-      window.open(`https://metamask.app.link/dapp/${redirectUrl}`);
+      // window.open(`https://metamask.app.link/dapp/${redirectUrl}`);
+      window.location.href = `https://metamask.app.link/dapp/${redirectUrl}`;
+
+      // window.open(`metamask://dapp/${redirectUrl}`);
       // window.open('https://metamask.app.link/dapp/https://amb.u2i.net');
     } else {
       window.open('https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn');
