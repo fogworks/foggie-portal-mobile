@@ -92,7 +92,7 @@
     confirmPassword: '',
     verifyPw: '',
     promo_code: '',
-    amb_promo_code: '',
+    amb_promo_code: 'amb8CYt0p',
   });
   const validatePass2 = (value: string) => {
     console.log(value);

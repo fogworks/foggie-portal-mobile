@@ -168,6 +168,7 @@
                 </nut-image>
                 <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
                 <img v-else src="@/assets/svg/home/file.svg" alt="" />
+                <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
               </template>
             </div>
             <div class="name_box">
@@ -198,13 +199,12 @@
       ref="imgListRef"
       :orderId="route.query.id"
       :mintType="mintType"
+      v-model:imgArray="imgArray"
       v-model:isCheckMode="isCheckMode"
       v-model:checkedData="imgCheckedData"
       @cancelSelect="cancelSelect"
       @selectAll="selectAll"
-      @touchRow="touchRow"
-      @touchmoveRow="touchmoveRow"
-      @touchendRow="touchendRow"
+      @rowClick="rowClick"
       v-else
     ></ImgList>
 
@@ -245,9 +245,9 @@
           </nut-tabbar-item>
         </template>
 
-        <nut-tabbar-item tab-title="Download" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
+        <nut-tabbar-item tab-title="Download" :class="[selectArr.length < 1 || !isMobileOrder ? 'is-disable' : '']">
           <template #icon="props">
-            <IconDownload :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconDownload>
+            <IconDownload :color="selectArr.length >= 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconDownload>
           </template>
         </nut-tabbar-item>
         <nut-tabbar-item v-if="isAvailableOrder" tab-title="Delete" :class="[selectArr.length < 1 ? 'is-disable' : 'delete-item']">
@@ -333,13 +333,12 @@
   import ActionComponent from './actionComponent.vue';
   import IconCopy from '~icons/home/copy.svg';
   import IconBucket from '~icons/home/bucket.svg';
+  import IconPlay from '~icons/home/play.svg';
   import IconHttp2 from '~icons/home/http2.svg';
   // import IconIPFS from '~icons/home/ipfs.svg';
   import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
-
   import ErrorPage from '@/views/errorPage/index.vue';
   import FlashLight from '~icons/ri/flashlight-fill';
-
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNft from '~icons/home/nft.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
@@ -965,7 +964,6 @@
       moveShow.value = true;
       // doSearch('', movePrefix.value, true);
     } else if (type === 'download') {
-      if (checkData.length > 1) return false;
       //   downLoad();
 
       // const bucketName = 'test11111';
@@ -975,35 +973,114 @@
 
       const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+        if (checkData.length > 1) return false;
+
         $cordovaPlugins.downloadFileHH(url, checkData[0].fullName, headers);
       } else {
         showToast.text('Coming soon for your download');
-        fetch(url, { method: 'GET', headers })
-          .then((response) => {
-            if (response.ok) {
-              // 创建一个 Blob 对象，并将响应数据写入其中
-              return response.blob();
-            } else {
-              // 处理错误响应
-              console.error('Error:', response.status, response.statusText);
-            }
-          })
-          .then((blob) => {
-            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = checkData[0].fullName;
+        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+        server = new grpcService.default.ServiceClient(ip, null, null);
+        let range = new Prox.default.ProxRangeRequest();
+        let request = null;
+        let stream;
+        let downloadName;
+        if (checkData.length == 1 && !checkData[0].isDir) {
+          request = new Prox.default.ProxGetRequest();
+          request.setHeader(header.value);
+          request.setRange(range);
+          request.setCid(checkData[0].cid);
+          request.setKey(encodeURIComponent(checkData[0].key));
+          request.setThumb(false);
+          console.log(request, 'request');
+          downloadName = checkData[0].name;
+          stream = server.getObject(request, metadata.value);
+        } else {
+          downloadName = 'download.zip';
+          let infoList = [];
 
-            // 将 <a> 元素添加到文档中，并模拟点击
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          })
-          .catch((error) => {
-            // 处理网络错误
-            console.error('Network Error:', error);
+          for (const item of checkData) {
+            let objs = new Prox.default.ProxGetInfo();
+            objs.setCid(item.cid);
+            objs.setKey(item.key);
+            infoList.push(objs);
+          }
+          request = new Prox.default.ProxGetRequests();
+          request.setHeader(header.value);
+          request.setRange(range);
+          request.setObjsList(infoList);
+          let prefixes = [];
+          let data = [];
+
+          checkData.forEach((el) => {
+            if (el.cid && !el.isDir) {
+              data.push({
+                cid: el.cid,
+                key: encodeURIComponent(el.fullName),
+              });
+            } else {
+              // prefixes.push(encodeURIComponent(el.fullName));
+              prefixes.push(el.fullName.replace('/', ''));
+            }
           });
+          request.setPrefixesList(JSON.parse(JSON.stringify(prefixes)));
+          stream = server.getObjects(request, metadata.value);
+        }
+        let chunks = [];
+        stream.on('data', (response) => {
+          console.log(response, 'response');
+
+          chunks.push(response.getChunk_asU8()); // 收集数据块
+        });
+
+        stream.on('status', (status) => {
+          console.log('Stream status:', status);
+        });
+
+        stream.on('end', (end) => {
+          let blob = new Blob(chunks, { type: 'application/octet-stream' }); // 创建 Blob 对象
+          let url = URL.createObjectURL(blob); // 为 Blob 创建 URL
+
+          // 创建隐藏的下载链接并触发点击
+          let a = document.createElement('a');
+          a.href = url;
+          a.download = downloadName; // 指定下载文件的名称
+          document.body.appendChild(a); // 将链接添加到文档中
+          a.click(); // 模拟点击进行下载
+          // 清理
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url); // 释放 Blob 对象的 URL
+          console.log('Stream end!', end);
+        });
+
+        stream.on('error', (error) => {
+          console.log('error----------upload', error);
+        });
       }
+      // fetch(url, { method: 'GET', headers })
+      //   .then((response) => {
+      //     if (response.ok) {
+      //       // 创建一个 Blob 对象，并将响应数据写入其中
+      //       return response.blob();
+      //     } else {
+      //       // 处理错误响应
+      //       console.error('Error:', response.status, response.statusText);
+      //     }
+      //   })
+      //   .then((blob) => {
+      //     // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+      //     const a = document.createElement('a');
+      //     a.href = URL.createObjectURL(blob);
+      //     a.download = checkData[0].fullName;
+
+      //     // 将 <a> 元素添加到文档中，并模拟点击
+      //     document.body.appendChild(a);
+      //     a.click();
+      //     document.body.removeChild(a);
+      //   })
+      //   .catch((error) => {
+      //     // 处理网络错误
+      //     console.error('Network Error:', error);
+      //   });
     } else if (type === 'delete') {
       const onOk = async () => {
         deleteItem(checkData);
@@ -1354,7 +1431,7 @@
         isDir: true,
         checked: false,
         name,
-        category: 1,
+        category: 0,
         fileType: 1,
 
         fullName: data.commonPrefixes[i],
@@ -1739,10 +1816,7 @@
         dirFile === decodeURIComponent(currentFolderStr),
         dirFileName !== uploadFileName,
       );
-      if (
-        dirFile === decodeURIComponent(currentFolderStr) ||
-        dirFile.charAt(dirFile.length - 1) === '/'
-      ) {
+      if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
         if (detailShow.value) {
           setTimeout(() => {
             initWebSocket();
@@ -1776,7 +1850,7 @@
     (val) => {
       if (val) {
         nextTick(() => {
-          if (chooseItem.value.originalSize > 1024 * 1024 * 20) {
+          if (chooseItem.value.originalSize > 1024 * 1024 * 20 && chooseItem.value.category == 1) {
             showToast.text('The file is too large, please download and view');
           }
         });
@@ -1929,13 +2003,19 @@
         }
       }
     } else if (action === 'FILE_PIN') {
-      const  curName = fileInfo.keys[0];
-      const curDir = window.sessionStorage.getItem('currentFolder')
+      const curName = fileInfo.keys[0];
+      const curDir = window.sessionStorage.getItem('currentFolder');
       tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
         if (el.cid === cid[0]) {
           el.isPin = true;
-        } else if (curName.charAt(curName.length - 1) === '/' && decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)) {
+        } else if (
+          curName.charAt(curName.length - 1) === '/' &&
+          decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
+        ) {
           el.isPin = true;
+          if (!el.cid && cid[0]) {
+            el.cid = cid[0];
+          }
         }
       });
     } else if (action === 'FILE_CHANGE') {
@@ -2491,6 +2571,15 @@
         width: 80px;
         height: 80px;
         border-radius: 0.3rem;
+        vertical-align: middle;
+      }
+      .play_icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1.2rem;
+        height: 1.2rem;
       }
     }
     .name_box {

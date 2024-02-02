@@ -5,10 +5,12 @@
         <IconSwitch @click="getList" v-show="curStepIndex == 4"></IconSwitch>
       </div>
       <div class="dmc_account_box">
-        Hello,
-        <router-link to="/member">
-          {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
-        </router-link>
+        <div>
+          Hello,
+          <router-link to="/member">
+            {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
+          </router-link>
+        </div>
         <div class="img-box">
           <nut-popover
             theme="dark"
@@ -237,7 +239,14 @@
           </div>
         </div> -->
         <div class="file_list file_list_img" v-if="imgData.length">
-          <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
+          <div
+            @click="handleRow(item)"
+            class="list_item"
+            style="border: none"
+            v-show="index < 10"
+            v-for="(item, index) in imgData"
+            :key="index"
+          >
             <nut-image show-loading show-error round radius="5px" :src="item.imgUrl" fit="cover" position="center">
               <template #loading>
                 <Loading width="16" height="16"></Loading>
@@ -254,13 +263,16 @@
               <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
               <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
               <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-
               <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else src="@/assets/svg/home/file.svg" alt="" />
+              <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
             </div>
             <div class="name_box">
               <p>{{ item.name }}</p>
               <p>{{ item.date || '' }}</p>
+            </div>
+            <div class="right_radio" @click.stop>
+              <MoreX @click="clickFIleItem(item)" width="40px" height="25px" />
             </div>
           </div>
         </div>
@@ -369,7 +381,7 @@
         </div>
       </nut-popup>
     </Teleport>
-    <!-- 
+
     <ActionComponent
       v-model:fileItemPopupIsShow="fileItemPopupIsShow"
       v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
@@ -398,7 +410,7 @@
       @swipeChange="swipeChange"
       @clickFIleItemDetail="clickFIleItemDetail"
       @clickFIleItem="clickFIleItem"
-    ></ActionComponent> -->
+    ></ActionComponent>
   </div>
 </template>
 
@@ -409,6 +421,7 @@
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
   import IconPlus from '~icons/home/plus.svg';
+  import IconPlay from '~icons/home/play.svg';
   import IconPlus2 from '~icons/home/add.svg';
   import IconAssets from '~icons/home/assets.svg';
   import IconHistory from '~icons/home/history.svg';
@@ -419,7 +432,7 @@
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
   import IconVideo from '~icons/home/video.svg';
-  import { Notice, TriangleUp, DouArrowUp, RectUp, Setting, Loading, Shop, Scan2 } from '@nutui/icons-vue';
+  import { Notice, TriangleUp, DouArrowUp, MoreX, RectUp, Setting, Loading, Shop, Scan2 } from '@nutui/icons-vue';
   import { toRefs, computed, reactive, ref, watch, watchEffect, createVNode } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
@@ -587,7 +600,7 @@
   function clickFIleItem(params) {
     detailRow.value = params;
     fileItemPopupIsShow.value = true;
-    if (detailRow.value.originalSize > 1024 * 1024 * 20) {
+    if (detailRow.value.originalSize > 1024 * 1024 * 20 && detailRow.value.category == 1) {
       showToast.text('The file is too large, please download and view');
     }
   }
@@ -784,12 +797,7 @@
       imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
       detailShow.value = true;
     } else {
-      let prefix;
-      if (row.isDir) {
-        prefix = detailRow.value.fullName.split('/').slice(0, -2);
-      } else {
-        prefix = detailRow.value.fullName.split('/').slice(0, -1);
-      }
+      let prefix = detailRow.value.fullName.split('/').slice(0, -1);
       console.log(detailRow.value.fullName, prefix);
 
       router.push({
@@ -932,9 +940,6 @@
     order_uuid.value = item.uuid;
     showRight.value = false;
     if (order_uuid.value) {
-      if (imgListRef?.value) {
-        imgListRef?.value?.refresh3();
-      }
       await getOrderInfo(true, order_uuid.value);
       getFileList();
       // if (imgListRef?.value) {
@@ -1185,7 +1190,7 @@
         isDir: true,
         checked: false,
         name,
-        category: 1,
+        category: 0,
         fileType: 1,
 
         fullName: data.commonPrefixes[i],
@@ -1944,6 +1949,14 @@
         border-top: 1px solid #eee;
         .left_icon_box {
           position: relative;
+          .play_icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.2rem;
+            height: 1.2rem;
+          }
         }
 
         .type_icon {
@@ -1965,10 +1978,11 @@
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          width: calc(100% - 180px);
+          width: calc(100% - 200px);
           margin-left: 30px;
 
           p:first-child {
+            width: 100%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -2122,8 +2136,8 @@
     // background: #5758a0;
     // margin: 0 -4vw;
     display: grid;
-    grid-template-columns: 100px auto;
-    gap: 30px;
+    grid-template-columns: 80px auto;
+    gap: 0px;
     align-items: center;
     height: 100px;
     padding: 10px 0 0 10px;
@@ -2139,7 +2153,8 @@
       font-weight: bold;
 
       display: flex;
-      justify-content: flex-end;
+      // justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
 
       font-size: 40px;
@@ -2301,7 +2316,7 @@
 
   .income-card {
     position: relative;
-    padding: 40px;
+    padding: 40px 0 40px 40px;
     height: 410px;
     box-sizing: border-box;
     margin: 0;
@@ -2319,7 +2334,7 @@
       margin-left: 10px;
     }
     > img {
-      top: 30px;
+      top: 110px;
       position: absolute;
       right: 20px;
       width: 60px;

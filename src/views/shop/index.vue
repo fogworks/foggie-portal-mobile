@@ -30,11 +30,12 @@
       <!-- <IconSetting @click="showTop = true"></IconSetting> -->
       <!-- </p> -->
       <div class="price_box">
-        Annual Purchase Price: <br />
+        <span style="white-space: nowrap"> Estimated 24 weeks purchase price: </span>
+        <br />
         <span style="text-align: center; margin-bottom: 10px; color: #e5960f" class="price_box_text">
-          100 GB = {{ middleTotalPrice }} DMC</span
+          100 GB = {{ middleTotalPrice2 }} DMC</span
         >
-        Estimated Annual Reward: <br />
+        Estimated 24 weeks reward: <br />
         <span style="text-align: center; color: #e5960f" class="price_box_text">
           + {{ (perGoldenPSTIncome * 100).toFixed(0) }} DMC/<span>100 GB </span></span
         >
@@ -124,6 +125,7 @@
             <nut-input-number
               @focus="buyDisabled = true"
               @blur="buyDisabled = false"
+              :max="9999999999"
               :min="100"
               decimal-places="0"
               v-model="shopForm.quantity"
@@ -189,6 +191,10 @@
               <span class="row_box_value"
                 >{{ ((+base_Price + +deposit_ratio_Price) * (shopForm.floating_ratio / 100)).toFixed(4) }}&nbsp;<span>DMC</span></span
               >
+            </div>
+            <div class="row_box">
+              <span class="row_box_title">Lowest Limit Total</span>
+              <span class="row_box_value">{{ (+base_Price + +deposit_ratio_Price).toFixed(4) }} <span>DMC</span></span>
             </div>
             <div class="row_box">
               <span class="row_box_title">Upper Limit Total</span>
@@ -333,7 +339,7 @@
       .finally(() => {});
   };
   const deposit_ratio_Price = computed(() => {
-    return ((curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity).toFixed(4);
+    return ((curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity).toFixed(4) || '0';
   });
   const totalPrice = computed(() => {
     let baseTotal = (
@@ -350,7 +356,7 @@
   });
   const base_Price = computed(() => {
     let total = (curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity;
-    return total.toFixed(4);
+    return total.toFixed(4) || '0';
   });
 
   const middleTotalPrice = computed(() => {
@@ -362,7 +368,14 @@
       (1 + state.shopForm.floating_ratio / 100);
     return total.toFixed(4);
   });
+  const middleTotalPrice2 = computed(() => {
+    console.log(middle_price.value);
 
+    let total =
+      (middle_price.value / 10000) * state.shopForm.week * state.shopForm.quantity +
+      (middle_price.value / 10000) * 1 * state.shopForm.quantity;
+    return total.toFixed(4);
+  });
   async function submit() {
     if (state.shopForm.quantity < 100) {
       showToast.text('Minimum number of spaces is 100');
@@ -404,6 +417,7 @@
       // showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
       showBuy.value = false;
       loading.value = false;
+      showTop.value = false;
       const dmcOk = () => {
         router.push({ path: '/recharge', query: { rechargeDMC } });
       };
@@ -694,6 +708,13 @@
   }
 </style>
 <style lang="scss" scoped>
+  .nut-input-text {
+    :deep {
+      input {
+        width: 5rem;
+      }
+    }
+  }
   .price_box_text {
     width: 100%;
     display: inline-block;
