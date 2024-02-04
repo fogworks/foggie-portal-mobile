@@ -116,7 +116,7 @@
       });
   }
 
-  const html5QrCode = ref();
+  const html5QrCode = ref(null);
   async function getCameras() {
     if (html5QrCode.value) {
       await stop();
@@ -125,7 +125,6 @@
     Html5Qrcode.getCameras()
       .then((devices) => {
         if (devices && devices.length) {
-          html5QrCode.value = new Html5Qrcode('reader');
           if (!route.query?.publicKey) {
             start(); //扫码
           }
@@ -138,6 +137,10 @@
   }
 
   function start() {
+    if (!html5QrCode.value) {
+      html5QrCode.value = new Html5Qrcode('reader');
+    }
+
     //environment后置 user前置
     html5QrCode.value
       .start(
@@ -320,11 +323,18 @@
           start();
         }
       }
+    } else {
+      if (!newVal) {
+        start();
+      }
     }
   });
 
   onMounted(() => {
-    getCameras();
+    if (!route.query?.publicKey) {
+      getCameras();
+    }
+
     loadBucketList();
   });
 
