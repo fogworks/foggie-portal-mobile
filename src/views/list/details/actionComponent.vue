@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- ACTION SHEET -->
     <nut-popup
       teleport-disable
       pop-class="fileItemPopup"
@@ -82,7 +83,7 @@
         >
       </div>
     </nut-popup>
-
+    <!-- iso -->
     <nut-popup
       teleport-disable
       pop-class="fileItemPopup"
@@ -162,8 +163,8 @@
         <nut-button type="info" block @click="confirmRename">Confirm</nut-button>
       </div>
     </nut-popup>
-    <!-- move -->
 
+    <!-- move -->
     <nut-popup
       teleport-disable
       v-if="moveShow"
@@ -207,6 +208,7 @@
         <nut-button type="info" block @click="confirmMove">Move to current folder</nut-button>
       </div>
     </nut-popup>
+
     <!-- share -->
     <nut-popup
       teleport-disable
@@ -308,6 +310,7 @@
         </div>
       </div>
     </nut-popup>
+    <!-- preview -->
     <Teleport to="body">
       <nut-overlay z-index="1800" overlay-class="detail_over" v-model:visible="detailShow1" :close-on-click-overlay="false">
         <div class="detail_top" v-if="chooseItem.category !== 1">
@@ -365,6 +368,25 @@
           </div>
         </div>
       </nut-overlay>
+    </Teleport>
+    <Teleport to="body">
+      <nut-action-sheet z-index="1800" v-model:visible="wordVisible" title="Links">
+        <div class="custom-action_sheet">
+          <div @click="choose('google')">
+            <img src="@/assets/googlelogo_preview.png" style="height: 25px" />
+          </div>
+          <div @click="choose('Microsoft')">
+            <img src="@/assets/removebg-preview.png" style="height: 25px" />
+          </div>
+
+          <div @click="choose('other')">
+            <img src="@/assets/otherplugins.png" style="width: 30px; height: 30px" />
+            <div style="font-size: 18px; margin-left: 5px">Other</div>
+          </div>
+
+          <div @click="emits('update:wordVisible', false)"> Cancel </div>
+        </div>
+      </nut-action-sheet>
     </Teleport>
   </div>
 </template>
@@ -432,6 +454,7 @@
     'update:detailShow',
     'update:imgStartIndex',
     'update:isNewFolder',
+    'update:wordVisible',
     'handlerClick',
     'swipeChange',
     'clickFIleItemDetail',
@@ -455,6 +478,7 @@
     isMobileOrder: Boolean,
     renameShow: Boolean,
     isNewFolder: Boolean,
+    wordVisible: Boolean,
     selectArr: Array,
     bucketName: String,
     accessKeyId: String,
@@ -492,6 +516,7 @@
     bucketName,
     imgUrl,
     isMobileOrder,
+    wordVisible,
     imgStartIndex,
     images,
     fileItemPopupIsShow,
@@ -515,6 +540,7 @@
     fileItemDetailPopupIsShow1,
     renameShow1,
   } = toRefs(state);
+  const router = useRouter();
   watch(
     fileItemPopupIsShow,
     (val) => {
@@ -594,6 +620,29 @@
     copyIPFS,
     copyNft,
   } = useShare(orderInfo.value, header, deviceType, metadata);
+  function choose(type) {
+    const curSelectType = chooseItem.value.name.substring(chooseItem.value.name.lastIndexOf('.') + 1);
+    const curSelectTypeMap = {
+      xls: 'excel',
+      xlsx: 'excel',
+      pdf: 'pdf',
+      doc: 'docx',
+      docx: 'docx',
+    };
+    switch (type) {
+      case 'google':
+        window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(chooseItem.value.imgUrlLarge)}`);
+        break;
+      case 'Microsoft':
+        window.open(`https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(chooseItem.value.imgUrlLarge)}`);
+        break;
+      case 'other':
+        router.push({ path: '/filePreview', query: { fileSrc: chooseItem.value.imgUrlLarge, fileType: curSelectTypeMap[curSelectType] } });
+        break;
+    }
+    emits('update:wordVisible', false);
+  }
+
   const shareCheckData = computed(() => {
     let checkData = [];
     if (detailShow.value) {
@@ -1190,6 +1239,30 @@
   });
 </script>
 <style lang="scss">
+  .custom-action_sheet {
+    display: flex;
+    flex-direction: column;
+
+    & > div:not(:last-child) {
+      padding: 10px 20px;
+      width: 100%;
+      height: 90px;
+      line-height: 90px;
+      display: flex;
+      align-items: center;
+    }
+
+    & > div:last-child {
+      height: 100px;
+      background-color: #f7f7f7;
+      font-size: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+    }
+  }
+
   .fileItemPopup.nut-popup {
     background-color: #f9f9f9;
     padding: 40px 40px;

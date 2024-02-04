@@ -127,11 +127,12 @@
   const userBindLoading = ref(false)  // 用户绑定ambcode的 loading
   const isConfirm = ref(false)  //用户是否勾选已知 
   watch(bindAmbCodeDialogIsShow, () => {
-      if (!amb_promo_code.value) {
-    userBindAmbCode.value='amb8CYt0p'
-}
-  },{deep:true,immediate:true})
-  
+    if (!amb_promo_code.value) {
+      userBindAmbCode.value = import.meta.env.VITE_USE_AMBCODE
+    }
+    },
+    { deep: true, immediate: true }
+  )
   const tabItem = [
   { key: 'home', icon: Home },
     { key: 'list', icon: Horizontal },
@@ -142,18 +143,16 @@
   const router = useRouter();
   const route = useRoute();
   const showUpload = computed(() => {
-      const routeName=['listDetails','filePreview','getKey','IPFSService','FileList','orderSummary','orderSumDetail','s3Info','RecordsListGuid','RecordsList']
-        if (routeName.indexOf(route.name)==-1) {
+    const routeName=['listDetails','filePreview','getKey','IPFSService','FileList','orderSummary','orderSumDetail','s3Info','RecordsListGuid','RecordsList']
+    if (routeName.indexOf(route.name)==-1) {
       return true
-          } else {
+    } else {
       return false
     }
   })
   const activeTab = ref(0);
   const orderTotal=ref(0)
-  
   const tabbarVisible = ref(true);
-  
   const showBorder = ref(true);
   watch(
     () => router,
@@ -168,18 +167,6 @@
   
   const tabSwitch = (_item, index) => {
     switch (index) {
-    //   case 0:
-    //     router.push('/home');
-    //     break;
-    //   case 1:
-    //     router.push('/list');
-    //     break;
-    //   case 2:
-    //     router.push('/member');
-    //     break;
-    //   case 3:
-    //     router.push('/demo');
-    //     break;
         case 0:
             router.push('/home');
             break;
@@ -200,31 +187,6 @@
   };
   const fileSocket = ref('');
   const showSocketDialog = ref(false);
-  
-  // const bindUser = async () => {
-  //   let isUserCode = false;
-  //   if (userInfo.value.promo_code) {
-  //     await check_promo({ promo_code: userInfo.value.promo_code }).then((res) => {
-  //       if (res.code == 200) isUserCode = true;
-  //     });
-  //   }
-  //   if (isUserCode && !userInfo.value.promo_code) {
-  //     const userOk = () => {
-  //       bind_user_promo({ promo_code: userInfo.value.promo_code }).then((res) => { });
-  //     };
-  
-  //     showDialog({
-  //       title: 'Notice',
-  //       content: `Your current invitation code ${userInfo.value.promo_code} is the user's invitation code, are you sure you want to bind it?`,
-  //       onOk: userOk,
-  //       okText: 'Accept',
-  //       popClass: 'dialog_class',
-  //     });
-  //   }
-  // };
-  
-  
-  
   
   const initFoggieDate = async () => {
     showToast.loading('Loading', {

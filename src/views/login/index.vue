@@ -268,11 +268,9 @@
     let res = await user();
     if (res.data) {
       userStore.setInfo(res.data);
-
       router.push({ path: '/home' });
     }
   }
-
   const submit = async () => {
     // let isPass = true
 

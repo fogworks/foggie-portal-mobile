@@ -265,6 +265,7 @@
       v-model:moveShow="moveShow"
       v-model:detailShow="detailShow"
       v-model:imgStartIndex="imgStartIndex"
+      v-model:wordVisible="wordVisible"
       :category="category"
       :header="header"
       :prefix="prefix"
@@ -436,6 +437,7 @@
       },
     ],
     isFirst: false,
+    wordVisible: false,
   });
   const imgListRef = ref('');
   const isMobileOrder = computed(() => {
@@ -490,6 +492,7 @@
     longPress,
     isFirst,
     checkedItem,
+    wordVisible,
   } = toRefs(state);
 
   const {
@@ -599,78 +602,9 @@
       doSearch(continuationToken.value, prefix.value, false);
     }
   };
-  const touchRow = (row: any, event: any) => {
-    timeOutEvent = setTimeout(function () {
-      timeOutEvent = 0;
-      if (isMobileOrder.value && (mintType.value != 1 || category.value == 1)) {
-        isCheckMode.value = true;
-      }
-    }, 1000);
-  };
-
-  const touchmoveRow = (row: any, event: any) => {
-    clearTimeout(timeOutEvent);
-    timeOutEvent = 0;
-  };
 
   const imgUrl = ref('');
-  const touchendRow = (row: { checked: boolean; isDir: any; name: string; imgUrl: string }, event: { target: { nodeName: string } }) => {
-    clearTimeout(timeOutEvent);
-    if (event?.target?.nodeName == 'svg' || event?.target?.nodeName == 'path') {
-      // showAction(row);
-      return false;
-    }
-    if (event?.target?.className == 'ipfs_img' || event?.target?.className == 'ipfs_info') {
-      return false;
-    }
-    if (timeOutEvent != 0) {
-      if (isCheckMode.value) {
-        // select
-        row.checked = !row.checked;
-      } else {
-        if (row.isDir) {
-          keyWord.value = '';
-          let long_name = prefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
-          prefix.value = long_name.split('/').slice(0, -1);
-          prefixChange();
-        } else {
-          chooseItem.value = row;
-          console.log(chooseItem.value, 'chooseItem.value');
-          const type = row.name.substring(row.name.lastIndexOf('.') + 1);
 
-          if (type == 'pdf') {
-            // window.open(row.imgUrlLarge);
-            console.log(row.imgUrlLarge);
-
-            router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
-          } else if (type == 'txt') {
-            chooseItem.value.detailType = 'txt';
-            detailShow.value = true;
-            // fetch(row.imgUrlLarge)
-            //   .then((response) => response.text())
-            //   .then((text) => {
-            //     document.getElementById('txtContainer').textContent = text;
-            //   });
-          } else if (['xls', 'xlsx'].includes(type)) {
-            router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
-          } else if (['doc', 'docx'].includes(type)) {
-            router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'docx' } });
-            // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
-            // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
-            console.log(row.imgUrlLarge);
-          } else if (['ppt', 'pptx'].includes(type)) {
-            window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
-            console.log(row.imgUrlLarge);
-          } else if (row.imgUrlLarge) {
-            imgUrl.value = row.imgUrlLarge;
-            imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
-            detailShow.value = true;
-          }
-        }
-      }
-    }
-    return false;
-  };
   const cancelSelect = () => {
     // isCheckMode.value = false;
 
@@ -697,8 +631,8 @@
       if (type == 'pdf') {
         // window.open(row.imgUrlLarge);
         console.log(row.imgUrlLarge);
-
-        router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
+        wordVisible.value = true;
+        // router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
       } else if (type == 'txt') {
         chooseItem.value.detailType = 'txt';
         detailShow.value = true;
@@ -708,14 +642,13 @@
             document.getElementById('txtContainer').textContent = text;
           });
       } else if (['xls', 'xlsx'].includes(type)) {
-        router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
+        wordVisible.value = true;
+        // router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
       } else if (['doc', 'docx'].includes(type)) {
-        router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'docx' } });
+        wordVisible.value = true;
+        // router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'docx' } });
         // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
         // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
-        console.log(row.imgUrlLarge);
-      } else if (['ppt', 'pptx'].includes(type)) {
-        window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
         console.log(row.imgUrlLarge);
       } else if (row.imgUrlLarge) {
         imgUrl.value = row.imgUrlLarge;

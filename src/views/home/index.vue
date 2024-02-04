@@ -389,6 +389,7 @@
       v-model:moveShow="moveShow"
       v-model:detailShow="detailShow"
       v-model:imgStartIndex="imgStartIndex"
+      v-model:wordVisible="wordVisible"
       :category="0"
       :header="header"
       :prefix="[]"
@@ -519,6 +520,7 @@
   const accountShow = ref(false);
   const showRight = ref(false);
   const detailShow = ref(false);
+  const wordVisible = ref(false);
   const curSelectSrc = ref('');
   const curSelectType = ref('');
   const listRef = ref('');
@@ -764,9 +766,11 @@
     console.log(type);
 
     if (type == 'pdf') {
-      curSelectSrc.value = row.imgUrlLarge;
-      curSelectType.value = 'pdf';
-      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'pdf' } });
+      wordVisible.value = true;
+
+      // curSelectSrc.value = row.imgUrlLarge;
+      // curSelectType.value = 'pdf';
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'pdf' } });
     } else if (type == 'txt') {
       detailRow.value.detailType = 'txt';
       detailShow.value = true;
@@ -776,20 +780,24 @@
       //     document.getElementById('txtContainer').textContent = text;
       //   });
     } else if (['xls', 'xlsx'].includes(type)) {
-      curSelectSrc.value = row.imgUrlLarge;
-      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'excel' } });
+      wordVisible.value = true;
+
+      // curSelectSrc.value = row.imgUrlLarge;
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'excel' } });
     } else if (['doc', 'docx'].includes(type)) {
-      detailRow.value.detailType = 'word';
-      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
+      wordVisible.value = true;
+
+      // detailRow.value.detailType = 'word';
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
       // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
       // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
       console.log(row.imgUrlLarge);
     } else if (['ppt', 'pptx'].includes(type)) {
-      curSelectSrc.value = row.imgUrlLarge;
-      curSelectType.value = 'ppt';
-      // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
-      window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
-      // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
+      // curSelectSrc.value = row.imgUrlLarge;
+      // curSelectType.value = 'ppt';
+      // // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      // window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+      // // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
 
       console.log(row.imgUrlLarge);
     } else if (row.imgUrlLarge) {

@@ -92,7 +92,7 @@
     confirmPassword: '',
     verifyPw: '',
     promo_code: '',
-    amb_promo_code: 'amb8CYt0p',
+    amb_promo_code: '',
   });
   const validatePass2 = (value: string) => {
     console.log(value);
@@ -326,7 +326,7 @@
     });
   }, 300);
   onMounted(() => {
-    loginForm.amb_promo_code = route.query.amb_promo_code || '';
+    loginForm.amb_promo_code = route.query.amb_promo_code || import.meta.env.VITE_USE_AMBCODE;
   });
 </script>
 
