@@ -1038,6 +1038,67 @@ proto.proto.ServicePromiseClient.prototype.summaryInfo =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxRequestStatistics,
+ *   !proto.proto.ProxStatisticsInfo>}
+ */
+const methodDescriptor_Service_Statistics = new grpc.web.MethodDescriptor(
+  '/proto.Service/Statistics',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxRequestStatistics,
+  proto.proto.ProxStatisticsInfo,
+  /**
+   * @param {!proto.proto.ProxRequestStatistics} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxStatisticsInfo.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxRequestStatistics} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxStatisticsInfo)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxStatisticsInfo>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.statistics =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/Statistics',
+      request,
+      metadata || {},
+      methodDescriptor_Service_Statistics,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxRequestStatistics} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxStatisticsInfo>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.statistics =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/Statistics',
+      request,
+      metadata || {},
+      methodDescriptor_Service_Statistics);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.ProxRenameObject,
  *   !proto.proto.ProxRenameObjectResp>}
  */

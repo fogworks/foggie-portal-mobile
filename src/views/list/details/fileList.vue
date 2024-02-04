@@ -151,9 +151,8 @@
                 />
                 <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
                 <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
-                <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
                 <nut-image
-                  v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl"
+                  v-else-if="item.category != 0 && item.category != 4 && item.imgUrl"
                   show-loading
                   show-error
                   round
@@ -166,6 +165,7 @@
                     <Loading width="16" height="16"></Loading>
                   </template>
                 </nut-image>
+                <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
                 <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
                 <img v-else src="@/assets/svg/home/file.svg" alt="" />
                 <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
@@ -1194,6 +1194,7 @@
                   getTags: () => any;
                   getImages: () => any;
                   getNftinfosList: () => any;
+                  getThumb: () => any;
                 }) => {
                   const imageObj = el.getImages().toObject();
                   const imageInfo = {};
@@ -1232,6 +1233,7 @@
                     imageInfo: imageInfo,
                     isShowDetail,
                     nftInfoList: el.getNftinfosList(),
+                    thumb: el.getThumb(),
                   };
                 },
               ),
@@ -1291,13 +1293,14 @@
       // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
       isSystemImg = true;
@@ -1462,8 +1465,8 @@
         file_id: file_id,
         pubkey: cid,
         cid,
-        imgUrl: url,
-        imgUrlLarge: url_large,
+        imgUrl: data.content[j].thumb && data.content[j].thumb != 'b' ? url : '',
+        imgUrlLarge: data.content[j].thumb && data.content[j].thumb != 'b' ? url_large : '',
         share: {},
         isSystemImg,
         canShare: cid ? true : false,
@@ -1575,6 +1578,7 @@
                   getTags: () => any;
                   getNftinfosList: () => any;
                   getImages: () => any;
+                  getThumb: () => any;
                 }) => {
                   console.log(el, 'el---');
                   // const imageObj = el.getImages().toObject();
@@ -1612,6 +1616,7 @@
                     category: el.getCategory(),
                     tags: el.getTags(),
                     nftInfoList: el.getNftinfosList(),
+                    thumb: el.getThumb(),
                     // imageInfo,
                     // isShowDetail,
                   };
@@ -1650,7 +1655,6 @@
     cancelSelect();
     doSearch('', prefix.value, true);
   };
-  provide('handleImg', handleImg);
   watch(
     category,
     async (val, old) => {

@@ -230,9 +230,9 @@
               <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
               <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
               <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
+              <img v-else-if="item.category != 0 && item.category != 4 && item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
 
-              <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else src="@/assets/svg/home/file.svg" alt="" />
               <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
             </div>
@@ -1225,13 +1225,14 @@
       // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
       isSystemImg = true;
@@ -1313,6 +1314,7 @@
                   getTags: () => any;
                   getImages: () => any;
                   getNftinfosList: () => any;
+                  getThumb: () => any;
                 }) => {
                   const imageObj = el.getImages().toObject();
                   const imageInfo = {};
@@ -1351,6 +1353,7 @@
                     imageInfo: imageInfo,
                     isShowDetail,
                     nftInfoList: el.getNftinfosList(),
+                    thumb: el.getThumb(),
                   };
                 },
               ),
@@ -1500,8 +1503,8 @@
         file_id: file_id,
         pubkey: cid,
         cid,
-        imgUrl: url,
-        imgUrlLarge: url_large,
+        imgUrl: data.content[j].thumb && data.content[j].thumb != 'b' ? url : '',
+        imgUrlLarge: data.content[j].thumb && data.content[j].thumb != 'b' ? url_large : '',
         share: {},
         isSystemImg,
         canShare: cid ? true : false,

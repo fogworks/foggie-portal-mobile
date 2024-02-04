@@ -347,6 +347,7 @@ message ProxObject{
 	repeated ProxNFTInfo nftInfos = 16;
 	repeated ProxPinning pinning = 17;
 	ProxImageInfo images = 18;
+	string thumb = 19;
 }
 message ProxPrefixPin{
 	string prefix=1;
@@ -435,6 +436,28 @@ message ProxRequestSummaryIds {
 	ProxHeader header = 1;
 	repeated string ids = 2;
 }
+message ProxCategory {
+	int32 category = 1;
+	int64 total = 2;
+	int64 count = 3;
+}
+message ProxPrefix {
+	string prefix = 1;
+	int64 total = 2;
+	int64 count = 3;
+}
+message ProxStatisticsInfo{
+	repeated ProxCategory categories = 1;
+	repeated ProxPrefix prefixes = 2;
+	ProxCategory categorySum = 3;
+	ProxPrefix prefixSum = 4;
+}
+message ProxRequestStatistics {
+	ProxHeader header = 1;
+	string prefix = 2;
+	bool needPrefix = 3;
+}
+
 message ProxSummaryInfo {
 	string id = 1;
 	int64 total = 2;
@@ -505,6 +528,7 @@ service Service {
 	rpc GetObjectInfo(ProxGetRequest) returns (ProxObject) {}
 	rpc DeleteObject(ProxDeleteObjectReq)returns(ProxDeleteResp){}
 	rpc SummaryInfo(ProxRequestSummaryIds)returns(ProxSummaryInfos){}
+	rpc Statistics(ProxRequestStatistics)returns(ProxStatisticsInfo){}
 	rpc RenameObjects(ProxRenameObject)returns(ProxRenameObjectResp){}
 	rpc GetTimeLine(ProxTimeLine)returns(ProxTimeLineResp){}
 	rpc GetPreSigned(ProxPresignedURL)returns(ProxPresignedURLResp){}

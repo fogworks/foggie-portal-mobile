@@ -16,6 +16,20 @@
       <div class="fileItem_header">
         <img v-if="(chooseItem.category == 1 || chooseItem.category == 2) && chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
         <img v-else-if="chooseItem.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+        <nut-image
+          v-else-if="chooseItem.category != 0 && chooseItem.category != 4 && chooseItem.imgUrl"
+          show-loading
+          show-error
+          round
+          radius="5px"
+          :src="chooseItem.imgUrl"
+          fit="cover"
+          position="center"
+        >
+          <template #loading>
+            <Loading width="16" height="16"></Loading>
+          </template>
+        </nut-image>
         <img v-else-if="chooseItem.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
         <img v-else src="@/assets/svg/home/file.svg" alt="" />
         <div class="fileItem_header_right">
@@ -319,7 +333,7 @@
         </div>
         <HLSVideo v-if="chooseItem.category == 2" :imgUrl="imgUrl"></HLSVideo>
         <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
-        <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
+        <MyAudio v-else-if="chooseItem.category == 3" :coverUrl="chooseItem.imgUrl" :audioUrl="chooseItem.imgUrlLarge"></MyAudio>
         <div v-else-if="imgUrl && chooseItem.category == 1" class="middle_img">
           <van-image-preview
             ref="imgPreRef"
