@@ -276,8 +276,8 @@
 
     ruleForm.value.validate().then(async ({ valid, errors }: any) => {
       if (valid) {
-        // let isPass = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? true : false;
-        let isPass = true;
+        let isPass = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? true : false;
+        // let isPass = true;
         if (!isPass) {
           try {
             loading.value = true;
