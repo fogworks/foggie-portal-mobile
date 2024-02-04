@@ -29,20 +29,28 @@
           </div>
         </template>
         <p> Sign in with Ethereum </p>
-        <div class="login-img" @click.stop="loginWithMeta">
-          <span>Metamask</span>
-          <div class="img-metamask"><MetaMask></MetaMask></div>
-        </div>
-        <div class="login-img" @click.stop="loginWithOKX">
-          <span>OKX</span>
-          <div class="img-metamask">
-            <img style="margin: 0; border-radius: 10px" src="@/assets/okx.webp" alt="" />
+        <template v-if="isMobileDevice && !hasProvider">
+          <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
+            <div class="login-img">
+              <span style="color: #fff">Metamask</span>
+              <div class="img-metamask"><MetaMask></MetaMask></div>
+            </div>
+          </a>
+          <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
+            <nut-button block type="info" :loading="loading" style="margin-top: 30px; font-size: 16px">
+              Sign in with Metamask</nut-button
+            ></a
+          >
+        </template>
+        <template v-else>
+          <div class="login-img" @click.stop="loginWithMeta">
+            <span>Metamask</span>
+            <div class="img-metamask"><MetaMask></MetaMask></div>
           </div>
-        </div>
-
-        <!-- <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
-          Sign in with Metamask</nut-button
-        > -->
+          <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
+            Sign in with Metamask</nut-button
+          >
+        </template>
       </van-tab>
       <van-tab name="2">
         <template #title>
@@ -114,7 +122,7 @@
 
 <script lang="ts" setup name="LoginPage">
   // import { MetaMaskSDK } from '@metamask/sdk';
-  import injectedModule from '@web3-onboard/injected-wallets';
+  // import injectedModule from '@web3-onboard/injected-wallets';
   import { init, useOnboard } from '@web3-onboard/vue';
   import metamaskSDK from '@web3-onboard/metamask';
   import detectEthereumProvider from '@metamask/detect-provider';
@@ -144,6 +152,15 @@
   import { load_gpa_token } from '@/utils/util.ts';
   import { redirectUrl } from '@/setting.js';
   import Cookies from 'js-cookie';
+  // const MMSDK = new MetaMaskSDK(
+  //   {
+  //     dappMetadata: {
+  //       name: 'Example Pure JS Dapp',
+  //       url: window.location.href,
+  //     },
+  //   },
+  //   // Other options
+  // );
 
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -216,6 +233,7 @@
     login_type: 'password',
   });
   const wallet_type = ref<any>('');
+  const hasProvider = ref<any>('');
   const timer = ref<any>('');
   const nonce = ref<string>('');
   const codeSrc = ref<any>('');
@@ -458,6 +476,7 @@
         showToast.hide('login');
       });
   };
+
   const metaOpen = inject('metaOpen');
   const OKXOpen = inject('OKXOpen');
 
@@ -473,12 +492,14 @@
       duration: 0,
     });
     const provider = await detectEthereumProvider();
+    // const ethereum = MMSDK.getProvider();
     //  const ethereum = MMSDK.getProvider() // You can also access via window.ethereum
 
     //     ethereum.request({ method: 'eth_requestAccounts' })
 
-    if (provider == window.ethereum && provider) {
+    if (provider == window.ethereum && provider && window.ethereum.isMetaMask) {
       try {
+        // await ethereum.request({ method: 'eth_requestAccounts' });
         await window.ethereum.request({
           method: 'eth_requestAccounts',
           params: [],
@@ -489,7 +510,6 @@
         });
       } catch (err) {
         showToast.hide('login');
-        showToast.text(err);
       }
       await checkWallet(accountsList.value[0]);
     } else {
@@ -597,6 +617,7 @@
   };
 
   onMounted(async () => {
+    hasProvider.value = await detectEthereumProvider();
     setTimeout(() => {
       const access_token = Cookies.get('access_token');
       const refresh_token = Cookies.get('refresh_token');

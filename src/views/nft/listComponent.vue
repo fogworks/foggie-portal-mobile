@@ -56,10 +56,15 @@
         </div>
       </div>
     </nut-infinite-loading>
-    <div class="bottom_btn" v-if="showBtn">
+    <div class="bottom_btn" v-if="showBtn && hasProvider">
       <nut-button v-if="!checkedItem.value.name" block type="primary" @click="goToDapp">Mint New</nut-button>
       <nut-button v-else-if="checkedItem.value.name && activeTab == 2" block type="primary">Mint</nut-button>
       <nut-button v-else-if="checkedItem.value.name" block type="primary">Mint Again</nut-button>
+    </div>
+    <div class="bottom_btn" v-else-if="showBtn && isMobileDevice && !hasProvider">
+      <a :href="`https://metamask.app.link/dapp/${dappUrl}`">
+        <nut-button block type="primary">Mint New</nut-button>
+      </a>
     </div>
   </div>
 </template>
@@ -72,6 +77,7 @@
   import { browserUrl } from '@/setting';
   import { useUserStore } from '@/store/modules/user';
   import { search_mint, search_deploy } from '@/api/index.ts';
+  import detectEthereumProvider from '@metamask/detect-provider';
 
   const useStore = useUserStore();
   const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
@@ -127,6 +133,7 @@
   const checkedItem = reactive({
     value: {},
   });
+  const hasProvider = ref('');
   const nftPs = ref(10);
   const nftPn = ref(1);
   const contractPs = ref(10);
@@ -209,6 +216,9 @@
       window.open(`${browserUrl}/address/${item.contract}`);
     }
   };
+  onMounted(async () => {
+    hasProvider.value = await detectEthereumProvider();
+  });
 </script>
 
 <style lang="scss" scoped>

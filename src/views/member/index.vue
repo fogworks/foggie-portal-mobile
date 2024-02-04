@@ -5,9 +5,9 @@
         <div style="position: relative">
           <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" @click="clickInput" />
           <input type="file" name="" accept="image/*," ref="uploadRef" @change="uploadFile" id="" style="display: none" />
-          <!-- <div class="uploadIcon">
+          <div class="uploadIcon">
             <Photograph color="#90B3EF" width="15px" height="15px"></Photograph>
-          </div> -->
+          </div>
         </div>
 
         <div class="user_header_box_content">
