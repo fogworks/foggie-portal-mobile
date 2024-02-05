@@ -1504,7 +1504,7 @@
         pubkey: cid,
         cid,
         imgUrl: data.content[j].thumb && data.content[j].thumb != 'b' ? url : '',
-        imgUrlLarge: data.content[j].thumb && data.content[j].thumb != 'b' ? url_large : '',
+        imgUrlLarge: url_large,
         share: {},
         isSystemImg,
         canShare: cid ? true : false,

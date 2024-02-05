@@ -16,7 +16,9 @@
 </template>
 
 <script setup>
-  import IconAudio2 from '~icons/home/audio2.svg';
+  // import IconAudio2 from '~icons/home/audio2.svg';
+  // import IconAudio2 from '~icons/home/audio.svg';
+  import IconAudio2 from '~icons/home/audio3.svg';
   const props = defineProps({
     audioUrl: String,
     coverUrl: String,

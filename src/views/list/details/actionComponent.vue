@@ -416,8 +416,6 @@
   import IconDelete from '~icons/home/delete.svg';
   import IconTwitter from '~icons/home/twitter.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';
-  import IconNewFolder from '~icons/home/new_folder.svg';
-  import IconAllCate from '~icons/home/all-cate.svg';
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
@@ -450,10 +448,7 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   import moment from 'moment';
   import { HmacSHA1, enc } from 'crypto-js';
-  import uploader from './uploader.vue';
-  import { poolUrl } from '@/setting.js';
-  import { get_order_sign } from '@/api/index';
-  import { browserUrl } from '@/setting';
+  import { poolUrl, browserUrl } from '@/setting.js';
   const { getOrderInfo } = useOrderInfo();
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
