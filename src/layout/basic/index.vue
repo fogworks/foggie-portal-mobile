@@ -50,7 +50,7 @@
       <img src="@/assets/fog-works_w.png" style="height: 60px" alt="" srcset="">
       <nut-input v-model="userBindAmbCode" placeholder="Please enter AGENT Invitation Code" max-length="12"
         min-length="12"></nut-input>
-      <nut-checkbox v-model="isConfirm" class="isConfirmCheckbox" style="text-align: left;" icon-size="24">I understand the
+      <nut-checkbox v-model="isConfirm" class="isConfirmCheckbox" style="text-align: left;word-break:break-word" icon-size="24">I understand the
         usage scenario of this
         invitation code(official code is used by default,in case you don't have other code)</nut-checkbox>
       <template #footer>
@@ -87,7 +87,7 @@
           </template>
         </nut-dialog>
       </Teleport>
-    <UploadSet v-if="curStepIndex == 4&&showUpload"></UploadSet>
+    <UploadSet v-if="curStepIndex == 4&&showUpload" v-model:needRefresh="needRefresh"></UploadSet>
   </template>
   
   <script lang="ts" setup name="BasicLayoutPage">
@@ -122,6 +122,15 @@
   //     bindAmbCode()
   //   }
   // })
+  const needRefresh = ref(false)
+  provide('needRefresh', needRefresh)
+  watch(needRefresh, (val) => {
+    if (val) {
+      setTimeout(() => {
+        needRefresh.value=false
+      },1000)
+    }
+  },{deep:true,immediate:true})
   const bindAmbCodeDialogIsShow = ref(false)
   const userBindAmbCode = ref('')  // 用户想要绑定的ambcode
   const userBindLoading = ref(false)  // 用户绑定ambcode的 loading
@@ -453,7 +462,6 @@
     }).catch(() => {
       userBindLoading.value = false
     })
-  
   }
   
   
@@ -487,7 +495,6 @@
           console.error('WebSocket connection error:', event);
       };
   };
-  
   const closeSocketDialog = () => {
       showSocketDialog.value = false;
   };
