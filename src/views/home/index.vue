@@ -302,7 +302,7 @@
       </div>
       <ListComponent :showBtn="false" has-more :tabList="[]" :imgList="nftImgList"></ListComponent>
     </div>
-    <div class="tab_top_title" v-if="ishaveProfit"
+    <div class="tab_top_title" v-if="ishaveProfit && earningsList.length"
       >Reward and Expenditure <span style="font-size: 12px; display: inline-block">(for the last weeks)</span></div
     >
     <nut-infinite-loading
@@ -476,7 +476,7 @@
   import { HmacSHA1, enc } from 'crypto-js';
   import { search_mint, search_deploy } from '@/api/index.ts';
   const tableLoading = ref(false);
-
+  const needRefresh = inject('needRefresh');
   // const { loadMore as loadBucket, listData  } = useOrderList();
   const { resetData, loadMore, listData, hasMore, infinityValue, total } = useOrderList();
   const {
@@ -984,6 +984,15 @@
       getFileList();
     }
   };
+  watch(
+    needRefresh,
+    (val) => {
+      if (val) {
+        refresh();
+      }
+    },
+    { deep: true },
+  );
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
     let imgHttpLink = '';
     let imgHttpLarge = '';

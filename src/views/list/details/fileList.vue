@@ -98,7 +98,17 @@
               {{ prefix.at(-1) || '' }}
             </span>
           </template>
-          <nut-checkbox style="flex: 0 0 100px" v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
+          <nut-checkbox style="flex: 0 0 60px" v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
+          <IconListType
+            style="width: 2rem; height: 2rem; vertical-align: middle"
+            v-if="cardMode && category != 1"
+            @click="cardMode = !cardMode"
+          ></IconListType>
+          <IconCardType
+            style="margin: 0 0.2rem; width: 1.5rem; height: 2rem; vertical-align: middle"
+            v-else-if="!cardMode && category != 1"
+            @click="cardMode = !cardMode"
+          ></IconCardType>
         </div>
       </div>
       <div class="search_bar" v-if="category !== 1">
@@ -126,7 +136,7 @@
       <nut-infinite-loading
         v-if="tableData.length"
         load-more-txt="No more content"
-        class="file_list"
+        :class="['file_list', cardMode ? 'card_list' : '']"
         v-model="infinityValue"
         :has-more="!!continuationToken"
         @load-more="loadMore"
@@ -152,7 +162,7 @@
                 <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
                 <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
                 <nut-image
-                  v-else-if="item.category != 0 && item.category != 4 && item.imgUrl"
+                  v-else-if="item.category != 0 && (!cardMode ? item.category != 4 : true) && item.imgUrl"
                   show-loading
                   show-error
                   round
@@ -173,9 +183,9 @@
             </div>
             <div class="name_box">
               <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
-              <p>{{ item.date || '' }}</p>
+              <p v-if="!cardMode">{{ item.date || '' }}</p>
             </div>
-            <div @click.stop v-if="item.isPin || (item.nftInfoList && item.nftInfoList.length > 0)" class="ipfs_info">
+            <div @click.stop v-if="(item.isPin || (item.nftInfoList && item.nftInfoList.length > 0)) && !cardMode" class="ipfs_info">
               <!-- <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
               <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2> -->
               <IconNft v-if="item.nftInfoList && item.nftInfoList.length > 0"></IconNft>
@@ -184,9 +194,9 @@
             <!-- <div @click.stop="showAction(item)" class="right_div">
             <IconMore v-show="!isCheckMode" class="right_more"></IconMore>
           </div> -->
-            <div class="right_radio" @click.stop>
+            <div :class="['mask', 'right_radio', isCheckMode ? 'isChecking' : '']" @click.stop>
               <nut-checkbox v-if="isCheckMode" :label="item.name"></nut-checkbox>
-              <MoreX @click="clickFIleItem(item)" v-else width="40px" height="25px" />
+              <MoreX v-else-if="!cardMode && !isCheckMode" @click="clickFIleItem(item)" width="40px" height="25px" />
             </div>
           </div>
         </nut-checkbox-group>
@@ -332,6 +342,8 @@
 
 <script setup lang="ts">
   import ActionComponent from './actionComponent.vue';
+  import IconListType from '~icons/home/listType.svg';
+  import IconCardType from '~icons/home/cardType.svg';
   import IconCopy from '~icons/home/copy.svg';
   import IconBucket from '~icons/home/bucket.svg';
   import IconPlay from '~icons/home/play.svg';
@@ -396,6 +408,7 @@
   const router = useRouter();
   const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const state = reactive({
+    cardMode: false,
     actionRef: '',
     imgPreRef: '',
     swipe: '',
@@ -493,6 +506,7 @@
     isFirst,
     checkedItem,
     wordVisible,
+    cardMode,
   } = toRefs(state);
 
   const {
@@ -636,11 +650,6 @@
       } else if (type == 'txt') {
         chooseItem.value.detailType = 'txt';
         detailShow.value = true;
-        fetch(row.imgUrlLarge)
-          .then((response) => response.text())
-          .then((text) => {
-            document.getElementById('txtContainer').textContent = text;
-          });
       } else if (['xls', 'xlsx'].includes(type)) {
         wordVisible.value = true;
         // router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
@@ -2451,6 +2460,96 @@
       }
       .nut-searchbar__search-input {
         --nut-searchbar-input-background: #f5f8fd;
+      }
+    }
+  }
+  .card_list {
+    :deep {
+      .nut-infinite__container {
+        width: 100%;
+      }
+      .nut-checkbox-group {
+        display: grid;
+        grid-gap: 5px;
+        grid-template-columns: repeat(3, 1fr);
+        justify-items: center;
+        width: 100%;
+      }
+    }
+    .list_item {
+      position: relative;
+      box-sizing: border-box;
+      flex-direction: column;
+      padding: 0.5rem;
+      width: 240px;
+      border: none;
+      border-radius: 10px;
+      .mask {
+        display: none;
+        position: absolute;
+        top: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+
+        .itemChecked {
+          display: block;
+        }
+        &.isChecking {
+          display: block;
+          height: 100%;
+          cursor: pointer;
+          :deep {
+            .nut-checkbox {
+              width: 100%;
+              height: 100%;
+              display: block;
+            }
+            .nut-icon {
+              padding: 10px;
+            }
+          }
+        }
+
+        :deep {
+          .nut-checkbox {
+            position: absolute;
+            left: 0;
+          }
+          .nut-checkbox__input {
+            position: absolute;
+            right: 5px;
+            top: 10px;
+          }
+          .nut-checkbox__label {
+            display: none;
+          }
+        }
+      }
+      .left_icon_box {
+        width: 150px;
+        height: 150px;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+      .name_box {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+        p {
+          font-size: 0.8rem !important;
+          color: #000 !important;
+        }
+      }
+      .right_radio {
+        // position: absolute;
+        // right: 10px;
+        // top: 10px;
+        // width: unset;
+        // height: unset;
       }
     }
   }
