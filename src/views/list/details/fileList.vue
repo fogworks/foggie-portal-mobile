@@ -177,6 +177,21 @@
                 </nut-image>
                 <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
                 <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
+                <nut-image
+                  v-else-if="item.category == 1 && item.originalSize <= 102400"
+                  show-loading
+                  show-error
+                  round
+                  radius="5px"
+                  :src="item.imgUrlLarge"
+                  fit="cover"
+                  position="center"
+                >
+                  <template #loading>
+                    <Loading width="16" height="16"></Loading>
+                  </template>
+                </nut-image>
+                <IconImage v-else-if="item.category == 1"></IconImage>
                 <img v-else src="@/assets/svg/home/file.svg" alt="" />
                 <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
               </template>
@@ -1319,6 +1334,7 @@
     }
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
+  provide('handleImg', handleImg);
   const initRemoteData = async (
     data: {
       commonPrefixes?: any;
@@ -1483,6 +1499,7 @@
         isPin: data.content[j].isPin,
         isPinCyfs: data.content[j].isPinCyfs,
         nftInfoList: data.content[j].nftInfoList,
+        thumb: data.content[j].thumb,
       };
       console.log(item, 'data.content[j]');
 
@@ -2529,10 +2546,19 @@
       .left_icon_box {
         width: 150px;
         height: 150px;
-        img {
+        img,
+        svg {
           width: 100%;
           height: 100%;
           object-fit: cover;
+        }
+        .play_icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 2rem;
+          height: 2rem;
         }
       }
       .name_box {
@@ -2603,7 +2629,8 @@
       position: relative;
       width: 80px;
       height: 80px;
-      img {
+      img,
+      svg {
         width: 80px;
         height: 80px;
         border-radius: 0.3rem;

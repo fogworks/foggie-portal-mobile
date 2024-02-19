@@ -384,7 +384,7 @@
       </nut-overlay>
     </Teleport>
     <Teleport to="body">
-      <nut-action-sheet z-index="1800" v-model:visible="wordVisible" title="Links">
+      <nut-action-sheet z-index="1800" :close-abled="false" v-model:visible="wordVisible" title="Links">
         <div class="custom-action_sheet">
           <div @click="choose('google')">
             <img src="@/assets/googlelogo_preview.png" style="height: 25px" />

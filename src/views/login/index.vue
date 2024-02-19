@@ -69,10 +69,10 @@
           <span>Google</span>
           <img src="@/assets/google-logo.svg" class="img-google" />
         </div>
-        <div class="login-img" @click.stop="weChatLogin">
+        <!-- <div class="login-img" @click.stop="weChatLogin">
           <span>WeChat</span>
           <img src="@/assets/wechat.png" class="img-google" />
-        </div>
+        </div> -->
       </van-tab>
       <van-tab name="3">
         <template #title>

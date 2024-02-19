@@ -470,7 +470,11 @@ function uploadFile(nativePath, file, paramData) {
     if (progressEvent.lengthComputable) {
       var percentage = Math.round((progressEvent.loaded / progressEvent.total) * 100);
       paramData.onProgress &&
-        paramData.onProgress({ event: { loaded: progressEvent.loaded, total: progressEvent.total }, options: {}, percentage });
+        paramData.onProgress({
+          event: { loaded: progressEvent.loaded, total: progressEvent.total },
+          option: { sourceFile: { name: file.name } },
+          percentage,
+        });
       // 在这里更新进度条或其他 UI 元素
     }
   };

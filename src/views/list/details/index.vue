@@ -215,12 +215,21 @@
       <template v-else-if="tableData.length">
         <div class="file_list file_list_img" v-if="imgData.length">
           <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
-            <nut-image show-loading show-error round radius="5px" :src="item.imgUrl" fit="cover" position="center">
+            <nut-image
+              v-if="item.imgUrl || item.originalSize <= 102400"
+              show-loading
+              show-error
+              round
+              radius="5px"
+              :src="item.imgUrl || item.imgUrlLarge"
+              fit="cover"
+              position="center"
+            >
               <template #loading>
                 <Loading width="16" height="16"></Loading>
               </template>
             </nut-image>
-            <!-- <img :src="item.imgUrl" alt="" /> -->
+            <IconImage v-else></IconImage>
           </div>
         </div>
         <div class="file_list" v-if="otherData.length">
@@ -400,16 +409,15 @@
   // import AESHelper from './AESHelper';
   // import { Image } from '@nutui/icons-vue';
   import { HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
-  import { showDialog } from '@nutui/nutui';
+  import { showDialog, showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute, useRouter } from 'vue-router';
   import useOrderInfo from './useOrderInfo.js';
   import useShare from './useShare.js';
-  import { showToast } from '@nutui/nutui';
-  import { transferUTCTime, getfilesize } from '@/utils/util';
-  import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload } from '@/api/index';
+  import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
+  import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload, get_order_sign } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
@@ -525,10 +533,18 @@
   const imgStartIndex = ref(false);
   const wordVisible = ref(false);
 
+  const fileSocket = ref('');
+  const socketDate = ref('');
+  const socketToken = ref('');
+  const currentFolder = ref('');
+  const showSocketDialog = ref(false);
+
   const images = computed(() => {
     let arr = [];
     imgData.value.filter((el) => {
-      arr.push(el.imgUrlLarge);
+      if (arr.length < 20) {
+        arr.push(el.imgUrlLarge);
+      }
     });
     return arr;
   });
@@ -1032,7 +1048,7 @@
 
   const uploadComplete = () => {
     console.log('uploadComplete');
-    getFileList();
+    // getFileList();
   };
 
   const onProgress = ({ event, options, percentage }: any) => {
@@ -1140,6 +1156,7 @@
               bucketName.value = newBucketName.value;
               getOrderInfo();
               getSummary();
+              initWebSocket();
               isNameLoading.value = false;
               showToast.hide();
             }
@@ -1561,24 +1578,7 @@
     getFileList();
     getSummary();
   };
-  onMounted(async () => {
-    await getOrderInfo();
 
-    // if (orderInfo.value.electronic_type == '0') {
-    if (bucketName.value) {
-      getFileList();
-      getSummary();
-    } else {
-      dialogVisible.value = true;
-      setDefaultName();
-    }
-    syncChallenge();
-
-    // } else {
-    //   getFileList();
-    //   getSummary();
-    // }
-  });
   function closedOrder() {
     showDialog({
       title: 'Cancel Bucket',
@@ -1614,6 +1614,242 @@
       },
     });
   }
+  const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
+    console.log('doSocketFn', msg, tableData.value);
+    const action = msg.action;
+    const fileInfo = msg.fileInfo;
+    const keys = fileInfo.keys;
+    const bucket = fileInfo.bucket;
+    const cid = fileInfo.cid;
+    if (!action || !keys || keys.length === 0) {
+      refresh();
+      return;
+    }
+
+    if (action === 'FILE_ADD') {
+      let index = keys[0].lastIndexOf('/');
+      let name = keys[0].substring(index + 1);
+      const date = transferGMTTime(fileInfo.lastModified * 1000);
+      const _cid = cid && cid[0] ? cid[0] : '';
+      const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
+      if (!target) {
+        const type = keys[0].substring(keys[0].lastIndexOf('.') + 1).toLowerCase();
+        const data = {
+          cid: _cid,
+          key: keys[0],
+        };
+        const imgData = await handleImg(data, type, false);
+        let category = 0;
+        if (
+          type === 'png' ||
+          type === 'bmp' ||
+          type === 'gif' ||
+          type === 'jpeg' ||
+          type === 'jpg' ||
+          type === 'svg' ||
+          type === 'heif' ||
+          type === 'webp' ||
+          type === 'ico'
+        ) {
+          category = 1;
+        } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
+          category = 2;
+        } else if (type === 'mp3') {
+          category = 3;
+        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+          category = 4;
+        }
+        const url = imgData.imgHttpLink;
+        const isSystemImg = imgData.isSystemImg;
+        const url_large = imgData.imgHttpLarge;
+
+        console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
+
+        let imageInfo = {
+          aperture: '',
+          datetime: '', //拍摄时间
+          exposuretime: '', //ev曝光量
+          exptime: '', //曝光时间
+          orientation: '', //方向
+          focallength: '', //焦距
+          Flash: false, //是否使用闪光灯
+          software: '', // 使用软件
+          iso: '', //iso
+          camerainfo: '', //手机厂商及其机型
+          gps: '', //经纬度
+          resolution: '', //像素
+        };
+        let isShowDetail = false;
+
+        if (fileInfo.image_infos && Object.keys(fileInfo.image_infos).length > 0) {
+          let key = Object.keys(fileInfo.image_infos)[0];
+          let imageObj = fileInfo.image_infos[key];
+          if (imageObj && imageObj.addition) {
+            isShowDetail = true;
+            imageInfo.aperture = imageObj.addition.aperture;
+            imageInfo.datetime = moment(imageObj.addition.date_time, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+            imageInfo.exposuretime = imageObj.addition?.exposure_time; //ev曝光量
+            imageInfo.exptime = imageObj.addition?.exp_time; //曝光时间
+            imageInfo.orientation = imageObj.addition?.orientation; //方向
+            imageInfo.focallength = imageObj.addition?.focal_length; //焦距
+            imageInfo.Flash = imageObj.addition?.flash || false; //是否使用闪光灯
+            imageInfo.software = imageObj.addition?.software; // 使用软件
+            imageInfo.iso = imageObj.addition?.iso.charCodeAt(0);
+            imageInfo.camerainfo = imageObj?.camera_info; //手机厂商及其机型
+            imageInfo.gps = imageObj?.gps; //经纬度
+            imageInfo.resolution = imageObj?.resolution; //像素
+          }
+          console.log('FILE_ADD-----------tableData', imageInfo);
+        }
+
+        let item = {
+          isDir: false,
+          checked: false,
+          name,
+          category,
+          fileType: 2,
+          fullName: keys[0],
+          key: keys[0],
+          idList: [
+            {
+              name: 'IPFS',
+              code: '',
+            },
+            {
+              name: 'CYFS',
+              code: '',
+            },
+          ],
+          date,
+          pubkey: _cid,
+          cid: _cid,
+          imgUrl: url,
+          imgUrlLarge: url_large,
+          share: {},
+          isSystemImg,
+          canShare: _cid ? true : false,
+          isPin: false,
+          isPinCyfs: false,
+          type,
+          isShowDetail,
+          imageInfo,
+        };
+        tableData.value.unshift(item);
+      }
+    } else if (action === 'FILE_PIN') {
+      const curName = fileInfo.keys[0];
+      const curDir = window.sessionStorage.getItem('currentFolder');
+      tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
+        if (el.cid === cid[0]) {
+          el.isPin = true;
+        } else if (
+          curName.charAt(curName.length - 1) === '/' &&
+          decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
+        ) {
+          el.isPin = true;
+          if (!el.cid && cid[0]) {
+            el.cid = cid[0];
+          }
+        }
+      });
+    } else if (action === 'FILE_CHANGE') {
+    } else if (action === 'FILE_DELETE') {
+      console.log('FILE_DELETE', keys);
+      // tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+      // imgArray.value = imgArray.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+    } else if (action === 'FILE_PINNING') {
+    }
+  };
+  const initWebSocket = async () => {
+    let param = {
+      order_uuid: route?.query?.uuid,
+    };
+    const signData = await get_order_sign(param);
+    socketDate.value = signData?.result?.data?.timestamp;
+    socketToken.value = signData?.result?.data?.sign;
+    console.log('initWebSocket-----------');
+    const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
+    fileSocket.value = new WebSocket(url);
+    fileSocket.value.onopen = () => {
+      const authMessage = {
+        action: 'AUTH',
+        userID: orderInfo.value.foggie_id,
+        token: socketToken.value,
+        date: socketDate.value,
+      };
+      fileSocket.value.send(JSON.stringify(authMessage));
+    };
+
+    fileSocket.value.onmessage = (event: { data: string }) => {
+      const message = JSON.parse(event.data);
+      const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
+      console.log('Received message from server:', message, currentFolderStr);
+      const uploadFileName = window.sessionStorage.getItem('uploadFileName');
+      let fileInfo = message.fileInfo;
+      let dirArr = fileInfo.keys;
+      const updateBy = fileInfo.updateBy;
+      let dirFile = '';
+      let dirFileName = '';
+      if (dirArr && dirArr.length > 0) {
+        let index = dirArr[0].lastIndexOf('/');
+        if (index > -1) {
+          dirFile = dirArr[0].substring(0, index + 1);
+          dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
+        } else {
+          dirFile = '';
+          dirFileName = dirArr[0];
+        }
+      }
+
+      console.log(
+        '888888',
+        dirArr,
+        dirFile,
+        currentFolderStr,
+        dirFile === decodeURIComponent(currentFolderStr),
+        dirFileName !== uploadFileName,
+      );
+      if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
+        if (detailShow.value) {
+          setTimeout(() => {
+            initWebSocket();
+          }, 3000);
+        } else {
+          doSocketFn(message);
+        }
+      }
+    };
+
+    fileSocket.value.onclose = (event: any) => {
+      console.log('WebSocket connection closed:', event, fileSocket.value);
+      if (fileSocket.value) {
+        console.log('WebSocket connection again:');
+        initWebSocket();
+      }
+    };
+    fileSocket.value.onerror = (event: any) => {
+      console.error('WebSocket connection error:', event);
+    };
+  };
+  onMounted(async () => {
+    await getOrderInfo();
+
+    // if (orderInfo.value.electronic_type == '0') {
+    if (bucketName.value) {
+      getFileList();
+      getSummary();
+      initWebSocket();
+    } else {
+      dialogVisible.value = true;
+      setDefaultName();
+    }
+    syncChallenge();
+
+    // } else {
+    //   getFileList();
+    //   getSummary();
+    // }
+  });
   // onDeactivated(() => {
   //   if (merkleTimeOut) clearTimeout(merkleTimeOut);
   // });
