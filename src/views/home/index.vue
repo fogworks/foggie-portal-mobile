@@ -222,7 +222,7 @@
             <div class="svg_box">
               <IconVideo></IconVideo>
             </div>
-            <p>Video</p>
+            <p>Videos</p>
           </div>
         </div>
       </div>
@@ -287,7 +287,7 @@
                 </template>
               </nut-image>
               <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-              <img v-else src="@/assets/svg/home/file.svg" alt="" />
+              <img v-else :src="getFileType(item.name)" alt="" />
               <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
             </div>
             <div class="name_box">
@@ -483,6 +483,9 @@
   import moment from 'moment';
   import { HmacSHA1, enc } from 'crypto-js';
   import { search_mint, search_deploy, get_order_sign } from '@/api/index.ts';
+
+  import getFileType from "@/utils/getFileType.ts";
+
   const tableLoading = ref(false);
   const needRefresh = inject('needRefresh');
   // const { loadMore as loadBucket, listData  } = useOrderList();

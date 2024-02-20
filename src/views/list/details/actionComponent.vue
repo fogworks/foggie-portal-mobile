@@ -31,7 +31,7 @@
           </template>
         </nut-image>
         <img v-else-if="chooseItem.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-        <img v-else src="@/assets/svg/home/file.svg" alt="" />
+        <img v-else :src="getFileType(chooseItem.name)" alt="" />
         <div class="fileItem_header_right">
           <div style="width: 75%">{{ chooseItem.fullName }}</div>
           <div v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
@@ -163,7 +163,7 @@
           <IconVideo v-else-if="selectArr[0].category == 2"></IconVideo>
           <IconAudio2 v-else-if="selectArr[0].category == 3" src="@/assets/svg/home/audio.svg" alt="" />
           <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
-          <IconFile v-else src="@/assets/svg/home/file.svg" alt="" />
+          <IconFile v-else :src="getFileType(selectArr[0].name)" alt="" />
         </div>
         <p v-if="!isNewFolder"> {{ selectArr.length ? getOriginName(selectArr[0].name.split('/')[0]) : '' }}</p>
         <nut-searchbar
@@ -449,6 +449,9 @@
   import moment from 'moment';
   import { HmacSHA1, enc } from 'crypto-js';
   import { poolUrl, browserUrl } from '@/setting.js';
+
+  import getFileType from "@/utils/getFileType.ts";
+
   const { getOrderInfo } = useOrderInfo();
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;

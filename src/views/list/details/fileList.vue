@@ -61,7 +61,7 @@
             <div class="svg_box">
               <IconVideo></IconVideo>
             </div>
-            <p>Video</p>
+            <p>Videos</p>
           </div>
         </div>
       </nut-popup>
@@ -192,7 +192,7 @@
                   </template>
                 </nut-image>
                 <IconImage v-else-if="item.category == 1"></IconImage>
-                <img v-else src="@/assets/svg/home/file.svg" alt="" />
+                <img v-else :src="getFileType(item.name)" alt="" />
                 <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
               </template>
             </div>
@@ -413,6 +413,8 @@
   import { poolUrl } from '@/setting.js';
   import { get_order_sign } from '@/api/index';
   import { browserUrl } from '@/setting';
+
+  import getFileType from "@/utils/getFileType.ts";
 
   // const accessKeyId = ref<string>('');
   // const secretAccessKey = ref<string>('');
@@ -1113,10 +1115,10 @@
   };
   const fileTypeText = {
     0: 'All File List',
-    1: 'Image',
-    2: 'Video',
+    1: 'Images',
+    2: 'Videos',
     3: 'Audio',
-    4: 'Document',
+    4: 'Documents',
   };
   const switchType = (type: number) => {
     category.value = type;
@@ -1381,10 +1383,7 @@
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
-      if (data.prefix) {
-        // name = name.split(data.prefix)[1];
-        name = name.split('/')[name.split('/').length - 2] + '/';
-      }
+      
 
       let cur_cid = '';
       let isPin = false;
@@ -1393,6 +1392,11 @@
           cur_cid = data.prefixpins[i].array[1];
           isPin = data.prefixpins[i].array[2];
         }
+      }
+
+      if (data.prefix) {
+        // name = name.split(data.prefix)[1];
+        name = name.split('/')[name.split('/').length - 2] + '/';
       }
 
       let item = {
