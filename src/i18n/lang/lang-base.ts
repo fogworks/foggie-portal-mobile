@@ -13,6 +13,7 @@ export type langType = {
     transactionRecords: string;
     photography: string;
     nft: string;
+    allNFTList: string;
   };
   language: {
     en: string;

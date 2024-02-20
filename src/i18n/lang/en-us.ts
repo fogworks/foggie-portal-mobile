@@ -15,6 +15,7 @@ export const lang: langType = {
     transactionRecords: 'Transaction Records',
     photography: 'Photography',
     nft: 'NFT',
+    allNFTList: 'NFT',
   },
   language: {
     en: 'English',
