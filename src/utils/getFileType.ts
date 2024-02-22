@@ -18,14 +18,20 @@ const fileIconArr = ref({
 });
 
 
-export default function  getFileType(type) {
+export default function getFileType(type) {
   if (!type) return fileIconArr.value.file;
   let TYPE = type.toLowerCase();
   if (
     TYPE.endsWith(".jpeg") ||
     TYPE.endsWith(".jpg") ||
     TYPE.endsWith(".png") ||
-    TYPE.endsWith(".svg")
+    TYPE.endsWith(".svg") ||
+    TYPE.endsWith('.bmp') ||
+    TYPE.endsWith('.gif') ||
+    TYPE.endsWith('.ico') ||
+    TYPE.endsWith('.webp') ||
+    TYPE.endsWith('.heif') ||
+    TYPE.endsWith('.psd')
   ) {
     return fileIconArr.value.image;
   } else if (

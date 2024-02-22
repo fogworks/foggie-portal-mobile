@@ -239,10 +239,23 @@
               <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
               <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
               <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
-              <img v-else-if="item.category != 0 && item.category != 4 && item.imgUrl" :src="item.imgUrl" alt="" />
+              <nut-image
+                v-else-if="item.category != 0 && item.category != 4 && item.imgUrl"
+                show-loading
+                show-error
+                round
+                radius="5px"
+                :src="item.imgUrl"
+                fit="cover"
+                position="center"
+                style="width: 100%; height: 100%"
+              >
+                <template #loading>
+                  <Loading width="16" height="16"></Loading>
+                </template>
+              </nut-image>
               <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-
-              <img v-else src="@/assets/svg/home/file.svg" alt="" />
+              <img v-else :src="getFileType(item.name)" alt="" />
               <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
             </div>
             <div class="name_box">
@@ -374,6 +387,7 @@
   import { Loading, MoreX } from '@nutui/icons-vue';
   import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
+  import getFileType from "@/utils/getFileType.ts";
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
   import MyAudio from './myAudio.vue';
