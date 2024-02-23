@@ -222,7 +222,7 @@
             <div class="svg_box">
               <IconVideo></IconVideo>
             </div>
-            <p>Videos</p>
+            <p>Video</p>
           </div>
         </div>
       </div>
@@ -287,7 +287,7 @@
                 </template>
               </nut-image>
               <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-              <img v-else :src="getFileType(item.name)" alt="" />
+              <img v-else src="@/assets/svg/home/file.svg" alt="" />
               <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
             </div>
             <div class="name_box">
@@ -372,7 +372,7 @@
       <nut-popup position="left" :style="{ width: '6rem', height: '100%' }" v-model:visible="showRight">
         <!-- <span class="draw_title"> Select a bucket to display on the home page </span> -->
         <nut-infinite-loading
-          :load-more-txt="' '"
+          :load-more-txt="'Is Bottom'"
           class="file_list file_list_bucket"
           ref="listRef"
           v-model="infinityValue"
@@ -483,9 +483,6 @@
   import moment from 'moment';
   import { HmacSHA1, enc } from 'crypto-js';
   import { search_mint, search_deploy, get_order_sign } from '@/api/index.ts';
-
-  import getFileType from "@/utils/getFileType.ts";
-
   const tableLoading = ref(false);
   const needRefresh = inject('needRefresh');
   // const { loadMore as loadBucket, listData  } = useOrderList();
@@ -811,7 +808,7 @@
       //   .then((text) => {
       //     document.getElementById('txtContainer').textContent = text;
       //   });
-    } else if (['xls', 'xlsx', 'csv'].includes(type)) {
+    } else if (['xls', 'xlsx'].includes(type)) {
       wordVisible.value = true;
 
       // curSelectSrc.value = row.imgUrlLarge;
@@ -1052,7 +1049,7 @@
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
@@ -1639,7 +1636,7 @@
           category = 2;
         } else if (type === 'mp3') {
           category = 3;
-        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
+        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
           category = 4;
         }
         const url = imgData.imgHttpLink;
@@ -1931,6 +1928,7 @@
         bottom: unset;
         width: 100%;
         height: 100%;
+        padding: 0;
         border-radius: 1rem;
         background: unset;
         border: 1px dashed #ccc;
