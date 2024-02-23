@@ -9,20 +9,43 @@
           </template>
         </nut-image> -->
         <div v-for="index in 4">
-          <nut-image @click="showImgList" fit="cover" v-if="index <= 3 && tableData[index - 1]" :src="tableData[index - 1].imgUrl">
+          <template v-if="index <= (isAvailableOrder ? 3 : 4) && tableData[index - 1]">
+            <nut-image
+              v-if="tableData[index - 1].imgUrl || tableData[index - 1].originalSize <= 102400"
+              @click="showImgList"
+              show-loading
+              show-error
+              round
+              radius="5px"
+              :src="tableData[index - 1].imgUrl || tableData[index - 1].imgUrlLarge"
+              fit="cover"
+              position="center"
+            >
+              <template #loading>
+                <Loading width="16" height="16"></Loading>
+              </template>
+            </nut-image>
+            <IconImage @click="showImgList" v-else></IconImage>
+          </template>
+          <!-- <nut-image
+            fit="cover"
+            v-if="index <= (isAvailableOrder ? 3 : 4) && tableData[index - 1]"
+            :src="tableData[index - 1].imgUrl || tableData[index - 1].imgUrlLarge"
+          >
             <template #loading>
               <Loading width="16px" height="16px" name="loading" />
             </template>
-          </nut-image>
-          <slot v-if="index == 4"></slot>
+          </nut-image> -->
+
+          <slot v-if="index == 4 && isAvailableOrder"></slot>
         </div>
       </div>
       <div class="out_img_box" v-else>
         <img @click="showImgList" src="@/assets/bucketPhoto0.svg" alt="" />
         <img @click="showImgList" src="@/assets/bucketPhoto1.svg" alt="" />
         <img @click="showImgList" src="@/assets/bucketPhoto2.svg" alt="" />
-        <!-- <img src="@/assets/bucketPhoto3.svg" alt="" /> -->
-        <slot></slot>
+        <img @click="showImgList" v-if="!isAvailableOrder" src="@/assets/bucketPhoto3.svg" alt="" />
+        <slot v-else></slot>
       </div>
     </div>
     <Teleport to="body">
@@ -97,18 +120,38 @@
               </div>
             </div> -->
             <div class="falls">
-              <nut-image
-                v-for="item in tableData"
-                @click="openImage(item)"
-                :class="[isCheckMode && itemChecked(item.cid, item.dateId) ? 'imageItemChecked' : '']"
+              <template v-for="item in tableData">
+                <nut-image
+                  v-if="item.imgUrl || item.originalSize <= 102400"
+                  @click="openImage(item)"
+                  :class="[isCheckMode && itemChecked(item.cid, item.dateId) ? 'imageItemChecked' : '']"
+                  fit="cover"
+                  :key="item.cid"
+                  :src="item.imgUrl || item.imgUrlLarge"
+                >
+                  <template #loading>
+                    <Loading width="16px" height="16px" name="loading" />
+                  </template>
+                </nut-image>
+                <IconImage @click="openImage(item)" v-else></IconImage>
+              </template>
+
+              <!-- <nut-image
+                v-if="tableData[index - 1].imgUrl || tableData[index - 1].originalSize <= 102400"
+                @click="showImgList"
+                show-loading
+                show-error
+                round
+                radius="5px"
+                :src="tableData[index - 1].imgUrl || tableData[index - 1].imgUrlLarge"
                 fit="cover"
-                :key="item.cid"
-                :src="item.imgUrl"
+                position="center"
               >
                 <template #loading>
-                  <Loading width="16px" height="16px" name="loading" />
+                  <Loading width="16" height="16"></Loading>
                 </template>
               </nut-image>
+              <IconImage @click="showImgList" v-else></IconImage> -->
             </div>
           </nut-infinite-loading>
 
@@ -205,7 +248,7 @@
       :isAvailableOrder="isAvailableOrder"
       :chooseItem="chooseItem"
       :images="images"
-      :imgUrl="chooseItem.imgUrl"
+      :imgUrl="chooseItem.imgUrl || chooseItem.imgUrlLarge"
       :isMobileOrder="isMobileOrder"
       :isNewFolder="false"
       :selectArr="selectArr"
@@ -225,6 +268,7 @@
 </template>
 <script setup>
   import { Checked, Loading } from '@nutui/icons-vue';
+  import IconImage from '~icons/home/image.svg';
   import IconShare from '~icons/home/share.svg';
   import IconDownload from '~icons/home/download.svg';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
@@ -546,6 +590,7 @@
               imageInfo: imageInfo,
               isShowDetail,
               nftInfoList: el.getNftinfosList(),
+              thumb: el.getThumb(),
             };
           }),
           continuationToken: res.getContinuationtoken(),
@@ -623,7 +668,7 @@
         file_id: file_id,
         pubkey: cid,
         cid,
-        imgUrl: url,
+        imgUrl: el.thumb && el.thumb != 'b' ? url : '',
         imgUrlLarge: url_large,
         share: {},
         isSystemImg,
@@ -685,7 +730,6 @@
     imgData.value = [];
     imgArray.value = [];
     imgCheckedData.value = {};
-    isReady.value = false;
     imgIndex.value = 0;
   };
   const refresh2 = () => {
@@ -861,13 +905,19 @@
       return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
     }
   }
+  function tableDataAdd(item) {
+    tableData.value.unshift(item);
+  }
 
-  defineExpose({ refresh, refresh3 });
+  defineExpose({ refresh, refresh3, tableDataAdd });
   watch(
     isReady,
     (val) => {
       // getFileList('', '', true);
-      getFileList();
+      if (val) {
+        console.log(val, 'readyyyyyyyyyyyyy');
+        getFileList();
+      }
     },
     { deep: true },
   );
@@ -882,7 +932,7 @@
         imgData.value = [];
         imgArray.value = [];
         imgCheckedData.value = {};
-        isReady.value = false;
+        // isReady.value = false;
         imgIndex.value = 0;
         // await getOrderInfo(true, val);
       }
@@ -895,8 +945,8 @@
   watch(
     secretAccessKey,
     (val) => {
-      console.log(val, 'secretAccessKeysecretAccessKey');
       if (val) {
+        console.log(val, 'secretAccessKeysecretAccessKey');
         imgDetailShow.value = false;
         timeLine.value = [];
         dateTimeLine.value = [];
@@ -936,12 +986,14 @@
       gap: 0.5rem;
       padding: 0.5rem 1rem;
       height: 280px;
-      .nut-image {
+      .nut-image,
+      svg {
         height: 130px;
         border-radius: 10px;
         overflow: hidden;
       }
-      img {
+      img,
+      svg {
         width: 100%;
       }
     }

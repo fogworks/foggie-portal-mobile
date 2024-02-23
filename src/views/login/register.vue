@@ -326,7 +326,7 @@
     });
   }, 300);
   onMounted(() => {
-    loginForm.amb_promo_code = route.query.amb_promo_code || '';
+    loginForm.amb_promo_code = route.query.amb_promo_code || import.meta.env.VITE_USE_AMBCODE;
   });
 </script>
 

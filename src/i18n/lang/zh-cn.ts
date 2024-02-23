@@ -14,6 +14,7 @@ export const lang: langType = {
     analysis: '收益记录',
     transactionRecords: '交易记录',
     nft: 'NFT',
+    allNFTList: 'NFT',
   },
   language: {
     en: '英文',

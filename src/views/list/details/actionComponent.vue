@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- ACTION SHEET -->
     <nut-popup
       teleport-disable
       pop-class="fileItemPopup"
@@ -15,10 +16,24 @@
       <div class="fileItem_header">
         <img v-if="(chooseItem.category == 1 || chooseItem.category == 2) && chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
         <img v-else-if="chooseItem.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+        <nut-image
+          v-else-if="chooseItem.category != 0 && chooseItem.category != 4 && chooseItem.imgUrl"
+          show-loading
+          show-error
+          round
+          radius="5px"
+          :src="chooseItem.imgUrl"
+          fit="cover"
+          position="center"
+        >
+          <template #loading>
+            <Loading width="16" height="16"></Loading>
+          </template>
+        </nut-image>
         <img v-else-if="chooseItem.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-        <img v-else src="@/assets/svg/home/file.svg" alt="" />
+        <img v-else :src="getFileType(chooseItem.name)" alt="" />
         <div class="fileItem_header_right">
-          <div style="width: 85%">{{ chooseItem.fullName }}</div>
+          <div style="width: 75%">{{ chooseItem.fullName }}</div>
           <div v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
         </div>
       </div>
@@ -30,7 +45,7 @@
       >
         <div class="optionBox">
           <template v-if="isAvailableOrder">
-            <div @click="handlerClick('share')">
+            <div @click="handlerClick('share')" v-if="!chooseItem.isDir">
               <IconShare color="#222224 "></IconShare>
               <span>Share</span>
             </div>
@@ -82,7 +97,7 @@
         >
       </div>
     </nut-popup>
-
+    <!-- iso -->
     <nut-popup
       teleport-disable
       pop-class="fileItemPopup"
@@ -148,7 +163,7 @@
           <IconVideo v-else-if="selectArr[0].category == 2"></IconVideo>
           <IconAudio2 v-else-if="selectArr[0].category == 3" src="@/assets/svg/home/audio.svg" alt="" />
           <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
-          <IconFile v-else src="@/assets/svg/home/file.svg" alt="" />
+          <IconFile v-else :src="getFileType(selectArr[0].name)" alt="" />
         </div>
         <p v-if="!isNewFolder"> {{ selectArr.length ? getOriginName(selectArr[0].name.split('/')[0]) : '' }}</p>
         <nut-searchbar
@@ -162,8 +177,8 @@
         <nut-button type="info" block @click="confirmRename">Confirm</nut-button>
       </div>
     </nut-popup>
-    <!-- move -->
 
+    <!-- move -->
     <nut-popup
       teleport-disable
       v-if="moveShow"
@@ -207,6 +222,7 @@
         <nut-button type="info" block @click="confirmMove">Move to current folder</nut-button>
       </div>
     </nut-popup>
+
     <!-- share -->
     <nut-popup
       teleport-disable
@@ -308,6 +324,7 @@
         </div>
       </div>
     </nut-popup>
+    <!-- preview -->
     <Teleport to="body">
       <nut-overlay z-index="1800" overlay-class="detail_over" v-model:visible="detailShow1" :close-on-click-overlay="false">
         <div class="detail_top" v-if="chooseItem.category !== 1">
@@ -316,7 +333,7 @@
         </div>
         <HLSVideo v-if="chooseItem.category == 2" :imgUrl="imgUrl"></HLSVideo>
         <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
-        <MyAudio v-else-if="chooseItem.category == 3" :audioUrl="chooseItem.imgUrl"></MyAudio>
+        <MyAudio v-else-if="chooseItem.category == 3" :coverUrl="chooseItem.imgUrl" :audioUrl="chooseItem.imgUrlLarge"></MyAudio>
         <div v-else-if="imgUrl && chooseItem.category == 1" class="middle_img">
           <van-image-preview
             ref="imgPreRef"
@@ -366,6 +383,25 @@
         </div>
       </nut-overlay>
     </Teleport>
+    <Teleport to="body">
+       <nut-action-sheet z-index="1800" @close="emits('update:wordVisible', false)"  v-model:visible="wordVisible" title="Links">
+        <div class="custom-action_sheet">
+          <div @click="choose('google')">
+            <img src="@/assets/googlelogo_preview.png" style="height: 25px" />
+          </div>
+          <div @click="choose('Microsoft')">
+            <img src="@/assets/removebg-preview.png" style="height: 25px" />
+          </div>
+
+          <div @click="choose('other')">
+            <img src="@/assets/otherplugins.png" style="width: 30px; height: 30px" />
+            <div style="font-size: 18px; margin-left: 5px">Direct open</div>
+          </div>
+
+          <div @click="emits('update:wordVisible', false)"> Cancel </div>
+        </div>
+      </nut-action-sheet>
+    </Teleport>
   </div>
 </template>
 
@@ -380,8 +416,6 @@
   import IconDelete from '~icons/home/delete.svg';
   import IconTwitter from '~icons/home/twitter.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';
-  import IconNewFolder from '~icons/home/new_folder.svg';
-  import IconAllCate from '~icons/home/all-cate.svg';
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
@@ -414,10 +448,10 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   import moment from 'moment';
   import { HmacSHA1, enc } from 'crypto-js';
-  import uploader from './uploader.vue';
-  import { poolUrl } from '@/setting.js';
-  import { get_order_sign } from '@/api/index';
-  import { browserUrl } from '@/setting';
+  import { poolUrl, browserUrl } from '@/setting.js';
+
+  import getFileType from "@/utils/getFileType.ts";
+
   const { getOrderInfo } = useOrderInfo();
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -432,6 +466,7 @@
     'update:detailShow',
     'update:imgStartIndex',
     'update:isNewFolder',
+    'update:wordVisible',
     'handlerClick',
     'swipeChange',
     'clickFIleItemDetail',
@@ -455,6 +490,7 @@
     isMobileOrder: Boolean,
     renameShow: Boolean,
     isNewFolder: Boolean,
+    wordVisible: Boolean,
     selectArr: Array,
     bucketName: String,
     accessKeyId: String,
@@ -492,6 +528,7 @@
     bucketName,
     imgUrl,
     isMobileOrder,
+    wordVisible,
     imgStartIndex,
     images,
     fileItemPopupIsShow,
@@ -515,9 +552,11 @@
     fileItemDetailPopupIsShow1,
     renameShow1,
   } = toRefs(state);
+  const router = useRouter();
   watch(
     fileItemPopupIsShow,
     (val) => {
+      console.log('111--------', chooseItem.value);
       fileItemPopupIsShow1.value = val;
     },
     { deep: true, immediate: true },
@@ -593,6 +632,30 @@
     copyIPFS,
     copyNft,
   } = useShare(orderInfo.value, header, deviceType, metadata);
+  function choose(type) {
+    const curSelectType = chooseItem.value.name.substring(chooseItem.value.name.lastIndexOf('.') + 1);
+    const curSelectTypeMap = {
+      xls: 'excel',
+      xlsx: 'excel',
+      csv: 'excel',
+      pdf: 'pdf',
+      doc: 'docx',
+      docx: 'docx',
+    };
+    switch (type) {
+      case 'google':
+        window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(chooseItem.value.imgUrlLarge)}`);
+        break;
+      case 'Microsoft':
+        window.open(`https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(chooseItem.value.imgUrlLarge)}`);
+        break;
+      case 'other':
+        router.push({ path: '/filePreview', query: { fileSrc: chooseItem.value.imgUrlLarge, fileType: curSelectTypeMap[curSelectType] } });
+        break;
+    }
+    emits('update:wordVisible', false);
+  }
+
   const shareCheckData = computed(() => {
     let checkData = [];
     if (detailShow.value) {
@@ -626,6 +689,84 @@
       emits('update:moveShow', true);
       // moveShow.value = true;
       // doSearch('', movePrefix.value, true);
+    } else if (type == 'download') {
+      showToast.text('Coming soon for your download');
+      let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+      server = new grpcService.default.ServiceClient(ip, null, null);
+      let range = new Prox.default.ProxRangeRequest();
+      let request = null;
+      let stream;
+      let downloadName;
+      if (!checkData[0].isDir) {
+        request = new Prox.default.ProxGetRequest();
+        request.setHeader(header.value);
+        request.setRange(range);
+        request.setCid(checkData[0].cid);
+        request.setKey(encodeURIComponent(checkData[0].key));
+        request.setThumb(false);
+        console.log(request, 'request');
+        downloadName = checkData[0].name;
+        stream = server.getObject(request, metadata.value);
+      } else {
+        downloadName = 'download.zip';
+        let infoList = [];
+
+        for (const item of checkData) {
+          let objs = new Prox.default.ProxGetInfo();
+          objs.setCid(item.cid);
+          objs.setKey(item.key);
+          infoList.push(objs);
+        }
+        request = new Prox.default.ProxGetRequests();
+        request.setHeader(header.value);
+        request.setRange(range);
+        request.setObjsList(infoList);
+        let prefixes = [];
+        let data = [];
+        checkData.forEach((el) => {
+          if (el.cid && !el.isDir) {
+            data.push({
+              cid: el.cid,
+              key: encodeURIComponent(el.fullName),
+            });
+          } else {
+            // prefixes.push(encodeURIComponent(el.fullName));
+            prefixes.push(el.fullName.replace('/', ''));
+          }
+        });
+        request.setPrefixesList(JSON.parse(JSON.stringify(prefixes)));
+        stream = server.getObjects(request, metadata.value);
+      }
+      let chunks = [];
+      stream.on('data', (response) => {
+        console.log(response, 'response');
+
+        chunks.push(response.getChunk_asU8()); // 收集数据块
+      });
+
+      stream.on('status', (status) => {
+        console.log('Stream status:', status);
+      });
+
+      stream.on('end', (end) => {
+        let blob = new Blob(chunks, { type: 'application/octet-stream' }); // 创建 Blob 对象
+        let url = URL.createObjectURL(blob); // 为 Blob 创建 URL
+
+        // 创建隐藏的下载链接并触发点击
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = downloadName; // 指定下载文件的名称
+        document.body.appendChild(a); // 将链接添加到文档中
+        a.click(); // 模拟点击进行下载
+        // 清理
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url); // 释放 Blob 对象的 URL
+        console.log('Stream end!', end);
+      });
+
+      stream.on('error', (error) => {
+        console.log('error----------upload', error);
+      });
     } else {
       emits('handlerClick', type);
     }
@@ -1111,6 +1252,30 @@
   });
 </script>
 <style lang="scss">
+  .custom-action_sheet {
+    display: flex;
+    flex-direction: column;
+
+    & > div:not(:last-child) {
+      padding: 10px 20px;
+      width: 100%;
+      height: 90px;
+      line-height: 90px;
+      display: flex;
+      align-items: center;
+    }
+
+    & > div:last-child {
+      height: 100px;
+      background-color: #f7f7f7;
+      font-size: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+    }
+  }
+
   .fileItemPopup.nut-popup {
     background-color: #f9f9f9;
     padding: 40px 40px;

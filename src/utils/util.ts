@@ -253,10 +253,11 @@ function formatNumber(number) {
 const getType = (fileName: string) => {
   fileName = fileName.toLowerCase();
   if (
-    fileName.endsWith('.jpeg') ||
-    fileName.endsWith('.jpg') ||
-    fileName.endsWith('.png') ||
-    fileName.endsWith('.svg') ||
+    fileName.endsWith(".jpeg") ||
+    fileName.endsWith(".jpg") ||
+    fileName.endsWith(".png") ||
+    fileName.endsWith(".svg") ||
+    fileName.endsWith('.bmp') ||
     fileName.endsWith('.gif') ||
     fileName.endsWith('.ico') ||
     fileName.endsWith('.webp') ||
@@ -276,7 +277,7 @@ const getType = (fileName: string) => {
     return 5;
   } else if (fileName.endsWith('.mp3')) {
     return 3;
-  } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+  } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.csv')) {
     return 4;
   } else if (fileName.endsWith('.pdf')) {
     return 4;

@@ -9,17 +9,27 @@
     </div>
     <div class="contentBox">
       <div class="showcase-content">
-        <h1> Welcome to <span class="primary-text">My World!</span> </h1>
+        <h1> Welcome to <span class="primary-text">Foggie Mobile!</span> </h1>
         <p>Please select the authorization method</p>
       </div>
+
+      <div class="logo">
+        <img src="@/assets/fog-works.png" alt="" srcset="" />
+        <!-- <span>Foggie Mobile</span> -->
+      </div>
+
       <div class="optionsBtn">
         <div @click="skipTo('H5')">
-          <img src="@/assets/H5.svg" alt="" srcset="" />
-          <div>H5</div>
+          <div class="item">
+            <img src="@/assets/browser.svg" alt="" srcset="" />
+          </div>
+          <div style="margin-top: 5px">Browser</div>
         </div>
         <div>
-          <img src="@/assets/iOS.svg" alt="" srcset="" />
-          <div>IOS</div>
+          <div class="item">
+            <img src="@/assets/logo-dog-black_1.svg" alt="" srcset="" />
+          </div>
+          <div style="margin-top: 5px">Foggie Mobile</div>
         </div>
       </div>
     </div>
@@ -70,7 +80,7 @@
       transform: translateX(-50%);
       h1 {
         text-align: center;
-        font-size: 45px;
+        font-size: 40px;
         margin: 0;
         // padding-bottom: 20px;
         .primary-text {
@@ -86,19 +96,56 @@
       }
     }
     .optionsBtn {
-      margin-top: 500px;
+      margin-top: 150px;
       display: flex;
       justify-content: space-around;
       div {
         text-align: center;
         color: #fff;
-        font-size: 60px;
+        font-size: 40px;
         font-weight: 500;
         // font-style: italic;
-        img {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .item {
+          background-color: #fff;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 140px;
+          height: 140px;
+          img {
           width: 125px;
           height: 125px;
         }
+        }
+
+        // .lastImage{
+        //   width: 230px;
+        //   height: 230px;
+        // }
+      }
+    }
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin-top: 200px;
+      width: 100%;
+      height: 200px;
+      img {
+        width: 240px;
+        height: 140px;
+      }
+      span {
+        margin-top: 60px;
+        font-size: 65px;
+        color: #fff;
+        font-weight: 600;
+        font-style: italic;
       }
     }
   }

@@ -27,9 +27,21 @@
   provide('isMobileDevice', isMobileDevice);
   const metaOpen = () => {
     if (isMobileDevice.value) {
-      showToast.text(`https://metamask.app.link/dapp/${redirectUrl}`);
-
       window.open(`https://metamask.app.link/dapp/${redirectUrl}`);
+      // window.open('https://metamask.app.link/dapp/https://amb.u2i.net');
+    } else {
+      window.open('https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn');
+    }
+  };
+  const OKXOpen = () => {
+    if (isMobileDevice.value) {
+      // const ua = navigator.userAgent;
+      // const isOKApp = /OKApp/i.test(ua);
+      const encodedDappUrl = encodeURIComponent(redirectUrl);
+      const deepLink = 'okx://wallet/dapp/url?dappUrl=' + encodedDappUrl;
+      const encodedUrl = 'https://www.okx.com/download?deeplink=' + encodeURIComponent(deepLink);
+
+      window.open(encodedUrl);
       // window.open('https://metamask.app.link/dapp/https://amb.u2i.net');
     } else {
       window.open('https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn');
@@ -48,6 +60,7 @@
     }
   };
 
+  provide('OKXOpen', OKXOpen);
   provide('metaOpen', metaOpen);
   provide('metaOpenDapp', metaOpenDapp);
 

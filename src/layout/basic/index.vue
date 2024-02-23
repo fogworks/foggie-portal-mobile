@@ -48,13 +48,11 @@
         <div style="font-weight: 600;font-size: 17px;">Bind</div>
       </template>
       <img src="@/assets/fog-works_w.png" style="height: 60px" alt="" srcset="">
-  
-  
       <nut-input v-model="userBindAmbCode" placeholder="Please enter AGENT Invitation Code" max-length="12"
         min-length="12"></nut-input>
-      <nut-checkbox v-model="isConfirm" class="isConfirmCheckbox" style="text-align: left;" icon-size="24">I understand the
+      <nut-checkbox v-model="isConfirm" class="isConfirmCheckbox" style="text-align: left;word-break:break-word" icon-size="24">I understand the
         usage scenario of this
-        invitation code</nut-checkbox>
+        invitation code(official code is used by default,in case you don't have other code)</nut-checkbox>
       <template #footer>
         <nut-button type="primary" @click="bindAmbCodeDialogIsShow = false">Operate Later</nut-button>
         <nut-button type="primary" @click="bindUserAmbCode" :loading="userBindLoading"
@@ -89,7 +87,7 @@
           </template>
         </nut-dialog>
       </Teleport>
-    <UploadSet v-if="curStepIndex == 4&&showUpload"></UploadSet>
+    <UploadSet v-if="curStepIndex == 4&&showUpload" v-model:needRefresh="needRefresh"></UploadSet>
   </template>
   
   <script lang="ts" setup name="BasicLayoutPage">
@@ -115,41 +113,55 @@
   const curStepIndex = computed(() => userStore.getCurStepIndex); // 1 绑定大使邀请码
 
   watch(amb_promo_code, (newVal) => {
+      if (newVal) {
     userBindAmbCode.value = newVal
-  })
+    }
+  },{deep:true})
   // watchEffect(() => {
   //   if (uuid.value && !cloudCodeIsBind.value) {
   //     bindAmbCode()
   //   }
   // })
+  const needRefresh = ref(false)
+  provide('needRefresh', needRefresh)
+  watch(needRefresh, (val) => {
+    if (val) {
+      setTimeout(() => {
+        needRefresh.value=false
+      },1000)
+    }
+  },{deep:true,immediate:true})
   const bindAmbCodeDialogIsShow = ref(false)
   const userBindAmbCode = ref('')  // 用户想要绑定的ambcode
   const userBindLoading = ref(false)  // 用户绑定ambcode的 loading
   const isConfirm = ref(false)  //用户是否勾选已知 
-  
-  
+  watch(bindAmbCodeDialogIsShow, () => {
+    if (!amb_promo_code.value) {
+      userBindAmbCode.value = import.meta.env.VITE_USE_AMBCODE
+    }
+    },
+    { deep: true, immediate: true }
+  )
   const tabItem = [
   { key: 'home', icon: Home },
     { key: 'list', icon: Horizontal },
-    { key: 'nft', icon: Image },
+    { key: 'allNFTList', icon: Image },
     { key: 'member', icon: My },
   ];
   
   const router = useRouter();
   const route = useRoute();
   const showUpload = computed(() => {
-      const routeName=['listDetails','filePreview','getKey','IPFSService','FileList','orderSummary','orderSumDetail','s3Info','RecordsListGuid','RecordsList']
-        if (routeName.indexOf(route.name)==-1) {
+    const routeName=['listDetails','filePreview','getKey','IPFSService','FileList','orderSummary','orderSumDetail','s3Info','RecordsListGuid','RecordsList']
+    if (routeName.indexOf(route.name)==-1) {
       return true
-          } else {
+    } else {
       return false
     }
   })
   const activeTab = ref(0);
   const orderTotal=ref(0)
-  
   const tabbarVisible = ref(true);
-  
   const showBorder = ref(true);
   watch(
     () => router,
@@ -164,18 +176,6 @@
   
   const tabSwitch = (_item, index) => {
     switch (index) {
-    //   case 0:
-    //     router.push('/home');
-    //     break;
-    //   case 1:
-    //     router.push('/list');
-    //     break;
-    //   case 2:
-    //     router.push('/member');
-    //     break;
-    //   case 3:
-    //     router.push('/demo');
-    //     break;
         case 0:
             router.push('/home');
             break;
@@ -196,31 +196,6 @@
   };
   const fileSocket = ref('');
   const showSocketDialog = ref(false);
-  
-  // const bindUser = async () => {
-  //   let isUserCode = false;
-  //   if (userInfo.value.promo_code) {
-  //     await check_promo({ promo_code: userInfo.value.promo_code }).then((res) => {
-  //       if (res.code == 200) isUserCode = true;
-  //     });
-  //   }
-  //   if (isUserCode && !userInfo.value.promo_code) {
-  //     const userOk = () => {
-  //       bind_user_promo({ promo_code: userInfo.value.promo_code }).then((res) => { });
-  //     };
-  
-  //     showDialog({
-  //       title: 'Notice',
-  //       content: `Your current invitation code ${userInfo.value.promo_code} is the user's invitation code, are you sure you want to bind it?`,
-  //       onOk: userOk,
-  //       okText: 'Accept',
-  //       popClass: 'dialog_class',
-  //     });
-  //   }
-  // };
-  
-  
-  
   
   const initFoggieDate = async () => {
     showToast.loading('Loading', {
@@ -487,7 +462,6 @@
     }).catch(() => {
       userBindLoading.value = false
     })
-  
   }
   
   
@@ -521,7 +495,6 @@
           console.error('WebSocket connection error:', event);
       };
   };
-  
   const closeSocketDialog = () => {
       showSocketDialog.value = false;
   };

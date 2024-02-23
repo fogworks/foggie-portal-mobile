@@ -5,10 +5,12 @@
         <IconSwitch @click="getList" v-show="curStepIndex == 4"></IconSwitch>
       </div>
       <div class="dmc_account_box">
-        Hello,
-        <router-link to="/member">
-          {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
-        </router-link>
+        <div>
+          Hello,
+          <router-link to="/member">
+            {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
+          </router-link>
+        </div>
         <div class="img-box">
           <nut-popover
             theme="dark"
@@ -237,13 +239,29 @@
           </div>
         </div> -->
         <div class="file_list file_list_img" v-if="imgData.length">
-          <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
-            <nut-image show-loading show-error round radius="5px" :src="item.imgUrl" fit="cover" position="center">
+          <div
+            @click="handleRow(item)"
+            class="list_item"
+            style="border: none"
+            v-show="index < 10"
+            v-for="(item, index) in imgData"
+            :key="index"
+          >
+            <nut-image
+              v-if="item.imgUrl || item.originalSize <= 102400"
+              show-loading
+              show-error
+              round
+              radius="5px"
+              :src="item.imgUrl || item.imgUrlLarge"
+              fit="cover"
+              position="center"
+            >
               <template #loading>
                 <Loading width="16" height="16"></Loading>
               </template>
             </nut-image>
-            <!-- <img :src="item.imgUrl" alt="" /> -->
+            <IconImage v-else></IconImage>
           </div>
         </div>
         <div class="file_list" v-if="otherData.length">
@@ -253,14 +271,31 @@
               <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
               <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
               <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
+              <nut-image
+                v-else-if="item.category != 0 && item.category != 4 && item.imgUrl"
+                show-loading
+                show-error
+                round
+                radius="5px"
+                :src="item.imgUrl"
+                fit="cover"
+                position="center"
+                style="width: 100%; height: 100%"
+              >
+                <template #loading>
+                  <Loading width="16" height="16"></Loading>
+                </template>
+              </nut-image>
               <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-
-              <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
               <img v-else src="@/assets/svg/home/file.svg" alt="" />
+              <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
             </div>
             <div class="name_box">
               <p>{{ item.name }}</p>
               <p>{{ item.date || '' }}</p>
+            </div>
+            <div class="right_radio" @click.stop>
+              <MoreX @click="clickFIleItem(item)" width="40px" height="25px" />
             </div>
           </div>
         </div>
@@ -276,7 +311,7 @@
       </div>
       <ListComponent :showBtn="false" has-more :tabList="[]" :imgList="nftImgList"></ListComponent>
     </div>
-    <div class="tab_top_title" v-if="ishaveProfit"
+    <div class="tab_top_title" v-if="ishaveProfit && earningsList.length"
       >Reward and Expenditure <span style="font-size: 12px; display: inline-block">(for the last weeks)</span></div
     >
     <nut-infinite-loading
@@ -369,7 +404,7 @@
         </div>
       </nut-popup>
     </Teleport>
-    <!-- 
+
     <ActionComponent
       v-model:fileItemPopupIsShow="fileItemPopupIsShow"
       v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
@@ -377,6 +412,7 @@
       v-model:moveShow="moveShow"
       v-model:detailShow="detailShow"
       v-model:imgStartIndex="imgStartIndex"
+      v-model:wordVisible="wordVisible"
       :category="0"
       :header="header"
       :prefix="[]"
@@ -398,7 +434,7 @@
       @swipeChange="swipeChange"
       @clickFIleItemDetail="clickFIleItemDetail"
       @clickFIleItem="clickFIleItem"
-    ></ActionComponent> -->
+    ></ActionComponent>
   </div>
 </template>
 
@@ -409,6 +445,7 @@
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
   import IconPlus from '~icons/home/plus.svg';
+  import IconPlay from '~icons/home/play.svg';
   import IconPlus2 from '~icons/home/add.svg';
   import IconAssets from '~icons/home/assets.svg';
   import IconHistory from '~icons/home/history.svg';
@@ -419,7 +456,7 @@
   import IconImage from '~icons/home/image.svg';
   import IconDocument from '~icons/home/document.svg';
   import IconVideo from '~icons/home/video.svg';
-  import { Notice, TriangleUp, DouArrowUp, RectUp, Setting, Loading, Shop, Scan2 } from '@nutui/icons-vue';
+  import { Notice, TriangleUp, DouArrowUp, MoreX, RectUp, Setting, Loading, Shop, Scan2 } from '@nutui/icons-vue';
   import { toRefs, computed, reactive, ref, watch, watchEffect, createVNode } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
@@ -427,8 +464,7 @@
   //   import { search_cloud } from '@/api';
   import { search_cloud } from '@/api';
   import useUserAssets from './useUserAssets.ts';
-  import { transferUTCTimeDay, getfilesize2 } from '@/utils/util';
-  import { transferUTCTime, formatNumber } from '@/utils/util';
+  import { transferUTCTimeDay, getfilesize2, transferGMTTime, transferUTCTime, formatNumber } from '@/utils/util';
   import '@nutui/nutui/dist/packages/toast/style';
   import { useIntersectionObserver } from '@vueuse/core';
   import { search_order_profit, search_user_asset_detail, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
@@ -446,9 +482,9 @@
   import { poolUrl } from '@/setting.js';
   import moment from 'moment';
   import { HmacSHA1, enc } from 'crypto-js';
-  import { search_mint, search_deploy } from '@/api/index.ts';
+  import { search_mint, search_deploy, get_order_sign } from '@/api/index.ts';
   const tableLoading = ref(false);
-
+  const needRefresh = inject('needRefresh');
   // const { loadMore as loadBucket, listData  } = useOrderList();
   const { resetData, loadMore, listData, hasMore, infinityValue, total } = useOrderList();
   const {
@@ -471,7 +507,9 @@
   const images = computed(() => {
     let arr = [];
     imgData.value.filter((el) => {
-      arr.push(el.imgUrlLarge);
+      if (arr.length < 20) {
+        arr.push(el.imgUrlLarge);
+      }
     });
     return arr;
   });
@@ -506,6 +544,7 @@
   const accountShow = ref(false);
   const showRight = ref(false);
   const detailShow = ref(false);
+  const wordVisible = ref(false);
   const curSelectSrc = ref('');
   const curSelectType = ref('');
   const listRef = ref('');
@@ -587,7 +626,7 @@
   function clickFIleItem(params) {
     detailRow.value = params;
     fileItemPopupIsShow.value = true;
-    if (detailRow.value.originalSize > 1024 * 1024 * 20) {
+    if (detailRow.value.originalSize > 1024 * 1024 * 20 && detailRow.value.category == 1) {
       showToast.text('The file is too large, please download and view');
     }
   }
@@ -632,6 +671,11 @@
   const order_uuid = ref('');
   const pn = ref(1);
   const ps = ref(10);
+  const fileSocket = ref('');
+  const socketDate = ref('');
+  const socketToken = ref('');
+  const currentFolder = ref('');
+  const showSocketDialog = ref(false);
   const loadMoreFun = async () => {
     try {
       const postData = {
@@ -751,9 +795,11 @@
     console.log(type);
 
     if (type == 'pdf') {
-      curSelectSrc.value = row.imgUrlLarge;
-      curSelectType.value = 'pdf';
-      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'pdf' } });
+      wordVisible.value = true;
+
+      // curSelectSrc.value = row.imgUrlLarge;
+      // curSelectType.value = 'pdf';
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'pdf' } });
     } else if (type == 'txt') {
       detailRow.value.detailType = 'txt';
       detailShow.value = true;
@@ -763,20 +809,24 @@
       //     document.getElementById('txtContainer').textContent = text;
       //   });
     } else if (['xls', 'xlsx'].includes(type)) {
-      curSelectSrc.value = row.imgUrlLarge;
-      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'excel' } });
+      wordVisible.value = true;
+
+      // curSelectSrc.value = row.imgUrlLarge;
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'excel' } });
     } else if (['doc', 'docx'].includes(type)) {
-      detailRow.value.detailType = 'word';
-      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
+      wordVisible.value = true;
+
+      // detailRow.value.detailType = 'word';
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
       // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
       // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
       console.log(row.imgUrlLarge);
     } else if (['ppt', 'pptx'].includes(type)) {
-      curSelectSrc.value = row.imgUrlLarge;
-      curSelectType.value = 'ppt';
-      // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
-      window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
-      // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
+      // curSelectSrc.value = row.imgUrlLarge;
+      // curSelectType.value = 'ppt';
+      // // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      // window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+      // // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
 
       console.log(row.imgUrlLarge);
     } else if (row.imgUrlLarge) {
@@ -784,12 +834,7 @@
       imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
       detailShow.value = true;
     } else {
-      let prefix;
-      if (row.isDir) {
-        prefix = detailRow.value.fullName.split('/').slice(0, -2);
-      } else {
-        prefix = detailRow.value.fullName.split('/').slice(0, -1);
-      }
+      let prefix = detailRow.value.fullName.split('/').slice(0, -1);
       console.log(detailRow.value.fullName, prefix);
 
       router.push({
@@ -910,8 +955,8 @@
     });
   };
   const uploadComplete = () => {
-    imgListRef?.value?.refresh();
-    getFileList();
+    // imgListRef?.value?.refresh();
+    // getFileList();
   };
   const setBucket = async (item) => {
     if (!item.domain) {
@@ -932,9 +977,7 @@
     order_uuid.value = item.uuid;
     showRight.value = false;
     if (order_uuid.value) {
-      if (imgListRef?.value) {
-        imgListRef?.value?.refresh3();
-      }
+      initWebSocket();
       await getOrderInfo(true, order_uuid.value);
       getFileList();
       // if (imgListRef?.value) {
@@ -957,6 +1000,15 @@
       getFileList();
     }
   };
+  watch(
+    needRefresh,
+    (val) => {
+      if (val) {
+        // refresh();
+      }
+    },
+    { deep: true },
+  );
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
     let imgHttpLink = '';
     let imgHttpLarge = '';
@@ -991,13 +1043,14 @@
       // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
       isSystemImg = true;
@@ -1082,6 +1135,7 @@
                   getTags: () => any;
                   getImages: () => any;
                   getNftinfosList: () => any;
+                  getThumb: () => any;
                 }) => {
                   const imageObj = el.getImages().toObject();
                   const imageInfo = {};
@@ -1120,6 +1174,7 @@
                     imageInfo: imageInfo,
                     isShowDetail,
                     nftInfoList: el.getNftinfosList(),
+                    thumb: el.getThumb(),
                   };
                 },
               ),
@@ -1185,7 +1240,7 @@
         isDir: true,
         checked: false,
         name,
-        category: 1,
+        category: 0,
         fileType: 1,
 
         fullName: data.commonPrefixes[i],
@@ -1265,7 +1320,7 @@
         file_id: file_id,
         pubkey: cid,
         cid,
-        imgUrl: url,
+        imgUrl: data.content[j].thumb && data.content[j].thumb != 'b' ? url : '',
         imgUrlLarge: url_large,
         share: {},
         isSystemImg,
@@ -1273,6 +1328,7 @@
         isPersistent,
         isPin: data.content[j].isPin,
         isPinCyfs: data.content[j].isPinCyfs,
+        thumb: data.content[j].thumb,
       };
       // if (item.isDir || category == 1) {
       tableData.value.push(item);
@@ -1538,7 +1594,227 @@
         infinityValue2.value = false;
       });
   }
+  const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
+    console.log('doSocketFn', msg, tableData.value);
+    const action = msg.action;
+    const fileInfo = msg.fileInfo;
+    const keys = fileInfo.keys;
+    const bucket = fileInfo.bucket;
+    const cid = fileInfo.cid;
+    if (!action || !keys || keys.length === 0) {
+      refresh();
+      return;
+    }
 
+    if (action === 'FILE_ADD') {
+      let index = keys[0].lastIndexOf('/');
+      let name = keys[0].substring(index + 1);
+      const date = transferGMTTime(fileInfo.lastModified * 1000);
+      const _cid = cid && cid[0] ? cid[0] : '';
+      const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
+      if (!target) {
+        const type = keys[0].substring(keys[0].lastIndexOf('.') + 1).toLowerCase();
+        const data = {
+          cid: _cid,
+          key: keys[0],
+        };
+        const imgData = await handleImg(data, type, false);
+        let category = 0;
+        if (
+          type === 'png' ||
+          type === 'bmp' ||
+          type === 'gif' ||
+          type === 'jpeg' ||
+          type === 'jpg' ||
+          type === 'svg' ||
+          type === 'heif' ||
+          type === 'webp' ||
+          type === 'ico'
+        ) {
+          category = 1;
+        } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
+          category = 2;
+        } else if (type === 'mp3') {
+          category = 3;
+        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+          category = 4;
+        }
+        const url = imgData.imgHttpLink;
+        const isSystemImg = imgData.isSystemImg;
+        const url_large = imgData.imgHttpLarge;
+
+        console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
+
+        let imageInfo = {
+          aperture: '',
+          datetime: '', //拍摄时间
+          exposuretime: '', //ev曝光量
+          exptime: '', //曝光时间
+          orientation: '', //方向
+          focallength: '', //焦距
+          Flash: false, //是否使用闪光灯
+          software: '', // 使用软件
+          iso: '', //iso
+          camerainfo: '', //手机厂商及其机型
+          gps: '', //经纬度
+          resolution: '', //像素
+        };
+        let isShowDetail = false;
+
+        if (fileInfo.image_infos && Object.keys(fileInfo.image_infos).length > 0) {
+          let key = Object.keys(fileInfo.image_infos)[0];
+          let imageObj = fileInfo.image_infos[key];
+          if (imageObj && imageObj.addition) {
+            isShowDetail = true;
+            imageInfo.aperture = imageObj.addition.aperture;
+            imageInfo.datetime = moment(imageObj.addition.date_time, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+            imageInfo.exposuretime = imageObj.addition?.exposure_time; //ev曝光量
+            imageInfo.exptime = imageObj.addition?.exp_time; //曝光时间
+            imageInfo.orientation = imageObj.addition?.orientation; //方向
+            imageInfo.focallength = imageObj.addition?.focal_length; //焦距
+            imageInfo.Flash = imageObj.addition?.flash || false; //是否使用闪光灯
+            imageInfo.software = imageObj.addition?.software; // 使用软件
+            imageInfo.iso = imageObj.addition?.iso.charCodeAt(0);
+            imageInfo.camerainfo = imageObj?.camera_info; //手机厂商及其机型
+            imageInfo.gps = imageObj?.gps; //经纬度
+            imageInfo.resolution = imageObj?.resolution; //像素
+          }
+          console.log('FILE_ADD-----------tableData', imageInfo);
+        }
+
+        let item = {
+          isDir: false,
+          checked: false,
+          name,
+          category,
+          fileType: 2,
+          fullName: keys[0],
+          key: keys[0],
+          idList: [
+            {
+              name: 'IPFS',
+              code: '',
+            },
+            {
+              name: 'CYFS',
+              code: '',
+            },
+          ],
+          date,
+          pubkey: _cid,
+          cid: _cid,
+          imgUrl: url,
+          imgUrlLarge: url_large,
+          share: {},
+          isSystemImg,
+          canShare: _cid ? true : false,
+          isPin: false,
+          isPinCyfs: false,
+          type,
+          isShowDetail,
+          imageInfo,
+        };
+        tableData.value.unshift(item);
+        imgListRef?.value?.tableDataAdd(item);
+      }
+    } else if (action === 'FILE_PIN') {
+      const curName = fileInfo.keys[0];
+      const curDir = window.sessionStorage.getItem('currentFolder');
+      tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
+        if (el.cid === cid[0]) {
+          el.isPin = true;
+        } else if (
+          curName.charAt(curName.length - 1) === '/' &&
+          decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
+        ) {
+          el.isPin = true;
+          if (!el.cid && cid[0]) {
+            el.cid = cid[0];
+          }
+        }
+      });
+    } else if (action === 'FILE_CHANGE') {
+    } else if (action === 'FILE_DELETE') {
+      console.log('FILE_DELETE', keys);
+      // tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+      // imgArray.value = imgArray.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+    } else if (action === 'FILE_PINNING') {
+    }
+  };
+  const initWebSocket = async () => {
+    if (!order_uuid.value) {
+      return false;
+    }
+    let param = {
+      order_uuid: order_uuid.value,
+    };
+    const signData = await get_order_sign(param);
+    socketDate.value = signData?.result?.data?.timestamp;
+    socketToken.value = signData?.result?.data?.sign;
+    console.log('initWebSocket-----------');
+    const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
+    fileSocket.value = new WebSocket(url);
+    fileSocket.value.onopen = () => {
+      const authMessage = {
+        action: 'AUTH',
+        userID: orderInfo.value.foggie_id,
+        token: socketToken.value,
+        date: socketDate.value,
+      };
+      fileSocket.value.send(JSON.stringify(authMessage));
+    };
+
+    fileSocket.value.onmessage = (event: { data: string }) => {
+      const message = JSON.parse(event.data);
+      const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
+      console.log('Received message from server:', message, currentFolderStr);
+      const uploadFileName = window.sessionStorage.getItem('uploadFileName');
+      let fileInfo = message.fileInfo;
+      let dirArr = fileInfo.keys;
+      const updateBy = fileInfo.updateBy;
+      let dirFile = '';
+      let dirFileName = '';
+      if (dirArr && dirArr.length > 0) {
+        let index = dirArr[0].lastIndexOf('/');
+        if (index > -1) {
+          dirFile = dirArr[0].substring(0, index + 1);
+          dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
+        } else {
+          dirFile = '';
+          dirFileName = dirArr[0];
+        }
+      }
+
+      console.log(
+        '888888',
+        dirArr,
+        dirFile,
+        currentFolderStr,
+        dirFile === decodeURIComponent(currentFolderStr),
+        dirFileName !== uploadFileName,
+      );
+      if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
+        if (detailShow.value) {
+          setTimeout(() => {
+            initWebSocket();
+          }, 3000);
+        } else {
+          doSocketFn(message);
+        }
+      }
+    };
+
+    fileSocket.value.onclose = (event: any) => {
+      console.log('WebSocket connection closed:', event, fileSocket.value);
+      if (fileSocket.value) {
+        console.log('WebSocket connection again:');
+        initWebSocket();
+      }
+    };
+    fileSocket.value.onerror = (event: any) => {
+      console.error('WebSocket connection error:', event);
+    };
+  };
   watch(
     cloudCodeIsBind,
     async (newVal) => {
@@ -1652,6 +1928,7 @@
         bottom: unset;
         width: 100%;
         height: 100%;
+        padding: 0;
         border-radius: 1rem;
         background: unset;
         border: 1px dashed #ccc;
@@ -1944,6 +2221,14 @@
         border-top: 1px solid #eee;
         .left_icon_box {
           position: relative;
+          .play_icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.2rem;
+            height: 1.2rem;
+          }
         }
 
         .type_icon {
@@ -1965,10 +2250,11 @@
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          width: calc(100% - 180px);
+          width: calc(100% - 200px);
           margin-left: 30px;
 
           p:first-child {
+            width: 100%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -2122,8 +2408,8 @@
     // background: #5758a0;
     // margin: 0 -4vw;
     display: grid;
-    grid-template-columns: 100px auto;
-    gap: 30px;
+    grid-template-columns: 80px auto;
+    gap: 0px;
     align-items: center;
     height: 100px;
     padding: 10px 0 0 10px;
@@ -2139,7 +2425,8 @@
       font-weight: bold;
 
       display: flex;
-      justify-content: flex-end;
+      // justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
 
       font-size: 40px;
@@ -2301,7 +2588,7 @@
 
   .income-card {
     position: relative;
-    padding: 40px;
+    padding: 40px 0 40px 40px;
     height: 410px;
     box-sizing: border-box;
     margin: 0;
@@ -2319,7 +2606,7 @@
       margin-left: 10px;
     }
     > img {
-      top: 30px;
+      top: 110px;
       position: absolute;
       right: 20px;
       width: 60px;

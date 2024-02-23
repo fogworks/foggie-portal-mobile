@@ -46,7 +46,7 @@
             :secretAccessKey="secretAccessKey" :bucketName="bucketName"></FolderList>
         </template>
       </div>
-      <FastUploader v-if="!needSet && bucketName" @getRouteOrder="getRouteOrder" @setBucketAndPath="setBucketAndPath"
+      <FastUploader v-if="!needSet && bucketName" @uploadComplete="uploadComplete" @getRouteOrder="getRouteOrder" @setBucketAndPath="setBucketAndPath"
         v-model:canSet="canSet" :header="header" :metadata="metadata" :orderInfo="orderInfo" :accessKeyId="accessKeyId"
         :prefix="uploadPath" :secretAccessKey="secretAccessKey" :bucketName="bucketName"></FastUploader>
       <p class="title2" v-if="!needSet">Select existing file casting</p>
@@ -104,8 +104,10 @@ const uploadPath = ref('');
 const router = useRouter();
 const popShow = ref(false);
 const isHistory = ref(false)
+const hasUpload=ref(false)
 const allTotal=ref(0)
-const keyWord=ref('')
+const keyWord = ref('')
+const emits=defineEmits(['update:needRefresh'])
 const checkBucket = computed(() => {
   return route.query.bucket || '';
 });
@@ -131,6 +133,9 @@ const loadMoreFun = async () => {
     }
   });
 };
+const uploadComplete = () => {
+  hasUpload.value=true
+}
 const getList = async () => {
   resetData();
   await loadMoreFun();
@@ -254,6 +259,11 @@ watch(popShow, async (val) => {
     resetData();
     await loadMoreFun();
     setDefaultBucketAndPath(true)
+  } else {
+    if (hasUpload.value) {
+      emits('update:needRefresh', true)
+      hasUpload.value=false
+    }
   }
 }, { deep: true })
 watch(cloudCodeIsBind, async (val) => {

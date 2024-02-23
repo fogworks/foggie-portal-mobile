@@ -267,7 +267,7 @@
   );
   const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
     console.log('uploadSuccess-----', responseText, option, fileItem, isUploadComplete.value);
-    if (isUploadComplete.value) {
+    if (isUploadComplete.value || isAndroid.value) {
       isDisabled.value = false;
       window.sessionStorage.setItem('uploadFileName', fileItem.name);
 

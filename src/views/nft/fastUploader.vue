@@ -338,7 +338,7 @@
       return 5;
     } else if (fileName.endsWith('.mp3')) {
       return 3;
-    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.csv')) {
       return 4;
     } else if (fileName.endsWith('.pdf')) {
       return 4;

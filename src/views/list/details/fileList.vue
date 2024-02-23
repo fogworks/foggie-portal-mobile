@@ -61,7 +61,7 @@
             <div class="svg_box">
               <IconVideo></IconVideo>
             </div>
-            <p>Video</p>
+            <p>Videos</p>
           </div>
         </div>
       </nut-popup>
@@ -98,7 +98,17 @@
               {{ prefix.at(-1) || '' }}
             </span>
           </template>
-          <nut-checkbox style="flex: 0 0 100px" v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
+          <nut-checkbox style="flex: 0 0 60px" v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
+          <IconListType
+            style="width: 2rem; height: 2rem; vertical-align: middle"
+            v-if="cardMode && category != 1"
+            @click="cardMode = !cardMode"
+          ></IconListType>
+          <IconCardType
+            style="margin: 0 0.2rem; width: 1.5rem; height: 2rem; vertical-align: middle"
+            v-else-if="!cardMode && category != 1"
+            @click="cardMode = !cardMode"
+          ></IconCardType>
         </div>
       </div>
       <div class="search_bar" v-if="category !== 1">
@@ -126,7 +136,7 @@
       <nut-infinite-loading
         v-if="tableData.length"
         load-more-txt="No more content"
-        class="file_list"
+        :class="['file_list', cardMode ? 'card_list' : '']"
         v-model="infinityValue"
         :has-more="!!continuationToken"
         @load-more="loadMore"
@@ -151,9 +161,8 @@
                 />
                 <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
                 <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
-                <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
                 <nut-image
-                  v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl"
+                  v-else-if="item.category != 0 && item.imgUrl"
                   show-loading
                   show-error
                   round
@@ -166,15 +175,32 @@
                     <Loading width="16" height="16"></Loading>
                   </template>
                 </nut-image>
+                <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
                 <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
-                <img v-else src="@/assets/svg/home/file.svg" alt="" />
+                <nut-image
+                  v-else-if="item.category == 1 && item.originalSize <= 102400"
+                  show-loading
+                  show-error
+                  round
+                  radius="5px"
+                  :src="item.imgUrlLarge"
+                  fit="cover"
+                  position="center"
+                >
+                  <template #loading>
+                    <Loading width="16" height="16"></Loading>
+                  </template>
+                </nut-image>
+                <IconImage v-else-if="item.category == 1"></IconImage>
+                <img v-else :src="getFileType(item.name)" alt="" />
+                <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
               </template>
             </div>
             <div class="name_box">
               <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
-              <p>{{ item.date || '' }}</p>
+              <p v-if="!cardMode">{{ item.date || '' }}</p>
             </div>
-            <div @click.stop v-if="item.isPin || (item.nftInfoList && item.nftInfoList.length > 0)" class="ipfs_info">
+            <div @click.stop v-if="(item.isPin || (item.nftInfoList && item.nftInfoList.length > 0)) && !cardMode" class="ipfs_info">
               <!-- <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
               <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2> -->
               <IconNft v-if="item.nftInfoList && item.nftInfoList.length > 0"></IconNft>
@@ -183,9 +209,9 @@
             <!-- <div @click.stop="showAction(item)" class="right_div">
             <IconMore v-show="!isCheckMode" class="right_more"></IconMore>
           </div> -->
-            <div class="right_radio" @click.stop>
+            <div :class="['mask', 'right_radio', isCheckMode ? 'isChecking' : '']" @click.stop>
               <nut-checkbox v-if="isCheckMode" :label="item.name"></nut-checkbox>
-              <MoreX @click="clickFIleItem(item)" v-else width="40px" height="25px" />
+              <MoreX v-else-if="!cardMode && !isCheckMode" @click="clickFIleItem(item)" width="40px" height="25px" />
             </div>
           </div>
         </nut-checkbox-group>
@@ -198,13 +224,12 @@
       ref="imgListRef"
       :orderId="route.query.id"
       :mintType="mintType"
+      v-model:imgArray="imgArray"
       v-model:isCheckMode="isCheckMode"
       v-model:checkedData="imgCheckedData"
       @cancelSelect="cancelSelect"
       @selectAll="selectAll"
-      @touchRow="touchRow"
-      @touchmoveRow="touchmoveRow"
-      @touchendRow="touchendRow"
+      @rowClick="rowClick"
       v-else
     ></ImgList>
 
@@ -245,9 +270,9 @@
           </nut-tabbar-item>
         </template>
 
-        <nut-tabbar-item tab-title="Download" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
+        <nut-tabbar-item tab-title="Download" :class="[selectArr.length < 1 || !isMobileOrder ? 'is-disable' : '']">
           <template #icon="props">
-            <IconDownload :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconDownload>
+            <IconDownload :color="selectArr.length >= 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconDownload>
           </template>
         </nut-tabbar-item>
         <nut-tabbar-item v-if="isAvailableOrder" tab-title="Delete" :class="[selectArr.length < 1 ? 'is-disable' : 'delete-item']">
@@ -265,6 +290,7 @@
       v-model:moveShow="moveShow"
       v-model:detailShow="detailShow"
       v-model:imgStartIndex="imgStartIndex"
+      v-model:wordVisible="wordVisible"
       :category="category"
       :header="header"
       :prefix="prefix"
@@ -331,15 +357,16 @@
 
 <script setup lang="ts">
   import ActionComponent from './actionComponent.vue';
+  import IconListType from '~icons/home/listType.svg';
+  import IconCardType from '~icons/home/cardType.svg';
   import IconCopy from '~icons/home/copy.svg';
   import IconBucket from '~icons/home/bucket.svg';
+  import IconPlay from '~icons/home/play.svg';
   import IconHttp2 from '~icons/home/http2.svg';
   // import IconIPFS from '~icons/home/ipfs.svg';
   import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
-
   import ErrorPage from '@/views/errorPage/index.vue';
   import FlashLight from '~icons/ri/flashlight-fill';
-
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNft from '~icons/home/nft.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
@@ -387,6 +414,8 @@
   import { get_order_sign } from '@/api/index';
   import { browserUrl } from '@/setting';
 
+  import getFileType from "@/utils/getFileType.ts";
+
   // const accessKeyId = ref<string>('');
   // const secretAccessKey = ref<string>('');
 
@@ -396,6 +425,7 @@
   const router = useRouter();
   const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const state = reactive({
+    cardMode: false,
     actionRef: '',
     imgPreRef: '',
     swipe: '',
@@ -437,6 +467,7 @@
       },
     ],
     isFirst: false,
+    wordVisible: false,
   });
   const imgListRef = ref('');
   const isMobileOrder = computed(() => {
@@ -491,6 +522,8 @@
     longPress,
     isFirst,
     checkedItem,
+    wordVisible,
+    cardMode,
   } = toRefs(state);
 
   const {
@@ -600,78 +633,9 @@
       doSearch(continuationToken.value, prefix.value, false);
     }
   };
-  const touchRow = (row: any, event: any) => {
-    timeOutEvent = setTimeout(function () {
-      timeOutEvent = 0;
-      if (isMobileOrder.value && (mintType.value != 1 || category.value == 1)) {
-        isCheckMode.value = true;
-      }
-    }, 1000);
-  };
-
-  const touchmoveRow = (row: any, event: any) => {
-    clearTimeout(timeOutEvent);
-    timeOutEvent = 0;
-  };
 
   const imgUrl = ref('');
-  const touchendRow = (row: { checked: boolean; isDir: any; name: string; imgUrl: string }, event: { target: { nodeName: string } }) => {
-    clearTimeout(timeOutEvent);
-    if (event?.target?.nodeName == 'svg' || event?.target?.nodeName == 'path') {
-      // showAction(row);
-      return false;
-    }
-    if (event?.target?.className == 'ipfs_img' || event?.target?.className == 'ipfs_info') {
-      return false;
-    }
-    if (timeOutEvent != 0) {
-      if (isCheckMode.value) {
-        // select
-        row.checked = !row.checked;
-      } else {
-        if (row.isDir) {
-          keyWord.value = '';
-          let long_name = prefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
-          prefix.value = long_name.split('/').slice(0, -1);
-          prefixChange();
-        } else {
-          chooseItem.value = row;
-          console.log(chooseItem.value, 'chooseItem.value');
-          const type = row.name.substring(row.name.lastIndexOf('.') + 1);
 
-          if (type == 'pdf') {
-            // window.open(row.imgUrlLarge);
-            console.log(row.imgUrlLarge);
-
-            router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
-          } else if (type == 'txt') {
-            chooseItem.value.detailType = 'txt';
-            detailShow.value = true;
-            // fetch(row.imgUrlLarge)
-            //   .then((response) => response.text())
-            //   .then((text) => {
-            //     document.getElementById('txtContainer').textContent = text;
-            //   });
-          } else if (['xls', 'xlsx'].includes(type)) {
-            router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
-          } else if (['doc', 'docx'].includes(type)) {
-            router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'docx' } });
-            // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
-            // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
-            console.log(row.imgUrlLarge);
-          } else if (['ppt', 'pptx'].includes(type)) {
-            window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
-            console.log(row.imgUrlLarge);
-          } else if (row.imgUrlLarge) {
-            imgUrl.value = row.imgUrlLarge;
-            imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
-            detailShow.value = true;
-          }
-        }
-      }
-    }
-    return false;
-  };
   const cancelSelect = () => {
     // isCheckMode.value = false;
 
@@ -698,26 +662,27 @@
       if (type == 'pdf') {
         // window.open(row.imgUrlLarge);
         console.log(row.imgUrlLarge);
-
-        router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
+        wordVisible.value = true;
+        // router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
       } else if (type == 'txt') {
         chooseItem.value.detailType = 'txt';
         detailShow.value = true;
-        fetch(row.imgUrlLarge)
-          .then((response) => response.text())
-          .then((text) => {
-            document.getElementById('txtContainer').textContent = text;
-          });
-      } else if (['xls', 'xlsx'].includes(type)) {
-        router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
+      } else if (['xls', 'xlsx', 'csv'].includes(type)) {
+        wordVisible.value = true;
+        // router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
       } else if (['doc', 'docx'].includes(type)) {
-        router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'docx' } });
+        wordVisible.value = true;
+        // router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'docx' } });
         // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
         // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
         console.log(row.imgUrlLarge);
       } else if (['ppt', 'pptx'].includes(type)) {
-        window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
-        console.log(row.imgUrlLarge);
+        // curSelectSrc.value = row.imgUrlLarge;
+        // curSelectType.value = 'ppt';
+        // // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+        // window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+        // // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
+        // console.log(row.imgUrlLarge);
       } else if (row.imgUrlLarge) {
         imgUrl.value = row.imgUrlLarge;
 
@@ -965,7 +930,6 @@
       moveShow.value = true;
       // doSearch('', movePrefix.value, true);
     } else if (type === 'download') {
-      if (checkData.length > 1) return false;
       //   downLoad();
 
       // const bucketName = 'test11111';
@@ -975,35 +939,114 @@
 
       const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+        if (checkData.length > 1) return false;
+
         $cordovaPlugins.downloadFileHH(url, checkData[0].fullName, headers);
       } else {
         showToast.text('Coming soon for your download');
-        fetch(url, { method: 'GET', headers })
-          .then((response) => {
-            if (response.ok) {
-              // 创建一个 Blob 对象，并将响应数据写入其中
-              return response.blob();
-            } else {
-              // 处理错误响应
-              console.error('Error:', response.status, response.statusText);
-            }
-          })
-          .then((blob) => {
-            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = checkData[0].fullName;
+        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+        server = new grpcService.default.ServiceClient(ip, null, null);
+        let range = new Prox.default.ProxRangeRequest();
+        let request = null;
+        let stream;
+        let downloadName;
+        if (checkData.length == 1 && !checkData[0].isDir) {
+          request = new Prox.default.ProxGetRequest();
+          request.setHeader(header.value);
+          request.setRange(range);
+          request.setCid(checkData[0].cid);
+          request.setKey(encodeURIComponent(checkData[0].key));
+          request.setThumb(false);
+          console.log(request, 'request');
+          downloadName = checkData[0].name;
+          stream = server.getObject(request, metadata.value);
+        } else {
+          downloadName = 'download.zip';
+          let infoList = [];
 
-            // 将 <a> 元素添加到文档中，并模拟点击
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          })
-          .catch((error) => {
-            // 处理网络错误
-            console.error('Network Error:', error);
+          for (const item of checkData) {
+            let objs = new Prox.default.ProxGetInfo();
+            objs.setCid(item.cid);
+            objs.setKey(item.key);
+            infoList.push(objs);
+          }
+          request = new Prox.default.ProxGetRequests();
+          request.setHeader(header.value);
+          request.setRange(range);
+          request.setObjsList(infoList);
+          let prefixes = [];
+          let data = [];
+
+          checkData.forEach((el) => {
+            if (el.cid && !el.isDir) {
+              data.push({
+                cid: el.cid,
+                key: encodeURIComponent(el.fullName),
+              });
+            } else {
+              // prefixes.push(encodeURIComponent(el.fullName));
+              prefixes.push(el.fullName.replace('/', ''));
+            }
           });
+          request.setPrefixesList(JSON.parse(JSON.stringify(prefixes)));
+          stream = server.getObjects(request, metadata.value);
+        }
+        let chunks = [];
+        stream.on('data', (response) => {
+          console.log(response, 'response');
+
+          chunks.push(response.getChunk_asU8()); // 收集数据块
+        });
+
+        stream.on('status', (status) => {
+          console.log('Stream status:', status);
+        });
+
+        stream.on('end', (end) => {
+          let blob = new Blob(chunks, { type: 'application/octet-stream' }); // 创建 Blob 对象
+          let url = URL.createObjectURL(blob); // 为 Blob 创建 URL
+
+          // 创建隐藏的下载链接并触发点击
+          let a = document.createElement('a');
+          a.href = url;
+          a.download = downloadName; // 指定下载文件的名称
+          document.body.appendChild(a); // 将链接添加到文档中
+          a.click(); // 模拟点击进行下载
+          // 清理
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url); // 释放 Blob 对象的 URL
+          console.log('Stream end!', end);
+        });
+
+        stream.on('error', (error) => {
+          console.log('error----------upload', error);
+        });
       }
+      // fetch(url, { method: 'GET', headers })
+      //   .then((response) => {
+      //     if (response.ok) {
+      //       // 创建一个 Blob 对象，并将响应数据写入其中
+      //       return response.blob();
+      //     } else {
+      //       // 处理错误响应
+      //       console.error('Error:', response.status, response.statusText);
+      //     }
+      //   })
+      //   .then((blob) => {
+      //     // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+      //     const a = document.createElement('a');
+      //     a.href = URL.createObjectURL(blob);
+      //     a.download = checkData[0].fullName;
+
+      //     // 将 <a> 元素添加到文档中，并模拟点击
+      //     document.body.appendChild(a);
+      //     a.click();
+      //     document.body.removeChild(a);
+      //   })
+      //   .catch((error) => {
+      //     // 处理网络错误
+      //     console.error('Network Error:', error);
+      //   });
     } else if (type === 'delete') {
       const onOk = async () => {
         deleteItem(checkData);
@@ -1072,10 +1115,10 @@
   };
   const fileTypeText = {
     0: 'All File List',
-    1: 'Image',
-    2: 'Video',
+    1: 'Images',
+    2: 'Videos',
     3: 'Audio',
-    4: 'Document',
+    4: 'Documents',
   };
   const switchType = (type: number) => {
     category.value = type;
@@ -1184,6 +1227,7 @@
                   getTags: () => any;
                   getImages: () => any;
                   getNftinfosList: () => any;
+                  getThumb: () => any;
                 }) => {
                   const imageObj = el.getImages().toObject();
                   const imageInfo = {};
@@ -1222,6 +1266,7 @@
                     imageInfo: imageInfo,
                     isShowDetail,
                     nftInfoList: el.getNftinfosList(),
+                    thumb: el.getThumb(),
                   };
                 },
               ),
@@ -1281,13 +1326,14 @@
       // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
       isSystemImg = true;
@@ -1297,6 +1343,7 @@
     }
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
+  provide('handleImg', handleImg);
   const initRemoteData = async (
     data: {
       commonPrefixes?: any;
@@ -1336,10 +1383,7 @@
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
-      if (data.prefix) {
-        // name = name.split(data.prefix)[1];
-        name = name.split('/')[name.split('/').length - 2] + '/';
-      }
+      
 
       let cur_cid = '';
       let isPin = false;
@@ -1350,11 +1394,16 @@
         }
       }
 
+      if (data.prefix) {
+        // name = name.split(data.prefix)[1];
+        name = name.split('/')[name.split('/').length - 2] + '/';
+      }
+
       let item = {
         isDir: true,
         checked: false,
         name,
-        category: 1,
+        category: 0,
         fileType: 1,
 
         fullName: data.commonPrefixes[i],
@@ -1452,7 +1501,7 @@
         file_id: file_id,
         pubkey: cid,
         cid,
-        imgUrl: url,
+        imgUrl: data.content[j].thumb && data.content[j].thumb != 'b' ? url : '',
         imgUrlLarge: url_large,
         share: {},
         isSystemImg,
@@ -1461,6 +1510,7 @@
         isPin: data.content[j].isPin,
         isPinCyfs: data.content[j].isPinCyfs,
         nftInfoList: data.content[j].nftInfoList,
+        thumb: data.content[j].thumb,
       };
       console.log(item, 'data.content[j]');
 
@@ -1565,6 +1615,7 @@
                   getTags: () => any;
                   getNftinfosList: () => any;
                   getImages: () => any;
+                  getThumb: () => any;
                 }) => {
                   console.log(el, 'el---');
                   // const imageObj = el.getImages().toObject();
@@ -1602,6 +1653,7 @@
                     category: el.getCategory(),
                     tags: el.getTags(),
                     nftInfoList: el.getNftinfosList(),
+                    thumb: el.getThumb(),
                     // imageInfo,
                     // isShowDetail,
                   };
@@ -1640,7 +1692,6 @@
     cancelSelect();
     doSearch('', prefix.value, true);
   };
-  provide('handleImg', handleImg);
   watch(
     category,
     async (val, old) => {
@@ -1739,10 +1790,7 @@
         dirFile === decodeURIComponent(currentFolderStr),
         dirFileName !== uploadFileName,
       );
-      if (
-        dirFile === decodeURIComponent(currentFolderStr) ||
-        dirFile.charAt(dirFile.length - 1) === '/'
-      ) {
+      if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
         if (detailShow.value) {
           setTimeout(() => {
             initWebSocket();
@@ -1776,7 +1824,7 @@
     (val) => {
       if (val) {
         nextTick(() => {
-          if (chooseItem.value.originalSize > 1024 * 1024 * 20) {
+          if (chooseItem.value.originalSize > 1024 * 1024 * 20 && chooseItem.value.category == 1) {
             showToast.text('The file is too large, please download and view');
           }
         });
@@ -1844,7 +1892,7 @@
           category = 2;
         } else if (type === 'mp3') {
           category = 3;
-        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
           category = 4;
         }
         const url = imgData.imgHttpLink;
@@ -1929,13 +1977,19 @@
         }
       }
     } else if (action === 'FILE_PIN') {
-      const  curName = fileInfo.keys[0];
-      const curDir = window.sessionStorage.getItem('currentFolder')
+      const curName = fileInfo.keys[0];
+      const curDir = window.sessionStorage.getItem('currentFolder');
       tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
         if (el.cid === cid[0]) {
           el.isPin = true;
-        } else if (curName.charAt(curName.length - 1) === '/' && decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)) {
+        } else if (
+          curName.charAt(curName.length - 1) === '/' &&
+          decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
+        ) {
           el.isPin = true;
+          if (!el.cid && cid[0]) {
+            el.cid = cid[0];
+          }
         }
       });
     } else if (action === 'FILE_CHANGE') {
@@ -2437,6 +2491,105 @@
       }
     }
   }
+  .card_list {
+    :deep {
+      .nut-infinite__container {
+        width: 100%;
+      }
+      .nut-checkbox-group {
+        display: grid;
+        grid-gap: 5px;
+        grid-template-columns: repeat(3, 1fr);
+        justify-items: center;
+        width: 100%;
+      }
+    }
+    .list_item {
+      position: relative;
+      box-sizing: border-box;
+      flex-direction: column;
+      padding: 0.5rem;
+      width: 240px;
+      border: none;
+      border-radius: 10px;
+      .mask {
+        display: none;
+        position: absolute;
+        top: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+
+        .itemChecked {
+          display: block;
+        }
+        &.isChecking {
+          display: block;
+          height: 100%;
+          cursor: pointer;
+          :deep {
+            .nut-checkbox {
+              width: 100%;
+              height: 100%;
+              display: block;
+            }
+            .nut-icon {
+              padding: 10px;
+            }
+          }
+        }
+
+        :deep {
+          .nut-checkbox {
+            position: absolute;
+            left: 0;
+          }
+          .nut-checkbox__input {
+            position: absolute;
+            right: 5px;
+            top: 10px;
+          }
+          .nut-checkbox__label {
+            display: none;
+          }
+        }
+      }
+      .left_icon_box {
+        width: 150px;
+        height: 150px;
+        img,
+        svg {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .play_icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+      .name_box {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+        p {
+          font-size: 0.8rem !important;
+          color: #000 !important;
+        }
+      }
+      .right_radio {
+        // position: absolute;
+        // right: 10px;
+        // top: 10px;
+        // width: unset;
+        // height: unset;
+      }
+    }
+  }
   .list_item {
     display: flex;
     justify-content: flex-start;
@@ -2487,10 +2640,20 @@
       position: relative;
       width: 80px;
       height: 80px;
-      img {
+      img,
+      svg {
         width: 80px;
         height: 80px;
         border-radius: 0.3rem;
+        vertical-align: middle;
+      }
+      .play_icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1.2rem;
+        height: 1.2rem;
       }
     }
     .name_box {
