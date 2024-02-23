@@ -1,6 +1,6 @@
 {
   "name": "vue-h5-template",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "scripts": {
     "dev": "vite --mode development",
     "dev:scan": "set VITE_IS_HTTPS=true && vite --https --host 0.0.0.0",
