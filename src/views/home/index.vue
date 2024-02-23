@@ -372,7 +372,7 @@
       <nut-popup position="left" :style="{ width: '6rem', height: '100%' }" v-model:visible="showRight">
         <!-- <span class="draw_title"> Select a bucket to display on the home page </span> -->
         <nut-infinite-loading
-          :load-more-txt="'Is Bottom'"
+          :load-more-txt="' '"
           class="file_list file_list_bucket"
           ref="listRef"
           v-model="infinityValue"
