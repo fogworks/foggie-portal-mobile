@@ -395,7 +395,7 @@
 
           <div @click="choose('other')">
             <img src="@/assets/otherplugins.png" style="width: 30px; height: 30px" />
-            <div style="font-size: 18px; margin-left: 5px">Other</div>
+            <div style="font-size: 18px; margin-left: 5px">Direct open</div>
           </div>
 
           <div @click="emits('update:wordVisible', false)"> Cancel </div>
