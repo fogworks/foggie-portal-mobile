@@ -162,7 +162,7 @@
                 <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
                 <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
                 <nut-image
-                  v-else-if="item.category != 0 && (!cardMode ? item.category != 4 : true) && item.imgUrl"
+                  v-else-if="item.category != 0 && item.imgUrl"
                   show-loading
                   show-error
                   round
