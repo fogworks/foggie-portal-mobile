@@ -701,7 +701,7 @@
       .van-tabs__content {
         padding: 1.5rem 1rem;
         color: #fff;
-        min-height: 15rem;
+        // min-height: 15rem;
       }
       .van-tab {
         // background-color: transparent;
