@@ -637,6 +637,7 @@
     const curSelectTypeMap = {
       xls: 'excel',
       xlsx: 'excel',
+      csv: 'excel',
       pdf: 'pdf',
       doc: 'docx',
       docx: 'docx',

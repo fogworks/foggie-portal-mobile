@@ -667,7 +667,7 @@
       } else if (type == 'txt') {
         chooseItem.value.detailType = 'txt';
         detailShow.value = true;
-      } else if (['xls', 'xlsx'].includes(type)) {
+      } else if (['xls', 'xlsx', 'csv'].includes(type)) {
         wordVisible.value = true;
         // router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
       } else if (['doc', 'docx'].includes(type)) {
@@ -1332,7 +1332,7 @@
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
@@ -1892,7 +1892,7 @@
           category = 2;
         } else if (type === 'mp3') {
           category = 3;
-        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
           category = 4;
         }
         const url = imgData.imgHttpLink;

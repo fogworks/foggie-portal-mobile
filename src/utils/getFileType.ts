@@ -55,7 +55,7 @@ export default function getFileType(type) {
     return fileIconArr.value.css;
   } else if (TYPE.endsWith(".mp3")) {
     return fileIconArr.value.music;
-  } else if (TYPE.endsWith(".xlsx") || TYPE.endsWith(".xls")) {
+  } else if (TYPE.endsWith(".xlsx") || TYPE.endsWith(".xls") || TYPE.endsWith(".csv")) {
     return fileIconArr.value.excel;
   } else if (TYPE.endsWith(".pdf")) {
     return fileIconArr.value.pdf;

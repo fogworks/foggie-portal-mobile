@@ -811,7 +811,7 @@
       //   .then((text) => {
       //     document.getElementById('txtContainer').textContent = text;
       //   });
-    } else if (['xls', 'xlsx'].includes(type)) {
+    } else if (['xls', 'xlsx', 'csv'].includes(type)) {
       wordVisible.value = true;
 
       // curSelectSrc.value = row.imgUrlLarge;
@@ -1052,7 +1052,7 @@
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
@@ -1639,7 +1639,7 @@
           category = 2;
         } else if (type === 'mp3') {
           category = 3;
-        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
           category = 4;
         }
         const url = imgData.imgHttpLink;
