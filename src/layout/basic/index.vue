@@ -96,7 +96,7 @@
   import { Home, Horizontal, My,Image } from '@nutui/icons-vue';
   import { user, search_cloud,check_promo, bind_user_promo, checkDmcAccount, updateUser, } from '@/api';
   import { bind_promo, check_promo as check_amb_promo, check_user_bind } from '@/api/amb';
-  import { onMounted, provide } from 'vue';
+  import { onMounted, provide, createVNode} from 'vue';
   
   import { useUserStore } from '@/store/modules/user';
   import { showToast, showDialog } from '@nutui/nutui';
@@ -104,13 +104,18 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
-  
+
+
   const userStore = useUserStore();
   const amb_promo_code = computed(() => userStore.getUserInfo?.amb_promo_code || '');
   const uuid = computed(() => userStore.getUserInfo?.uuid);
   const userInfo = computed(() => userStore.getUserInfo);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
   const curStepIndex = computed(() => userStore.getCurStepIndex); // 1 绑定大使邀请码
+
+  import DMCWalletLogin from '@/views/login/DMCWalletLoginHook.ts';
+  const { isHasDmcwallet, dmcWalletLogin } = DMCWalletLogin();
+
 
   watch(amb_promo_code, (newVal) => {
       if (newVal) {
@@ -210,6 +215,9 @@
       userStore.setInfo({
         ...data.data,
       });
+      if(isHasDmcwallet.value){
+        initLoginDMCAccount()
+      }
     }
     showToast.hide('user_info')
   };
@@ -313,6 +321,61 @@
       }
     }
   }
+
+
+  function initLoginDMCAccount() {
+
+    window.dmcwallet.getAccount((error, result) => {
+          if (error) {
+              // 如果报错，则对错误进⾏捕获并处理
+          } else {
+          if(userInfo.value.dmc){
+            if(result.account_name != userInfo.value.dmc){
+              showDialog({
+                title: 'Warning',
+                content: createVNode('span', { style: {} }, 'Account conflict, whether to switch to the current account?'),
+                cancelText: 'Cancel',
+                okText: 'Yes',
+                onCancel: () => {
+                  // console.log('取消');
+                },
+                onOk: () => {
+                  userStore.logout();
+                  userStore.setCloudCodeIsBind(false);
+                  userStore.setcurStepIndex(1);
+           
+                  router.push('/login');
+   
+                },
+              });
+            }
+          }else{
+            //绑定 钱包
+            bindDmcIsShow.value = true;
+            accountName.value == result.account_name
+          }
+         
+          }
+      });
+      
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
     async function getOrder() {
       const order_state = null;
@@ -464,6 +527,10 @@
     })
   }
   
+
+
+
+
   
   provide('openBindDMCDiaolg', openBindDMCDiaolg)
   provide('bindAmbCode', bindAmbCode)
