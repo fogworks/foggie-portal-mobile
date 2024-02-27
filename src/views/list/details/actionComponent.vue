@@ -272,57 +272,62 @@
           >Confirm</nut-button
         >
       </div>
-      <div class="share_info_box" v-else>
-        <!-- <div v-if="shareRefContent.ipfsStr && isMobileOrder">
+      <template v-else>
+        <div class="share_info_box">
+          <div v-if="shareRefContent.httpStr">
+            <IconHttp
+              @click="
+                shareType = '';
+                isReady = true;
+              "
+            ></IconHttp>
+            HTTP Link
+          </div>
+        </div>
+        <div class="share_info_box" style="margin-top: 10px">
+          <!-- <div v-if="shareRefContent.ipfsStr && isMobileOrder">
           <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
           IPFS Link
         </div> -->
-        <div v-if="shareRefContent.httpStr">
-          <IconHttp
-            @click="
-              shareType = '';
-              isReady = true;
-            "
-          ></IconHttp>
-          HTTP Link
+
+          <div v-if="shareRefContent.httpStr">
+            <IconTwitter
+              @click="
+                shareType = 'twitter';
+                isReady = true;
+              "
+            ></IconTwitter>
+            Twitter
+          </div>
+          <div v-if="shareRefContent.httpStr">
+            <IconFacebook
+              @click="
+                shareType = 'faceBook';
+                isReady = true;
+              "
+            ></IconFacebook>
+            Facebook
+          </div>
+          <div v-if="shareRefContent.httpStr">
+            <IconSlack
+              @click="
+                shareType = 'slack';
+                isReady = true;
+              "
+            ></IconSlack>
+            Slack
+          </div>
+          <div v-if="shareRefContent.httpStr">
+            <IconPinterest
+              @click="
+                shareType = 'pinterest';
+                isReady = true;
+              "
+            ></IconPinterest>
+            Pinterest
+          </div>
         </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconTwitter
-            @click="
-              shareType = 'twitter';
-              isReady = true;
-            "
-          ></IconTwitter>
-          Twitter
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconFacebook
-            @click="
-              shareType = 'faceBook';
-              isReady = true;
-            "
-          ></IconFacebook>
-          Facebook
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconSlack
-            @click="
-              shareType = 'slack';
-              isReady = true;
-            "
-          ></IconSlack>
-          Slack
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconPinterest
-            @click="
-              shareType = 'pinterest';
-              isReady = true;
-            "
-          ></IconPinterest>
-          Pinterest
-        </div>
-      </div>
+      </template>
     </nut-popup>
     <!-- preview -->
     <Teleport to="body">
@@ -384,7 +389,7 @@
       </nut-overlay>
     </Teleport>
     <Teleport to="body">
-       <nut-action-sheet z-index="1800" @close="emits('update:wordVisible', false)"  v-model:visible="wordVisible" title="Links">
+      <nut-action-sheet z-index="1800" @close="emits('update:wordVisible', false)" v-model:visible="wordVisible" title="Links">
         <div class="custom-action_sheet">
           <div @click="choose('google')">
             <img src="@/assets/googlelogo_preview.png" style="height: 25px" />
@@ -450,7 +455,7 @@
   import { HmacSHA1, enc } from 'crypto-js';
   import { poolUrl, browserUrl } from '@/setting.js';
 
-  import getFileType from "@/utils/getFileType.ts";
+  import getFileType from '@/utils/getFileType.ts';
 
   const { getOrderInfo } = useOrderInfo();
   const isMobileDevice = computed(() => {
@@ -1471,8 +1476,10 @@
     flex-wrap: wrap;
     align-items: center;
     margin-top: 100px;
+    padding: 0 10px;
+    overflow-x: auto;
     div {
-      min-width: 240px;
+      min-width: 180px;
       margin-top: 20px;
       text-align: center;
       color: $main_blue;
