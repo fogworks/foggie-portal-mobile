@@ -71,6 +71,14 @@
             <p>Your Payment Account:</p>
             <p class="dmc_account">{{ dmc }}</p>
           </div>
+          <div
+            v-if="isHasDmcwallet"
+            @click="invDialogIsShow = true"
+            style="display: flex; justify-content: center; width: 100%; margin-bottom: 10px"
+          >
+            <nut-button type="primary">Recharge</nut-button>
+          </div>
+
           <div class="tips">
             Please open the DMC Wallet App, copy the Agent Account name and memo for recharging. Make sure to fill in the Memo to ensure a
             smooth and successful transaction.One Memo corresponds to one recharge, if you want to recharge multiple times, please refresh
@@ -99,6 +107,27 @@
         </div>
       </div>
     </BasicModal>
+
+    <nut-popup
+      v-model:visible="invDialogIsShow"
+      pop-class="stepsDialog"
+      z-index="9999"
+      round
+      position="top"
+      closeable
+      :style="{ 'min-height': '25%' }"
+    >
+      <h2 class="rechargeTitle">Please enter the recharge amount</h2>
+
+      <div style="padding: 30px">
+        <nut-form ref="formRef" :model-value="formLine" :rules="rules" style="width: 100%">
+          <nut-form-item label="Amount" prop="amount">
+            <nut-input v-model="formLine.amount" autofocus placeholder=" Enter the recharge amount" type="digit"></nut-input>
+          </nut-form-item>
+        </nut-form>
+        <nut-button type="primary" style="margin-top: 30px" block @click="submitRecharge">Recharge</nut-button>
+      </div>
+    </nut-popup>
   </div>
 </template>
 
@@ -154,7 +183,94 @@
       memo.value = res.result.memo;
     });
   }
+
+  const isHasDmcwallet = ref(false); //是否在dmc钱包app的浏览器中打开  默认false即为普通浏览器
+  const invDialogIsShow = ref(false);
+  const formRef = ref();
+  const formLine = reactive({
+    amount: '',
+  });
+  const rules = reactive({
+    amount: [
+      {
+        required: true,
+        message: 'Please enter the recharge amount',
+      },
+    ],
+  });
+
+  // watch(isHasDmcwallet, (newVal) => {
+  //   if (newVal) {
+  //     invDialogIsShow.value = true;
+  //   }
+  // });
+
+  function submitRecharge() {
+    formRef.value?.validate().then(({ valid }) => {
+      if (valid) {
+        transactionDMC();
+      }
+    });
+  }
+
+  function transactionDMC() {
+    // 获取当前登录账户信息
+    window.dmcwallet.getAccount((error, d) => {
+      if (error) {
+      } else {
+        if (d?.account_name) {
+          // 发起交易
+          window.dmcwallet.beginTransaction(
+            [
+              {
+                account: 'dmc.token',
+                name: 'extransfer',
+                authorization: [
+                  {
+                    actor: d?.account_name,
+                    permission: 'active',
+                  },
+                ],
+                data: {
+                  // 该 transact data, 此处以 transfer 为例
+                  from: d?.account_name, // 当前账户
+                  to: targetAccount.value, //  收款账户,此处以 datamall 为例
+                  quantity: {
+                    //  转账数量
+                    quantity: `${Number(formLine.amount).toFixed(4)} DMC`,
+                    contract: 'datamall',
+                  },
+                  memo: memo.value, //  备注
+                },
+              },
+              // 多个 action 继续添加即可
+            ],
+            (error, result) => {
+              invDialogIsShow.value = false;
+              if (error) {
+                showToast.fail(error);
+              } else {
+                showToast.success('Recharge successfully, please wait for receipt');
+
+                setTimeout(() => {
+                  router.push({ path: '/assetsInfo' });
+                }, 1000);
+              }
+            },
+          );
+        }
+      }
+    });
+  }
+
   onMounted(() => {
+    if (window.dmcwallet) {
+      isHasDmcwallet.value = true;
+    } else {
+      window.addEventListener('sdkReady', () => {
+        isHasDmcwallet.value = true;
+      });
+    }
     getAmbDmc();
     confirmRecharge();
     getUserAssets();
@@ -166,6 +282,15 @@
 </script>
 
 <style lang="scss" scoped>
+  .stepsDialog {
+    .rechargeTitle {
+      font-size: 24px;
+      text-align: center;
+      height: 80px;
+      line-height: 80px;
+    }
+  }
+
   .recharge_btn_box {
     width: 100%;
     display: flex;

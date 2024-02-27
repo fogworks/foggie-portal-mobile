@@ -37,19 +37,35 @@
             </div>
           </a>
           <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
-            <nut-button block type="info" :loading="loading" style="margin-top: 30px; font-size: 16px">
+            <!-- <nut-button block type="info" :loading="loading" style="margin-top: 30px; font-size: 16px">
               Sign in with Metamask</nut-button
-            ></a
-          >
+            > -->
+          </a>
         </template>
         <template v-else>
           <div class="login-img" @click.stop="loginWithMeta">
             <span>Metamask</span>
             <div class="img-metamask"><MetaMask></MetaMask></div>
           </div>
-          <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
+          <!-- <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
             Sign in with Metamask</nut-button
-          >
+          > -->
+        </template>
+
+        <template v-if="isHasDmcwallet">
+          <!-- <hr /> -->
+
+          <!-- <p style="margin-top: 20px"> Sign in with DMC Wallet</p> -->
+
+          <div class="login-img" @click="dmcWalletLogin">
+            <span style="color: #fff">DMC Wallet</span>
+            <div class="img-metamask">
+              <img style="width: 100%;margin: 0px;" src="@/assets/DMC_Token1.png" alt="" srcset="" />
+            </div>
+          </div>
+          <!-- <nut-button block type="info" @click="dmcWalletLogin" :loading="loading" style="margin-top: 30px; font-size: 16px">
+            Sign in with DMC Wallet</nut-button
+          > -->
         </template>
       </van-tab>
       <van-tab name="2">
@@ -142,6 +158,7 @@
     check_wallet,
     wallet_register,
     oauth_url,
+    updateUser,
   } from '@/api';
   // import router from '@/router';
   import { useRouter, useRoute } from 'vue-router';
@@ -152,6 +169,9 @@
   import { load_gpa_token } from '@/utils/util.ts';
   import { redirectUrl } from '@/setting.js';
   import Cookies from 'js-cookie';
+  import DMCWalletLogin from '@/views/login/DMCWalletLoginHook.ts';
+  const { isHasDmcwallet, dmcWalletLogin } = DMCWalletLogin();
+
   // const MMSDK = new MetaMaskSDK(
   //   {
   //     dappMetadata: {
@@ -410,7 +430,7 @@
           method: 'personal_sign',
           params: [message, accounts[0]],
         });
-        console.log(signature);
+
         return wallet_login({
           address: accounts[0],
           wallet_type: 'metamask',
@@ -441,6 +461,7 @@
       }
     }
   }
+
   const checkWallet = async (address, wallet_type = 'metamask') => {
     return check_wallet({ address, wallet_type })
       .then(async (res) => {
@@ -644,7 +665,7 @@
   .login {
     position: relative;
     justify-content: flex-start;
-    height: 100%;
+    min-height: 100%;
     .tab_header {
       width: 100%;
       // display: grid;
