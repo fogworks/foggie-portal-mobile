@@ -265,16 +265,44 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
       return fileLink;
     }
   };
+  const showCopyDialog = (title = 'Http Link', url) => {
+    let src = require('@/assets/svg/home/http2.svg');
+
+    // let src = IconHttp2;
+    let str = `<div>
+      <img style="height:60px; padding:0 20px;" src=${src}> 
+      </div> <div  class='http_share_text'>The link has been generated, so go ahead and share it.</div>`;
+    showDialog({
+      title,
+      content: str,
+      okText: title == 'Http Link' ? 'Copy' : 'Share',
+      noCancelBtn: true,
+      customClass: 'BuyOrderClass',
+      onOk: () => {
+        console.log(url, 'httpCopyLink.value');
+        window.open(url);
+        httpCopyLink.value = '';
+        showShareDialog.value = false;
+        // router.push({ name: 'listDetails', query: { id: res.data?.orderId, uuid: res.data?.uuid, amb_uuid: res.data?.ambUuid } });
+      },
+      beforeClose: () => {
+        httpCopyLink.value = '';
+        showShareDialog.value = false;
+        return true;
+      },
+    });
+  };
   const shareTwitter = async (fileLink, checkData) => {
-    let newWindow = window.open('', '_blank');
+    // let newWindow = window.open('', '_blank');
 
     let link = await createLowLink(fileLink, checkData);
     var twitterUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(checkData.name);
 
+    // newWindow.location = twitterUrl;
 
-    newWindow.location = twitterUrl;
+    showCopyDialog('Twitter', twitterUrl);
 
-    // openUrl(twitterUrl);   
+    // openUrl(twitterUrl);
     // window.open(twitterUrl, '_blank');
   };
 
@@ -282,28 +310,31 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     const a = document.createElement('a');
     a.href = url;
     a.target = '_blank';
-    document.body.appendChild(a)
-    a.click()
+    document.body.appendChild(a);
+    a.click();
   };
   const shareFacebook = async (fileLink, checkData) => {
-    let newWindow = window.open('', '_blank');
+    // let newWindow = window.open('', '_blank');
     let link = await createLowLink(fileLink, checkData);
     var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link);
     // var twitterUrl = 'https://www.facebook.com/dialog/share?href=' + encodeURIComponent(link) + '&display=popup';
     // window.open(twitterUrl, '_blank');
-    newWindow.location = twitterUrl;
+    // newWindow.location = twitterUrl;
     // openUrl(twitterUrl);
+    showCopyDialog('Facebook', twitterUrl);
   };
   const sharePinterest = async (fileLink, checkData) => {
-    let newWindow = window.open('', '_blank');
+    // let newWindow = window.open('', '_blank');
     let link = await createLowLink(fileLink, checkData);
     var twitterUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(link)}&media=${imgUrl.value}&description=${
       imgDesc.value
     }`;
-    newWindow.location = twitterUrl;
+    // newWindow.location = twitterUrl;
     // var twitterUrl = 'https://www.facebook.com/dialog/share?href=' + encodeURIComponent(link) + '&display=popup';
     // openUrl(twitterUrl);
     // window.open(twitterUrl, '_blank');
+
+    showCopyDialog('Pinterest', twitterUrl);
   };
   const shareSlack = async (fileLink, checkData) => {
     let link = await createLowLink(fileLink, checkData);
