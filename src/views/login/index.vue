@@ -29,30 +29,32 @@
           </div>
         </template>
         <p> Sign in with Ethereum </p>
-        <template v-if="isMobileDevice && !hasProvider">
-          <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
-            <div class="login-img">
-              <span style="color: #fff">Metamask</span>
-              <div class="img-metamask"><MetaMask></MetaMask></div>
-            </div>
-          </a>
-          <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
-            <!-- <nut-button block type="info" :loading="loading" style="margin-top: 30px; font-size: 16px">
+        <template v-if="!isHasDmcwallet">
+          <template v-if="isMobileDevice && !hasProvider">
+            <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
+              <div class="login-img">
+                <span style="color: #fff">Metamask</span>
+                <div class="img-metamask"><MetaMask></MetaMask></div>
+              </div>
+            </a>
+            <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
+              <!-- <nut-button block type="info" :loading="loading" style="margin-top: 30px; font-size: 16px">
               Sign in with Metamask</nut-button
             > -->
-          </a>
-        </template>
-        <template v-else>
-          <div class="login-img" @click.stop="loginWithMeta">
-            <span>Metamask</span>
-            <div class="img-metamask"><MetaMask></MetaMask></div>
-          </div>
-          <!-- <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
+            </a>
+          </template>
+          <template v-else>
+            <div class="login-img" @click.stop="loginWithMeta">
+              <span>Metamask</span>
+              <div class="img-metamask"><MetaMask></MetaMask></div>
+            </div>
+            <!-- <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
             Sign in with Metamask</nut-button
           > -->
+          </template>
         </template>
 
-        <template v-if="isHasDmcwallet">
+        <template v-else>
           <!-- <hr /> -->
 
           <!-- <p style="margin-top: 20px"> Sign in with DMC Wallet</p> -->
@@ -60,7 +62,7 @@
           <div class="login-img" @click="dmcWalletLogin">
             <span style="color: #fff">DMC Wallet</span>
             <div class="img-metamask">
-              <img style="width: 100%;margin: 0px;" src="@/assets/DMC_Token1.png" alt="" srcset="" />
+              <img style="width: 100%; margin: 0px" src="@/assets/DMC_Token1.png" alt="" srcset="" />
             </div>
           </div>
           <!-- <nut-button block type="info" @click="dmcWalletLogin" :loading="loading" style="margin-top: 30px; font-size: 16px">
@@ -68,7 +70,7 @@
           > -->
         </template>
       </van-tab>
-      <van-tab name="2">
+      <van-tab name="2" v-if="!isHasDmcwallet">
         <template #title>
           <div class="tab_header">
             <div :class="[activeType == 2 ? 'isChecked' : '']" @click="activeType = '2'">
