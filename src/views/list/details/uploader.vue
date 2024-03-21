@@ -88,6 +88,7 @@
 
   const uploadList = ref<any[]>([]);
 
+
   const uploaderList = ref<any[]>([]);
   // const props = defineProps({
   //   bucketName: [String],
@@ -102,7 +103,9 @@
 
   const route = useRoute();
 
-  const successStatus = ref<number>(204);
+  // const successStatus = ref<number>(201);
+  const successStatus = ref<number>(204); //bucket上传是204 maxio是201
+
 
   const uploadRef = ref<any>(null);
   const uploadUri = ref<string>('');
@@ -203,7 +206,9 @@
         }
         return reject();
       }
-      uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
+
+      uploadUri.value = `http://127.0.0.1:9009/o/`;
+      // uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
       console.log('uploadList------', uploadList.value);
 
       uploaderList.value = fileArr;
@@ -319,6 +324,7 @@
   };
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
+    debugger
     if (isUploadComplete.value) {
       console.log(responseText, option, fileItem);
 
@@ -410,6 +416,14 @@
         _form.append(key, value);
       }
       _form.append('file', options.sourceFile);
+
+      // _form.append("Id", "baeqaemjq");
+      // _form.append("PeerId", "12D3KooWQcfuGqvwGEBeKEjYZXm2vBxLUmcBfgqJNwXnBCyiHugU");
+      // _form.append("Token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTEwMTc4MzksInVzZXJuYW1lIjpudWxsLCJlbWFpbCI6Im5uZDFAeXlkLmNvbSIsImRldmljZV9pZCI6IjY2MDAzNTAwLWI1MWUtMTFlZS1hYzRhLWJmZjYzMTQzMGMwMCIsImhvc3RfaWQiOiIiLCJwZWVyX2lkIjoiIiwiYWNjb3VudCI6IiIsImF1dGhvcml6ZWQiOnRydWV9.8ldxfyt8KfBbcpYBQL1y6Rjue4goDOde550ZrwR8aRA');
+      // _form.append("Key", options.headers.Key);
+      // _form.append("Success_action_status", "201");
+      // _form.append("file", options.sourceFile, options.sourceFile.name);
+
       options.formData = _form;
       xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
       xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
