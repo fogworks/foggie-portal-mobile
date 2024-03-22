@@ -7,7 +7,7 @@
       <div class="dmc_account_box">
         <div>
           Hello,
-          <router-link to="/member">
+          <router-link to="/maxio">
             {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
           </router-link>
         </div>
