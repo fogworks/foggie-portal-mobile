@@ -1,5 +1,6 @@
 <template>
-    <div class="main-page" :class="{ tabbar: tabbarVisible, border: showBorder }">
+    <!-- <div class="main-page" :class="{ tabbar: tabbarVisible, border: showBorder }"> -->
+        <div class="main-page" :class="{ tabbar: tabbarVisible}">
       <RouterView v-slot="{Component,route}">
         <MyTransition>
             <component  :is="Component" :key="route.path"></component>
@@ -149,9 +150,9 @@
   )
   const tabItem = [
     { key: 'home', icon: Home },
-    { key: 'list', icon: Horizontal },
-    { key: 'allNFTList', icon: Image },
-    { key: 'member', icon: My },
+    // { key: 'list', icon: Horizontal },
+    // { key: 'allNFTList', icon: Image },
+    // { key: 'member', icon: My },
   ];
   
   const router = useRouter();
