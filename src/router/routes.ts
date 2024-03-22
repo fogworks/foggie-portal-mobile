@@ -285,6 +285,14 @@ export const routes = [
                 },
             },
             {
+                path: 'cloud',
+                name: 'cloud',
+                component: () => import('@/views/maxio/cloud.vue'),
+                meta: {
+                    title: 'tabbar.list',
+                },
+            },
+            {
                 path: 'maxPool',
                 name: 'maxPool',
                 component: () => import('@/views/maxio/maxPool.vue'),

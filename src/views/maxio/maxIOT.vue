@@ -25,7 +25,8 @@
       <div class="maxio_home_content">
         <div class="maxio_home_leftMenu" :class="[showLeft ? '' : 'minWidth']">
           <div class="menu_img" @click="changeTab('home')">
-            <img src="@/assets/maxio/maxio.svg" alt="" />
+            <!-- <img src="@/assets/maxio/maxio.svg" alt="" /> -->
+            <img src="@/assets/maxio/maxio.png" alt="" class="left_max_png" />
           </div>
           <div class="menu_img" @click="changeTab('pool')">
             <img src="@/assets/maxio/pool.svg" alt="" />
