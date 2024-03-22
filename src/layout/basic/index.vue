@@ -148,7 +148,7 @@
     { deep: true, immediate: true }
   )
   const tabItem = [
-//   { key: 'home', icon: Home },
+    { key: 'home', icon: Home },
     { key: 'list', icon: Horizontal },
     { key: 'allNFTList', icon: Image },
     { key: 'member', icon: My },
