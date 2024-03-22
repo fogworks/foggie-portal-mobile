@@ -1,0 +1,169 @@
+.maxio_home_bg {
+  background: #31313c;
+  height: 100%;
+  width: 100%;
+  // padding: 20px;
+  background: url('@/assets/maxio/bg1.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: scroll;
+  margin-bottom: 39px;
+  box-sizing: border-box;
+}
+.maxio_home {
+  height: calc(100% - 40px);
+  width: calc(100% - 40px);
+  background: rgba(30, 31, 29, 0.15);
+  border: 1px solid rgba(211, 211, 211, 0.43);
+  box-shadow: 0px 2px 4px rgb(0 0 0 / 25%);
+  border-radius: 40px;
+  color: #ffffff;
+  padding: 20px;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(40px);
+  box-sizing: border-box;
+  overflow-y: scroll;
+}
+
+.maxio_home_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+  font-weight: bold;
+  font-size: 32px;
+  .maxio_title_box {
+    //   display: flex;
+    //   flex-direction: column;
+    //   align-items: center;
+    //   justify-content: center;
+    position: relative;
+    .max_ip {
+      position: absolute;
+      font-size: 20px;
+      left: calc(50% - 24px);
+      bottom: 0px;
+    }
+  }
+  .maxio_title {
+    display: flex;
+    align-items: center;
+  }
+  .maxio_img {
+    width: 70px;
+    height: 70px;
+    background: transparent;
+    border: 0.1px solid #fff;
+    border-radius: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+  img {
+    width: 80px;
+  }
+  .icon_img {
+    width: 50px;
+  }
+  .maxio_logo {
+    width: 120px;
+    height: 60px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    img {
+      width: 50px;
+    }
+  }
+  .maxio_home_headLogo {
+    width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+.maxio_home_content {
+  margin-top: 40px;
+  height: calc(100% - 100px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.maxio_home_leftMenu {
+  transition: all 0.8s;
+  padding: 20px 0;
+  width: 120px;
+  background: rgb(181 186 202 / 38%);
+  height: 100%;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  .menu_img {
+    margin: 10px 0;
+    cursor: pointer;
+    padding: 10px;
+    img {
+      width: 60px;
+      height: 60px;
+    }
+  }
+}
+.active_img {
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.266667vw solid #ffffff8c;
+  background: #3c0cddb5;
+  box-shadow:
+    rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}
+.maxio_home_rightContent {
+  width: calc(100% - 160px);
+  height: 100%;
+  box-sizing: border-box;
+  .maxio_home_title {
+    font-weight: bold;
+  }
+}
+.maxio_home_card {
+  background: #3c3c47;
+  width: 100%;
+  background: rgb(181 186 202 / 38%);
+  height: 300px;
+  border-radius: 30px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  img {
+    width: 100%;
+  }
+}
+.maxio_reward_card {
+  padding: 20px;
+  img {
+    width: 100%;
+    height: 92%;
+    object-fit: contain;
+  }
+}

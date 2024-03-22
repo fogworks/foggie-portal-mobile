@@ -148,7 +148,7 @@
     { deep: true, immediate: true }
   )
   const tabItem = [
-  { key: 'home', icon: Home },
+//   { key: 'home', icon: Home },
     { key: 'list', icon: Horizontal },
     { key: 'allNFTList', icon: Image },
     { key: 'member', icon: My },
@@ -611,7 +611,7 @@
   
   .tabbar {
     // height: calc(100vh - 92px);
-    height: unset;
+    // height: unset;
     // padding-bottom: 100px;
   }
   

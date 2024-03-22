@@ -4,10 +4,16 @@ export const routes = [
         redirect: '/home',
         component: () => import('@/layout/basic/index.vue'),
         children: [
+            // {
+            //     path: 'home',
+            //     name: 'Home',
+            //     component: () => import('@/views/home/index.vue'),
+            // },
             {
                 path: 'home',
                 name: 'Home',
-                component: () => import('@/views/home/index_copy.vue'),
+                // component: () => import('@/views/home/index_copy.vue'),
+                component: () => import('@/views/maxio/home.vue'),
             },
             {
                 path: 'assetsInfo',

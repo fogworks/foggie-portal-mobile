@@ -3,8 +3,9 @@
     <div class="maxio_home">
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
-          <div class="maxio_logo" @click="doShowLeft">
-            <img src="@/assets/maxio/list.svg" alt="" />
+          <div class="maxio_logo">
+            <img src="@/assets/maxio/list.svg" alt="" @click="changeTab('home')" />
+            <img src="@/assets/maxio/change.svg" alt="" style="margin-left: 10px" @click="doShowLeft" />
           </div>
         </div>
 
@@ -23,21 +24,24 @@
       </div>
       <div class="maxio_home_content">
         <div class="maxio_home_leftMenu" :class="[showLeft ? '' : 'minWidth']">
+          <div class="menu_img" @click="changeTab('home')">
+            <img src="@/assets/maxio/maxio.svg" alt="" />
+          </div>
           <div class="menu_img" @click="changeTab('pool')">
             <img src="@/assets/maxio/pool.svg" alt="" />
           </div>
           <div class="menu_img" @click="changeTab('iot')">
-            <img src="@/assets/maxio/iot.svg" alt="" />
+            <img src="@/assets/maxio/iot1.svg" alt="" />
           </div>
-          <div class="menu_img" @click="changeTab('file')">
+          <div class="menu_img active_img" @click="changeTab('file')">
             <img src="@/assets/maxio/file.svg" alt="" />
           </div>
           <div class="menu_img" @click="changeTab('reward')">
             <img src="@/assets/maxio/reward.svg" alt="" />
           </div>
-          <div class="menu_img" @click="changeTab('set')">
+          <!-- <div class="menu_img" @click="changeTab('set')">
             <img src="@/assets/maxio/set.svg" alt="" />
-          </div>
+          </div> -->
         </div>
         <div class="maxio_home_rightContent" :class="[showLeft ? 'maxWidth' : '']">
           <img src="@/assets/maxio/fileCircle.png" alt="" />
@@ -53,13 +57,13 @@
   import { ref, toRefs, computed } from 'vue';
   const router = useRouter();
   const route = useRoute();
-  const showLeft = ref(false);
+  const showLeft = ref(true);
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
   };
   const changeTab = (type) => {
-    if (type === 'home') {
-      router.push({ path: '/maxio' });
+    if (type === 'index') {
+      router.push({ path: '/home' });
     } else if (type === 'pool') {
       router.push({ path: '/maxPool' });
     } else if (type === 'iot') {
@@ -70,143 +74,20 @@
       router.push({ path: '/maxReward' });
     } else if (type === 'set') {
       router.push({ path: '/maxSet' });
+    } else if (type === 'home') {
+      router.push({ path: '/maxio' });
     }
   };
 </script>
 
 <style lang="scss" scoped>
-  .maxio_home_bg {
-    background: #31313c;
-    height: 100%;
-    width: 100%;
-    // padding: 20px;
-    background: url('@/assets/maxio/bg1.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    background-position: center center;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: scroll;
-    margin-bottom: 39px;
-    box-sizing: border-box;
-  }
-  .maxio_home {
-    height: calc(100% - 40px);
-    width: calc(100% - 40px);
-    background: rgba(30, 31, 29, 0.15);
-    border: 1px solid rgba(211, 211, 211, 0.43);
-    box-shadow: 0px 2px 4px rgb(0 0 0 / 25%);
-    border-radius: 40px;
-    color: #ffffff;
-    padding: 20px;
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    box-sizing: border-box;
-    overflow-y: scroll;
-  }
-
-  .maxio_home_head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: #fff;
-    font-weight: bold;
-    font-size: 32px;
-    .maxio_title_box {
-      //   display: flex;
-      //   flex-direction: column;
-      //   align-items: center;
-      //   justify-content: center;
-      position: relative;
-      .max_ip {
-        position: absolute;
-        font-size: 20px;
-        left: calc(50% - 24px);
-        bottom: 0px;
-      }
-    }
-    .maxio_title {
-      display: flex;
-      align-items: center;
-    }
-    .maxio_img {
-      width: 70px;
-      height: 70px;
-      background: transparent;
-      border: 0.1px solid #fff;
-      border-radius: 30%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      &:hover {
-        transform: scale(1.1);
-      }
-    }
-    img {
-      width: 80px;
-    }
-    .icon_img {
-      width: 50px;
-    }
-    .maxio_logo {
-      width: 120px;
-      height: 60px;
-      background: transparent;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      img {
-        width: 50px;
-      }
-    }
-    .maxio_home_headLogo {
-      width: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-  .maxio_home_content {
-    transition: all 1s;
-    margin-top: 40px;
-    height: calc(100% - 100px);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .maxio_home_leftMenu {
-    transition: all 0.8s;
-    padding: 20px 0;
-    width: 120px;
-    background: rgb(181 186 202 / 38%);
-    height: 100%;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-sizing: border-box;
-    .menu_img {
-      margin: 10px 0;
-      cursor: pointer;
-      img {
-        width: 80px;
-        height: 80px;
-      }
-    }
-  }
+  @import url('./common.scss');
   .minWidth {
     width: 0 !important;
     transform: translateX(-140px);
   }
   .maxio_home_rightContent {
     transition: all 0.8s;
-    // width: calc(100% - 160px);
-    // border: 1px solid#fff;
     height: 100%;
     box-sizing: border-box;
     width: 100%;
