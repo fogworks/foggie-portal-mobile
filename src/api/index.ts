@@ -1,6 +1,6 @@
 import request, { http } from '@/utils/request';
 import typeApi from '@/typeApi.js';
-const { apiUrl, shareUrl, chainUrl, nodeUrl, webUrl } = typeApi();
+const { apiUrl, vpsUrl, shareUrl, chainUrl, nodeUrl, webUrl } = typeApi();
 export function login(data: object) {
   return http.post(`${apiUrl}/api_accounts/accounts/login`, {
     ...data,
@@ -263,7 +263,6 @@ export const wallet_bind_uuid = (data: any) => {
   });
 };
 
-
 export const search_mint = (data: any, ps: any, pn: any) => {
   let url = `${apiUrl}/nft_scanner/nft/search_mint?ps=${ps}&pn=${pn}`;
   return request({
@@ -271,7 +270,7 @@ export const search_mint = (data: any, ps: any, pn: any) => {
     method: 'POST',
     data,
   });
-}
+};
 
 export const search_deploy = (data: any, ps: any, pn: any) => {
   let url = `${apiUrl}/nft_scanner/nft/search_deploy?ps=${ps}&pn=${pn}`;
@@ -280,7 +279,7 @@ export const search_deploy = (data: any, ps: any, pn: any) => {
     method: 'POST',
     data,
   });
-}
+};
 
 export const oauth_url = (data) => {
   return request({
@@ -288,8 +287,7 @@ export const oauth_url = (data) => {
     method: 'POST',
     data,
   });
-}
-
+};
 
 export const update_nft_sync = (data: any) => {
   let url = `/nft_scanner/nft/update_nft_sync`;
@@ -298,7 +296,7 @@ export const update_nft_sync = (data: any) => {
     method: 'POST',
     data,
   });
-}
+};
 
 /* 生成签名 */
 export const generate_signInfoAPi = (publicKey: string) => {
@@ -307,17 +305,31 @@ export const generate_signInfoAPi = (publicKey: string) => {
     method: 'GET',
     timeout: 100000,
   });
-}
+};
 
 /* 更新签名 */
-export const update_signInfoAPi = (publicKey: string, data:any) => {
+export const update_signInfoAPi = (publicKey: string, data: any) => {
   return request({
     url: `/session/${publicKey}`,
     method: 'PUT',
     timeout: 100000,
     headers: {
-      'Content-Type': "application/json"
+      'Content-Type': 'application/json',
     },
     data,
   });
-}
+};
+export const search_max = (data) => {
+  return request({
+    url: `${vpsUrl}/api/vps/search_max?pn=${data.pn}&ps=${data.ps}`,
+    method: 'GET',
+  });
+};
+export const get_vood_token = (params) => {
+  let url = `${vpsUrl}/api/accounts/get_vood_token`;
+  return request({
+    url: url,
+    method: 'get',
+    params,
+  });
+};

@@ -9,7 +9,7 @@ import IconsResolver from 'unplugin-icons/resolver';
 import Components from 'unplugin-vue-components/vite';
 import commonjs from 'vite-plugin-commonjs';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
-import basicSsl from '@vitejs/plugin-basic-ssl'
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 const { FileSystemIconLoader } = require('unplugin-icons/loaders');
 
@@ -23,8 +23,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
   const root = process.cwd();
   const env = loadEnv(mode, root);
   const buildType = env.VITE_BUILD_TYPE;
-  const ISHttps = env.VITE_IS_HTTPS
-
+  const ISHttps = env.VITE_IS_HTTPS;
 
   const viteEnv = wrapperEnv(env);
   return {
@@ -267,11 +266,11 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
         },
       }),
       mode == 'development' &&
-      nodePolyfills({
-        include: ['node_modules/**/*.js', new RegExp('node_modules/.vite/.*js')],
-        http: true,
-        crypto: true,
-      }),
+        nodePolyfills({
+          include: ['node_modules/**/*.js', new RegExp('node_modules/.vite/.*js')],
+          http: true,
+          crypto: true,
+        }),
     ],
     build: {
       rollupOptions: {

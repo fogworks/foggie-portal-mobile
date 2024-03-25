@@ -8,6 +8,7 @@ export default function typeApi() {
     //   chainUrl: 'https://scontract.dmctech.io:8361',
     //   shareUrl: 'https://45.207.245.24:17071',
     //   webUrl: 'https://amb.dev.u2i.net',
+    //   vpsUrl : 'https://devlop.fogworks.io'
     // };
     // 线上
     // return {
@@ -16,6 +17,7 @@ export default function typeApi() {
     //   chainUrl: 'https://scontract.dmctech.io:8361',
     //   shareUrl: 'https://45.207.245.24:17071',
     //   webUrl: 'https://m.fogworks.io',
+    //  vpsUrl : 'https://pool.fogworks.io'
     // };
     return {
       apiUrl: 'https://amb.u2i.net',
@@ -23,6 +25,7 @@ export default function typeApi() {
       chainUrl: 'https://amb.u2i.net',
       shareUrl: 'https://amb.u2i.net',
       webUrl: 'https://amb.u2i.net',
+      vpsUrl: 'https://devlop.fogworks.io',
     };
     // return {
     //   apiUrl: '/android_proxy',
@@ -38,6 +41,7 @@ export default function typeApi() {
       chainUrl: '',
       shareUrl: '',
       webUrl: '',
+      vpsUrl: '',
     };
   }
 }

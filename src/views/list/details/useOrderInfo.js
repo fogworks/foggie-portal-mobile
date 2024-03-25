@@ -152,7 +152,7 @@ export default function useOrderInfo() {
         let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
         let request = new Prox.default.ProxGetCredRequest();
         request.setHeader(orderSignInfo.value.header ? orderSignInfo.value.header : header.value);
-        // console.log('metadata==11:', request, metadata.value);
+        console.log('metadata==11:', request, metadata.value);
         server.listCreds(request, metadata.value, async (err, res) => {
           if (err) {
             isError.value = true;
