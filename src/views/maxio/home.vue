@@ -49,7 +49,7 @@
           </div>
         </div> -->
         <nut-infinite-loading
-          :load-more-txt="'Is Bottom'"
+          :load-more-txt="' '"
           class="maxio_home_leftMenu"
           ref="listRef"
           v-model="infinityValue"
@@ -91,7 +91,8 @@
           </div>
         </div>
         <div class="maxio_home_rightContent" v-if="showBucket">
-          <img src="@/assets/maxio/bucketDemo.png" alt="" class="bucket_img" />
+          <CloudComponent :cloudQuery="cloudQuery"></CloudComponent>
+          <!-- <img src="@/assets/maxio/bucketDemo.png" alt="" class="bucket_img" /> -->
         </div>
       </div>
     </div>
@@ -100,6 +101,7 @@
 
 <script setup>
   import { ref, toRefs, computed } from 'vue';
+  import CloudComponent from './cloud.vue';
   import useOrderList from './useAllOrderList.ts';
   import { search_cloud } from '@/api';
   import { useUserStore } from '@/store/modules/user';
@@ -111,8 +113,9 @@
     showDeviceMenu: true,
     activeTab: 1,
     noBucketData: [],
+    cloudQuery: {},
   });
-  const { noBucketData, showBucket, showDeviceMenu, activeTab } = toRefs(state);
+  const { cloudQuery, noBucketData, showBucket, showDeviceMenu, activeTab } = toRefs(state);
   const { resetData, loadMore, allOrderList, hasMore, infinityValue, total } = useOrderList();
   const router = useRouter();
   const route = useRoute();
@@ -136,8 +139,17 @@
   const changeMenu = (item, _type) => {
     showDeviceMenu.value = !showDeviceMenu.value;
     activeTab.value = item.uuid || item.device_id;
+
     console.log(activeTab.value, 'activeTab.value');
     if (item.device_type == 3) {
+      currentBucketData = item;
+      window.localStorage.homeChooseBucket = JSON.stringify(item);
+      cloudQuery.value = {
+        id: item.order_id,
+        uuid: item.uuid,
+        amb_uuid: item.amb_uuid,
+        domain: item.domain,
+      };
       showBucket.value = true;
       //   router.push({ path: '/cloud' });
     } else {
@@ -197,29 +209,37 @@
       });
       return false;
     }
+
     // bucketName.value = item.domain
     currentBucketData = item;
     window.localStorage.homeChooseBucket = JSON.stringify(item);
   };
-  watch(cloudCodeIsBind, async (val) => {
-    if (val) {
-      userStore.setambRefuse(false);
-      getNoBucketOrder;
-      await loadMoreFun();
-      console.log(allOrderList.value.length, 'allOrderList.length');
+  watch(
+    cloudCodeIsBind,
+    async (val) => {
+      if (val) {
+        userStore.setambRefuse(false);
+        getNoBucketOrder;
+        await loadMoreFun();
+        console.log(allOrderList.value.length, 'allOrderList.length');
 
-      if (window.localStorage.homeChooseBucket) {
-        setBucket(JSON.parse(window.localStorage.homeChooseBucket));
-      } else if (leftBucketList.value.length) {
-        let bucketList = leftBucketList.value.filter((el) => el.domain);
-        if (bucketList.length) {
-          setBucket(bucketList[0]);
-        } else {
-          showToast.text('Please select a bucket and set the bucket name.');
+        if (window.localStorage.homeChooseBucket) {
+          setBucket(JSON.parse(window.localStorage.homeChooseBucket));
+        } else if (leftBucketList.value.length) {
+          let bucketList = leftBucketList.value.filter((el) => el.domain);
+          if (bucketList.length) {
+            setBucket(bucketList[0]);
+          } else {
+            showToast.text('Please select a bucket and set the bucket name.');
+          }
         }
       }
-    }
-  });
+    },
+    {
+      deep: true,
+      immediate: true,
+    },
+  );
 </script>
 
 <style lang="scss">

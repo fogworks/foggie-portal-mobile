@@ -974,7 +974,7 @@
     // bucketName.value = item.domain
     currentBucketData = item;
     window.localStorage.homeChooseBucket = JSON.stringify(item);
-    order_uuid.value = item.uuid;
+    // order_uuid.value = item.uuid;
     showRight.value = false;
     if (order_uuid.value) {
       initWebSocket();
