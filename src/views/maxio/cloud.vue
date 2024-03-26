@@ -2278,6 +2278,8 @@
       .list_item {
         .left_icon_box {
           position: relative;
+          height: 80px;
+          width: 80px;
           img {
             vertical-align: middle;
           }
@@ -2294,7 +2296,7 @@
     }
     .file_list_img {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
       grid-gap: 0.2rem;
       justify-items: center;
       margin-top: 20px;
@@ -2302,8 +2304,8 @@
       background: $card-bg;
       border-radius: 16px;
       .list_item {
-        width: 120px;
-        height: 120px;
+        width: 100px;
+        height: 100px;
         justify-content: center;
         padding: 0 !important;
         // padding: 20px 0;
