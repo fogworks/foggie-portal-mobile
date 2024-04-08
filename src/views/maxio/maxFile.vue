@@ -40,9 +40,6 @@
           <div class="menu_img" @click="changeTab('reward')">
             <img src="@/assets/maxio/reward.svg" alt="" />
           </div>
-          <!-- <div class="menu_img" @click="changeTab('set')">
-            <img src="@/assets/maxio/set.svg" alt="" />
-          </div> -->
         </div>
         <div class="maxio_home_rightContent" :class="[showLeft ? 'maxWidth' : '']">
           <img src="@/assets/maxio/fileCircle.png" alt="" />

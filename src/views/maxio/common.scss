@@ -94,6 +94,7 @@
     justify-content: center;
   }
 }
+
 .maxio_home_content {
   margin-top: 40px;
   height: calc(100% - 100px);
@@ -104,7 +105,7 @@
 .maxio_home_leftMenu {
   transition: all 0.8s;
   padding: 20px 0;
-  width: 120px;
+  width: 140px;
   background: rgb(181 186 202 / 38%);
   height: 100%;
   border-radius: 20px;
@@ -112,24 +113,33 @@
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
+  overflow-y: scroll;
   .menu_img {
     margin: 10px 0;
     cursor: pointer;
-    padding: 10px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     img {
-      width: 60px;
-      height: 60px;
+      width: 80px;
+      height: 80px;
     }
+  }
+  .title_text {
+    font-size: 22px;
+    font-weight: bold;
   }
 }
 .active_img {
-  border: 2px solid #fff;
-  border-radius: 50%;
+  border: 1px dashed #fff;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 0.266667vw solid #ffffff8c;
   background: #3c0cddb5;
+  background: #fff0;
+  background: rgb(255 255 255 / 21%);
   box-shadow:
     rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
@@ -172,4 +182,35 @@
     height: 92%;
     object-fit: contain;
   }
+}
+.user_img {
+  width: 20px;
+  border-radius: 50%;
+  margin: 0 4px;
+  border: 1px solid #fff;
+  padding: 10px;
+}
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-container img {
+  display: block;
+  width: 100%;
+  opacity: 0.5;
+}
+
+.image-container .watermark {
+  position: absolute;
+  top: -3px;
+  right: -6px;
+  color: yellow;
+  font-size: 2.666667vw;
+  font-weight: bold;
+  mix-blend-mode: multiply;
+  padding: 0.666667vw;
+  background-color: #222;
+  border-radius: 6px;
+  //  transform: rotateZ(54deg);
 }

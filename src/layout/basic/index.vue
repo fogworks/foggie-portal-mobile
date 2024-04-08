@@ -150,9 +150,9 @@
   )
   const tabItem = [
     { key: 'home', icon: Home },
-    // { key: 'list', icon: Horizontal },
-    // { key: 'allNFTList', icon: Image },
-    // { key: 'member', icon: My },
+    { key: 'list', icon: Horizontal },
+    { key: 'allNFTList', icon: Image },
+    { key: 'member', icon: My },
   ];
   
   const router = useRouter();
@@ -187,9 +187,11 @@
             break;
         case 1:
             router.push('/list');
+            // router.push('/allNFTList');
             break;
         case 2:
             router.push('/allNFTList');
+            // router.push('/member');
             break;
         case 3:
             router.push('/member');
@@ -539,13 +541,13 @@
   
   
   const initWebSocket = () => {
-      console.log('initWebSocket');
+    //   console.log('initWebSocket');
       const url = `ws://devlop.fogworks.io:9099/ambmgr/common/profit_ws`;
       fileSocket.value = new WebSocket(url);
       fileSocket.value.onopen = () => {
           let refresh_token = userStore.getToken;
           let token = refresh_token.split(' ')[1];
-          console.log('openWebSocket token',token);
+        //   console.log('openWebSocket token',token);
         //   showSocketDialog.value=true;
           fileSocket.value.send(token);
       };
