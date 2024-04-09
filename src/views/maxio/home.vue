@@ -63,8 +63,10 @@
           </div>
         </div>
         <div class="maxio_home_rightContent" v-if="showBucket" :class="[showLeft ? 'maxWidth' : '']">
-          <CloudComponent :cloudQuery="cloudQuery"></CloudComponent>
-          <!-- <img src="@/assets/maxio/bucketDemo.png" alt="" class="bucket_img" /> -->
+          <div v-if="currentBucketData.state === 0" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
+            <img src="@/assets/maxio/empty.png" alt="" />
+          </div>
+          <CloudComponent :cloudQuery="cloudQuery" v-else></CloudComponent>
         </div>
       </div>
     </div>
@@ -143,7 +145,7 @@
 
     // bucketName.value = item.domain
     currentBucketData.value = item;
-    // window.localStorage.homeChooseBucket = JSON.stringify(item);
+    window.localStorage.homeChooseBucket = JSON.stringify(item);
   };
   const changeMenu = (item, _type) => {
     if (item.device_type == 3) {
@@ -160,6 +162,9 @@
       showBucket.value = false;
     }
   };
+  const gotoBucketDetail = (item) => {
+    router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });
+  };
   watch(leftBucketList, (val) => {
     if (val.length > 0) {
       showLeft.value = true;
@@ -173,8 +178,19 @@
       if (val) {
         userStore.setambRefuse(false);
         await loadMoreFun();
-        setBucket(leftBucketList.value && leftBucketList.value[0]);
+        // setBucket(leftBucketList.value && leftBucketList.value[0]);
         showBucket.value = true;
+        if (window.localStorage.homeChooseBucket) {
+          setBucket(JSON.parse(window.localStorage.homeChooseBucket));
+        } else if (leftBucketList.value.length) {
+          //   let bucketList = leftBucketList.value.filter((el) => el.domain);
+          let bucketList = leftBucketList.value;
+          if (bucketList.length) {
+            setBucket(bucketList[0]);
+          } else {
+            showToast.text('Please select a bucket and set the bucket name.');
+          }
+        }
       }
     },
     {

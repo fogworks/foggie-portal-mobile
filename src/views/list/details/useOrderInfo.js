@@ -13,6 +13,7 @@ export default function useOrderInfo() {
   const store = useUserStore();
   const orderStore = useOrderStore();
   const { getOrderInfoList } = storeToRefs(orderStore);
+
   const orderInfo = reactive({
     value: {},
   });
@@ -40,6 +41,7 @@ export default function useOrderInfo() {
   // const accessKeyId = ref('');
   // const secretAccessKey = ref('');
   const filesCount = ref(0);
+  const loadingAnmation = ref(false);
   const usedSize = ref(0);
   const isError = ref(false);
   // let metadata = ref({});
@@ -63,15 +65,16 @@ export default function useOrderInfo() {
   });
   const route = useRoute();
   const getOrderInfo = async (getKey = true, uuid = '') => {
-    showToast.loading('Loading', {
-      cover: true,
-      customClass: 'app_loading',
-      icon: loadingImg,
-      loadingRotate: false,
-      id: 'order_info_id',
-      // coverColor: 'rgba(0,0,0,0.45)',
-      duration: 0,
-    });
+    loadingAnmation.value = true;
+    // showToast.loading('Loading', {
+    //   cover: true,
+    //   customClass: 'app_loading',
+    //   icon: loadingImg,
+    //   loadingRotate: false,
+    //   id: 'order_info_id',
+    //   // coverColor: 'rgba(0,0,0,0.45)',
+    //   duration: 0,
+    // });
     try {
       let res = await get_unique_order({ order_uuid: uuid || route?.query?.uuid });
       const resData = res.result.data;
@@ -117,6 +120,7 @@ export default function useOrderInfo() {
         console.log(orderInfo.value?.uuid, 'orderInfo.value?.uuid;');
         console.log(orderInfo2.value, 'orderInfo2');
         showToast.hide('order_info_id');
+        loadingAnmation.value = false;
         return true;
       }
       let param = {
@@ -146,6 +150,7 @@ export default function useOrderInfo() {
     } catch {
       isError.value = true;
       showToast.hide('order_info_id');
+      loadingAnmation.value = false;
     }
     if (bucketName.value && getKey) {
       return new Promise((resolve, reject) => {
@@ -158,6 +163,7 @@ export default function useOrderInfo() {
             isError.value = true;
             console.log('err------111222:', err);
             showToast.hide('order_info_id');
+            loadingAnmation.value = false;
             reject(false);
           } else if (res.array.length > 0) {
             // accessKeyId.value = res.array[0][0][0];
@@ -168,6 +174,7 @@ export default function useOrderInfo() {
             await orderStore.setOrderInfoList(orderInfo.value.uuid, JSON.parse(JSON.stringify(orderSignInfo.value)));
             // await orderStore.setOrderInfoList(orderInfo.value.uuid, orderSignInfo.value);
             showToast.hide('order_info_id');
+            loadingAnmation.value = false;
             console.log(res.array[0][0][1], 'secretAccessKey111111111');
             resolve(true);
           }
@@ -175,6 +182,7 @@ export default function useOrderInfo() {
       });
     } else {
       showToast.hide('order_info_id');
+      loadingAnmation.value = false;
       return true;
     }
   };
@@ -224,5 +232,6 @@ export default function useOrderInfo() {
     accessKeyId,
     secretAccessKey,
     isError,
+    loadingAnmation,
   };
 }

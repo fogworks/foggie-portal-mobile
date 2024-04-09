@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div :class="['top_box', isAvailableOrder ? '' : 'isHistory', showText ? 'showHight' : 'hideHight']" v-if="!loadingAnmation">
+    <div :class="['top_box', isAvailableOrder ? '' : 'isHistory', showText ? 'showHight' : 'hideHight']">
       <nut-row class="order-detail">
         <nut-col :span="24" class="order-content_wrap">
           <TriangleDown v-if="!showText" @click="showText = true" class="my_svg_icon show_avg" color="#fff"></TriangleDown>
@@ -27,27 +27,44 @@
           </nut-cell>
           <nut-cell>
             <Order />
-            ID:&nbsp;<span>{{ orderInfo.value?.foggie_id }}</span>
+            ID:&nbsp;{{ orderInfo.value?.foggie_id }}
           </nut-cell>
           <nut-cell>
             <Clock />
-            Expiration:&nbsp;<span>{{ transferUTCTime(orderInfo.value.expire) }}</span>
+            Expiration:&nbsp;{{ transferUTCTime(orderInfo.value.expire) }}
           </nut-cell>
           <nut-cell>
             <Refresh />
-            Status:&nbsp;<span>{{ statusTypes[orderInfo.value.state] }}</span>
+            Status:&nbsp;{{ statusTypes[orderInfo.value.state] }}
           </nut-cell>
         </nut-col>
       </nut-row>
     </div>
-    <div class="detail_box" v-if="!loadingAnmation">
+    <div class="detail_box">
       <div class="today_file">
-        <span class="title">Recent Files</span>
+        <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
         <span class="see_all" @click="router.push({ name: 'FileList', query: { ...cloudQuery.value, category: 0, bucketName } })"
           >See All ></span
         >
       </div>
       <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
+      <!-- <nut-infinite-loading load-more-txt="No more content" v-else-if="tableData.length" :has-more="false" class="file_list">
+        <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
+          <div :class="['left_icon_box']">
+          
+            <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+          
+            <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+
+            <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
+            <img v-else src="@/assets/svg/home/file.svg" alt="" />
+          </div>
+          <div class="name_box">
+            <p>{{ item.name }}</p>
+            <p>{{ item.date || '' }}</p>
+          </div>
+        </div>
+      </nut-infinite-loading> -->
       <template v-else-if="tableData.length">
         <div class="file_list file_list_img" v-if="imgData.length">
           <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
@@ -140,40 +157,72 @@
         @clickFIleItem="clickFIleItem"
       ></ActionComponent>
     </div>
-    <div class="skeleton-picture" v-if="loadingAnmation" style="width: 100%">
-      <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
-      </nut-skeleton>
-      <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
-      </nut-skeleton>
-      <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
-      </nut-skeleton>
-    </div>
+    <uploader
+      v-if="isMobileOrder && isAvailableOrder"
+      :getSummary="getSummary"
+      :isMobileOrder="isMobileOrder"
+      :bucketName="bucketName"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      :orderInfo="orderInfo"
+      @uploadComplete="uploadComplete"
+    ></uploader>
   </div>
 </template>
 
 <script setup lang="ts">
   import ActionComponent from '@/views/list/details/actionComponent.vue';
+  import { Loading, MoreX } from '@nutui/icons-vue';
+  import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
   import getFileType from '@/utils/getFileType.ts';
+  import MyAudio from './myAudio.vue';
+  import IconCopy from '~icons/home/copy.svg';
+  import IconEdit from '~icons/iconamoon/edit-fill.svg';
+  import IconPinterest from '~icons/logos/pinterest.svg';
+  import IconSlack from '~icons/home/slack.svg';
+  import IconBucket from '~icons/home/bucket.svg';
+  import IconShare from '~icons/home/share.svg';
+  import IconArrowLeft from '~icons/home/arrow-left.svg';
+  import IconDownload from '~icons/home/download.svg';
+  import IconTwitter from '~icons/home/twitter.svg';
+  import IconHttp from '~icons/home/http.svg';
+  import IconFacebook from '~icons/devicon/facebook.svg';
+  import { delay, throttle } from 'lodash';
+  import IconAudio2 from '~icons/home/audio2.svg';
+  import IconMore from '~icons/home/more.svg';
   import IconImage from '~icons/home/image.svg';
   import IconPlay from '~icons/home/play.svg';
+  import IconDocument from '~icons/home/document.svg';
+  import IconVideo from '~icons/home/video.svg';
   import IconMdiF from '~icons/home/png.svg';
   import IconRiPie from '~icons/home/pie.svg';
   import IconSpace from '~icons/home/space.svg';
-  import { HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
+  import IconRiNodeTree from '~icons/ri/node-tree';
+  import IconRiSendToBack from '~icons/ri/send-to-back';
+  import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
+  import keySolid from '~icons/teenyicons/key-solid';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+  import { HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { HmacSHA1, enc } from 'crypto-js';
+  import { Buffer } from 'buffer';
   import { useRoute, useRouter } from 'vue-router';
   import useOrderInfo from '@/views/list/details/useOrderInfo.js';
   import useShare from '@/views/list/details/useShare.js';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
-  import { valid_upload, get_order_sign } from '@/api/index';
+  import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload, get_order_sign } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
+  import loadingImg from '@/components/loadingImg/index.vue';
+  import { useUserStore } from '@/store/modules/user';
+  import { getSecondTime, getType } from '@/utils/util';
+  import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
+  import ErrorPage from '@/views/errorPage/index.vue';
   import useDelete from '@/views/list/details/useDelete.js';
   import moment from 'moment';
+  import uploader from '@/views/list/details/uploader.vue';
   import { poolUrl } from '@/setting.js';
   const props = defineProps({
     cloudQuery: {
@@ -182,7 +231,9 @@
     },
   });
   const { cloudQuery } = toRefs(props);
+  const dialogShow = ref(false);
   const showText = ref(false);
+  const page = ref(0);
   const statusTypes = {
     0: 'Consensus not reached',
     1: 'Consensus reached',
@@ -192,7 +243,6 @@
     5: 'Canceled',
     6: 'Cancellation of the next cycle',
   };
-  //   const loadingAnmation = ref(true);
   const {
     filesCount,
     getSummary,
@@ -207,7 +257,6 @@
     getOrderInfo,
     isAvailableOrder,
     isError,
-    loadingAnmation,
   } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
   const {
@@ -235,8 +284,16 @@
   } = useShare(orderInfo, header, deviceType, metadata);
 
   let server;
+  const route = useRoute();
   const router = useRouter();
+  const mintType = ref(cloudQuery.value.mintType || '0'); //0 not mint,1 nft mint,2 inscript
+  const successStatus = ref<number>(204);
+  const isNameLoading = ref(false);
+  // const sheetVisible = ref(false);
   const imgPreRef = ref('');
+  const userStore = useUserStore();
+  const uuid = computed(() => userStore.getUserInfo.uuid);
+  const dmcName = computed(() => userStore.getUserInfo.dmc);
   const isMobileOrder = computed(() => {
     if (orderInfo.value.electronic_type == '0') {
       return true;
@@ -246,15 +303,23 @@
   });
 
   const moveShow = ref<boolean>(false);
+  const uploadRef = ref<any>(null);
+  const uploadUri = ref<string>('');
+  const prefix = ref<string>('');
+  const showCreateName = ref<boolean>(true);
+  const newBucketName = ref<string>('');
   const tableData = ref<array>([]);
   const imgData = ref([]);
   const otherData = ref([]);
   const tableLoading = ref<boolean>(false);
   const isDisabled = ref<boolean>(false);
+  const btnLoading = ref<boolean>(false);
+  const formData = ref<any>({});
 
   const memo = ref<any>('');
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
+  const minerIp = ref<string>('');
   const income = ref(0);
   const fileItemPopupIsShow = ref(false);
   const fileItemDetailPopupIsShow = ref(false);
@@ -266,6 +331,8 @@
   const fileSocket = ref('');
   const socketDate = ref('');
   const socketToken = ref('');
+  const currentFolder = ref('');
+  const showSocketDialog = ref(false);
 
   const images = computed(() => {
     let arr = [];
@@ -307,10 +374,19 @@
     console.log(params);
     fileItemDetailPopupIsShow.value = true;
   }
+  // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
+  // order_id.value = '1281';
   memo.value = cloudQuery.value.uuid;
   order_id.value = cloudQuery.value.id;
   amb_uuid.value = cloudQuery.value.amb_uuid;
   income.value = cloudQuery.value.income;
+  const isMobileDevice = computed(() => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    // 此正则表达式涵盖了大多数使用的手机和平板设备
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+  });
+
   let merkleTimeOut;
   watch(
     tableData,
@@ -329,13 +405,13 @@
     },
     { deep: true },
   );
-
   const getMerkleState = (timeout = true) => {
     const d = {
       orderId: order_id.value,
     };
     valid_upload(d).then((res) => {
       if (res.data?.data) {
+        // TODO
         isDisabled.value = true;
         if (timeout) {
           merkleTimeOut = setTimeout(() => {
@@ -350,8 +426,65 @@
       }
     });
   };
+  const beforeupload = (file: any) => {
+    return new Promise(async (resolve, reject) => {
+      let nowTime = new Date().getTime();
+      let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
+      let time = ((+endTime - +nowTime) / 1000).toFixed(0);
+      if (time > 4 * 60) {
+        time = time - 60 * 60;
+      }
+      if (time > 0) {
+        let content = 'Upload files after ' + getSecondTime(+time);
+        showToast.fail(content);
+        reject(false);
+      }
+      const fileCopy = file[0]; // 保存file变量的副本
+      const d = {
+        orderId: order_id.value,
+      };
+      let merkleRes = await valid_upload(d);
+      if (merkleRes?.data) {
+        isDisabled.value = false;
+      } else {
+        // showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
+        isDisabled.value = true;
+        getMerkleState(true);
+        reject();
+      }
+
+      uploadUri.value = `https://${bucketName.value}.${poolUrl}:6008/o/`;
+
+      const policy = {
+        expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
+        conditions: [
+          { bucket: bucketName.value },
+          { acl: 'public-read' }, // 设置 ACL（可根据需求更改）
+          ['starts-with', fileCopy, prefix.value], // Key 以 "uploads/" 开头
+          ['starts-with', '$Content-Type', ''], // Content-Type 为空
+        ],
+      };
+      const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
+
+      let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
+      const signature = enc.Base64.stringify(hmac);
+
+      formData.value = {};
+      formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
+      formData.value.Policy = policyBase64;
+      formData.value.Signature = signature;
+      formData.value.Awsaccesskeyid = accessKeyId.value;
+
+      formData.value.category = getType(fileCopy.name);
+      resolve([fileCopy]);
+    });
+  };
+
   const imgUrl = ref('');
   const detailRow = reactive({ value: {} });
+
+  const curSelectSrc = ref(''); //当前选择文件的src
+  const curSelectType = ref(''); //当前选择文件的类型
 
   const handleRow = (row) => {
     detailRow.value = row;
@@ -360,7 +493,10 @@
     console.log(type);
 
     if (type == 'pdf') {
+      // curSelectSrc.value = row.imgUrlLarge;
+      // curSelectType.value = 'pdf';
       wordVisible.value = true;
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'pdf' } });
     } else if (type == 'txt') {
       detailRow.value.detailType = 'txt';
       detailShow.value = true;
@@ -371,10 +507,24 @@
         });
     } else if (['xls', 'xlsx', 'csv'].includes(type)) {
       wordVisible.value = true;
+
+      // curSelectSrc.value = row.imgUrlLarge;
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'excel' } });
     } else if (['doc', 'docx'].includes(type)) {
       wordVisible.value = true;
+
+      // detailRow.value.detailType = 'word';
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
+      // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
       console.log(row.imgUrlLarge);
     } else if (['ppt', 'pptx'].includes(type)) {
+      // curSelectSrc.value = row.imgUrlLarge;
+      // curSelectType.value = 'ppt';
+      // // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      // window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+      // // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
+      // console.log(row.imgUrlLarge);
     } else if (row.imgUrlLarge) {
       imgUrl.value = row.imgUrlLarge;
       imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
@@ -393,6 +543,23 @@
     }
   };
 
+  function choose(type) {
+    console.log(type);
+    console.log(curSelectSrc.value);
+    console.log(curSelectType.value);
+
+    switch (type) {
+      case 'google':
+        window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(curSelectSrc.value)}`);
+        break;
+      case 'Microsoft':
+        window.open(`https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(curSelectSrc.value)}`);
+        break;
+      case 'other':
+        router.push({ path: '/filePreview', query: { fileSrc: curSelectSrc.value, fileType: curSelectType.value } });
+        break;
+    }
+  }
   const $cordovaPlugins = inject('$cordovaPlugins');
   const handlerClick = async (type: string) => {
     const checkData = JSON.parse(JSON.stringify(detailRow.value));
@@ -511,6 +678,32 @@
       });
     }
   };
+  const syncImgList = ref([]);
+  const syncIndex = ref(0);
+  const syncPhotos = () => {
+    let nowTime = Date.now();
+    let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
+    let time = Math.round((endTime - nowTime) / 1000);
+    if (time > 6 * 60) {
+      time -= 60 * 60;
+    }
+    if (time > 0) {
+      const content = `Upload files after ${getSecondTime(time)}`;
+      showToast.fail(content);
+      return false;
+    }
+    const uploadUrl = `https://${bucketName.value}.${poolUrl}:6008/o/`;
+    const options = {
+      serviceUrl: uploadUrl,
+      syncImgList,
+      syncIndex,
+      bucketName: bucketName.value,
+      accessKeyId: accessKeyId.value,
+      secretAccessKey: secretAccessKey.value,
+      prefixStr: '',
+    };
+    $cordovaPlugins.syncPhotos(options);
+  };
   const getSignHeaders = (objectKey) => {
     // const objectKey = encodeURIComponent(checkData[0].fullName);
     const date = new Date().toUTCString();
@@ -532,6 +725,247 @@
       Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
     };
     return headers;
+  };
+
+  function secondsToStr(seconds) {
+    let hours: any = Math.floor(seconds / 3600).toFixed(0);
+    let minutes: any = Math.floor((seconds % 3600) / 60).toFixed(0);
+    let remainingSeconds: any = (seconds % 60).toFixed(0);
+
+    hours = hours < 10 ? '0' + hours : hours;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    remainingSeconds = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
+    if (hours >= 24 || seconds < 0) {
+      return '- -';
+    } else {
+      return hours + '：' + minutes + '：' + remainingSeconds;
+    }
+  }
+  const formatSize = (size: number) => {
+    size = Number(size);
+    if (size < 1024) {
+      return size.toFixed(0) + ' bytes';
+    } else if (size < 1024 * 1024) {
+      return (size / 1024.0).toFixed(0) + ' KB';
+    } else if (size < 1024 * 1024 * 1024) {
+      return (size / 1024.0 / 1024.0).toFixed(1) + ' MB';
+    } else {
+      return (size / 1024.0 / 1024.0 / 1024.0).toFixed(1) + ' GB';
+    }
+  };
+
+  const curUploadFileSize = computed(() => formatSize(lastDownloadNumer.value));
+  // 剩余上传时间
+  const formatedTimeRemaining = computed(() => {
+    if (timeRemaining.value === Number.POSITIVE_INFINITY || timeRemaining.value === 0) {
+      return '';
+    }
+    let parsedTimeRemaining = secondsToStr(timeRemaining.value);
+
+    return parsedTimeRemaining;
+  });
+
+  const formatedAverageSpeed = computed(() => `${formatSize(averageSpeed.value)} / s`);
+  const uploadStatus = ref('');
+  const averageSpeed = ref(0); // 当前块 上传的文件大小
+  const timeRemaining = ref(0); // 剩余上传时间(s)
+  const lastDownloadNumer = ref(0); // 最后一次上传的文件大小
+  const uploadProgressIsShow = ref(false); // 是否展示上传进度
+  const uploadProgress = ref(0); // 上传进度
+  const downloadProgress = throttle(
+    function (loaded, total) {
+      if (loaded < lastDownloadNumer.value) return;
+      averageSpeed.value = loaded - lastDownloadNumer.value;
+      timeRemaining.value = (total - loaded) / averageSpeed.value;
+      lastDownloadNumer.value = loaded;
+    },
+    1000,
+    { leading: true, trailing: true },
+  );
+
+  const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
+    console.log('uploadSuccess', responseText, option, fileItem);
+    console.log(option, 'option');
+    uploadStatus.value = 'success';
+
+    delay(() => {
+      uploadProgressIsShow.value = false;
+    }, 2000);
+    getFileList();
+    const updateUsedSpace = () => {
+      return update_order_size({
+        used_space: +option.sourceFile.size,
+        order_id: +cloudQuery.value.id,
+        device_type: 'mobile',
+      })
+        .then((res) => {
+          if (res.code == 200) {
+            // getOrderInfo(false);
+            uploadRef.value.clearUploadQueue();
+          } else {
+            setTimeout(() => {
+              updateUsedSpace();
+            }, 3000);
+          }
+        })
+        .catch(() => {
+          setTimeout(() => {
+            updateUsedSpace();
+          }, 3000);
+        });
+    };
+    await updateUsedSpace();
+    if (orderInfo.value.mobile_upload == undefined) {
+      await getOrderInfo(false, cloudQuery.value.uuid);
+    }
+
+    // let uploadLine = 1024 * 1024 * 50;
+    let uploadLine = 1024 * 1024 * 1;
+
+    let used_space = usedSize || 0;
+    if (uploadLine >= used_space) {
+      // let needSpace = getfilesize(uploadLine - used_space);
+      // showToast.text(`At least ${needSpace} of files need to be uploaded to submit Merkle`);
+      return false;
+    }
+    const d = {
+      orderId: cloudQuery.value.id,
+      uuid: amb_uuid.value,
+      // uuid: 'fb08ae12-c5fb-4b24-88d9-746339b72fd0',
+      orderUuid: memo.value,
+      rpc: orderInfo.value.rpc,
+    };
+    calc_merkle(d).then((res) => {
+      console.log('calc_merkle-----', res);
+    });
+    // uploadRef.value.clearUploadQueue();
+  };
+
+  const uploadComplete = () => {
+    console.log('uploadComplete');
+    // getFileList();
+  };
+
+  const onProgress = ({ event, options, percentage }: any) => {
+    console.log('onProgress', event, options, percentage);
+    uploadProgress.value = percentage;
+    downloadProgress(event.loaded, event.total);
+  };
+
+  const onStart = ({ options }: any) => {
+    uploadProgress.value = 0;
+    uploadProgressIsShow.value = true;
+    uploadStatus.value = 'uploading';
+    console.log('onStart', options);
+  };
+
+  const onFailure = ({ responseText, option, fileItem }: any) => {
+    console.log('onFailure', '-----', responseText, '-----', option, '-----', fileItem);
+    delay(() => {
+      uploadProgressIsShow.value = false;
+    }, 3000);
+    uploadStatus.value = 'error';
+    uploadRef.value.clearUploadQueue();
+  };
+
+  const onChange = ({ fileList, event }: any) => {
+    console.log('--------------2');
+    console.log('onChange', fileList, event);
+  };
+
+  const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
+    xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
+    xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
+    xhr.send(options.formData);
+  };
+  const getKey = () => {
+    if (orderInfo.value.electronic_type == '1' || !isAvailableOrder.value) {
+      return false;
+    } else {
+      router.push({
+        name: 'getKey',
+        query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain },
+      });
+    }
+  };
+  const getIPFSService = () => {
+    if (orderInfo.value.electronic_type == '1' || !isAvailableOrder.value) {
+      return false;
+    } else {
+      router.push({
+        name: 'IPFSService',
+        query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain },
+      });
+    }
+  };
+
+  const createName = async () => {
+    let retrNumber = 0; // 重试次数
+    if (!showCreateName.value) {
+      showCreateName.value = true;
+    } else if (newBucketName.value) {
+      let reg = /^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9]))*(?:\.[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9]))*)*$/;
+      if (newBucketName.value.length < 8 || newBucketName.value.length > 10) {
+        showToast.text('Please enter a name with a length of 8-10 digits');
+        return;
+      }
+      if (!reg.test(newBucketName.value)) {
+        showToast.text(
+          'Custom names can only contain lowercase letters, numbers, periods, and dashes (-), and must start and end with lowercase letters or numbers',
+        );
+        return;
+      }
+      // check name
+      isNameLoading.value = true;
+      const result = await check_name(newBucketName.value);
+      if (result?.data?.domain) {
+        console.log('name is exist');
+        isNameLoading.value = false;
+        return;
+      }
+
+      //   showToast.loading('Loading', {
+      //     cover: true,
+      //     coverColor: 'rgba(0,0,0,0.45)',
+      //     customClass: 'app_loading',
+      //     icon: loadingImg,
+      //     loadingRotate: false,
+      //     duration: 0,
+      //   });
+
+      setOrderName();
+    }
+
+    function setOrderName() {
+      retrNumber++;
+      let order_data = {
+        is_domain: true,
+        name: newBucketName.value,
+        order_uuid: orderInfo.value.uuid,
+      };
+      order_name_set(order_data)
+        .then((order_result) => {
+          if (order_result.code == 200) {
+            if (!order_result?.data?.result) {
+              bucketName.value = newBucketName.value;
+              getOrderInfo(true, cloudQuery.value.uuid);
+              getSummary();
+              initWebSocket();
+              isNameLoading.value = false;
+              showToast.hide();
+            }
+          } else {
+            delay(() => {
+              serOrderNameError();
+            }, 3000);
+          }
+        })
+        .catch((err) => {
+          delay(() => {
+            serOrderNameError(err);
+          }, 3000);
+        });
+    }
   };
 
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
@@ -586,7 +1020,7 @@
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
-    console.log('changeTab1111');
+    console.log(11111);
 
     // showToast.loading('Loading', {
     //   cover: true,
@@ -862,6 +1296,25 @@
     console.log(tableData.value, 'tableData.value');
 
     tableLoading.value = false;
+  };
+
+  const gotoSummary = (order_id, state) => {
+    console.log(order_id, state, 'order_id, state');
+    router.push({
+      name: 'orderSummary',
+      query: {
+        id: order_id,
+        status: state,
+        createdTime: transferUTCTime(orderInfo.value.order_created_at),
+        endTime: orderInfo.value.expire ? transferUTCTime(orderInfo.value.expire) : '- -',
+        uuid: orderInfo.value.uuid,
+        amb_uuid: orderInfo.value.amb_uuid,
+        domain: orderInfo.value.domain,
+        type: isAvailableOrder.value ? '' : 'history',
+      },
+    });
+    window.sessionStorage.removeItem('myHistoryOrder');
+    window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(orderInfo.value));
   };
 
   const refresh = async () => {
@@ -1234,8 +1687,7 @@
       flex-direction: column;
       .text {
         font-size: 20px;
-        font-weight: bolder;
-        color: yellow;
+        font-weight: normal;
       }
     }
   }
@@ -1375,7 +1827,6 @@
         span {
           // color: #ff7b1d;
           color: #9cb77d;
-          color: yellow;
         }
       }
 
@@ -1396,7 +1847,7 @@
     }
   }
   .isHistory {
-    // background: #2b2929;
+    background: #2b2929;
   }
 
   .detail_box {
@@ -1723,7 +2174,7 @@
 
         p:last-child {
           margin-top: 5px;
-          color: #fff;
+          color: #dadada;
           font-size: 20px;
         }
       }

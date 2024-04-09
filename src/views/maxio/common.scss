@@ -153,6 +153,25 @@
     font-weight: bold;
   }
 }
+.bucketNoFile {
+  img {
+    width: 100%;
+    animation: loopSize 3s linear alternate infinite;
+  }
+}
+@keyframes loopSize {
+  0% {
+    transform: scale(0.96);
+    transform: rotateY(180deg);
+  }
+  50% {
+    transform: scale(1);
+    // transform: rotateY(90deg);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
 .bucket_img {
   width: 100%;
 }
