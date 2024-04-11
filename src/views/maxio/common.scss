@@ -54,6 +54,9 @@
   .maxio_title {
     display: flex;
     align-items: center;
+    background: #ffffff82;
+    padding: 20px;
+    border-radius: 20px;
   }
   .maxio_img {
     width: 70px;
@@ -71,6 +74,7 @@
   }
   img {
     width: 80px;
+    margin-right: 16px;
   }
   .icon_img {
     width: 50px;
@@ -117,10 +121,12 @@
   .menu_img {
     margin: 10px 0;
     cursor: pointer;
-    padding: 5px;
+    padding: 5px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-sizing: border-box;
+    width: 100%;
     img {
       width: 80px;
       height: 80px;
@@ -129,10 +135,17 @@
   .title_text {
     font-size: 22px;
     font-weight: bold;
+    text-overflow: ellipsis;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
+    box-sizing: border-box;
   }
 }
 .active_img {
-  border: 1px dashed #fff;
+  //   border: 1px dashed #fff;
+  border: 5px solid #71d1e0;
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -144,6 +157,7 @@
     rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
     rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  background: #00000094;
 }
 .maxio_home_rightContent {
   width: calc(100% - 160px);
@@ -182,9 +196,10 @@
   background: #3c3c47;
   width: 100%;
   background: rgb(181 186 202 / 38%);
-  height: 300px;
+  //   height: 300px;
   border-radius: 30px;
   margin-bottom: 20px;
+  padding: 20px 0;
   display: flex;
   align-items: center;
   justify-content: center;

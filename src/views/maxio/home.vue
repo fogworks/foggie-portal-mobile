@@ -11,9 +11,9 @@
 
         <div class="maxio_title_box">
           <div class="maxio_title" v-if="!showBucket">
-            <!-- <img src="@/assets/maxio/maxio.png" alt="" /> -->
+            <img src="@/assets/maxio/maxio.png" alt="" />
             <div class="title_text">
-              <div class="max_name"> MAXIO-00</div>
+              <div class="max_name"> {{ currentBucketData.dedicatedip || 'MAX IO-' + currentBucketData.id }}</div>
             </div>
           </div>
           <div class="maxio_title" v-if="showBucket">
@@ -34,7 +34,7 @@
             v-for="(item, index) in leftBucketList"
             @click="changeMenu(item)"
             :key="index"
-            :class="[currentBucketData.uuid === item.uuid || item.device_id ? 'active_img' : '', 'menu_img']"
+            :class="[currentBucketData.uuid === item.uuid ? 'active_img' : '', 'menu_img']"
           >
             <div class="image-container" v-if="item.device_type == 3 && [4, 5].includes(item.state)" alt="">
               <img src="@/assets/home_bucket.png" />
@@ -44,29 +44,24 @@
             <img src="@/assets/home_bucket.png" v-if="item.device_type == 3 && [0, 1, 2, 3, 6].includes(item.state)" alt="" />
             <img src="@/assets/maxio/maxio.png" v-if="item.device_type == 'maxio'" alt="" class="left_max_png" />
 
-            <div class="title_text">{{ item.domain || 'Order' + item.order_id }}</div>
+            <div class="title_text" v-if="item.device_type !== 'maxio'">{{ item.domain || 'Order' + item.order_id }}</div>
+            <div class="title_text" v-if="item.device_type === 'maxio'">{{ item.dedicatedip || 'MAX IO' + item.index + 1 }}</div>
           </div>
+        </div>
+        <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="!showBucket" :class="[showLeft ? 'maxWidth' : '']">
+          <!-- <sd> -->
+          <max-index></max-index>
+          <!-- </sd> -->
         </div>
 
-        <div class="maxio_home_rightContent" v-if="!showBucket" :class="[showLeft ? 'maxWidth' : '']">
-          <div class="maxio_home_title">Minning Pool()</div>
-          <div class="maxio_home_card" @click="changeTab('pool')">
-            <img src="@/assets/maxio/poolList.png" alt="" />
-          </div>
-          <div class="maxio_home_title">Depins()</div>
-          <div class="maxio_home_card" @click="changeTab('iot')">
-            <img src="@/assets/maxio/iotList.png" alt="" />
-          </div>
-          <div class="maxio_home_title">Devices Rewards</div>
-          <div class="maxio_home_card maxio_reward_card" @click="changeTab('reward')">
-            <img src="@/assets/maxio/rewardLine.png" alt="" />
-          </div>
-        </div>
         <div class="maxio_home_rightContent" v-if="showBucket" :class="[showLeft ? 'maxWidth' : '']">
+          <!-- <sd> -->
           <div v-if="currentBucketData.state === 0" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
             <img src="@/assets/maxio/empty.png" alt="" />
           </div>
-          <CloudComponent :cloudQuery="cloudQuery" v-else></CloudComponent>
+
+          <!-- <CloudComponent :cloudQuery="cloudQuery" v-if="currentBucketData.state !== 0"></CloudComponent> -->
+          <!-- </sd> -->
         </div>
       </div>
     </div>
@@ -76,6 +71,8 @@
 <script setup>
   import { ref, toRefs, computed } from 'vue';
   import CloudComponent from './cloud.vue';
+  import maxIndex from './maxIndex.vue';
+  import sd from './sd.vue';
   import useOrderList from './useAllOrderList.ts';
   import { search_cloud } from '@/api';
   import { useUserStore } from '@/store/modules/user';
@@ -148,7 +145,8 @@
     window.localStorage.homeChooseBucket = JSON.stringify(item);
   };
   const changeMenu = (item, _type) => {
-    if (item.device_type == 3) {
+    console.log(item.device_type, 'item.device_type');
+    if (item.device_type === 3) {
       currentBucketData.value = item;
       window.localStorage.homeChooseBucket = JSON.stringify(item);
       cloudQuery.value = {
@@ -160,6 +158,7 @@
       showBucket.value = true;
     } else {
       showBucket.value = false;
+      currentBucketData.value = item;
     }
   };
   const gotoBucketDetail = (item) => {
@@ -214,8 +213,13 @@
   .minWidth {
     width: 0 !important;
     transform: translateX(-140px);
+    background: transparent;
   }
   .maxWidth {
     width: calc(100% - 160px);
+    border: 5px solid #71d1e0;
+    border-radius: 20px;
+    background: #00000039;
+    padding: 20px;
   }
 </style>

@@ -78,7 +78,9 @@ export default function useAllOrderList() {
             pn: 1,
             ps: 100,
         }).then(async (res) => {
-            maxTableData.value = res.data;
+            let data = res.data;
+            let maxList = data.filter((el) => el.device_type === 'maxio');
+            maxTableData.value = maxList;
         });
 
         await search_cloud({ ps: 100, pn: 1, order_state, start_time, end_time, buy_result, ...postData })
