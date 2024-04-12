@@ -1,5 +1,5 @@
 <template>
-  <div class="maxio_home_bg">
+  <div class="maxio_home_bg pool_index_box">
     <div class="maxio_home">
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
@@ -13,10 +13,11 @@
           <div class="maxio_title">
             <img src="@/assets/maxio/maxio.png" alt="" />
             <div class="title_text">
-              <div class="max_name"> MAXIO-001</div>
+              <!-- <div class="max_name"> {{ 'MAX IO-' + currentItem.id }}</div> -->
+              <div class="max_name"> {{ currentItem.dedicatedip }}</div>
             </div>
           </div>
-          <div class="max_ip"> (192.168.1.1)</div>
+          <!-- <div class="max_ip"> ({{ currentItem.dedicatedip }})</div> -->
         </div>
         <div class="maxio_img" @click="changeTab('home')">
           <img src="@/assets/maxio/back.svg" alt="" class="icon_img" />
@@ -24,33 +25,69 @@
       </div>
       <div class="maxio_home_content">
         <div class="maxio_home_leftMenu" :class="[showLeft ? '' : 'minWidth']">
-          <div class="menu_img" @click="changeTab('home')">
-            <!-- <img src="@/assets/maxio/maxio.svg" alt="" /> -->
-            <img src="@/assets/maxio/maxio.png" alt="" class="left_max_png" />
-          </div>
-          <div class="menu_img" @click="changeTab('pool')">
-            <img src="@/assets/maxio/pool.svg" alt="" />
-          </div>
-          <div class="menu_img active_img" @click="changeTab('iot')">
-            <img src="@/assets/maxio/iot1.svg" alt="" />
-          </div>
+          <!-- <div class="menu_img" @click="changeTab('home')">
+            <img src="@/assets/maxio/maxio_name.png" alt="" style="object-fit: cover" />
+          </div> -->
           <div class="menu_img" @click="changeTab('file')">
             <img src="@/assets/maxio/file.svg" alt="" />
           </div>
           <div class="menu_img" @click="changeTab('reward')">
             <img src="@/assets/maxio/reward.svg" alt="" />
           </div>
+          <div class="menu_img active_img" @click="changeTab('iot')">
+            <img src="@/assets/maxio/iot1.svg" alt="" />
+          </div>
+          <div class="menu_img" @click="changeTab('pool')">
+            <img src="@/assets/maxio/pool.svg" alt="" />
+          </div>
           <!-- <div class="menu_img" @click="changeTab('set')">
             <img src="@/assets/maxio/set.svg" alt="" />
           </div> -->
         </div>
+
+        <!-- maxio_home_rightContent -->
         <div class="maxio_home_rightContent" :class="[showLeft ? 'maxWidth' : '']">
           <div class="maxio_home_card">
-            <img src="@/assets/maxio/iotList.png" alt="" />
+            <div class="maxio_pool_list maxio_iot_list">
+              <div class="maxio_pool_item" v-for="(item, index) in iotList" :key="index">
+                <div class="img_bg iot_bg">
+                  <img src="@/assets/maxio/room1.svg" v-if="index % 3 === 0" />
+                  <img src="@/assets/maxio/room2.svg" v-if="index % 3 === 1" />
+                  <img src="@/assets/maxio/room3.svg" v-if="index % 3 === 2" />
+                </div>
+                <span class="pool_name">{{ item.name }}({{ item.number }})</span>
+              </div>
+            </div>
           </div>
-          <img src="@/assets/maxio/iotDevice.png" alt="" />
-          <img src="@/assets/maxio/iotDevice1.png" alt="" />
-          <img src="@/assets/maxio/iotDevice1.png" alt="" />
+
+          <div class="iot_room_list" v-for="(item, index) in iotRoomList" :key="index">
+            <div class="iot_room_head">
+              <img src="@/assets/maxio/room1.svg" v-if="index % 3 === 0" />
+              <img src="@/assets/maxio/room2.svg" v-if="index % 3 === 1" />
+              <img src="@/assets/maxio/room3.svg" v-if="index % 3 === 2" />
+              <div class="iot_room_title"> {{ item.groupName }}</div>
+              <div class="iot_room_number">({{ item.number }} IOT Devices) </div>
+            </div>
+            <div class="iot_room_detail">
+              <div class="iot_device_item" v-for="(_item, _index) in item.deviceList" :key="_index">
+                <div class="iot_temp">
+                  <div class="iot_temp_line">
+                    <img src="@/assets/maxio/temp.svg" />
+                    <span>{{ _item.temp }}</span>
+                  </div>
+                  <div class="iot_temp_line"> Current Temp. </div>
+                </div>
+
+                <div class="iot_hum">
+                  <div class="iot_temp_line">
+                    <img src="@/assets/maxio/hum.svg" />
+                    <span>{{ _item.humidity }}</span>
+                  </div>
+                  <div class="iot_temp_line"> Humidity. </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -58,13 +95,32 @@
 </template>
 
 <script setup>
-  import { ref, toRefs, computed } from 'vue';
+  import { ref, toRefs, computed, onMounted } from 'vue';
   const router = useRouter();
   const route = useRoute();
   const showLeft = ref(true);
+  const currentItem = ref({});
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
   };
+  const iotList = ref([
+    { name: 'BedRoom', number: '1' },
+    { name: 'Living Room', number: '2' },
+    // { name: 'Metting Room', number: '3' },
+    // { name: 'Metting Room', number: '3' },
+  ]);
+
+  const iotRoomList = ref([]);
+  iotRoomList.value = [
+    {
+      groupName: 'Metting Room',
+      number: '2',
+      deviceList: [
+        { name: 'IOT-001', temp: '25', humidity: '60%' },
+        { name: 'IOT-002', temp: '30', humidity: '50%' },
+      ],
+    },
+  ];
   const changeTab = (type) => {
     if (type === 'index') {
       router.push({ path: '/home' });
@@ -82,56 +138,32 @@
       router.push({ path: '/maxio' });
     }
   };
+  onMounted(() => {
+    currentItem.value = JSON.parse(window.localStorage.homeChooseBucket);
+  });
 </script>
 
 <style lang="scss" scoped>
   @import url('./common.scss');
-  .minWidth {
-    width: 0 !important;
-    transform: translateX(-140px);
-  }
-  .maxio_home_rightContent {
-    transition: all 0.8s;
-    height: 100%;
-    box-sizing: border-box;
-    width: 100%;
-    .maxio_home_title {
-      font-weight: bold;
-    }
-  }
-  .maxWidth {
-    width: calc(100% - 160px);
-  }
-  .maxio_home_card {
-    margin-bottom: 20px;
-    background: #3c3c47;
-    width: 100%;
-    background: rgb(181 186 202 / 38%);
-    height: 300px;
-    border-radius: 30px;
-    // margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    // overflow: hidden;
-    box-sizing: border-box;
-    img {
-      width: 90%;
-    }
-  }
-  .nobg {
-    background: transparent;
-  }
-  .maxio_reward_card {
-    padding: 20px;
-    img {
-      width: 80%;
-      height: 92%;
-      object-fit: contain;
-    }
-  }
-  img {
-    width: 100%;
-    object-fit: contain;
-  }
+  @import url('./index.scss');
+  //   .minWidth {
+  //     width: 0 !important;
+  //     transform: translateX(-140px);
+  //   }
+  //   .maxio_home_rightContent {
+  //     transition: all 0.8s;
+  //     height: 100%;
+  //     box-sizing: border-box;
+  //     width: 100%;
+  //     .maxio_home_title {
+  //       font-weight: bold;
+  //     }
+  //   }
+  //   .maxWidth {
+  //     width: calc(100% - 120px);
+  //   }
+  //   img {
+  //     width: 100%;
+  //     object-fit: contain;
+  //   }
 </style>

@@ -1,10 +1,11 @@
 <template>
   <div class="pool_index_box">
-    <div class="maxio_home_card">
+    <div class="maxio_home_card" @click="changeTab('reward')">
       <div class="maxio_pool_list">
         <div class="maxio_pool_item" v-for="(item, index) in rewardList" :key="index">
-          <div class="img_bg iot_bg reward_bg">
-            <img src="@/assets/maxio/reward.svg" />
+          <div class="img_bg reward_bg">
+            <img src="@/assets/maxio/reward.svg" v-if="item.type === 'pool'" />
+            <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" />
           </div>
           <span class="pool_name">{{ item.name }}</span>
           <span class="reward_value">{{ item.number }} DMC</span>
@@ -14,17 +15,17 @@
     <div class="maxio_home_card">
       <div class="maxio_pool_list">
         <div class="maxio_pool_item" v-for="(item, index) in poolList" :key="index">
-          <div class="img_bg pool_bg" v-if="item.type === 'pool'">
+          <div class="img_bg pool_bg" v-if="item.type === 'pool'" @click="changeTab(item.type)">
             <img src="@/assets/maxio/poolIcon.jpg" />
           </div>
-          <div class="img_bg iot_bg" v-if="item.type === 'iot'">
+          <div class="img_bg iot_bg" v-if="item.type === 'iot'" @click="changeTab(item.type)">
             <img src="@/assets/maxio/room.png" />
           </div>
           <span class="pool_name">{{ item.name }}({{ item.number }})</span>
         </div>
       </div>
     </div>
-    <div class="maxio_home_card space_card">
+    <div class="maxio_home_card space_card" @click="changeTab('file')">
       <div class="space_card_left"><MyEcharts style="width: 100%; height: 260px" :options="chartOptions"></MyEcharts> </div>
       <div class="space_card_right">
         <div class="local_title">Local Usage</div>
@@ -47,7 +48,6 @@
       </div>
     </div>
 
-    <!-- <div class="maxio_home_card"><MyEcharts style="width: 100%; height: 200px" :options="chartOptions"></MyEcharts> </div> -->
     <!-- <div class="maxio_home_title">Depins({{ deviceNumber }})</div>
     <div class="maxio_home_card" @click="changeTab('iot')">
       <img src="@/assets/maxio/iotList.png" alt="" />
@@ -61,6 +61,8 @@
 
 <script setup>
   import { ref, toRefs, computed } from 'vue';
+  const router = useRouter();
+  const route = useRoute();
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
@@ -128,7 +130,6 @@
         }
 
         let str = `${name} : ${value}`;
-        console.log(str);
         return str;
       },
     },
@@ -164,181 +165,25 @@
       },
     ],
   };
+  const changeTab = (type) => {
+    if (type === 'index') {
+      router.push({ path: '/home' });
+    } else if (type === 'pool') {
+      router.push({ path: '/maxPool' });
+    } else if (type === 'iot') {
+      router.push({ path: '/maxIOT' });
+    } else if (type === 'file') {
+      router.push({ path: '/maxFile' });
+    } else if (type === 'reward') {
+      router.push({ path: '/maxReward' });
+    } else if (type === 'set') {
+      router.push({ path: '/maxSet' });
+    } else if (type === 'home') {
+      router.push({ path: '/maxio' });
+    }
+  };
 </script>
 
 <style lang="scss" scoped>
-  .pool_index_box {
-    .maxio_home_card {
-      margin-top: 20px;
-    }
-    .maxio_pool_list {
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      width: 100%;
-      .maxio_pool_item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-size: 24px;
-
-        width: 50%;
-        .img_bg {
-          width: 100px;
-          height: 100px;
-
-          background-image: linear-gradient(
-            215deg,
-            #fcc5e4 0%,
-            #fda34b 15%,
-            #ff7882 35%,
-            #c8699e 52%,
-            #7046aa 71%,
-            #0c1db8 87%,
-            #020f75 100%
-          );
-          border-radius: 20px;
-          padding: 14px;
-          box-sizing: border-box;
-        }
-        .pool_bg {
-          img {
-            animation: poolChange 1s linear alternate infinite;
-          }
-        }
-        .iot_bg {
-          background-image: linear-gradient(103deg, #f83600 0%, #f9d423 100%);
-          img {
-            animation: iotChange 2s linear alternate infinite;
-          }
-        }
-        .reward_bg {
-          background-image: linear-gradient(177deg, #e4d1b9 0%, #e2a856 30%, #ec9210 100%);
-          //   background-image: linear-gradient(to top, #e14fad 0%, #f9d423 100%);
-          //   background-image: linear-gradient(-225deg, #231557 0%, #44107a 29%, #ff1361 67%, #fff800 100%);
-          img {
-            animation: rewardChange 2s linear alternate infinite;
-          }
-        }
-        .pool_name {
-          margin: 16px 0;
-          font-weight: bold;
-          white-space: nowrap;
-        }
-        .reward_value {
-          font-style: normal;
-          //   font-weight: normal;
-          color: #fac858;
-        }
-        .pool_number {
-          font-size: 20px;
-          font-weight: bold;
-        }
-      }
-    }
-  }
-
-  .space_card {
-    box-sizing: border-box;
-    padding: 20px;
-    display: flex;
-    align-items: start;
-    justify-content: space-between;
-    width: 100%;
-    .space_card_left,
-    .space_card_right {
-      border-radius: 0;
-      width: 50% !important;
-      font-style: normal;
-
-      .local_title {
-        white-space: nowrap;
-        font-size: 24px;
-        text-align: left;
-        padding-left: 14px;
-      }
-      .file_items {
-        margin-left: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 80px;
-        line-height: 30px;
-        border-bottom: 0.5px dashed #6f7681;
-        padding: 5px;
-        .file_name {
-          font-size: 22px;
-          text-align: left;
-          font-style: normal;
-          margin-bottom: 4px;
-        }
-        .file_size {
-          display: flex;
-          font-size: 16px;
-
-          font-style: normal;
-          span {
-            white-space: nowrap;
-          }
-          .file_number {
-            font-weight: bold;
-            // font-weight: normal;
-          }
-          .file_space {
-            margin-right: 8px;
-            color: #fac858;
-          }
-        }
-        .svg_box {
-          text-align: center;
-          margin-right: 10px;
-
-          svg {
-            width: 40px;
-            height: 40px;
-            vertical-align: middle;
-          }
-        }
-      }
-    }
-  }
-  @keyframes poolChange {
-    0% {
-      transform: scale(1);
-      transform: translateY(-10px) translateX(10px) translateZ(10px);
-    }
-    100% {
-      transform: scale(0.96);
-      transform: translateY(0px) translateX(0px);
-    }
-  }
-  @keyframes iotChange {
-    0% {
-      transform: scale(1);
-      transform: rotateY(90deg);
-    }
-    100% {
-      transform: scale(0.96);
-      transform: rotateY(0deg);
-    }
-  }
-  @keyframes rewardChange {
-    0%,
-    100% {
-      transform: translate(0, 0);
-    }
-    10%,
-    30%,
-    50%,
-    70%,
-    90% {
-      transform: translate(-2px, -2px);
-    }
-    20%,
-    40%,
-    60%,
-    80% {
-      transform: translate(2px, 2px);
-    }
-  }
+  @import url('./index.scss');
 </style>

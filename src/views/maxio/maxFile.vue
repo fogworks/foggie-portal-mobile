@@ -24,21 +24,20 @@
       </div>
       <div class="maxio_home_content">
         <div class="maxio_home_leftMenu" :class="[showLeft ? '' : 'minWidth']">
-          <div class="menu_img" @click="changeTab('home')">
-            <!-- <img src="@/assets/maxio/maxio.svg" alt="" /> -->
-            <img src="@/assets/maxio/maxio.png" alt="" class="left_max_png" />
-          </div>
-          <div class="menu_img" @click="changeTab('pool')">
-            <img src="@/assets/maxio/pool.svg" alt="" />
-          </div>
-          <div class="menu_img" @click="changeTab('iot')">
-            <img src="@/assets/maxio/iot1.svg" alt="" />
-          </div>
-          <div class="menu_img active_img" @click="changeTab('file')">
+          <!-- <div class="menu_img" @click="changeTab('home')">
+            <img src="@/assets/maxio/maxio_name.png" alt="" style="object-fit: cover" />
+          </div> -->
+          <div class="menu_img active_img" @click="changeTab('file')" active_img>
             <img src="@/assets/maxio/file.svg" alt="" />
           </div>
           <div class="menu_img" @click="changeTab('reward')">
             <img src="@/assets/maxio/reward.svg" alt="" />
+          </div>
+          <div class="menu_img" @click="changeTab('iot')">
+            <img src="@/assets/maxio/iot1.svg" alt="" />
+          </div>
+          <div class="menu_img" @click="changeTab('pool')">
+            <img src="@/assets/maxio/pool.svg" alt="" />
           </div>
         </div>
         <div class="maxio_home_rightContent" :class="[showLeft ? 'maxWidth' : '']">
@@ -80,10 +79,10 @@
 
 <style lang="scss" scoped>
   @import url('./common.scss');
-  .minWidth {
-    width: 0 !important;
-    transform: translateX(-140px);
-  }
+  //   .minWidth {
+  //     width: 0 !important;
+  //     transform: translateX(-140px);
+  //   }
   .maxio_home_rightContent {
     transition: all 0.8s;
     height: 100%;
@@ -93,9 +92,9 @@
       font-weight: bold;
     }
   }
-  .maxWidth {
-    width: calc(100% - 160px);
-  }
+  //   .maxWidth {
+  //     width: calc(100% - 120px);
+  //   }
   .maxio_home_card {
     margin-bottom: 20px;
     background: #3c3c47;

@@ -1,5 +1,5 @@
 <template>
-  <div class="maxio_home_bg">
+  <div class="maxio_home_bg maxio_reward_page">
     <div class="maxio_home">
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
@@ -24,21 +24,20 @@
       </div>
       <div class="maxio_home_content maxio_reward_content">
         <div class="maxio_home_leftMenu" :class="[showLeft ? '' : 'minWidth']">
-          <div class="menu_img" @click="changeTab('home')">
-            <!-- <img src="@/assets/maxio/maxio.svg" alt="" /> -->
-            <img src="@/assets/maxio/maxio.png" alt="" class="left_max_png" />
-          </div>
-          <div class="menu_img" @click="changeTab('pool')">
-            <img src="@/assets/maxio/pool.svg" alt="" />
-          </div>
-          <div class="menu_img" @click="changeTab('iot')">
-            <img src="@/assets/maxio/iot1.svg" alt="" />
-          </div>
+          <!-- <div class="menu_img" @click="changeTab('home')">
+            <img src="@/assets/maxio/maxio_name.png" alt="" style="object-fit: cover" />
+          </div> -->
           <div class="menu_img" @click="changeTab('file')">
             <img src="@/assets/maxio/file.svg" alt="" />
           </div>
           <div class="menu_img active_img" @click="changeTab('reward')">
             <img src="@/assets/maxio/reward.svg" alt="" />
+          </div>
+          <div class="menu_img" @click="changeTab('iot')">
+            <img src="@/assets/maxio/iot1.svg" alt="" />
+          </div>
+          <div class="menu_img" @click="changeTab('pool')">
+            <img src="@/assets/maxio/pool.svg" alt="" />
           </div>
           <!-- <div class="menu_img" @click="changeTab('set')">
             <img src="@/assets/maxio/set.svg" alt="" />
@@ -46,10 +45,19 @@
         </div>
         <div class="maxio_home_rightContent" :class="[showLeft ? 'maxWidth' : '']">
           <div class="maxio_home_card">
-            <img src="@/assets/maxio/rewardList.png" alt="" />
+            <div class="maxio_pool_list">
+              <div class="maxio_pool_item" v-for="(item, index) in rewardList" :key="index">
+                <div class="img_bg reward_bg">
+                  <img src="@/assets/maxio/reward.svg" v-if="item.type === 'pool'" />
+                  <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" />
+                </div>
+                <span class="pool_name">{{ item.name }}</span>
+                <span class="reward_value">{{ item.number }} DMC</span>
+              </div>
+            </div>
           </div>
-          <img src="@/assets/maxio/poolReward.png" alt="" />
-          <img src="@/assets/maxio/iotReward.png" alt="" />
+          <img src="@/assets/maxio/poolReward.png" alt="" style="width: 100%" />
+          <img src="@/assets/maxio/iotReward.png" alt="" style="width: 100%" />
         </div>
       </div>
     </div>
@@ -64,6 +72,10 @@
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
   };
+  const rewardList = ref([
+    { name: 'Minning Reward', number: '100.0000', type: 'pool' },
+    { name: 'IOT Reward', number: '200.0000', type: 'iot' },
+  ]);
   const changeTab = (type) => {
     if (type === 'index') {
       router.push({ path: '/home' });
@@ -85,60 +97,50 @@
 
 <style lang="scss" scoped>
   @import url('./common.scss');
-  .maxio_home_card {
-    margin-bottom: 20px;
-    background: #3c3c47;
-    width: 100%;
-    background: rgb(181 186 202 / 38%);
-    height: 300px;
-    border-radius: 30px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-  }
-  .nobg {
-    background: transparent;
-  }
-  .maxio_reward_card {
-    padding: 20px;
-    img {
-      width: 100%;
-      height: 92%;
-      object-fit: contain;
-    }
-  }
-  .maxio_reward_content {
-    .maxio_home_rightContent {
-      transition: all 0.8s;
-      height: 100%;
-      box-sizing: border-box;
-      width: 100%;
-      .maxio_home_title {
-        font-weight: bold;
-      }
-      img {
-        width: 100%;
-        object-fit: contain;
-        margin: 20px 0;
-      }
-      .maxio_home_card {
-        box-sizing: border-box;
-        img {
-          height: 100%;
-          object-fit: cover;
-          margin: 20px 0;
-          margin-top: -20px;
-        }
-      }
-    }
-    .maxWidth {
-      width: calc(100% - 160px);
-    }
-  }
-  .minWidth {
-    width: 0 !important;
-    transform: translateX(-140px);
+  @import url('./index.scss');
+  //   .maxio_home_card {
+  //     margin-bottom: 20px;
+  //     background: #3c3c47;
+  //     width: 100%;
+  //     background: rgb(181 186 202 / 38%);
+  //     height: 300px;
+  //     border-radius: 30px;
+  //     margin-bottom: 10px;
+  //     display: flex;
+  //     align-items: center;
+  //     justify-content: center;
+  //     box-sizing: border-box;
+  //   }
+  //   .maxio_home_rightContent {
+  //     transition: all 0.8s;
+  //     height: 100%;
+  //     box-sizing: border-box;
+  //     width: 100%;
+  //     .maxio_home_title {
+  //       font-weight: bold;
+  //     }
+  //     img {
+  //       width: 100%;
+  //       object-fit: contain;
+  //       margin: 20px 0;
+  //     }
+  //     .maxio_home_card {
+  //       box-sizing: border-box;
+  //       img {
+  //         height: 100%;
+  //         object-fit: cover;
+  //         margin: 20px 0;
+  //         margin-top: -20px;
+  //       }
+  //     }
+  //   }
+  //   .maxWidth {
+  //     width: calc(100% - 120px);
+  //   }
+  //   .minWidth {
+  //     width: 0 !important;
+  //     transform: translateX(-140px);
+  //   }
+  .maxio_reward_page {
   }
 </style>

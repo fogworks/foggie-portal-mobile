@@ -1,0 +1,267 @@
+//   background: url('@/assets/maxio/bg.png') center center no-repeat;
+//   background-size: 100% 100%;
+.maxio_pool_list {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  .maxio_pool_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 24px;
+
+    width: 50%;
+    .img_bg {
+      width: 100px;
+      height: 100px;
+
+      background-image: linear-gradient(215deg, #fcc5e4 0%, #fda34b 15%, #ff7882 35%, #c8699e 52%, #7046aa 71%, #0c1db8 87%, #020f75 100%);
+      border-radius: 20px;
+      padding: 14px;
+      box-sizing: border-box;
+    }
+    .pool_bg {
+      img {
+        animation: poolChange 1s linear alternate infinite;
+      }
+    }
+    .iot_bg {
+      background-image: linear-gradient(103deg, #f83600 0%, #f9d423 100%);
+      img {
+        animation: iotChange 2s linear alternate infinite;
+      }
+    }
+    .reward_bg {
+      background-image: linear-gradient(177deg, #e4d1b9 0%, #e2a856 30%, #ec9210 100%);
+      // background-image: linear-gradient(to top, #e14fad 0%, #f9d423 100%);
+      // background-image: linear-gradient(-225deg, #231557 0%, #44107a 29%, #ff1361 67%, #fff800 100%);
+      img {
+        //   animation: rewardChange 2s linear alternate infinite;
+      }
+    }
+    .pool_name {
+      margin: 16px 0;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .reward_value {
+      font-style: normal;
+      font-weight: bold;
+      color: #fac858;
+    }
+    .pool_number {
+      font-size: 20px;
+      font-weight: bold;
+    }
+  }
+}
+
+.space_card {
+  box-sizing: border-box;
+  padding: 20px;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  width: 100%;
+  .space_card_left,
+  .space_card_right {
+    border-radius: 0;
+    width: 50% !important;
+    font-style: normal;
+
+    .local_title {
+      white-space: nowrap;
+      font-size: 24px;
+      text-align: left;
+      padding-left: 14px;
+    }
+    .file_items {
+      margin-left: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 80px;
+      line-height: 30px;
+      border-bottom: 0.5px dashed #6f7681;
+      padding: 5px;
+      .file_name {
+        font-size: 22px;
+        text-align: left;
+        font-style: normal;
+        margin-bottom: 4px;
+      }
+      .file_size {
+        display: flex;
+        font-size: 16px;
+
+        font-style: normal;
+        span {
+          white-space: nowrap;
+        }
+        .file_number {
+          font-weight: bold;
+          // font-weight: normal;
+        }
+        .file_space {
+          margin-right: 8px;
+          color: #fac858;
+        }
+      }
+      .svg_box {
+        text-align: center;
+        margin-right: 10px;
+
+        svg {
+          width: 40px;
+          height: 40px;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+}
+
+.maxio_iot_list {
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+  position: relative;
+  padding: 0 20px;
+  .maxio_pool_item {
+    width: 50% !important;
+    margin-right: 30px;
+  }
+}
+@keyframes poolChange {
+  0% {
+    transform: scale(1);
+    transform: translateY(-10px) translateX(10px) translateZ(10px);
+  }
+  100% {
+    transform: scale(0.96);
+    transform: translateY(0px) translateX(0px);
+  }
+}
+@keyframes iotChange {
+  0% {
+    transform: scale(1);
+    transform: rotateY(90deg);
+  }
+  100% {
+    transform: scale(0.96);
+    transform: rotateY(0deg);
+  }
+}
+@keyframes rewardChange {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translate(-2px, -2px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translate(2px, 2px);
+  }
+}
+
+.iot_room_list {
+  img {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+  }
+  .iot_room_head {
+    display: flex;
+    align-items: center;
+    align-items: baseline;
+    font-weight: bold;
+
+    .iot_room_number {
+      font-size: 20px;
+      margin-left: 10px;
+      color: #f9c721;
+    }
+  }
+  .iot_room_detail {
+    .iot_device_item {
+      border: 1px solid #ffffff6b;
+      border-radius: 10px;
+      padding: 26px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      font-weight: bold;
+    }
+  }
+}
+
+.maxio_pool_card {
+  flex-direction: column;
+  align-items: start !important;
+  justify-content: space-between !important;
+  padding: 20px;
+  height: 300px;
+  .pool_name {
+    font-weight: bolder;
+  }
+  .pool_detail {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: end;
+    font-weight: bold;
+  }
+  .pool_space {
+    margin-right: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    .pool_space_title {
+      display: flex;
+      color: #fac858;
+      font-weight: bolder;
+      font-size: 30px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .pool_img {
+    width: 100px;
+    height: 100px;
+    background-image: linear-gradient(215deg, #fcc5e4 0%, #fda34b 15%, #ff7882 35%, #c8699e 52%, #7046aa 71%, #0c1db8 87%, #020f75 100%);
+    border-radius: 20px;
+    padding: 14px;
+    box-sizing: border-box;
+    img {
+      width: 100% !important;
+      animation: poolChange 1s linear alternate infinite;
+    }
+  }
+  .pool_time_line {
+    width: 100%;
+    font-size: 20px;
+    display: flex;
+    white-space: nowrap;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-top: 8px;
+    .pool_time_join,
+    .pool_time_exp {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .title {
+        font-size: 18px;
+        font-weight: normal;
+      }
+    }
+  }
+}

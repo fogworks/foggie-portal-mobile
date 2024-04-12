@@ -109,7 +109,7 @@
 .maxio_home_leftMenu {
   transition: all 0.8s;
   padding: 20px 0;
-  width: 140px;
+  width: 100px;
   background: rgb(181 186 202 / 38%);
   height: 100%;
   border-radius: 20px;
@@ -128,8 +128,8 @@
     box-sizing: border-box;
     width: 100%;
     img {
-      width: 80px;
-      height: 80px;
+      width: 60px;
+      height: 60px;
     }
   }
   .title_text {
@@ -157,11 +157,13 @@
     rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
     rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-  background: #00000094;
+  background: #00000039;
 }
 .maxio_home_rightContent {
-  width: calc(100% - 160px);
+  transition: all 0.8s;
+  width: calc(100% - 120px);
   height: 100%;
+  width: 100%;
   box-sizing: border-box;
   .maxio_home_title {
     font-weight: bold;
@@ -247,4 +249,19 @@
   background-color: #222;
   border-radius: 6px;
   //  transform: rotateZ(54deg);
+}
+
+//common
+.maxWidth {
+  width: calc(100% - 120px) !important;
+  border: 5px solid #71d1e0;
+  border-radius: 20px;
+  background: #00000039;
+  padding: 20px;
+}
+
+.minWidth {
+  width: 0 !important;
+  transform: translateX(-140px);
+  background: transparent;
 }

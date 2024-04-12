@@ -22,7 +22,6 @@
               <div class="max_name"> {{ currentBucketData.domain || 'Order' + currentBucketData.order_id }}</div>
             </div>
           </div>
-          <!-- <div class="max_ip"> (192.168.1.1)</div> -->
         </div>
         <div class="maxio_img">
           <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" class="user_img" />
@@ -89,23 +88,6 @@
   const route = useRoute();
   const showLeft = ref(false);
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
-  const changeTab = (type) => {
-    if (type === 'index') {
-      router.push({ path: '/home' });
-    } else if (type === 'pool') {
-      router.push({ path: '/maxPool' });
-    } else if (type === 'iot') {
-      router.push({ path: '/maxIOT' });
-    } else if (type === 'file') {
-      router.push({ path: '/maxFile' });
-    } else if (type === 'reward') {
-      router.push({ path: '/maxReward' });
-    } else if (type === 'set') {
-      router.push({ path: '/maxSet' });
-    } else if (type === 'home') {
-      router.push({ path: '/maxio' });
-    }
-  };
   const leftBucketList = computed(() => {
     return allOrderList.value;
   });
@@ -141,14 +123,25 @@
     // }
 
     // bucketName.value = item.domain
-    currentBucketData.value = item;
     window.localStorage.homeChooseBucket = JSON.stringify(item);
-  };
-  const changeMenu = (item, _type) => {
-    console.log(item.device_type, 'item.device_type');
     if (item.device_type === 3) {
       currentBucketData.value = item;
-      window.localStorage.homeChooseBucket = JSON.stringify(item);
+      cloudQuery.value = {
+        id: item.order_id,
+        uuid: item.uuid,
+        amb_uuid: item.amb_uuid,
+        domain: item.domain,
+      };
+      showBucket.value = true;
+    } else {
+      showBucket.value = false;
+      currentBucketData.value = item;
+    }
+  };
+  const changeMenu = (item, _type) => {
+    window.localStorage.homeChooseBucket = JSON.stringify(item);
+    if (item.device_type === 3) {
+      currentBucketData.value = item;
       cloudQuery.value = {
         id: item.order_id,
         uuid: item.uuid,
@@ -179,6 +172,7 @@
         await loadMoreFun();
         // setBucket(leftBucketList.value && leftBucketList.value[0]);
         showBucket.value = true;
+        console.log(window.localStorage.homeChooseBucke, 'window.localStorage.homeChooseBucke');
         if (window.localStorage.homeChooseBucket) {
           setBucket(JSON.parse(window.localStorage.homeChooseBucket));
         } else if (leftBucketList.value.length) {
@@ -210,16 +204,16 @@
       font-weight: bold;
     }
   }
-  .minWidth {
-    width: 0 !important;
-    transform: translateX(-140px);
-    background: transparent;
-  }
-  .maxWidth {
-    width: calc(100% - 160px);
-    border: 5px solid #71d1e0;
-    border-radius: 20px;
-    background: #00000039;
-    padding: 20px;
-  }
+  //   .minWidth {
+  //     width: 0 !important;
+  //     transform: translateX(-140px);
+  //     background: transparent;
+  //   }
+  //   .maxWidth {
+  //     width: calc(100% - 120px);
+  //     border: 5px solid #71d1e0;
+  //     border-radius: 20px;
+  //     background: #00000039;
+  //     padding: 20px;
+  //   }
 </style>
