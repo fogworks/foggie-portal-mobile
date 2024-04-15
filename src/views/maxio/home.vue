@@ -33,7 +33,13 @@
             v-for="(item, index) in leftBucketList"
             @click="changeMenu(item)"
             :key="index"
-            :class="[currentBucketData.uuid === item.uuid ? 'active_img' : '', 'menu_img']"
+            :class="[
+              (item.device_type == 3 && currentBucketData.uuid === item.uuid) ||
+              (item.device_type == 'maxio' && currentBucketData.id === item.id)
+                ? 'active_img'
+                : '',
+              'menu_img',
+            ]"
           >
             <div class="image-container" v-if="item.device_type == 3 && [4, 5].includes(item.state)" alt="">
               <img src="@/assets/home_bucket.png" />
@@ -49,7 +55,7 @@
         </div>
         <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="!showBucket" :class="[showLeft ? 'maxWidth' : '']">
           <!-- <sd> -->
-          <max-index></max-index>
+          <max-index :showLeft="showLeft"></max-index>
           <!-- </sd> -->
         </div>
 
@@ -58,8 +64,7 @@
           <div v-if="currentBucketData.state === 0" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
             <img src="@/assets/maxio/empty.png" alt="" />
           </div>
-
-          <!-- <CloudComponent :cloudQuery="cloudQuery" v-if="currentBucketData.state !== 0"></CloudComponent> -->
+          <CloudComponent :cloudQuery="cloudQuery" v-if="currentBucketData.state !== 0"></CloudComponent>
           <!-- </sd> -->
         </div>
       </div>

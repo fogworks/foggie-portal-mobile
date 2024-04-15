@@ -26,7 +26,9 @@
       </div>
     </div>
     <div class="maxio_home_card space_card" @click="changeTab('file')">
-      <div class="space_card_left"><MyEcharts style="width: 100%; height: 260px" :options="chartOptions"></MyEcharts> </div>
+      <div class="space_card_left"
+        ><MyEcharts style="width: 100%; height: 260px" :options="chartOptions" :showLeft="showLeft"></MyEcharts>
+      </div>
       <div class="space_card_right">
         <div class="local_title">Local Usage</div>
         <div class="file_items" v-for="(item, index) in localStorageData" :key="index">
@@ -69,6 +71,17 @@
   import IconDocument from '~icons/home/document.svg';
   import IconVideo from '~icons/home/video.svg';
   import IconAllCate from '~icons/home/all-cate.svg';
+  const props = defineProps({
+    showLeft: Boolean,
+  });
+  const showLeft = ref();
+  watch(
+    () => props.showLeft,
+    (val) => {
+      showLeft.value = val;
+    },
+    { deep: true },
+  );
   const poolNumber = ref(0);
   const deviceNumber = ref(0);
   const rewardList = ref([
