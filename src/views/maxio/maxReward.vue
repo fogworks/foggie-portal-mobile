@@ -43,64 +43,66 @@
             <img src="@/assets/maxio/set.svg" alt="" />
           </div> -->
         </div>
-        <div class="maxio_home_rightContent" :class="[showLeft ? 'maxWidth' : '']">
-          <div class="maxio_home_card">
-            <div class="maxio_pool_list">
-              <div class="maxio_pool_item" v-for="(item, index) in rewardList" :key="index">
-                <div class="img_bg reward_bg">
-                  <img src="@/assets/maxio/reward.svg" v-if="item.type === 'pool'" />
-                  <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" />
+        <div class="maxio_home_rightContent maxio_sd_rightContent" :class="[showLeft ? 'maxWidth' : '']">
+          <sd>
+            <div class="maxio_home_card">
+              <div class="maxio_pool_list">
+                <div class="maxio_pool_item" v-for="(item, index) in rewardList" :key="index">
+                  <div class="img_bg reward_bg">
+                    <img src="@/assets/maxio/reward.svg" v-if="item.type === 'pool'" />
+                    <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" />
+                  </div>
+                  <span class="pool_name">{{ item.name }}</span>
+                  <span class="reward_value">{{ item.number }} DMC</span>
                 </div>
-                <span class="pool_name">{{ item.name }}</span>
-                <span class="reward_value">{{ item.number }} DMC</span>
               </div>
             </div>
-          </div>
-          <div class="reward_type_box">
-            <nut-tabs v-model="rewardType" size="small" :ellipsis="hideText">
-              <nut-tab-pane title="Minning Pool Reward" pane-key="pool" class="reward_pool_box_parent">
-                <div class="reward_pool_box">
-                  <div class="reward_pool_title"> Pool - {{ activePool }}</div>
-                  <nut-tabs v-model="activePool" size="small" :ellipsis="hideText" v-if="poolList.length > 1">
-                    <nut-tab-pane :title="item.bucket" :pane-key="item.bucket" v-for="(item, index) in poolList" :key="index">
+            <div class="reward_type_box">
+              <nut-tabs v-model="rewardType" size="small" :ellipsis="hideText">
+                <nut-tab-pane title="Minning Pool Reward" pane-key="pool" class="reward_pool_box_parent">
+                  <div class="reward_pool_box">
+                    <div class="reward_pool_title"> Pool - {{ activePool }}</div>
+                    <nut-tabs v-model="activePool" size="small" :ellipsis="hideText" v-if="poolList.length > 1">
+                      <nut-tab-pane :title="item.bucket" :pane-key="item.bucket" v-for="(item, index) in poolList" :key="index">
+                        <div class="today_reward_item">
+                          <span class="today_text">Today Anticipated</span>
+                          <span class="today_value">+3,490</span>
+                        </div>
+                        <nut-tabs v-model="timeType" size="small" :ellipsis="hideText">
+                          <nut-tab-pane title="Day" pane-key="Day"> Day</nut-tab-pane>
+                          <nut-tab-pane title="Week" pane-key="Week"> Week</nut-tab-pane>
+                          <nut-tab-pane title="Month" pane-key="Month"> Month</nut-tab-pane>
+                        </nut-tabs>
+                      </nut-tab-pane>
+                    </nut-tabs>
+                    <div v-else>
                       <div class="today_reward_item">
                         <span class="today_text">Today Anticipated</span>
                         <span class="today_value">+3,490</span>
                       </div>
                       <nut-tabs v-model="timeType" size="small" :ellipsis="hideText">
-                        <nut-tab-pane title="Day" pane-key="Day"> Day</nut-tab-pane>
+                        <nut-tab-pane title="Day" pane-key="Day">
+                          <div class="reward_list" v-for="(item, index) in rewardDetailList" :key="index">
+                            <div class="img_box">
+                              <img src="@/assets/maxio/reward.svg" alt="" />
+                            </div>
+                            <div class="reward_list_center">
+                              <div class="title">Daily Reward</div>
+                              <div class="time">{{ handleTime(item) }}</div>
+                            </div>
+                            <div class="reward_list_value">+ {{ item.income }}</div>
+                          </div>
+                        </nut-tab-pane>
                         <nut-tab-pane title="Week" pane-key="Week"> Week</nut-tab-pane>
                         <nut-tab-pane title="Month" pane-key="Month"> Month</nut-tab-pane>
                       </nut-tabs>
-                    </nut-tab-pane>
-                  </nut-tabs>
-                  <div v-else>
-                    <div class="today_reward_item">
-                      <span class="today_text">Today Anticipated</span>
-                      <span class="today_value">+3,490</span>
                     </div>
-                    <nut-tabs v-model="timeType" size="small" :ellipsis="hideText">
-                      <nut-tab-pane title="Day" pane-key="Day">
-                        <div class="reward_list" v-for="(item, index) in rewardDetailList" :key="index">
-                          <div class="img_box">
-                            <img src="@/assets/maxio/reward.svg" alt="" />
-                          </div>
-                          <div class="reward_list_center">
-                            <div class="title">Daily Reward</div>
-                            <div class="time">{{ handleTime(item) }}</div>
-                          </div>
-                          <div class="reward_list_value">+ {{ item.income }}</div>
-                        </div>
-                      </nut-tab-pane>
-                      <nut-tab-pane title="Week" pane-key="Week"> Week</nut-tab-pane>
-                      <nut-tab-pane title="Month" pane-key="Month"> Month</nut-tab-pane>
-                    </nut-tabs>
                   </div>
-                </div>
-              </nut-tab-pane>
-              <nut-tab-pane title="IOT Reward" pane-key="iot" class="reward_pool_box_parent"> IOT Reward</nut-tab-pane>
-            </nut-tabs>
-          </div>
+                </nut-tab-pane>
+                <nut-tab-pane title="IOT Reward" pane-key="iot" class="reward_pool_box_parent"> IOT Reward</nut-tab-pane>
+              </nut-tabs>
+            </div>
+          </sd>
 
           <!-- <img src="@/assets/maxio/poolReward.png" alt="" style="width: 100%" /> -->
           <!-- <img src="@/assets/maxio/iotReward.png" alt="" style="width: 100%" /> -->
@@ -112,6 +114,7 @@
 
 <script setup>
   import moment from 'moment';
+  import sd from './sd.vue';
   import { ref, toRefs, computed } from 'vue';
   const hideText = false;
   const router = useRouter();

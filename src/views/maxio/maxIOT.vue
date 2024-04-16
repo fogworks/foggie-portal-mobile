@@ -46,48 +46,50 @@
         </div>
 
         <!-- maxio_home_rightContent -->
-        <div class="maxio_home_rightContent" :class="[showLeft ? 'maxWidth' : '']">
-          <div class="maxio_home_card">
-            <div class="maxio_pool_list maxio_iot_list">
-              <div class="maxio_pool_item" v-for="(item, index) in iotList" :key="index">
-                <div class="img_bg iot_bg">
-                  <img src="@/assets/maxio/room1.svg" v-if="index % 3 === 0" />
-                  <img src="@/assets/maxio/room2.svg" v-if="index % 3 === 1" />
-                  <img src="@/assets/maxio/room3.svg" v-if="index % 3 === 2" />
-                </div>
-                <span class="pool_name">{{ item.name }}({{ item.number }})</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="iot_room_list" v-for="(item, index) in iotRoomList" :key="index">
-            <div class="iot_room_head">
-              <img src="@/assets/maxio/room1.svg" v-if="index % 3 === 0" />
-              <img src="@/assets/maxio/room2.svg" v-if="index % 3 === 1" />
-              <img src="@/assets/maxio/room3.svg" v-if="index % 3 === 2" />
-              <div class="iot_room_title"> {{ item.groupName }}</div>
-              <div class="iot_room_number">({{ item.number }} IOT Devices) </div>
-            </div>
-            <div class="iot_room_detail">
-              <div class="iot_device_item" v-for="(_item, _index) in item.deviceList" :key="_index">
-                <div class="iot_temp">
-                  <div class="iot_temp_line">
-                    <img src="@/assets/maxio/temp.svg" />
-                    <span>{{ _item.temp }}</span>
+        <div class="maxio_home_rightContent maxio_sd_rightContent" :class="[showLeft ? 'maxWidth' : '']">
+          <sd>
+            <div class="maxio_home_card">
+              <div class="maxio_pool_list maxio_iot_list">
+                <div class="maxio_pool_item" v-for="(item, index) in iotList" :key="index">
+                  <div class="img_bg iot_bg">
+                    <img src="@/assets/maxio/room1.svg" v-if="index % 3 === 0" />
+                    <img src="@/assets/maxio/room2.svg" v-if="index % 3 === 1" />
+                    <img src="@/assets/maxio/room3.svg" v-if="index % 3 === 2" />
                   </div>
-                  <div class="iot_temp_line"> Current Temp. </div>
-                </div>
-
-                <div class="iot_hum">
-                  <div class="iot_temp_line">
-                    <img src="@/assets/maxio/hum.svg" />
-                    <span>{{ _item.humidity }}</span>
-                  </div>
-                  <div class="iot_temp_line"> Humidity. </div>
+                  <span class="pool_name">{{ item.name }}({{ item.number }})</span>
                 </div>
               </div>
             </div>
-          </div>
+
+            <div class="iot_room_list" v-for="(item, index) in iotRoomList" :key="index">
+              <div class="iot_room_head">
+                <img src="@/assets/maxio/room1.svg" v-if="index % 3 === 0" />
+                <img src="@/assets/maxio/room2.svg" v-if="index % 3 === 1" />
+                <img src="@/assets/maxio/room3.svg" v-if="index % 3 === 2" />
+                <div class="iot_room_title"> {{ item.groupName }}</div>
+                <div class="iot_room_number">({{ item.number }} IOT Devices) </div>
+              </div>
+              <div class="iot_room_detail">
+                <div class="iot_device_item" v-for="(_item, _index) in item.deviceList" :key="_index">
+                  <div class="iot_temp">
+                    <div class="iot_temp_line">
+                      <img src="@/assets/maxio/temp.svg" />
+                      <span>{{ _item.temp }}</span>
+                    </div>
+                    <div class="iot_temp_line"> Current Temp. </div>
+                  </div>
+
+                  <div class="iot_hum">
+                    <div class="iot_temp_line">
+                      <img src="@/assets/maxio/hum.svg" />
+                      <span>{{ _item.humidity }}</span>
+                    </div>
+                    <div class="iot_temp_line"> Humidity. </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sd>
         </div>
       </div>
     </div>
@@ -95,6 +97,7 @@
 </template>
 
 <script setup>
+  import sd from './sd.vue';
   import { ref, toRefs, computed, onMounted } from 'vue';
   const router = useRouter();
   const route = useRoute();

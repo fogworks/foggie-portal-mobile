@@ -44,32 +44,34 @@
             <img src="@/assets/maxio/set.svg" alt="" />
           </div> -->
         </div>
-        <div class="maxio_home_rightContent" :class="[showLeft ? 'maxWidth' : '']">
-          <div class="maxio_home_card maxio_pool_card" v-for="(item, index) in poolList" :key="index">
-            <div class="pool_name">{{ item.miner_pool_name }}</div>
-            <div class="pool_detail">
-              <div class="pool_space">
-                <div class="pool_space_title">
-                  <span class="first">{{ item.space }} GB</span>
-                  <span class="sec">(Space)</span>
+        <div class="maxio_home_rightContent maxio_sd_rightContent" :class="[showLeft ? 'maxWidth' : '']">
+          <sd>
+            <div class="maxio_home_card maxio_pool_card" v-for="(item, index) in poolList" :key="index">
+              <div class="pool_name">{{ item.miner_pool_name }}</div>
+              <div class="pool_detail">
+                <div class="pool_space">
+                  <div class="pool_space_title">
+                    <span class="first">{{ item.space }} GB</span>
+                    <span class="sec">(Space)</span>
+                  </div>
+                  <div class="pool_space_time"> 100 Days 23:59:59 </div>
                 </div>
-                <div class="pool_space_time"> 100 Days 23:59:59 </div>
+                <div class="pool_img">
+                  <img src="@/assets/maxio/poolIcon.jpg" />
+                </div>
               </div>
-              <div class="pool_img">
-                <img src="@/assets/maxio/poolIcon.jpg" />
+              <div class="pool_time_line">
+                <div class="pool_time_join">
+                  <span> {{ handleTime(item) }}</span>
+                  <span class="title">Join Time</span>
+                </div>
+                <div class="pool_time_exp">
+                  <span> {{ handleEndTime(item) }}</span>
+                  <span class="title">Expire Time</span>
+                </div>
               </div>
             </div>
-            <div class="pool_time_line">
-              <div class="pool_time_join">
-                <span> {{ handleTime(item) }}</span>
-                <span class="title">Join Time</span>
-              </div>
-              <div class="pool_time_exp">
-                <span> {{ handleEndTime(item) }}</span>
-                <span class="title">Expire Time</span>
-              </div>
-            </div>
-          </div>
+          </sd>
         </div>
       </div>
     </div>
@@ -78,6 +80,7 @@
 
 <script setup>
   import { ref, toRefs, computed } from 'vue';
+  import sd from './sd.vue';
   import moment from 'moment';
   const router = useRouter();
   const route = useRoute();

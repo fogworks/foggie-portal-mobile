@@ -54,18 +54,18 @@
           </div>
         </div>
         <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="!showBucket" :class="[showLeft ? 'maxWidth' : '']">
-          <!-- <sd> -->
-          <max-index :showLeft="showLeft"></max-index>
-          <!-- </sd> -->
+          <sd>
+            <max-index :showLeft="showLeft"></max-index>
+          </sd>
         </div>
 
-        <div class="maxio_home_rightContent" v-if="showBucket" :class="[showLeft ? 'maxWidth' : '']">
-          <!-- <sd> -->
-          <div v-if="currentBucketData.state === 0" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
-            <img src="@/assets/maxio/empty.png" alt="" />
-          </div>
-          <CloudComponent :cloudQuery="cloudQuery" v-if="currentBucketData.state !== 0"></CloudComponent>
-          <!-- </sd> -->
+        <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="showBucket" :class="[showLeft ? 'maxWidth' : '']">
+          <sd>
+            <div v-if="currentBucketData.state === 0" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
+              <img src="@/assets/maxio/empty.png" alt="" />
+            </div>
+            <CloudComponent :cloudQuery="cloudQuery" v-if="currentBucketData.state !== 0"></CloudComponent>
+          </sd>
         </div>
       </div>
     </div>

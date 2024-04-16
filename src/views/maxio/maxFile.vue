@@ -40,10 +40,12 @@
             <img src="@/assets/maxio/pool.svg" alt="" />
           </div>
         </div>
-        <div class="maxio_home_rightContent" :class="[showLeft ? 'maxWidth' : '']">
-          <img src="@/assets/maxio/fileCircle.png" alt="" />
-          <div class="maxio_home_title">My File</div>
-          <img src="@/assets/maxio/fileLists.png" alt="" />
+        <div class="maxio_home_rightContent maxio_sd_rightContent" :class="[showLeft ? 'maxWidth' : '']">
+          <sd>
+            <img src="@/assets/maxio/fileCircle.png" alt="" />
+            <div class="maxio_home_title">My File</div>
+            <img src="@/assets/maxio/fileLists.png" alt="" />
+          </sd>
         </div>
       </div>
     </div>
@@ -52,6 +54,7 @@
 
 <script setup>
   import { ref, toRefs, computed } from 'vue';
+  import sd from './sd.vue';
   const router = useRouter();
   const route = useRoute();
   const showLeft = ref(true);

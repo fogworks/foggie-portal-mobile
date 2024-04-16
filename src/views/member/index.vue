@@ -83,12 +83,18 @@
         </div>
       </div> -->
 
-      <nut-row class="buttonContent">
-        <nut-col :span="6" @click="gotoDetail('/personalInfo')">
+      <nut-row class="buttonContent" v-if="showSettings">
+        <!-- <nut-col :span="6" @click="gotoDetail('/personalInfo')">
           <div class="customBtn">
             <img src="@/assets/newIcon/userInfo.png" style="width: 45px; height: 45px; display: inline-block" />
           </div>
           <div>Profile</div>
+        </nut-col> -->
+        <nut-col :span="6" @click="changeTab('back')">
+          <div class="customBtn">
+            <img src="@/assets/maxio/back.svg" style="width: 45px; height: 45px; display: inline-block" />
+          </div>
+          <div>Back</div>
         </nut-col>
         <nut-col :span="6" @click="visible = true">
           <div class="customBtn">
@@ -98,22 +104,26 @@
         </nut-col>
         <nut-col :span="6" @click="contactUs">
           <div class="customBtn">
-            <!-- <Service color="#505056" /> -->
             <img src="@/assets/newIcon/ContactUs.png" style="width: 45px; height: 45px; display: inline-block" />
           </div>
           <div>Contact Us</div>
         </nut-col>
         <nut-col :span="6" @click="goToPrivacy">
           <div class="customBtn">
-            <!-- <Link color="#505056" /> -->
             <img src="@/assets/newIcon/AboutUs.png" style="width: 45px; height: 45px; display: inline-block" />
           </div>
-          <div
-            >About
-            <!-- <div>Fog Works</div> -->
-          </div>
+          <div>About </div>
         </nut-col>
       </nut-row>
+
+      <setting @click="changeTab('reward')" v-if="!showSettings">
+        <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
+        <div class="title">Assets</div>
+      </setting>
+      <setting @click="changeTab('setting')" v-if="!showSettings">
+        <img src="@/assets/newIcon/ContactUs.png" style="width: 45px; height: 45px; display: inline-block" />
+        <div class="title">Settings</div>
+      </setting>
 
       <div class="logOutBtn" @click="logout">
         <span style="margin-left: 45px">Log out</span>
@@ -171,6 +181,8 @@
   import { onMounted, reactive, ref } from 'vue';
   import { formatNumber } from '@/utils/util';
   import { ambAddress } from '@/setting';
+  import setting from './setting.vue';
+  const showSettings = ref(false);
 
   const uploadRef = ref();
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
@@ -187,6 +199,14 @@
 
   const bindAmbCode = inject('bindAmbCode');
   const openBindDMCDiaolg = inject('openBindDMCDiaolg');
+  const changeTab = (type) => {
+    if (type === 'setting') {
+      showSettings.value = true;
+    }
+    if (type === 'back') {
+      showSettings.value = false;
+    }
+  };
   watch(
     () => cloudCodeIsBind.value,
     (newValue) => {
@@ -417,12 +437,30 @@
     margin-right: -4vw;
     min-height: 100vh;
     background-color: #fff;
-
+    @keyframes ani {
+      0% {
+        box-shadow: 0 0 0px #ff8329;
+      }
+      25% {
+        box-shadow: 0 0 10px #ff8329;
+      }
+      50% {
+        box-shadow: 0 0 20px #ff8329;
+      }
+      75% {
+        box-shadow: 0 0 100px #ff8329;
+      }
+      100% {
+        box-shadow: 0 0 0px #ff8329;
+      }
+    }
     .userHeader {
       position: relative;
       padding: 20px 60px;
       background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       padding-bottom: 120px;
+      background-image: linear-gradient(135deg, #667eea5c 0%, #6930a3e8 100%);
+      animation: ani 2s linear infinite;
 
       .scanQR {
         display: none;
@@ -666,8 +704,8 @@
       .title {
         font-size: 26px;
         color: #000;
-        display: grid;
-        grid-template-columns: auto 80px;
+        // display: grid;
+        // grid-template-columns: auto 80px;
         font-style: italic;
         gap: 40px;
         align-items: center;

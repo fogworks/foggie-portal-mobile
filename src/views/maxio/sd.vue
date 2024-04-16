@@ -39,7 +39,7 @@
 
   .card-sd_container {
     filter: drop-shadow(46px 36px 24px #4090b5) drop-shadow(-55px -40px 25px #9e30a9);
-    animation: blinkShadowsFilter 8s ease-in infinite;
+    animation: blinkShadowsFilter 3s ease-in infinite;
     width: 100%;
   }
 
@@ -58,37 +58,37 @@
   }
 
   .card-content::before {
-    content: '';
-    position: absolute;
-    width: 250%;
-    aspect-ratio: 1/1;
-    transform-origin: center;
-    background: linear-gradient(to bottom, transparent, transparent, #66e0ff, #66e0ff, #e366ff, #e366ff, transparent, transparent),
-      linear-gradient(to left, transparent, transparent, #66e0ff, #66e0ff, #e366ff, #e366ff, transparent, transparent);
-    animation: rotate 5s infinite linear;
+    // content: '';
+    // position: absolute;
+    // width: 250%;
+    // aspect-ratio: 1/1;
+    // transform-origin: center;
+    // background: linear-gradient(to bottom, transparent, transparent, #66e0ff, #66e0ff, #e366ff, #e366ff, transparent, transparent),
+    //   linear-gradient(to left, transparent, transparent, #66e0ff, #66e0ff, #e366ff, #e366ff, transparent, transparent);
+    // animation: rotate 5s infinite linear;
   }
 
   .card-content::after {
-    content: '';
-    position: absolute;
-    top: 1%;
-    left: 1%;
-    width: 98%;
-    height: 98%;
-    background: repeating-linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgba(64, 144, 181, 0.6) 1px,
-        rgb(0, 0, 0) 3px,
-        rgba(64, 144, 181, 0.3019607843) 5px,
-        #153544 4px,
-        transparent 0.5%
-      ),
-      repeating-linear-gradient(to left, hsl(295, 60%, 12%) 100%, hsla(295, 60%, 12%, 0.99) 100%);
-    box-shadow: inset 0px 0px 30px 40px hsl(296, 59%, 10%);
-    -webkit-clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
-    clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
-    animation: backglitch 94ms linear infinite;
+    // content: '';
+    // position: absolute;
+    // top: 1%;
+    // left: 1%;
+    // width: 98%;
+    // height: 98%;
+    // background: repeating-linear-gradient(
+    //     to bottom,
+    //     transparent 0%,
+    //     rgba(64, 144, 181, 0.6) 1px,
+    //     rgb(0, 0, 0) 3px,
+    //     rgba(64, 144, 181, 0.3019607843) 5px,
+    //     #153544 4px,
+    //     transparent 0.5%
+    //   ),
+    //   repeating-linear-gradient(to left, hsl(295, 60%, 12%) 100%, hsla(295, 60%, 12%, 0.99) 100%);
+    // box-shadow: inset 0px 0px 30px 40px hsl(296, 59%, 10%);
+    // -webkit-clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    // clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    // animation: backglitch 94ms linear infinite;
   }
 
   .card-sd_title {
