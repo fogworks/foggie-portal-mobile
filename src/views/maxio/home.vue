@@ -1,6 +1,9 @@
 <template>
   <div class="maxio_home_bg">
     <div class="maxio_home">
+      <div class="top_link_box">
+        <topLink></topLink>
+      </div>
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
           <div class="maxio_logo" @click="doShowLeft">
@@ -77,6 +80,7 @@
   import CloudComponent from './cloud.vue';
   import maxIndex from './maxIndex.vue';
   import sd from './sd.vue';
+  import topLink from './topLink.vue';
   import useOrderList from './useAllOrderList.ts';
   import { search_cloud } from '@/api';
   import { useUserStore } from '@/store/modules/user';

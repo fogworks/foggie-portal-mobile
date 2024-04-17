@@ -8,8 +8,8 @@
 
     <div class="infotop">
       <slot></slot>
-      <br />
-      <br />
+      <!-- <br />
+      <br /> -->
       <div class="name">
         <slot name="title"></slot>
       </div>
@@ -28,9 +28,10 @@
     box-shadow: 0px 8px 28px -9px rgba(0, 0, 0, 0.45);
     position: relative;
     width: 240px;
-    height: 330px;
+    height: 200px;
     border-radius: 16px;
     overflow: hidden;
+    border: 1px solid #ffffff2b;
   }
 
   .my_wave {
@@ -57,12 +58,18 @@
   .infotop {
     text-align: center;
     font-size: 20px;
-    position: absolute;
-    top: 5.6em;
-    left: 0;
-    right: 0;
+    // position: absolute;
+    // top: 5.6em;
+    // left: 0;
+    // right: 0;
     color: rgb(255, 255, 255);
     font-weight: 600;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .name {
@@ -71,6 +78,8 @@
     position: relative;
     top: 1em;
     text-transform: lowercase;
+    .title {
+    }
   }
 
   .my_wave:nth-child(2),

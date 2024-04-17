@@ -3,7 +3,9 @@
     <div class="card-sd_container">
       <div class="card-content">
         <div class="card-sd_title">
-          <span class="sd_title">已链接</span>
+          <span class="sd_title">
+            <nut-noticebar :text="text" background="transparent" color="#fff" :left-icon="false" />
+          </span>
         </div>
         <div class="card-body">
           <slot></slot>
@@ -13,9 +15,15 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+  const text = ref('您昨日的在线时长是10小时20分钟，收益+100.DMC');
+</script>
 
 <style lang="scss">
+  .nut-noticebar__page {
+    height: 50px;
+    line-height: 50px;
+  }
   .maxio_sd_rightContent {
     padding: 0 !important;
     background: transparent !important;
@@ -44,7 +52,8 @@
   }
 
   .card-content {
-    padding: 50px 40px 20px 30px;
+    // padding: 50px 40px 20px 30px;
+    padding: 60px 60px 20px 30px;
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -53,42 +62,44 @@
     width: 100%;
     box-sizing: border-box;
     aspect-ratio: 9/16;
-    -webkit-clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
-    clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    // -webkit-clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    // clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    -webkit-clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
   }
 
   .card-content::before {
-    // content: '';
-    // position: absolute;
-    // width: 250%;
-    // aspect-ratio: 1/1;
-    // transform-origin: center;
-    // background: linear-gradient(to bottom, transparent, transparent, #66e0ff, #66e0ff, #e366ff, #e366ff, transparent, transparent),
-    //   linear-gradient(to left, transparent, transparent, #66e0ff, #66e0ff, #e366ff, #e366ff, transparent, transparent);
-    // animation: rotate 5s infinite linear;
+    content: '';
+    position: absolute;
+    width: 250%;
+    aspect-ratio: 1/1;
+    transform-origin: center;
+    background: linear-gradient(to bottom, transparent, transparent, #66e0ff, #66e0ff, #e366ff, #e366ff, transparent, transparent),
+      linear-gradient(to left, transparent, transparent, #66e0ff, #66e0ff, #e366ff, #e366ff, transparent, transparent);
+    animation: rotate 5s infinite linear;
   }
 
   .card-content::after {
-    // content: '';
-    // position: absolute;
-    // top: 1%;
-    // left: 1%;
-    // width: 98%;
-    // height: 98%;
-    // background: repeating-linear-gradient(
-    //     to bottom,
-    //     transparent 0%,
-    //     rgba(64, 144, 181, 0.6) 1px,
-    //     rgb(0, 0, 0) 3px,
-    //     rgba(64, 144, 181, 0.3019607843) 5px,
-    //     #153544 4px,
-    //     transparent 0.5%
-    //   ),
-    //   repeating-linear-gradient(to left, hsl(295, 60%, 12%) 100%, hsla(295, 60%, 12%, 0.99) 100%);
-    // box-shadow: inset 0px 0px 30px 40px hsl(296, 59%, 10%);
-    // -webkit-clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
-    // clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
-    // animation: backglitch 94ms linear infinite;
+    content: '';
+    position: absolute;
+    top: 1%;
+    left: 1%;
+    width: 98%;
+    height: 98%;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(64, 144, 181, 0.6) 1px,
+        rgb(0, 0, 0) 3px,
+        rgba(64, 144, 181, 0.3019607843) 5px,
+        #153544 4px,
+        transparent 0.5%
+      ),
+      repeating-linear-gradient(to left, hsl(295, 60%, 12%) 100%, hsla(295, 60%, 12%, 0.99) 100%);
+    box-shadow: inset 0px 0px 30px 40px hsl(296, 59%, 10%);
+    -webkit-clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    animation: backglitch 94ms linear infinite;
   }
 
   .card-sd_title {

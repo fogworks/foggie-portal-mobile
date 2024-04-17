@@ -1,59 +1,60 @@
 <template>
   <div class="userInfo">
-    <div class="userHeader">
-      <div class="user_header_box">
-        <div style="position: relative">
-          <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" alt="" srcset="" @click="clickInput" />
-          <input type="file" name="" accept="image/*," ref="uploadRef" @change="uploadFile" id="" style="display: none" />
-          <div class="uploadIcon">
-            <Photograph color="#90B3EF" width="15px" height="15px"></Photograph>
+    <div class="user_bg_box">
+      <div class="userHeader">
+        <div class="user_header_box">
+          <div style="position: relative">
+            <img :src="userAvatar ? userAvatar : require('@/assets/user.svg')" alt="" srcset="" @click="clickInput" />
+            <input type="file" name="" accept="image/*," ref="uploadRef" @change="uploadFile" id="" style="display: none" />
+            <div class="uploadIcon">
+              <Photograph color="#90B3EF" width="15px" height="15px"></Photograph>
+            </div>
+          </div>
+
+          <div class="user_header_box_content">
+            <div class="accTitle">{{ dmcAccount }}</div>
+            <div class="email">Email: {{ email }}</div>
+            <!-- <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div> -->
+            <!-- <div class="email" v-if="promo_code">promoCode: {{ promo_code }}</div> -->
+            <div class="email" v-if="user_code">UserCode: {{ user_code }} <IconCopy @click="copyCode(user_code)"></IconCopy></div>
+            <div class="email" v-if="user_code">(Use this string to login dapp directly)</div>
           </div>
         </div>
-
-        <div class="user_header_box_content">
-          <div class="accTitle">{{ dmcAccount }}</div>
-          <div class="email">Email: {{ email }}</div>
-          <!-- <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div> -->
-          <!-- <div class="email" v-if="promo_code">promoCode: {{ promo_code }}</div> -->
-          <div class="email" v-if="user_code">UserCode: {{ user_code }} <IconCopy @click="copyCode(user_code)"></IconCopy></div>
-          <div class="email" v-if="user_code">(Use this string to login dapp directly)</div>
-        </div>
-      </div>
-      <div class="money">
-        <!-- <div>
+        <div class="money">
+          <!-- <div>
           <div class="key">Balance</div>
           <div class="value">
             <span style="font-size: 18px">{{ money.Balance.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.Balance.decimalPart }}</span>
           </div>
         </div> -->
-        <!-- <div>
+          <!-- <div>
           <div class="key">Recharge</div>
           <div class="value">
             <span style="font-size: 18px">{{ money.Recharge.integerPart }}</span>
             <span style="font-size: 12px">.{{ money.Recharge.decimalPart }}</span>
           </div>
         </div> -->
-        <div>
-          <div class="key">Reward</div>
-          <div class="value" v-if="cloudCodeIsBind" @click="gotoDetail('/assetsInfo')">
-            <span style="font-size: 18px">{{ money.income.integerPart }}</span>
-            <span style="font-size: 12px">.{{ money.income.decimalPart }}</span>
+          <div>
+            <div class="key">Reward</div>
+            <div class="value" v-if="cloudCodeIsBind" @click="gotoDetail('/assetsInfo')">
+              <span style="font-size: 18px">{{ money.income.integerPart }}</span>
+              <span style="font-size: 12px">.{{ money.income.decimalPart }}</span>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <div class="key">Withdrawn</div>
-          <div class="value" v-if="cloudCodeIsBind" @click="showWithdraw">
-            <span style="font-size: 18px">{{ money.withdraw.integerPart }}</span>
-            <span style="font-size: 12px">.{{ money.withdraw.decimalPart }}</span>
+          <div>
+            <div class="key">Withdrawn</div>
+            <div class="value" v-if="cloudCodeIsBind" @click="showWithdraw">
+              <span style="font-size: 18px">{{ money.withdraw.integerPart }}</span>
+              <span style="font-size: 12px">.{{ money.withdraw.decimalPart }}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="scanQR" @click="requestCameraPermission">
-        <Scan2 color="#fff" width="25px" height="25px"></Scan2>
-      </div>
-      <!-- <div class="bottom_btn">
+        <div class="scanQR" @click="requestCameraPermission">
+          <Scan2 color="#fff" width="25px" height="25px"></Scan2>
+        </div>
+        <!-- <div class="bottom_btn">
         <div class="bottom_btn_item">
           <img src="@/assets/shop.svg" alt="" />
           <div class="bottom_btn_itemText"> Buy</div>
@@ -67,10 +68,10 @@
           <div class="bottom_btn_itemText"> Withdraw</div>
         </div>
       </div> -->
-    </div>
-    <!-- <div class="my_assets_card"> </div> -->
-    <div class="userBox">
-      <!-- <div class="withdraw-btn" direction="horizontal" align="center">
+      </div>
+      <!-- <div class="my_assets_card"> </div> -->
+      <div class="userBox">
+        <!-- <div class="withdraw-btn" direction="horizontal" align="center">
         <div class="action_item" @click="toRecharge">
           <img src="@/assets/Recharge.png" alt="" />
 
@@ -83,84 +84,85 @@
         </div>
       </div> -->
 
-      <nut-row class="buttonContent" v-if="showSettings">
-        <!-- <nut-col :span="6" @click="gotoDetail('/personalInfo')">
+        <nut-row class="buttonContent" v-if="showSettings">
+          <!-- <nut-col :span="6" @click="gotoDetail('/personalInfo')">
           <div class="customBtn">
             <img src="@/assets/newIcon/userInfo.png" style="width: 45px; height: 45px; display: inline-block" />
           </div>
           <div>Profile</div>
         </nut-col> -->
-        <nut-col :span="6" @click="changeTab('back')">
-          <div class="customBtn">
-            <img src="@/assets/maxio/back.svg" style="width: 45px; height: 45px; display: inline-block" />
-          </div>
-          <div>Back</div>
-        </nut-col>
-        <nut-col :span="6" @click="visible = true">
-          <div class="customBtn">
-            <img src="@/assets/newIcon/links.png" style="width: 45px; height: 45px; display: inline-block" />
-          </div>
-          <div>Links</div>
-        </nut-col>
-        <nut-col :span="6" @click="contactUs">
-          <div class="customBtn">
-            <img src="@/assets/newIcon/ContactUs.png" style="width: 45px; height: 45px; display: inline-block" />
-          </div>
-          <div>Contact Us</div>
-        </nut-col>
-        <nut-col :span="6" @click="goToPrivacy">
-          <div class="customBtn">
-            <img src="@/assets/newIcon/AboutUs.png" style="width: 45px; height: 45px; display: inline-block" />
-          </div>
-          <div>About </div>
-        </nut-col>
-      </nut-row>
+          <nut-col :span="6" @click="changeTab('back')">
+            <div class="customBtn">
+              <img src="@/assets/maxio/back.svg" style="width: 45px; height: 45px; display: inline-block" />
+            </div>
+            <div>Back</div>
+          </nut-col>
+          <nut-col :span="6" @click="visible = true">
+            <div class="customBtn">
+              <img src="@/assets/newIcon/links.png" style="width: 45px; height: 45px; display: inline-block" />
+            </div>
+            <div>Links</div>
+          </nut-col>
+          <nut-col :span="6" @click="contactUs">
+            <div class="customBtn">
+              <img src="@/assets/newIcon/ContactUs.png" style="width: 45px; height: 45px; display: inline-block" />
+            </div>
+            <div>Contact Us</div>
+          </nut-col>
+          <nut-col :span="6" @click="goToPrivacy">
+            <div class="customBtn">
+              <img src="@/assets/newIcon/AboutUs.png" style="width: 45px; height: 45px; display: inline-block" />
+            </div>
+            <div>About </div>
+          </nut-col>
+        </nut-row>
 
-      <setting @click="changeTab('reward')" v-if="!showSettings">
-        <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
-        <div class="title">Assets</div>
-      </setting>
-      <setting @click="changeTab('setting')" v-if="!showSettings">
-        <img src="@/assets/newIcon/ContactUs.png" style="width: 45px; height: 45px; display: inline-block" />
-        <div class="title">Settings</div>
-      </setting>
+        <setting @click="changeTab('reward')" v-if="!showSettings">
+          <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
+          <div class="title">Assets</div>
+        </setting>
+        <setting @click="changeTab('setting')" v-if="!showSettings">
+          <img src="@/assets/newIcon/ContactUs.png" style="width: 45px; height: 45px; display: inline-block" />
+          <div class="title">Settings</div>
+        </setting>
 
-      <div class="logOutBtn" @click="logout">
-        <span style="margin-left: 45px">Log out</span>
-        <div class="outBnt">
-          <ArrowRight2 color="#5771F9" />
+        <div class="logOutBtn" @click="logout">
+          <span style="margin-left: 45px">Log out</span>
+          <div class="outBnt">
+            <ArrowRight2 color="#5771F9" />
+          </div>
         </div>
       </div>
-    </div>
 
-    <Teleport to="body">
-      <nut-action-sheet v-model:visible="visible" title="Links">
-        <div class="custom-action_sheet">
-          <div @click="choose('dmc')">
-            <img src="@/assets/DMC_token.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
-            <div>DMC</div>
-          </div>
-          <div @click="choose('ipfs')">
-            <img src="@/assets/ipfs.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
-            <!-- <img src="@/assets/DMC_token.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" /> -->
-            <div>IPFS</div>
-          </div>
-          <div @click="choose('foggie')">
-            <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
-            <div>Fog Works</div>
-          </div>
-          <!-- <div @click="choose('pool')">
+      <Teleport to="body">
+        <nut-action-sheet v-model:visible="visible" title="Links">
+          <div class="custom-action_sheet">
+            <div @click="choose('dmc')">
+              <img src="@/assets/DMC_token.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
+              <div>DMC</div>
+            </div>
+            <div @click="choose('ipfs')">
+              <img src="@/assets/ipfs.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
+              <!-- <img src="@/assets/DMC_token.png" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" /> -->
+              <div>IPFS</div>
+            </div>
+            <div @click="choose('foggie')">
+              <img src="@/assets/logo-dog-black.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
+              <div>Fog Works</div>
+            </div>
+            <!-- <div @click="choose('pool')">
             <img src="@/assets/user.svg" style="width: 30px; height: 30px; margin-right: 10px; display: inline-block" />
             <div>Premium Agent</div>
           </div> -->
-          <!-- <div @click="choose('client')">
+            <!-- <div @click="choose('client')">
           <Shop></Shop>
           <div>Cloud Mining Pool Client</div>
         </div> -->
-          <div @click="visible = false"> Cancel </div>
-        </div>
-      </nut-action-sheet>
-    </Teleport>
+            <div @click="visible = false"> Cancel </div>
+          </div>
+        </nut-action-sheet>
+      </Teleport>
+    </div>
   </div>
 </template>
 
@@ -433,10 +435,16 @@
 
 <style lang="scss" scoped>
   .userInfo {
-    margin-left: -4vw;
-    margin-right: -4vw;
+    // margin-left: -4vw;
+    // margin-right: -4vw;
     min-height: 100vh;
     background-color: #fff;
+    height: 100%;
+    width: 100%;
+    background: url('@/assets/maxio/bg1.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
     @keyframes ani {
       0% {
         box-shadow: 0 0 0px #ff8329;
@@ -457,10 +465,10 @@
     .userHeader {
       position: relative;
       padding: 20px 60px;
-      background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding-bottom: 120px;
-      background-image: linear-gradient(135deg, #667eea5c 0%, #6930a3e8 100%);
-      animation: ani 2s linear infinite;
+      //   background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      //   padding-bottom: 120px;
+      //   background-image: linear-gradient(135deg, #667eea5c 0%, #6930a3e8 100%);
+      //   animation: ani 2s linear infinite;
 
       .scanQR {
         display: none;
@@ -627,7 +635,7 @@
       position: relative;
       top: -100px;
       //   height: auto;
-      background-color: #fff;
+      //   background-color: #fff;
       border-radius: 60px 60px 0 0;
       padding: 50px 60px;
       display: flex;
@@ -756,7 +764,7 @@
         width: 70%;
         left: 50%;
         transform: translateX(-50%);
-        background: #4c5093;
+        // background: #4c5093;
         border-radius: 50px;
         text-align: center;
         line-height: 140px;
@@ -772,6 +780,9 @@
         transition: transform 0.3s ease-in-out;
         height: 100px;
         background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background-image: linear-gradient(135deg, #ffffff26 0%, #ffffff52 100%);
+        border: 1px solid #ffffff05;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
         .outBnt {
           width: 60px;
@@ -789,6 +800,20 @@
         transform: translate(5px, 5px);
       }
     }
+  }
+  .user_bg_box {
+    box-sizing: border-box;
+    margin: 0 20px;
+    background: rgba(30, 31, 29, 0.15);
+    border: 1px solid rgba(211, 211, 211, 0.43);
+    box-shadow: 0 0.266667vw 0.533333vw #00000040;
+    border-radius: 18px;
+    color: #fff;
+    padding: 2.666667vw;
+    -webkit-backdrop-filter: blur(5.333333vw);
+    backdrop-filter: blur(5.333333vw);
+    box-sizing: border-box;
+    height: calc(100% - 100px);
   }
 </style>
 <style lang="scss">
