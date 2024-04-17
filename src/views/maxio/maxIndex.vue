@@ -78,11 +78,11 @@
   const router = useRouter();
   const route = useRoute();
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
-  import IconAudio2 from '~icons/home/audio2.svg';
-  import IconImage from '~icons/home/image.svg';
-  import IconDocument from '~icons/home/document.svg';
-  import IconVideo from '~icons/home/video.svg';
-  import IconAllCate from '~icons/home/all-cate.svg';
+  import IconAudio2 from '~icons/home/maudio.svg';
+  import IconImage from '~icons/home/mimage.svg';
+  import IconDocument from '~icons/home/mdoc.svg';
+  import IconVideo from '~icons/home/mvideo.svg';
+  //   import IconAllCate from '~icons/home/all-cate.svg';
   const props = defineProps({
     showLeft: Boolean,
   });
