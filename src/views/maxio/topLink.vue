@@ -1,5 +1,5 @@
 <template>
-  <div class="my-wave-loader">
+  <div class="my-wave-loader" @click="changeHeight" :class="[isHeight ? 'maxHeight' : 'hideHeight']">
     <div class="my-wave_box">
       <div class="my-wave-loader-inner">
         <div class="my-wave-loader-block"></div>
@@ -9,7 +9,7 @@
         <div class="my-wave-loader-block"></div>
         <div class="my-wave-loader-block"></div>
       </div>
-      <div class="text_loading">Connecting...</div>
+      <!-- <div class="text_loading">Connecting...</div> -->
       <div class="my-wave-loader-inner my_second_inner">
         <div class="my-wave-loader-block"></div>
         <div class="my-wave-loader-block"></div>
@@ -38,8 +38,11 @@
   </div>
 </template>
 
-<script>
-  export default {};
+<script setup>
+  const isHeight = ref(false);
+  const changeHeight = () => {
+    isHeight.value = !isHeight.value;
+  };
 </script>
 
 <style lang="scss" scoped>
@@ -106,11 +109,18 @@
     transition: ease 0.2s;
     position: relative;
     background: #222;
+    transition: all 0.9s ease;
+  }
+  .maxHeight {
+    height: 150px;
+  }
+  .hideHeight {
+    height: 50px;
   }
   .my-wave_box {
     width: 70%;
     height: 100%;
-    background: #ffffff2b;
+    // background: #ffffff2b;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -143,7 +153,7 @@
     margin: 4px;
     background-color: #41c0df;
     box-shadow: 0 0 20px #41c0df;
-    animation: my-wave-loader_562 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    animation: my-wave-loader_562 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
   }
   .my_second_inner {
     .my-wave-loader-block {

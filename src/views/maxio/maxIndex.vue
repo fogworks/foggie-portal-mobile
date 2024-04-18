@@ -9,20 +9,18 @@
             <img src="@/assets/maxio/reward2.svg" v-if="item.type === 'ipfs'" />
             <!-- <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" /> -->
           </div>
-          <span class="pool_name">{{ item.name }}</span>
+          <span class="pool_name">{{ item.name }}({{ item.count }})</span>
           <span class="reward_value">{{ item.number }} DMC</span>
         </div>
       </div>
     </div>
-    <div class="maxio_home_card">
+    <!-- <div class="maxio_home_card">
       <div class="maxio_pool_list">
         <div class="maxio_pool_item pool_item_ipfs" v-for="(item, index) in poolList" :key="index">
           <div class="img_bg pool_bg" v-if="item.type === 'pool'" @click="changeTab(item.type)">
-            <!-- <img src="@/assets/maxio/poolIcon.jpg" /> -->
-            <img src="@/assets/maxio/poolUser.svg" />
+            <img src="@/assets/maxio/poolUser1.svg" />
           </div>
           <div class="img_bg iot_bg" v-if="item.type === 'iot'" @click="changeTab(item.type)">
-            <!-- <img src="@/assets/maxio/room.png" /> -->
             <img src="@/assets/maxio/room2.svg" />
           </div>
           <div class="img_bg iot_bg" v-if="item.type === 'ipfs'" @click="changeTab(item.type)">
@@ -31,10 +29,10 @@
           <span class="pool_name">{{ item.name }}({{ item.number }})</span>
         </div>
       </div>
-    </div>
-    <div class="maxio_home_card space_card" @click="changeTab('file')">
+    </div> -->
+    <div class="maxio_home_card space_card">
       <div class="space_card_left"
-        ><MyEcharts style="width: 100%; height: 120px" :options="chartOptions" :showLeft="showLeft"></MyEcharts>
+        ><MyEcharts style="width: 100%; height: 100px" :options="chartOptions" :showLeft="showLeft"></MyEcharts>
       </div>
     </div>
 
@@ -62,10 +60,10 @@
       </div>
     </div>
 
-    <!-- <div class="maxio_home_title">Depins({{ deviceNumber }})</div>
-    <div class="maxio_home_card" @click="changeTab('iot')">
-      <img src="@/assets/maxio/iotList.png" alt="" />
-    </div> -->
+    <!-- <div class="maxio_home_title">Depins({{ deviceNumber }})</div> -->
+    <!-- <div class="maxio_home_card" @click="changeTab('iot')"> -->
+    <img src="@/assets/maxio/maxlist.jpg" alt="" style="width: 100%" />
+    <!-- </div> -->
     <!-- <div class="maxio_home_title">Devices Rewards</div>
     <div class="maxio_home_card maxio_reward_card" @click="changeTab('reward')">
       <img src="@/assets/maxio/rewardLine.png" alt="" />
@@ -97,9 +95,9 @@
   const poolNumber = ref(0);
   const deviceNumber = ref(0);
   const rewardList = ref([
-    { name: 'Minning', number: '100.0000', type: 'pool' },
-    { name: 'IOT', number: '200.0000', type: 'iot' },
-    { name: 'IPFS', number: '20.0000', type: 'ipfs' },
+    { name: 'Minning', number: '100.0000', type: 'pool', count: 2 },
+    { name: 'IOT', number: '200.0000', type: 'iot', count: 4 },
+    { name: 'IPFS', number: '20.0000', type: 'ipfs', count: 1 },
   ]);
   const poolList = ref([
     { name: 'Minning', number: '1', type: 'pool' },
@@ -129,20 +127,21 @@
   chartOptions.value = {
     tooltip: {
       trigger: 'item',
+      show: false,
     },
     legend: {
-      backgroundColor: '#b5baca61',
+      //   backgroundColor: '#b5baca61',
       borderRadius: 5,
       icon: 'circle',
       left: '0',
       orient: 'vertical',
       textStyle: {
         color: '#fff',
-        fontSize: '8px',
+        fontSize: '7px',
         fontWeight: 'bold',
       },
-      itemWidth: 10, // 设置图例标记的宽度
-      itemHeight: 10, // 设置图例标记的高度
+      itemWidth: 8, // 设置图例标记的宽度
+      itemHeight: 8, // 设置图例标记的高度
       itemStyle: {
         borderColor: '#fff', // 边框颜色
         borderWidth: 1, // 边框宽度
@@ -166,7 +165,7 @@
         type: 'pie',
         top: '0%',
         left: '50%',
-        radius: ['60%', '100%'],
+        radius: ['40%', '70%'],
         avoidLabelOverlap: false,
         padAngle: 5,
         itemStyle: {

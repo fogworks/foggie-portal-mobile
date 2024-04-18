@@ -17,17 +17,20 @@
             <img src="@/assets/maxio/maxio.png" alt="" />
             <div class="title_text">
               <div class="max_name"> {{ currentBucketData.dedicatedip || 'MAX IO-' + currentBucketData.id }}</div>
+              <div class="max_name"> MAXIO-001</div>
             </div>
           </div>
           <div class="maxio_title" v-if="showBucket">
             <img src="@/assets/home_bucket.png" alt="" />
             <div class="title_text">
               <div class="max_name"> {{ currentBucketData.domain || 'Order' + currentBucketData.order_id }}</div>
+              <div class="max_name"> Bucket-001</div>
             </div>
           </div>
         </div>
         <div class="maxio_img">
-          <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" class="user_img" />
+          <!-- <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" class="user_img" /> -->
+          <!-- <icon-img></icon-img> -->
         </div>
       </div>
       <div class="maxio_home_content">
@@ -81,6 +84,7 @@
   import maxIndex from './maxIndex.vue';
   import sd from './sd.vue';
   import topLink from './topLink.vue';
+  import iconImg from './iconImg.vue';
   import useOrderList from './useAllOrderList.ts';
   import { search_cloud } from '@/api';
   import { useUserStore } from '@/store/modules/user';

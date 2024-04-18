@@ -55,14 +55,20 @@
     display: flex;
     align-items: center;
     background: #ffffff82;
+    background: rgb(255 255 255 / 30%);
     padding: 20px;
-    border-radius: 20px;
+    border-radius: 26px;
+  }
+  .max_name {
+    // font-weight: normal;
+    font-size: 26px;
+    color: #71d1e0;
   }
   .maxio_img {
     width: 70px;
     height: 70px;
     background: transparent;
-    border: 0.1px solid #fff;
+    // border: 0.1px solid #fff;
     border-radius: 30%;
     display: flex;
     align-items: center;
@@ -100,14 +106,14 @@
 }
 
 .maxio_home_content {
-  margin-top: 40px;
-  height: calc(100% - 100px);
+  margin-top: 20px;
+  //   height: calc(100% - 100px);
   display: flex;
-  align-items: center;
+  //   align-items: center;
   justify-content: space-between;
 }
 .maxio_home_leftMenu {
-  box-shadow: #d3d3eb 0px -3px 8px 4px;
+  box-shadow: #d3d3eb 0px -3px 8px 2px;
   transition: all 0.8s;
   padding: 20px 0;
   width: 100px;
@@ -201,11 +207,11 @@
   width: 100%;
   //   background: rgb(181 186 202 / 38%);
   background: rgb(181 186 202 / 11%);
-  background: rgb(8 8 10 / 15%);
+  background: rgb(8 8 10 / 33%);
   //   height: 300px;
   border-radius: 30px;
-  margin-bottom: 20px;
-  padding: 20px 0;
+  margin-bottom: 16px;
+  padding: 16px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -216,12 +222,25 @@
   //   border-radius: 37px;
   border: 3px solid transparent;
   border-radius: 16px;
-  background-clip: padding-box, border-box;
-  background-origin: padding-box, border-box;
-  background-image: linear-gradient(to right, #222, #222), linear-gradient(90deg, #8f41e9, #578aef);
+  background: rgb(255 255 255 / 33%);
+  // background-clip: padding-box, border-box;
+  // background-origin: padding-box, border-box;
+  // background-image: linear-gradient(to right, #222, #222), linear-gradient(90deg, #8f41e9, #578aef);
   img {
     width: 100%;
   }
+}
+.maxio_home_card::after {
+  background: repeating-linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(64, 144, 181, 0.6) 1px,
+      rgb(0, 0, 0) 3px,
+      rgba(64, 144, 181, 0.3019607843) 5px,
+      #153544 4px,
+      transparent 0.5%
+    ),
+    repeating-linear-gradient(to left, hsl(295, 60%, 12%) 100%, hsla(295, 60%, 12%, 0.99) 100%);
 }
 .maxio_reward_card {
   padding: 20px;

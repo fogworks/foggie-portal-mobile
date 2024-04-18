@@ -5,7 +5,7 @@
         <div class="card_border_box">
           <div class="card-sd_title">
             <span class="sd_title">
-              e632-7277...b8aeabcf
+              e6bd ... abcf
               <!-- <nut-noticebar :text="text" background="transparent" color="#fff" :left-icon="false" /> -->
             </span>
           </div>
@@ -46,29 +46,18 @@
     flex-direction: column;
     gap: 1em;
     width: 100%;
+    // height: 100%;
   }
 
   .card-sd_container {
-    filter: drop-shadow(46px 36px 24px #4090b5) drop-shadow(-55px -40px 25px #9e30a9);
-    animation: blinkShadowsFilter 3s ease-in infinite;
+    // filter: drop-shadow(46px 36px 24px #4090b5) drop-shadow(-55px -40px 25px #9e30a9);
+    // animation: blinkShadowsFilter 3s ease-in infinite;
     width: 100%;
-  }
-  .card_border_box {
-    padding: 60px 20px 20px 30px;
-    width: 100%;
-    height: 100%;
-    width: calc(100% - 80px);
-    height: calc(100% - 40px);
-    position: relative;
-    box-sizing: border-box;
-    overflow-y: scroll;
-    border: 1px solid #fff;
-    margin: 20px;
-    -webkit-clip-path: polygon(0 0, 94% 0, 100% 0%, 100% 100%, 86% 116%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
-    clip-path: polygon(0 0, 94% 0, 100% 0%, 100% 100%, 86% 116%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    // height: 100%;
   }
 
   .card-content {
+    position: relative;
     // padding: 50px 40px 20px 30px;
     // padding: 60px 60px 20px 30px;
     display: flex;
@@ -77,12 +66,38 @@
     text-align: center;
     background-color: hsl(296, 59%, 10%);
     width: 100%;
+    height: 100%;
     box-sizing: border-box;
     aspect-ratio: 9/16;
     // -webkit-clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
     // clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
     -webkit-clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
     clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    // border: 3px solid #15b8df;
+    background-color: hsl(296deg 59% 10% / 39%);
+    // box-shadow: #ffd700 0px 0px 1.066667vw;
+    border: 2px solid #ffffff61;
+    border-radius: 8px;
+    box-shadow: #d3d3eb 0px -0.4vw 1.066667vw 0.533333vw;
+  }
+  .card_border_box {
+    z-index: 1;
+    padding: 70px 0px 20px 10px;
+    margin: 0px 0px 0px 10px;
+    width: 100%;
+    height: 100%;
+    width: calc(100% - 60px);
+    height: calc(100% - 40px);
+    position: relative;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    // border: 1px solid #fff;
+
+    // -webkit-clip-path: polygon(0 0, 94% 0, 100% 0%, 100% 100%, 86% 116%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    // clip-path: polygon(0 0, 94% 0, 100% 0%, 100% 100%, 86% 116%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    // border: 1px solid #ffffffab;
+    border-radius: 10px;
+    // margin: 2.666667vw;
   }
 
   .card-content::before {
@@ -101,7 +116,7 @@
     // position: absolute;
     // top: 1%;
     // left: 1%;
-    // width: 98%;
+    // width: 99%;
     // height: 98%;
     // background: repeating-linear-gradient(
     //     to bottom,
@@ -137,9 +152,17 @@
         rgba(255, 255, 255, 0) 96%,
         rgba(102, 224, 255, 0.3) 100%
       );
+    background: linear-gradient(
+        90deg,
+        rgba(255, 254, 250, 0) 0%,
+        rgb(189 228 238 / 30%) 27%,
+        rgb(157 181 187 / 30%) 63%,
+        rgba(255, 255, 255, 0) 100%
+      ),
+      linear-gradient(0deg, rgb(160 174 178 / 30%) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 96%, rgb(167 213 225 / 30%) 100%);
     width: 98%;
     position: absolute;
-    top: 2px;
+    top: 0px;
     left: 0;
   }
 
@@ -150,12 +173,16 @@
     position: relative;
     z-index: 2;
     color: hsl(192, 100%, 88%);
-    font-size: 1em;
+    font-size: 1.2em;
     transition: all ease-in-out 2s linear;
     font-style: normal;
-    background: rgba(13, 13, 13, 0.38);
-    color: hsl(210deg 9.33% 50.33%);
-    text-shadow: 0 1px 1px hsla(0, 0%, 100%, 0.8);
+    // background: rgba(13, 13, 13, 0.38);
+    // color: hsl(210deg 9.33% 50.33%);
+    // text-shadow: 0 1px 1px hsla(0, 0%, 100%, 0.8);
+    background: rgb(13 13 13 / 0%);
+    color: hsl(210deg 9.33% 50.33% / 53%);
+    text-shadow: 0 1px 1px hsl(0deg 0% 100% / 70%);
+    letter-spacing: 8px;
   }
 
   .card-body {

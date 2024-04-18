@@ -13,8 +13,8 @@
 
     width: 50%;
     .img_bg {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
 
       //   background-image: linear-gradient(215deg, #fcc5e4 0%, #fda34b 15%, #ff7882 35%, #c8699e 52%, #7046aa 71%, #0c1db8 87%, #020f75 100%);
       border-radius: 20px;
@@ -25,14 +25,14 @@
       background: #ffffff54;
       img {
         // animation: poolChange 1s linear alternate infinite;
-        animation: iotChange 2s linear alternate infinite;
+        // animation: iotChange 2s linear alternate infinite;
       }
     }
     .iot_bg {
       background: #ffffff54;
       //   background-image: linear-gradient(103deg, #f83600 0%, #f9d423 100%);
       img {
-        animation: iotChange 2s linear alternate infinite;
+        // animation: iotChange 2s linear alternate infinite;
       }
     }
     .reward_bg {
@@ -47,15 +47,18 @@
       }
     }
     .pool_name {
-      margin: 16px 0;
+      margin: 16px 0 0 0;
       font-weight: bold;
       white-space: nowrap;
+      font-style: normal;
     }
     .reward_value {
       font-style: normal;
       font-weight: bold;
       color: #fac858;
-      font-size: 18px;
+      font-size: 14px;
+      margin-top: 10px;
+      white-space: nowrap;
     }
     .pool_number {
       font-size: 20px;
@@ -97,15 +100,16 @@
       height: 80px;
       line-height: 30px;
       border-bottom: 0.5px dashed #6f7681;
-      padding: 5px;
+      padding: 10px 5px;
       .file_name {
         font-size: 22px;
         text-align: left;
         font-style: normal;
-        margin-bottom: 4px;
+        // margin-bottom: 4px;
       }
       .file_size {
         display: flex;
+        // flex-direction: column;
         font-size: 16px;
 
         font-style: normal;
@@ -114,7 +118,8 @@
         }
         .file_number {
           font-weight: bold;
-          // font-weight: normal;
+          font-weight: normal;
+          font-size: 14px;
         }
         .file_space {
           margin-right: 8px;
@@ -123,7 +128,7 @@
       }
       .svg_box {
         text-align: center;
-        margin-right: 10px;
+        margin-right: 6px;
 
         svg {
           width: 40px;
