@@ -43,6 +43,8 @@ export default function useAllOrderList() {
     const orderStore = useOrderStore();
     const useStore = useUserStore();
     const listData = ref([] as any);
+    const historyData = ref([] as any);
+    const runningData = ref([] as any);
     const maxTableData = ref([]);
     const total = ref(0);
     const hasMore = computed(() => {
@@ -94,11 +96,18 @@ export default function useAllOrderList() {
                         }
                         return true;
                     }) || [];
+
                 // pn.value++;
                 // listData.value = [...listData.value, ...cloudList];
 
                 cloudList.sort((a, b) => a.state - b.state);
                 listData.value = [...cloudList];
+                historyData.value = listData.value.filter((s) => {
+                    return [4, 5].includes(s.state)
+                }) || [];
+                runningData.value = listData.value.filter((s) => {
+                    return [0, 1, 2, 3, 6].includes(s.state)
+                }) || [];
                 infinityValue.value = false;
                 isError.value = false;
                 if (getUsedSpace) {
@@ -202,5 +211,8 @@ export default function useAllOrderList() {
         infinityValue,
         shortcuts,
         total,
+        maxTableData,
+        historyData,
+        runningData
     };
 }

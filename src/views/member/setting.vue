@@ -27,11 +27,15 @@
     background: transparent;
     box-shadow: 0px 8px 28px -9px rgba(0, 0, 0, 0.45);
     position: relative;
-    width: 240px;
-    height: 200px;
-    border-radius: 16px;
+    width: 200px;
+    height: 180px;
+    border-radius: 50px;
     overflow: hidden;
     border: 1px solid #ffffff2b;
+    box-shadow:
+      rgba(0, 0, 0, 0.4) 0px 2px 4px,
+      rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
+      rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
   }
 
   .my_wave {
@@ -43,10 +47,10 @@
     top: 0;
     margin-left: -50%;
     margin-top: -70%;
-    background: linear-gradient(744deg, #af40ff, #5b42f3 60%, #00ddeb);
-    background: linear-gradient(744deg, #892ecb, #a49ae0 60%, #080b0c);
-    background: linear-gradient(744deg, #e448a2, #1f27df 60%, #080b0c);
-    background: linear-gradient(744deg, #e448a270, #a49ae063 60%, #080b0c63);
+    // background: linear-gradient(744deg, #af40ff, #5b42f3 60%, #00ddeb);
+    // background: linear-gradient(744deg, #892ecb, #a49ae0 60%, #080b0c);
+    // background: linear-gradient(744deg, #e448a2, #1f27df 60%, #080b0c);
+    background: linear-gradient(744deg, #ffffff52, rgb(164 154 224 / 18%) 60%, #ca5891);
   }
 
   .my_icon {

@@ -56,13 +56,18 @@
     align-items: center;
     background: #ffffff82;
     background: rgb(255 255 255 / 30%);
-    padding: 20px;
+    padding: 10px 20px;
     border-radius: 26px;
+    .title_text {
+      display: flex;
+      flex-wrap: nowrap;
+    }
   }
   .max_name {
     // font-weight: normal;
     font-size: 26px;
     color: #71d1e0;
+    white-space: nowrap;
   }
   .maxio_img {
     width: 70px;
@@ -114,7 +119,6 @@
 }
 .maxio_home_leftMenu {
   box-shadow: #d3d3eb 0px -3px 8px 2px;
-  transition: all 0.8s;
   padding: 20px 0;
   width: 100px;
   background: rgb(181 186 202 / 38%);
@@ -125,7 +129,37 @@
   align-items: center;
   box-sizing: border-box;
   overflow-y: scroll;
+  overflow-x: hidden;
   z-index: 99;
+  .isShowMaxio {
+    transition: all 0.8s;
+    // transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+    // height: auto;
+    // opacity: 1;
+    // transform: translateY(0);
+    &.showMax {
+      opacity: 1;
+      height: auto;
+      transform: translateY(0);
+    }
+    &.hideMax {
+      opacity: 0;
+      height: 0;
+      transform: translateY(-500px);
+    }
+  }
+  .left_max_png {
+    object-fit: cover;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    padding: 10px;
+    border: 0.266667vw solid #ffffff69;
+    cursor: pointer;
+    box-shadow:
+      rgba(0, 0, 0, 0.4) 0px 2px 4px,
+      rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
+      rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+  }
   .menu_img {
     margin: 10px 0;
     cursor: pointer;
@@ -199,7 +233,8 @@
 .bucket_img {
   width: 100%;
 }
-.left_max_png {
+
+.left_max_pngs {
   transform: scale(1.3);
 }
 .maxio_home_card {
@@ -280,6 +315,15 @@
   background-color: #222;
   border-radius: 6px;
   //  transform: rotateZ(54deg);
+}
+.history .watermark {
+  background-color: transparent;
+  top: -10px;
+  right: 0px;
+  .small {
+    width: 50px;
+    height: 50px;
+  }
 }
 
 //common

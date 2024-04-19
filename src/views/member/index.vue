@@ -84,7 +84,7 @@
         </div>
       </div> -->
 
-        <nut-row class="buttonContent" v-if="showSettings">
+        <nut-row class="buttonContent" :class="[showSettings ? 'showSettings' : 'hideSettings']">
           <!-- <nut-col :span="6" @click="gotoDetail('/personalInfo')">
           <div class="customBtn">
             <img src="@/assets/newIcon/userInfo.png" style="width: 45px; height: 45px; display: inline-block" />
@@ -92,7 +92,7 @@
           <div>Profile</div>
         </nut-col> -->
           <nut-col :span="6" @click="changeTab('back')">
-            <div class="customBtn">
+            <div class="customBtn backbtn">
               <img src="@/assets/maxio/back.svg" style="width: 45px; height: 45px; display: inline-block" />
             </div>
             <div>Back</div>
@@ -117,14 +117,24 @@
           </nut-col>
         </nut-row>
 
-        <setting @click="changeTab('reward')" v-if="!showSettings">
-          <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
-          <div class="title">Assets</div>
-        </setting>
-        <setting @click="changeTab('setting')" v-if="!showSettings">
-          <img src="@/assets/newIcon/ContactUs.png" style="width: 45px; height: 45px; display: inline-block" />
-          <div class="title">Settings</div>
-        </setting>
+        <div class="router_list" v-if="!showSettings">
+          <setting @click="gotoDetail('/assetsInfo')">
+            <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
+            <div class="title">Assets</div>
+          </setting>
+          <setting @click="changeTab('setting')">
+            <img src="@/assets/maxio/cs.svg" style="width: 45px; height: 45px; display: inline-block" />
+            <div class="title">About</div>
+          </setting>
+          <setting @click="router.push('/shop')">
+            <img src="@/assets/maxio/shop.svg" style="width: 45px; height: 45px; display: inline-block" />
+            <div class="title">Shop</div>
+          </setting>
+          <setting @click="router.push('/nft')">
+            <img src="@/assets/maxio/nft.svg" style="width: 45px; height: 45px; display: inline-block" />
+            <div class="title">NFT</div>
+          </setting>
+        </div>
 
         <div class="logOutBtn" @click="logout">
           <span style="margin-left: 45px">Log out</span>
@@ -465,6 +475,7 @@
     .userHeader {
       position: relative;
       padding: 20px 60px;
+      margin-bottom: 60px;
       //   background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       //   padding-bottom: 120px;
       //   background-image: linear-gradient(135deg, #667eea5c 0%, #6930a3e8 100%);
@@ -712,6 +723,7 @@
       .title {
         font-size: 26px;
         color: #000;
+        color: #fff;
         // display: grid;
         // grid-template-columns: auto 80px;
         font-style: italic;
@@ -720,6 +732,7 @@
       }
 
       .buttonContent {
+        transition: all 0.8s;
         .customBtn {
           width: 100px;
           height: 100px;
@@ -729,6 +742,14 @@
           justify-content: center;
           align-items: center;
           transition: transform 0.3s ease-in-out;
+        }
+        .backbtn {
+          border: 4px solid #fff6;
+          background: transparent;
+          box-shadow:
+            rgba(0, 0, 0, 0.4) 0px 2px 4px,
+            rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
+            rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
         }
 
         .customBtn:active {
@@ -750,12 +771,22 @@
             text-align: center;
             letter-spacing: 0px;
             color: #151940;
+            white-space: nowrap;
+            color: #fff;
             user-select: none;
             word-wrap: break-word !important;
             word-break: normal;
             text-align: center;
           }
         }
+      }
+      .showSettings {
+        opacity: 1;
+        width: 100%;
+      }
+      .hideSettings {
+        opacity: 0;
+        width: 0;
       }
 
       .logOutBtn {
@@ -814,6 +845,17 @@
     backdrop-filter: blur(5.333333vw);
     box-sizing: border-box;
     height: calc(100% - 100px);
+  }
+  .router_list {
+    width: 100%;
+    flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    justify-content: space-between;
+    .e-card {
+      margin: 20px;
+    }
   }
 </style>
 <style lang="scss">

@@ -17,14 +17,14 @@
             <img src="@/assets/maxio/maxio.png" alt="" />
             <div class="title_text">
               <div class="max_name"> {{ currentBucketData.dedicatedip || 'MAX IO-' + currentBucketData.id }}</div>
-              <div class="max_name"> MAXIO-001</div>
+              <div class="max_name"> （MAXIO-001）</div>
             </div>
           </div>
           <div class="maxio_title" v-if="showBucket">
             <img src="@/assets/home_bucket.png" alt="" />
             <div class="title_text">
               <div class="max_name"> {{ currentBucketData.domain || 'Order' + currentBucketData.order_id }}</div>
-              <div class="max_name"> Bucket-001</div>
+              <div class="max_name"> （Bucket-001）</div>
             </div>
           </div>
         </div>
@@ -35,30 +35,63 @@
       </div>
       <div class="maxio_home_content">
         <div class="maxio_home_leftMenu" :class="[showLeft ? '' : 'minWidth']" ref="listRef">
-          <div
-            v-for="(item, index) in leftBucketList"
-            @click="changeMenu(item)"
-            :key="index"
-            :class="[
-              (item.device_type == 3 && currentBucketData.uuid === item.uuid) ||
-              (item.device_type == 'maxio' && currentBucketData.id === item.id)
-                ? 'active_img'
-                : '',
-              'menu_img',
-            ]"
-          >
-            <div class="image-container" v-if="item.device_type == 3 && [4, 5].includes(item.state)" alt="">
-              <img src="@/assets/home_bucket.png" />
-              <div class="watermark">History</div>
+          <!-- home_bucket000 -->
+          <div class="menu_img" @click="changeList('maxio')">
+            <img src="@/assets/maxio/maxio_name.png" class="left_max_png" />
+          </div>
+          <div class="isShowMaxio" :class="[isShowMaxio ? 'showMax' : 'hideMax']">
+            <div
+              v-for="(item, index) in maxTableData"
+              @click="changeMenu(item)"
+              :key="index"
+              :class="[item.device_type == 'maxio' && currentBucketData.id === item.id ? 'active_img' : '', 'menu_img']"
+            >
+              <img src="@/assets/maxio/maxio.png" alt="" class="left_max_pngs" />
+              <div class="title_text" v-if="item.device_type === 'maxio'">{{ item.dedicatedip || 'MAX IO' + item.index + 1 }}</div>
             </div>
+          </div>
 
-            <img src="@/assets/home_bucket.png" v-if="item.device_type == 3 && [0, 1, 2, 3, 6].includes(item.state)" alt="" />
-            <img src="@/assets/maxio/maxio.png" v-if="item.device_type == 'maxio'" alt="" class="left_max_png" />
+          <!-- home_bucket111 -->
+          <div class="menu_img" @click="changeList('bucket')">
+            <img src="@/assets/maxio/hbucket.svg" class="left_max_png" />
+          </div>
+          <div class="isShowMaxio" :class="[isShowBucket ? 'showMax' : 'hideMax']">
+            <div
+              v-for="(item, index) in runningDataCy"
+              @click="changeMenu(item)"
+              :key="index"
+              :class="[item.device_type == 3 && currentBucketData.uuid === item.uuid ? 'active_img' : '', 'menu_img']"
+            >
+              <img src="@/assets/home_bucket.png" alt="" />
+              <div class="title_text">{{ item.domain || 'Order' + item.order_id }}</div>
+            </div>
+          </div>
 
-            <div class="title_text" v-if="item.device_type !== 'maxio'">{{ item.domain || 'Order' + item.order_id }}</div>
-            <div class="title_text" v-if="item.device_type === 'maxio'">{{ item.dedicatedip || 'MAX IO' + item.index + 1 }}</div>
+          <!-- home_bucket222 -->
+          <div class="menu_img" @click="changeList('history')">
+            <div class="image-container history">
+              <img src="@/assets/maxio/hbucket.svg" class="left_max_png" />
+              <div class="watermark">
+                <img src="@/assets/maxio/history.svg" class="small" />
+              </div>
+            </div>
+          </div>
+          <div class="isShowMaxio" :class="[isShowHistory ? 'showMax' : 'hideMax']">
+            <div
+              v-for="(item, index) in historyDataCy"
+              @click="changeMenu(item)"
+              :key="index"
+              :class="[item.device_type == 3 && currentBucketData.uuid === item.uuid ? 'active_img' : '', 'menu_img']"
+            >
+              <div class="image-container" alt="">
+                <img src="@/assets/home_bucket.png" />
+                <div class="watermark">History</div>
+              </div>
+              <div class="title_text">{{ item.domain || 'Order' + item.order_id }}</div>
+            </div>
           </div>
         </div>
+
         <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="!showBucket" :class="[showLeft ? 'maxWidth' : '']">
           <sd>
             <max-index :showLeft="showLeft"></max-index>
@@ -91,20 +124,61 @@
   const userStore = useUserStore();
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
   let currentBucketData = ref({});
+  const isShowMaxio = ref(false);
+  const isShowBucket = ref(false);
+  const isShowHistory = ref(false);
   const state = reactive({
     showBucket: false,
     cloudQuery: {},
   });
   const { cloudQuery, showBucket } = toRefs(state);
-  const { resetData, loadMore, allOrderList, hasMore, infinityValue, total } = useOrderList();
+  const { resetData, loadMore, allOrderList, hasMore, infinityValue, total, maxTableData, historyData, runningData } = useOrderList();
   const router = useRouter();
   const route = useRoute();
   const showLeft = ref(false);
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
+  //   const leftBucketList = ref([]);
+  const maxTableDataCy = ref([]);
+  const runningDataCy = ref([]);
+  const historyDataCy = ref([]);
   const leftBucketList = computed(() => {
+    console.log(allOrderList.value, 'allOrderList.value');
     return allOrderList.value;
   });
+  //   const maxTableDataCy = computed(() => {
+  //     return maxTableData.value;
+  //   });
+  //   const runningDataCy = computed(() => {
+  //     return runningData.value;
+  //   });
+  //   const historyDataCy = computed(() => {
+  //     return historyData.value;
+  //   });
 
+  const changeList = (type) => {
+    if (type === 'maxio') {
+      isShowMaxio.value = !isShowMaxio.value;
+    } else if (type === 'bucket') {
+      isShowBucket.value = !isShowBucket.value;
+    } else if (type === 'history') {
+      isShowHistory.value = !isShowHistory.value;
+    }
+    if (isShowMaxio.value) {
+      maxTableDataCy.value = [...maxTableData.value];
+    } else {
+      maxTableDataCy.value = [];
+    }
+    if (isShowBucket.value) {
+      runningDataCy.value = [...runningData.value];
+    } else {
+      runningDataCy.value = [];
+    }
+    if (isShowHistory.value) {
+      historyDataCy.value = [...historyData.value];
+    } else {
+      historyDataCy.value = [];
+    }
+  };
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
   };
@@ -138,6 +212,7 @@
     // bucketName.value = item.domain
     window.localStorage.homeChooseBucket = JSON.stringify(item);
     if (item.device_type === 3) {
+      //   changeList('bucket');
       currentBucketData.value = item;
       cloudQuery.value = {
         id: item.order_id,
@@ -147,6 +222,7 @@
       };
       showBucket.value = true;
     } else {
+      //   changeList('maxio');
       showBucket.value = false;
       currentBucketData.value = item;
     }
@@ -170,6 +246,22 @@
   const gotoBucketDetail = (item) => {
     router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });
   };
+  const initSetBucket = () => {
+    // setBucket(leftBucketList.value && leftBucketList.value[0]);
+    showBucket.value = true;
+    console.log(window.localStorage.homeChooseBucke, 'window.localStorage.homeChooseBucke');
+    if (window.localStorage.homeChooseBucket) {
+      setBucket(JSON.parse(window.localStorage.homeChooseBucket));
+    } else if (leftBucketList.value.length) {
+      //   let bucketList = leftBucketList.value.filter((el) => el.domain);
+      let bucketList = leftBucketList.value;
+      if (bucketList.length) {
+        setBucket(bucketList[0]);
+      } else {
+        showToast.text('Please select a bucket and set the bucket name.');
+      }
+    }
+  };
   watch(leftBucketList, (val) => {
     if (val.length > 0) {
       showLeft.value = true;
@@ -183,20 +275,7 @@
       if (val) {
         userStore.setambRefuse(false);
         await loadMoreFun();
-        // setBucket(leftBucketList.value && leftBucketList.value[0]);
-        showBucket.value = true;
-        console.log(window.localStorage.homeChooseBucke, 'window.localStorage.homeChooseBucke');
-        if (window.localStorage.homeChooseBucket) {
-          setBucket(JSON.parse(window.localStorage.homeChooseBucket));
-        } else if (leftBucketList.value.length) {
-          //   let bucketList = leftBucketList.value.filter((el) => el.domain);
-          let bucketList = leftBucketList.value;
-          if (bucketList.length) {
-            setBucket(bucketList[0]);
-          } else {
-            showToast.text('Please select a bucket and set the bucket name.');
-          }
-        }
+        initSetBucket();
       }
     },
     {
