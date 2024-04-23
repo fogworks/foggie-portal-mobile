@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-  import { ref, toRefs, computed } from 'vue';
+  import { ref, toRefs, computed, onMounted } from 'vue';
   const router = useRouter();
   const route = useRoute();
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
@@ -80,11 +80,14 @@
   import IconImage from '~icons/home/mimage.svg';
   import IconDocument from '~icons/home/mdoc.svg';
   import IconVideo from '~icons/home/mvideo.svg';
+  import getList from './getList.ts';
+  const { getMyList, myPoolList, myIotList } = getList();
   //   import IconAllCate from '~icons/home/all-cate.svg';
   const props = defineProps({
     showLeft: Boolean,
   });
   const showLeft = ref();
+  const currentTabItem = ref({});
   watch(
     () => props.showLeft,
     (val) => {
@@ -208,6 +211,10 @@
       router.push({ path: '/maxio' });
     }
   };
+  onMounted(() => {
+    currentTabItem.value = JSON.parse(window.localStorage.homeChooseBucket);
+    getMyList(currentTabItem.value);
+  });
 </script>
 
 <style lang="scss" scoped>

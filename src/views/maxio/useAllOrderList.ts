@@ -1,4 +1,4 @@
-import { search_cloud, get_order_sign, search_max } from '@/api';
+import { search_cloud, get_order_sign, search_max, searchDeviceEarningsAPI } from '@/api';
 import { useOrderStore } from '@/store/modules/order';
 import { showToast } from '@nutui/nutui';
 import '@nutui/nutui/dist/packages/toast/style';
@@ -199,6 +199,75 @@ export default function useAllOrderList() {
                     }
                 });
             });
+        });
+    };
+    let params1 = {
+        device_id: "",
+        asset_type: "miner_pool",
+        start_time: "",
+        end_time: "",
+        cycle: "",
+        bucket: "",
+        iot_device_id: "",
+        total: true,
+    };
+    let params2 = {
+        device_id: "",
+        asset_type: "iot",
+        start_time: "",
+        end_time: "",
+        cycle: "",
+        bucket: "",
+        iot_device_id: "",
+        total: true,
+    };
+    searchDeviceEarningsAPI(params1).then((results) => {
+        console.log(results, 'pool111');
+        // if (res && res.result && res.result.counts) {
+        //     totalMinerReward.value = res.result.counts;
+        //     rewardObject.value.value = totalMinerReward.value;
+        // }
+    });
+    searchDeviceEarningsAPI(params2).then((res) => {
+        console.log(res, 'iot222');
+        // if (res && res.result && res.result.counts) {
+        //   totalIotReward.value = res.result.counts;
+        //   rewardObject1.value.value = totalMinerReward.value;
+        // }
+    });
+    const getTotalReward = (deviceData) => {
+        let params1 = {
+            device_id: deviceData.value.device_id,
+            asset_type: "miner_pool",
+            start_time: "",
+            end_time: "",
+            cycle: "",
+            bucket: "",
+            iot_device_id: "",
+            total: true,
+        };
+
+        let params2 = {
+            device_id: deviceData.value.device_id,
+            asset_type: "iot",
+            start_time: "",
+            end_time: "",
+            cycle: "",
+            bucket: "",
+            iot_device_id: "",
+            total: true,
+        };
+
+        searchDeviceEarningsAPI(params1).then((res) => {
+            // if (res && res.result && res.result.counts) {
+            //     totalMinerReward.value = res.result.counts;
+            // }
+        });
+
+        searchDeviceEarningsAPI(params2).then((res) => {
+            // if (res && res.result && res.result.counts) {
+            //     totalIotReward.value = res.result.counts;
+            // }
         });
     };
     return {

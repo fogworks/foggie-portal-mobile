@@ -86,6 +86,8 @@ message PutObjectRequest {
   bool stageOnly = 5;
   int32 category = 6;
   string tags = 7;
+  string rhash = 8;
+  string acl = 9;
 }
 
 message PutObjectReq {
@@ -140,6 +142,7 @@ message GetRequest {
   string key = 3;
   RangeRequest range = 4;
   bool thumb =5;
+  string pwd = 6;
 }
 
 message ObjectInfo {
@@ -280,6 +283,7 @@ message Object{
   repeated NFTInfo nftInfos = 16;
   repeated Pinning pinning = 17;
     ImageInfo images = 18;
+    string thumb = 19;
 }
 
 message PrefixPin{
@@ -355,30 +359,12 @@ message PinReq{
   PinPay pay = 3;
 }
 
-message PeerInfo{
-  Header header = 1;
-}
-message PeerIds {
-  repeated string ids = 1;
-}
-message PeerInfoResp{
-  repeated Header  peerInfos= 1;
-}
-message DeletePeerIdResp{
-  string status = 1;
-  string  id = 2;
-}
-message DeletePeerIdsResp {
-  repeated DeletePeerIdResp deletes = 1;
-}
-
 message PingRequest {
   Header header = 1;
 }
 message PingResponse {
   string peerID = 1;
 }
-
 message PingMinerRequest {
   Header header = 1;
   string  orderID = 2;
@@ -567,18 +553,129 @@ message UpdateNFTResp {
   string status = 1;
 }
 
+message Category {
+  int32 category = 1;
+  int64 total = 2;
+  int64 count = 3;
+}
+message Prefix {
+  string prefix = 1;
+  int64 total = 2;
+  int64 count = 3;
+}
+message StatisticsInfo{
+  repeated Category categories = 1;
+  repeated Prefix prefixes = 2;
+  Category categorySum = 3;
+  Prefix prefixSum = 4;
+}
+message RequestStatistics {
+  Header header = 1;
+  string prefix = 2;
+  bool needPrefix = 3;
+}
+message GetCarMetaRequest {
+  Header header = 1;
+  string Name = 2;
+  string cid = 3;
+  string pwd = 4;
+}
+message GetCarMetaResponse {
+  bytes meta= 1;
+  string status = 2;
+}
+message GetBlockResponse {
+  bytes chunk= 1;
+  string status = 2;
+}
+message GetBlockRequest {
+  Header header = 1;
+  string cid = 2;
+  string pwd = 3;
+}
+message TargetPeer {
+  string multiAddr = 1;
+  string access = 2;
+  string id = 3;
+}
+message FetchRequest {
+  Header header = 1;
+  string url = 2;
+  string name = 3;
+  bytes meta = 4;
+  repeated TargetPeer origins  = 5;
+  string pwd = 6;
+}
+message GExtractCode {
+  Header header = 1;
+  string cid = 2;
+  string key = 3;
+  string exp = 4;
+}
+message FetchPinningRequest {
+  Header header = 1;
+  string pinningId = 2;
+}
+message FetchPinningResponse {
+  string  status = 1;
+}
+message GExtractCodeResp {
+  string extractCode = 1;
+  string state = 2;
+  string cid = 3;
+}
+message FetchResponse {
+  string status = 1;
+}
+message PInfo {
+  string cid = 1;
+  string status = 2;
+  uint64 averageSpeed = 3;
+  uint64 size  =4;
+  uint64 firstByte = 5;
+  uint64 duration  = 6;
+  string provider = 7;
+  int32 idx = 8;
+
+}
+message PinningInfo {
+  string requestID = 1;
+  string status = 2;
+  string Created = 3;
+  repeated PInfo pins = 4;
+  string name = 5;
+  int32 fsType =6;
+  int32 operType = 7;
+  uint64 averageSpeed = 8;
+}
+
+message PinningListRequest {
+  Header header = 1;
+  string status = 2;
+  string pinType = 3;
+  string before = 4;
+  string after = 5;
+  int32 limit = 6;
+  string match = 7;
+  repeated string cids = 8;
+
+}
+message PinningResp {
+ repeated PinningInfo pinnings = 1;
+}
 service API {
   rpc Pin(PinReq)returns(PinResp){}
   rpc PingMiner(PingMinerRequest)returns(PingMinerResponse){}
   rpc Ping(PingRequest)returns(PingResponse){}
-  rpc AddPeerStore(PeerInfo)returns(PeerInfoResp){}
-  rpc DelPeerStore(PeerIds)returns(DeletePeerIdResp){}
-  rpc ListPeerStoreInfos(PeerIds)returns (PeerInfoResp){}
+//  rpc AddPeerStore(PeerInfo)returns(PeerInfoResp){}
+//  rpc DelPeerStore(PeerIds)returns(DeletePeerIdResp){}
+//  rpc ListPeerStoreInfos(PeerIds)returns (PeerInfoResp){}
 
   rpc GetHostID(GetHostIDRequest) returns(GetHostIDReply){}
   rpc GetToken(stream GetTokenRequest)returns(stream GetTokenReply){}
   rpc Stage(stream StageRequest) returns (StageResponse) {}
   rpc PutObject(stream PutObjectOpt)returns(PutObjectResp){}
+  rpc PutObjectStream(stream PutObjectOpt)returns(stream PutObjectResp){}
   rpc NewMultipartObject(PutObjectReq)returns(MultipartCreateResp){}
   rpc PutObjectPart(stream PutObjectPartOpt)returns(PutObjectPartResult){}
   rpc CompleteMultipart(CompleteMultipartReq)returns(CompleteMultipartResp){}
@@ -586,12 +683,17 @@ service API {
   rpc ListObjectParts(ListPartsReq)returns(ListPartsResponse){}
   rpc ListObjects(ListObjectsReq)returns(ListObjectsResp){}
   rpc GetObject(GetRequest) returns (stream GetResponse) {}
+  rpc FetchObject(FetchRequest) returns (stream GetResponse) {}
+  rpc AsyncFetchObject(FetchRequest) returns (PinningInfo) {}
+  rpc GetBlock(GetBlockRequest) returns (stream GetBlockResponse) {}
+  rpc GetCarMeta(GetCarMetaRequest) returns (stream GetCarMetaResponse) {}
   rpc GetObjects(GetRequests) returns (stream GetResponse) {}
   rpc GetObjectInfo(GetRequest) returns (Object) {}
   rpc DeleteObject(DeleteObjectReq)returns(DeleteResp){}
   rpc SearchObject(SearchRequest) returns (stream SearchResponse) {}
   rpc FindObjects(FindRequest) returns (Objects) {}
   rpc SummaryInfo(RequestSummaryIds)returns(SummaryInfos){}
+  rpc Statistics(RequestStatistics)returns(StatisticsInfo){}
   rpc RenameObjects(RenameObject)returns(RenameObjectResp){}
   rpc GetTimeLine(TimeLine)returns(TimeLineResp){}
   rpc GetPreSigned(PresignedURL)returns(PresignedURLResp){}
@@ -599,8 +701,127 @@ service API {
   rpc Chat(ChatReq) returns (ChatResponse) {}
   rpc Knowledge(KNReq) returns (KNResponse) {}
   rpc GenerateCred(CredRequest)returns(CredResp){}
+  rpc GenerateExtractCode(GExtractCode)returns(GExtractCodeResp){}
+  rpc PausedFetchObject(FetchPinningRequest)returns(FetchPinningResponse){}
+  rpc CancelFetchObject(FetchPinningRequest)returns(FetchPinningResponse){}
+  rpc DeleteFetchObject(FetchPinningRequest)returns(FetchPinningResponse){}
+  rpc ResumeFetchObject(FetchPinningRequest)returns(FetchPinningResponse){}
+  rpc FetchPinningEvent(FetchPinningRequest)returns(PinningInfo){}
+  rpc ListPinnings(PinningListRequest)returns(PinningResp){}
   rpc ListCreds(GetCredRequest)returns(CredsList){}
   rpc DeleteCred(CredRequest)returns(CredResp){}
   rpc GenPinningCred(GeneratePinCredRequest)returns(GeneratePinCredResp){}
   rpc UpdateNFT(UpdateNFTRequest)returns(UpdateNFTResp){}
+  rpc F2PGetSpaceInfo(F2PGetSpace)returns(F2PGetSpaceResp){}
+  rpc F2PGetMinerInfo(F2PGetMiner)returns(F2PGetMinerResp){}
+  rpc F2PGetIOTList(F2PGetIOT)returns(F2PGetIOTResp){}
+  rpc F2PGetIOTAmount(F2PGetIOT)returns(F2PGetIOTAmountResp){}
+  rpc F2PGetAppInfo(F2PGetApp)returns(F2PGetAppResp){}
+}
+
+message F2PGetSpace {
+  Header header = 1;
+}
+message F2PGetMiner {
+  Header header = 1;
+}
+message F2PGetSpaceResult {
+  uint64 ipfs = 1;
+  uint64 local_data = 2;
+  uint64 lot = 3;
+  uint64 mining_pool = 4;
+  uint64 remaining = 5;
+  uint64 total = 6;
+}
+message F2PGetSpaceResp {
+  int32 code = 1;
+  string message =2 ;
+  F2PGetSpaceResult result = 3;
+}
+message F2PGetMinerData {
+  int64 id = 1;
+  string bucket = 2;
+  string createdAt = 3;
+  bool delete_data = 4;
+  string dmc_account = 5;
+  int32 expire_on_week = 6;
+  int32 is_delete = 7;
+  bool is_pin = 8;
+  string memo = 9;
+  string miner_pool_addr =10;
+  string miner_pool_name = 11;
+  string pin_size = 12;
+  string space = 13;
+  string stack_asset = 14;
+  string status = 15;
+  string updatedAt = 16;
+}
+message F2PGetMinerResult {
+  repeated F2PGetMinerData data = 1;
+  string pageNumber = 2;
+  string pageSize = 3;
+  int32 total = 4;
+}
+message F2PGetMinerResp {
+  int32 code = 1;
+  string message =2 ;
+  F2PGetMinerResult result = 3;
+}
+message F2PGetIOT {
+  Header header = 1;
+}
+message IOTInfo {
+  string deviceId = 1;
+  int32 status = 2;
+  string groupName = 3;
+  string lastActiveTime = 4;
+  string temperature = 5;
+  string humidity = 6;
+  int32 groupId = 7;
+  string deviceName = 8;
+  int32 deviceType = 9;
+}
+message IOTData {
+  int32 groupId = 1;
+  int32 type = 2;
+  string groupName = 3;
+  repeated IOTInfo list = 4;
+  bool receiverStatus = 5;
+}
+message F2PGetIOTResp {
+  int32 code = 1;
+  string msg =2 ;
+  repeated IOTData data = 3;
+}
+message F2PGetIOTAmountResp {
+  int32 code = 1;
+  string msg =2 ;
+  int32 data = 3;
+  int64 time = 4;
+}
+
+message F2PGetApp {
+  Header header = 1;
+  string name = 2;
+}
+message F2PGetAppData {
+  int64 id = 1;
+  string createdAt = 2;
+  string updatedAt = 3;
+  string name = 4;
+  string version = 5;
+  string state = 6;
+  string install_type = 7;
+  string service_state = 8;
+  string params = 9;
+  string time =10;
+}
+
+message F2PGetAppResult {
+   F2PGetAppData data = 1;
+}
+message F2PGetAppResp {
+  int32 code = 1;
+  string message =2 ;
+  F2PGetAppResult result = 3;
 }

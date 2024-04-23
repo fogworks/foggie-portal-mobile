@@ -47,6 +47,7 @@ declare module 'vue' {
     NutRow: typeof import('@nutui/nutui')['Row']
     NutSearchbar: typeof import('@nutui/nutui')['Searchbar']
     NutShortPassword: typeof import('@nutui/nutui')['ShortPassword']
+    NutSkeleton: typeof import('@nutui/nutui')['Skeleton']
     NutStep: typeof import('@nutui/nutui')['Step']
     NutSteps: typeof import('@nutui/nutui')['Steps']
     NutSticky: typeof import('@nutui/nutui')['Sticky']
