@@ -81,7 +81,7 @@ export default function useAllOrderList() {
             ps: 100,
         }).then(async (res) => {
             let data = res.data;
-            let maxList = data.filter((el) => el.device_type === 'maxio');
+            let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
             maxTableData.value = maxList;
         });
 
@@ -201,75 +201,7 @@ export default function useAllOrderList() {
             });
         });
     };
-    let params1 = {
-        device_id: "",
-        asset_type: "miner_pool",
-        start_time: "",
-        end_time: "",
-        cycle: "",
-        bucket: "",
-        iot_device_id: "",
-        total: true,
-    };
-    let params2 = {
-        device_id: "",
-        asset_type: "iot",
-        start_time: "",
-        end_time: "",
-        cycle: "",
-        bucket: "",
-        iot_device_id: "",
-        total: true,
-    };
-    searchDeviceEarningsAPI(params1).then((results) => {
-        console.log(results, 'pool111');
-        // if (res && res.result && res.result.counts) {
-        //     totalMinerReward.value = res.result.counts;
-        //     rewardObject.value.value = totalMinerReward.value;
-        // }
-    });
-    searchDeviceEarningsAPI(params2).then((res) => {
-        console.log(res, 'iot222');
-        // if (res && res.result && res.result.counts) {
-        //   totalIotReward.value = res.result.counts;
-        //   rewardObject1.value.value = totalMinerReward.value;
-        // }
-    });
-    const getTotalReward = (deviceData) => {
-        let params1 = {
-            device_id: deviceData.value.device_id,
-            asset_type: "miner_pool",
-            start_time: "",
-            end_time: "",
-            cycle: "",
-            bucket: "",
-            iot_device_id: "",
-            total: true,
-        };
 
-        let params2 = {
-            device_id: deviceData.value.device_id,
-            asset_type: "iot",
-            start_time: "",
-            end_time: "",
-            cycle: "",
-            bucket: "",
-            iot_device_id: "",
-            total: true,
-        };
-
-        searchDeviceEarningsAPI(params1).then((res) => {
-            // if (res && res.result && res.result.counts) {
-            //     totalMinerReward.value = res.result.counts;
-            // }
-        });
-
-        searchDeviceEarningsAPI(params2).then((res) => {
-            // if (res && res.result && res.result.counts) {
-            //     totalIotReward.value = res.result.counts;
-            // }
-        });
-    };
     return {
         isError,
         loadMore,
@@ -282,6 +214,6 @@ export default function useAllOrderList() {
         total,
         maxTableData,
         historyData,
-        runningData
+        runningData,
     };
 }

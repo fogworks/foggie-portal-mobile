@@ -5,25 +5,79 @@
 
 import { s3Url, poolUrl, maxUrl } from '@/setting.js';
 
-import * as Prox from '@/pb/prox_pb.js';
-import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+import * as Prox from '@/pb/net_pb.js';
+import * as grpcService from '@/pb/net_grpc_web_pb.js';
 
-import { get_vood_token } from '@/api/index';
+import { get_vood_token, searchDeviceEarningsAPI } from '@/api/index';
 import { useUserStore } from '@/store/modules/user';
 const userStore = useUserStore();
+import moment from 'moment';
+import { getfilesize } from "@/utils/util";
 
 export default function getList(deviceData) {
     const myPoolList = ref([] as any);
     const myIotList = ref([] as any);
+    const mySpaceInfo = ref({} as any);
+    const MinerReward = ref('');
+    const IOTReward = ref('');
+    const rewardList = ref([] as any);
+    const spaceData = ref([]);
+    const fileListArr = ref([
+        {
+            type: "Photos",
+            number: "",
+            capacity: "",
+            name: "Images",
+            total: 0,
+        },
+        {
+            type: "Videos",
+            number: "",
+            capacity: "",
+            name: "Videos",
+            total: 0,
+        },
+        {
+            type: "Audio",
+            number: "",
+            capacity: "",
+            name: "Audio",
+            total: 0,
+        },
+        {
+            type: "Documents",
+            number: "",
+            capacity: "",
+            name: "Documents",
+            total: 0,
+        },
+        {
+            type: "Other",
+            number: "",
+            capacity: "",
+            name: "Other",
+            total: 0,
+        },
+    ]);
+    let allCount = ref(0);
+    let allSize = ref("");
+    rewardList.value = [
+        { name: 'Minning', number: '0', type: 'pool', count: 0 },
+        { name: 'IOT', number: '0', type: 'iot', count: 0 },
+        { name: 'IPFS', number: '0', type: 'ipfs', count: 0 },
+    ];
     const getMyList = async (deviceData) => {
+        if (!deviceData.device_id) {
+            return;
+        }
         let token = await get_vood_token({ vood_id: deviceData.device_id });
         userStore.setMaxTokenMap({
             id: deviceData.device_id,
             token: token.data.token_type + " " + token.data.access_token,
         });
-        let _token = token.data.token_type + " " + token.data.access_token;
+        let _token = token.data.access_token;
 
-        let server = new grpcService.default.ServiceClient(maxUrl, null, null);
+        let server = new grpcService.default.APIClient(maxUrl, null, null);
         let header = new Prox.default.ProxHeader();
         let request = new Prox.default.ProxF2PGetMiner();
 
@@ -34,22 +88,196 @@ export default function getList(deviceData) {
         const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
         header.setApptype(appType);
         request.setHeader(header);
-
+        let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
         let metadata = {
-            'X-Custom-Date': '20240423T094100Z'
+            'X-Custom-Date': date + 'Z'
         };
-        console.log(header, 'header...', request, metadata);
-
+        // console.log(header, 'header...', request, metadata);
         server.f2PGetMinerInfo(request, metadata, (err: any, res: { array: any }) => {
             if (err) {
-                console.log('err------generateCred:', err);
+                console.log('f2PGetMinerInfoerr------:', err);
             }
-            console.log(res, '888')
+            // console.log(res, '888')
+            // console.log(res.toObject().result.dataList);
+            if (res) {
+                myPoolList.value = res.toObject().result.dataList;
+                console.log(myPoolList.value, 'myPoolList')
+                rewardList.value = [
+                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myIotList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
+                    { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
+                ];
+            }
+
+
+        });
+        initIotList(deviceData, _token, appType, metadata);
+        getTotalReward(deviceData);
+        getFileStatistics(deviceData, _token, appType, metadata);
+        initSpaceInfo(deviceData, _token, appType, metadata);
+    };
+    const initIotList = async (deviceData, _token, appType, metadata) => {
+        let server = new grpcService.default.APIClient(maxUrl, null, null);
+        let header = new Prox.default.ProxHeader();
+        let request = new Prox.default.ProxF2PGetIOT();
+        header.setPeerid(deviceData.peer_id);
+        header.setId(deviceData.foggie_id);
+        header.setToken(_token);
+        header.setApptype(appType);
+        request.setHeader(header);
+        server.f2PGetIOTList(request, metadata, (err: any, res: { array: any }) => {
+            if (err) {
+                console.log('f2PGetIOTList--err------:', err);
+            }
+            // console.log(res, 'f2PGetIOTList', res.toObject());
+            if (res) {
+                myIotList.value = res.toObject().dataList;
+                console.log(myIotList.value, 'myIotList')
+                rewardList.value = [
+                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myIotList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
+                    { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
+                ];
+            }
+
+        });
+        // server.f2PGetIOTAmount(request, metadata, (err: any, res: { array: any }) => {
+        //     if (err) {
+        //         console.log('F2PGetIOTAmounterr------:', err);
+        //     }
+        //     console.log(res, 'F2PGetIOTAmounterr', res.getData());
+
+        // });
+
+    };
+    const initSpaceInfo = async (deviceData, _token, appType, metadata) => {
+        let server = new grpcService.default.APIClient(maxUrl, null, null);
+        let header = new Prox.default.ProxHeader();
+        let request = new Prox.default.ProxF2PGetSpace();
+        header.setPeerid(deviceData.peer_id);
+        header.setId(deviceData.foggie_id);
+        header.setToken(_token);
+        header.setApptype(appType);
+        request.setHeader(header);
+        spaceData.value = [];
+        server.f2PGetSpaceInfo(request, metadata, (err: any, res: { array: any }) => {
+            if (err) {
+                console.log('f2PGetSpaceInfo--err------:', err);
+            }
+            // console.log(res, 'f2PGetSpaceInfo', res.toObject());
+            if (res) {
+                mySpaceInfo.value = res.toObject().result;
+                console.log(mySpaceInfo.value, 'mySpaceInfo')
+                for (var key in mySpaceInfo.value) {
+
+                    let _item = { name: key, value: mySpaceInfo.value[key] }
+                    spaceData.value.push(_item);
+                }
+                // console.log(spaceData.value, ' spaceData.value')
+            }
+
+        });
+        // server.f2PGetIOTAmount(request, metadata, (err: any, res: { array: any }) => {
+        //     if (err) {
+        //         console.log('F2PGetIOTAmounterr------:', err);
+        //     }
+        //     console.log(res, 'F2PGetIOTAmounterr', res.getData());
+
+        // });
+
+    };
+    const getTotalReward = async (deviceData) => {
+        let params1 = {
+            device_id: deviceData.device_id,
+            asset_type: "miner_pool",
+            start_time: "",
+            end_time: "",
+            cycle: "",
+            bucket: "",
+            iot_device_id: "",
+            total: true,
+        };
+
+        let params2 = {
+            device_id: deviceData.device_id,
+            asset_type: "iot",
+            start_time: "",
+            end_time: "",
+            cycle: "",
+            bucket: "",
+            iot_device_id: "",
+            total: true,
+        };
+
+        searchDeviceEarningsAPI(params1).then((res) => {
+            if (res && res.result) {
+                MinerReward.value = res.result.counts;
+                rewardList.value = [
+                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myIotList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
+                    { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
+                ];
+            }
+            console.log(res, 'pool111', MinerReward.value);
+        });
+
+        searchDeviceEarningsAPI(params2).then((res) => {
+            console.log(res, 'iot222');
+            if (res && res.result) {
+                IOTReward.value = res.result.counts;
+                rewardList.value = [
+                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myIotList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
+                    { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
+                ];
+            }
+        });
+    };
+    const getFileStatistics = async (deviceData, _token, appType, metadata) => {
+        let server = new grpcService.default.APIClient(maxUrl, null, null);
+        let header = new Prox.default.ProxHeader();
+        let request = new Prox.default.ProxRequestStatistics();
+        header.setPeerid(deviceData.peer_id);
+        header.setId(deviceData.foggie_id);
+        header.setToken(_token);
+        header.setApptype(appType);
+        request.setHeader(header);
+        // console.log(server.statistics, 'server.statistics', header);
+        server.statistics(request, metadata, (err: any, res: { array: any }) => {
+            if (err) {
+                console.log("err-statistics------:", err);
+            } else {
+                fileListArr.value = fileListArr.value.map((item: any) => {
+                    return {
+                        ...item,
+                        number: 0,
+                        capacity: 0,
+                    };
+                });
+                allCount.value = res.getCategorysum().getCount();
+                allSize.value = getfilesize(res.getCategorysum().getTotal());
+                res.getCategoriesList().map((item: any) => {
+                    let index = item.getCategory();
+                    if (index > 0) {
+                        fileListArr.value[index - 1].number = item.getCount();
+                        fileListArr.value[index - 1].capacity = getfilesize(item.getTotal(),);
+                        fileListArr.value[index - 1].total = item.getTotal();
+                    }
+                });
+                // console.log(fileListArr.value, 'fileListArr');
+            }
         });
     };
     return {
         getMyList,
+        getTotalReward,
         myPoolList,
         myIotList,
-    };
+        MinerReward,
+        IOTReward,
+        rewardList,
+        mySpaceInfo,
+        spaceData,
+        fileListArr
+    }
 }

@@ -17,7 +17,7 @@
             <img src="@/assets/maxio/maxio.png" alt="" />
             <div class="title_text">
               <div class="max_name"> {{ currentBucketData.dedicatedip || 'MAX IO-' + currentBucketData.id }}</div>
-              <div class="max_name"> （MAXIO-001）</div>
+              <div class="max_name"> （MAXIO-{{ currentBucketData.id }} ）</div>
             </div>
           </div>
           <div class="maxio_title" v-if="showBucket">
@@ -112,7 +112,7 @@
 </template>
 
 <script setup>
-  import { ref, toRefs, computed } from 'vue';
+  import { ref, toRefs, computed, onMounted } from 'vue';
   import CloudComponent from './cloud.vue';
   import maxIndex from './maxIndex.vue';
   import sd from './sd.vue';
@@ -195,38 +195,7 @@
       await loadMore([0, 1, 2, 3, 4, 6], '', '', '', postData);
     } catch {}
   };
-  const setBucket = async (item) => {
-    // if (!item.domain) {
-    //   router.push({
-    //     name: 'listDetails',
-    //     query: {
-    //       id: item.order_id,
-    //       uuid: item.uuid,
-    //       amb_uuid: item.amb_uuid,
-    //       domain: item.domain,
-    //     },
-    //   });
-    //   return false;
-    // }
 
-    // bucketName.value = item.domain
-    window.localStorage.homeChooseBucket = JSON.stringify(item);
-    if (item.device_type === 3) {
-      //   changeList('bucket');
-      currentBucketData.value = item;
-      cloudQuery.value = {
-        id: item.order_id,
-        uuid: item.uuid,
-        amb_uuid: item.amb_uuid,
-        domain: item.domain,
-      };
-      showBucket.value = true;
-    } else {
-      //   changeList('maxio');
-      showBucket.value = false;
-      currentBucketData.value = item;
-    }
-  };
   const changeMenu = (item, _type) => {
     window.localStorage.homeChooseBucket = JSON.stringify(item);
     if (item.device_type === 3) {
@@ -247,9 +216,8 @@
     router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });
   };
   const initSetBucket = () => {
-    // setBucket(leftBucketList.value && leftBucketList.value[0]);
     showBucket.value = true;
-    console.log(window.localStorage.homeChooseBucke, 'window.localStorage.homeChooseBucke');
+    // console.log(window.localStorage.homeChooseBucke, '000------window.localStorage.homeChooseBucke');
     if (window.localStorage.homeChooseBucket) {
       setBucket(JSON.parse(window.localStorage.homeChooseBucket));
     } else if (leftBucketList.value.length) {
@@ -260,8 +228,31 @@
       } else {
         showToast.text('Please select a bucket and set the bucket name.');
       }
+    } else {
+      showToast.text('empty data');
     }
   };
+  const setBucket = async (item) => {
+    window.localStorage.setItem('homeChooseBucket', JSON.stringify(item));
+    userStore.setCurrentLeftTab(item);
+    if (item.device_type === 3) {
+      currentBucketData.value = item;
+      cloudQuery.value = {
+        id: item.order_id,
+        uuid: item.uuid,
+        amb_uuid: item.amb_uuid,
+        domain: item.domain,
+      };
+      showBucket.value = true;
+    } else {
+      showBucket.value = false;
+      currentBucketData.value = item;
+    }
+  };
+  //   onMounted(async () => {
+  //     await loadMoreFun();
+  //     initSetBucket();
+  //   });
   watch(leftBucketList, (val) => {
     if (val.length > 0) {
       showLeft.value = true;

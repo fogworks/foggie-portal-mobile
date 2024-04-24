@@ -17,6 +17,7 @@ interface StoreUser {
     ambRefuse: boolean;
     curStepIndex: any;
     maxTokenMap: any;
+    currentLeftTab: any
 }
 
 export const useUserStore = defineStore({
@@ -32,6 +33,10 @@ export const useUserStore = defineStore({
         maxTokenMap: window.localStorage.getItem("maxTokenMap")
             ? JSON.parse(window.localStorage.getItem("maxTokenMap"))
             : {},
+        // currentLeftTab: window.localStorage.getItem("homeChooseBucket")
+        //     ? JSON.parse(window.localStorage.getItem("homeChooseBucket"))
+        //     : {},
+        currentLeftTab: {},
     }),
     getters: {
         getUserInfo(): any {
@@ -58,6 +63,9 @@ export const useUserStore = defineStore({
         },
         getMaxTokenMap(): any {
             return this.maxTokenMap;
+        },
+        getCurrentLeftTab(): any {
+            return this.currentLeftTab;
         },
     },
     actions: {
@@ -102,6 +110,9 @@ export const useUserStore = defineStore({
         setMaxTokenMap(data) {
             setTokenMap(data.id, data.token);
             this.maxTokenMap[data.id] = data.token;
+        },
+        setCurrentLeftTab(data) {
+            this.currentLeftTab = data;
         },
     },
     persist: {
