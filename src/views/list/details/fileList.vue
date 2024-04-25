@@ -414,7 +414,7 @@
   import { get_order_sign } from '@/api/index';
   import { browserUrl } from '@/setting';
 
-  import getFileType from "@/utils/getFileType.ts";
+  import getFileType from '@/utils/getFileType.ts';
 
   // const accessKeyId = ref<string>('');
   // const secretAccessKey = ref<string>('');
@@ -656,7 +656,7 @@
       prefixChange();
     } else {
       chooseItem.value = row;
-      console.log(chooseItem.value, 'chooseItem.value');
+      //   console.log(chooseItem.value, 'chooseItem.value');
       const type = row.name.substring(row.name.lastIndexOf('.') + 1);
 
       if (type == 'pdf') {
@@ -1383,7 +1383,6 @@
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
-      
 
       let cur_cid = '';
       let isPin = false;

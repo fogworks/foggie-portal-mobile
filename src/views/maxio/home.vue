@@ -118,7 +118,7 @@
   import sd from './sd.vue';
   import topLink from './topLink.vue';
   import iconImg from './iconImg.vue';
-  import useOrderList from './useAllOrderList.ts';
+  import useOrderList from './maxHooks/useAllOrderList';
   import { search_cloud } from '@/api';
   import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
@@ -142,7 +142,7 @@
   const runningDataCy = ref([]);
   const historyDataCy = ref([]);
   const leftBucketList = computed(() => {
-    console.log(allOrderList.value, 'allOrderList.value');
+    // console.log(allOrderList.value, 'home---allOrderList.value');
     return allOrderList.value;
   });
   //   const maxTableDataCy = computed(() => {
@@ -233,6 +233,7 @@
     }
   };
   const setBucket = async (item) => {
+    // console.log('setBucket--0---------', item);
     window.localStorage.setItem('homeChooseBucket', JSON.stringify(item));
     userStore.setCurrentLeftTab(item);
     if (item.device_type === 3) {

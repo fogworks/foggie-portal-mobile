@@ -286,9 +286,9 @@
         </div>
         <div class="share_info_box" style="margin-top: 10px">
           <!-- <div v-if="shareRefContent.ipfsStr && isMobileOrder">
-          <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
-          IPFS Link
-        </div> -->
+            <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
+            IPFS Link
+          </div> -->
 
           <div v-if="shareRefContent.httpStr">
             <IconTwitter
@@ -388,6 +388,7 @@
         </div>
       </nut-overlay>
     </Teleport>
+    <!-- wordVisible -->
     <Teleport to="body">
       <nut-action-sheet z-index="1800" @close="emits('update:wordVisible', false)" v-model:visible="wordVisible" title="Links">
         <div class="custom-action_sheet">
@@ -439,15 +440,15 @@
   import { Search2, TriangleUp, Loading, MoreX, Tips } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
-  import useDelete from './useDelete.js';
-  import useShare from './useShare.js';
-  import HLSVideo from './hlsVideo.vue';
-  import MyAudio from './myAudio.vue';
+  import useDelete from '@/views/list/details/useDelete.js';
+  import useShare from '@/views/list/details/useShare.js';
+  import HLSVideo from '@/views/list/details/hlsVideo.vue';
+  import MyAudio from '@/views/list/details/myAudio.vue';
   // import { ProxListObjectsRequest, ProxListObjectsReq, ProxHeader } from '@/pb/prox_pb.js';
   // import Prox from '@/pb/prox_pb.ts';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
-  import useOrderInfo from './useOrderInfo.js';
+  import useOrderInfo from '@/views/list/details/useOrderInfo.js';
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';

@@ -56,6 +56,7 @@ export default function useAllOrderList() {
     const pn = ref(1);
     const ps = ref(10);
     const allOrderList = computed(() => {
+        // console.log(maxTableData.value, 'allOrderList----', listData.value);
         return [...maxTableData.value, ...listData.value];
     });
     const resetData = () => {

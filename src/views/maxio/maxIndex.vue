@@ -82,7 +82,7 @@
   import IconDocument from '~icons/home/mdoc.svg';
   import IconVideo from '~icons/home/mvideo.svg';
   import IconOther from '~icons/home/mother.svg';
-  import getList from './getList.ts';
+  import getList from './maxHooks/getList.ts';
   import { useUserStore } from '@/store/modules/user';
   import maxFileList from './maxFileList.vue';
   const userStore = useUserStore();
@@ -231,8 +231,8 @@
     CurrentLeftTab,
     async (val) => {
       if (val) {
-        console.log(val, val.device_id, 'watch');
         currentTabItem.value = val;
+        // console.log(val, val.device_id, 'index----CurrentLeftTabwatch', currentTabItem.value);
         cloudQuery.value = {
           id: currentTabItem.value.id,
           // uuid: currentTabItem.value.uuid,

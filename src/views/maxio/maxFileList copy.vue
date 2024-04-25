@@ -63,8 +63,7 @@
         image="error"
       >
       </nut-empty>
-
-      <maxFileRow
+      <ActionComponent
         v-model:fileItemPopupIsShow="fileItemPopupIsShow"
         v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
         v-model:renameShow="renameShow"
@@ -93,7 +92,7 @@
         @swipeChange="swipeChange"
         @clickFIleItemDetail="clickFIleItemDetail"
         @clickFIleItem="clickFIleItem"
-      ></maxFileRow>
+      ></ActionComponent>
     </div>
     <div class="skeleton-picture" v-if="loadingAnmation" style="width: 100%">
       <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
@@ -107,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-  import maxFileRow from './maxFileRow.vue';
+  import ActionComponent from '@/views/list/details/actionComponent.vue';
   import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
@@ -124,6 +123,7 @@
   import { useRouter } from 'vue-router';
   //   import useOrderInfo from '@/views/list/details/useOrderInfo.js';
   import maxFileInfo from './maxHooks/maxFileInfo.js';
+  import maxioFileShare from './maxHooks/maxioFileShare.js';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import { valid_upload, get_order_sign, get_vood_token } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
@@ -140,8 +140,47 @@
     },
   });
   const { cloudQuery, deviceData } = toRefs(props);
-  const { accessKeyId, secretAccessKey, getHttpShare, initSk, getSummary } = maxFileInfo();
-  const isError = ref(false);
+  //   const {
+  //     getSummary,
+  //     accessKeyId,
+  //     secretAccessKey,
+  //     bucketName,
+  //     header,
+  //     metadata,
+  //     deviceType,
+  //     deviceData,
+  //     getOrderInfo,
+  //     isAvailableOrder,
+  //     isError,
+  //     loadingAnmation,
+  //   } = useOrderInfo();
+  //   provide('getOrderInfo', getOrderInfo);
+  //   const { getSummary, accessKeyId, secretAccessKey, header, metadata, deviceType, loadingAnmation } = maxFileInfo(deviceData);
+
+  //   const {
+  //     httpCopyLink,
+  //     copyLink,
+  //     shareType,
+  //     isReady,
+  //     confirmShare,
+  //     periodValue,
+  //     confirmPeriod,
+  //     periodShow,
+  //     desc,
+  //     imgDesc,
+  //     options,
+  //     doShare,
+  //     ipfsPin,
+  //     showShareDialog,
+  //     shareRefContent,
+  //     copyContent,
+  //     confirmHttpShare,
+  //     getHttpShare,
+  //     cloudPin,
+  //     copyIPFS,
+  //     copyNft,
+  //   } = maxioFileShare(deviceData, header, deviceType, metadata);
+
   const router = useRouter();
   const imgPreRef = ref('');
   const isMobileOrder = ref(false);
@@ -163,7 +202,7 @@
   const fileSocket = ref('');
   const socketDate = ref('');
   const socketToken = ref('');
-  const maxToken = ref('');
+
   const images = computed(() => {
     let arr = [];
     imgData.value.filter((el) => {
@@ -179,11 +218,11 @@
   const { deleteItem } = useDelete(
     tableLoading,
     () => {
-      //   refresh();
+      refresh();
     },
-    // deviceData,
-    // header,
-    // metadata,
+    deviceData,
+    header,
+    metadata,
   );
   function swipeChange(index) {
     imgStartIndex.value = index;
@@ -250,7 +289,6 @@
   };
   const $cordovaPlugins = inject('$cordovaPlugins');
   const handlerClick = async (type: string) => {
-    // return;
     const checkData = JSON.parse(JSON.stringify(detailRow.value));
     console.log(checkData, 'checkData');
 
@@ -368,7 +406,6 @@
   };
 
   const getSignHeaders = (objectKey) => {
-    return;
     // const objectKey = encodeURIComponent(checkData[0].fullName);
     const date = new Date().toUTCString();
 
@@ -388,6 +425,59 @@
       Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
     };
     return headers;
+  };
+
+  const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
+    let imgHttpLink = '';
+    let imgHttpLarge = '';
+    type = type.toLowerCase();
+    let isSystemImg = false;
+    // let cid = item.cid;
+    // let key = item.key;
+
+    // let ip = deviceData.value.rpc.split(':')[0];
+    // let port = deviceData.value.rpc.split(':')[1];
+    // let ip ='127.0.0.1';
+    // let port = '9007';
+    // let Id = deviceData.value.foggie_id;
+    // let peerId = deviceData.value.peer_id;
+    if (
+      type === 'png' ||
+      type === 'bmp' ||
+      type === 'gif' ||
+      type === 'jpeg' ||
+      type === 'jpg' ||
+      type === 'svg' ||
+      type === 'ico' ||
+      type === 'webp'
+    ) {
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+      imgHttpLink = getHttpShare(
+        accessKeyId.value,
+        secretAccessKey.value,
+        bucketName.value,
+        item.key,
+        type === 'ico' || type === 'svg' ? false : true,
+      );
+      // console.log('--------imgHttpLarge', imgHttpLarge);
+    } else if (type === 'mp3') {
+      type = 'audio';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
+      type = 'video';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+    } else {
+      isSystemImg = true;
+    }
+    if (isDir) {
+      isSystemImg = true;
+    }
+    return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
 
   async function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
@@ -520,7 +610,7 @@
             prefixpins: res.getPrefixpinsList(),
           };
           isError.value = false;
-          //   console.log(transferData, 'transferDatatransferDatatransferData');
+          console.log(transferData, 'transferDatatransferDatatransferData');
           initRemoteData(transferData, reset, 0);
           showToast.hide('file_list');
         } else if (err) {
@@ -559,8 +649,9 @@
       tableData.value = [];
     }
     // if (!accessKeyId.value) {
-    //   await initSk(deviceData.value, maxToken.value);
+    //     await getOrderInfo(true, cloudQuery.value.uuid);
     // }
+    console.log(data, data.prefix, 'data.commonPrefixesdata.commonPrefixesdata.commonPrefixes');
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
       if (data.prefix) {
@@ -631,7 +722,7 @@
         name = name.split('/')[name.split('/').length - 2];
       }
       let isPersistent = data.content[j].isPersistent;
-      //   console.log(data.content[j], 'data.content[j]');
+      console.log(data.content[j], 'data.content[j]');
 
       let item = {
         imageInfo: data.content[j].imageInfo,
@@ -672,56 +763,21 @@
       };
 
       tableData.value.push(item);
-      //   console.log(tableData.value, 'tableData.value');
+      console.log(tableData.value, 'tableData.value');
     }
 
     // tableLoading.value = false;
-  };
-  const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
-    let imgHttpLink = '';
-    let imgHttpLarge = '';
-    type = type.toLowerCase();
-    let isSystemImg = false;
-    if (
-      type === 'png' ||
-      type === 'bmp' ||
-      type === 'gif' ||
-      type === 'jpeg' ||
-      type === 'jpg' ||
-      type === 'svg' ||
-      type === 'ico' ||
-      type === 'webp'
-    ) {
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key);
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, type === 'ico' || type === 'svg' ? false : true);
-    } else if (type === 'mp3') {
-      type = 'audio';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key) + '&inline=true';
-    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
-      type = 'video';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key) + '&inline=true';
-    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key);
-    } else {
-      isSystemImg = true;
-    }
-    if (isDir) {
-      isSystemImg = true;
-    }
-    return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
 
   const refresh = async () => {
     detailShow.value = false;
     // await getOrderInfo(true, cloudQuery.value.uuid);
     getFileList();
-    // getSummary();
+    getSummary();
   };
 
   const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
+    console.log('doSocketFn', msg, tableData.value);
     const action = msg.action;
     const fileInfo = msg.fileInfo;
     const keys = fileInfo.keys;
@@ -873,6 +929,7 @@
     const signData = await get_order_sign(param);
     socketDate.value = signData?.result?.data?.timestamp;
     socketToken.value = signData?.result?.data?.sign;
+    console.log('initWebSocket-----------');
     const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
     fileSocket.value = new WebSocket(url);
     fileSocket.value.onopen = () => {
@@ -936,24 +993,12 @@
       console.error('WebSocket connection error:', event);
     };
   };
-  const initToken = async (deviceData) => {
-    let token = await get_vood_token({ vood_id: deviceData.device_id });
-    userStore.setMaxTokenMap({
-      id: deviceData.device_id,
-      token: token.data.token_type + ' ' + token.data.access_token,
-    });
-    maxToken.value = token.data.access_token;
-  };
   watch(
     () => cloudQuery.value.id,
     async (val) => {
       if (val) {
-        // console.log(deviceData.value, 'maxfileList----0000');
-        await initToken(deviceData.value);
-        initSk(deviceData.value, maxToken.value);
         getFileList();
-        getSummary(deviceData.value, maxToken.value);
-
+        // getSummary();
         // initWebSocket();
       }
     },
@@ -982,6 +1027,7 @@
   onUnmounted(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });
+  //   provide('getSummary', getSummary);
   provide('isMobileOrder', isMobileOrder);
   const getMerkleState = (timeout = true) => {
     const d = {

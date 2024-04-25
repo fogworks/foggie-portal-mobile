@@ -101,7 +101,7 @@ export default function getList(deviceData) {
             // console.log(res.toObject().result.dataList);
             if (res) {
                 myPoolList.value = res.toObject().result.dataList;
-                console.log(myPoolList.value, 'myPoolList')
+                // console.log(myPoolList.value, 'myPoolList')
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myIotList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
@@ -132,7 +132,7 @@ export default function getList(deviceData) {
             // console.log(res, 'f2PGetIOTList', res.toObject());
             if (res) {
                 myIotList.value = res.toObject().dataList;
-                console.log(myIotList.value, 'myIotList')
+                // console.log(myIotList.value, 'myIotList')
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myIotList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
@@ -167,7 +167,7 @@ export default function getList(deviceData) {
             // console.log(res, 'f2PGetSpaceInfo', res.toObject());
             if (res) {
                 mySpaceInfo.value = res.toObject().result;
-                console.log(mySpaceInfo.value, 'mySpaceInfo')
+                // console.log(mySpaceInfo.value, 'mySpaceInfo')
                 for (var key in mySpaceInfo.value) {
 
                     let _item = { name: key, value: mySpaceInfo.value[key] }
@@ -218,11 +218,11 @@ export default function getList(deviceData) {
                     { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
             }
-            console.log(res, 'pool111', MinerReward.value);
+            // console.log(res, 'pool111', MinerReward.value);
         });
 
         searchDeviceEarningsAPI(params2).then((res) => {
-            console.log(res, 'iot222');
+            // console.log(res, 'iot222');
             if (res && res.result) {
                 IOTReward.value = res.result.counts;
                 rewardList.value = [
