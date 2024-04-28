@@ -50,28 +50,47 @@
                 <div class="maxio_pool_item" v-for="(item, index) in rewardList" :key="index">
                   <div class="img_bg reward_bg">
                     <img src="@/assets/maxio/reward.svg" v-if="item.type === 'pool'" />
-                    <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" />
+                    <img src="@/assets/maxio/reward1.svg" v-if="item.type === 'iot'" />
+                    <!-- <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" /> -->
                   </div>
-                  <span class="pool_name">{{ item.name }}</span>
-                  <span class="reward_value">{{ item.number }} DMC</span>
+                  <span class="pool_name">{{ item.name }}({{ item.count }})</span>
+                  <span class="reward_value">{{ item.number ? item.number : '0' }} DMC</span>
                 </div>
               </div>
             </div>
             <div class="reward_type_box">
-              <nut-tabs v-model="rewardType" size="small" :ellipsis="hideText">
-                <nut-tab-pane title="Minning Pool Reward" pane-key="pool" class="reward_pool_box_parent">
+              <nut-tabs v-model="rewardType" size="small" :ellipsis="hideText" @change="changeTopTypeTab">
+                <nut-tab-pane
+                  :title="pitem.label"
+                  :pane-key="pitem.type"
+                  class="reward_pool_box_parent"
+                  v-for="(pitem, pindex) in ptypeList"
+                  :key="pindex"
+                >
                   <div class="reward_pool_box">
-                    <div class="reward_pool_title"> Pool - {{ activePool }}</div>
-                    <nut-tabs v-model="activePool" size="small" :ellipsis="hideText" v-if="poolList.length > 1">
+                    <div class="reward_pool_title">
+                      <img src="@/assets/maxio/pool.svg" alt="" />
+                      Pool - {{ activePool }}</div
+                    >
+                    <nut-tabs v-model="activePool" size="small" :ellipsis="hideText" v-if="poolList.length > 1" @change="changeTypeTab()">
                       <nut-tab-pane :title="item.bucket" :pane-key="item.bucket" v-for="(item, index) in poolList" :key="index">
                         <div class="today_reward_item">
                           <span class="today_text">Today Anticipated</span>
                           <span class="today_value">+3,490</span>
                         </div>
-                        <nut-tabs v-model="timeType" size="small" :ellipsis="hideText">
-                          <nut-tab-pane title="Day" pane-key="Day"> Day</nut-tab-pane>
-                          <nut-tab-pane title="Week" pane-key="Week"> Week</nut-tab-pane>
-                          <nut-tab-pane title="Month" pane-key="Month"> Month</nut-tab-pane>
+                        <nut-tabs v-model="timeType" size="small" :ellipsis="hideText" @change="changeTypeTab()">
+                          <nut-tab-pane :title="_item.key" :pane-key="_item.value" v-for="(_item, _key) in changeTabList" :key="_key">
+                            <div class="reward_list" v-for="(item, index) in rewardDetailList" :key="index">
+                              <div class="img_box">
+                                <img src="@/assets/maxio/reward.svg" alt="" />
+                              </div>
+                              <div class="reward_list_center">
+                                <div class="title">{{ _item.key }} Reward</div>
+                                <div class="time">{{ handleTime(item) }}</div>
+                              </div>
+                              <div class="reward_list_value">+ {{ item.income }} </div>
+                            </div>
+                          </nut-tab-pane>
                         </nut-tabs>
                       </nut-tab-pane>
                     </nut-tabs>
@@ -81,25 +100,22 @@
                         <span class="today_value">+3,490</span>
                       </div>
                       <nut-tabs v-model="timeType" size="small" :ellipsis="hideText">
-                        <nut-tab-pane title="Day" pane-key="Day">
+                        <nut-tab-pane :title="_item.key" :pane-key="_item.key" v-for="(_item, _key) in changeTabList" :key="_key">
                           <div class="reward_list" v-for="(item, index) in rewardDetailList" :key="index">
                             <div class="img_box">
                               <img src="@/assets/maxio/reward.svg" alt="" />
                             </div>
                             <div class="reward_list_center">
-                              <div class="title">Daily Reward</div>
+                              <div class="title">{{ _item.key }} Reward</div>
                               <div class="time">{{ handleTime(item) }}</div>
                             </div>
                             <div class="reward_list_value">+ {{ item.income }}</div>
                           </div>
                         </nut-tab-pane>
-                        <nut-tab-pane title="Week" pane-key="Week"> Week</nut-tab-pane>
-                        <nut-tab-pane title="Month" pane-key="Month"> Month</nut-tab-pane>
                       </nut-tabs>
                     </div>
                   </div>
                 </nut-tab-pane>
-                <nut-tab-pane title="IOT Reward" pane-key="iot" class="reward_pool_box_parent"> IOT Reward</nut-tab-pane>
               </nut-tabs>
             </div>
           </sd>
@@ -115,7 +131,8 @@
 <script setup>
   import moment from 'moment';
   import sd from './sd.vue';
-  import { ref, toRefs, computed } from 'vue';
+  import { searchDeviceEarningsAPI } from '@/api/index';
+  import { ref, toRefs, computed, onMounted } from 'vue';
   const hideText = false;
   const router = useRouter();
   const route = useRoute();
@@ -126,60 +143,108 @@
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
   };
-  const rewardList = ref([
-    { name: 'Minning Reward', number: '100.0000', type: 'pool' },
-    { name: 'IOT Reward', number: '200.0000', type: 'iot' },
-  ]);
+  import getList from './maxHooks/getList.ts';
+  const { getTimeReward } = getList();
+  //   const rewardList = ref([
+  //     { name: 'Minning Reward', number: '100.0000', type: 'pool' },
+  //     { name: 'IOT Reward', number: '200.0000', type: 'iot' },
+  //   ]);
+  const ptypeList = [
+    { label: 'Minning Pool Reward', type: 'pool' },
+    { label: 'IOT Reward', type: 'iot' },
+  ];
   const poolList = ref([]);
-  poolList.value = [
-    {
-      id: '2',
-      bucket: 'sharebucket1',
-      createdAt: '2024-03-20T06:11:36.77584197Z',
-      delete_data: false,
-      dmc_account: 'yitianyitian',
-      expire_on_week: 25,
-      is_delete: 0,
-      is_pin: false,
-      memo: '',
-      miner_pool_addr: '',
-      miner_pool_name: 'MAXIO_POOL', //1
-      pin_size: '1024',
-      space: '1024', //2
-      stack_asset: '',
-      status: 'finish',
-      updatedAt: '2024-03-20T06:11:58.794228845Z',
-    },
-    // {
-    //   id: '2',
-    //   bucket: 'sharebucket2',
-    //   createdAt: '2024-03-20T06:11:36.77584197Z',
-    //   delete_data: false,
-    //   dmc_account: 'yitianyitian',
-    //   expire_on_week: 25,
-    //   is_delete: 0,
-    //   is_pin: false,
-    //   memo: '',
-    //   miner_pool_addr: '',
-    //   miner_pool_name: 'MAXIO_POOL', //1
-    //   pin_size: '1024',
-    //   space: '1024', //2
-    //   stack_asset: '',
-    //   status: 'finish',
-    //   updatedAt: '2024-03-20T06:11:58.794228845Z',
-    // },
-  ];
-  const rewardDetailList = [
-    {
-      income: 15.36,
-      period: '2024-04-14T00:00:00Z',
-    },
-    {
-      income: 16.76,
-      period: '2024-04-13T00:00:00Z',
-    },
-  ];
-  activePool.value = poolList.value[0].bucket;
+  const iotList = ref([]);
+  const currentItem = ref({});
+  const changeTabList = ref([
+    { key: 'Day', value: 'day' },
+    { key: 'Week', value: 'week' },
+    { key: 'Month', value: 'month' },
+  ]);
+  //   const rewardDetailList = [
+  //     {
+  //       income: 15.36,
+  //       period: '2024-04-14T00:00:00Z',
+  //     },
+  //     {
+  //       income: 16.76,
+  //       period: '2024-04-13T00:00:00Z',
+  //     },
+  //   ];
+  const rewardDetailList = ref([]);
+  const rewardList = ref([]);
+
+  onMounted(() => {
+    currentItem.value = JSON.parse(window.localStorage.homeChooseBucket);
+    let myRewardList = JSON.parse(window.localStorage.getItem('rewardList'));
+    if (myRewardList && myRewardList.length > 0) {
+      rewardList.value = myRewardList.filter((item) => {
+        return item.type !== 'ipfs';
+      });
+    } else {
+      rewardList.value = [];
+    }
+    initTableList();
+  });
+  const changeTypeTab = (pool, time) => {
+    // console.log(rewardType.value, activePool.value, timeType.value, 'changeTypeTab');
+    getTimeRewardData();
+  };
+  const changeTopTypeTab = () => {
+    initTableList();
+  };
+  const initTableList = () => {
+    let pList = [];
+    if (rewardType.value === 'pool') {
+      let myPoolList = JSON.parse(window.localStorage.getItem('myPoolList'));
+      pList = myPoolList;
+    } else if (rewardType.value === 'iot') {
+      let myIotList = JSON.parse(window.localStorage.getItem('myIotList'));
+      pList = myIotList;
+    }
+    if (pList && pList.length > 0) {
+      poolList.value = pList;
+      activePool.value = poolList.value[0].bucket;
+    } else {
+      poolList.value = [];
+    }
+    getTimeRewardData();
+  };
+  const getTimeRewardData = async () => {
+    let type = rewardType.value === 'pool' ? 'miner_pool' : 'iot';
+    let params1 = {};
+    let start = '';
+    let end = '';
+    if (rewardType.value === 'pool') {
+      params1 = {
+        device_id: currentItem.value.device_id,
+        asset_type: type,
+        start_time: '',
+        end_time: '',
+        cycle: timeType.value,
+        bucket: activePool.value,
+        total: false,
+      };
+    } else {
+      params1 = {
+        device_id: currentItem.value.device_id,
+        asset_type: type,
+        start_time: '',
+        end_time: '',
+        cycle: timeType.value,
+        bucket: '',
+        iot_device_id: '',
+        total: true,
+      };
+    }
+
+    searchDeviceEarningsAPI(params1).then((res) => {
+      if (res && res.result) {
+        console.log(res.result, 'getTimeRewardData');
+        rewardDetailList.value = res.result.counts;
+      }
+    });
+  };
   const changeTab = (type) => {
     if (type === 'index') {
       router.push({ path: '/home' });
@@ -246,6 +311,12 @@
         height: 50px;
         line-height: 50px;
         border-bottom: 8px solid #fff;
+        text-align: left;
+        font-style: normal !important;
+        img {
+          width: 40px;
+          height: 40px;
+        }
       }
       .reward_pool_box_parent {
         border: 1px solid #fff !important;
@@ -278,15 +349,17 @@
           box-sizing: border-box;
           background-color: #fff;
           border-radius: 50%;
-          background-color: #e5a041;
+          background-color: transparent;
           width: 70px;
           height: 70px;
-          box-shadow:
-            rgba(0, 0, 0, 0.25) 0px 54px 55px,
-            rgba(0, 0, 0, 0.12) 0px -12px 30px,
-            rgba(0, 0, 0, 0.12) 0px 4px 6px,
-            rgba(0, 0, 0, 0.17) 0px 12px 13px,
-            rgba(0, 0, 0, 0.09) 0px -3px 5px;
+          box-shadow: #ffd700 0px 0px 1.066667vw;
+          border: 1px solid #ffd700;
+          //   box-shadow:
+          //     rgba(0, 0, 0, 0.25) 0px 54px 55px,
+          //     rgba(0, 0, 0, 0.12) 0px -12px 30px,
+          //     rgba(0, 0, 0, 0.12) 0px 4px 6px,
+          //     rgba(0, 0, 0, 0.17) 0px 12px 13px,
+          //     rgba(0, 0, 0, 0.09) 0px -3px 5px;
           img {
             width: 50px;
             height: 50px;
@@ -294,5 +367,21 @@
         }
       }
     }
+  }
+  .reward_list_center {
+    font-size: 22px;
+    font-style: normal !important;
+    text-align: left;
+    .title {
+      height: 30px;
+    }
+    .time {
+      font-size: 18px;
+      font-weight: normal;
+    }
+  }
+  .reward_list_value {
+    font-style: normal !important;
+    font-size: 22px;
   }
 </style>

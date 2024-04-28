@@ -47,7 +47,7 @@
         <div class="maxio_home_rightContent maxio_sd_rightContent" :class="[showLeft ? 'maxWidth' : '']">
           <sd>
             <div class="maxio_home_card maxio_pool_card" v-for="(item, index) in poolList" :key="index">
-              <div class="pool_name">{{ item.miner_pool_name }}</div>
+              <div class="pool_name">{{ item.minerPoolName }}</div>
               <div class="pool_detail">
                 <div class="pool_space">
                   <div class="pool_space_title">
@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-  import { ref, toRefs, computed } from 'vue';
+  import { ref, toRefs, computed, onMounted } from 'vue';
   import sd from './sd.vue';
   import moment from 'moment';
   const router = useRouter();
@@ -90,6 +90,16 @@
   };
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
   const currentItem = ref({});
+  const poolList = ref([]);
+  onMounted(() => {
+    currentItem.value = JSON.parse(window.localStorage.homeChooseBucket);
+    let myPoolList = JSON.parse(window.localStorage.getItem('myPoolList'));
+    if (myPoolList && myPoolList.length > 0) {
+      poolList.value = myPoolList;
+    } else {
+      poolList.value = [];
+    }
+  });
   const changeTab = (type) => {
     if (type === 'index') {
       router.push({ path: '/home' });
@@ -107,37 +117,34 @@
       router.push({ path: '/maxio' });
     }
   };
-  const poolList = ref([]);
-  poolList.value = [
-    {
-      id: '2',
-      bucket: 'sharebucket1',
-      createdAt: '2024-03-20T06:11:36.77584197Z',
-      delete_data: false,
-      dmc_account: 'yitianyitian',
-      expire_on_week: 25,
-      is_delete: 0,
-      is_pin: false,
-      memo: '',
-      miner_pool_addr: '',
-      miner_pool_name: 'MAXIO_POOL', //1
-      pin_size: '1024',
-      space: '1024', //2
-      stack_asset: '',
-      status: 'finish',
-      updatedAt: '2024-03-20T06:11:58.794228845Z',
-    },
-  ];
+
+  //   poolList.value = [
+  //     {
+  //       id: '2',
+  //       bucket: 'sharebucket1',
+  //       createdAt: '2024-03-20T06:11:36.77584197Z',
+  //       delete_data: false,
+  //       dmc_account: 'yitianyitian',
+  //       expire_on_week: 25,
+  //       is_delete: 0,
+  //       is_pin: false,
+  //       memo: '',
+  //       miner_pool_addr: '',
+  //       miner_pool_name: 'MAXIO_POOL', //1
+  //       pin_size: '1024',
+  //       space: '1024', //2
+  //       stack_asset: '',
+  //       status: 'finish',
+  //       updatedAt: '2024-03-20T06:11:58.794228845Z',
+  //     },
+  //   ];
   const handleEndTime = (item) => {
-    const nowDate = moment(item.createdAt).add(item.expire_on_week, 'weeks').format('YYYY-MM-DD HH:mm:ss');
+    const nowDate = moment(item.createdat).add(item.expireOnWeek, 'weeks').format('YYYY-MM-DD HH:mm:ss');
     return nowDate;
   };
   const handleTime = (item) => {
-    return moment.utc(item.createdAt).local().format('YYYY-MM-DD HH:mm:ss');
+    return moment.utc(item.createdat).local().format('YYYY-MM-DD HH:mm:ss');
   };
-  onMounted(() => {
-    currentItem.value = JSON.parse(window.localStorage.homeChooseBucket);
-  });
 </script>
 
 <style lang="scss" scoped>

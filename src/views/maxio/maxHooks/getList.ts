@@ -107,8 +107,10 @@ export default function getList(deviceData) {
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
                     { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
-            }
 
+            }
+            window.localStorage.setItem("myPoolList", JSON.stringify(myPoolList.value));
+            window.localStorage.setItem("rewardList", JSON.stringify(rewardList.value));
 
         });
         initIotList(deviceData, _token, appType, metadata);
@@ -138,6 +140,8 @@ export default function getList(deviceData) {
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
                     { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
+                window.localStorage.setItem("myIotList", JSON.stringify(myIotList.value));
+                window.localStorage.setItem("rewardList", JSON.stringify(rewardList.value));
             }
 
         });
@@ -169,10 +173,10 @@ export default function getList(deviceData) {
                 mySpaceInfo.value = res.toObject().result;
                 // console.log(mySpaceInfo.value, 'mySpaceInfo')
                 for (var key in mySpaceInfo.value) {
-
                     let _item = { name: key, value: mySpaceInfo.value[key] }
                     spaceData.value.push(_item);
                 }
+                window.localStorage.setItem("spaceData", JSON.stringify(spaceData.value));
                 // console.log(spaceData.value, ' spaceData.value')
             }
 
@@ -212,6 +216,7 @@ export default function getList(deviceData) {
         searchDeviceEarningsAPI(params1).then((res) => {
             if (res && res.result) {
                 MinerReward.value = res.result.counts;
+                window.localStorage.setItem("MinerReward", MinerReward.value);
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myIotList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
@@ -230,6 +235,8 @@ export default function getList(deviceData) {
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
                     { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
+                window.localStorage.setItem("IOTReward", JSON.stringify(IOTReward.value));
+                window.localStorage.setItem("rewardList", JSON.stringify(rewardList.value));
             }
         });
     };
@@ -264,6 +271,7 @@ export default function getList(deviceData) {
                         fileListArr.value[index - 1].total = item.getTotal();
                     }
                 });
+                window.localStorage.setItem("fileListArr", JSON.stringify(fileListArr.value));
                 // console.log(fileListArr.value, 'fileListArr');
             }
         });
