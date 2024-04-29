@@ -5,7 +5,7 @@
         <div class="card_border_box">
           <div class="card-sd_title">
             <span class="sd_title">
-              e6bd ... abcf
+              {{ currentItem.device_id && textSubStr(currentItem.device_id) }}
               <!-- <nut-noticebar :text="text" background="transparent" color="#fff" :left-icon="false" /> -->
             </span>
           </div>
@@ -19,7 +19,16 @@
 </template>
 
 <script setup>
-  const text = ref('您昨日的在线时长是10小时20分钟，收益+100.DMC');
+  import { ref, toRefs, computed, onMounted } from 'vue';
+  const currentItem = ref({});
+  onMounted(() => {
+    currentItem.value = JSON.parse(window.localStorage.homeChooseBucket);
+  });
+  const textSubStr = (text) => {
+    if (text) {
+      return text.substring(0, 4) + '...' + text.substring(text.length - 4, text.length);
+    }
+  };
 </script>
 
 <style lang="scss">

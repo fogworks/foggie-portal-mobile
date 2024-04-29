@@ -18,6 +18,7 @@
             </div>
           </div>
           <!-- <div class="max_ip"> ({{ currentItem.dedicatedip }})</div> -->
+          <div class="max_ip"> IOT Manage</div>
         </div>
         <div class="maxio_img" @click="changeTab('home')">
           <img src="@/assets/maxio/back.svg" alt="" class="icon_img" />
@@ -66,11 +67,11 @@
                 <img src="@/assets/maxio/room1.svg" v-if="index % 3 === 0" />
                 <img src="@/assets/maxio/room2.svg" v-if="index % 3 === 1" />
                 <img src="@/assets/maxio/room3.svg" v-if="index % 3 === 2" />
-                <div class="iot_room_title"> {{ item.groupName }}</div>
-                <div class="iot_room_number">({{ item.number }} IOT Devices) </div>
+                <div class="iot_room_title"> {{ item.groupname }}</div>
+                <div class="iot_room_number">({{ item.listList.length }} IOT Devices) </div>
               </div>
               <div class="iot_room_detail">
-                <div class="iot_device_item" v-for="(_item, _index) in item.deviceList" :key="_index">
+                <div class="iot_device_item" v-for="(_item, _index) in item.listList" :key="_index">
                   <div class="iot_temp">
                     <div class="iot_temp_line">
                       <img src="@/assets/maxio/temp.svg" />
@@ -86,6 +87,10 @@
                     </div>
                     <div class="iot_temp_line"> Humidity. </div>
                   </div>
+                </div>
+                <div v-if="!item.listList.length">
+                  <img src="@/assets/maxio/empty.svg" alt="" style="" class="empty_img" />
+                  <div class="empty_img_text">There is currently no new data available</div>
                 </div>
               </div>
             </div>
@@ -107,23 +112,23 @@
     showLeft.value = !showLeft.value;
   };
   const iotList = ref([
-    { name: 'BedRoom', number: '1' },
-    { name: 'Living Room', number: '2' },
+    // { name: 'BedRoom', number: '1' },
+    // { name: 'Living Room', number: '2' },
     // { name: 'Metting Room', number: '3' },
     // { name: 'Metting Room', number: '3' },
   ]);
 
   const iotRoomList = ref([]);
-  iotRoomList.value = [
-    {
-      groupName: 'Metting Room',
-      number: '2',
-      deviceList: [
-        { name: 'IOT-001', temp: '25', humidity: '60%' },
-        { name: 'IOT-002', temp: '30', humidity: '50%' },
-      ],
-    },
-  ];
+  //   iotRoomList.value = [
+  //     {
+  //       groupName: 'Metting Room',
+  //       number: '2',
+  //       deviceList: [
+  //         { name: 'IOT-001', temp: '25', humidity: '60%' },
+  //         { name: 'IOT-002', temp: '30', humidity: '50%' },
+  //       ],
+  //     },
+  //   ];
   const changeTab = (type) => {
     if (type === 'index') {
       router.push({ path: '/home' });
@@ -143,12 +148,25 @@
   };
   onMounted(() => {
     currentItem.value = JSON.parse(window.localStorage.homeChooseBucket);
+    let myIotList = JSON.parse(window.localStorage.getItem('myIotList'));
+    for (let i = 0; i < myIotList.length; i++) {
+      iotList.value.push({ name: myIotList[i].groupname, number: myIotList[i].listList.length });
+    }
+    iotRoomList.value = myIotList;
   });
 </script>
 
 <style lang="scss" scoped>
   @import url('./common.scss');
   @import url('./index.scss');
+  .empty_img {
+    margin-top: 40px;
+    width: 200px !important;
+    height: 200px !important;
+  }
+  .empty_img_text {
+    font-size: 20px !important;
+  }
   //   .minWidth {
   //     width: 0 !important;
   //     transform: translateX(-140px);

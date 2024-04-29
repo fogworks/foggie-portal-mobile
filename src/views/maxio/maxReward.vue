@@ -13,10 +13,12 @@
           <div class="maxio_title">
             <img src="@/assets/maxio/maxio.png" alt="" />
             <div class="title_text">
-              <div class="max_name"> MAXIO-001</div>
+              <!-- <div class="max_name"> MAXIO-001</div> -->
+              <div class="max_name"> {{ currentItem.dedicatedip || 'MAX IO-' + currentItem.id }}</div>
             </div>
           </div>
-          <div class="max_ip"> (192.168.1.1)</div>
+          <!-- <div class="max_ip"> (192.168.1.1)</div> -->
+          <div class="max_ip"> MAXIO Reward</div>
         </div>
         <div class="maxio_img" @click="changeTab('home')">
           <img src="@/assets/maxio/back.svg" alt="" class="icon_img" />
@@ -69,15 +71,16 @@
                 >
                   <div class="reward_pool_box">
                     <div class="reward_pool_title">
-                      <img src="@/assets/maxio/pool.svg" alt="" />
-                      Pool - {{ activePool }}</div
+                      <img src="@/assets/maxio/pool.svg" alt="" v-if="rewardType === 'pool'" />
+                      <img src="@/assets/maxio/room1.svg" alt="" v-if="rewardType === 'iot'" style="" />
+                      {{ rewardType === 'pool' ? 'Pool' : 'IOT' }} - {{ activePool }}</div
                     >
                     <nut-tabs v-model="activePool" size="small" :ellipsis="hideText" v-if="poolList.length > 1" @change="changeTypeTab()">
                       <nut-tab-pane :title="item.bucket" :pane-key="item.bucket" v-for="(item, index) in poolList" :key="index">
-                        <div class="today_reward_item">
+                        <!-- <div class="today_reward_item">
                           <span class="today_text">Today Anticipated</span>
                           <span class="today_value">+3,490</span>
-                        </div>
+                        </div> -->
                         <nut-tabs v-model="timeType" size="small" :ellipsis="hideText" @change="changeTypeTab()">
                           <nut-tab-pane :title="_item.key" :pane-key="_item.value" v-for="(_item, _key) in changeTabList" :key="_key">
                             <div class="reward_list" v-for="(item, index) in rewardDetailList" :key="index">
@@ -90,15 +93,19 @@
                               </div>
                               <div class="reward_list_value">+ {{ item.income }} </div>
                             </div>
+                            <div v-if="!rewardDetailList.length">
+                              <img src="@/assets/maxio/empty.svg" alt="" style="" class="empty_img" />
+                              <div class="empty_img_text">There is currently no new data available</div>
+                            </div>
                           </nut-tab-pane>
                         </nut-tabs>
                       </nut-tab-pane>
                     </nut-tabs>
                     <div v-else>
-                      <div class="today_reward_item">
+                      <!-- <div class="today_reward_item">
                         <span class="today_text">Today Anticipated</span>
                         <span class="today_value">+3,490</span>
-                      </div>
+                      </div> -->
                       <nut-tabs v-model="timeType" size="small" :ellipsis="hideText">
                         <nut-tab-pane :title="_item.key" :pane-key="_item.key" v-for="(_item, _key) in changeTabList" :key="_key">
                           <div class="reward_list" v-for="(item, index) in rewardDetailList" :key="index">
@@ -110,6 +117,10 @@
                               <div class="time">{{ handleTime(item) }}</div>
                             </div>
                             <div class="reward_list_value">+ {{ item.income }}</div>
+                          </div>
+                          <div v-if="!rewardDetailList.length">
+                            <img src="@/assets/maxio/empty.svg" alt="" style="" class="empty_img" />
+                            <div class="empty_img_text">There is currently no new data available</div>
                           </div>
                         </nut-tab-pane>
                       </nut-tabs>
@@ -204,7 +215,7 @@
     }
     if (pList && pList.length > 0) {
       poolList.value = pList;
-      activePool.value = poolList.value[0].bucket;
+      activePool.value = poolList.value[0].bucket || poolList.value[0].groupname;
     } else {
       poolList.value = [];
     }
@@ -316,6 +327,10 @@
         img {
           width: 40px;
           height: 40px;
+          margin-left: 6px;
+          transform: scale(1.3);
+          object-fit: contain;
+          margin-right: 8px;
         }
       }
       .reward_pool_box_parent {
@@ -383,5 +398,12 @@
   .reward_list_value {
     font-style: normal !important;
     font-size: 22px;
+  }
+  .empty_img {
+    width: 200px;
+    height: 200px;
+  }
+  .empty_img_text {
+    font-size: 18px;
   }
 </style>

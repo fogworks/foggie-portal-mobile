@@ -103,8 +103,8 @@ export default function getList(deviceData) {
                 myPoolList.value = res.toObject().result.dataList;
                 // console.log(myPoolList.value, 'myPoolList')
                 rewardList.value = [
-                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myIotList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
+                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
                     { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
 
@@ -136,8 +136,8 @@ export default function getList(deviceData) {
                 myIotList.value = res.toObject().dataList;
                 // console.log(myIotList.value, 'myIotList')
                 rewardList.value = [
-                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myIotList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
+                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
                     { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
                 window.localStorage.setItem("myIotList", JSON.stringify(myIotList.value));
@@ -218,8 +218,8 @@ export default function getList(deviceData) {
                 MinerReward.value = res.result.counts;
                 window.localStorage.setItem("MinerReward", MinerReward.value);
                 rewardList.value = [
-                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myIotList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
+                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
                     { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
             }
@@ -231,8 +231,8 @@ export default function getList(deviceData) {
             if (res && res.result) {
                 IOTReward.value = res.result.counts;
                 rewardList.value = [
-                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myIotList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myPoolList.value.length },
+                    { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
                     { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
                 window.localStorage.setItem("IOTReward", JSON.stringify(IOTReward.value));
