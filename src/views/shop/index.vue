@@ -732,7 +732,7 @@
   .out_blue {
     position: relative;
     height: 290px;
-    background: #43a3fd;
+    // background: #43a3fd;
     border-radius: 0 0 50px 50px;
 
     .inside_blue {
@@ -742,10 +742,11 @@
       width: 100%;
       height: 345px;
       background: #5264f9;
+      background: #c2d0dc36;
       border-radius: 0 0 50px 50px;
       overflow: hidden;
-      background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
-      background-image: linear-gradient(260deg, #98660b 0%, #0f0e0d 74%);
+      //   background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+      //   background-image: linear-gradient(260deg, #98660b 0%, #0f0e0d 74%);
 
       .back_img {
         position: absolute;
@@ -910,6 +911,8 @@
     // margin-top: 70px;
     border-radius: 10px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1490196078);
     // span {
     //   font-size: 16px;
     //   color: #666;
@@ -934,7 +937,7 @@
       font-weight: bold;
       margin-left: -30px;
       font-size: 32px;
-      color: #000;
+      //   color: #000;
       padding-left: 20px;
     }
   }
@@ -1161,6 +1164,8 @@
     background: #fff;
     padding: 20px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    background: rgba(255, 255, 255, 0.1490196078);
+    color: #fff;
     .vip_title {
       font-size: 34px;
       font-weight: bold;
@@ -1180,6 +1185,7 @@
           height: 100px;
           // background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
           background: #32323b;
+          background: #c6c6d787;
           border-radius: 50%;
           margin-right: 10px;
           display: flex;
@@ -1197,6 +1203,7 @@
         .vip_list_sub_title {
           font-size: 18px;
           color: #333;
+          color: #fff;
           white-space: nowrap;
         }
       }
@@ -1210,6 +1217,8 @@
     padding: 20px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     margin-top: 70px;
+    color: #fff;
+    background: #ffffff26;
     .vip_title {
       font-size: 34px;
       font-weight: bold;

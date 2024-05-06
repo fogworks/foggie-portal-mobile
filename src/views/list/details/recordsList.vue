@@ -319,6 +319,8 @@
     padding: 20px;
     width: 100%;
     background: #fff;
+    color: #fff;
+    background: transparent;
     box-sizing: border-box;
     color: $primary-color-end;
     // transition: all 0.3s;

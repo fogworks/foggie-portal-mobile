@@ -1,6 +1,6 @@
 <template>
   <div class="analysis_box analysis_charts_box">
-    <div style="background: #fff; margin-bottom: 10px">
+    <div style="margin-bottom: 10px">
       <div class="top_box">
         <TopBack> Assets Data Analysis</TopBack>
         <div class="Analysis_title">{{ timeType }} Data Analysis </div>
@@ -867,7 +867,7 @@
 <style lang="scss" scoped>
   .analysis_box {
     // min-height: 100%;
-    background: #f1f1f1;
+    // background: #f1f1f1;
   }
 
   .analysis_charts_box {
@@ -881,8 +881,8 @@
     // margin: 20px;
     padding: 50px 10px 30px;
     border-radius: 20px;
-    background: $primary-color;
-    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    // background: $primary-color;
+    // background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
     .Analysis_title {
       color: #fff;
       font-weight: bold;

@@ -436,6 +436,7 @@
     height: auto;
     font-weight: bold;
     margin-top: 20px;
+    background: #7878ad3b;
     .recharge_contact {
       margin-top: 12px;
       display: flex;
@@ -510,7 +511,8 @@
     background: $primary-color;
     color: #fff;
     border-radius: 30px;
-    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    // background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    background: #7878ad3b;
     // margin-top: 150px;
 
     > div {

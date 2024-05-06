@@ -22,7 +22,7 @@
   import { ref, toRefs, computed, onMounted } from 'vue';
   const currentItem = ref({});
   onMounted(() => {
-    currentItem.value = JSON.parse(window.localStorage.homeChooseBucket);
+    currentItem.value = window.localStorage.homeChooseBucket && JSON.parse(window.localStorage.homeChooseBucket);
   });
   const textSubStr = (text) => {
     if (text) {
@@ -74,20 +74,22 @@
     align-content: center;
     text-align: center;
     background-color: hsl(296, 59%, 10%);
-    width: 100%;
+    width: 98%;
     height: 100%;
     box-sizing: border-box;
     aspect-ratio: 9/16;
-    // -webkit-clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
-    // clip-path: polygon(0 0, 85% 0, 100% 14%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
-    -webkit-clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
-    clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
-    // border: 3px solid #15b8df;
-    background-color: hsl(296deg 59% 10% / 39%);
+    // -webkit-clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    // clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
+    // -webkit-clip-path: polygon(0 0, 90% 0, 98% 17%, 99% 59%, 91% 65%, 93% 79%, 99% 82%, 99% 90%, 89% 100%, 0 100%);
+    // clip-path: polygon(0 0, 90% 0, 98% 17%, 99% 59%, 91% 65%, 93% 79%, 99% 82%, 99% 90%, 89% 100%, 0 100%);
+    background-color: #54575f;
+    background: rgba(255, 255, 255, 0.3);
+    background: rgb(20 18 18);
     // box-shadow: #ffd700 0px 0px 1.066667vw;
-    border: 2px solid #ffffff61;
-    border-radius: 8px;
-    box-shadow: #d3d3eb 0px -0.4vw 1.066667vw 0.533333vw;
+    border: 2px solid #fff;
+    border: 0.266667vw solid #818f9e;
+    border-radius: 22px;
+    // box-shadow: #d3d3eb 0px -0.4vw 1.066667vw 0.533333vw;
   }
   .card_border_box {
     z-index: 1;
@@ -121,26 +123,38 @@
   }
 
   .card-content::after {
-    // content: '';
-    // position: absolute;
-    // top: 1%;
-    // left: 1%;
-    // width: 99%;
-    // height: 98%;
-    // background: repeating-linear-gradient(
-    //     to bottom,
-    //     transparent 0%,
-    //     rgba(64, 144, 181, 0.6) 1px,
-    //     rgb(0, 0, 0) 3px,
-    //     rgba(64, 144, 181, 0.3019607843) 5px,
-    //     #153544 4px,
-    //     transparent 0.5%
-    //   ),
-    //   repeating-linear-gradient(to left, hsl(295, 60%, 12%) 100%, hsla(295, 60%, 12%, 0.99) 100%);
+    content: '';
+    position: absolute;
+    top: 1%;
+    left: 1%;
+    width: 99%;
+    height: 98%;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(64, 144, 181, 0.6) 1px,
+        rgb(0, 0, 0) 3px,
+        rgba(64, 144, 181, 0.3019607843) 5px,
+        #153544 4px,
+        transparent 0.5%
+      ),
+      repeating-linear-gradient(to left, hsl(295, 60%, 12%) 100%, hsla(295, 60%, 12%, 0.99) 100%);
     // box-shadow: inset 0px 0px 30px 40px hsl(296, 59%, 10%);
     // -webkit-clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
     // clip-path: polygon(0 0, 90% 0, 100% 16%, 100% 60%, 92% 65%, 93% 77%, 99% 80%, 99% 90%, 89% 100%, 0 100%);
-    // animation: backglitch 94ms linear infinite;
+    // -webkit-clip-path: polygon(0 0, 90% 0, 98% 17%, 99% 59%, 91% 65%, 93% 79%, 99% 82%, 99% 90%, 89% 100%, 0 100%);
+    // clip-path: polygon(0 0, 90% 0, 98% 17%, 99% 59%, 91% 65%, 93% 79%, 99% 82%, 99% 90%, 89% 100%, 0 100%);
+    // animation: backglitch 1s linear infinite;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgb(103 118 124 / 60%) 1px,
+        rgb(0, 0, 0) 0.4vw,
+        rgba(64, 144, 181, 0.3019607843) 0.666667vw,
+        #3c4143 0.533333vw,
+        transparent 0.5%
+      ),
+      repeating-linear-gradient(to left, hsl(208.97deg 32.58% 17.45%) 100%, hsl(295deg 4.19% 5.84% / 99%) 100%);
   }
 
   .card-sd_title {

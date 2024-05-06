@@ -231,7 +231,8 @@
     background: $primary-color;
     color: #fff;
     border-radius: 30px;
-    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    // background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    background: #a3a3ba4a;
 
     > div {
       min-height: 60px;
@@ -315,6 +316,8 @@
     background: #fff;
     margin: 20px;
     border-radius: 40px;
+    background: #a3a3ba4a;
+    color: #fff;
     .service_title {
       font-size: 36px;
       font-weight: bold;
@@ -341,6 +344,7 @@
             border-radius: 30px;
             background: #3553ad;
             background: #eff2fc;
+            background: #0a0e1a96;
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
             // background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
           }

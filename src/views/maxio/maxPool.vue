@@ -72,6 +72,10 @@
                 </div>
               </div>
             </div>
+            <div v-if="!poolList.length">
+              <img src="@/assets/maxio/empty.svg" alt="" style="" class="empty_img" />
+              <div class="empty_img_text">There is currently no new data available</div>
+            </div>
           </sd>
         </div>
       </div>
@@ -192,5 +196,12 @@
     //     object-fit: contain;
     //   }
     // }
+    .empty_img {
+      margin-top: 150px;
+    }
+    .empty_img_text {
+      font-size: 26px;
+      margin-top: 20px;
+    }
   }
 </style>

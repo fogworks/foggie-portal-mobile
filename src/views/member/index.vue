@@ -451,10 +451,12 @@
     background-color: #fff;
     height: 100%;
     width: 100%;
-    background: url('@/assets/maxio/bg1.png');
+    background: url('@/assets/maxio/bg3.jpg');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center center;
+    // display: flex;
+    // align-items: center;
     @keyframes ani {
       0% {
         box-shadow: 0 0 0px #ff8329;
@@ -737,6 +739,7 @@
           width: 100px;
           height: 100px;
           background: #f4f5f9;
+          background: #f4f5f978;
           border-radius: 50%;
           display: flex;
           justify-content: center;
@@ -836,13 +839,13 @@
     box-sizing: border-box;
     margin: 0 20px;
     background: rgba(30, 31, 29, 0.15);
-    border: 1px solid rgba(211, 211, 211, 0.43);
+    // border: 1px solid rgba(211, 211, 211, 0.43);
     box-shadow: 0 0.266667vw 0.533333vw #00000040;
     border-radius: 18px;
     color: #fff;
     padding: 2.666667vw;
-    -webkit-backdrop-filter: blur(5.333333vw);
-    backdrop-filter: blur(5.333333vw);
+    // -webkit-backdrop-filter: blur(1px);
+    // backdrop-filter: blur(1px);
     box-sizing: border-box;
     height: calc(100% - 100px);
   }

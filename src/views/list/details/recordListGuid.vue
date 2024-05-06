@@ -145,6 +145,8 @@
     background: #fff;
     box-sizing: border-box;
     color: $primary-color-end;
+    background: transparent;
+    color: #fff;
     // transition: all 0.3s;
     span {
       font-size: 35px;

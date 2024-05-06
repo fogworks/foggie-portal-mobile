@@ -151,7 +151,7 @@
   }
 
   .info_box {
-    background: #f5f7fb;
+    /* background: #f5f7fb; */
     padding-bottom: 5rem;
 
     :deep {
@@ -171,7 +171,7 @@
     text-align: center;
     color: #fff;
     // background-color: $main-blue;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
     cursor: pointer;
 
     svg {

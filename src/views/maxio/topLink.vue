@@ -9,7 +9,7 @@
         <div class="my-wave-loader-block"></div>
         <div class="my-wave-loader-block"></div>
       </div>
-      <!-- <div class="text_loading">Connecting...</div> -->
+      <div class="text_loading">Connecting...</div>
       <div class="my-wave-loader-inner my_second_inner">
         <div class="my-wave-loader-block"></div>
         <div class="my-wave-loader-block"></div>

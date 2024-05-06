@@ -7,7 +7,7 @@
         </MyTransition>
       </RouterView>
     </div>
-    <nut-tabbar unactive-color="#364636" active-color="#1989fa" bottom v-model="activeTab" @tab-switch="tabSwitch">
+    <nut-tabbar unactive-color="#fff" active-color="#ffd700" bottom v-model="activeTab" @tab-switch="tabSwitch">
       <nut-tabbar-item v-for="item in tabItem" :key="item.key" :tab-title="$t(`tabbar.${item.key}`)" :icon="item.icon" />
     </nut-tabbar>
   
@@ -150,8 +150,8 @@
   )
   const tabItem = [
     { key: 'home', icon: Home },
-    { key: 'list', icon: Horizontal },
-    { key: 'allNFTList', icon: Image },
+    // { key: 'list', icon: Horizontal },
+    // { key: 'allNFTList', icon: Image },
     { key: 'member', icon: My },
   ];
   
@@ -187,7 +187,7 @@
             break;
         case 1:
             router.push('/list');
-            // router.push('/allNFTList');
+            router.push('/member');
             break;
         case 2:
             router.push('/allNFTList');
@@ -606,10 +606,14 @@
     // height: calc(100vh - 92px);
     // overflow-y: scroll;
     height: unset;
-    height: 100%;
+    // height: 100%;
   
     overflow-x: hidden;
     // background: #fff;
+    background: url('@/assets/maxio/bg3.jpg');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
   }
   
   .tabbar {
@@ -628,6 +632,7 @@
     :deep{
       .nut-tabbar{
         --nut-tabbar-height:60px;
+     
         .nut-popover-item-img{
           width: 20px;
           height: 20px;
@@ -640,4 +645,12 @@
     }
   }
   </style>
+<style>
+
+.nut-tabbar{
+    background: #111214 !important;
+    border-top: none !important;
+  }
+</style>
+
   

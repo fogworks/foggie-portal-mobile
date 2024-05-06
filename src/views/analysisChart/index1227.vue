@@ -533,7 +533,7 @@
 <style lang="scss" scoped>
   .analysis_box {
     // min-height: 100%;
-    background: #f1f1f1;
+    // background: #f1f1f1;
   }
 
   .analysis_charts_box {

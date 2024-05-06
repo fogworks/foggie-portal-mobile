@@ -17,14 +17,14 @@
             <img src="@/assets/maxio/maxio.png" alt="" />
             <div class="title_text">
               <div class="max_name"> {{ currentBucketData.dedicatedip || 'MAX IO-' + currentBucketData.id }}</div>
-              <div class="max_name"> （MAXIO-{{ currentBucketData.id }} ）</div>
+              <!-- <div class="max_name"> （MAXIO-{{ currentBucketData.id }} ）</div> -->
             </div>
           </div>
           <div class="maxio_title" v-if="showBucket">
             <img src="@/assets/home_bucket.png" alt="" />
             <div class="title_text">
               <div class="max_name"> {{ currentBucketData.domain || 'Order' + currentBucketData.order_id }}</div>
-              <div class="max_name"> （Bucket-001）</div>
+              <!-- <div class="max_name"> （Bucket-001）</div> -->
             </div>
           </div>
         </div>

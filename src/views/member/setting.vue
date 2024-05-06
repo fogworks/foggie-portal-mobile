@@ -36,6 +36,7 @@
       rgba(0, 0, 0, 0.4) 0px 2px 4px,
       rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
       rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1490196078) 0%, rgba(255, 255, 255, 0.3215686275) 100%);
   }
 
   .my_wave {
@@ -51,6 +52,7 @@
     // background: linear-gradient(744deg, #892ecb, #a49ae0 60%, #080b0c);
     // background: linear-gradient(744deg, #e448a2, #1f27df 60%, #080b0c);
     background: linear-gradient(744deg, #ffffff52, rgb(164 154 224 / 18%) 60%, #ca5891);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1490196078) 0%, rgba(255, 255, 255, 0.3215686275) 100%);
   }
 
   .my_icon {
