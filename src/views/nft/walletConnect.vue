@@ -221,7 +221,7 @@
     padding: 30px;
     height: 100%;
     box-sizing: border-box;
-    background: #fff;
+    // background: #fff;
   }
   .title {
     color: #000;

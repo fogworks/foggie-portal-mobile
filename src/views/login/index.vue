@@ -703,6 +703,8 @@
       .van-tab--active {
         background: hsl(209, 95%, 90.1%);
         background: hsl(242.31deg 79.6% 82.69%);
+        background: #cc6228;
+
         svg {
           color: hsl(211, 100%, 43.2%);
           color: #fff;
@@ -817,6 +819,8 @@
     // box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
     margin: 14px 0;
     cursor: pointer;
+    background: #ffffff4d;
+    border-radius: 14px;
     &:hover {
       //   background: hsl(0, 0%, 95.1%);
       border-radius: 0.5rem;

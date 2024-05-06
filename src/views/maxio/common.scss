@@ -46,6 +46,7 @@
     //   align-items: center;
     //   justify-content: center;
     position: relative;
+    width: 100%;
     .max_ip {
       position: absolute;
       font-size: 20px;
@@ -58,7 +59,7 @@
     align-items: center;
     background: #ffffff82;
     background: rgb(255 255 255 / 30%);
-    padding: 10px 20px;
+    padding: 8px 100px;
     border-radius: 26px;
     .title_text {
       display: flex;
@@ -86,7 +87,7 @@
     }
   }
   img {
-    width: 80px;
+    width: 60px;
     margin-right: 16px;
   }
   .icon_img {

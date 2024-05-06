@@ -182,7 +182,7 @@
 <style lang="scss" scoped>
   .page_box {
     // height: 100%;
-    background: #fff;
+    // background: #fff;
     padding-bottom: 5rem;
   }
   .top_img {
@@ -222,6 +222,7 @@
     position: relative;
     margin-top: 120px;
     text-align: center;
+    color: #fff;
     > p {
       font-size: 1.4rem;
       font-weight: 800;

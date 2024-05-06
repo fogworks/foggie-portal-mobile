@@ -3,16 +3,16 @@
     <TopBack class="top_title" type="2"
       ><span class="title">{{ activeTab == 1 ? 'NFT List' : 'Contract List' }}</span></TopBack
     >
-    <ListComponent 
-      v-model:activeTab="activeTab" 
-      chooseType="1" 
+    <ListComponent
+      v-model:activeTab="activeTab"
+      chooseType="1"
       :nftTotal="nftTotal"
       :contractTotal="contractTotal"
-      :imgList="imgList" 
+      :imgList="imgList"
       :contractList="contractList"
       @loadcontractList="loadcontractList"
       @loadImgList="loadImgList"
-      ></ListComponent>
+    ></ListComponent>
   </div>
 </template>
 
@@ -56,7 +56,7 @@
       imgList.value = res.result.data;
       nftTotal.value = res.result.total;
     }
-    const r = await search_deploy(d, 10 ,1);
+    const r = await search_deploy(d, 10, 1);
     if (r?.result?.data) {
       contractList.value = r.result.data;
       contractTotal.value = r.result.total;
@@ -71,7 +71,6 @@
   onMounted(() => {
     init();
   });
-  
 
   watch(walletInfo, (val) => {
     init();
@@ -93,7 +92,7 @@
     padding: 30px;
     height: 100%;
     box-sizing: border-box;
-    background: #fff;
+    // background: #fff;
   }
   .title {
     color: #000;
