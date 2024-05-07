@@ -1,5 +1,5 @@
 <template>
-  <div class="maxio_home_bg">
+  <div class="maxio_home_bg maxio_child_bg">
     <div class="maxio_home">
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">

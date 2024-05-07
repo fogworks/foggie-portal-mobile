@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%">
+  <div>
     <div class="top_box">
       <TopBack>Generate Access keys</TopBack>
     </div>
@@ -370,7 +370,7 @@
 
     const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
     header.setApptype(appType);
-    
+
     const ak = dynamicForm.state.tels[index].accessKey;
     const sk = dynamicForm.state.tels[index].secretKey;
     cred.setAccesskey(ak);
@@ -557,22 +557,34 @@
   .top_tips {
     margin-top: 2rem;
     background: #fff;
+    background: rgba(181, 186, 202, 0.38);
+    color: #fff;
   }
   .top_tips2 {
-    background: #fff;
+    // background: #fff;
     font-size: 0.8rem;
+    color: #fff;
     p {
       padding: 0.4rem 1rem;
       font-size: 1.3rem;
       font-weight: 600;
     }
+    .nut-searchbar {
+      background: rgba(181, 186, 202, 0.38);
+    }
+    .nut-searchbar__right-search-icon {
+      color: #fff;
+    }
+
     .nut-searchbar__search-input .nut-searchbar__input-bar {
       &:-ms-input-placeholder {
-        color: #000;
+        // color: #000;
+        color: #fff;
       }
 
       &::placeholder {
         color: #000;
+        color: #fff;
       }
     }
   }
@@ -657,7 +669,8 @@
     // display: inline-block;
     text-decoration: underline;
     color: #333;
-    font-weight: bold;
+    color: #fff;
+    font-weight: bolder;
     margin-bottom: 10px;
   }
 </style>

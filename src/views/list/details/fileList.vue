@@ -191,7 +191,7 @@
                     <Loading width="16" height="16"></Loading>
                   </template>
                 </nut-image>
-                <IconImage v-else-if="item.category == 1"></IconImage>
+                <IconImage1 v-else-if="item.category == 1"></IconImage1>
                 <img v-else :src="getFileType(item.name)" alt="" />
                 <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
               </template>
@@ -378,6 +378,7 @@
   import IconAllCate from '~icons/home/all-cate.svg';
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
+  import IconImage1 from '~icons/home/mimage.svg';
   import IconDocument from '~icons/home/document.svg';
   import IconFile from '~icons/home/file.svg';
   import IconVideo from '~icons/home/video.svg';
@@ -943,7 +944,7 @@
 
         $cordovaPlugins.downloadFileHH(url, checkData[0].fullName, headers);
       } else {
-        showToast.text('Coming soon for your download');
+        showToast.text('The download is in progress, please wait patiently');
         let ip = `https://${bucketName.value}.${poolUrl}:7007`;
         server = new grpcService.default.ServiceClient(ip, null, null);
         let range = new Prox.default.ProxRangeRequest();

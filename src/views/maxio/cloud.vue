@@ -43,12 +43,11 @@
     <div class="detail_box" v-if="!loadingAnmation">
       <div class="today_file">
         <span class="title">Recent Files</span>
-        <span class="see_all" @click="router.push({ name: 'FileList', query: { ...cloudQuery.value, category: 0, bucketName } })"
-          >See All ></span
-        >
+        <span class="see_all" @click="gotoOrderDetail(cloudQuery)">See All ></span>
       </div>
       <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
       <template v-else-if="tableData.length">
+        <!-- imgData -->
         <div class="file_list file_list_img" v-if="imgData.length">
           <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
             <nut-image
@@ -68,6 +67,7 @@
             <IconImage v-else></IconImage>
           </div>
         </div>
+        <!-- otherData -->
         <div class="file_list" v-if="otherData.length">
           <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
             <div :class="['left_icon_box']">
@@ -109,6 +109,8 @@
         image="error"
       >
       </nut-empty>
+
+      <!-- ActionComponent -->
       <ActionComponent
         v-model:fileItemPopupIsShow="fileItemPopupIsShow"
         v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
@@ -148,6 +150,16 @@
       <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
       </nut-skeleton>
     </div>
+    <uploader
+      v-if="isMobileOrder && isAvailableOrder"
+      :getSummary="getSummary"
+      :isMobileOrder="isMobileOrder"
+      :bucketName="bucketName"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      :orderInfo="orderInfo"
+      @uploadComplete="uploadComplete"
+    ></uploader>
   </div>
 </template>
 
@@ -155,12 +167,13 @@
   import ActionComponent from '@/views/list/details/actionComponent.vue';
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
   import getFileType from '@/utils/getFileType.ts';
-  import IconImage from '~icons/home/image.svg';
+  //   import IconImage from '~icons/home/image.svg';
+  import IconImage from '~icons/home/mimage.svg';
   import IconPlay from '~icons/home/play.svg';
   import IconMdiF from '~icons/home/png.svg';
   import IconRiPie from '~icons/home/pie.svg';
   import IconSpace from '~icons/home/space.svg';
-  import { HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
+  import { MoreX, HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   import { showDialog, showToast } from '@nutui/nutui';
@@ -175,6 +188,7 @@
   import useDelete from '@/views/list/details/useDelete.js';
   import moment from 'moment';
   import { poolUrl } from '@/setting.js';
+  import uploader from '@/views/list/details/uploader.vue';
   const props = defineProps({
     cloudQuery: {
       type: Object,
@@ -330,6 +344,34 @@
     { deep: true },
   );
 
+  const gotoOrderDetail = (item) => {
+    if (!item.domain) {
+      router.push({
+        name: 'listDetails',
+        query: {
+          id: item.order_id,
+          uuid: item.uuid,
+          amb_uuid: item.amb_uuid,
+          domain: item.domain,
+        },
+      });
+    } else {
+      router.push({
+        name: 'FileList',
+        query: {
+          id: item.order_id,
+          uuid: item.uuid,
+          amb_uuid: item.amb_uuid,
+          domain: item.domain,
+        },
+      });
+    }
+  };
+  const uploadComplete = () => {
+    console.log('uploadComplete');
+    getFileList();
+    // refresh();
+  };
   const getMerkleState = (timeout = true) => {
     const d = {
       orderId: order_id.value,
@@ -406,7 +448,7 @@
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
         $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
       } else {
-        showToast.text('Coming soon for your download');
+        showToast.text('The download is in progress, please wait patiently');
         fetch(url, { method: 'GET', headers })
           .then((response) => {
             if (response.ok) {

@@ -100,10 +100,11 @@
 
         <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="showBucket" :class="[showLeft ? 'maxWidth' : '']">
           <sd>
-            <div v-if="currentBucketData.state === 0" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
+            <div v-if="!cloudQuery.uuid" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
               <img src="@/assets/maxio/empty.png" alt="" />
             </div>
-            <CloudComponent :cloudQuery="cloudQuery" v-if="currentBucketData.state !== 0"></CloudComponent>
+            <!-- v-if="currentBucketData.state !== 0" -->
+            <CloudComponent :cloudQuery="cloudQuery" v-if="cloudQuery.uuid"></CloudComponent>
           </sd>
         </div>
       </div>
@@ -198,6 +199,7 @@
 
   const changeMenu = (item, _type) => {
     window.localStorage.homeChooseBucket = JSON.stringify(item);
+    userStore.setCurrentLeftTab(item);
     if (item.device_type === 3) {
       currentBucketData.value = item;
       cloudQuery.value = {
@@ -211,6 +213,7 @@
       showBucket.value = false;
       currentBucketData.value = item;
     }
+    console.log(currentBucketData.value, 'changeMenu', currentBucketData.value.state);
   };
   const gotoBucketDetail = (item) => {
     router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });

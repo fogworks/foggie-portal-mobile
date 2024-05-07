@@ -614,6 +614,7 @@
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center center;
+    height: 100%;
   }
   
   .tabbar {

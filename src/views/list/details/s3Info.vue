@@ -80,6 +80,7 @@
   }
   .title_click {
     color: red;
+    color: #f9d310;
     text-decoration: underline;
   }
 
@@ -94,6 +95,7 @@
     font-weight: bold;
     display: inline-block;
     font-weight: bold;
+    color: #fff;
   }
   .title {
     width: 100%;
@@ -104,10 +106,12 @@
     line-height: 40px;
     font-weight: bold;
     display: inline-block;
+    color: #d6d1d1;
   }
   .h1_title {
     font-size: 30px;
     color: #4c5093;
+    color: #dedeea;
   }
   img {
     width: 70%;

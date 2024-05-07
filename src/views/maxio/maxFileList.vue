@@ -262,7 +262,7 @@
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
         $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
       } else {
-        showToast.text('Coming soon for your download');
+        showToast.text('The download is in progress, please wait patiently');
         fetch(url, { method: 'GET', headers })
           .then((response) => {
             if (response.ok) {

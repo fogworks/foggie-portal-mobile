@@ -696,7 +696,7 @@
       // moveShow.value = true;
       // doSearch('', movePrefix.value, true);
     } else if (type == 'download') {
-      showToast.text('Coming soon for your download');
+      showToast.text('The download is in progress, please wait patiently');
       let ip = `https://${bucketName.value}.${poolUrl}:7007`;
       server = new grpcService.default.ServiceClient(ip, null, null);
       let range = new Prox.default.ProxRangeRequest();

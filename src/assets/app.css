@@ -10,11 +10,15 @@ p {
   margin: 0;
   padding: 0;
 }
+/* body {
+  height: 100%;
+} */
 .nut-tabs__titles-item {
   background: #fff;
 }
 .nut-button--info {
   background: #5758a0;
+  background: rgba(181, 186, 202, 0.38) !important;
   border-radius: 20px;
 }
 .top_back {
@@ -72,9 +76,9 @@ p {
   /* margin: 20px; */
   padding: 50px 10px 30px;
   border-radius: 20px;
-  background: #5758a0;
+  /* background: #5758a0;
   background: #7878ad3b;
-  background: transparent;
+  background: transparent; */
   /* background-image: linear-gradient(137deg, #4062bb 0%, #5200ae 74%); */
 }
 

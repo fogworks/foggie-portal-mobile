@@ -133,7 +133,7 @@
                 @click="getKey"
               >
                 <div class="svg_box svg_box2 order-icon-recycle">
-                  <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                  <img src="@/assets/maxio/bucket.svg" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
                 </div>
                 <p>S3 Service</p>
               </div>
@@ -142,7 +142,7 @@
                 @click="getIPFSService"
               >
                 <div class="svg_box svg_box2 order-icon-recycle">
-                  <img src="@/assets/ipfs.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                  <img src="@/assets/maxio/ipfs.svg" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
                 </div>
                 <p>IPFS Pinning</p>
               </div>
@@ -387,7 +387,7 @@
   import { Loading, MoreX } from '@nutui/icons-vue';
   import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
-  import getFileType from "@/utils/getFileType.ts";
+  import getFileType from '@/utils/getFileType.ts';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
   import MyAudio from './myAudio.vue';
@@ -403,12 +403,12 @@
   import IconHttp from '~icons/home/http.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';
   import { delay, throttle } from 'lodash';
-  import IconAudio2 from '~icons/home/audio2.svg';
-  import IconMore from '~icons/home/more.svg';
-  import IconImage from '~icons/home/image.svg';
+  //   import IconAudio2 from '~icons/home/audio2.svg';
+  //   import IconMore from '~icons/home/more.svg';
+  //   import IconImage from '~icons/home/image.svg';
+  //   import IconDocument from '~icons/home/document.svg';
+  //   import IconVideo from '~icons/home/video.svg';
   import IconPlay from '~icons/home/play.svg';
-  import IconDocument from '~icons/home/document.svg';
-  import IconVideo from '~icons/home/video.svg';
   //   import IconMdiF from '~icons/mdi/file-cloud';
   //   import IconRiPie from '~icons/ri/pie-chart-fill';
   import IconMdiF from '~icons/home/png.svg';
@@ -418,6 +418,13 @@
   import IconRiSendToBack from '~icons/ri/send-to-back';
   import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
   import keySolid from '~icons/teenyicons/key-solid';
+
+  import IconAudio2 from '~icons/home/maudio.svg';
+  import IconImage from '~icons/home/mimage.svg';
+  import IconDocument from '~icons/home/mdoc.svg';
+  import IconVideo from '~icons/home/mvideo.svg';
+  import IconOther from '~icons/home/mother.svg';
+
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   // import AESHelper from './AESHelper';
@@ -792,7 +799,7 @@
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
         $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
       } else {
-        showToast.text('Coming soon for your download');
+        showToast.text('The download is in progress, please wait patiently');
         fetch(url, { method: 'GET', headers })
           .then((response) => {
             if (response.ok) {
@@ -2086,8 +2093,8 @@
     // margin: 0 30px;
     padding: 30px 10px;
     border-radius: 20px !important;
-    background: $primary-color;
-    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    // background: $primary-color;
+    // background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
     padding-bottom: 50px;
     .order-content_wrap {
       display: flex;
@@ -2250,6 +2257,7 @@
       flex-wrap: wrap;
       padding: 10px;
       background: #fff;
+      background: rgba(181, 186, 202, 0.38);
       border-radius: 20px;
       width: 40%;
       :deep {
@@ -2283,6 +2291,7 @@
         height: 150px;
         cursor: pointer;
         font-weight: bold;
+        background: transparent !important;
         &.miner_tool {
           height: 100px;
           .svg_box {
@@ -2294,6 +2303,7 @@
           }
           p {
             font-size: 0.8rem;
+            color: #fff !important;
           }
         }
 
@@ -2373,6 +2383,7 @@
 
         p {
           color: #051e56;
+          color: #fff;
           white-space: nowrap;
         }
 
@@ -2402,10 +2413,10 @@
     }
     .right_check_box {
       width: 60%;
-      background: #e9e9f8;
+      //   background: #e9e9f8;
       margin-left: 40px;
       box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-      background: #fff;
+      //   background: #fff;
     }
 
     .type_check_box1 {
@@ -2453,6 +2464,7 @@
       margin: 30px 0;
       font-size: 32px;
       font-weight: bold;
+      color: #fff;
 
       .title {
         font-weight: bold;
@@ -2460,6 +2472,7 @@
 
       .see_all {
         color: #5460fe;
+        color: #fff;
         font-size: 30px;
         cursor: pointer;
         // text-decoration: underline;
@@ -2498,6 +2511,7 @@
       margin-top: 20px;
       padding: 0.5rem;
       background: #fff;
+      background: rgba(181, 186, 202, 0.38);
       border-radius: 16px;
       .list_item {
         width: 120px;
@@ -2569,10 +2583,11 @@
     .see_all {
       margin-top: 1rem;
       color: #5460fe;
+      color: #fff;
       font-size: 30px;
       text-align: center;
       cursor: pointer;
-      // text-decoration: underline;
+      //   text-decoration: underline;
     }
 
     .top_grid {
