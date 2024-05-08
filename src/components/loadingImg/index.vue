@@ -1,9 +1,24 @@
 <template>
-  <div class="loader">
-    <div class="box-1"> </div>
-  </div>
+  <div class="loader11"></div>
 </template>
 <style scoped>
+  .loader11 {
+    width: 150px;
+    height: 150px;
+    border: 8px solid rgb(0, 0, 0, 0.11);
+    border-radius: 50%;
+    border-top-color: rgb(235, 169, 47);
+    border-left-color: rgb(43, 145, 87);
+    border-right-color: rgb(20, 102, 226);
+    border-bottom-color: rgb(224, 71, 71);
+    animation: loader1776 2s linear infinite;
+  }
+
+  @keyframes loader1776 {
+    to {
+      transform: rotate(360deg);
+    }
+  }
   .loader {
     position: relative;
   }

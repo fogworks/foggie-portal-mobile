@@ -72,6 +72,10 @@
                 </div>
               </div>
             </div>
+            <div class="today_file">
+              <span class="title">Recent Files</span>
+              <span class="see_all" @click="gotoFile(cloudQuery)">See All ></span>
+            </div>
             <maxFileList :cloudQuery="cloudQuery" :deviceData="currentItem"></maxFileList>
           </sd>
         </div>
@@ -116,6 +120,17 @@
     } else if (type === 'home') {
       router.push({ path: '/maxio' });
     }
+  };
+  const gotoFile = (item) => {
+    router.push({
+      name: 'maxFileList',
+      query: {
+        id: item.order_id,
+        uuid: item.uuid,
+        amb_uuid: item.amb_uuid,
+        domain: item.domain,
+      },
+    });
   };
   onMounted(() => {
     currentItem.value = JSON.parse(window.localStorage.homeChooseBucket);

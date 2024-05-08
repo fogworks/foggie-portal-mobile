@@ -150,9 +150,13 @@
 
   .app_loading {
     background: #fff;
-
     .nut-toast-inner {
       box-shadow: none;
+      color: #fff;
+    }
+    .nut-toast-inner {
+      background: rgba(181, 186, 202, 0.38);
+      background: transparent;
     }
   }
 

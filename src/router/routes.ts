@@ -130,6 +130,15 @@ export const routes = [
                 },
             },
             {
+                path: 'maxFileList',
+                name: 'maxFileList',
+                component: () => import('@/views/maxio/maxFileOpt/maxAllFileList.vue'),
+                meta: {
+                    notKeepAlive: true,
+                    notBar: true,
+                },
+            },
+            {
                 path: 'recordsList',
                 name: 'RecordsList',
                 component: () => import('@/views/list/details/recordsList.vue'),
@@ -311,7 +320,7 @@ export const routes = [
             {
                 path: 'maxFile',
                 name: 'maxFile',
-                component: () => import('@/views/maxio/maxFile.vue'),
+                component: () => import('@/views/maxio/maxFileManage.vue'),
                 meta: {
                     title: 'tabbar.list',
                 },

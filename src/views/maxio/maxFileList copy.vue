@@ -122,8 +122,8 @@
   import { HmacSHA1, enc } from 'crypto-js';
   import { useRouter } from 'vue-router';
   //   import useOrderInfo from '@/views/list/details/useOrderInfo.js';
-  import maxFileInfo from './maxHooks/maxFileInfo.js';
-  import maxioFileShare from './maxHooks/maxioFileShare.js';
+  import maxFileInfo from './maxFileOpt/maxFileInfo.js';
+  import maxioFileShare from './maxFileOpt/maxioFileShare.js';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import { valid_upload, get_order_sign, get_vood_token } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';

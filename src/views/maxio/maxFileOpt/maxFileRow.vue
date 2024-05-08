@@ -13,6 +13,7 @@
       :style="{ height: 'auto', minHeight: chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0 ? '80%' : '40%' }"
       v-model:visible="fileItemPopupIsShow1"
     >
+      111
       <div class="fileItem_header">
         <img v-if="(chooseItem.category == 1 || chooseItem.category == 2) && chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
         <img v-else-if="chooseItem.isDir" src="@/assets/svg/home/folder.svg" alt="" />
@@ -388,7 +389,6 @@
         </div>
       </nut-overlay>
     </Teleport>
-    <!-- wordVisible -->
     <Teleport to="body">
       <nut-action-sheet z-index="1800" @close="emits('update:wordVisible', false)" v-model:visible="wordVisible" title="Links">
         <div class="custom-action_sheet">
@@ -440,20 +440,19 @@
   import { Search2, TriangleUp, Loading, MoreX, Tips } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
-  import useDelete from '@/views/list/details/useDelete.js';
-  import useShare from '@/views/list/details/useShare.js';
-  import HLSVideo from '@/views/list/details/hlsVideo.vue';
-  import MyAudio from '@/views/list/details/myAudio.vue';
+  import useDelete from './useDelete.js';
+  import useShare from './useShare.js';
+  import HLSVideo from './hlsVideo.vue';
+  import MyAudio from './myAudio.vue';
   // import { ProxListObjectsRequest, ProxListObjectsReq, ProxHeader } from '@/pb/prox_pb.js';
   // import Prox from '@/pb/prox_pb.ts';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
-  import useOrderInfo from '@/views/list/details/useOrderInfo.js';
+  import useOrderInfo from './useOrderInfo.js';
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import moment from 'moment';
-
   import { HmacSHA1, enc } from 'crypto-js';
   import { poolUrl, browserUrl } from '@/setting.js';
 
@@ -563,7 +562,8 @@
   watch(
     fileItemPopupIsShow,
     (val) => {
-      //   console.log('111--------', chooseItem.value);
+      console.log('111-----fileItemPopupIsShow---', val, chooseItem.value, 'chooseItem.value');
+      //   console.log(chooseItem.value, 'chooseItem.value');
       fileItemPopupIsShow1.value = val;
     },
     { deep: true, immediate: true },

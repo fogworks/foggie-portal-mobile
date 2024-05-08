@@ -154,7 +154,7 @@
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
   };
-  import getList from './maxHooks/getList.ts';
+  import getList from './maxFileOpt/getList';
   const { getTimeReward } = getList();
   //   const rewardList = ref([
   //     { name: 'Minning Reward', number: '100.0000', type: 'pool' },

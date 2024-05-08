@@ -107,7 +107,11 @@
 </template>
 
 <script setup lang="ts">
-  import maxFileRow from './maxFileRow.vue';
+  import maxFileRow from './maxFileOpt/maxFileRow.vue';
+  import useDelete from './maxFileOpt/useDelete.js';
+  import maxFileInfo from './maxFileOpt/maxFileInfo.js';
+  //   import useOrderInfo from '@/views/list/details/useOrderInfo.js';
+
   import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
   import { ref, onMounted, watch, createVNode, provide } from 'vue';
@@ -115,19 +119,16 @@
   import IconImage from '~icons/home/image.svg';
   import IconPlay from '~icons/home/play.svg';
   import { s3Url, poolUrl, maxUrl } from '@/setting.js';
-  import { HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
+  import { MoreX, HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
   import * as Prox from '@/pb/net_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
   import { showDialog, showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { HmacSHA1, enc } from 'crypto-js';
   import { useRouter } from 'vue-router';
-  //   import useOrderInfo from '@/views/list/details/useOrderInfo.js';
-  import maxFileInfo from './maxHooks/maxFileInfo.js';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import { valid_upload, get_order_sign, get_vood_token } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
-  import useDelete from '@/views/list/details/useDelete.js';
   import moment from 'moment';
   const props = defineProps({
     cloudQuery: {
@@ -194,6 +195,7 @@
   }
   function clickFIleItem(params) {
     detailRow.value = params;
+    console.log(params, 'clickFIleItemclickFIleItemparams', detailRow.value, detailRow.value.originalSize);
     fileItemPopupIsShow.value = true;
     if (detailRow.value.originalSize > 1024 * 1024 * 200 && detailRow.value.category == 1) {
       showToast.text('The file is too large, please download and view');
@@ -692,19 +694,26 @@
       type === 'ico' ||
       type === 'webp'
     ) {
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key);
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, type === 'ico' || type === 'svg' ? false : true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value);
+      imgHttpLink = getHttpShare(
+        accessKeyId.value,
+        secretAccessKey.value,
+        item.key,
+        type === 'ico' || type === 'svg' ? false : true,
+        deviceData.value,
+      );
+      console.log(imgHttpLarge, 'imgHttpLinkimgHttpLink', imgHttpLink);
     } else if (type === 'mp3') {
       type = 'audio';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key) + '&inline=true';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value) + '&inline=true';
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key) + '&inline=true';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value) + '&inline=true';
     } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key);
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value);
     } else {
       isSystemImg = true;
     }
@@ -1295,7 +1304,7 @@
   .detail_box {
     box-sizing: border-box;
     height: 100%;
-    padding: 20px 0;
+    // padding: 20px 0;
     padding-bottom: 5rem;
     // background: #fff;
     border-radius: 40px 40px 0 0;

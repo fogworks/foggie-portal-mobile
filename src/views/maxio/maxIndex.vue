@@ -63,6 +63,10 @@
     <!-- <div class="maxio_home_title">Depins({{ deviceNumber }})</div> -->
     <!-- <div class="maxio_home_card" @click="changeTab('iot')"> -->
     <!-- <img src="@/assets/maxio/maxlist.jpg" alt="" style="width: 100%" /> -->
+    <div class="today_file">
+      <span class="title">Recent Files</span>
+      <span class="see_all" @click="changeTab('file')">Go File></span>
+    </div>
     <maxFileList :cloudQuery="cloudQuery" :deviceData="currentTabItem"></maxFileList>
     <!-- </div> -->
     <!-- <div class="maxio_home_title">Devices Rewards</div>
@@ -82,7 +86,7 @@
   import IconDocument from '~icons/home/mdoc.svg';
   import IconVideo from '~icons/home/mvideo.svg';
   import IconOther from '~icons/home/mother.svg';
-  import getList from './maxHooks/getList.ts';
+  import getList from './maxFileOpt/getList.ts';
   import { useUserStore } from '@/store/modules/user';
   import maxFileList from './maxFileList.vue';
   const userStore = useUserStore();

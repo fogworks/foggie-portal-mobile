@@ -1,4 +1,4 @@
-import useVariable from '@/views/list/details/useVariable';
+import useVariable from './useVariable';
 import { ref } from 'vue';
 import { showToast, showDialog } from '@nutui/nutui';
 import * as Prox from '@/pb/prox_pb.js';
