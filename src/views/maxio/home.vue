@@ -2,7 +2,7 @@
   <div class="maxio_home_bg">
     <div class="maxio_home">
       <div class="top_link_box">
-        <topLink></topLink>
+        <topLink :topType="topType" :topShow="topShow"></topLink>
       </div>
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
@@ -90,6 +90,10 @@
               <div class="title_text">{{ item.domain || 'Order' + item.order_id }}</div>
             </div>
           </div>
+
+          <div class="menu_img buy_img" @click="buyOrder">
+            <img src="@/assets/maxio/buy.svg" class="left_max_png" />
+          </div>
         </div>
 
         <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="!showBucket" :class="[showLeft ? 'maxWidth' : '']">
@@ -117,7 +121,7 @@
   import CloudComponent from './cloud.vue';
   import maxIndex from './maxIndex.vue';
   import sd from './sd.vue';
-  import topLink from './topLink.vue';
+  import topLink from './component/topLink.vue';
   import iconImg from './iconImg.vue';
   import useOrderList from './maxFileOpt/useAllOrderList';
   import { search_cloud } from '@/api';
@@ -132,6 +136,8 @@
     showBucket: false,
     cloudQuery: {},
   });
+  const topType = ref('link');
+  const topShow = ref(false);
   const { cloudQuery, showBucket } = toRefs(state);
   const { resetData, loadMore, allOrderList, hasMore, infinityValue, total, maxTableData, historyData, runningData } = useOrderList();
   const router = useRouter();
@@ -252,6 +258,10 @@
       showBucket.value = false;
       currentBucketData.value = item;
     }
+  };
+  const buyOrder = () => {
+    topType.value = 'buy';
+    topShow.value = !topShow.value;
   };
   //   onMounted(async () => {
   //     await loadMoreFun();

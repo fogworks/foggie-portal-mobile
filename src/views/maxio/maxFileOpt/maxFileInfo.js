@@ -75,7 +75,7 @@ export default function initMaxFile() {
       let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
       let metadata = {
         'X-Custom-Date': date + 'Z',
-        'X-Sid': '12D3KooWRZN3eZ7engVVrRfcvuHTrAiPQJp64QghVyxg7LbxSsmY',
+        'X-Sid': deviceData.peer_id,
       };
 
       request.setIdsList([deviceData.foggie_id]);
@@ -102,33 +102,15 @@ export default function initMaxFile() {
   };
   const getHttpShare = (awsAccessKeyId, awsSecretAccessKey, keyName, thumb, deviceData) => {
     const objectKey = encodeURIComponent(keyName);
-    // const expirationTime = Math.floor(Date.now() / 1000) + (isMobileDevice.value ? periodValue.value[0] : periodValue.value);
-
-    // const httpMethod = 'GET';
-    // const contentType = '';
-    // const contentMd5 = '';
-    // const canonicalizedAmzHeaders = '';
-
-    // const canonicalizedResource = `${maxUrl}/o/${objectKey}`;
-    // const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n${expirationTime}\n${canonicalizedAmzHeaders}/${canonicalizedResource}`;
-
-    // let hmac = HmacSHA1(signature, awsSecretAccessKey);
-    // const signatureBase64 = enc.Base64.stringify(hmac);
-
-    // const baseUrl = `${maxUrl}/o/${objectKey}`;
-    // const baseUrl = `${maxUrl}`;
     const baseUrl = `http://154.31.41.36:9900`;
     // const baseUrl = `http://127.0.0.1:9009`;
     let token = MaxTokenMap.value[deviceData.device_id];
     token = Base64.encode(token.split(' ')[1]);
-    console.log(`token: ${token}`);
     if (thumb) {
       let str = `${baseUrl}/o/${deviceData.peer_id}/${deviceData.foggie_id}/${objectKey}?thumb=true&token=${token}`;
-      //   console.log('---------getHttpShare-------------', str);
       return str;
     }
     let str = `${baseUrl}/o/${deviceData.peer_id}/${deviceData.foggie_id}/${objectKey}&token=${token}`;
-    // console.log('---------getHttpShare--------2222-----', str);
     return str;
   };
   return { accessKeyId, secretAccessKey, getHttpShare, initSk, getSummary };

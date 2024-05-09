@@ -64,7 +64,7 @@
       >
       </nut-empty>
 
-      <maxFileRow
+      <actionComponent
         v-model:fileItemPopupIsShow="fileItemPopupIsShow"
         v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
         v-model:renameShow="renameShow"
@@ -72,6 +72,7 @@
         v-model:detailShow="detailShow"
         v-model:imgStartIndex="imgStartIndex"
         v-model:wordVisible="wordVisible"
+        :orderInfo="deviceData"
         :category="0"
         :header="header"
         :prefix="[]"
@@ -93,7 +94,7 @@
         @swipeChange="swipeChange"
         @clickFIleItemDetail="clickFIleItemDetail"
         @clickFIleItem="clickFIleItem"
-      ></maxFileRow>
+      ></actionComponent>
     </div>
     <div class="skeleton-picture" v-if="loadingAnmation" style="width: 100%">
       <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
@@ -107,6 +108,7 @@
 </template>
 
 <script setup lang="ts">
+  import actionComponent from './maxFileOpt/actionComponent.vue';
   import maxFileRow from './maxFileOpt/maxFileRow.vue';
   import useDelete from './maxFileOpt/useDelete.js';
   import maxFileInfo from './maxFileOpt/maxFileInfo.js';
@@ -202,7 +204,7 @@
     }
   }
   function clickFIleItemDetail(params) {
-    console.log(params);
+    console.log('list00-----clickFIleItemDetail', params);
     fileItemDetailPopupIsShow.value = true;
   }
   order_id.value = cloudQuery.value.id;
@@ -212,10 +214,9 @@
   const detailRow = reactive({ value: {} });
 
   const handleRow = (row) => {
+    // console.log('handleRow-------', row, row.name.substring(row.name.lastIndexOf('.') + 1));
     detailRow.value = row;
     const type = row.name.substring(row.name.lastIndexOf('.') + 1);
-    console.log(row.imgUrlLarge);
-    console.log(type);
 
     if (type == 'pdf') {
       wordVisible.value = true;
@@ -252,10 +253,8 @@
   };
   const $cordovaPlugins = inject('$cordovaPlugins');
   const handlerClick = async (type: string) => {
-    // return;
     const checkData = JSON.parse(JSON.stringify(detailRow.value));
     console.log(checkData, 'checkData');
-
     if (type === 'download') {
       const objectKey = encodeURIComponent(checkData.fullName);
       const headers = getSignHeaders(objectKey);
@@ -369,29 +368,6 @@
     }
   };
 
-  const getSignHeaders = (objectKey) => {
-    return;
-    // const objectKey = encodeURIComponent(checkData[0].fullName);
-    const date = new Date().toUTCString();
-
-    const httpMethod = 'GET';
-    const contentType = '';
-    const contentMd5 = '';
-    const canonicalizedAmzHeaders = '';
-    const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
-
-    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
-
-    let hmac = HmacSHA1(signature, secretAccessKey.value);
-    const signatureBase64 = enc.Base64.stringify(hmac);
-
-    const headers = {
-      'x-amz-date': date,
-      Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
-    };
-    return headers;
-  };
-
   async function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
     if (!deviceData.value.device_id) {
       return;
@@ -410,6 +386,7 @@
     let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
     let metadata = {
       'X-Custom-Date': date + 'Z',
+      'X-Sid': deviceData.value.peer_id,
     };
 
     header.setPeerid(deviceData.value.peer_id);
@@ -528,8 +505,7 @@
         } else if (err) {
           isError.value = true;
           showToast.hide('file_list');
-          console.log('err----list', err);
-          console.log('err----list', JSON.stringify(err));
+          console.log('err----listlistObjects', err);
         }
       },
     );
@@ -702,7 +678,6 @@
         type === 'ico' || type === 'svg' ? false : true,
         deviceData.value,
       );
-      console.log(imgHttpLarge, 'imgHttpLinkimgHttpLink', imgHttpLink);
     } else if (type === 'mp3') {
       type = 'audio';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
@@ -959,7 +934,7 @@
       if (val) {
         // console.log(deviceData.value, 'maxfileList----0000');
         await initToken(deviceData.value);
-        initSk(deviceData.value, maxToken.value);
+        // initSk(deviceData.value, maxToken.value);
         getFileList();
         getSummary(deviceData.value, maxToken.value);
 

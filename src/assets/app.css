@@ -18,7 +18,7 @@ p {
 }
 .nut-button--info {
   background: #5758a0;
-  background: rgba(181, 186, 202, 0.38) !important;
+  /* background: rgba(181, 186, 202, 0.38) !important; */
   border-radius: 20px;
 }
 .top_back {

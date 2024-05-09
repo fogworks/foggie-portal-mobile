@@ -195,8 +195,8 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     let key = item.key;
 
     if (key) {
+      console.log(orderInfo, orderInfo.value, 'orderInfo.value');
       let foggie_id = orderInfo.value.foggie_id;
-      // let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
       let httpStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/o/${item.cid}`;
       let ipfsStr2 = item.cid ? `ipfs://${item.cid}` : '';
       let ipfsStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${item.cid}`;
@@ -427,9 +427,6 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     let hmac = HmacSHA1(signature, awsSecretAccessKey);
     const signatureBase64 = enc.Base64.stringify(hmac);
 
-    // let ip = `http://${orderInfo.value.rpc.split(':')[0]}:6008`;
-    // const baseUrl = `${ip}/o/${bucketName}/${objectKey}`;
-
     let ip = `https://${bucketName}.${poolUrl}:6008`;
     const baseUrl = `${ip}/o/${objectKey}`;
     if (thumb) {
@@ -463,12 +460,8 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     let key = shareOption.key;
 
     if (key) {
-      // let httpStr = `http://${orderInfo.value.rpc.split(':')[0]}/fog/${foggie_id}/${item.cid}`;
       let httpStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/o/${shareOption.cid}`;
       shareRefContent.httpStr = httpStr;
-      // if (+pinData.shareOption.originalSize > orderInfo.value.total_space * 0.01) {
-      //   shareRefContent.ipfsStr = '';
-      // }
     }
     if (orderInfo.value.expire) {
       let expireTimeStamp = new Date(orderInfo.value.expire).getTime();
@@ -487,7 +480,9 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
   };
   const copyIPFS = (type, item) => {
     let ipfsStr2 = item.cid ? `ipfs://${item.cid}` : '';
-    let ipfsStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${item.cid}`;
+    // let ipfsStr = `https://${orderInfo.value.domain}.${poolUrl}:6008/ipfs/${item.cid}`;
+    let ipfsStr = item.imgUrlLarge;
+
     if (type == 'ipfs') {
       copyLink(ipfsStr2);
     } else {
