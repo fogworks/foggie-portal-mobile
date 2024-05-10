@@ -8,7 +8,7 @@
       safe-area-inset-bottom
       closeable
       round
-      z-index="1802"
+      z-index="18002"
       @close="emits('update:fileItemPopupIsShow', false)"
       :style="{ height: 'auto', minHeight: chooseItem.nftInfoList && chooseItem.nftInfoList.length > 0 ? '80%' : '40%' }"
       v-model:visible="fileItemPopupIsShow1"
@@ -105,7 +105,7 @@
       safe-area-inset-bottom
       closeable
       round
-      z-index="1801"
+      z-index="18001"
       @close="emits('update:fileItemDetailPopupIsShow', false)"
       :style="{ height: 'auto', minHeight: '35%' }"
       v-model:visible="fileItemDetailPopupIsShow1"
@@ -150,7 +150,7 @@
       position="bottom"
       closeable
       round
-      z-index="1801"
+      z-index="18001"
       :style="{ height: '90%' }"
       v-model:visible="renameShow1"
     >
@@ -180,7 +180,7 @@
     <nut-popup
       teleport-disable
       v-if="moveShow"
-      z-index="1801"
+      z-index="18001"
       position="bottom"
       closeable
       round
@@ -224,7 +224,7 @@
     <nut-popup
       teleport-disable
       v-if="showShareDialog"
-      z-index="1801"
+      z-index="18001"
       @closed="
         isReady = false;
         shareType = '';
@@ -323,7 +323,7 @@
     </nut-popup>
     <!-- preview -->
     <Teleport to="body">
-      <nut-overlay z-index="1800" overlay-class="detail_over" v-model:visible="detailShow1" :close-on-click-overlay="false">
+      <nut-overlay z-index="18000" overlay-class="detail_over" v-model:visible="detailShow1" :close-on-click-overlay="false">
         <div class="detail_top" v-if="chooseItem.category !== 1">
           <IconArrowLeft @click="emits('update:detailShow', false)" class="detail_back" color="#fff"></IconArrowLeft>
           <IconMore @click="clickFIleItem(chooseItem)" class="detail_back" color="#fff"></IconMore>
@@ -382,7 +382,7 @@
     </Teleport>
     <!-- wordVisible -->
     <Teleport to="body">
-      <nut-action-sheet z-index="1800" @close="emits('update:wordVisible', false)" v-model:visible="wordVisible" title="Links">
+      <nut-action-sheet z-index="18000" @close="emits('update:wordVisible', false)" v-model:visible="wordVisible" title="Links">
         <div class="custom-action_sheet">
           <div @click="choose('google')">
             <img src="@/assets/googlelogo_preview.png" style="height: 25px" />
@@ -565,7 +565,7 @@
     return checkData;
   });
   const deviceType = computed(() => orderInfo?.value.device_type);
-  console.log(orderInfo.value, 'orderInfo?.valueorderInfo?.value');
+  //   console.log(orderInfo.value, 'orderInfo?.valueorderInfo?.value');
   const {
     httpCopyLink,
     copyLink,
@@ -613,7 +613,6 @@
       detailShow1.value = val;
       nextTick(() => {
         if (imgPreRef.value) {
-          console.log(chooseItem.value, 'chooseItem.swipeToswipeTo');
           imgPreRef.value.swipeTo(imgStartIndex.value);
         } else if (chooseItem.value.detailType == 'txt') {
           console.log('chooseItem.value.imgUrlLarge', chooseItem.value.imgUrlLarge);
@@ -638,7 +637,7 @@
   watch(
     fileItemDetailPopupIsShow,
     (val) => {
-      console.log('fileItemDetailPopupIsShow', val);
+      //   console.log('fileItemDetailPopupIsShow', val);
       fileItemDetailPopupIsShow1.value = val;
     },
     { deep: true, immediate: true },
@@ -695,7 +694,6 @@
   };
   const maxDownload = (checkData) => {
     const objectKey = encodeURIComponent(chooseItem.value.key);
-    // let url = `/o/${orderInfo.value.peer_id}/${orderInfo.value.foggie_id}/${objectKey}`;
     let url = `http://154.31.41.36:9900/o/${orderInfo.value.peer_id}/${orderInfo.value.foggie_id}/${objectKey}`;
     let token = MaxTokenMap.value[orderInfo.value.device_id];
     token = token.split(' ')[1];
@@ -705,40 +703,22 @@
     fetch(url, { method: 'GET', headers })
       .then((response) => {
         if (response.ok) {
-          // 创建一个 Blob 对象，并将响应数据写入其中
-          console.log('Success', response);
           return response.blob();
         } else {
           showToast.fail('Download failed, please try again');
-          // 处理错误响应
           console.error('Error:', response.status, response.statusText);
         }
       })
       .then((blob) => {
-        console.log(blob, 'blob', checkData);
-        console.log('Blob type:', blob.type, checkData);
-
-        // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
         const a = document.createElement('a');
-        console.log("document.createElement('a')");
-
         a.href = URL.createObjectURL(blob);
-        console.log(a.href);
-
-        a.download = checkData.fullName;
-        console.log(a.download);
-
-        // 将 <a> 元素添加到文档中，并模拟点击
+        a.download = checkData[0].fullName;
         document.body.appendChild(a);
-        console.log('添加');
         a.click();
-        console.log('点击');
-
         document.body.removeChild(a);
       })
       .catch((error) => {
         showToast.fail('Download failed, please try again');
-        // 处理网络错误
         console.error('Network Error:', error);
       });
   };

@@ -2,7 +2,8 @@
   <div class="maxio_home_bg">
     <div class="maxio_home">
       <div class="top_link_box">
-        <topLink :topType="topType" :topShow="topShow"></topLink>
+        <topLink :topType="topTypeText" :topShow="!topShow" :topText="topText" v-if="topShow"></topLink>
+        <topLink :topType="topType" :topShow="topShow" :topText="topText"></topLink>
       </div>
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
@@ -137,6 +138,8 @@
     cloudQuery: {},
   });
   const topType = ref('link');
+  const topTypeText = ref('link');
+  const topText = ref('');
   const topShow = ref(false);
   const { cloudQuery, showBucket } = toRefs(state);
   const { resetData, loadMore, allOrderList, hasMore, infinityValue, total, maxTableData, historyData, runningData } = useOrderList();
@@ -262,6 +265,8 @@
   const buyOrder = () => {
     topType.value = 'buy';
     topShow.value = !topShow.value;
+    topText.value = topShow.value ? 'Buy Order......' : '';
+    // console.log(topText.value, '88888');
   };
   //   onMounted(async () => {
   //     await loadMoreFun();

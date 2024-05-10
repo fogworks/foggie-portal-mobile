@@ -158,6 +158,16 @@
         transparent 0.5%
       ),
       repeating-linear-gradient(to left, hsl(208.97deg 32.58% 17.45%) 100%, hsl(295deg 4.19% 5.84% / 99%) 100%);
+    background: repeating-linear-gradient(
+        to bottom,
+        black 0%,
+        rgb(103 118 124 / 11%) 1px,
+        rgb(0 0 0 / 0%) 0.4vw,
+        rgb(64 144 181 / 0%) 0.666667vw,
+        #3c4143 0.533333vw,
+        transparent 0.5%
+      ),
+      repeating-linear-gradient(to left, hsl(208.97deg 32.58% 17.45%) 100%, hsl(295deg 4.19% 5.84% / 52%) 100%);
   }
 
   .card-sd_title {

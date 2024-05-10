@@ -35,6 +35,7 @@
   height: calc(100% - 120px);
   overflow: hidden;
   position: relative;
+  border: 0.266667vw solid #818f9e;
 }
 
 .maxio_home_head {
@@ -127,7 +128,7 @@
   overflow-y: scroll;
 }
 .maxio_home_leftMenu {
-  //   box-shadow: #d3d3eb 0px -3px 8px 2px;
+  box-shadow: #d3d3eb 0px -3px 8px 2px;
   //   border: 1px solid #d3d3eb;
   position: relative;
   padding: 20px 0;
@@ -155,6 +156,19 @@
       transparent 0.5%
     ),
     repeating-linear-gradient(to left, hsl(208.97deg, 32.58%, 17.45%) 100%, hsla(295deg, 4.19%, 5.84%, 0.99) 100%);
+
+  background: repeating-linear-gradient(
+      to bottom,
+      black 0%,
+      rgb(103 118 124 / 71%) 1px,
+      rgba(0, 0, 0, 0) 0.4vw,
+      rgba(64, 144, 181, 0) 0.666667vw,
+      #3c4143 0.533333vw,
+      transparent 0.5%
+    ),
+    repeating-linear-gradient(to left, hsl(208.97deg 32.58% 17.45%) 100%, hsla(295deg, 4.19%, 5.84%, 0.52) 100%);
+  border: 1px solid #ffffff38;
+
   .isShowMaxio {
     transition: all 0.8s;
     // transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
@@ -391,6 +405,9 @@
   .maxio_home_content {
     height: calc(100% - 150px);
   }
+  .maxio_home {
+    padding-top: 20px !important;
+  }
 }
 .top_link_box {
   width: 100%;
@@ -400,4 +417,5 @@
   display: flex;
   align-items: center;
   z-index: 9999;
+  flex-direction: column;
 }

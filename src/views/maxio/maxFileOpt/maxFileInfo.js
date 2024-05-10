@@ -110,7 +110,7 @@ export default function initMaxFile() {
       let str = `${baseUrl}/o/${deviceData.peer_id}/${deviceData.foggie_id}/${objectKey}?thumb=true&token=${token}`;
       return str;
     }
-    let str = `${baseUrl}/o/${deviceData.peer_id}/${deviceData.foggie_id}/${objectKey}&token=${token}`;
+    let str = `${baseUrl}/o/${deviceData.peer_id}/${deviceData.foggie_id}/${objectKey}?token=${token}`;
     return str;
   };
   return { accessKeyId, secretAccessKey, getHttpShare, initSk, getSummary };

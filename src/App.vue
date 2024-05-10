@@ -185,6 +185,7 @@
   }
 
   .nut-popup {
+    z-index: 20000 !important;
     .nut-dialog:not(.CustomName) {
       //   background-color: #2d2e41 !important;
       box-shadow: inset 0 0 0 0.5px hsl(0deg 0% 100% / 30%);

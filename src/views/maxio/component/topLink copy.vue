@@ -2,24 +2,45 @@
   <div class="my-wave-loader" @click="changeHeight" :class="[isHeight ? 'maxHeight' : 'hideHeight', newType]">
     <div v-if="newType === 'buy'" class="buy_pop">
       <h3 class="buyOrderTitle"> Pre-trading information</h3>
-      <div class="storagebox_wrap">
-        <div class="storagebox">
-          <img src="@/assets/VIP.svg" alt="" srcset="" />
-          <div class="BaseBox">
-            <div class="base_box1">
-              <div
-                ><span class="s1">{{ shopForm.quantity }} GB</span>
-                <span class="s2">+</span>
-                <span class="s1">{{ shopForm.week }} W</span></div
-              >
-            </div>
+      <div class="storagebox">
+        <img src="@/assets/VIP.svg" alt="" srcset="" />
+        <div class="BaseBox">
+          <div class="base_box1">
+            <span class="s1">{{ shopForm.quantity }} GB</span>
+            <span class="s2">+</span>
+            <span class="s1">{{ shopForm.week }} W</span>
           </div>
         </div>
-        <div class="price_box">
-          <span class="s1 price_box_line">
+      </div>
+      <div class="storageDetail">
+        <div class="rowBox">
+          <div class="row_box">
+            <span class="row_box_title">Unit Price</span>
+            <span class="row_box_value">{{ (curReferenceRate / 10000).toFixed(4) }} (GB/Week)</span>
+          </div>
+          <div class="row_box">
+            <span class="row_box_title">Base Price</span>
+            <span class="row_box_value">{{ base_Price }} <span>DMC</span></span>
+          </div>
+          <div class="row_box">
+            <span class="row_box_title">Deposit</span>
+            <span class="row_box_value">{{ deposit_ratio_Price }} <span>DMC</span></span>
+          </div>
+          <div class="row_box" style="border-bottom-style: solid" v-if="shopForm.floating_ratio">
+            <span class="row_box_title">Variation Price</span>
+            <span class="row_box_value">
+              {{ ((+base_Price + +deposit_ratio_Price) * (shopForm.floating_ratio / 100)).toFixed(4) }}
+              &nbsp;<span>DMC</span></span
+            >
+          </div>
+          <div class="row_box">
+            <span class="row_box_title">Lowest Limit Total</span>
+            <span class="row_box_value">{{ (+base_Price + +deposit_ratio_Price).toFixed(4) }} <span>DMC</span></span>
+          </div>
+          <div class="row_box">
             <span class="row_box_title">Upper Limit Total</span>
-            <span class="row_box_value">{{ totalPrice }}11 <span>DMC</span></span>
-          </span>
+            <span class="row_box_value">{{ totalPrice }} <span>DMC</span></span>
+          </div>
         </div>
       </div>
       <div class="bottom_btn">
@@ -37,7 +58,7 @@
         <nut-button block type="warning" :disabled="buyOrderIsSuccess" @click="confirmBuy" :loading="loading"> Confirm Buy </nut-button>
       </div>
     </div>
-    <div class="my-wave_box" v-if="!topText && newType !== 'buy'">
+    <div class="my-wave_box" v-else>
       <div class="my-wave-loader-inner">
         <div class="my-wave-loader-block"></div>
         <div class="my-wave-loader-block"></div>
@@ -46,7 +67,7 @@
         <div class="my-wave-loader-block"></div>
         <div class="my-wave-loader-block"></div>
       </div>
-      <div class="text_loading">{{ topText ? topText : 'Connecting...' }}</div>
+      <div class="text_loading">Connecting...</div>
       <div class="my-wave-loader-inner my_second_inner">
         <div class="my-wave-loader-block"></div>
         <div class="my-wave-loader-block"></div>
@@ -72,23 +93,6 @@
         <div class="my-wave-loader-block"></div>
       </div>
     </div>
-    <div v-if="topText && newType !== 'buy'" class="topTextWrap">
-      <div class="🤚">
-        <div class="👉"></div>
-        <div class="👉"></div>
-        <div class="👉"></div>
-        <div class="👉"></div>
-        <div class="🌴"></div>
-        <div class="👍"></div
-      ></div>
-      <div class="topText">
-        <div class="top_loader">
-          <div class="top_scanner">
-            <span>purchasing...</span>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -98,7 +102,6 @@
   const props = defineProps({
     topType: String,
     topShow: Boolean,
-    topText: String,
   });
   const state = reactive({
     shopForm: {
@@ -116,7 +119,7 @@
   const buyOrderIsSuccess = ref(false);
   const progressPercentage = ref(0);
 
-  const { topType, topShow, topText } = toRefs(props);
+  const { topType, topShow } = toRefs(props);
   const newType = ref('link');
   const showBuyBox = ref(false);
 
@@ -126,15 +129,16 @@
   watch(
     topShow,
     (val) => {
+      console.log(val, 'topShowtopShowtopShow');
       isHeight.value = val;
       if (!val) {
         newType.value = 'link';
-        // console.log(newType.value, '0000 topType.value');
+        console.log(newType.value, '0000 topType.value');
       } else {
         newType.value = 'buy';
-        // console.log(newType.value, '1111 topType.value');
+        console.log(newType.value, '1111 topType.value');
       }
-      //   console.log(newType.value, topText.value, ' watch----topType.value');
+      console.log(newType.value, ' topType.value');
       //   if (val === 'buy') {
       //     isHeight.value
       //     showBuyBox.value = true;
@@ -193,6 +197,14 @@
     }
   }
 
+  //   .top_link_box {
+  //     width: 100%;
+  //     position: fixed;
+  //     top: 40px;
+  //     left: 0;
+  //     display: flex;
+  //     align-items: center;
+  //   }
   .my-wave-loader {
     border-radius: 50px;
     width: 60%;
@@ -226,9 +238,6 @@
     height: 400px;
     height: auto;
     border: 1px solid yellow;
-    transform: translateY(100px);
-    border: 2px solid #17feff;
-    box-shadow: #d3d3eb 0px -3px 8px 2px;
   }
   .hideHeight {
     height: 50px;
@@ -356,61 +365,22 @@
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     .buyOrderTitle {
       text-align: center;
-      margin: 20px 0;
-      position: relative;
-      color: transparent;
-      font-size: 1.4rem;
-      position: relative;
-      overflow: hidden;
-      &::before {
-        content: 'Pre-trading information';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 0;
-        height: 100%;
-        border-right: 4px solid #17feff;
-        overflow: hidden;
-        color: #17feff;
-        animation: load91371 3s linear infinite;
-      }
+      margin: 10px 0;
     }
-    .price_box {
-      margin: 0px 10px;
-      padding: 10px;
-      padding-left: 22px;
-      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    }
-    .price_box_line {
-      display: flex;
-      flex-direction: column;
-      .row_box_value {
-        text-align: center;
-        margin: 8px 0;
-        font-weight: bolder;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        font-size: 50px;
-      }
-    }
-    .storagebox_wrap {
+    .storagebox {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 150px auto;
+      gap: 20px;
+      align-items: center;
+      padding: 20px 20px;
       background: linear-gradient(135deg, #18191b 0%, #eeb40a 45%, rgb(113 99 76) 83%, #eaeef9 100%);
-      background: linear-gradient(187deg, #41d6da52 0%, #17feffd9 45%, rgb(58 188 193 / 59%) 83%, #4cf6f8 100%);
+
       color: #fff;
       margin: 0px 40px;
       border-radius: 10px;
-      padding: 10px;
-      font-weight: bolder;
-      border: 1px dashed #fff;
-    }
-    .storagebox {
-      display: flex;
-      align-items: center;
-      color: #fff;
-      margin: 0px 10px;
-      padding: 10px;
-      font-weight: bolder;
-      img {
-        width: 100px;
+      & > img {
+        width: 80%;
         object-fit: cover;
       }
       .BaseBox {
@@ -449,11 +419,14 @@
     }
 
     .storageDetail {
+      padding: 30px 20px;
+      background-color: #ffffff;
+      background-color: #ffffffad;
+      background-color: #3d4448;
       margin: 0px 40px;
       border-radius: 10px;
-      //   margin-top: 40px;
+      margin-top: 40px;
       font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-      font-weight: bolder;
 
       .rowBox {
         .row_box {
@@ -461,7 +434,6 @@
           justify-content: space-between;
           padding: 20px 10px;
           border-bottom: 2px dashed #616161;
-          flex-direction: column;
           .row_box_title,
           .row_box_value {
             // font-weight: 600;
@@ -495,19 +467,11 @@
     .bottom_btn {
       padding: 20px 40px;
       .nut-button {
-        height: 80px;
+        height: 100px;
         // background-color: #2d2e41 !important;
-        // background: linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%);
-        // background: linear-gradient(135deg, #1d2027 0%, #f1bc23 45%, rgb(31 28 23) 83%, #eaeef9 100%);
-        // background: linear-gradient(135deg, #18191b 0%, #eeb40a 45%, rgb(113 99 76) 83%, #eaeef9 100%);
-        background: linear-gradient(135deg, #41d6da52 0%, #17feffd9 45%, rgb(58 188 193 / 59%) 83%, #4cf6f8 100%);
-        background: linear-gradient(
-          129deg,
-          rgb(65 214 218) 0%,
-          rgba(23, 254, 255, 0.8509803922) 45%,
-          rgb(58 188 193 / 0%) 83%,
-          #4cf6f8 100%
-        );
+        background: linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%);
+        background: linear-gradient(135deg, #1d2027 0%, #f1bc23 45%, rgb(31 28 23) 83%, #eaeef9 100%);
+        background: linear-gradient(135deg, #18191b 0%, #eeb40a 45%, rgb(113 99 76) 83%, #eaeef9 100%);
         font-size: 40px;
         border: 0px;
         color: #ffffff;
@@ -517,235 +481,6 @@
         background: #aaa !important;
         opacity: 0.28 !important;
       }
-    }
-  }
-</style>
-
-<style lang="scss">
-  .topTextWrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .topText {
-    margin-top: 20px;
-    font-weight: bold;
-    .top_scanner span {
-      color: transparent;
-      font-size: 1.4rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .top_scanner span::before {
-      content: 'Purchasing...';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 100%;
-      border-right: 4px solid #17feff;
-      overflow: hidden;
-      color: #17feff;
-      animation: load91371 2s linear infinite;
-    }
-
-    @keyframes load91371 {
-      0%,
-      10%,
-      100% {
-        width: 0;
-      }
-
-      10%,
-      20%,
-      30%,
-      40%,
-      50%,
-      60%,
-      70%,
-      80%,
-      90%,
-      100% {
-        border-right-color: transparent;
-      }
-
-      11%,
-      21%,
-      31%,
-      41%,
-      51%,
-      61%,
-      71%,
-      81%,
-      91% {
-        border-right-color: #17feff;
-      }
-
-      60%,
-      80% {
-        width: 100%;
-      }
-    }
-  }
-  .🤚 {
-    --skin-color: #e4c560;
-    --tap-speed: 0.6s;
-    --tap-stagger: 0.1s;
-    position: relative;
-    width: 80px;
-    height: 60px;
-    margin-left: 80px;
-    transform: scale(0.6);
-  }
-
-  .🤚:before {
-    content: '';
-    display: block;
-    width: 180%;
-    height: 75%;
-    position: absolute;
-    top: 70%;
-    right: 20%;
-    background-color: black;
-    border-radius: 40px 10px;
-    filter: blur(10px);
-    opacity: 0.3;
-  }
-
-  .🌴 {
-    display: block;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: var(--skin-color);
-    border-radius: 10px 40px;
-  }
-
-  .👍 {
-    position: absolute;
-    width: 120%;
-    height: 38px;
-    background-color: var(--skin-color);
-    bottom: -18%;
-    right: 1%;
-    transform-origin: calc(100% - 20px) 20px;
-    transform: rotate(-20deg);
-    border-radius: 30px 20px 20px 10px;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-    border-left: 2px solid rgba(0, 0, 0, 0.1);
-  }
-
-  .👍:after {
-    width: 20%;
-    height: 60%;
-    content: '';
-    background-color: rgba(255, 255, 255, 0.3);
-    position: absolute;
-    bottom: -8%;
-    left: 5px;
-    border-radius: 60% 10% 10% 30%;
-    border-right: 2px solid rgba(0, 0, 0, 0.05);
-  }
-
-  .👉 {
-    position: absolute;
-    width: 80%;
-    height: 35px;
-    background-color: var(--skin-color);
-    bottom: 32%;
-    right: 64%;
-    transform-origin: 100% 20px;
-    animation-duration: calc(var(--tap-speed) * 2);
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    transform: rotate(10deg);
-  }
-
-  .👉:before {
-    content: '';
-    position: absolute;
-    width: 140%;
-    height: 30px;
-    background-color: var(--skin-color);
-    bottom: 8%;
-    right: 65%;
-    transform-origin: calc(100% - 20px) 20px;
-    transform: rotate(-60deg);
-    border-radius: 20px;
-  }
-
-  .👉:nth-child(1) {
-    animation-delay: 0;
-    filter: brightness(70%);
-    animation-name: tap-upper-1;
-  }
-
-  .👉:nth-child(2) {
-    animation-delay: var(--tap-stagger);
-    filter: brightness(80%);
-    animation-name: tap-upper-2;
-  }
-
-  .👉:nth-child(3) {
-    animation-delay: calc(var(--tap-stagger) * 2);
-    filter: brightness(90%);
-    animation-name: tap-upper-3;
-  }
-
-  .👉:nth-child(4) {
-    animation-delay: calc(var(--tap-stagger) * 3);
-    filter: brightness(100%);
-    animation-name: tap-upper-4;
-  }
-
-  @keyframes tap-upper-1 {
-    0%,
-    50%,
-    100% {
-      transform: rotate(10deg) scale(0.4);
-    }
-
-    40% {
-      transform: rotate(50deg) scale(0.4);
-    }
-  }
-
-  @keyframes tap-upper-2 {
-    0%,
-    50%,
-    100% {
-      transform: rotate(10deg) scale(0.6);
-    }
-
-    40% {
-      transform: rotate(50deg) scale(0.6);
-    }
-  }
-
-  @keyframes tap-upper-3 {
-    0%,
-    50%,
-    100% {
-      transform: rotate(10deg) scale(0.8);
-    }
-
-    40% {
-      transform: rotate(50deg) scale(0.8);
-    }
-  }
-
-  @keyframes tap-upper-4 {
-    0%,
-    50%,
-    100% {
-      transform: rotate(10deg) scale(1);
-    }
-
-    40% {
-      transform: rotate(50deg) scale(1);
     }
   }
 </style>

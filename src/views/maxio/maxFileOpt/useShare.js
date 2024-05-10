@@ -1,8 +1,10 @@
 import useVariable from './useVariable';
 import { ref } from 'vue';
 import { showToast, showDialog } from '@nutui/nutui';
-import * as Prox from '@/pb/prox_pb.js';
-import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+// import * as Prox from '@/pb/prox_pb.js';
+// import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+import * as Prox from '@/pb/net_pb.js';
+import * as grpcService from '@/pb/net_grpc_web_pb.js';
 import { getLink } from '@/api/index.ts';
 import { useUserStore } from '@/store/modules/user';
 import { transferUTCTime } from '@/utils/util.ts';
@@ -11,7 +13,7 @@ import '@nutui/nutui/dist/packages/toast/style';
 import { HmacSHA1, enc } from 'crypto-js';
 
 import IconHttp2 from '~icons/home/http2.svg';
-import { poolUrl } from '@/setting.js';
+import { poolUrl, maxUrl } from '@/setting.js';
 import loadingImg from '@/components/loadingImg/index.vue';
 import { browserUrl } from '@/setting';
 // import useOrderInfo from './useOrderInfo.js';
@@ -77,15 +79,24 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
       value: monthSeconds * 12,
     },
   ]);
+  const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
   const cloudPin = async (item, stype = 'ipfs', flag, exp, isShare = true) => {
+    console.log('cloudPincloudPincloudPin');
     let server = null;
     let mp_domain = '';
-    mp_domain = `${orderInfo.value.domain}.${poolUrl}`;
+    // mp_domain = `${orderInfo.value.domain}.${poolUrl}`;
+    // server = new grpcService.default.APIClient(`https://${mp_domain}:7007`, null, null);
+    // console.log(`https://${mp_domain}:7007`, '`https://${mp_domain}:7007`');
+    console.log(item, 'pinnnnitem', item.key, item.fullName);
+    server = new grpcService.default.APIClient(maxUrl, null, null);
+    let header = new Prox.default.ProxHeader();
+    let token = MaxTokenMap.value[orderInfo.value.device_id];
+    token = token.split(' ')[1];
 
-    server = new grpcService.default.ServiceClient(`https://${mp_domain}:7007`, null, null);
-
-    console.log(`https://${mp_domain}:7007`, '`https://${mp_domain}:7007`');
-
+    header.setPeerid(orderInfo.value.peer_id);
+    header.setId(orderInfo.value.foggie_id);
+    header.setToken(token);
+    // console.log(header, 'header');
     let request = new Prox.default.ProxPinReq();
     let pinRequest = new Prox.default.ProxPinRequest();
     let pinPay = new Prox.default.ProxPinPay();
@@ -98,12 +109,11 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     pinRequest.setKey(item.key);
 
     pinPay.setCopied(0);
-    // pinPay.setTrxid("");
 
     request.setRequest(pinRequest);
-    request.setHeader(header.value);
+    request.setHeader(header);
     request.setPay(pinPay);
-    console.log(request, 'request');
+    // console.log(request, 'request');
     return new Promise((resolve, reject) => {
       showToast.loading('Loading', {
         cover: true,
@@ -132,9 +142,7 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     console.log(item, 'item');
     console.log(orderInfo.value, 'orderInfo.value');
     let foggieToken;
-    // if (foggieToken && foggieToken.indexOf('bearer ') > -1) {
-    //   foggieToken = foggieToken.split('bearer ')[1];
-    // }
+
     let device_type = null;
 
     if (orderInfo.value.device_type == 'foggie' || !orderInfo.value.device_type) {
@@ -176,12 +184,10 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     ProxPinReq.setHeader(header.value);
     ProxPinReq.setRequest(request);
     ProxPinReq.setPay(pinPay);
-    // let ip = orderInfo.value.rpc.split(':')[0];
-    // let server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
     let bucketName = orderInfo.value.domain;
 
     let ip = `https://${bucketName}.${poolUrl}:7007`;
-    let server = new grpcService.default.ServiceClient(ip, null, null);
+    let server = new grpcService.default.APIClient(ip, null, null);
 
     // showToast.text('IPFS link will available later.');
     server.pin(ProxPinReq, metadata.value, (err, res) => {
@@ -205,7 +211,6 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
       shareRefContent.httpStr = httpStr;
       if (+pinData.item.originalSize > orderInfo.value.total_space * 0.01) {
         shareRefContent.ipfsStr = '';
-        // showToast.fail('File size exceeds 1% of the order space size, sharing is not supported');
       }
       showShareDialog.value = true;
     }

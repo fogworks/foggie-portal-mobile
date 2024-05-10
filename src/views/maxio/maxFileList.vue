@@ -130,6 +130,8 @@
   import { useRouter } from 'vue-router';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import { valid_upload, get_order_sign, get_vood_token } from '@/api/index';
+  import useShare from './maxFileOpt/useShare';
+
   import '@nutui/nutui/dist/packages/toast/style';
   import moment from 'moment';
   const props = defineProps({
@@ -143,6 +145,7 @@
     },
   });
   const { cloudQuery, deviceData } = toRefs(props);
+  const { doShare, cloudPin } = useShare(deviceData, {}, deviceData.value.deviceType, {});
   const { accessKeyId, secretAccessKey, getHttpShare, initSk, getSummary } = maxFileInfo();
   const isError = ref(false);
   const router = useRouter();
@@ -171,7 +174,7 @@
     let arr = [];
     imgData.value.filter((el) => {
       if (arr.length < 20) {
-        arr.push(el.imgUrlLarge);
+        arr.push(el.imgUrl);
       }
     });
     return arr;
@@ -254,7 +257,6 @@
   const $cordovaPlugins = inject('$cordovaPlugins');
   const handlerClick = async (type: string) => {
     const checkData = JSON.parse(JSON.stringify(detailRow.value));
-    console.log(checkData, 'checkData');
     if (type === 'download') {
       const objectKey = encodeURIComponent(checkData.fullName);
       const headers = getSignHeaders(objectKey);
@@ -327,7 +329,6 @@
     } else if (type === 'pin') {
       const onOk = async () => {
         await cloudPin(checkData, 'ipfs');
-        // detailRow.value.isPin = true;
         detailShow.value = false;
         getFileList();
       };
