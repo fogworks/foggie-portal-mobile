@@ -73,22 +73,22 @@
               <div class="iot_room_detail">
                 <div class="iot_device_item" v-for="(_item, _index) in item.listList" :key="_index">
                   <div class="iot_temp">
-                    <div class="iot_temp_line">
+                    <div class="iot_temp_line iot_temp_unit">
                       <img src="@/assets/maxio/temp.svg" />
-                      <span>{{ _item.temp }}</span>
+                      <span>{{ _item.temperature }}</span>
                     </div>
-                    <div class="iot_temp_line"> Current Temp. </div>
+                    <div class=""> Current Temp. </div>
                   </div>
 
                   <div class="iot_hum">
                     <div class="iot_temp_line">
                       <img src="@/assets/maxio/hum.svg" />
-                      <span>{{ _item.humidity }}</span>
+                      <span>{{ _item.humidity }}%</span>
                     </div>
-                    <div class="iot_temp_line"> Humidity. </div>
+                    <div class="iot_temp_line1"> Humidity. </div>
                   </div>
                 </div>
-                <div v-if="!item.listList.length">
+                <div v-if="!item.listList.length" class="iot_empty_box">
                   <img src="@/assets/maxio/empty.svg" alt="" style="" class="empty_img" />
                   <div class="empty_img_text">There is currently no new data available</div>
                 </div>
@@ -157,13 +157,14 @@
 </script>
 
 <style lang="scss" scoped>
-  @import url('./common.scss');
-  @import url('./index.scss');
+  @import url('./maxFileOpt/style/common.scss');
+  @import url('./maxFileOpt/style/index.scss');
   .empty_img {
     margin-top: 40px;
     width: 200px !important;
     height: 200px !important;
   }
+
   .empty_img_text {
     font-size: 20px !important;
   }

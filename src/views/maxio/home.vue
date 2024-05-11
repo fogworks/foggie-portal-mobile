@@ -53,9 +53,7 @@
           </div>
 
           <!-- home_bucket111 -->
-          <div class="menu_img" @click="changeList('bucket')">
-            <img src="@/assets/maxio/hbucket.svg" class="left_max_png" />
-          </div>
+          <div class="menu_img" @click="changeList('bucket')"> <img src="@/assets/maxio/hbucket.svg" class="left_max_png" /> </div>
           <div class="isShowMaxio" :class="[isShowBucket ? 'showMax' : 'hideMax']">
             <div
               v-for="(item, index) in runningDataCy"
@@ -152,7 +150,6 @@
   const runningDataCy = ref([]);
   const historyDataCy = ref([]);
   const leftBucketList = computed(() => {
-    // console.log(allOrderList.value, 'home---allOrderList.value');
     return allOrderList.value;
   });
   //   const maxTableDataCy = computed(() => {
@@ -244,8 +241,19 @@
       showToast.text('empty data');
     }
   };
+
+  const buyOrder = () => {
+    topType.value = 'buy';
+    topShow.value = !topShow.value;
+    topText.value = topShow.value ? 'Buy Order......' : '';
+    // console.log(topText.value, '88888');
+  };
+  //   onMounted(async () => {
+  //     await loadMoreFun();
+  //     initSetBucket();
+  //   });
   const setBucket = async (item) => {
-    // console.log('setBucket--0---------', item);
+    console.log('setBucket--0---------', item);
     window.localStorage.setItem('homeChooseBucket', JSON.stringify(item));
     userStore.setCurrentLeftTab(item);
     if (item.device_type === 3) {
@@ -257,24 +265,21 @@
         domain: item.domain,
       };
       showBucket.value = true;
+      if ([4, 5].includes(item.state)) {
+        changeList('history');
+      } else {
+        changeList('bucket');
+      }
     } else {
       showBucket.value = false;
       currentBucketData.value = item;
+      changeList('maxio');
     }
   };
-  const buyOrder = () => {
-    topType.value = 'buy';
-    topShow.value = !topShow.value;
-    topText.value = topShow.value ? 'Buy Order......' : '';
-    // console.log(topText.value, '88888');
-  };
-  //   onMounted(async () => {
-  //     await loadMoreFun();
-  //     initSetBucket();
-  //   });
   watch(leftBucketList, (val) => {
     if (val.length > 0) {
       showLeft.value = true;
+      //   console.log(currentBucketData.value, 'currentBucketData.value.device_type', val.length);
     } else {
       showLeft.value = false;
     }
@@ -296,7 +301,7 @@
 </script>
 
 <style lang="scss">
-  @import url('./common.scss');
+  @import url('./maxFileOpt/style/common.scss');
   .maxio_home_rightContent {
     transition: all 0.8s;
     height: 100%;

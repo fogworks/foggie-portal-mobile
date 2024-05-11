@@ -194,7 +194,7 @@ export default function useOrderInfo() {
 
       request.setIdsList([orderInfo.value.foggie_id]);
 
-      console.log(`https://${bucketName.value}.${poolUrl}:7007`, 'bucketNamebucketNamebucketNamebucketName');
+      //   console.log(`https://${bucketName.value}.${poolUrl}:7007`, 'bucketNamebucketNamebucketNamebucketName');
 
       server.summaryInfo(request, metadata.value, (err, res) => {
         if (err) {

@@ -109,7 +109,6 @@
 
 <script setup lang="ts">
   import actionComponent from './maxFileOpt/actionComponent.vue';
-  import maxFileRow from './maxFileOpt/maxFileRow.vue';
   import useDelete from './maxFileOpt/useDelete.js';
   import maxFileInfo from './maxFileOpt/maxFileInfo.js';
   //   import useOrderInfo from '@/views/list/details/useOrderInfo.js';

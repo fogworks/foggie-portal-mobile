@@ -1,114 +1,7 @@
 <template>
-  <div class="fileList_content">
-    <Teleport to="body">
-      <!-- top -->
-      <nut-popup position="top" round pop-class="type_check_pop" v-if="showTypeCheckPop" v-model:visible="showTypeCheckPop">
-        <div :class="['list_header']">
-          <div style="display: flex">
-            <template v-if="!prefix.length">
-              <div class="top_back" @click="router.go(-1)"> </div>
-              <span class="top_title">
-                {{ fileTypeText[category] }}
-              </span>
-              <TriangleUp
-                @click="showTypeCheckPop = !showTypeCheckPop"
-                :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
-              ></TriangleUp>
-            </template>
-            <template v-else>
-              <div
-                class="top_back"
-                @click="
-                  prefix.splice(-1);
-                  prefixChange();
-                "
-              >
-              </div>
-              <span class="top_title">
-                {{ prefix.at(-1) || '' }}
-              </span>
-            </template>
-          </div>
-        </div>
-        <div class="type_check_box">
-          <div class="type_item" @click="switchType(0)">
-            <div class="svg_box">
-              <IconAllCate></IconAllCate>
-            </div>
-            <p>All</p>
-          </div>
-          <div class="type_item" @click="switchType(1)">
-            <div class="svg_box">
-              <IconImage></IconImage>
-            </div>
-            <p>Images</p>
-          </div>
-          <div class="type_item" @click="switchType(3)">
-            <div class="svg_box">
-              <IconAudio2></IconAudio2>
-            </div>
-            <p>Audio</p>
-          </div>
-          <div class="type_item" @click="switchType(4)">
-            <div class="svg_box">
-              <IconDocument></IconDocument>
-            </div>
-            <p>Documents</p>
-          </div>
-          <div class="type_item" @click="switchType(2)">
-            <div class="svg_box">
-              <IconVideo></IconVideo>
-            </div>
-            <p>Videos</p>
-          </div>
-        </div>
-      </nut-popup>
-    </Teleport>
+  <div class="fileList_content max_fileList_content">
     <!-- file_Top -->
     <nut-sticky class="file_Top" top="0">
-      <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
-        <div style="display: flex; width: 100%">
-          <template v-if="!prefix.length">
-            <div class="boxtop">
-              <div style="display: flex; align-items: center; flex: 0 0 auto">
-                <div class="top_back" @click="router.go(-1)"> </div>
-                <span class="top_title">
-                  {{ fileTypeText[category] }}
-                </span>
-                <TriangleUp
-                  @click="showTypeCheckPop = !showTypeCheckPop"
-                  :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
-                ></TriangleUp>
-              </div>
-            </div>
-          </template>
-          <template v-else>
-            <div
-              class="top_back"
-              @click="
-                prefix.splice(-1);
-                prefixChange();
-              "
-            >
-              <!-- <TopBack> </TopBack> -->
-            </div>
-            <span class="top_title" style="flex: 1">
-              {{ prefix.at(-1) || '' }}
-            </span>
-          </template>
-          <nut-checkbox style="flex: 0 0 60px" v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
-          <IconListType
-            style="width: 2rem; height: 2rem; vertical-align: middle"
-            v-if="cardMode && category != 1"
-            @click="cardMode = !cardMode"
-          ></IconListType>
-          <IconCardType
-            style="margin: 0 0.2rem; width: 1.5rem; height: 2rem; vertical-align: middle"
-            v-else-if="!cardMode && category != 1"
-            @click="cardMode = !cardMode"
-          ></IconCardType>
-        </div>
-      </div>
       <!-- search_bar -->
       <div class="search_bar" v-if="category !== 1">
         <IconNewFolder
@@ -123,6 +16,23 @@
           <template #rightin> <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" /> </template>
         </nut-searchbar>
         <div> </div>
+      </div>
+
+      <!-- Edit -->
+      <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
+        <div style="display: flex">
+          <nut-checkbox v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
+          <IconListType
+            style="width: 2rem; height: 2rem; vertical-align: middle"
+            v-if="cardMode && category != 1"
+            @click="cardMode = !cardMode"
+          ></IconListType>
+          <IconCardType
+            style="margin: 0 0.2rem; width: 1.5rem; height: 2rem; vertical-align: middle"
+            v-else-if="!cardMode && category != 1"
+            @click="cardMode = !cardMode"
+          ></IconCardType>
+        </div>
       </div>
     </nut-sticky>
     <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
@@ -191,8 +101,7 @@
               <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
               <p v-if="!cardMode">{{ item.date || '' }}</p>
             </div>
-            <div @click.stop v-if="(item.isPin || (item.nftInfoList && item.nftInfoList.length > 0)) && !cardMode" class="ipfs_info">
-              <IconNft v-if="item.nftInfoList && item.nftInfoList.length > 0"></IconNft>
+            <div @click.stop v-if="item.isPin && !cardMode" class="ipfs_info">
               <IconIPFS v-if="item.isPin" color="#496AF2"></IconIPFS>
             </div>
             <div :class="['mask', 'right_radio', isCheckMode ? 'isChecking' : '']" @click.stop>
@@ -268,7 +177,7 @@
         </nut-tabbar-item>
       </nut-tabbar>
     </Teleport>
-    <ActionComponent
+    <!-- <ActionComponent
       ref="actionRef"
       v-model:fileItemPopupIsShow="fileItemPopupIsShow"
       v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
@@ -281,7 +190,7 @@
       :header="header"
       :prefix="prefix"
       :isAvailableOrder="isAvailableOrder"
-      :chooseItem="chooseItem"
+      :chooseItem="deviceData.value"
       :images="images"
       :imgUrl="imgUrl"
       :isMobileOrder="isMobileOrder"
@@ -289,7 +198,7 @@
       :selectArr="selectArr"
       :bucketName="bucketName"
       :metadata="metadata"
-      :orderInfo="orderInfo"
+      :orderInfo="deviceData"
       :isCheckMode="isCheckMode"
       :accessKeyId="accessKeyId"
       :secretAccessKey="secretAccessKey"
@@ -298,7 +207,7 @@
       @swipeChange="swipeChange"
       @clickFIleItemDetail="clickFIleItemDetail"
       @clickFIleItem="clickFIleItem"
-    ></ActionComponent>
+    ></ActionComponent> -->
 
     <uploader
       v-if="isMobileOrder && isAvailableOrder"
@@ -307,7 +216,7 @@
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
       :secretAccessKey="secretAccessKey"
-      :orderInfo="orderInfo"
+      :orderInfo="deviceData"
       :prefix="prefix"
       @uploadComplete="uploadComplete"
     ></uploader>
@@ -340,73 +249,47 @@
 </template>
 
 <script setup lang="ts">
-  import ActionComponent from './maxFileRow.vue';
+  import ActionComponent from './actionComponent.vue';
   import ImgList from './imgList.vue';
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
-  //   import HLSVideo from './hlsVideo.vue';
-  //   import MyAudio from './myAudio.vue';
   import uploader from './uploader.vue';
 
   import IconListType from '~icons/home/listType.svg';
   import IconCardType from '~icons/home/cardType.svg';
-  import IconCopy from '~icons/home/copy.svg';
   import IconBucket from '~icons/home/bucket.svg';
   import IconPlay from '~icons/home/play.svg';
-  import IconHttp2 from '~icons/home/http2.svg';
   import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
   import ErrorPage from '@/views/errorPage/index.vue';
-  import FlashLight from '~icons/ri/flashlight-fill';
-  import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconNft from '~icons/home/nft.svg';
-  import IconPinterest from '~icons/logos/pinterest.svg';
-  import IconSlack from '~icons/home/slack.svg';
-  import IconDelete from '~icons/home/delete.svg';
-  import IconTwitter from '~icons/home/twitter.svg';
-  import IconFacebook from '~icons/devicon/facebook.svg';
-  import IconNewFolder from '~icons/home/new_folder.svg';
-  import IconAllCate from '~icons/home/all-cate.svg';
-  import IconAudio2 from '~icons/home/audio2.svg';
-  import IconImage from '~icons/home/image.svg';
-  import IconImage1 from '~icons/home/mimage.svg';
-  import IconDocument from '~icons/home/document.svg';
-  import IconFile from '~icons/home/file.svg';
-  import IconVideo from '~icons/home/video.svg';
-  import IconFolder from '~icons/home/folder.svg';
   import IconShare from '~icons/home/share.svg';
   import IconRename from '~icons/home/rename.svg';
   import IconMove from '~icons/home/move.svg';
   import IconDownload from '~icons/home/download.svg';
-  import IconMore from '~icons/home/more.svg';
-  import IconArrowLeft from '~icons/home/arrow-left.svg';
-  import IconHttp from '~icons/home/http.svg';
-  import { reactive, toRefs, watch, onMounted, onUnmounted, onBeforeUnmount } from 'vue';
-  import { useRoute, useRouter } from 'vue-router';
+  import { reactive, toRefs, watch, onMounted, onBeforeUnmount } from 'vue';
+  import { useRoute } from 'vue-router';
   import { Search2, TriangleUp, Loading, MoreX, Tips } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
+  import { useUserStore } from '@/store/modules/user';
 
-  // import { ProxListObjectsRequest, ProxListObjectsReq, ProxHeader } from '@/pb/prox_pb.js';
-  // import Prox from '@/pb/prox_pb.ts';
-  import * as Prox from '@/pb/prox_pb.js';
-  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
-  import useOrderInfo from './useOrderInfo.js';
+  const userStore = useUserStore();
+  import * as Prox from '@/pb/net_pb.js';
+  import * as grpcService from '@/pb/net_grpc_web_pb.js';
+
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import moment, { duration } from 'moment';
   import { HmacSHA1, enc } from 'crypto-js';
-
-  import { poolUrl } from '@/setting.js';
-  import { get_order_sign } from '@/api/index';
-  import { browserUrl } from '@/setting';
+  import { poolUrl, maxUrl } from '@/setting.js';
+  import { get_order_sign, get_vood_token } from '@/api/index';
   import getFileType from '@/utils/getFileType.ts';
 
-  let timeOutEvent: string | number | NodeJS.Timeout | undefined;
   let server = null;
   const route = useRoute();
-  const router = useRouter();
   const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
+
   const state = reactive({
     cardMode: false,
     actionRef: '',
@@ -414,7 +297,7 @@
     swipe: '',
     imgArray: [],
     imgStartIndex: 0,
-    category: 0,
+    category: '',
     keyWord: '',
     infinityValue: false,
     hasMore: false,
@@ -454,41 +337,31 @@
   });
   const imgListRef = ref('');
   const isMobileOrder = computed(() => {
-    if (orderInfo.value.electronic_type == '0') {
+    if (deviceData.value.electronic_type == '0') {
       return true;
     } else {
       return false;
     }
-  });
-  const isMobileDevice = computed(() => {
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
-    // 此正则表达式涵盖了大多数使用的手机和平板设备
-    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
   });
   provide('isMobileOrder', isMobileOrder);
 
   const fileSocket = ref('');
   const socketDate = ref('');
   const socketToken = ref('');
-  const currentFolder = ref('');
   const showSocketDialog = ref(false);
-
+  const isError = ref(false);
   const {
     actionRef,
     imgPreRef,
-    swipe,
     imgArray,
     imgStartIndex,
     tableLoading,
     showTypeCheckPop,
-    newName,
     renameShow,
     isCheckMode,
     chooseItem,
     showActionPop,
     tableData,
-    hasMore,
     infinityValue,
     keyWord,
     category,
@@ -496,70 +369,26 @@
     imgCheckedData,
     prefix,
     movePrefix,
-    isSearch,
     moveShow,
     continuationToken,
     continuationToken2,
-    dirData,
     isNewFolder,
-    longPress,
-    isFirst,
     checkedItem,
     wordVisible,
     cardMode,
   } = toRefs(state);
 
-  const {
-    isAvailableOrder,
-    isError,
-    getSummary,
-    bucketName,
-    header,
-    metadata,
-    deviceType,
-    orderInfo,
-    accessKeyId,
-    secretAccessKey,
-    getOrderInfo,
-  } = useOrderInfo();
+  let header = ref({});
+  let metadata = ref({});
+
+  const deviceData = ref({});
+  const bucketName = ref('');
+  deviceData.value = JSON.parse(window.localStorage.homeChooseBucket);
+
+  import maxFileInfo from './maxFileInfo.js';
+  const { accessKeyId, secretAccessKey, getHttpShare, getSummary } = maxFileInfo();
+  const { cloudPin } = useShare(deviceData, {}, deviceData.value && deviceData.value.deviceType, {});
   provide('getSummary', getSummary);
-  const {
-    httpCopyLink,
-    copyLink,
-    shareType,
-    isReady,
-    confirmShare,
-    periodValue,
-    confirmPeriod,
-    periodShow,
-    desc,
-    imgDesc,
-    options,
-    doShare,
-    createNFT,
-    ipfsPin,
-    showShareDialog,
-    shareRefContent,
-    copyContent,
-    confirmHttpShare,
-    getHttpShare,
-    cloudPin,
-    copyIPFS,
-    copyNft,
-  } = useShare(orderInfo, header, deviceType, metadata);
-  const shareCheckData = computed(() => {
-    let checkData = [];
-    if (detailShow.value) {
-      checkData = [chooseItem.value];
-    } else {
-      if (isCheckMode.value) {
-        checkData = selectArr.value;
-      } else {
-        checkData = [chooseItem.value];
-      }
-    }
-    return checkData;
-  });
   const images = computed(() => {
     let arr = [];
     imgArray.value.filter((el) => {
@@ -567,26 +396,13 @@
     });
     return arr;
   });
-  const showActionBtn = computed(() => {
-    if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type === 3) {
-      if (
-        [4, 5].includes(orderInfo.value.state)
-        // || !merkleState.value
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    } else {
-      return true;
-    }
-  });
+
   const { deleteItem } = useDelete(
     tableLoading,
     () => {
       checkedItem.value = [];
     },
-    orderInfo,
+    deviceData,
     header,
     metadata,
   );
@@ -639,14 +455,11 @@
       prefixChange();
     } else {
       chooseItem.value = row;
-      //   console.log(chooseItem.value, 'chooseItem.value');
       const type = row.name.substring(row.name.lastIndexOf('.') + 1);
 
       if (type == 'pdf') {
-        // window.open(row.imgUrlLarge);
         console.log(row.imgUrlLarge);
         wordVisible.value = true;
-        // router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
       } else if (type == 'txt') {
         chooseItem.value.detailType = 'txt';
         detailShow.value = true;
@@ -669,7 +482,6 @@
       } else if (row.imgUrlLarge) {
         imgUrl.value = row.imgUrlLarge;
 
-        // let index = imgArray.value.findIndex((el) => el.name == row.name);
         imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
         detailShow.value = true;
         nextTick(() => {
@@ -684,212 +496,10 @@
       }
     }
   };
-  const showAction = (item: { name: string }) => {
-    if (timeOutEvent !== 0) {
-      chooseItem.value = item;
-      showActionPop.value = true;
-    }
-  };
-  const choose = (item: { name: string }) => {
-    chooseItem.value = item;
-  };
   const tabSwitch = (item: { tabTitle: string }, index: any) => {
     handlerClick(item.tabTitle.toLowerCase());
   };
-  //move
-  const confirmMove = () => {
-    let checkData = [];
-    if (detailShow.value) {
-      checkData = [chooseItem.value];
-    } else {
-      if (isCheckMode.value) {
-        checkData = selectArr.value;
-      } else {
-        checkData = [chooseItem.value];
-      }
-    }
-    const targetObject = (val: { name: string }) => {
-      if (movePrefix.value.length) {
-        return movePrefix.value.join('/') + '/' + val.name;
-      } else {
-        return val.name;
-      }
-    };
-    let index = 0;
-    const length = checkData.length - 1;
-    const rename = function (
-      resolve: { (value: unknown): void; (arg0: boolean): void },
-      reject: { (reason?: any): void; (arg0: boolean): void },
-    ) {
-      if (targetObject(checkData[index]).length > 1024) {
-        showToast.warn('The file path cannot exceed a maximum of 1024 characters, operation failed');
-        if (index === length) {
-          resolve(true);
-        } else {
-          index++;
-          rename(resolve, reject);
-        }
-        return false;
-      }
-      // let ip = orderInfo.value.rpc.split(':')[0];
-      // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-      let ip = `https://${bucketName.value}.${poolUrl}:7007`;
-      server = new grpcService.default.ServiceClient(ip, null, null);
-      let ProxRenameObject = new Prox.default.ProxRenameObject();
-      ProxRenameObject.setHeader(header.value);
-      ProxRenameObject.setSourceobject(encodeURIComponent(checkData[index].fullName));
-      ProxRenameObject.setTargetobject(encodeURIComponent(targetObject(checkData[index])));
-      ProxRenameObject.setFiletype(checkData[index].fileType);
-      console.log(ProxRenameObject, 'ProxRenameObject');
 
-      server.renameObjects(ProxRenameObject, {}, (err: { message: any }, data: any) => {
-        if (data) {
-          if (index === length) {
-            showToast.success('Move successful');
-            moveShow.value = false;
-            movePrefix.value = [];
-            cancelSelect();
-            doSearch('', prefix.value, true);
-            resolve(true);
-          } else {
-            index++;
-            rename(resolve, reject);
-          }
-        } else {
-          console.log(err, 'err');
-          movePrefix.value = [];
-          showToast.fail(err.message || 'Move failed');
-          doSearch('', prefix.value, true);
-          reject(false);
-        }
-      });
-    };
-    return new Promise((resolve, reject) => {
-      rename(resolve, reject);
-    });
-    // moveShow.value = false;
-  };
-  const getOriginName = (name: string) => {
-    let arr = name.split('.');
-    if (arr.length > 1) {
-      arr.pop();
-    }
-    return arr.join('.');
-  };
-  const getEndName = (name: string) => {
-    let arr = name.split('.');
-    if (arr.length > 1) {
-      return '.' + arr[arr.length - 1];
-    } else {
-      return '';
-    }
-  };
-  //rename
-  const confirmRename = () => {
-    if (!newName.value) {
-      showToast.warn('Please enter a name');
-      return false;
-    }
-    const folderNameRegex = /^[^\s\\\\/:*?"<>|]+(\.[^\s\\\\/:*?"<>|]+)?$/;
-    if (!folderNameRegex.test(newName.value)) {
-      showToast.warn("Incorrect name format. Please do not include special characters and do not end with the character '/'");
-
-      return false;
-    }
-    // const checkData = !detailShow.value ? selectArr.value : [chooseItem.value];
-    let checkData = [];
-    if (detailShow.value) {
-      checkData = [chooseItem.value];
-    } else {
-      if (isCheckMode.value) {
-        checkData = selectArr.value;
-      } else {
-        checkData = [chooseItem.value];
-      }
-    }
-
-    const targetObject = () => {
-      if (isNewFolder.value) {
-        if (prefix.value.length) {
-          return encodeURIComponent(prefix.value.join('/') + '/' + newName.value) + '/';
-        } else {
-          return encodeURIComponent(newName.value) + '/';
-        }
-      } else {
-        const endName = getEndName(checkData[0].name);
-        const arr = checkData?.[0]?.fullName.split('/');
-        if (checkData[0]?.type == 'application/x-directory') {
-          if (newName.value[newName.value.length - 1] == '/') {
-            const newData = newName.value.slice(0, newName.value.length - 1);
-            arr.splice(arr.length - 2, 1, newData);
-          } else {
-            arr.splice(arr.length - 2, 1, newName.value);
-          }
-        } else {
-          arr.splice(arr.length - 1, 1, newName.value + endName);
-        }
-        return arr.join('/');
-      }
-    };
-    if (targetObject().length > 1024) {
-      showToast.warn('The file path cannot exceed a maximum of 1024 characters, operation failed');
-      return false;
-    }
-    // let ip = orderInfo.value.rpc.split(':')[0];
-    // server = new grpcService.default.ServiceClient(`http://${ip}:7007`);
-    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
-    server = new grpcService.default.ServiceClient(ip, null, null);
-
-    if (isNewFolder.value) {
-      let ProxFileInfo = new Prox.default.ProxFileInfo();
-      ProxFileInfo.setHeader(header.value);
-      ProxFileInfo.setKey(targetObject());
-      ProxFileInfo.setContenttype('application/x-directory');
-      ProxFileInfo.setSize(0);
-      console.log(ProxFileInfo, 'ProxFileInfo');
-
-      server.touchFile(ProxFileInfo, metadata.value, (err: { message: any }, data: any) => {
-        if (data) {
-          showToast.success('Create successful');
-          renameShow.value = false;
-          isNewFolder.value = false;
-          newName.value = '';
-          doSearch('', prefix.value, true);
-        } else {
-          showToast.fail(err.message || 'Create failed');
-        }
-      });
-    } else {
-      let ProxRenameObject = new Prox.default.ProxRenameObject();
-      ProxRenameObject.setHeader(header.value);
-      ProxRenameObject.setSourceobject(encodeURIComponent(checkData[0].fullName));
-      ProxRenameObject.setTargetobject(targetObject());
-      ProxRenameObject.setFiletype(checkData[0].fileType);
-      console.log(ProxRenameObject, 'ProxRenameObject');
-
-      server.renameObjects(ProxRenameObject, metadata.value, (err: { message: any }, data: any) => {
-        if (data) {
-          showToast.success('Rename successful');
-          renameShow.value = false;
-          newName.value = '';
-          cancelSelect();
-
-          doSearch('', prefix.value, true);
-        } else {
-          console.log(err, 'err');
-
-          showToast.fail(err.message || 'Rename failed');
-        }
-      });
-    }
-  };
-
-  const toNextLevel = (row: { name: string }) => {
-    keyWord.value = '';
-    let long_name = movePrefix.value.length ? movePrefix.value?.join('/') + '/' + row.name : row.name;
-    movePrefix.value = long_name.split('/').slice(0, -1);
-    getFileList('', movePrefix.value, true);
-  };
   const $cordovaPlugins = inject('$cordovaPlugins');
 
   const handlerClick = async (type: string) => {
@@ -905,7 +515,6 @@
         checkData = [chooseItem.value];
       }
     }
-    // const checkData = !detailShow.value || isCheckMode ? selectArr.value : [chooseItem.value];
     console.log(checkData);
     if (type === 'move') {
       // if (category.value == 1) return false;
@@ -1058,9 +667,6 @@
       //   message: "Share succeeded",
       //   position: "bottom-left",
       // });
-    } else if (type == 'nft') {
-      if (checkData.length > 1) return false;
-      createNFT(checkData[0], accessKeyId.value, secretAccessKey.value, bucketName.value);
     } else if (type === 'pin') {
       const onOk = async () => {
         await cloudPin(checkData[0], 'ipfs');
@@ -1083,7 +689,6 @@
             }
           });
         }
-        // doSearch('', prefix.value, true);
       };
       showDialog({
         title: 'Warning',
@@ -1096,82 +701,61 @@
       });
     }
   };
-  const fileTypeText = {
-    0: 'All File List',
-    1: 'Images',
-    2: 'Videos',
-    3: 'Audio',
-    4: 'Documents',
-  };
   const switchType = (type: number) => {
     category.value = type;
     cancelSelect();
     showTypeCheckPop.value = false;
   };
 
-  const uploadComplete = (file: any) => {
-    // getFileList('', prefix.value, true);
-  };
+  const uploadComplete = (file: any) => {};
 
-  function getFileList(scroll: string, prefix: any[], reset = false) {
-    showToast.loading('Loading', {
-      //   cover: true,
-      //   customClass: 'app_loading',
-      //   icon: loadingImg,
-      //   loadingRotate: false,
-      //   id: 'file_list',
-      // coverColor: 'rgba(0,0,0,0.45)',
-      id: 'file_list',
-      cover: true,
-      coverColor: 'rgba(0,0,0,0.45)',
-      customClass: 'app_loading',
-      icon: loadingImg,
-      loadingRotate: false,
+  async function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
+    console.log('getFileListgetFileList------', deviceData.value);
+    if (!deviceData.value.device_id) {
+      return;
+    }
+    let token = await get_vood_token({ vood_id: deviceData.value.device_id });
+    userStore.setMaxTokenMap({
+      id: deviceData.value.device_id,
+      token: token.data.token_type + ' ' + token.data.access_token,
     });
-    let list_prefix = '';
-    if (prefix?.length) {
-      list_prefix = prefix.join('/');
-      if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
-        list_prefix = encodeURIComponent(list_prefix) + '/';
-      }
-    }
-    // let ip = orderInfo.value.rpc.split(':')[0];
-    // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-
-    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
-    server = new grpcService.default.ServiceClient(ip, null, null);
-
+    let _token = token.data.access_token;
+    let server = new grpcService.default.APIClient(maxUrl, null, null);
+    console.log(server, 'server----proxxxxhead');
+    console.log('server----proxxxxhead-------------', new Prox.default.ProxHeader());
+    let header = new Prox.default.ProxHeader();
     let listObject = new Prox.default.ProxListObjectsRequest();
-    listObject.setPrefix(list_prefix);
-    let delimiter: string;
-    let categoryParam: string | number;
-    if (moveShow.value) {
-      delimiter = '/';
-      categoryParam = '0';
-    } else {
-      delimiter = category.value != 0 ? '' : '/';
-      categoryParam = category.value;
-    }
-    listObject.setDelimiter(delimiter);
+    let requestReq = new Prox.default.ProxListObjectsReq();
+    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+    let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
+    let metadata = {
+      'X-Custom-Date': date + 'Z',
+      'X-Sid': deviceData.value.peer_id,
+    };
+
+    header.setPeerid(deviceData.value.peer_id);
+    header.setId(deviceData.value.foggie_id);
+    header.setToken(_token);
+    header.setApptype(appType);
+    console.log(header, 'proxxxxhead');
+
+    listObject.setPrefix('');
+    listObject.setDelimiter('');
     listObject.setEncodingType('');
-    listObject.setMaxKeys(30);
+    listObject.setMaxKeys(20);
     listObject.setStartAfter('');
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
     listObject.setKeyMarker('');
-    listObject.setOrderby('');
+    listObject.setOrderby('lastmodifiedtime desc');
     listObject.setTags('');
-
-    listObject.setCategory(categoryParam);
+    listObject.setCategory(0);
     listObject.setDate('');
-    let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header.value);
-    // console.log('list-object--header', header, metadata.value);
-    // console.log('listObjectlistObject', listObject);
+    requestReq.setHeader(header);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
-      metadata.value,
+      metadata,
       (
         err: any,
         res: {
@@ -1185,7 +769,6 @@
           getPrefixpinsList: () => any;
         },
       ) => {
-        infinityValue.value = false;
         if (res) {
           const transferData = {
             commonPrefixes: res.getCommonprefixesList(),
@@ -1260,74 +843,18 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
-          console.log(transferData, 'transferData,transferData');
-          console.log(res, 'res,res');
           isError.value = false;
-          initRemoteData(transferData, reset, category.value);
-        } else if (err) {
+          //   console.log(transferData, 'transferDatatransferDatatransferData');
+          initRemoteData(transferData, reset, 0);
           showToast.hide('file_list');
+        } else if (err) {
           isError.value = true;
-          console.log('err----', err);
+          showToast.hide('file_list');
+          console.log('err----listlistObjects', err);
         }
       },
     );
   }
-
-  const handleImg = async (item: { cid: any; key: any }, type: string, isDir: boolean) => {
-    let imgHttpLink = '';
-    let imgHttpLarge = '';
-    type = type.toLowerCase();
-    let isSystemImg = false;
-    let cid = item.cid;
-    let key = item.key;
-
-    let ip = orderInfo.value.rpc?.split(':')[0];
-    let port = orderInfo.value.rpc?.split(':')[1];
-    let Id = orderInfo.value.foggie_id;
-    let peerId = orderInfo.value.peer_id;
-    // console.log(bucketName.value, 'bucketName');
-
-    if (
-      type === 'png' ||
-      type === 'bmp' ||
-      type === 'gif' ||
-      type === 'jpeg' ||
-      type === 'jpg' ||
-      type === 'svg' ||
-      type === 'ico' ||
-      type === 'webp'
-    ) {
-      //   console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
-      imgHttpLink = getHttpShare(
-        accessKeyId.value,
-        secretAccessKey.value,
-        bucketName.value,
-        item.key,
-        type === 'ico' || type === 'svg' ? false : true,
-      );
-      // console.log('--------imgHttpLarge', imgHttpLarge);
-    } else if (type === 'mp3') {
-      type = 'audio';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
-      type = 'video';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
-    } else {
-      isSystemImg = true;
-    }
-    if (isDir) {
-      isSystemImg = true;
-    }
-    return { imgHttpLink, isSystemImg, imgHttpLarge };
-  };
-  provide('handleImg', handleImg);
-
   const initRemoteData = async (
     data: {
       commonPrefixes?: any;
@@ -1345,41 +872,27 @@
   ) => {
     if (!data) {
       tableLoading.value = false;
-      showToast.hide('file_list');
       return;
     }
-    console.log('data', data);
     if (data.err) {
       showToast.fail('Failed to  retrieve data. Please try again later');
     }
-    let dir = prefix.value.join('/');
+    let dir = [].join('/');
     if (reset) {
-      if (moveShow.value) {
-        dirData.value = [];
-      } else {
-        cancelSelect();
-        tableData.value = [];
-        imgArray.value = [];
-      }
-    }
-    if (!accessKeyId.value) {
-      await getOrderInfo();
+      tableData.value = [];
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
-
-      let cur_cid = '';
-      let isPin = false;
-      for (let i = 0; i < data.prefixpins?.length; i++) {
-        if (data.prefixpins[i]?.array[0] === name && data.prefixpins[i]?.array[1]) {
-          cur_cid = data.prefixpins[i].array[1];
-          isPin = data.prefixpins[i].array[2];
-        }
-      }
-
       if (data.prefix) {
         // name = name.split(data.prefix)[1];
         name = name.split('/')[name.split('/').length - 2] + '/';
+      }
+
+      let cur_cid = '';
+      for (let i = 0; i < data.prefixpins?.length; i++) {
+        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
+          cur_cid = data.prefixpins[i].cid;
+        }
       }
 
       let item = {
@@ -1413,43 +926,31 @@
         share: {},
         isSystemImg: false,
         canShare: false,
-        isPin,
       };
-      if (moveShow.value) {
-        dirData.value.push(item);
-      } else {
-        tableData.value.push(item);
-      }
+
+      tableData.value.push(item);
     }
-    currentFolder.value = data.prefix;
-    window.sessionStorage.setItem('currentFolder', currentFolder.value);
-    console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
+
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
-      let isDir = data?.content[j].contentType == 'application/x-directory' ? true : false;
+      let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
       const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
-      const imgData = await handleImg(data.content[j], type, isDir);
-      const url = imgData.imgHttpLink;
-      const isSystemImg = imgData.isSystemImg;
-      const url_large = imgData.imgHttpLarge;
+      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
       let name = data.content[j].key;
-
       if (data.prefix) {
-        name = name.split(decodeURIComponent(data.prefix))[1];
+        name = name.split(data.prefix)[1];
       }
-      if (name.indexOf('/') > 0) {
-        if (isDir) {
-          name = name.split('/')[name.split('/').length - 2] + '/';
-        } else {
-          name = name.split('/')[name.split('/').length - 1];
-        }
+      if (name.indexOf('/') > 0 && name[name.length - 1] != '/') {
+        console.log(name.indexOf('/') > 0, 'name.indexOf(' / ') > 0');
+        name = name.split('/')[name.split('/').length - 1];
+      } else if (name.indexOf('/') > 0) {
+        console.log(name.indexOf('/') > 0, 'name.indexOf(' / ') > 01111111');
+        name = name.split('/')[name.split('/').length - 2];
       }
       let isPersistent = data.content[j].isPersistent;
-
-      console.log(data.content[j], 'data.content[j]1');
 
       let item = {
         imageInfo: data.content[j].imageInfo,
@@ -1487,38 +988,59 @@
         isPersistent,
         isPin: data.content[j].isPin,
         isPinCyfs: data.content[j].isPinCyfs,
-        nftInfoList: data.content[j].nftInfoList,
-        thumb: data.content[j].thumb,
       };
-      console.log(item, 'data.content[j]');
 
-      if (moveShow.value) {
-      } else {
-        tableData.value.push(item);
-        if (item.category == 1) {
-          if (item.originalSize > 1024 * 1024 * 20) {
-            item.src = item.imgUrl;
-          } else {
-            item.src = item.imgUrlLarge;
-          }
-          imgArray.value.push(item);
-        }
-      }
+      tableData.value.push(item);
+      console.log(tableData.value, 'tableData.value');
     }
-    if (data.isTruncated) {
-      if (moveShow.value) {
-        continuationToken2.value = data.continuationToken;
-      } else {
-        continuationToken.value = data.continuationToken;
-      }
-    } else {
-      continuationToken.value = '';
-    }
-    tableLoading.value = false;
-    showToast.hide('file_list');
   };
+  const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
+    let imgHttpLink = '';
+    let imgHttpLarge = '';
+    type = type.toLowerCase();
+    let isSystemImg = false;
+    if (
+      type === 'png' ||
+      type === 'bmp' ||
+      type === 'gif' ||
+      type === 'jpeg' ||
+      type === 'jpg' ||
+      type === 'svg' ||
+      type === 'ico' ||
+      type === 'webp'
+    ) {
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value);
+      imgHttpLink = getHttpShare(
+        accessKeyId.value,
+        secretAccessKey.value,
+        item.key,
+        type === 'ico' || type === 'svg' ? false : true,
+        deviceData.value,
+      );
+    } else if (type === 'mp3') {
+      type = 'audio';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value) + '&inline=true';
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
+      type = 'video';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value) + '&inline=true';
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value);
+    } else {
+      isSystemImg = true;
+    }
+    if (isDir) {
+      isSystemImg = true;
+    }
+    return { imgHttpLink, isSystemImg, imgHttpLarge };
+  };
+  provide('handleImg', handleImg);
+
   function doSearch(scroll: string = '', prefixArg: any[] = [], reset = false) {
-    if (tableLoading.value) return false;
+    console.log('----doSearch------');
+    // if (tableLoading.value) return false;
     if (category.value == 1 && !moveShow.value && !renameShow.value) {
       imgListRef.value.refresh();
       return;
@@ -1535,7 +1057,7 @@
         // duration: 500000000,
       });
       tableLoading.value = true;
-      let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
+      let type = deviceData.value.device_type == 'space' || deviceData.value.device_type == 3 ? 'space' : 'foggie';
       if (type == 'space') {
         let ip = `https://${bucketName.value}.${poolUrl}:7007`;
         server = new grpcService.default.ServiceClient(ip, null, null);
@@ -1575,29 +1097,10 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
-                  getNftinfosList: () => any;
                   getImages: () => any;
+                  getNftinfosList: () => any;
                   getThumb: () => any;
                 }) => {
-                  console.log(el, 'el---');
-                  // const imageObj = el.getImages().toObject();
-                  // const imageInfo = {};
-                  // let isShowDetail = false;
-                  // if (imageObj.camerainfo?.make) {
-                  //   isShowDetail = true;
-                  //   imageInfo.aperture = imageObj.addition.aperture; //光圈
-                  //   imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
-                  //   imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
-                  //   imageInfo.exptime = imageObj.addition.exptime; //曝光时间
-                  //   imageInfo.orientation = imageObj.addition.orientation; //方向
-                  //   imageInfo.focallength = imageObj.addition.focallength; //焦距
-                  //   imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
-                  //   imageInfo.software = imageObj.addition.software; // 使用软件
-                  //   imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
-                  //   imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
-                  //   imageInfo.gps = imageObj.gps; //经纬度
-                  //   imageInfo.resolution = imageObj.resolution; //像素
-                  // }
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1667,7 +1170,7 @@
     fileSocket.value.onopen = () => {
       const authMessage = {
         action: 'AUTH',
-        userID: orderInfo.value.foggie_id,
+        userID: deviceData.value.foggie_id,
         token: socketToken.value,
         date: socketDate.value,
       };
@@ -1910,6 +1413,7 @@
     },
     { deep: true },
   );
+
   watch(
     category,
     async (val, old) => {
@@ -1920,8 +1424,8 @@
       }
       if (val == 1) {
       } else {
-        if (!orderInfo?.value?.id) {
-          await getOrderInfo();
+        if (!deviceData?.value?.id) {
+          //   await getOrderInfo();
         }
         console.log(category.value, 'categorycategorycategory');
         doSearch('', prefix.value, true);
@@ -1932,1225 +1436,28 @@
   onMounted(async () => {
     initPage();
   });
+
   onBeforeUnmount(() => {
     if (fileSocket.value) {
       fileSocket.value.close();
       fileSocket.value = null;
     }
   });
+
   const initPage = async () => {
-    if (route?.query?.prefix) {
-      prefix.value = route?.query?.prefix?.split('/');
-    }
-    let category1 = route.query.category || '0';
-    await getOrderInfo();
-    console.log(category1, 'category1category1');
-
+    prefix.value = [];
+    let category1 = 0;
+    // await getOrderInfo();
     switchType(category1);
-
-    initWebSocket();
+    // initWebSocket();
   };
   const refresh = async () => {
     cancelSelect();
-    await getOrderInfo();
+    // await getOrderInfo();
     doSearch('', prefix.value, true);
   };
 </script>
 
 <style lang="scss">
-  .fileItemPopup.nut-popup {
-    background-color: #f9f9f9;
-    padding: 40px 40px;
-    box-sizing: border-box;
-    .fileItem_header {
-      display: grid;
-      grid-template-columns: 100px auto;
-      gap: 30px;
-      align-items: center;
-      img {
-        width: 100%;
-        height: 100%;
-        border-radius: 10px;
-        object-fit: cover;
-      }
-      .fileItem_header_right > div {
-        font-size: 30px;
-        font-weight: 600;
-        line-height: 50px;
-
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-    .fileItem_body {
-      margin-top: 50px;
-      overflow-x: hidden;
-      overflow-y: auto;
-      .optionBox {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        // place-items: center;
-        justify-items: center;
-        gap: 25px;
-        padding: 30px 10px;
-        & > div {
-          width: 100%;
-          border-radius: 25px;
-          border: 1px solid #ddd1d1;
-          background-color: #f1f1f1;
-          height: 170px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: space-evenly;
-          color: #222224;
-          svg {
-            width: 60px;
-            height: 60px;
-          }
-        }
-      }
-      .ipfs {
-        border-radius: 25px;
-        border: 1px solid #ddd1d1;
-        background-color: #f1f1f1;
-        p {
-          display: grid;
-          grid-template-columns: auto 100px;
-          gap: 100px;
-          align-items: center;
-          border-bottom: 2px solid #fff;
-          height: 100px;
-          line-height: 100px;
-          box-sizing: border-box;
-          padding: 0px 15px;
-
-          & > * {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: 25px;
-            color: #222224;
-          }
-          svg {
-            height: 60px;
-            width: 60px;
-          }
-        }
-        p:last-child {
-          border-bottom: 0px;
-        }
-      }
-    }
-
-    .nut-popup__close-icon {
-      background-color: #ccccccc2;
-      border-radius: 50%;
-      color: #fff;
-    }
-    .fileItemDetail {
-      margin-top: 60px;
-      border-radius: 15px;
-      border: 1px solid #cac9ce;
-      overflow: hidden;
-      .fileItemDetail_header {
-        padding: 0px 20px;
-        height: 70px;
-        line-height: 70px;
-        background-color: #cbcacf;
-        font-weight: 600;
-        font-size: 28px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 4px solid #adacb1;
-        .flashlamp {
-          display: flex;
-          border-radius: 50%;
-          border: 4px solid #5e5d62;
-        }
-      }
-      .fileItemDetail_Body {
-        padding: 20px 20px;
-        border-bottom: 4px solid #adacb1;
-        background-color: #dfdee3;
-        & > div {
-          height: 40px;
-          line-height: 40px;
-          font-weight: 600px;
-          font-size: 28px;
-        }
-      }
-      .fileItemDetail_bottom {
-        background-color: #dfdee3;
-        display: grid;
-        padding: 0px 20px;
-        grid-template-columns: repeat(5, 1fr);
-        & > span {
-          text-align: center;
-          height: 60px;
-          line-height: 60px;
-          font-weight: 700px;
-          font-size: 28px;
-          position: relative;
-        }
-        & > span:not(:last-child)::before {
-          display: inline-block;
-          content: '';
-          width: 3px;
-          height: 60%;
-          background-color: #cdccd1;
-          position: absolute;
-          right: 0px;
-          top: 50%;
-          transform: translateY(-50%);
-        }
-        // & > span:last-child{
-        //  border: 0px;
-        // }
-      }
-    }
-  }
-
-  .fileUpdateIcon {
-    position: absolute;
-    bottom: 8px;
-    left: 10px;
-    width: 140px;
-    height: 140px;
-  }
-  .type_check_pop {
-    /* padding-top: 120px; */
-    height: 450px;
-  }
-  .dialog_class {
-    font-size: 30px;
-    .nut-dialog__header {
-      height: unset;
-      font-size: 35px;
-    }
-    .nut-dialog__content {
-      font-size: 30px;
-    }
-  }
-  @media screen and (min-width: 500px) {
-    .type_check_pop {
-      /* padding-top: 120px; */
-      height: unset;
-    }
-    .dialog_class {
-      font-size: 30px;
-      .nut-dialog__header {
-        height: unset;
-        font-size: 35px;
-      }
-      .nut-dialog__content {
-        font-size: 30px;
-      }
-    }
-  }
-</style>
-<style lang="scss" scoped>
-  .boxtop {
-    width: 100vw;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .bottom_ipfs_info {
-    position: fixed;
-    bottom: 100px;
-    padding: 20px;
-    background: #fff;
-    width: 100%;
-    box-sizing: border-box;
-    svg {
-      color: $main_blue;
-    }
-  }
-  .file_list {
-    height: calc(100vh - 310px);
-    overflow: auto;
-  }
-  #txtContainer {
-    color: #fff;
-    width: 100%;
-    padding: 0 20px;
-    box-sizing: border-box;
-    max-height: calc(100% - 300px);
-    overflow-y: auto;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-  .nut-custom-tour {
-    :deep {
-      .nut-popover {
-        width: 100%;
-      }
-    }
-  }
-  .file_Top {
-    z-index: 9999;
-  }
-  .file_list {
-    // height: calc(100% - 300px);
-    background: #fff;
-  }
-  :deep {
-    .nut-popover-content--bottom-center {
-      background: $main_blue;
-    }
-  }
-  .tour-demo-custom-content {
-    padding: 20px;
-    background: $main_blue;
-    color: #fff;
-    clear: both;
-    height: 100px;
-    .tour_btn {
-      float: right;
-      height: 50px;
-      margin-top: 10px;
-      padding: 5px 10px;
-      text-align: right;
-    }
-    &:after {
-      display: inline-block;
-      content: '';
-      clear: both;
-    }
-  }
-  .detail_over {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0px 10px;
-    background: #000;
-    box-sizing: border-box;
-    // overflow: auto;
-    z-index: 99;
-    .detail_top {
-      box-sizing: border-box;
-      position: fixed;
-      top: 0;
-      left: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      padding: 1rem;
-      background: linear-gradient(180deg, #00000059, transparent);
-      z-index: 99;
-    }
-    .middle_img {
-      max-height: 100%;
-      .nut-image {
-        width: 100%;
-        height: 100%;
-      }
-      :deep {
-        .van-swipe {
-          width: 100%;
-          height: 100%;
-          .van-swipe__track {
-            align-items: center;
-            width: 100% !important;
-            img {
-              // width: 100%;
-              width: unset;
-              max-width: 100%;
-              margin: 0 auto;
-            }
-          }
-          .van-image-preview__swipe-item {
-            background: #000;
-          }
-        }
-      }
-    }
-    .bottom_action {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      display: flex;
-      justify-content: space-evenly;
-      height: 140px;
-      background: linear-gradient(0deg, #00000059, transparent);
-
-      margin-top: 20px;
-      div {
-        text-align: center;
-        color: #fff;
-      }
-      svg {
-        color: #fff;
-        width: 80px;
-        height: 80px;
-      }
-    }
-  }
-  .detail_back {
-    width: 60px;
-    height: 60px;
-  }
-  .top_back {
-    margin: 0;
-    color: $main_blue;
-  }
-  .top_title {
-    margin-left: 80px;
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-  }
-  .check_top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 40px 20px;
-    color: #2e70ff;
-    font-size: 30px;
-    background: #fff;
-    span {
-      cursor: pointer;
-    }
-    .checked_num {
-      color: #000;
-      font-size: 35px;
-      cursor: default;
-    }
-  }
-  .fileList_content {
-    box-sizing: border-box;
-    height: 100%;
-  }
-  .list_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    width: 100%;
-    background: #fff;
-    box-sizing: border-box;
-    color: $primary-color-end;
-    background: transparent;
-    color: #fff;
-    // transition: all 0.3s;
-    span {
-      font-size: 35px;
-      font-weight: 700;
-      line-height: 60px;
-    }
-    .triangle {
-      margin: 10px;
-      width: 40px;
-      height: 40px;
-      transition: all 0.3s;
-    }
-    .triangleDown {
-      transform: rotate(180deg);
-    }
-  }
-  // .header_fixed {
-  //   position: fixed;
-  //   top: 0 !important;
-  //   z-index: 9999;
-  // }
-
-  .cate_title {
-    padding: 20px;
-    font-size: 40px;
-  }
-  .type_check_box {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-wrap: wrap;
-    .type_item {
-      width: 33%;
-      text-align: center;
-      height: 150px;
-      .svg_box {
-        width: 80px;
-        height: 80px;
-        line-height: 80px;
-        margin: 10px auto;
-        text-align: center;
-        border-radius: 20px;
-        svg {
-          width: 100%;
-          height: 100%;
-          vertical-align: middle;
-        }
-      }
-      p {
-        color: #051e56;
-      }
-      // &:nth-child(1) {
-      //   .svg_box {
-      //     background: #e6e9ff;
-      //   }
-      // }
-      // &:nth-child(2) {
-      //   .svg_box {
-      //     background: #f5ecff;
-      //   }
-      // }
-      // &:nth-child(3) {
-      //   .svg_box {
-      //     background: #e0f3ff;
-      //   }
-      // }
-      // &:nth-child(4) {
-      //   .svg_box {
-      //     background: #ffebef;
-      //   }
-      // }
-      // &:nth-child(5) {
-      //   .svg_box {
-      //     background: #e2e4ff;
-      //   }
-      // }
-    }
-  }
-  .search_bar {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background: #fff;
-    box-sizing: border-box;
-    padding: 20px;
-    .new_folder {
-      width: 50px;
-      height: 50px;
-    }
-    :deep {
-      .nut-searchbar {
-        width: calc(100% - 60px);
-        padding: 0;
-      }
-      .nut-searchbar__search-input {
-        --nut-searchbar-input-background: #f5f8fd;
-      }
-    }
-  }
-  .card_list {
-    :deep {
-      .nut-infinite__container {
-        width: 100%;
-      }
-      .nut-checkbox-group {
-        display: grid;
-        grid-gap: 5px;
-        grid-template-columns: repeat(3, 1fr);
-        justify-items: center;
-        width: 100%;
-      }
-    }
-    .list_item {
-      position: relative;
-      box-sizing: border-box;
-      flex-direction: column;
-      padding: 0.5rem;
-      width: 240px;
-      border: none;
-      border-radius: 10px;
-      .mask {
-        display: none;
-        position: absolute;
-        top: 0;
-        z-index: 1;
-        width: 100%;
-        height: 100%;
-
-        .itemChecked {
-          display: block;
-        }
-        &.isChecking {
-          display: block;
-          height: 100%;
-          cursor: pointer;
-          :deep {
-            .nut-checkbox {
-              width: 100%;
-              height: 100%;
-              display: block;
-            }
-            .nut-icon {
-              padding: 10px;
-            }
-          }
-        }
-
-        :deep {
-          .nut-checkbox {
-            position: absolute;
-            left: 0;
-          }
-          .nut-checkbox__input {
-            position: absolute;
-            right: 5px;
-            top: 10px;
-          }
-          .nut-checkbox__label {
-            display: none;
-          }
-        }
-      }
-      .left_icon_box {
-        width: 150px;
-        height: 150px;
-        img,
-        svg {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .play_icon {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 2rem;
-          height: 2rem;
-        }
-      }
-      .name_box {
-        width: 100%;
-        margin: 0;
-        text-align: center;
-        p {
-          font-size: 0.8rem !important;
-          color: #000 !important;
-        }
-      }
-      .right_radio {
-        // position: absolute;
-        // right: 10px;
-        // top: 10px;
-        // width: unset;
-        // height: unset;
-      }
-    }
-  }
-  .list_item {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 20px 20px 20px 40px;
-    border-top: 1px solid #efefef;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    :deep {
-      .nut-image {
-        width: 100%;
-        height: 100%;
-      }
-    }
-    &:active {
-      background: #cde3f5;
-    }
-    .left_checkMode {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 80px;
-      height: 80px;
-      background: #f1f1f1;
-      border-radius: 50%;
-      img {
-        width: 50px !important;
-        height: 50px !important;
-        border-radius: 0.4rem;
-      }
-      &.is_checked {
-        width: 60px;
-        height: 60px;
-        margin: 10px;
-        background: #2e70ff;
-      }
-      .ok_icon {
-        color: #fff;
-      }
-    }
-    .type_icon {
-      width: 80px;
-      height: 80px;
-    }
-    .left_icon_box {
-      position: relative;
-      width: 80px;
-      height: 80px;
-      img,
-      svg {
-        width: 80px;
-        height: 80px;
-        border-radius: 0.3rem;
-        vertical-align: middle;
-      }
-      .play_icon {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 1.2rem;
-        height: 1.2rem;
-      }
-    }
-    .name_box {
-      width: calc(100% - 500px);
-      flex: 1;
-      margin-left: 40px;
-      margin-right: 30px;
-      p:first-child {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      p:last-child {
-        margin-top: 5px;
-        color: #a7a7a7;
-        font-size: 20px;
-      }
-    }
-    .ipfs_info {
-      display: flex;
-      align-items: center;
-      width: 100px;
-      height: 80px;
-      svg,
-      img {
-        object-fit: contain;
-        height: 1.5rem;
-        width: 1.5rem;
-        margin-left: 20px;
-        cursor: pointer;
-      }
-    }
-    .right_div {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 80px;
-      height: 80px;
-    }
-    .right_radio {
-      height: 80px;
-      width: 80px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      :deep {
-        .nut-checkbox {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 100%;
-          height: 100%;
-          margin-right: 0;
-        }
-        .nut-checkbox__label {
-          display: none;
-        }
-      }
-    }
-    .right_more {
-      width: 50px;
-      height: 50px;
-      color: #ccc;
-    }
-  }
-  .bottom_action {
-    :deep {
-      .nut-tabbar-item {
-        background-color: #2e70ff;
-        color: #fff;
-        svg {
-          width: 40px;
-          height: 40px;
-        }
-      }
-      .nut-tabbar-item_icon-box_nav-word {
-        color: #ffffff5c;
-      }
-    }
-    &.canAction {
-      :deep {
-        .nut-tabbar-item_icon-box_nav-word {
-          color: #fff;
-        }
-      }
-    }
-    .is-disable {
-      color: #ffffff5c;
-      :deep {
-        .nut-tabbar-item_icon-box_nav-word {
-          color: #ffffff5c;
-        }
-      }
-    }
-    .delete-item {
-      color: red;
-      :deep {
-        .nut-tabbar-item_icon-box_nav-word {
-          color: red;
-        }
-      }
-    }
-  }
-  .row_is_checked {
-    background: #cde3f5;
-  }
-  // .rename_box {
-  //   margin-top: 40px;
-  //   padding: 0 40px;
-  //   :deep {
-  //     .nut-cell {
-  //       padding-left: 0;
-  //       padding-right: 0;
-  //       box-shadow: none;
-  //     }
-  //     .nut-textarea {
-  //       padding-left: 0;
-  //       padding-right: 0;
-  //     }
-  //   }
-  //   p {
-  //     text-align: center;
-  //     margin-bottom: 30px;
-  //   }
-  //   svg {
-  //     display: block;
-  //     margin: 0 auto;
-  //   }
-  //   :deep {
-  //     .nut-searchbar {
-  //       padding: 20px 0;
-  //     }
-  //     .nut-button {
-  //       margin-top: 40px;
-  //     }
-  //   }
-  // }
-  // .move_box {
-  //   .top_back {
-  //     margin-bottom: 10px;
-  //     p {
-  //       margin: 0 5px;
-  //       color: #000;
-  //     }
-  //   }
-  //   .file_list {
-  //     height: 600px;
-  //     overflow-y: auto;
-  //     .list_item {
-  //       width: 100%;
-  //       box-sizing: border-box;
-  //     }
-  //     .left_icon_box {
-  //       width: 80px;
-  //       height: 80px;
-  //       svg {
-  //         width: 100px;
-  //         height: 100px;
-  //       }
-  //     }
-  //     .name_box {
-  //       p {
-  //         text-align: right;
-  //         margin: 0;
-  //         font-size: 30px;
-  //       }
-  //     }
-  //   }
-  // }
-
-  @media screen and (min-width: 500px) {
-    #txtContainer {
-      color: #fff;
-      width: 100%;
-      padding: 0 20px;
-      max-height: calc(100% - 300px);
-      overflow-y: auto;
-    }
-    .file_list {
-      height: calc(100vh - 180px);
-      overflow: auto;
-    }
-    .tour-demo-custom-content {
-      padding: 20px;
-      height: 100px;
-      .tour_btn {
-        height: 50px;
-        margin-top: 10px;
-        padding: 5px 10px;
-      }
-    }
-    .detail_over {
-      padding: 30px 10px;
-      .middle_img {
-        max-height: calc(100vh - 500px);
-
-        .nut-image {
-          width: 100%;
-          height: 100%;
-        }
-      }
-      .bottom_action {
-        height: 200px;
-        margin-top: 20px;
-        svg {
-          color: #fff;
-          width: 80px;
-          height: 80px;
-        }
-      }
-    }
-    .detail_back {
-      width: 60px;
-      height: 60px;
-    }
-    .top_title {
-      margin-left: 60px;
-    }
-    .check_top {
-      padding: 20px 20px;
-      font-size: 30px;
-      .checked_num {
-        font-size: 35px;
-      }
-    }
-    .list_header {
-      padding: 10px;
-      width: 100%;
-      span {
-        font-size: 24px;
-        line-height: 30px;
-      }
-      .triangle {
-        margin: 0 15px;
-        width: 30px;
-        height: 30px;
-        transition: all 0.3s;
-        cursor: pointer;
-      }
-    }
-    .cate_title {
-      padding: 20px;
-      font-size: 40px;
-    }
-    .type_check_box {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      flex-wrap: wrap;
-      .type_item {
-        width: 100px;
-        text-align: center;
-        height: 150px;
-        .svg_box {
-          width: 80px;
-          height: 80px;
-          line-height: 80px;
-          margin: 10px auto;
-          text-align: center;
-          border-radius: 20px;
-          svg {
-            width: 100%;
-            height: 100%;
-            vertical-align: middle;
-          }
-        }
-        p {
-          color: #051e56;
-        }
-      }
-    }
-    .search_bar {
-      padding: 10px 20px;
-      .new_folder {
-        width: 40px;
-        height: 40px;
-      }
-      :deep {
-        .nut-searchbar {
-          width: calc(100% - 60px);
-          padding: 0;
-        }
-
-        .nut-searchbar__search-input {
-          --nut-searchbar-input-height: 50px;
-          --nut-icon-width: 30px;
-          --nut-icon-height: 30px;
-          --nut-icon-line-height: 30px;
-        }
-        .nut-searchbar__input-bar {
-          font-size: 1.5rem;
-        }
-        .nut-icon-search2 {
-          --nut-icon-width: 30px;
-          --nut-icon-height: 30px;
-          --nut-icon-line-height: 30px;
-        }
-      }
-    }
-    .list_item {
-      padding: 5px 20px 5px 40px;
-      border-top: 1px solid #efefef;
-
-      &:active,
-      &:hover {
-        background: #cde3f5;
-      }
-      .left_checkMode {
-        width: 80px;
-        height: 80px;
-        img {
-          width: 50px !important;
-          height: 50px !important;
-        }
-        &.is_checked {
-          width: 60px;
-          height: 60px;
-          margin: 10px;
-          background: #2e70ff;
-        }
-      }
-      .type_icon {
-        width: 80px;
-        height: 80px;
-      }
-      .left_icon_box {
-        width: 80px;
-        height: 80px;
-        img {
-          width: 80px;
-          height: 80px;
-        }
-      }
-      .name_box {
-        width: calc(100% - 180px);
-        margin-left: 30px;
-
-        p:last-child {
-          margin-top: 5px;
-          color: #a7a7a7;
-          font-size: 18px;
-        }
-      }
-      .right_div {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 80px;
-        height: 80px;
-      }
-      .right_radio {
-        height: 80px;
-        width: 80px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        :deep {
-          .nut-checkbox {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            margin-right: 0;
-          }
-          .nut-checkbox__label {
-            display: none;
-          }
-        }
-      }
-      .right_more {
-        width: 30px;
-        height: 30px;
-      }
-    }
-    .bottom_action {
-      :deep {
-        .nut-tabbar {
-          --nut-tabbar-height: 60px;
-        }
-        .nut-tabbar-item {
-          background-color: #2e70ff;
-          color: #fff;
-          cursor: pointer;
-          svg {
-            width: 30px;
-            height: 30px;
-          }
-        }
-        .nut-tabbar-item_icon-box_nav-word {
-          color: #ffffff5c;
-          --nut-tabbar-item-text-font-size: 1rem;
-        }
-      }
-    }
-    :deep {
-      .nut-popup {
-        .nut-icon {
-          min-height: 20px;
-        }
-      }
-    }
-    .rename_box {
-      margin-top: 40px;
-      padding: 0 40px;
-      :deep {
-        .nut-cell {
-          padding-left: 0;
-          padding-right: 0;
-          box-shadow: none;
-        }
-        .nut-textarea {
-          padding-left: 0;
-          padding-right: 0;
-        }
-      }
-      p {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-      svg {
-        display: block;
-        margin: 0 auto;
-      }
-      :deep {
-        .nut-searchbar {
-          margin: 0 auto;
-          padding: 20px 0;
-          --nut-searchbar-width: 600px;
-          --nut-searchbar-input-height: 70px;
-        }
-        .nut-button {
-          width: 300px;
-          margin: 0 auto;
-          margin-top: 40px;
-          --nut-button-default-height: 70px;
-          --nut-button-default-font-size: 1.5rem;
-        }
-        .nut-searchbar__search-input .nut-searchbar__input-bar {
-          font-size: 1.5rem;
-        }
-        .nut-icon {
-          --nut-icon-width: 30px;
-          --nut-icon-height: 30px;
-          --nut-icon-line-height: 30px;
-        }
-      }
-    }
-    .move_box {
-      :deep {
-        .nut-cell {
-          padding: 10px;
-          --nut-cell-title-font: 1.5rem;
-        }
-      }
-      .top_back {
-        margin-bottom: 10px;
-        p {
-          margin: 0 5px;
-          font-size: 2rem;
-        }
-      }
-      .file_list {
-        height: 600px;
-        overflow-y: auto;
-        .list_item {
-          width: 100%;
-          box-sizing: border-box;
-        }
-        .left_icon_box {
-          width: 80px;
-          height: 80px;
-          svg {
-            width: 80px;
-            height: 80px;
-          }
-        }
-        .name_box {
-          p {
-            text-align: right;
-            margin: 0;
-            font-size: 30px;
-          }
-        }
-      }
-      .nut-button {
-        --nut-button-default-font-size: 1rem;
-      }
-    }
-    .share_info_box {
-      margin-top: 30px;
-      margin: 30px 120px 0;
-      justify-content: space-around;
-      div {
-        min-width: 150px;
-        margin-top: 20px;
-
-        img,
-        svg {
-          width: 80px;
-          height: 80px;
-        }
-      }
-    }
-    .custom-content {
-      p {
-        padding: 10px 20px;
-        color: #909090;
-        border-bottom: 1px solid #eee;
-        svg {
-          width: 60px;
-          height: 60px;
-          margin-right: 20px;
-          vertical-align: middle;
-        }
-      }
-      ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        li {
-          padding: 10px 20px;
-          svg {
-            width: 40px;
-            height: 40px;
-            margin-right: 15px;
-            vertical-align: middle;
-          }
-          &:active,
-          &:hover {
-            background: #cde3f5;
-          }
-        }
-      }
-      .cancel_btn {
-        padding: 10px;
-        font-size: 24px;
-      }
-    }
-    :deep {
-      .van-dropdown-menu__bar {
-        background-color: transparent;
-        box-shadow: none;
-      }
-      .van-dropdown-menu__title:after {
-        transform: rotate(-45deg) scale(0.8);
-      }
-      .van-dropdown-menu__title--down:after {
-        transform: rotate(135deg) scale(0.8);
-      }
-      .van-dropdown-item__option {
-        padding: 20px;
-      }
-    }
-  }
+  @import url('./style/list.scss');
 </style>

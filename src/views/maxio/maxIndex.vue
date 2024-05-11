@@ -268,5 +268,5 @@
 </script>
 
 <style lang="scss" scoped>
-  @import url('./index.scss');
+  @import url('./maxFileOpt/style/index.scss');
 </style>

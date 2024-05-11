@@ -1219,8 +1219,8 @@
   });
 </script>
 <style lang="scss">
-  @import url('./component.scss');
+  @import url('./style/component.scss');
 </style>
 <style scoped lang="scss">
-  @import url('./componentScop.scss');
+  @import url('./style/componentScop.scss');
 </style>

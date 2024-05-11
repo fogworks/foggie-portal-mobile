@@ -560,6 +560,7 @@
       :deep {
         .nut-checkbox__icon {
           color: $main_blue;
+          color: #4efeff;
           path {
             fill-opacity: 1;
           }

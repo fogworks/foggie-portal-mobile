@@ -30,11 +30,14 @@
     }
     .iot_bg {
       background: #ffffff54;
+      background: rgb(68 219 221 / 83%);
+      border: 1px solid ffffff;
       //   background-image: linear-gradient(103deg, #f83600 0%, #f9d423 100%);
       img {
         // animation: iotChange 2s linear alternate infinite;
       }
     }
+
     .reward_bg {
       box-shadow: #ffd700 0px 0px 8px;
       border: 1px solid #ffd700;
@@ -151,6 +154,24 @@
     margin-right: 30px;
   }
 }
+.iot_temp_line {
+  color: #44dbdd;
+  position: relative;
+  span {
+    position: relative;
+  }
+}
+.iot_temp_unit span::after {
+  content: '°C';
+  position: absolute;
+  right: 0;
+  top: -10px;
+  display: block;
+  width: 0px;
+  height: 30px;
+  font-size: 20px;
+  background-color: #ffffff5c;
+}
 .pool_item_ipfs {
   width: 33% !important;
   font-style: normal;
@@ -207,16 +228,21 @@
     align-items: center;
     align-items: baseline;
     font-weight: bold;
+    background: #43c9cb1c;
 
     .iot_room_number {
       font-size: 20px;
       margin-left: 10px;
       color: #f9c721;
+      color: #44dbdd;
     }
   }
   .iot_room_detail {
     .iot_device_item {
       border: 1px solid #ffffff6b;
+      border: 1px solid rgb(67 215 218);
+      border: 0.266667vw solid #17feff;
+      box-shadow: #d3d3eb 0px -0.4vw 1.066667vw 0.266667vw;
       border-radius: 10px;
       padding: 26px;
       margin: 20px 0;
@@ -303,4 +329,10 @@
   .title {
     font-weight: bold;
   }
+}
+.iot_empty_box {
+  border: 1px dashed #ffffff87;
+  margin: 20px;
+  padding-bottom: 10px;
+  border-radius: 10px;
 }

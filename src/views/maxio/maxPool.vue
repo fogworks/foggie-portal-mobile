@@ -153,8 +153,8 @@
 </script>
 
 <style lang="scss" scoped>
-  @import url('./common.scss');
-  @import url('./index.scss');
+  @import url('./maxFileOpt/style/common.scss');
+  @import url('./maxFileOpt/style/index.scss');
   .maxio_home_pool {
     // .minWidth {
     //   width: 0 !important;

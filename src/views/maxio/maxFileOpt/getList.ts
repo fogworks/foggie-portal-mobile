@@ -80,7 +80,7 @@ export default function getList(deviceData) {
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let header = new Prox.default.ProxHeader();
         let request = new Prox.default.ProxF2PGetMiner();
-
+        // console.log(server, header, 'getMyListgetMyList');
         header.setPeerid(deviceData.peer_id);
         header.setId(deviceData.foggie_id);
         header.setToken(_token);
@@ -134,7 +134,7 @@ export default function getList(deviceData) {
             // console.log(res, 'f2PGetIOTList', res.toObject());
             if (res) {
                 myIotList.value = res.toObject().dataList;
-                // console.log(myIotList.value, 'myIotList')
+                console.log(myIotList.value, 'myIotList')
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },

@@ -88,7 +88,7 @@
           </template>
         </nut-dialog>
       </Teleport>
-    <UploadSet v-if="curStepIndex == 4&&showUpload" v-model:needRefresh="needRefresh"></UploadSet>
+    <!-- <UploadSet v-if="curStepIndex == 4&&showUpload" v-model:needRefresh="needRefresh"></UploadSet> -->
   </template>
   
   <script lang="ts" setup name="BasicLayoutPage">

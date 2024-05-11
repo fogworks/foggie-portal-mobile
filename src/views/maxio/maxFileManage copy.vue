@@ -41,6 +41,39 @@
         </div>
         <div class="maxio_home_rightContent maxio_sd_rightContent" :class="[showLeft ? 'maxWidth' : '']">
           <sd>
+            <div class="maxio_home_card space_card">
+              <div class="space_card_left"
+                ><MyEcharts style="width: 100%; height: 100px" :options="chartOptions" :showLeft="showLeft"></MyEcharts>
+              </div>
+            </div>
+            <div class="maxio_home_card space_card file_card">
+              <div class="space_card_right">
+                <div class="local_title">Category</div>
+                <div class="file_items_groups">
+                  <div class="file_items" v-for="(item, index) in fileListArr" :key="index">
+                    <div class="svg_box">
+                      <IconImage v-if="item.type === 'Photos'"></IconImage>
+                      <IconDocument v-if="item.type === 'Documents'"></IconDocument>
+                      <IconVideo v-if="item.type === 'Videos'"></IconVideo>
+                      <IconAudio2 v-if="item.type === 'Audio'"></IconAudio2>
+                      <IconOther v-if="item.type === 'Other'"></IconOther>
+                    </div>
+                    <div class="file_detail">
+                      <div class="file_name">{{ item.name }}</div>
+                      <div class="file_size">
+                        <span class="file_space">{{ getfilesize(item.total) }}</span>
+                        <span class="file_number"> ({{ item.number }} Files)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="today_file">
+              <span class="title">Recent Files</span>
+              <span class="see_all" @click="gotoFile(cloudQuery)">See All ></span>
+            </div>
+            <!-- <maxFileList :cloudQuery="cloudQuery" :deviceData="currentItem"></maxFileList> -->
             <maxAllFileList></maxAllFileList>
           </sd>
         </div>
@@ -88,6 +121,17 @@
       router.push({ path: '/maxio' });
     }
   };
+  const gotoFile = (item) => {
+    router.push({
+      name: 'maxFileList',
+      query: {
+        id: item.order_id,
+        uuid: item.uuid,
+        amb_uuid: item.amb_uuid,
+        domain: item.domain,
+      },
+    });
+  };
   onMounted(() => {
     currentItem.value = JSON.parse(window.localStorage.homeChooseBucket);
     fileListArr.value = JSON.parse(window.localStorage.fileListArr);
@@ -96,7 +140,84 @@
       _item.value = item.total;
       return _item;
     });
+    cloudQuery.value = {
+      id: currentItem.value.id,
+      // uuid: currentTabItem.value.uuid,
+      // amb_uuid: item.amb_uuid,
+      // domain: item.domain,
+    };
+    initOptions(_fileListArr);
   });
+
+  const initOptions = (_fileListArr) => {
+    chartOptions.value = {
+      tooltip: {
+        trigger: 'item',
+        show: false,
+      },
+      legend: {
+        //   backgroundColor: '#b5baca61',
+        borderRadius: 5,
+        icon: 'circle',
+        left: '0',
+        orient: 'vertical',
+        textStyle: {
+          color: '#fff',
+          fontSize: '7px',
+          fontWeight: 'bold',
+        },
+        itemWidth: 8, // 设置图例标记的宽度
+        itemHeight: 8, // 设置图例标记的高度
+        itemStyle: {
+          borderColor: '#fff', // 边框颜色
+          borderWidth: 1, // 边框宽度
+        },
+        formatter: function (name) {
+          let text = name;
+          let value = 0;
+          for (let i = 0; i < _fileListArr.length; i++) {
+            if (name === _fileListArr[i].name) {
+              value = getfilesize(_fileListArr[i].total);
+            }
+          }
+
+          let str = `${name} : ${value}`;
+          return str;
+        },
+      },
+      series: [
+        {
+          name: 'Storage Usage',
+          type: 'pie',
+          top: '0%',
+          left: '50%',
+          radius: ['40%', '70%'],
+          avoidLabelOverlap: false,
+          padAngle: 5,
+          itemStyle: {
+            borderRadius: 4,
+            //   borderWidth: 30, // 设置扇区间隙的宽度
+          },
+          label: {
+            show: false,
+            position: 'center',
+            fontSize: 20,
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 20,
+              fontWeight: 'bold',
+            },
+          },
+          labelLine: {
+            show: false,
+          },
+          data: _fileListArr,
+        },
+      ],
+    };
+  };
 </script>
 
 <style lang="scss" scoped>

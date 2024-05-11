@@ -76,7 +76,12 @@
                       {{ rewardType === 'pool' ? 'Pool' : 'IOT' }} - {{ activePool }}</div
                     >
                     <nut-tabs v-model="activePool" size="small" :ellipsis="hideText" v-if="poolList.length > 1" @change="changeTypeTab()">
-                      <nut-tab-pane :title="item.bucket" :pane-key="item.bucket" v-for="(item, index) in poolList" :key="index">
+                      <nut-tab-pane
+                        :title="item.bucket || item.groupname"
+                        :pane-key="item.bucket || item.groupname"
+                        v-for="(item, index) in poolList"
+                        :key="index"
+                      >
                         <!-- <div class="today_reward_item">
                           <span class="today_text">Today Anticipated</span>
                           <span class="today_value">+3,490</span>
@@ -218,6 +223,7 @@
       activePool.value = poolList.value[0].bucket || poolList.value[0].groupname;
     } else {
       poolList.value = [];
+      activePool.value = '';
     }
     getTimeRewardData();
   };
@@ -251,7 +257,7 @@
 
     searchDeviceEarningsAPI(params1).then((res) => {
       if (res && res.result) {
-        console.log(res.result, 'getTimeRewardData');
+        // console.log(res.result, 'getTimeRewardData');
         rewardDetailList.value = res.result.counts;
       }
     });
@@ -280,8 +286,8 @@
 </script>
 
 <style lang="scss" scoped>
-  @import url('./common.scss');
-  @import url('./index.scss');
+  @import url('./maxFileOpt/style/common.scss');
+  @import url('./maxFileOpt/style/index.scss');
 </style>
 <style lang="scss">
   .maxio_reward_page {
