@@ -1,40 +1,40 @@
 <template>
   <div class="fileList_content max_fileList_content">
     <!-- file_Top -->
-    <nut-sticky class="file_Top" top="0">
-      <!-- search_bar -->
-      <div class="search_bar" v-if="category !== 1">
-        <IconNewFolder
-          @click="
-            isNewFolder = true;
-            renameShow = true;
-          "
-          v-show="category == 0 && isMobileOrder && isAvailableOrder"
-          class="new_folder"
-        ></IconNewFolder>
-        <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
-          <template #rightin> <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" /> </template>
-        </nut-searchbar>
-        <div> </div>
-      </div>
+    <!-- <nut-sticky class="file_Top" top="0"> -->
+    <!-- search_bar -->
+    <div class="search_bar" v-if="category !== 1">
+      <IconNewFolder
+        @click="
+          isNewFolder = true;
+          renameShow = true;
+        "
+        v-show="category == 0 && isMobileOrder && isAvailableOrder"
+        class="new_folder"
+      ></IconNewFolder>
+      <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
+        <template #rightin> <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" /> </template>
+      </nut-searchbar>
+      <div> </div>
+    </div>
 
-      <!-- Edit -->
-      <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
-        <div style="display: flex">
-          <nut-checkbox v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
-          <IconListType
-            style="width: 2rem; height: 2rem; vertical-align: middle"
-            v-if="cardMode && category != 1"
-            @click="cardMode = !cardMode"
-          ></IconListType>
-          <IconCardType
-            style="margin: 0 0.2rem; width: 1.5rem; height: 2rem; vertical-align: middle"
-            v-else-if="!cardMode && category != 1"
-            @click="cardMode = !cardMode"
-          ></IconCardType>
-        </div>
+    <!-- Edit -->
+    <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
+      <div style="display: flex">
+        <nut-checkbox v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
+        <IconListType
+          style="width: 2rem; height: 2rem; vertical-align: middle"
+          v-if="cardMode && category != 1"
+          @click="cardMode = !cardMode"
+        ></IconListType>
+        <IconCardType
+          style="margin: 0 0.2rem; width: 1.5rem; height: 2rem; vertical-align: middle"
+          v-else-if="!cardMode && category != 1"
+          @click="cardMode = !cardMode"
+        ></IconCardType>
       </div>
-    </nut-sticky>
+    </div>
+    <!-- </nut-sticky> -->
     <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
     <template v-else-if="category != 1">
       <nut-infinite-loading
@@ -138,46 +138,45 @@
         safe-area-inset-bottom
         placeholder
       >
-        <template v-if="isAvailableOrder">
-          <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
-            <template #icon>
-              <IconShare :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconShare>
-              <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
-            </template>
-          </nut-tabbar-item>
-          <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
-            <template #icon="props">
-              <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
-            </template>
-          </nut-tabbar-item>
-          <nut-tabbar-item
-            :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'pin' : 'unpin'"
-            :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']"
-          >
-            <template #icon="props">
-              <IconIPFS :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconIPFS>
-            </template>
-          </nut-tabbar-item>
-          <nut-tabbar-item tab-title="Move" :class="[category == 1 || !isMobileOrder ? 'is-disable' : '']">
-            <template #icon="props">
-              <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
-            </template>
-          </nut-tabbar-item>
-        </template>
-
-        <nut-tabbar-item tab-title="Download" :class="[selectArr.length < 1 || !isMobileOrder ? 'is-disable' : '']">
-          <template #icon="props">
-            <IconDownload :color="selectArr.length >= 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconDownload>
+        <!-- <template v-if="isAvailableOrder"> -->
+        <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
+          <template #icon>
+            <IconShare :color="selectArr.length == 1 ? '#fff' : '#cccccc6e'"></IconShare>
           </template>
         </nut-tabbar-item>
-        <nut-tabbar-item v-if="isAvailableOrder" tab-title="Delete" :class="[selectArr.length < 1 ? 'is-disable' : 'delete-item']">
+        <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
           <template #icon="props">
-            <IconDelete :color="selectArr.length ? 'red' : '#ffffff5c'"></IconDelete>
+            <IconRename :color="selectArr.length == 1 ? '#fff' : '#cccccc6e'"></IconRename>
+          </template>
+        </nut-tabbar-item>
+        <nut-tabbar-item
+          :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'pin' : 'unpin'"
+          :class="[selectArr.length > 1 ? 'is-disable' : '']"
+        >
+          <template #icon="props">
+            <IconIPFS :color="selectArr.length == 1 ? '#fff' : '#cccccc6e'"></IconIPFS>
+          </template>
+        </nut-tabbar-item>
+        <nut-tabbar-item tab-title="Move" :class="[category == 1 ? 'is-disable' : '']">
+          <template #icon="props">
+            <IconMove :color="selectArr.length && category != 1 ? '#fff' : '#cccccc6e'"></IconMove>
+          </template>
+        </nut-tabbar-item>
+        <!-- </template> -->
+
+        <nut-tabbar-item tab-title="Download" :class="[selectArr.length < 1 ? 'is-disable' : '']">
+          <template #icon="props">
+            <IconDownload :color="selectArr.length >= 1 ? '#fff' : '#cccccc6e'"></IconDownload>
+          </template>
+        </nut-tabbar-item>
+        <nut-tabbar-item tab-title="Delete" :class="[selectArr.length < 1 ? 'is-disable' : 'delete-item']">
+          <template #icon="props">
+            <IconDelete :color="selectArr.length ? '#eebb15' : '#cccccc6e'"></IconDelete>
           </template>
         </nut-tabbar-item>
       </nut-tabbar>
     </Teleport>
-    <!-- <ActionComponent
+    <ActionComponent
       ref="actionRef"
       v-model:fileItemPopupIsShow="fileItemPopupIsShow"
       v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
@@ -190,7 +189,7 @@
       :header="header"
       :prefix="prefix"
       :isAvailableOrder="isAvailableOrder"
-      :chooseItem="deviceData.value"
+      :chooseItem="chooseItem"
       :images="images"
       :imgUrl="imgUrl"
       :isMobileOrder="isMobileOrder"
@@ -207,8 +206,8 @@
       @swipeChange="swipeChange"
       @clickFIleItemDetail="clickFIleItemDetail"
       @clickFIleItem="clickFIleItem"
-    ></ActionComponent> -->
-
+      :deviceData="deviceData"
+    ></ActionComponent>
     <uploader
       v-if="isMobileOrder && isAvailableOrder"
       :getSummary="getSummary"
@@ -249,6 +248,8 @@
 </template>
 
 <script setup lang="ts">
+  import * as Prox from '@/pb/net_pb.js';
+  import * as grpcService from '@/pb/net_grpc_web_pb.js';
   import ActionComponent from './actionComponent.vue';
   import ImgList from './imgList.vue';
   import useDelete from './useDelete.js';
@@ -259,6 +260,7 @@
   import IconCardType from '~icons/home/cardType.svg';
   import IconBucket from '~icons/home/bucket.svg';
   import IconPlay from '~icons/home/play.svg';
+  import IconDelete from '~icons/home/delete.svg';
   import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
   import ErrorPage from '@/views/errorPage/index.vue';
   import IconNft from '~icons/home/nft.svg';
@@ -274,8 +276,7 @@
   import { useUserStore } from '@/store/modules/user';
 
   const userStore = useUserStore();
-  import * as Prox from '@/pb/net_pb.js';
-  import * as grpcService from '@/pb/net_grpc_web_pb.js';
+  const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
 
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
@@ -285,6 +286,7 @@
   import { poolUrl, maxUrl } from '@/setting.js';
   import { get_order_sign, get_vood_token } from '@/api/index';
   import getFileType from '@/utils/getFileType.ts';
+  import maxFileInfo from './maxFileInfo.js';
 
   let server = null;
   const route = useRoute();
@@ -349,6 +351,7 @@
   const socketDate = ref('');
   const socketToken = ref('');
   const showSocketDialog = ref(false);
+  const currentFolder = ref('');
   const isError = ref(false);
   const {
     actionRef,
@@ -378,14 +381,26 @@
     cardMode,
   } = toRefs(state);
 
-  let header = ref({});
   let metadata = ref({});
 
   const deviceData = ref({});
   const bucketName = ref('');
   deviceData.value = JSON.parse(window.localStorage.homeChooseBucket);
-
-  import maxFileInfo from './maxFileInfo.js';
+  const appType = ref('');
+  appType.value = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+  const deviceToken = ref('');
+  let token = MaxTokenMap.value[deviceData.value.device_id];
+  token = token && token.split(' ')[1];
+  deviceToken.value = token;
+  const header = computed(() => {
+    let headerProx2 = new Prox.default.ProxHeader();
+    headerProx2.setPeerid(deviceData.value.peer_id);
+    headerProx2.setId(deviceData.value.foggie_id);
+    headerProx2.setToken(deviceToken.value);
+    headerProx2.setApptype(appType.value);
+    return headerProx2;
+  });
+  console.log(header.value, 'header.value');
   const { accessKeyId, secretAccessKey, getHttpShare, getSummary } = maxFileInfo();
   const { cloudPin } = useShare(deviceData, {}, deviceData.value && deviceData.value.deviceType, {});
   provide('getSummary', getSummary);
@@ -485,8 +500,7 @@
         imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
         detailShow.value = true;
         nextTick(() => {
-          console.log(imgStartIndex.value, 'imgStartIndex.value');
-
+          console.log(imgStartIndex.value, 'imgStartIndex.value', imgArray.value);
           if (imgPreRef.value) {
             imgPreRef.value.swipeTo(imgStartIndex.value);
             console.log(imgPreRef.value.startPosition, 'startPosition.value');
@@ -501,7 +515,36 @@
   };
 
   const $cordovaPlugins = inject('$cordovaPlugins');
-
+  const maxDownload = (checkData) => {
+    const objectKey = encodeURIComponent(chooseItem.value.key);
+    let url = `http://154.31.41.36:9900/o/${deviceData.value.peer_id}/${deviceData.value.foggie_id}/${objectKey}`;
+    let token = MaxTokenMap.value[deviceData.value.device_id];
+    token = token.split(' ')[1];
+    const headers = {
+      Authorization: token,
+    };
+    fetch(url, { method: 'GET', headers })
+      .then((response) => {
+        if (response.ok) {
+          return response.blob();
+        } else {
+          showToast.fail('Download failed, please try again');
+          console.error('Error:', response.status, response.statusText);
+        }
+      })
+      .then((blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = checkData[0].fullName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      })
+      .catch((error) => {
+        showToast.fail('Download failed, please try again');
+        console.error('Network Error:', error);
+      });
+  };
   const handlerClick = async (type: string) => {
     showActionPop.value = false;
     fileItemPopupIsShow.value = false;
@@ -517,102 +560,70 @@
     }
     console.log(checkData);
     if (type === 'move') {
-      // if (category.value == 1) return false;
       movePrefix.value = [];
       moveShow.value = true;
-      // doSearch('', movePrefix.value, true);
     } else if (type === 'download') {
-      //   downLoad();
-
-      // const bucketName = 'test11111';
       const objectKey = encodeURIComponent(checkData[0].fullName);
-
-      const headers = getSignHeaders(objectKey);
-
-      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
+      let url = `http://154.31.41.36:9900/o/${deviceData.value.peer_id}/${deviceData.value.foggie_id}/${objectKey}`;
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
         if (checkData.length > 1) return false;
-
         $cordovaPlugins.downloadFileHH(url, checkData[0].fullName, headers);
       } else {
         showToast.text('The download is in progress, please wait patiently');
-        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
-        server = new grpcService.default.ServiceClient(ip, null, null);
-        let range = new Prox.default.ProxRangeRequest();
-        let request = null;
         let stream;
         let downloadName;
         if (checkData.length == 1 && !checkData[0].isDir) {
-          request = new Prox.default.ProxGetRequest();
-          request.setHeader(header.value);
-          request.setRange(range);
-          request.setCid(checkData[0].cid);
-          request.setKey(encodeURIComponent(checkData[0].key));
-          request.setThumb(false);
-          console.log(request, 'request');
-          downloadName = checkData[0].name;
-          stream = server.getObject(request, metadata.value);
+          maxDownload(checkData);
         } else {
-          downloadName = 'download.zip';
-          let infoList = [];
-
-          for (const item of checkData) {
-            let objs = new Prox.default.ProxGetInfo();
-            objs.setCid(item.cid);
-            objs.setKey(item.key);
-            infoList.push(objs);
-          }
-          request = new Prox.default.ProxGetRequests();
-          request.setHeader(header.value);
-          request.setRange(range);
-          request.setObjsList(infoList);
-          let prefixes = [];
-          let data = [];
-
-          checkData.forEach((el) => {
-            if (el.cid && !el.isDir) {
-              data.push({
-                cid: el.cid,
-                key: encodeURIComponent(el.fullName),
-              });
-            } else {
-              // prefixes.push(encodeURIComponent(el.fullName));
-              prefixes.push(el.fullName.replace('/', ''));
-            }
-          });
-          request.setPrefixesList(JSON.parse(JSON.stringify(prefixes)));
-          stream = server.getObjects(request, metadata.value);
+          //   downloadName = 'download.zip';
+          //   let infoList = [];
+          //   for (const item of checkData) {
+          //     infoList.push(objs);
+          //   }
+          //   let prefixes = [];
+          //   let data = [];
+          //   checkData.forEach((el) => {
+          //     if (el.cid && !el.isDir) {
+          //       data.push({
+          //         cid: el.cid,
+          //         key: encodeURIComponent(el.fullName),
+          //       });
+          //     } else {
+          //       prefixes.push(el.fullName.replace('/', ''));
+          //     }
+          //   });
+          //   stream = await fetch(url, { method: 'GET', headers });
         }
-        let chunks = [];
-        stream.on('data', (response) => {
-          console.log(response, 'response');
+        // let chunks = [];
+        // stream.on('data', (response) => {
+        //   console.log(response, 'response');
 
-          chunks.push(response.getChunk_asU8()); // 收集数据块
-        });
+        //   chunks.push(response.getChunk_asU8()); // 收集数据块
+        // });
 
-        stream.on('status', (status) => {
-          console.log('Stream status:', status);
-        });
+        // stream.on('status', (status) => {
+        //   console.log('Stream status:', status);
+        // });
 
-        stream.on('end', (end) => {
-          let blob = new Blob(chunks, { type: 'application/octet-stream' }); // 创建 Blob 对象
-          let url = URL.createObjectURL(blob); // 为 Blob 创建 URL
+        // stream.on('end', (end) => {
+        //   let blob = new Blob(chunks, { type: 'application/octet-stream' }); // 创建 Blob 对象
+        //   let url = URL.createObjectURL(blob); // 为 Blob 创建 URL
 
-          // 创建隐藏的下载链接并触发点击
-          let a = document.createElement('a');
-          a.href = url;
-          a.download = downloadName; // 指定下载文件的名称
-          document.body.appendChild(a); // 将链接添加到文档中
-          a.click(); // 模拟点击进行下载
-          // 清理
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url); // 释放 Blob 对象的 URL
-          console.log('Stream end!', end);
-        });
+        //   // 创建隐藏的下载链接并触发点击
+        //   let a = document.createElement('a');
+        //   a.href = url;
+        //   a.download = downloadName; // 指定下载文件的名称
+        //   document.body.appendChild(a); // 将链接添加到文档中
+        //   a.click(); // 模拟点击进行下载
+        //   // 清理
+        //   document.body.removeChild(a);
+        //   URL.revokeObjectURL(url); // 释放 Blob 对象的 URL
+        //   console.log('Stream end!', end);
+        // });
 
-        stream.on('error', (error) => {
-          console.log('error----------upload', error);
-        });
+        // stream.on('error', (error) => {
+        //   console.log('error----------upload', error);
+        // });
       }
       // fetch(url, { method: 'GET', headers })
       //   .then((response) => {
@@ -714,30 +725,28 @@
     if (!deviceData.value.device_id) {
       return;
     }
-    let token = await get_vood_token({ vood_id: deviceData.value.device_id });
-    userStore.setMaxTokenMap({
-      id: deviceData.value.device_id,
-      token: token.data.token_type + ' ' + token.data.access_token,
-    });
-    let _token = token.data.access_token;
+    // let token = await get_vood_token({ vood_id: deviceData.value.device_id });
+    // userStore.setMaxTokenMap({
+    //   id: deviceData.value.device_id,
+    //   token: token.data.token_type + ' ' + token.data.access_token,
+    // });
+    // let _token = token.data.access_token;
     let server = new grpcService.default.APIClient(maxUrl, null, null);
-    console.log(server, 'server----proxxxxhead');
-    console.log('server----proxxxxhead-------------', new Prox.default.ProxHeader());
-    let header = new Prox.default.ProxHeader();
     let listObject = new Prox.default.ProxListObjectsRequest();
     let requestReq = new Prox.default.ProxListObjectsReq();
-    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
     let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
     let metadata = {
       'X-Custom-Date': date + 'Z',
       'X-Sid': deviceData.value.peer_id,
     };
-
-    header.setPeerid(deviceData.value.peer_id);
-    header.setId(deviceData.value.foggie_id);
-    header.setToken(_token);
-    header.setApptype(appType);
-    console.log(header, 'proxxxxhead');
+    // let header = new Prox.default.ProxHeader();
+    // const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+    // header.setPeerid(deviceData.value.peer_id);
+    // header.setId(deviceData.value.foggie_id);
+    // header.setToken(_token);
+    // header.setApptype(appType);
+    // header.value = header;
+    // console.log(header, '---proxxxxhead------', header.value);
 
     listObject.setPrefix('');
     listObject.setDelimiter('');
@@ -751,7 +760,7 @@
     listObject.setTags('');
     listObject.setCategory(0);
     listObject.setDate('');
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
@@ -872,27 +881,41 @@
   ) => {
     if (!data) {
       tableLoading.value = false;
+      showToast.hide('file_list');
       return;
     }
+    console.log('data', data);
     if (data.err) {
       showToast.fail('Failed to  retrieve data. Please try again later');
     }
-    let dir = [].join('/');
+    let dir = prefix.value.join('/');
     if (reset) {
-      tableData.value = [];
+      if (moveShow.value) {
+        dirData.value = [];
+      } else {
+        cancelSelect();
+        tableData.value = [];
+        imgArray.value = [];
+      }
     }
+    // if (!accessKeyId.value) {
+    //   await getOrderInfo();
+    // }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
+
+      let cur_cid = '';
+      let isPin = false;
+      for (let i = 0; i < data.prefixpins?.length; i++) {
+        if (data.prefixpins[i]?.array[0] === name && data.prefixpins[i]?.array[1]) {
+          cur_cid = data.prefixpins[i].array[1];
+          isPin = data.prefixpins[i].array[2];
+        }
+      }
+
       if (data.prefix) {
         // name = name.split(data.prefix)[1];
         name = name.split('/')[name.split('/').length - 2] + '/';
-      }
-
-      let cur_cid = '';
-      for (let i = 0; i < data.prefixpins?.length; i++) {
-        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
-          cur_cid = data.prefixpins[i].cid;
-        }
       }
 
       let item = {
@@ -926,31 +949,48 @@
         share: {},
         isSystemImg: false,
         canShare: false,
+        isPin,
       };
-
-      tableData.value.push(item);
+      if (moveShow.value) {
+        dirData.value.push(item);
+      } else {
+        tableData.value.push(item);
+      }
     }
-
+    currentFolder.value = data.prefix;
+    window.sessionStorage.setItem('currentFolder', currentFolder.value);
+    console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
-      let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
+      let isDir = data?.content[j].contentType == 'application/x-directory' ? true : false;
       const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
-      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+
+      // imgHttpLink, isSystemImg, imgHttpLarge
+
+      // let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+      const imgData = await handleImg(data.content[j], type, isDir);
+      //   console.log('----------contentType', data?.content[j].contentType);
+      const url = imgData.imgHttpLink;
+      const isSystemImg = imgData.isSystemImg;
+      const url_large = imgData.imgHttpLarge;
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
       let name = data.content[j].key;
+
       if (data.prefix) {
-        name = name.split(data.prefix)[1];
+        name = name.split(decodeURIComponent(data.prefix))[1];
       }
-      if (name.indexOf('/') > 0 && name[name.length - 1] != '/') {
-        console.log(name.indexOf('/') > 0, 'name.indexOf(' / ') > 0');
-        name = name.split('/')[name.split('/').length - 1];
-      } else if (name.indexOf('/') > 0) {
-        console.log(name.indexOf('/') > 0, 'name.indexOf(' / ') > 01111111');
-        name = name.split('/')[name.split('/').length - 2];
+      if (name.indexOf('/') > 0) {
+        if (isDir) {
+          name = name.split('/')[name.split('/').length - 2] + '/';
+        } else {
+          name = name.split('/')[name.split('/').length - 1];
+        }
       }
       let isPersistent = data.content[j].isPersistent;
+
+      //   console.log(data.content[j], 'data.content[j]1');
 
       let item = {
         imageInfo: data.content[j].imageInfo,
@@ -988,11 +1028,35 @@
         isPersistent,
         isPin: data.content[j].isPin,
         isPinCyfs: data.content[j].isPinCyfs,
+        nftInfoList: data.content[j].nftInfoList,
+        thumb: data.content[j].thumb,
       };
+      //   console.log(item, 'data.content[j]');
 
-      tableData.value.push(item);
-      console.log(tableData.value, 'tableData.value');
+      if (moveShow.value) {
+      } else {
+        tableData.value.push(item);
+        if (item.category == 1) {
+          if (item.originalSize > 1024 * 1024 * 20) {
+            item.src = item.imgUrl;
+          } else {
+            item.src = item.imgUrlLarge;
+          }
+          imgArray.value.push(item);
+        }
+      }
     }
+    if (data.isTruncated) {
+      if (moveShow.value) {
+        continuationToken2.value = data.continuationToken;
+      } else {
+        continuationToken.value = data.continuationToken;
+      }
+    } else {
+      continuationToken.value = '';
+    }
+    tableLoading.value = false;
+    showToast.hide('file_list');
   };
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
     let imgHttpLink = '';
@@ -1058,80 +1122,91 @@
       });
       tableLoading.value = true;
       let type = deviceData.value.device_type == 'space' || deviceData.value.device_type == 3 ? 'space' : 'foggie';
-      if (type == 'space') {
-        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
-        server = new grpcService.default.ServiceClient(ip, null, null);
+      console.log(type, 'doSearchdoSearch', deviceData.value.device_type);
+      // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+      // server = new grpcService.default.ServiceClient(ip, null, null);
+      let server = new grpcService.default.APIClient(maxUrl, null, null);
+      let ProxFindRequest = new Prox.default.ProxFindRequest();
+      console.log(header.value, 'header.valueheader.value');
 
-        let ProxFindRequest = new Prox.default.ProxFindRequest();
-        ProxFindRequest.setHeader(header.value);
-        ProxFindRequest.setCid('');
-        ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
-        ProxFindRequest.setFileid('');
-        let list_prefix: string;
-        if (prefixArg?.length) {
-          list_prefix = prefixArg.join('/');
-          if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
-            list_prefix = list_prefix + '/';
-          }
+      ProxFindRequest.setHeader(header.value);
+      ProxFindRequest.setCid('');
+      ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
+      ProxFindRequest.setFileid('');
+      let list_prefix: string;
+      list_prefix = '';
+
+      // let header = new Prox.default.ProxHeader();
+      // const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+      // header.setPeerid(deviceData.value.peer_id);
+      // header.setId(deviceData.value.foggie_id);
+      // header.setToken(MaxTokenMap);
+      // header.setApptype(appType);
+      // header.value = header;
+      //   if (prefixArg?.length) {
+      //     list_prefix = prefixArg.join('/');
+      //     if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
+      //       list_prefix = list_prefix + '/';
+      //     }
+      //   }
+      ProxFindRequest.setHeader(header.value);
+      ProxFindRequest.setPrefix(list_prefix);
+      server.findObjects(ProxFindRequest, metadata.value, (err: any, res: { getContentsList: () => any[] }) => {
+        infinityValue.value = false;
+        if (res) {
+          const transferData = res
+            .getContentsList()
+            .map(
+              (el: {
+                getKey: () => any;
+                getEtag: () => any;
+                getLastmodified: () => any;
+                getSize: () => any;
+                getContenttype: () => any;
+                getCid: () => any;
+                getFileid: () => any;
+                getIspin: () => any;
+                getIspincyfs: () => any;
+                getPinexp: () => any;
+                getCyfsexp: () => any;
+                getOod: () => any;
+                getIspersistent: () => any;
+                getCategory: () => any;
+                getTags: () => any;
+                getImages: () => any;
+                getNftinfosList: () => any;
+                getThumb: () => any;
+              }) => {
+                return {
+                  key: el.getKey(),
+                  etag: el.getEtag(),
+                  lastModified: el.getLastmodified(),
+                  size: el.getSize(),
+                  contentType: el.getContenttype(),
+                  cid: el.getCid(),
+                  fileId: el.getFileid(),
+                  isPin: el.getIspin(),
+                  isPinCyfs: el.getIspincyfs(),
+                  pinExp: el.getPinexp(),
+                  CyfsExp: el.getCyfsexp(),
+                  OOD: el.getOod(),
+                  isPersistent: el.getIspersistent(),
+                  category: el.getCategory(),
+                  tags: el.getTags(),
+                  nftInfoList: el.getNftinfosList(),
+                  thumb: el.getThumb(),
+                  // imageInfo,
+                  // isShowDetail,
+                };
+              },
+            );
+          isError.value = false;
+          console.log(transferData, 'search------transferDatatransferData');
+          initRemoteData({ content: transferData }, true, category.value);
+        } else {
+          isError.value = true;
         }
-        ProxFindRequest.setPrefix(list_prefix);
-        server.findObjects(ProxFindRequest, metadata.value, (err: any, res: { getContentsList: () => any[] }) => {
-          infinityValue.value = false;
-          if (res) {
-            const transferData = res
-              .getContentsList()
-              .map(
-                (el: {
-                  getKey: () => any;
-                  getEtag: () => any;
-                  getLastmodified: () => any;
-                  getSize: () => any;
-                  getContenttype: () => any;
-                  getCid: () => any;
-                  getFileid: () => any;
-                  getIspin: () => any;
-                  getIspincyfs: () => any;
-                  getPinexp: () => any;
-                  getCyfsexp: () => any;
-                  getOod: () => any;
-                  getIspersistent: () => any;
-                  getCategory: () => any;
-                  getTags: () => any;
-                  getImages: () => any;
-                  getNftinfosList: () => any;
-                  getThumb: () => any;
-                }) => {
-                  return {
-                    key: el.getKey(),
-                    etag: el.getEtag(),
-                    lastModified: el.getLastmodified(),
-                    size: el.getSize(),
-                    contentType: el.getContenttype(),
-                    cid: el.getCid(),
-                    fileId: el.getFileid(),
-                    isPin: el.getIspin(),
-                    isPinCyfs: el.getIspincyfs(),
-                    pinExp: el.getPinexp(),
-                    CyfsExp: el.getCyfsexp(),
-                    OOD: el.getOod(),
-                    isPersistent: el.getIspersistent(),
-                    category: el.getCategory(),
-                    tags: el.getTags(),
-                    nftInfoList: el.getNftinfosList(),
-                    thumb: el.getThumb(),
-                    // imageInfo,
-                    // isShowDetail,
-                  };
-                },
-              );
-            isError.value = false;
-
-            initRemoteData({ content: transferData }, true, category.value);
-          } else {
-            isError.value = true;
-          }
-        });
-      }
+      });
     }
   }
   const getSignHeaders = (objectKey: string) => {
@@ -1460,4 +1535,41 @@
 
 <style lang="scss">
   @import url('./style/list.scss');
+</style>
+<style scoped lang="scss">
+  .bottom_action {
+    .nut-tabbar-item {
+      background: #1a459d !important;
+      color: #fff;
+      svg {
+        width: 30px;
+        height: 30px;
+      }
+    }
+    .nut-tabbar-item_icon-box_nav-word {
+      color: #fff;
+    }
+    // &.canAction {
+    //   .nut-tabbar {
+    //     background: #1a459d !important;
+    //   }
+    //   .nut-tabbar-item_icon-box_nav-word,
+    //   .nut-tabbar-item,
+    //   .nut-tabbar-item__icon--unactive {
+    //     color: #fff !important;
+    //   }
+    //   .nut-tabbar-item_icon-box_nav-word {
+    //     color: #fff;
+    //   }
+    // }
+    .is-disable {
+      color: #cccccc6e;
+    }
+    .delete-item {
+      color: #eebb15;
+      .nut-tabbar-item_icon-box_nav-word {
+        color: #eebb15;
+      }
+    }
+  }
 </style>

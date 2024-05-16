@@ -1,5 +1,6 @@
 <template>
   <div class="my-wave-loader" @click="changeHeight" :class="[isHeight ? 'maxHeight' : 'hideHeight', newType]">
+    <div class="closeImg" v-if="newType === 'buy'" @click="closeBuy"></div>
     <div v-if="newType === 'buy'" class="buy_pop">
       <h3 class="buyOrderTitle"> Pre-trading information</h3>
       <div class="storagebox_wrap">
@@ -18,7 +19,7 @@
         <div class="price_box">
           <span class="s1 price_box_line">
             <span class="row_box_title">Upper Limit Total</span>
-            <span class="row_box_value">{{ totalPrice }}11 <span>DMC</span></span>
+            <span class="row_box_value">{{ totalPrice }}<span>DMC</span></span>
           </span>
         </div>
       </div>
@@ -34,7 +35,9 @@
           class="confirmBuy_btn"
         >
         </nut-progress>
-        <nut-button block type="warning" :disabled="buyOrderIsSuccess" @click="confirmBuy" :loading="loading"> Confirm Buy </nut-button>
+        <nut-button block type="warning" :disabled="buyOrderIsSuccess" @click="confirmBuy" :loading="loading" v-if="showBuy">
+          Confirm Buy
+        </nut-button>
       </div>
     </div>
     <div class="my-wave_box" v-if="!topText && newType !== 'buy'">
@@ -94,6 +97,12 @@
 
 <script setup>
   import { reactive, toRefs, watch, onMounted, onUnmounted, onBeforeUnmount } from 'vue';
+  import useUserAssets from '@/views/home/useUserAssets.ts';
+  import { showToast, showDialog } from '@nutui/nutui';
+  import { buy_order, node_order_buy, order_buy_state, node_order_search, get_average_price, query_node } from '@/api/amb';
+  import { useRouter } from 'vue-router';
+  const { getUserAssets, cloudBalance } = useUserAssets();
+  const router = useRouter();
   const isHeight = ref(false);
   const props = defineProps({
     topType: String,
@@ -106,13 +115,23 @@
       week: 24,
       floating_ratio: 5,
     },
-    base_Price: 0,
+    loading: false,
     curReferenceRate: 0,
-    deposit_ratio_Price: 0,
-    totalPrice: 0,
+    showTop: false,
+    deposit_ratio: 0,
+    middle_price: 0,
+    showBuy: false,
+    nodeInfo: {
+      nodeIp: '',
+      buyOrderUuid: '',
+      amb_user_uuid: '',
+    },
+    priceNode: '',
+    buyDisabled: false,
   });
   const { buyDisabled, priceNode, nodeInfo, showBuy, middle_price, deposit_ratio, showTop, shopForm, curReferenceRate, loading } =
     toRefs(state);
+  const emits = defineEmits(['closeBuy']);
   const buyOrderIsSuccess = ref(false);
   const progressPercentage = ref(0);
 
@@ -121,6 +140,7 @@
   const showBuyBox = ref(false);
 
   const changeHeight = () => {
+    return;
     isHeight.value = !isHeight.value;
   };
   watch(
@@ -129,20 +149,210 @@
       isHeight.value = val;
       if (!val) {
         newType.value = 'link';
-        // console.log(newType.value, '0000 topType.value');
       } else {
         newType.value = 'buy';
-        // console.log(newType.value, '1111 topType.value');
       }
-      //   console.log(newType.value, topText.value, ' watch----topType.value');
-      //   if (val === 'buy') {
-      //     isHeight.value
-      //     showBuyBox.value = true;
-      //     changeHeight();
-      //   }
     },
     { deep: true, immediate: true },
   );
+  const closeBuy = () => {
+    console.log('chils=====close');
+    emits('closeBuy');
+  };
+  const totalPrice = computed(() => {
+    let baseTotal = (
+      (curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity +
+      (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity
+    ).toFixed(4);
+    let floatTotal = (+baseTotal * (1 + state.shopForm.floating_ratio / 100)).toFixed(4);
+    if (+cloudBalance.value >= baseTotal && +cloudBalance.value < floatTotal) {
+      state.shopForm.floating_ratio = 0;
+      return cloudBalance.value;
+    } else {
+      return floatTotal;
+    }
+  });
+  const deposit_ratio_Price = computed(() => {
+    return ((curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity).toFixed(4) || '0';
+  });
+  const initOrderPrice = async () => {
+    node_order_search(priceNode.value, {
+      week: state.shopForm.week,
+      storage: state.shopForm.quantity,
+      poolType: 'golden', //vofo.*  / golden
+      size: 5,
+    }).then((res) => {
+      if (res.code == 200 && res.data.length) {
+        curReferenceRate.value = res.data[0].price;
+        deposit_ratio.value = res.data[0].depositRatio;
+        showBuy.value = true;
+      }
+    });
+  };
+  const queryPriceNode = () => {
+    return query_node()
+      .then((res) => {
+        if (res.code == 200) {
+          const nodeList = res.result.data.filter((el) => el.is_active);
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .catch(() => {
+        return false;
+      });
+  };
+  const getAveragePrice = async () => {
+    let params = {
+      week: state.shopForm.week,
+      floating_ratio: state.shopForm.floating_ratio,
+      pst: state.shopForm.quantity,
+    };
+
+    get_average_price(priceNode.value, {
+      week: state.shopForm.week,
+      storage: state.shopForm.quantity,
+      poolType: 'golden', //vofo.*  / golden
+      size: 5,
+    })
+      .then((res) => {
+        if (res.code == 200 && res.data) {
+          middle_price.value = res.data;
+        }
+      })
+      .finally(() => {});
+  };
+  const confirmBuy = async () => {
+    loading.value = true;
+    await getUserAssets();
+    if (+cloudBalance.value < +totalPrice.value) {
+      let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);
+      showBuy.value = false;
+      loading.value = false;
+      showTop.value = false;
+      const dmcOk = () => {
+        router.push({ path: '/recharge', query: { rechargeDMC } });
+        showBuy.value = true;
+      };
+      let src = require('@/assets/DMC_token.png');
+      let str = `<img class="bind_img" src=${src} style="height:60px;"/>
+      <p style='word-break:break-word;color:red;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p>`;
+      showDialog({
+        title: 'The balance is insufficient',
+        content: str,
+        noCancelBtn: true,
+        okText: 'Recharge',
+        onOk: dmcOk,
+      });
+      showBuy.value = true;
+      return false;
+    }
+    let params = {
+      week: state.shopForm.week,
+      floating_ratio: state.shopForm.floating_ratio / 100,
+      pst: state.shopForm.quantity + '',
+      total_price: (+totalPrice.value).toFixed(4),
+    };
+    const nodeRes = await buy_order(params);
+    if (nodeRes.code !== 200) {
+      showToast.fail(`Apologies for the delay, Please Try Again Later`);
+      loading.value = false;
+      return false;
+    }
+
+    nodeInfo.value.buyOrderUuid = nodeRes.result.uuid;
+    nodeInfo.value.amb_user_uuid = nodeRes.result.amb_user_uuid;
+    node_order_buy(nodeInfo.value.nodeIp, {
+      minPrice: curReferenceRate.value / 10000,
+      maxPrice: ((curReferenceRate.value / 10000) * (1 + state.shopForm.floating_ratio / 100)).toFixed(4),
+      buyOrderUuid: nodeInfo.value.buyOrderUuid,
+      userUuid: nodeInfo.value.amb_user_uuid,
+      period: state.shopForm.week.toString(),
+      pst: state.shopForm.quantity,
+      totalPrice: (+totalPrice.value).toFixed(4),
+      memo: `${nodeInfo.value.buyOrderUuid}_Order_buy`,
+      deviceType: 3,
+      poolType: 'golden', //vofo.*  / golden
+      terminalType: 2,
+      foggieUserAddress: dmc.value,
+      foggieEmail: email.value,
+      foggieUserUuid: uuid.value,
+    })
+      .then((res) => {
+        loading.value = false;
+
+        if (res.code == 200) {
+          fake.progress = 0;
+          fake.start();
+          buyOrderIsSuccess.value = true;
+          loadOrderBuyState();
+        }
+      })
+      .catch(() => {
+        loading.value = false;
+      });
+  };
+  function loadOrderBuyState() {
+    order_buy_state(nodeInfo.value.nodeIp, { buyOrderUuid: nodeInfo.value.buyOrderUuid })
+      .then((res) => {
+        if (res.code == 200) {
+          if (res.data.orderId && res.data.orderId != '') {
+            fake.end();
+
+            let src = require('@/assets/DMC_Token1.png');
+            let str = `<img class="bind_img nut-icon-am-jump nut-icon-am-infinite" src=${src} style="height:60px; padding: 20px;"/>
+    <div class='buyOrderItem'><span>Order ID:</span> <span>${res.data?.orderId}</span></div >
+    <div class='buyOrderItem'><span>Total price:</span> <span>${res.data?.totalPrice} DMC</span></div >
+    <div class='buyOrderItem'><span>Total Space:</span> <span>${res.data?.pst} GB </span></div >
+    <div class='buyOrderItem'><span>Service time:</span> <span>${res.data?.epoch} Weeks</span></div > `;
+            delay(() => {
+              showTop.value = false;
+              showBuy.value = false;
+              showDialog({
+                title: 'Purchase Successfully',
+                content: str,
+                okText: 'Go Bucket',
+                cancelText: 'Go Home',
+                customClass: 'BuyOrderClass',
+                onOk: () => {
+                  router.push({ name: 'listDetails', query: { id: res.data?.orderId, uuid: res.data?.uuid, amb_uuid: res.data?.ambUuid } });
+                },
+                onCancel: () => {
+                  router.push('/home');
+                },
+                beforeClose: () => {
+                  buyOrderIsSuccess.value = false;
+                  fake.progress = 0;
+                  fake.end();
+                  setTimeout(() => {
+                    getUserAssets();
+                  }, 2000);
+                  return true;
+                },
+              });
+            }, 1000);
+          } else {
+            delay(() => {
+              loadOrderBuyState();
+            }, 1000);
+          }
+        } else {
+          fake.stop();
+        }
+      })
+      .catch(() => {
+        fake.stop();
+      });
+  }
+  onMounted(async () => {
+    let res = await queryPriceNode();
+    if (res) {
+      getAveragePrice();
+    }
+    getUserAssets();
+    initOrderPrice();
+  });
 </script>
 
 <style lang="scss" scoped>
@@ -229,6 +439,23 @@
     transform: translateY(100px);
     border: 2px solid #17feff;
     box-shadow: #d3d3eb 0px -3px 8px 2px;
+    position: relative;
+  }
+  .closeImg {
+    background: url('@/assets/maxio/close.svg');
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    top: -12px;
+    right: -18px;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+    cursor: pointer;
+    z-index: 999;
+    &:hover {
+      transform: scale(1.1);
+    }
   }
   .hideHeight {
     height: 50px;

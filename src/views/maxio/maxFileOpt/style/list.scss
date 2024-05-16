@@ -530,7 +530,7 @@
         text-align: center;
         p {
           font-size: 0.8rem !important;
-          color: #000 !important;
+          color: #fff !important;
         }
       }
       .right_radio {
@@ -667,38 +667,13 @@
       color: #ccc;
     }
   }
-  .bottom_action {
-    .nut-tabbar-item {
-      background-color: #2e70ff;
-      color: #fff;
-      svg {
-        width: 40px;
-        height: 40px;
-      }
-    }
-    .nut-tabbar-item_icon-box_nav-word {
-      color: #ffffff5c;
-    }
-    &.canAction {
-      .nut-tabbar-item_icon-box_nav-word {
-        color: #fff;
-      }
-    }
-    .is-disable {
-      color: #ffffff5c;
-      .nut-tabbar-item_icon-box_nav-word {
-        color: #ffffff5c;
-      }
-    }
-    .delete-item {
-      color: red;
-      .nut-tabbar-item_icon-box_nav-word {
-        color: red;
-      }
-    }
-  }
+
   .row_is_checked {
     background: #cde3f5;
+    background: #3872e05e;
+    .nut-checkbox__icon {
+      color: #49ebed;
+    }
   }
 
   @media screen and (min-width: 500px) {

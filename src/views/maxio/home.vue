@@ -2,8 +2,8 @@
   <div class="maxio_home_bg">
     <div class="maxio_home">
       <div class="top_link_box">
-        <topLink :topType="topTypeText" :topShow="!topShow" :topText="topText" v-if="topShow"></topLink>
-        <topLink :topType="topType" :topShow="topShow" :topText="topText"></topLink>
+        <topLink :topType="topTypeText" :topShow="!topShow" :topText="topText" v-if="topShow" @closeBuy="closeBuy"></topLink>
+        <topLink :topType="topType" :topShow="topShow" :topText="topText" @closeBuy="closeBuy"></topLink>
       </div>
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
@@ -242,6 +242,12 @@
     }
   };
 
+  const closeBuy = () => {
+    console.log('closeBuycloseBuycloseBuy');
+    topType.value = 'link';
+    topShow.value = false;
+    topText.value = topShow.value ? 'Buy Order......' : '';
+  };
   const buyOrder = () => {
     topType.value = 'buy';
     topShow.value = !topShow.value;

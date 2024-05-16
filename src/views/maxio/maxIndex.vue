@@ -91,7 +91,7 @@
   import maxFileList from './maxFileList.vue';
   const userStore = useUserStore();
   const CurrentLeftTab = computed(() => userStore.getCurrentLeftTab);
-  const { getMyList, myPoolList, myIotList, MinerReward, IOTReward, rewardList, spaceData, fileListArr } = getList();
+  const { getMyList, myPoolList, myIotList, MinerReward, IOTReward, rewardList, spaceData, fileListArr, header } = getList();
   const cloudQuery = ref({});
   const props = defineProps({
     showLeft: Boolean,

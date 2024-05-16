@@ -61,6 +61,17 @@ export default function getList(deviceData) {
     ]);
     let allCount = ref(0);
     let allSize = ref("");
+    let currentDeviceData = ref({});
+    let deviceToken = ref('');
+    const appType = ref('');
+    const header = computed(() => {
+        let headerProx2 = new Prox.default.ProxHeader();
+        headerProx2.setPeerid(currentDeviceData.value.peer_id);
+        headerProx2.setId(currentDeviceData.value.foggie_id);
+        headerProx2.setToken(deviceToken.value);
+        headerProx2.setApptype(appType.value);
+        return headerProx2;
+    });
     rewardList.value = [
         { name: 'Minning', number: '0', type: 'pool', count: 0 },
         { name: 'IOT', number: '0', type: 'iot', count: 0 },
@@ -70,12 +81,14 @@ export default function getList(deviceData) {
         if (!deviceData.device_id) {
             return;
         }
+        currentDeviceData.value = deviceData;
         let token = await get_vood_token({ vood_id: deviceData.device_id });
         userStore.setMaxTokenMap({
             id: deviceData.device_id,
             token: token.data.token_type + " " + token.data.access_token,
         });
         let _token = token.data.access_token;
+        deviceToken.value = _token;
 
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let header = new Prox.default.ProxHeader();
@@ -85,7 +98,7 @@ export default function getList(deviceData) {
         header.setId(deviceData.foggie_id);
         header.setToken(_token);
 
-        const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+        appType.value = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
         header.setApptype(appType);
         request.setHeader(header);
         let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
@@ -286,6 +299,7 @@ export default function getList(deviceData) {
         rewardList,
         mySpaceInfo,
         spaceData,
-        fileListArr
+        fileListArr,
+        header
     }
 }
