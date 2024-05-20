@@ -1,6 +1,7 @@
 import { s3Url, poolUrl, maxUrl } from '@/setting.js';
 
-import * as Prox from '@/pb/net_pb.js';
+// import * as Prox from '@/pb/net_pb.js';
+import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/net_grpc_web_pb.js';
 
 import { get_vood_token } from '@/api/index';
@@ -45,6 +46,7 @@ export default function initMaxFile() {
     let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
     let metadata = {
       'X-Custom-Date': date + 'Z',
+      'X-Sid': deviceData.peer_id,
     };
     server.listCreds(request, metadata, (err, res) => {
       if (err) {
@@ -102,8 +104,8 @@ export default function initMaxFile() {
   };
   const getHttpShare = (awsAccessKeyId, awsSecretAccessKey, keyName, thumb, deviceData) => {
     const objectKey = encodeURIComponent(keyName);
-    const baseUrl = `http://154.31.41.36:9900`;
-    // const baseUrl = `http://127.0.0.1:9009`;
+    // const baseUrl = `http://154.31.41.36:9900`;//9009
+    const baseUrl = maxUrl;
     let token = MaxTokenMap.value[deviceData.device_id];
     token = Base64.encode(token.split(' ')[1]);
     if (thumb) {

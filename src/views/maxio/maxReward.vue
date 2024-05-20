@@ -86,7 +86,7 @@
                           <span class="today_text">Today Anticipated</span>
                           <span class="today_value">+3,490</span>
                         </div> -->
-                        <nut-tabs v-model="timeType" size="small" :ellipsis="hideText" @change="changeTypeTab()">
+                        <nut-tabs v-model="timeType" size="small" :ellipsis="hideText" @change="changeTypeTab(item)">
                           <nut-tab-pane :title="_item.key" :pane-key="_item.value" v-for="(_item, _key) in changeTabList" :key="_key">
                             <div class="reward_list" v-for="(item, index) in rewardDetailList" :key="index">
                               <div class="img_box">
@@ -154,7 +154,7 @@
   const route = useRoute();
   const showLeft = ref(true);
   const rewardType = ref('pool');
-  const timeType = ref('Day');
+  const timeType = ref('day');
   const activePool = ref('');
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
@@ -165,10 +165,12 @@
   //     { name: 'Minning Reward', number: '100.0000', type: 'pool' },
   //     { name: 'IOT Reward', number: '200.0000', type: 'iot' },
   //   ]);
-  const ptypeList = [
+  const ptypeList = ref([]);
+  ptypeList.value = [
     { label: 'Minning Pool Reward', type: 'pool' },
     { label: 'IOT Reward', type: 'iot' },
   ];
+  const curIot = ref('');
   const poolList = ref([]);
   const iotList = ref([]);
   const currentItem = ref({});
@@ -191,20 +193,39 @@
   const rewardList = ref([]);
 
   onMounted(() => {
+    ptypeList.value = [];
     currentItem.value = JSON.parse(window.localStorage.homeChooseBucket);
     let myRewardList = JSON.parse(window.localStorage.getItem('rewardList'));
     if (myRewardList && myRewardList.length > 0) {
       rewardList.value = myRewardList.filter((item) => {
         return item.type !== 'ipfs';
       });
+      if (myRewardList[0].count > 0) {
+        ptypeList.value.push({ label: 'Minning Pool Reward', type: 'pool' });
+        rewardType.value = 'pool';
+      } else if (myRewardList[1].count > 0) {
+        rewardType.value = 'iot';
+      }
+      if (myRewardList[1].count > 0) {
+        ptypeList.value.push({ label: 'IOT Reward', type: 'iot' });
+      }
     } else {
       rewardList.value = [];
+      ptypeList.value = [];
     }
     initTableList();
   });
-  const changeTypeTab = (pool, time) => {
-    // console.log(rewardType.value, activePool.value, timeType.value, 'changeTypeTab');
+  const changeTypeTab = (item) => {
+    console.log(item, rewardType.value, activePool.value, timeType.value, 'changeTypeTab');
+    findId();
     getTimeRewardData();
+  };
+  const findId = () => {
+    for (let i = 0; i < poolList.value.length; i++) {
+      if (poolList.value[i].groupname === activePool.value) {
+        curIot.value = poolList.value[i].groupid;
+      }
+    }
   };
   const changeTopTypeTab = () => {
     initTableList();
@@ -250,14 +271,13 @@
         end_time: '',
         cycle: timeType.value,
         bucket: '',
-        iot_device_id: '',
+        iot_device_id: curIot.value,
         total: true,
       };
     }
 
     searchDeviceEarningsAPI(params1).then((res) => {
       if (res && res.result) {
-        // console.log(res.result, 'getTimeRewardData');
         rewardDetailList.value = res.result.counts;
       }
     });

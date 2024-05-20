@@ -3,7 +3,8 @@ import { ref } from 'vue';
 import { showToast, showDialog } from '@nutui/nutui';
 // import * as Prox from '@/pb/prox_pb.js';
 // import * as grpcService from '@/pb/prox_grpc_web_pb.js';
-import * as Prox from '@/pb/net_pb.js';
+// import * as Prox from '@/pb/net_pb.js';
+import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/net_grpc_web_pb.js';
 import { getLink } from '@/api/index.ts';
 import { useUserStore } from '@/store/modules/user';
@@ -16,9 +17,10 @@ import IconHttp2 from '~icons/home/http2.svg';
 import { poolUrl, maxUrl } from '@/setting.js';
 import loadingImg from '@/components/loadingImg/index.vue';
 import { browserUrl } from '@/setting';
+import moment from 'moment';
 // import useOrderInfo from './useOrderInfo.js';
 
-export default function useShare(orderInfo, header, deviceType, metadata) {
+export default function useShare(orderInfo, header, deviceType, metadata1) {
   const userStore = useUserStore();
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -80,13 +82,16 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     },
   ]);
   const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
+  const metadata = ref({});
+  let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
+  metadata.value = {
+    'X-Custom-Date': date + 'Z',
+    'X-Sid': orderInfo.value.peer_id,
+  };
   const cloudPin = async (item, stype = 'ipfs', flag, exp, isShare = true) => {
     console.log('cloudPincloudPincloudPin');
     let server = null;
     let mp_domain = '';
-    // mp_domain = `${orderInfo.value.domain}.${poolUrl}`;
-    // server = new grpcService.default.APIClient(`https://${mp_domain}:7007`, null, null);
-    // console.log(`https://${mp_domain}:7007`, '`https://${mp_domain}:7007`');
     console.log(item, 'pinnnnitem', item.key, item.fullName);
     server = new grpcService.default.APIClient(maxUrl, null, null);
     let header = new Prox.default.ProxHeader();
@@ -96,7 +101,6 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     header.setPeerid(orderInfo.value.peer_id);
     header.setId(orderInfo.value.foggie_id);
     header.setToken(token);
-    // console.log(header, 'header');
     let request = new Prox.default.ProxPinReq();
     let pinRequest = new Prox.default.ProxPinRequest();
     let pinPay = new Prox.default.ProxPinPay();
@@ -113,7 +117,6 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
     request.setRequest(pinRequest);
     request.setHeader(header);
     request.setPay(pinPay);
-    // console.log(request, 'request');
     return new Promise((resolve, reject) => {
       showToast.loading('Loading', {
         cover: true,

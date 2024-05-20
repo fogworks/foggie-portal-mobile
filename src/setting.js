@@ -9,8 +9,7 @@ export const redirectUrl = 'https://amb.u2i.net/';
 export const dappUrl = 'https://dapp.u2i.net/';
 export const browserUrl = 'https://mumbai.polygonscan.com';
 export const vpsUrl = 'https://devlop.fogworks.io';
-// export const maxUrl = 'http://127.0.0.1:9007';
-export const maxUrl = 'http://154.31.41.36:9007';
+export const maxUrl = 'http://154.31.41.36:8080';
 
 // export const shareUrl = "https://grey.share.fogworks.io";
 // export const s3Url = "s3.vofocorp.com";

@@ -104,6 +104,13 @@
       <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
       </nut-skeleton>
     </div>
+    <uploader
+      :isMobileOrder="true"
+      :orderInfo="deviceData"
+      @getFileList="getFileList"
+      @uploadComplete="uploadComplete"
+      v-if="deviceData && deviceData.device_id"
+    ></uploader>
   </div>
 </template>
 
@@ -121,7 +128,8 @@
   import IconPlay from '~icons/home/play.svg';
   import { s3Url, poolUrl, maxUrl } from '@/setting.js';
   import { MoreX, HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
-  import * as Prox from '@/pb/net_pb.js';
+  //   import * as Prox from '@/pb/net_pb.js';
+  import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
   import { showDialog, showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
@@ -129,6 +137,7 @@
   import { useRouter } from 'vue-router';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import { valid_upload, get_order_sign, get_vood_token } from '@/api/index';
+  import uploader from '@/views/maxio/maxFileOpt/uploader.vue';
   import useShare from './maxFileOpt/useShare';
 
   import '@nutui/nutui/dist/packages/toast/style';
@@ -986,6 +995,11 @@
         isDisabled.value = false;
       }
     });
+  };
+  const uploadComplete = () => {
+    console.log('uploadComplete');
+    getFileList();
+    // refresh();
   };
 </script>
 

@@ -21,7 +21,7 @@
     <!-- Edit -->
     <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
       <div style="display: flex">
-        <nut-checkbox v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
+        <!-- <nut-checkbox v-model="isCheckMode" label="Multiple">Edit</nut-checkbox> -->
         <IconListType
           style="width: 2rem; height: 2rem; vertical-align: middle"
           v-if="cardMode && category != 1"
@@ -248,7 +248,8 @@
 </template>
 
 <script setup lang="ts">
-  import * as Prox from '@/pb/net_pb.js';
+  //   import * as Prox from '@/pb/net_pb.js';
+  import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
   import ActionComponent from './actionComponent.vue';
   import ImgList from './imgList.vue';
@@ -274,6 +275,7 @@
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import { useUserStore } from '@/store/modules/user';
+  import IconImage1 from '~icons/home/mimage.svg';
 
   const userStore = useUserStore();
   const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
@@ -389,20 +391,17 @@
   const appType = ref('');
   appType.value = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
   const deviceToken = ref('');
-  let token = MaxTokenMap.value[deviceData.value.device_id];
-  token = token && token.split(' ')[1];
-  deviceToken.value = token;
+  const { accessKeyId, secretAccessKey, getHttpShare, getSummary } = maxFileInfo();
   const header = computed(() => {
     let headerProx2 = new Prox.default.ProxHeader();
     headerProx2.setPeerid(deviceData.value.peer_id);
     headerProx2.setId(deviceData.value.foggie_id);
     headerProx2.setToken(deviceToken.value);
     headerProx2.setApptype(appType.value);
+    // console.log(header.value, 'header.value');
     return headerProx2;
   });
-  console.log(header.value, 'header.value');
-  const { accessKeyId, secretAccessKey, getHttpShare, getSummary } = maxFileInfo();
-  const { cloudPin } = useShare(deviceData, {}, deviceData.value && deviceData.value.deviceType, {});
+  const { cloudPin } = useShare(deviceData, header, deviceData.value && deviceData.value.deviceType, {});
   provide('getSummary', getSummary);
   const images = computed(() => {
     let arr = [];
@@ -517,7 +516,8 @@
   const $cordovaPlugins = inject('$cordovaPlugins');
   const maxDownload = (checkData) => {
     const objectKey = encodeURIComponent(chooseItem.value.key);
-    let url = `http://154.31.41.36:9900/o/${deviceData.value.peer_id}/${deviceData.value.foggie_id}/${objectKey}`;
+    // let url = `http://154.31.41.36:9900/o/${deviceData.value.peer_id}/${deviceData.value.foggie_id}/${objectKey}`;
+    let url = `${maxUrl}/o/${deviceData.value.peer_id}/${deviceData.value.foggie_id}/${objectKey}`;
     let token = MaxTokenMap.value[deviceData.value.device_id];
     token = token.split(' ')[1];
     const headers = {
@@ -564,7 +564,8 @@
       moveShow.value = true;
     } else if (type === 'download') {
       const objectKey = encodeURIComponent(checkData[0].fullName);
-      let url = `http://154.31.41.36:9900/o/${deviceData.value.peer_id}/${deviceData.value.foggie_id}/${objectKey}`;
+      //   let url = `http://154.31.41.36:9900/o/${deviceData.value.peer_id}/${deviceData.value.foggie_id}/${objectKey}`;
+      let url = `${maxUrl}/o/${deviceData.value.peer_id}/${deviceData.value.foggie_id}/${objectKey}`;
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
         if (checkData.length > 1) return false;
         $cordovaPlugins.downloadFileHH(url, checkData[0].fullName, headers);
@@ -575,81 +576,8 @@
         if (checkData.length == 1 && !checkData[0].isDir) {
           maxDownload(checkData);
         } else {
-          //   downloadName = 'download.zip';
-          //   let infoList = [];
-          //   for (const item of checkData) {
-          //     infoList.push(objs);
-          //   }
-          //   let prefixes = [];
-          //   let data = [];
-          //   checkData.forEach((el) => {
-          //     if (el.cid && !el.isDir) {
-          //       data.push({
-          //         cid: el.cid,
-          //         key: encodeURIComponent(el.fullName),
-          //       });
-          //     } else {
-          //       prefixes.push(el.fullName.replace('/', ''));
-          //     }
-          //   });
-          //   stream = await fetch(url, { method: 'GET', headers });
         }
-        // let chunks = [];
-        // stream.on('data', (response) => {
-        //   console.log(response, 'response');
-
-        //   chunks.push(response.getChunk_asU8()); // 收集数据块
-        // });
-
-        // stream.on('status', (status) => {
-        //   console.log('Stream status:', status);
-        // });
-
-        // stream.on('end', (end) => {
-        //   let blob = new Blob(chunks, { type: 'application/octet-stream' }); // 创建 Blob 对象
-        //   let url = URL.createObjectURL(blob); // 为 Blob 创建 URL
-
-        //   // 创建隐藏的下载链接并触发点击
-        //   let a = document.createElement('a');
-        //   a.href = url;
-        //   a.download = downloadName; // 指定下载文件的名称
-        //   document.body.appendChild(a); // 将链接添加到文档中
-        //   a.click(); // 模拟点击进行下载
-        //   // 清理
-        //   document.body.removeChild(a);
-        //   URL.revokeObjectURL(url); // 释放 Blob 对象的 URL
-        //   console.log('Stream end!', end);
-        // });
-
-        // stream.on('error', (error) => {
-        //   console.log('error----------upload', error);
-        // });
       }
-      // fetch(url, { method: 'GET', headers })
-      //   .then((response) => {
-      //     if (response.ok) {
-      //       // 创建一个 Blob 对象，并将响应数据写入其中
-      //       return response.blob();
-      //     } else {
-      //       // 处理错误响应
-      //       console.error('Error:', response.status, response.statusText);
-      //     }
-      //   })
-      //   .then((blob) => {
-      //     // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-      //     const a = document.createElement('a');
-      //     a.href = URL.createObjectURL(blob);
-      //     a.download = checkData[0].fullName;
-
-      //     // 将 <a> 元素添加到文档中，并模拟点击
-      //     document.body.appendChild(a);
-      //     a.click();
-      //     document.body.removeChild(a);
-      //   })
-      //   .catch((error) => {
-      //     // 处理网络错误
-      //     console.error('Network Error:', error);
-      //   });
     } else if (type === 'delete') {
       const onOk = async () => {
         deleteItem(checkData);
@@ -725,12 +653,6 @@
     if (!deviceData.value.device_id) {
       return;
     }
-    // let token = await get_vood_token({ vood_id: deviceData.value.device_id });
-    // userStore.setMaxTokenMap({
-    //   id: deviceData.value.device_id,
-    //   token: token.data.token_type + ' ' + token.data.access_token,
-    // });
-    // let _token = token.data.access_token;
     let server = new grpcService.default.APIClient(maxUrl, null, null);
     let listObject = new Prox.default.ProxListObjectsRequest();
     let requestReq = new Prox.default.ProxListObjectsReq();
@@ -762,6 +684,7 @@
     listObject.setDate('');
     requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
+    // console.log(requestReq, metadata, header.value, '----listObjects-----');
     server.listObjects(
       requestReq,
       metadata,
@@ -959,7 +882,7 @@
     }
     currentFolder.value = data.prefix;
     window.sessionStorage.setItem('currentFolder', currentFolder.value);
-    console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
+    // console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
       let isDir = data?.content[j].contentType == 'application/x-directory' ? true : false;
@@ -1122,7 +1045,6 @@
       });
       tableLoading.value = true;
       let type = deviceData.value.device_type == 'space' || deviceData.value.device_type == 3 ? 'space' : 'foggie';
-      console.log(type, 'doSearchdoSearch', deviceData.value.device_type);
       // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
       // server = new grpcService.default.ServiceClient(ip, null, null);
       let server = new grpcService.default.APIClient(maxUrl, null, null);
@@ -1499,9 +1421,6 @@
       }
       if (val == 1) {
       } else {
-        if (!deviceData?.value?.id) {
-          //   await getOrderInfo();
-        }
         console.log(category.value, 'categorycategorycategory');
         doSearch('', prefix.value, true);
       }
@@ -1509,8 +1428,16 @@
     { deep: true },
   );
   onMounted(async () => {
+    let token = await get_vood_token({ vood_id: deviceData.value.device_id });
+    userStore.setMaxTokenMap({
+      id: deviceData.value.device_id,
+      token: token.data.token_type + ' ' + token.data.access_token,
+    });
+    console.log(token.data.access_token, '0-------token.data.access_token');
+    deviceToken.value = token.data.access_token;
     initPage();
   });
+  console.log(header.value, 'header.value');
 
   onBeforeUnmount(() => {
     if (fileSocket.value) {
@@ -1522,9 +1449,7 @@
   const initPage = async () => {
     prefix.value = [];
     let category1 = 0;
-    // await getOrderInfo();
     switchType(category1);
-    // initWebSocket();
   };
   const refresh = async () => {
     cancelSelect();

@@ -101,7 +101,9 @@
   import { showToast, showDialog } from '@nutui/nutui';
   import { buy_order, node_order_buy, order_buy_state, node_order_search, get_average_price, query_node } from '@/api/amb';
   import { useRouter } from 'vue-router';
+  import { useUserStore } from '@/store/modules/user';
   const { getUserAssets, cloudBalance } = useUserAssets();
+  const userStore = useUserStore();
   const router = useRouter();
   const isHeight = ref(false);
   const props = defineProps({
@@ -131,6 +133,9 @@
   });
   const { buyDisabled, priceNode, nodeInfo, showBuy, middle_price, deposit_ratio, showTop, shopForm, curReferenceRate, loading } =
     toRefs(state);
+  const dmc = computed(() => userStore.getUserInfo.dmc);
+  const email = computed(() => userStore.getUserInfo.email);
+  const uuid = computed(() => userStore.getUserInfo.uuid);
   const emits = defineEmits(['closeBuy']);
   const buyOrderIsSuccess = ref(false);
   const progressPercentage = ref(0);
@@ -151,6 +156,7 @@
         newType.value = 'link';
       } else {
         newType.value = 'buy';
+        initOrderPrice();
       }
     },
     { deep: true, immediate: true },

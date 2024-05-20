@@ -107,24 +107,6 @@
   );
   const poolNumber = ref(0);
   const deviceNumber = ref(0);
-  //   const rewardList = ref([
-  //     { name: 'Minning', number: '100.0000', type: 'pool', count: 2 },
-  //     { name: 'IOT', number: '200.0000', type: 'iot', count: 4 },
-  //     { name: 'IPFS', number: '20.0000', type: 'ipfs', count: 1 },
-  //   ]);
-  //   const poolList = ref([
-  //     { name: 'Minning', number: '1', type: 'pool' },
-  //     { name: 'IOT', number: '2', type: 'iot' },
-  //     { name: 'IPFS', number: '2', type: 'ipfs' },
-  //   ]);
-  //   const spaceData = ref([]);
-  //   spaceData.value = [
-  //     { value: 1048, name: 'Pool' },
-  //     { value: 735, name: 'IOT' },
-  //     { value: 580, name: 'IPFS' },
-  //     { value: 484, name: 'Local' },
-  //     { value: 100, name: 'Available' },
-  //   ];
   const iotList = ref([{ name: '1' }]);
   const chartOptions = ref({});
   const localStorageData = ref([]);

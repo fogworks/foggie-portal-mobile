@@ -5,7 +5,8 @@
 
 import { s3Url, poolUrl, maxUrl } from '@/setting.js';
 
-import * as Prox from '@/pb/net_pb.js';
+// import * as Prox from '@/pb/net_pb.js';
+import * as Prox from '@/pb/prox_pb.js';
 import * as grpcService from '@/pb/net_grpc_web_pb.js';
 
 import { get_vood_token, searchDeviceEarningsAPI } from '@/api/index';
@@ -103,7 +104,8 @@ export default function getList(deviceData) {
         request.setHeader(header);
         let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
         let metadata = {
-            'X-Custom-Date': date + 'Z'
+            'X-Custom-Date': date + 'Z',
+            'X-Sid': deviceData.peer_id,
         };
         // console.log(header, 'header...', request, metadata);
         server.f2PGetMinerInfo(request, metadata, (err: any, res: { array: any }) => {
@@ -147,7 +149,7 @@ export default function getList(deviceData) {
             // console.log(res, 'f2PGetIOTList', res.toObject());
             if (res) {
                 myIotList.value = res.toObject().dataList;
-                console.log(myIotList.value, 'myIotList')
+                // console.log(myIotList.value, 'myIotList')
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },

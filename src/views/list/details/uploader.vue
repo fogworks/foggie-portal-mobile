@@ -545,6 +545,7 @@
     position: fixed;
     bottom: 14vw;
     z-index: 999;
+    left: 0;
   }
   @media screen and (min-width: 500px) {
     .upload_progress {

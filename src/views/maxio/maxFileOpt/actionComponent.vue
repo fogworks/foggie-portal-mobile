@@ -434,10 +434,8 @@
   import useShare from './useShare.js';
   import HLSVideo from './hlsVideo.vue';
   import MyAudio from './myAudio.vue';
-  //   import * as Prox from '@/pb/prox_pb.js';
-  //   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
-
-  import * as Prox from '@/pb/net_pb.js';
+  //   import * as Prox from '@/pb/net_pb.js';
+  import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
   import useOrderInfo from './useOrderInfo.js';
   import '@nutui/nutui/dist/packages/dialog/style';
@@ -694,7 +692,8 @@
   };
   const maxDownload = (checkData) => {
     const objectKey = encodeURIComponent(chooseItem.value.key);
-    let url = `http://154.31.41.36:9900/o/${orderInfo.value.peer_id}/${orderInfo.value.foggie_id}/${objectKey}`;
+    // let url = `http://154.31.41.36:9900/o/${orderInfo.value.peer_id}/${orderInfo.value.foggie_id}/${objectKey}`;
+    let url = `${maxUrl}/o/${orderInfo.value.peer_id}/${orderInfo.value.foggie_id}/${objectKey}`;
     let token = MaxTokenMap.value[orderInfo.value.device_id];
     token = token.split(' ')[1];
     const headers = {
