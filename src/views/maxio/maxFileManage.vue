@@ -4,7 +4,7 @@
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
           <div class="maxio_logo">
-            <img src="@/assets/maxio/list.svg" alt="" @click="changeTab('home')" />
+            <!-- <img src="@/assets/maxio/list.svg" alt="" @click="changeTab('home')" /> -->
             <img src="@/assets/maxio/change.svg" alt="" style="margin-left: 10px" @click="doShowLeft" />
           </div>
         </div>

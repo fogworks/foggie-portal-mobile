@@ -15,13 +15,24 @@
       <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
         <template #rightin> <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" /> </template>
       </nut-searchbar>
-      <div> </div>
+      <div>
+        <IconListType
+          style="margin: 0 10px; width: 2rem; height: 2rem; vertical-align: middle"
+          v-if="cardMode && category != 1"
+          @click="cardMode = !cardMode"
+        ></IconListType>
+        <IconCardType
+          style="margin: 0 10px; width: 1.5rem; height: 2rem; vertical-align: middle"
+          v-else-if="!cardMode && category != 1"
+          @click="cardMode = !cardMode"
+        ></IconCardType>
+      </div>
     </div>
 
     <!-- Edit -->
-    <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
+    <!-- <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
       <div style="display: flex">
-        <!-- <nut-checkbox v-model="isCheckMode" label="Multiple">Edit</nut-checkbox> -->
+        <nut-checkbox v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
         <IconListType
           style="width: 2rem; height: 2rem; vertical-align: middle"
           v-if="cardMode && category != 1"
@@ -33,7 +44,7 @@
           @click="cardMode = !cardMode"
         ></IconCardType>
       </div>
-    </div>
+    </div> -->
     <!-- </nut-sticky> -->
     <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
     <template v-else-if="category != 1">
@@ -102,7 +113,7 @@
               <p v-if="!cardMode">{{ item.date || '' }}</p>
             </div>
             <div @click.stop v-if="item.isPin && !cardMode" class="ipfs_info">
-              <IconIPFS v-if="item.isPin" color="#496AF2"></IconIPFS>
+              <IconIPFS v-if="item.isPin" color="#fbbd58"></IconIPFS>
             </div>
             <div :class="['mask', 'right_radio', isCheckMode ? 'isChecking' : '']" @click.stop>
               <nut-checkbox v-if="isCheckMode" :label="item.name"></nut-checkbox>

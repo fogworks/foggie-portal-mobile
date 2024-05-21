@@ -1667,11 +1667,13 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        text-align: left;
       }
       p:last-child {
         margin-top: 5px;
         color: #a7a7a7;
         font-size: 20px;
+        text-align: left;
       }
     }
     .ipfs_info {

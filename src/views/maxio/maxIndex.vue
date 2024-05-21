@@ -4,9 +4,12 @@
       <div class="maxio_pool_list">
         <div class="maxio_pool_item" v-for="(item, index) in rewardList" :key="index">
           <div class="img_bg reward_bg">
-            <img src="@/assets/maxio/reward.svg" v-if="item.type === 'pool'" />
-            <img src="@/assets/maxio/reward1.svg" v-if="item.type === 'iot'" />
-            <img src="@/assets/maxio/reward2.svg" v-if="item.type === 'ipfs'" />
+            <!-- <img src="@/assets/maxio/reward.svg" v-if="item.type === 'pool'" /> -->
+            <img src="@/assets/maxio/pool.svg" v-if="item.type === 'pool'" />
+            <img src="@/assets/maxio/room2.svg" v-if="item.type === 'iot'" />
+            <img src="@/assets/maxio/ipfs.svg" v-if="item.type === 'ipfs'" />
+            <!-- <img src="@/assets/maxio/reward1.svg" v-if="item.type === 'iot'" /> -->
+            <!-- <img src="@/assets/maxio/reward2.svg" v-if="item.type === 'ipfs'" /> -->
             <!-- <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" /> -->
           </div>
           <span class="pool_name">{{ item.name }}({{ item.count }})</span>

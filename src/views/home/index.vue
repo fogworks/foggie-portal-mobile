@@ -2277,6 +2277,8 @@
       padding: 0.5rem 0;
       background: #fff;
       border-radius: 16px;
+      background: #212121;
+      border: 0.4vw solid #373737;
       .list_item {
         width: 120px;
         height: 120px;

@@ -1,11 +1,9 @@
 <template>
   <div class="maxio_home_bg">
     <div class="maxio_home">
-      <div class="top_link_box">
-        <!-- <topLink :topType="topTypeText" :topShow="!topShow" :topText="topText" v-if="topShow" @closeBuy="closeBuy"></topLink> -->
-        <!-- <topLink :topType="topType" :topShow="topShow" :topText="topText" @closeBuy="closeBuy"></topLink> -->
+      <!-- <div class="top_link_box">
         <topHead :topType="topType" :topShow="!topShow" :topText="topText" @closeBuy="closeBuy"></topHead>
-      </div>
+      </div> -->
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
           <div class="maxio_logo" @click="doShowLeft">
@@ -73,7 +71,8 @@
             <div class="image-container history">
               <img src="@/assets/maxio/hbucket.svg" class="left_max_png" />
               <div class="watermark">
-                <img src="@/assets/maxio/history.svg" class="small" />
+                <!-- <img src="@/assets/maxio/history.svg" class="small" /> -->
+                history
               </div>
             </div>
           </div>
@@ -92,9 +91,9 @@
             </div>
           </div>
 
-          <div class="menu_img buy_img" @click="buyOrder">
+          <!-- <div class="menu_img buy_img" @click="buyOrder">
             <img src="@/assets/maxio/buy.svg" class="left_max_png" />
-          </div>
+          </div> -->
         </div>
 
         <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="!showBucket" :class="[showLeft ? 'maxWidth' : '']">

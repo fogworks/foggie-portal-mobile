@@ -30,7 +30,7 @@
     }
     .iot_bg {
       background: #ffffff54;
-      background: rgb(68 219 221 / 83%);
+      //   background: rgb(68 219 221 / 83%);
       border: 1px solid ffffff;
       //   background-image: linear-gradient(103deg, #f83600 0%, #f9d423 100%);
       img {
@@ -39,8 +39,8 @@
     }
 
     .reward_bg {
-      box-shadow: #ffd700 0px 0px 8px;
-      border: 1px solid #ffd700;
+      //   box-shadow: #ffd700 0px 0px 8px;
+      //   border: 1px solid #ffd700;
       background: #d0b7b72e;
       //   background-image: linear-gradient(177deg, #e4d1b9 0%, #e2a856 30%, #ec9210 100%);
       // background-image: linear-gradient(to top, #e14fad 0%, #f9d423 100%);
@@ -58,7 +58,7 @@
     .reward_value {
       font-style: normal;
       font-weight: bold;
-      color: #fac858;
+      //   color: #fac858;
       font-size: 14px;
       margin-top: 10px;
       white-space: nowrap;
@@ -155,7 +155,7 @@
   }
 }
 .iot_temp_line {
-  color: #44dbdd;
+  //   color: #44dbdd;
   position: relative;
   span {
     position: relative;
@@ -228,21 +228,23 @@
     align-items: center;
     align-items: baseline;
     font-weight: bold;
-    background: #43c9cb1c;
+    align-items: self-end;
+    // background: #43c9cb1c;
 
     .iot_room_number {
       font-size: 20px;
       margin-left: 10px;
       color: #f9c721;
-      color: #44dbdd;
+      //   color: #44dbdd;
     }
   }
   .iot_room_detail {
     .iot_device_item {
-      border: 1px solid #ffffff6b;
-      border: 1px solid rgb(67 215 218);
-      border: 0.266667vw solid #17feff;
-      box-shadow: #d3d3eb 0px -0.4vw 1.066667vw 0.266667vw;
+      //   border: 1px solid #ffffff6b;
+      //   border: 1px solid rgb(67 215 218);
+      //   border: 0.266667vw solid #17feff;
+      //   box-shadow: #d3d3eb 0px -0.4vw 1.066667vw 0.266667vw;
+      background: #212121;
       border-radius: 10px;
       padding: 26px;
       margin: 20px 0;
@@ -250,6 +252,7 @@
       align-items: center;
       justify-content: space-around;
       font-weight: bold;
+      border: 1px solid #373737;
     }
   }
 }
@@ -323,7 +326,7 @@
   justify-content: space-between;
   align-items: center;
   margin: 20px 0;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: bold;
 
   .title {
@@ -332,7 +335,9 @@
 }
 .iot_empty_box {
   border: 1px dashed #ffffff87;
-  margin: 20px;
+  border: 1px solid #373737;
+  background: #212121;
+  margin: 10px 0;
   padding-bottom: 10px;
   border-radius: 10px;
 }

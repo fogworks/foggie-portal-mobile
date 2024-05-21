@@ -547,6 +547,7 @@
             color: #fff;
             font-weight: 500;
             font-size: 25px;
+            white-space: nowrap;
             svg {
               vertical-align: middle;
             }
@@ -600,6 +601,7 @@
             font-weight: 500px;
             line-height: 40px;
             margin-bottom: 10px;
+            font-size: 25px;
           }
         }
       }
@@ -728,9 +730,10 @@
         color: #fff;
         // display: grid;
         // grid-template-columns: auto 80px;
-        font-style: italic;
+        // font-style: italic;
         gap: 40px;
         align-items: center;
+        margin-top: 8px;
       }
 
       .buttonContent {

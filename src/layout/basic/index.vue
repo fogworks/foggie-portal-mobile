@@ -610,7 +610,9 @@
   
     overflow-x: hidden;
     // background: #fff;
-    background: url('@/assets/maxio/bg3.jpg');
+    // background: url('@/assets/maxio/bg3.jpg');
+    // background: url('@/assets/maxio/MAXIO_bg.png');
+    background: #000;
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center center;
@@ -650,6 +652,7 @@
 
 .nut-tabbar{
     background: #111214 !important;
+    background: transparent !important;
     border-top: none !important;
   }
 </style>

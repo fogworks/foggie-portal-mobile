@@ -1514,7 +1514,7 @@
       justify-content: space-between;
       align-items: center;
       margin: 10px 0;
-      font-size: 32px;
+      font-size: 26px;
       font-weight: bold;
 
       .title {
@@ -1529,6 +1529,8 @@
       margin-top: 20px;
       background: $card-bg;
       border-radius: 16px;
+      background: #212121;
+      border: 2px solid #373737;
       .list_item {
         .left_icon_box {
           position: relative;
@@ -1556,6 +1558,8 @@
       margin-top: 20px;
       padding: 0.5rem;
       background: $card-bg;
+      background: #212121;
+      border: 2px solid #373737;
       border-radius: 16px;
       .list_item {
         width: 100px;
@@ -1610,12 +1614,15 @@
           overflow: hidden;
           text-overflow: ellipsis;
           font-size: 0.9rem;
+          text-align: left;
+          font-size: 26px;
         }
 
         p:last-child {
           margin-top: 5px;
           color: #fff;
           font-size: 20px;
+          text-align: left;
         }
       }
 
@@ -1978,7 +1985,7 @@
         align-items: center;
         margin: 10px 0;
         padding: 0 10px;
-        font-size: 24px;
+        font-size: 26px;
 
         .see_all {
           font-size: 24px;

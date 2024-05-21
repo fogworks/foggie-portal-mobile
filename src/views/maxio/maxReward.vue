@@ -4,7 +4,7 @@
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
           <div class="maxio_logo">
-            <img src="@/assets/maxio/list.svg" alt="" @click="changeTab('home')" />
+            <!-- <img src="@/assets/maxio/list.svg" alt="" @click="changeTab('home')" /> -->
             <img src="@/assets/maxio/change.svg" alt="" style="margin-left: 10px" @click="doShowLeft" />
           </div>
         </div>
@@ -51,8 +51,8 @@
               <div class="maxio_pool_list">
                 <div class="maxio_pool_item" v-for="(item, index) in rewardList" :key="index">
                   <div class="img_bg reward_bg">
-                    <img src="@/assets/maxio/reward.svg" v-if="item.type === 'pool'" />
-                    <img src="@/assets/maxio/reward1.svg" v-if="item.type === 'iot'" />
+                    <img src="@/assets/maxio/pool.svg" v-if="item.type === 'pool'" />
+                    <img src="@/assets/maxio/room2.svg" v-if="item.type === 'iot'" />
                     <!-- <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" /> -->
                   </div>
                   <span class="pool_name">{{ item.name }}({{ item.count }})</span>
@@ -328,6 +328,7 @@
       }
       .nut-tabs__titles {
         background: #f8f8f866;
+        background: rgb(248 248 248 / 6%);
         border-radius: 10px;
         padding: 0px 4px;
         margin: 10px 0;
@@ -360,7 +361,8 @@
         }
       }
       .reward_pool_box_parent {
-        border: 1px solid #fff !important;
+        border: 1px solid #373737 !important;
+        background: #212121;
         border-radius: 10px;
         margin: 20px 0;
         .today_reward_item {

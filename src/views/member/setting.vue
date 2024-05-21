@@ -51,8 +51,8 @@
     // background: linear-gradient(744deg, #af40ff, #5b42f3 60%, #00ddeb);
     // background: linear-gradient(744deg, #892ecb, #a49ae0 60%, #080b0c);
     // background: linear-gradient(744deg, #e448a2, #1f27df 60%, #080b0c);
-    background: linear-gradient(744deg, #ffffff52, rgb(164 154 224 / 18%) 60%, #ca5891);
-    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1490196078) 0%, rgba(255, 255, 255, 0.3215686275) 100%);
+    // background: linear-gradient(744deg, #ffffff52, rgb(164 154 224 / 18%) 60%, #ca5891);
+    // background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1490196078) 0%, rgba(255, 255, 255, 0.3215686275) 100%);
   }
 
   .my_icon {
@@ -95,12 +95,12 @@
 
   .playing .my_wave {
     border-radius: 40%;
-    animation: my_wave 3000ms infinite linear;
+    // animation: my_wave 3000ms infinite linear;
   }
 
   .my_wave {
     border-radius: 40%;
-    animation: my_wave 55s infinite linear;
+    // animation: my_wave 55s infinite linear;
   }
 
   .playing .my_wave:nth-child(2) {

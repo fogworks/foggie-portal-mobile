@@ -43,8 +43,8 @@
     margin-left: -20px;
   }
   .sd_container {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-style: italic;
+    // font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    // font-style: italic;
     font-weight: bold;
     display: flex;
     // aspect-ratio: 16/9;
@@ -55,7 +55,7 @@
     flex-wrap: wrap;
     flex-direction: column;
     gap: 1em;
-    width: 100%;
+    width: 97%;
     height: 100%;
   }
 
@@ -75,7 +75,7 @@
     align-content: center;
     text-align: center;
     // background-color: hsl(296, 59%, 10%);
-    width: 98%;
+    width: 100%;
     height: 100%;
     box-sizing: border-box;
     // aspect-ratio: 9/16;
@@ -88,8 +88,8 @@
     // background: rgba(255, 255, 255, 0.3);
     // background: rgb(20 18 18);
     // box-shadow: #ffd700 0px 0px 1.066667vw;
-    border: 2px solid #fff;
-    border: 0.266667vw solid #818f9e;
+    // border: 2px solid #fff;
+    // border: 0.266667vw solid #818f9e;
     border-radius: 22px;
     // box-shadow: #d3d3eb 0px -0.4vw 1.066667vw 0.533333vw;
   }
@@ -100,7 +100,7 @@
     width: 100%;
     height: 100%;
     width: calc(100% - 60px);
-    width: calc(100% - 20px);
+    width: calc(100% - 0px);
     height: calc(100% - 40px);
     position: relative;
     box-sizing: border-box;
@@ -148,26 +148,26 @@
     // -webkit-clip-path: polygon(0 0, 90% 0, 98% 17%, 99% 59%, 91% 65%, 93% 79%, 99% 82%, 99% 90%, 89% 100%, 0 100%);
     // clip-path: polygon(0 0, 90% 0, 98% 17%, 99% 59%, 91% 65%, 93% 79%, 99% 82%, 99% 90%, 89% 100%, 0 100%);
     // animation: backglitch 1s linear infinite;
-    background: repeating-linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgb(103 118 124 / 60%) 1px,
-        rgb(0, 0, 0) 0.4vw,
-        rgba(64, 144, 181, 0.3019607843) 0.666667vw,
-        #3c4143 0.533333vw,
-        transparent 0.5%
-      ),
-      repeating-linear-gradient(to left, hsl(208.97deg 32.58% 17.45%) 100%, hsl(295deg 4.19% 5.84% / 99%) 100%);
-    background: repeating-linear-gradient(
-        to bottom,
-        black 0%,
-        rgb(103 118 124 / 11%) 1px,
-        rgb(0 0 0 / 0%) 0.4vw,
-        rgb(64 144 181 / 0%) 0.666667vw,
-        #3c4143 0.533333vw,
-        transparent 0.5%
-      ),
-      repeating-linear-gradient(to left, hsl(208.97deg 32.58% 17.45%) 100%, hsl(295deg 4.19% 5.84% / 52%) 100%);
+    // background: repeating-linear-gradient(
+    //     to bottom,
+    //     transparent 0%,
+    //     rgb(103 118 124 / 60%) 1px,
+    //     rgb(0, 0, 0) 0.4vw,
+    //     rgba(64, 144, 181, 0.3019607843) 0.666667vw,
+    //     #3c4143 0.533333vw,
+    //     transparent 0.5%
+    //   ),
+    //   repeating-linear-gradient(to left, hsl(208.97deg 32.58% 17.45%) 100%, hsl(295deg 4.19% 5.84% / 99%) 100%);
+    // background: repeating-linear-gradient(
+    //     to bottom,
+    //     black 0%,
+    //     rgb(103 118 124 / 11%) 1px,
+    //     rgb(0 0 0 / 0%) 0.4vw,
+    //     rgb(64 144 181 / 0%) 0.666667vw,
+    //     #3c4143 0.533333vw,
+    //     transparent 0.5%
+    //   ),
+    //   repeating-linear-gradient(to left, hsl(208.97deg 32.58% 17.45%) 100%, hsl(295deg 4.19% 5.84% / 52%) 100%);
   }
 
   .card-sd_title {
