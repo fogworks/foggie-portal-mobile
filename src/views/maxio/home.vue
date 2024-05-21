@@ -2,8 +2,9 @@
   <div class="maxio_home_bg">
     <div class="maxio_home">
       <div class="top_link_box">
-        <topLink :topType="topTypeText" :topShow="!topShow" :topText="topText" v-if="topShow" @closeBuy="closeBuy"></topLink>
-        <topLink :topType="topType" :topShow="topShow" :topText="topText" @closeBuy="closeBuy"></topLink>
+        <!-- <topLink :topType="topTypeText" :topShow="!topShow" :topText="topText" v-if="topShow" @closeBuy="closeBuy"></topLink> -->
+        <!-- <topLink :topType="topType" :topShow="topShow" :topText="topText" @closeBuy="closeBuy"></topLink> -->
+        <topHead :topType="topType" :topShow="!topShow" :topText="topText" @closeBuy="closeBuy"></topHead>
       </div>
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
@@ -29,9 +30,10 @@
             </div>
           </div>
         </div>
-        <div class="maxio_img">
+        <div class="maxio_img" @click="showOfflineBox">
           <!-- <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" class="user_img" /> -->
           <!-- <icon-img></icon-img> -->
+          <img src="@/assets/maxio/offline.svg" class="user_img" />
         </div>
       </div>
       <div class="maxio_home_content">
@@ -120,7 +122,8 @@
   import CloudComponent from './cloud.vue';
   import maxIndex from './maxIndex.vue';
   import sd from './sd.vue';
-  import topLink from './component/topLink.vue';
+  //   import topLink from './component/topLink.vue';
+  import topHead from './component/topHead.vue';
   import iconImg from './iconImg.vue';
   import useOrderList from './maxFileOpt/useAllOrderList';
   import { search_cloud } from '@/api';
@@ -161,7 +164,6 @@
   //   const historyDataCy = computed(() => {
   //     return historyData.value;
   //   });
-
   const changeList = (type) => {
     if (type === 'maxio') {
       isShowMaxio.value = !isShowMaxio.value;
@@ -243,16 +245,29 @@
   };
 
   const closeBuy = () => {
-    console.log('closeBuycloseBuycloseBuy');
     topType.value = 'link';
     topShow.value = false;
     topText.value = topShow.value ? 'Buy Order......' : '';
   };
   const buyOrder = () => {
-    topType.value = 'buy';
     topShow.value = !topShow.value;
+    if (topShow.value) {
+      topType.value = 'buy';
+    } else {
+      topType.value = 'link';
+    }
     topText.value = topShow.value ? 'Buy Order......' : '';
-    // console.log(topText.value, '88888');
+  };
+  const showOfflineBox = () => {
+    topShow.value = !topShow.value;
+    console.log(topType.value, 'showOfflineBoxshowOfflineBoxshowOfflineBox');
+    topType.value = 'offline';
+    if (topShow.value) {
+      topType.value = 'offline';
+    } else {
+      topType.value = 'link';
+    }
+    topText.value = topShow.value ? '离线任务创建中......' : '';
   };
   //   onMounted(async () => {
   //     await loadMoreFun();

@@ -1,10 +1,105 @@
 <template>
-  <div class="my-wave-loader" @click="changeHeight" :class="[isHeight ? 'maxHeight' : 'hideHeight', newType]">
-    <div class="closeImg" v-if="newType === 'buy'" @click="closeBuy"></div>
-    {{ newType }}={{ topText }}-{{ topShow }}
-    <div v-if="newType === 'buy'" class="buy_pop">
-      <h3 class="buyOrderTitle"> Pre-trading information</h3>
-      <div class="storagebox_wrap">
+  <div class="top_head_box" @click="changeHeight" :class="[newType !== 'link' ? 'maxHeight' : 'hideHeight', newType]">
+    <div class="my-wave-loader">
+      <!-- head link-->
+      <div class="my-wave_box" v-if="newType === 'link'">
+        <div class="my-wave-loader-inner">
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+        </div>
+        <div class="text_loading">{{ topText ? topText : 'Connecting...' }}</div>
+        <div class="my-wave-loader-inner my_second_inner">
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+        </div>
+        <div class="my-wave-loader-inner my_second_inner1">
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+        </div>
+        <div class="my-wave-loader-inner my_second_inner2">
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+        </div>
+      </div>
+
+      <!-- head buy-->
+      <div v-if="newType === 'buy'" class="topTextWrap">
+        <div class="🤚">
+          <div class="👉"></div>
+          <div class="👉"></div>
+          <div class="👉"></div>
+          <div class="👉"></div>
+          <div class="🌴"></div>
+          <div class="👍"></div
+        ></div>
+        <div class="topText">
+          <div class="top_loader">
+            <div class="top_scanner">
+              <span>purchasing...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- head link-->
+      <div class="my-wave_box" v-if="newType === 'offline'">
+        <div class="my-wave-loader-inner">
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+        </div>
+        <div class="text_loading">{{ topText ? topText : 'Connecting...' }}</div>
+        <div class="my-wave-loader-inner my_second_inner">
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+        </div>
+        <div class="my-wave-loader-inner my_second_inner1">
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+        </div>
+        <div class="my-wave-loader-inner my_second_inner2">
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+          <div class="my-wave-loader-block"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- content offline-->
+    <div class="buy_pop" :class="[newType !== 'link' ? 'showBuy' : 'hideBuy']">
+      <div class="closeImg" v-if="newType !== 'link'" @click="closeBuy"></div>
+      <h3 class="buyOrderTitle" v-if="newType === 'buy'"> Pre-trading information</h3>
+      <div class="storagebox_wrap" v-if="newType === 'buy'">
         <div class="storagebox">
           <img src="@/assets/VIP.svg" alt="" srcset="" />
           <div class="BaseBox">
@@ -24,7 +119,7 @@
           </span>
         </div>
       </div>
-      <div class="bottom_btn">
+      <div class="bottom_btn" v-if="newType === 'buy'">
         <nut-progress
           v-if="buyOrderIsSuccess"
           :percentage="progressPercentage"
@@ -40,59 +135,9 @@
           Confirm Buy
         </nut-button>
       </div>
-    </div>
-    <div class="my-wave_box" v-if="newType !== 'buy'">
-      <div class="my-wave-loader-inner">
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-      </div>
-      <div class="text_loading">{{ topText ? topText : 'Connecting...' }}</div>
-      <div class="my-wave-loader-inner my_second_inner">
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-      </div>
-      <div class="my-wave-loader-inner my_second_inner1">
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-      </div>
-      <div class="my-wave-loader-inner my_second_inner2">
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-        <div class="my-wave-loader-block"></div>
-      </div>
-    </div>
-    <!-- head -->
-    <div v-if="topText && newType === 'link'" class="topTextWrap">
-      12
-      <div class="🤚">
-        <div class="👉"></div>
-        <div class="👉"></div>
-        <div class="👉"></div>
-        <div class="👉"></div>
-        <div class="🌴"></div>
-        <div class="👍"></div
-      ></div>
-      <div class="topText">
-        <div class="top_loader">
-          <div class="top_scanner">
-            <span>purchasing...</span>
-          </div>
-        </div>
+      <h3 class="buyOrderTitle offLineTitle" v-if="newType === 'offline'"> 添加离线下载链接</h3>
+      <div class="offline_box" v-if="newType === 'offline'">
+        <nut-input v-model="newType" :border="false" />
       </div>
     </div>
   </div>
@@ -148,20 +193,47 @@
   const showBuyBox = ref(false);
 
   const changeHeight = () => {
-    return;
     isHeight.value = !isHeight.value;
   };
+  const initOrderPrice = async () => {
+    return;
+    node_order_search(priceNode.value, {
+      week: state.shopForm.week,
+      storage: state.shopForm.quantity,
+      poolType: 'golden', //vofo.*  / golden
+      size: 5,
+    }).then((res) => {
+      if (res.code == 200 && res.data.length) {
+        curReferenceRate.value = res.data[0].price;
+        deposit_ratio.value = res.data[0].depositRatio;
+        showBuy.value = true;
+      }
+    });
+  };
+  //   watch(
+  //     topShow,
+  //     (val) => {
+  //       isHeight.value = val;
+  //       if (!val) {
+  //         newType.value = 'link';
+  //         newType.value = topType.value;
+  //       } else {
+  //         // newType.value = 'buy';
+  //         newType.value = topType.value;
+  //         initOrderPrice();
+  //       }
+  //     },
+  //     { deep: true, immediate: true },
+  //   );
   watch(
-    topShow,
+    topType,
     (val) => {
-      isHeight.value = val;
-      if (!val) {
-        newType.value = 'link';
-        newType.value = topType.value;
-      } else {
-        // newType.value = 'buy';
-        newType.value = topType.value;
-        initOrderPrice();
+      if (val) {
+        newType.value = val;
+        console.log(newType.value, ' newType.value');
+        if (newType.value === 'buy') {
+          initOrderPrice();
+        }
       }
     },
     { deep: true, immediate: true },
@@ -186,20 +258,7 @@
   const deposit_ratio_Price = computed(() => {
     return ((curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity).toFixed(4) || '0';
   });
-  const initOrderPrice = async () => {
-    node_order_search(priceNode.value, {
-      week: state.shopForm.week,
-      storage: state.shopForm.quantity,
-      poolType: 'golden', //vofo.*  / golden
-      size: 5,
-    }).then((res) => {
-      if (res.code == 200 && res.data.length) {
-        curReferenceRate.value = res.data[0].price;
-        deposit_ratio.value = res.data[0].depositRatio;
-        showBuy.value = true;
-      }
-    });
-  };
+
   const queryPriceNode = () => {
     return query_node()
       .then((res) => {
@@ -357,6 +416,7 @@
       });
   }
   onMounted(async () => {
+    return;
     let res = await queryPriceNode();
     if (res) {
       getAveragePrice();
@@ -367,6 +427,17 @@
 </script>
 
 <style lang="scss" scoped>
+  .offline_box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    .nut-input {
+      background: transparent !important;
+      border: 1px solid #fff;
+      width: 80%;
+    }
+  }
   .text_loading {
     opacity: 0.8;
     font-weight: bolder;
@@ -414,15 +485,30 @@
     }
   }
 
-  .my-wave-loader {
+  .top_head_box {
     border-radius: 50px;
     width: 60%;
     height: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     padding: 0;
     margin: 0px auto 20px;
+    cursor: pointer;
+    transition: ease 0.2s;
+    transition: all 0.9s ease;
+    position: relative;
+    // background: #222;
+  }
+  .my-wave-loader {
+    border-radius: 50px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
     cursor: pointer;
     transition: ease 0.2s;
     position: relative;
@@ -441,24 +527,26 @@
   }
   .maxHeight {
     height: 150px;
+    // height: 110px;
+    // transform: translateY(-10px);
   }
   .buy {
-    width: 80%;
+    width: 70%;
     height: 400px;
     height: auto;
-    border: 1px solid yellow;
-    transform: translateY(100px);
-    border: 2px solid #17feff;
-    box-shadow: #d3d3eb 0px -3px 8px 2px;
-    position: relative;
+    // border: 1px solid yellow;
+    // transform: translateY(100px);
+    // border: 2px solid #17feff;
+    // box-shadow: #d3d3eb 0px -3px 8px 2px;
+    // position: relative;
   }
   .closeImg {
     background: url('@/assets/maxio/close.svg');
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     position: absolute;
-    top: -12px;
-    right: -18px;
+    top: -32px;
+    right: -30px;
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: center center;
@@ -470,6 +558,7 @@
   }
   .hideHeight {
     height: 50px;
+    height: 100px;
   }
   .my-wave_box {
     width: 70%;
@@ -588,16 +677,34 @@
 </style>
 <style lang="scss">
   .buy_pop {
+    transition: all 0.9s ease;
+    width: 0;
+    height: 0;
     padding-bottom: 20px;
-    // background-color: #d5d5d5 !important;
-    // background: #fff !important;
+    margin-top: 20px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    position: relative;
+    background: #222;
+    border-radius: 10px;
+    transform: translateY(80px);
+
+    position: relative;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgb(103 118 124 / 60%) 1px,
+        rgb(0, 0, 0) 0.4vw,
+        rgba(64, 144, 181, 0.3019607843) 0.666667vw,
+        #3c4143 0.533333vw,
+        transparent 0.5%
+      ),
+      repeating-linear-gradient(to left, hsl(208.97deg 32.58% 17.45%) 100%, hsl(295deg 4.19% 5.84% / 99%) 100%);
     .buyOrderTitle {
       text-align: center;
       margin: 20px 0;
       position: relative;
       color: transparent;
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       position: relative;
       overflow: hidden;
       &::before {
@@ -611,6 +718,11 @@
         overflow: hidden;
         color: #17feff;
         animation: load91371 3s linear infinite;
+      }
+    }
+    .offLineTitle {
+      &::before {
+        content: '添加离线下载链接';
       }
     }
     .price_box {
@@ -643,12 +755,13 @@
     .storagebox {
       display: flex;
       align-items: center;
+      justify-content: center;
       color: #fff;
-      margin: 0px 10px;
-      padding: 10px;
+      margin: 0px 4px;
+      padding: 4px;
       font-weight: bolder;
       img {
-        width: 100px;
+        width: 80px;
         object-fit: cover;
       }
       .BaseBox {
@@ -672,9 +785,10 @@
         display: flex;
         justify-content: space-around;
         align-items: center;
+        white-space: nowrap;
         .s1 {
           font-weight: 700px;
-          font-size: 40px;
+          font-size: 36px;
         }
         .s2 {
           font-weight: 600;
@@ -757,6 +871,15 @@
       }
     }
   }
+  .showBuy {
+    border: 2px solid #17feff;
+    box-shadow: #d3d3eb 0px -3px 8px 2px;
+    width: 100%;
+    height: 100%;
+  }
+  .hideBuy {
+    overflow: hidden;
+  }
 </style>
 
 <style lang="scss">
@@ -766,7 +889,7 @@
     justify-content: center;
   }
   .topText {
-    margin-top: 20px;
+    // margin-top: 20px;
     font-weight: bold;
     .top_scanner span {
       color: transparent;

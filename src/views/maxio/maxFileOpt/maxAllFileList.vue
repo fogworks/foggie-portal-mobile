@@ -209,15 +209,11 @@
       :deviceData="deviceData"
     ></ActionComponent>
     <uploader
-      v-if="isMobileOrder && isAvailableOrder"
-      :getSummary="getSummary"
-      :isMobileOrder="isMobileOrder"
-      :bucketName="bucketName"
-      :accessKeyId="accessKeyId"
-      :secretAccessKey="secretAccessKey"
+      :isMobileOrder="true"
       :orderInfo="deviceData"
-      :prefix="prefix"
+      @getFileList="getFileList"
       @uploadComplete="uploadComplete"
+      v-if="deviceData && deviceData.device_id"
     ></uploader>
     <Teleport to="body">
       <nut-dialog
