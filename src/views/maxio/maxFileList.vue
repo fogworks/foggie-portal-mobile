@@ -1294,7 +1294,7 @@
     box-sizing: border-box;
     height: 100%;
     // padding: 20px 0;
-    padding-bottom: 5rem;
+    // padding-bottom: 5rem;
     // background: #fff;
     border-radius: 40px 40px 0 0;
     z-index: 99;

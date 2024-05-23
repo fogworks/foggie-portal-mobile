@@ -652,8 +652,9 @@
 
 .nut-tabbar{
     background: #111214 !important;
-    background: transparent !important;
+    /* background: transparent !important; */
     border-top: none !important;
+    border-top: 1px solid #373737 !important;
   }
 </style>
 

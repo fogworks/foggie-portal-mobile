@@ -113,6 +113,7 @@
         </div>
       </div>
     </div>
+    <offline :isShowOffline="isShowOffline" @closeBuy="showOfflineBox"></offline>
   </div>
 </template>
 
@@ -123,6 +124,7 @@
   import sd from './sd.vue';
   //   import topLink from './component/topLink.vue';
   import topHead from './component/topHead.vue';
+  import offline from './component/offline.vue';
   import iconImg from './iconImg.vue';
   import useOrderList from './maxFileOpt/useAllOrderList';
   import { search_cloud } from '@/api';
@@ -133,6 +135,7 @@
   const isShowMaxio = ref(false);
   const isShowBucket = ref(false);
   const isShowHistory = ref(false);
+  const isShowOffline = ref(false);
   const state = reactive({
     showBucket: false,
     cloudQuery: {},
@@ -258,15 +261,16 @@
     topText.value = topShow.value ? 'Buy Order......' : '';
   };
   const showOfflineBox = () => {
-    topShow.value = !topShow.value;
-    console.log(topType.value, 'showOfflineBoxshowOfflineBoxshowOfflineBox');
-    topType.value = 'offline';
-    if (topShow.value) {
-      topType.value = 'offline';
-    } else {
-      topType.value = 'link';
-    }
-    topText.value = topShow.value ? '离线任务创建中......' : '';
+    isShowOffline.value = !isShowOffline.value;
+    // topShow.value = !topShow.value;
+    // console.log(topType.value, 'showOfflineBoxshowOfflineBoxshowOfflineBox');
+    // topType.value = 'offline';
+    // if (topShow.value) {
+    //   topType.value = 'offline';
+    // } else {
+    //   topType.value = 'link';
+    // }
+    // topText.value = topShow.value ? '离线任务创建中......' : '';
   };
   //   onMounted(async () => {
   //     await loadMoreFun();

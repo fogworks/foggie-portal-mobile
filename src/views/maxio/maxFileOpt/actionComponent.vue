@@ -235,7 +235,7 @@
       :style="{ height: '300px' }"
       v-model:visible="showShareDialog"
     >
-      <div v-if="isReady" class="rename_box move_box">
+      <div class="rename_box move_box">
         <nut-cell style="margin-top: 50px" title="Access Period:">
           <template #link>
             <span v-if="isMobileDevice" style="display: flex; align-items: center"
@@ -247,10 +247,10 @@
             </van-dropdown-menu>
           </template>
         </nut-cell>
-        <template v-if="shareType">
+        <!-- <template v-if="shareType">
           <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
           <nut-textarea rows="3" v-model="imgDesc" />
-        </template>
+        </template> -->
         <nut-popup position="bottom" z-index="2100" v-if="isMobileDevice" v-model:visible="periodShow">
           <nut-picker
             v-model="periodValue"
@@ -262,14 +262,9 @@
           </nut-picker>
         </nut-popup>
 
-        <nut-button
-          type="info"
-          block
-          @click="() => confirmHttpShare(shareType, shareCheckData[0], accessKeyId, secretAccessKey, bucketName)"
-          >Confirm</nut-button
-        >
+        <nut-button type="info" block @click="() => confirmHttpShare(orderInfo, MaxTokenMap, periodValue, chooseItem)">Confirm</nut-button>
       </div>
-      <template v-else>
+      <template v-if="false">
         <div class="share_info_box">
           <div v-if="shareRefContent.httpStr">
             <IconHttp
@@ -447,8 +442,10 @@
   const userStore = useUserStore();
   const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
   import getFileType from '@/utils/getFileType.ts';
-
+  import maxFileInfo from './maxFileInfo.js';
+  const { confirmHttpShare, showShareDialog, periodValue } = maxFileInfo();
   const { getOrderInfo } = useOrderInfo();
+
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
     // 此正则表达式涵盖了大多数使用的手机和平板设备
@@ -565,12 +562,9 @@
   const deviceType = computed(() => orderInfo?.value.device_type);
   //   console.log(orderInfo.value, 'orderInfo?.valueorderInfo?.value');
   const {
-    httpCopyLink,
-    copyLink,
     shareType,
     isReady,
     confirmShare,
-    periodValue,
     confirmPeriod,
     periodShow,
     desc,
@@ -579,10 +573,8 @@
     doShare,
     createNFT,
     ipfsPin,
-    showShareDialog,
     shareRefContent,
     copyContent,
-    confirmHttpShare,
     getHttpShare,
     cloudPin,
     copyIPFS,
@@ -679,7 +671,8 @@
     }
     if (type == 'share') {
       if (checkData.length > 1) return false;
-      await doShare(checkData[0]);
+      //   await doShare(checkData[0]);
+      showShareDialog.value = true;
     } else if (type == 'move') {
       movePrefix.value = [];
       emits('update:moveShow', true);

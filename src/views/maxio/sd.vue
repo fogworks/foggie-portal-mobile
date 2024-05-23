@@ -95,13 +95,14 @@
   }
   .card_border_box {
     z-index: 1;
-    padding: 70px 0px 20px 10px;
+    padding: 70px 0px 0px 10px;
     margin: 0px 0px 0px 10px;
     width: 100%;
     height: 100%;
     width: calc(100% - 60px);
     width: calc(100% - 0px);
     height: calc(100% - 40px);
+    height: calc(100% - 0px);
     position: relative;
     box-sizing: border-box;
     overflow-y: scroll;

@@ -33,15 +33,21 @@
         </div>
       </div>
     </div> -->
+    <div class="today_file">
+      <span class="title">Space Use</span>
+    </div>
     <div class="maxio_home_card space_card">
       <div class="space_card_left"
-        ><MyEcharts style="width: 100%; height: 100px" :options="chartOptions" :showLeft="showLeft"></MyEcharts>
+        ><MyEcharts style="width: 100%; height: 120px" :options="chartOptions" :showLeft="showLeft"></MyEcharts>
       </div>
     </div>
 
+    <div class="today_file">
+      <span class="title">Category</span>
+    </div>
     <div class="maxio_home_card space_card" @click="changeTab('file')">
       <div class="space_card_right">
-        <div class="local_title">Category</div>
+        <!-- <div class="local_title">Category</div> -->
         <div class="file_items_groups">
           <div class="file_items" v-for="(item, index) in fileListArr" :key="index">
             <div class="svg_box">
@@ -147,7 +153,24 @@
     //   getMyList(currentTabItem.value);
     // }
   });
-  const initOptions = (val) => {
+  const initOptions = (chartData) => {
+    if (!chartData.length) {
+      return;
+    }
+    let colorArr = ['#00FF00', '#40B2FB', '#00FFFF', '#6841e1', '#FEFF00', '#F59543', '#FF59AB', '#FF4F2C'];
+    let _value = chartData.map((item) => item.value);
+    let totalSum = _value.reduce((a, b) => {
+      return a + b;
+    });
+    chartData = chartData.filter((item) => {
+      return item.name !== 'total' && item.name !== 'remaining';
+    });
+    let name = chartData.map((item) => item.name);
+    let value = chartData.map((item) => item.value);
+    let sum = value.reduce((a, b) => {
+      return a + b;
+    });
+
     chartOptions.value = {
       tooltip: {
         trigger: 'item',
@@ -155,20 +178,20 @@
       },
       legend: {
         //   backgroundColor: '#b5baca61',
-        borderRadius: 5,
+        borderRadius: 3,
         icon: 'circle',
         left: '0',
         orient: 'vertical',
         textStyle: {
           color: '#fff',
-          fontSize: '7px',
-          fontWeight: 'bold',
+          fontSize: '10px',
+          //   fontWeight: 'bold',
         },
         itemWidth: 8, // 设置图例标记的宽度
         itemHeight: 8, // 设置图例标记的高度
         itemStyle: {
           borderColor: '#fff', // 边框颜色
-          borderWidth: 1, // 边框宽度
+          borderWidth: 0, // 边框宽度
         },
         formatter: function (name) {
           let text = name;
@@ -183,17 +206,33 @@
           return str;
         },
       },
+      color: colorArr,
+      title: {
+        zlevel: 0,
+        text: 'Total',
+        subtext: getfilesize(totalSum),
+        textStyle: {
+          color: '#ffffff',
+          fontSize: 12,
+        },
+        subtextStyle: {
+          color: '#ffffff',
+          fontSize: 11,
+        },
+        x: '68%', //文字位置
+        y: '32%', //文字位置
+      },
       series: [
         {
           name: 'Storage Usage',
           type: 'pie',
           top: '0%',
           left: '50%',
-          radius: ['40%', '70%'],
+          radius: ['60%', '80%'],
           avoidLabelOverlap: false,
           padAngle: 5,
           itemStyle: {
-            borderRadius: 4,
+            borderRadius: 0,
             //   borderWidth: 30, // 设置扇区间隙的宽度
           },
           label: {
@@ -211,9 +250,208 @@
           labelLine: {
             show: false,
           },
-          data: spaceData.value,
+          data: chartData,
         },
       ],
+    };
+  };
+  const initOptions2 = (chartData) => {
+    if (!chartData.length) {
+      return;
+    }
+    let colorArr = ['#00FF00', '#40B2FB', '#B76AFF', '#00FFFF', '#FEFF00', '#F59543', '#FF59AB', '#FF4F2C'];
+    let _value = chartData.map((item) => item.value);
+    let totalSum = _value.reduce((a, b) => {
+      return a + b;
+    });
+    chartData = chartData.filter((item) => {
+      return item.name !== 'total' && item.name !== 'remaining';
+    });
+    let name = chartData.map((item) => item.name);
+    let value = chartData.map((item) => item.value);
+    let sum = value.reduce((a, b) => {
+      return a + b;
+    });
+
+    let seriesData = [];
+    let yAxisData = [];
+    for (let i = 0; i < chartData.length; i++) {
+      seriesData.push({
+        name: 'Storage Usage',
+        type: 'pie',
+        clockWise: true, //顺时加载
+        radius: [100 - i * 15 + '%', 94 - i * 15 + '%'],
+        center: ['50%', '50%'],
+        top: '0%',
+        left: '50%',
+        // padAngle: 5,
+        // avoidLabelOverlap: false,
+        label: {
+          show: false,
+          position: 'center',
+          fontSize: 20,
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 20,
+            fontWeight: 'bold',
+          },
+        },
+        labelLine: {
+          show: false,
+        },
+        data: [
+          {
+            name: chartData[i].name,
+            value: chartData[i].value,
+            hoverAnimation: false,
+          },
+          {
+            name: '',
+            value: sum - chartData[i].value,
+            itemStyle: {
+              color: 'rgba(255,255,255,.15)',
+            },
+            tooltip: {
+              show: false,
+              trigger: 'item',
+            },
+          },
+        ],
+      });
+      //   seriesData.push({
+      //     type: 'pie',
+      //     // silent: true,
+      //     // z: 1,
+      //     clockWise: true, //顺时加载
+      //     radius: [100 - i * 15 + '%', 94 - i * 15 + '%'],
+      //     // center: ['50%', '50%'],
+      //     top: '0%',
+      //     left: '50%',
+      //     avoidLabelOverlap: false,
+      //     label: {
+      //       show: false,
+      //     },
+      //     itemStyle: {
+      //       label: {
+      //         show: false,
+      //       },
+      //       labelLine: {
+      //         show: false,
+      //       },
+      //     },
+      //     data: [
+      //       {
+      //         value: 10,
+      //         itemStyle: {
+      //           color: 'rgba(255,255,255,.15)',
+      //         },
+      //         tooltip: {
+      //           show: false,
+      //         },
+      //       },
+      //       {
+      //         value: 0,
+      //         itemStyle: {
+      //           color: 'rgba(0,0,0,0)',
+      //         },
+      //         tooltip: {
+      //           show: false,
+      //         },
+      //       },
+      //     ],
+      //   });
+
+      yAxisData.push(((chartData[i].value / sum) * 100).toFixed(2) + '%');
+    }
+    console.log(seriesData, 'seriesData');
+
+    chartOptions.value = {
+      grid: {
+        width: '100%',
+        height: '100%',
+        top: '0%',
+        left: '0%',
+        containLabel: true,
+      },
+      title: {
+        zlevel: 0,
+        text: 'Total',
+        subtext: getfilesize(totalSum),
+        textStyle: {
+          color: '#ffffff',
+          fontSize: 10,
+        },
+        subtextStyle: {
+          color: '#ffffff',
+          fontSize: 10,
+        },
+        x: '68%', //文字位置
+        y: '32%', //文字位置
+      },
+      color: colorArr,
+      legend: {
+        backgroundColor: '#b5baca61',
+        borderRadius: 3,
+        icon: 'circle',
+        left: 0,
+        bottom: 0,
+        orient: 'vertical',
+        width: '100%',
+        height: '100%',
+        textStyle: {
+          color: '#fff',
+          fontSize: '9px',
+        },
+        itemWidth: 6, // 设置图例标记的宽度
+        itemHeight: 6, // 设置图例标记的高度
+        itemStyle: {
+          borderColor: '#fff', // 边框颜色
+          borderWidth: 0, // 边框宽度
+        },
+        formatter: function (name) {
+          let text = name;
+          let value = 0;
+          for (let i = 0; i < chartData.length; i++) {
+            if (name === chartData[i].name) {
+              value = getfilesize(chartData[i].value);
+            }
+          }
+          let str = `${name} : ${value}`;
+          return str;
+        },
+      },
+      //   tooltip: {
+      //     trigger: 'item',
+      //     formatter: '{b}：{c}（{d}%）',
+      //   },
+      //   yAxis: [
+      //     {
+      //       type: 'category',
+      //       inverse: true,
+      //       axisLine: {
+      //         show: false,
+      //       },
+      //       axisTick: {
+      //         show: false,
+      //       },
+      //       axisLabel: {
+      //         show: false,
+      //         inside: true,
+      //         textStyle: {
+      //           color: '#fff',
+      //         },
+      //       },
+      //       data: yAxisData,
+      //     },
+      //   ],
+      //   xAxis: [
+      //     {
+      //       show: false,
+      //     },
+      //   ],
+      series: seriesData,
     };
   };
   watch(

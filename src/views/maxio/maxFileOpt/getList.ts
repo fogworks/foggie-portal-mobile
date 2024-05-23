@@ -76,7 +76,7 @@ export default function getList(deviceData) {
     rewardList.value = [
         { name: 'Minning', number: '0', type: 'pool', count: 0 },
         { name: 'IOT', number: '0', type: 'iot', count: 0 },
-        { name: 'IPFS', number: '0', type: 'ipfs', count: 0 },
+        { name: 'Filecoin Station', number: '0', type: 'ipfs', count: 0 },
     ];
     const getMyList = async (deviceData) => {
         if (!deviceData.device_id) {
@@ -100,7 +100,7 @@ export default function getList(deviceData) {
         header.setToken(_token);
 
         appType.value = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-        header.setApptype(appType);
+        header.setApptype(appType.value);
         request.setHeader(header);
         let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
         let metadata = {
@@ -120,7 +120,7 @@ export default function getList(deviceData) {
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
-                    { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
+                    { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
 
             }
@@ -128,10 +128,10 @@ export default function getList(deviceData) {
             window.localStorage.setItem("rewardList", JSON.stringify(rewardList.value));
 
         });
-        initIotList(deviceData, _token, appType, metadata);
+        initIotList(deviceData, _token, appType.value, metadata);
         getTotalReward(deviceData);
-        getFileStatistics(deviceData, _token, appType, metadata);
-        initSpaceInfo(deviceData, _token, appType, metadata);
+        getFileStatistics(deviceData, _token, appType.value, metadata);
+        initSpaceInfo(deviceData, _token, appType.value, metadata);
     };
     const initIotList = async (deviceData, _token, appType, metadata) => {
         let server = new grpcService.default.APIClient(maxUrl, null, null);
@@ -153,7 +153,7 @@ export default function getList(deviceData) {
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
-                    { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
+                    { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
                 window.localStorage.setItem("myIotList", JSON.stringify(myIotList.value));
                 window.localStorage.setItem("rewardList", JSON.stringify(rewardList.value));
@@ -179,6 +179,7 @@ export default function getList(deviceData) {
         header.setApptype(appType);
         request.setHeader(header);
         spaceData.value = [];
+        // console.log(request, '----request---', header);
         server.f2PGetSpaceInfo(request, metadata, (err: any, res: { array: any }) => {
             if (err) {
                 console.log('f2PGetSpaceInfo--err------:', err);
@@ -235,7 +236,7 @@ export default function getList(deviceData) {
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
-                    { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
+                    { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
             }
             // console.log(res, 'pool111', MinerReward.value);
@@ -248,7 +249,7 @@ export default function getList(deviceData) {
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
-                    { name: 'IPFS', number: '0.0000', type: 'ipfs', count: 0 },
+                    { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
                 window.localStorage.setItem("IOTReward", JSON.stringify(IOTReward.value));
                 window.localStorage.setItem("rewardList", JSON.stringify(rewardList.value));

@@ -301,8 +301,10 @@
 </style>
 <style lang="scss">
   .maxio_upload_btn {
-    background: #bebfd473 !important;
-    background: #212121 !important;
+    // background: #bebfd473 !important;
+    // background: #212121 !important;
+    // background: #7341ea !important;
     border: 0.4vw solid #373737;
+    background-image: linear-gradient(89deg, #199dec 10%, #0061a3 40%, #df6b22 50%, #ffd07f 100%);
   }
 </style>
