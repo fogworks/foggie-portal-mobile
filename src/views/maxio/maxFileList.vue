@@ -128,9 +128,12 @@
   import IconPlay from '~icons/home/play.svg';
   import { s3Url, poolUrl, maxUrl } from '@/setting.js';
   import { MoreX, HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
-  //   import * as Prox from '@/pb/net_pb.js';
-  import * as Prox from '@/pb/prox_pb.js';
+  //   import * as Prox from '@/pb/prox_pb.js';
+  //   import * as grpcService from '@/pb/net_grpc_web_pb.js';
+
+  import * as Prox from '@/pb/net_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
+
   import { showDialog, showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { HmacSHA1, enc } from 'crypto-js';
@@ -388,9 +391,9 @@
     });
     let _token = token.data.access_token;
     let server = new grpcService.default.APIClient(maxUrl, null, null);
-    let header = new Prox.default.ProxHeader();
-    let listObject = new Prox.default.ProxListObjectsRequest();
-    let requestReq = new Prox.default.ProxListObjectsReq();
+    let header = new Prox.default.Header();
+    let listObject = new Prox.default.ListObjectsRequest();
+    let requestReq = new Prox.default.ListObjectsReq();
     const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
     let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
     let metadata = {

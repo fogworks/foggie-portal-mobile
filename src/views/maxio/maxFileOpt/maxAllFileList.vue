@@ -255,8 +255,10 @@
 </template>
 
 <script setup lang="ts">
-  //   import * as Prox from '@/pb/net_pb.js';
-  import * as Prox from '@/pb/prox_pb.js';
+  //   import * as Prox from '@/pb/prox_pb.js';
+  //   import * as grpcService from '@/pb/net_grpc_web_pb.js';
+
+  import * as Prox from '@/pb/net_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
   import ActionComponent from './actionComponent.vue';
   import ImgList from './imgList.vue';
@@ -400,7 +402,7 @@
   const deviceToken = ref('');
   const { accessKeyId, secretAccessKey, getHttpShare, getSummary } = maxFileInfo();
   const header = computed(() => {
-    let headerProx2 = new Prox.default.ProxHeader();
+    let headerProx2 = new Prox.default.Header();
     headerProx2.setPeerid(deviceData.value.peer_id);
     headerProx2.setId(deviceData.value.foggie_id);
     headerProx2.setToken(deviceToken.value);
@@ -661,14 +663,14 @@
       return;
     }
     let server = new grpcService.default.APIClient(maxUrl, null, null);
-    let listObject = new Prox.default.ProxListObjectsRequest();
-    let requestReq = new Prox.default.ProxListObjectsReq();
+    let listObject = new Prox.default.ListObjectsRequest();
+    let requestReq = new Prox.default.ListObjectsReq();
     let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
     let metadata = {
       'X-Custom-Date': date + 'Z',
       'X-Sid': deviceData.value.peer_id,
     };
-    // let header = new Prox.default.ProxHeader();
+    // let header = new Prox.default.Header();
     // const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
     // header.setPeerid(deviceData.value.peer_id);
     // header.setId(deviceData.value.foggie_id);
@@ -1055,7 +1057,7 @@
       // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
       // server = new grpcService.default.ServiceClient(ip, null, null);
       let server = new grpcService.default.APIClient(maxUrl, null, null);
-      let ProxFindRequest = new Prox.default.ProxFindRequest();
+      let ProxFindRequest = new Prox.default.FindRequest();
       console.log(header.value, 'header.valueheader.value');
 
       ProxFindRequest.setHeader(header.value);
@@ -1065,7 +1067,7 @@
       let list_prefix: string;
       list_prefix = '';
 
-      // let header = new Prox.default.ProxHeader();
+      // let header = new Prox.default.Header();
       // const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
       // header.setPeerid(deviceData.value.peer_id);
       // header.setId(deviceData.value.foggie_id);

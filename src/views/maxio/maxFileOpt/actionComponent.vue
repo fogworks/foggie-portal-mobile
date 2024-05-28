@@ -287,12 +287,12 @@
             Twitter
           </div>
           <div v-if="shareRefContent.httpStr">
-            <IconFacebook
+            <!-- <IconFacebook
               @click="
                 shareType = 'faceBook';
                 isReady = true;
               "
-            ></IconFacebook>
+            ></IconFacebook> -->
             Facebook
           </div>
           <div v-if="shareRefContent.httpStr">
@@ -407,7 +407,7 @@
   import IconSlack from '~icons/home/slack.svg';
   import IconDelete from '~icons/home/delete.svg';
   import IconTwitter from '~icons/home/twitter.svg';
-  import IconFacebook from '~icons/devicon/facebook.svg';
+  //   import IconFacebook from '~icons/devicon/facebook.svg';
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
   import IconFile from '~icons/home/file.svg';

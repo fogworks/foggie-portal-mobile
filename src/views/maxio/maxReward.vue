@@ -55,7 +55,7 @@
                     <img src="@/assets/maxio/room2.svg" v-if="item.type === 'iot'" />
                     <!-- <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" /> -->
                   </div>
-                  <span class="pool_name">{{ item.name }}({{ item.count }})</span>
+                  <span class="pool_name">{{ item.name }}({{ item.type === 'iot' ? item.iotNumber : item.count }})</span>
                   <span class="reward_value">{{ item.number ? item.number : '0' }} DMC</span>
                 </div>
               </div>
@@ -106,12 +106,13 @@
                         </nut-tabs>
                       </nut-tab-pane>
                     </nut-tabs>
+                    <!-- poolList.length ===1 -->
                     <div v-else>
                       <!-- <div class="today_reward_item">
                         <span class="today_text">Today Anticipated</span>
                         <span class="today_value">+3,490</span>
                       </div> -->
-                      <nut-tabs v-model="timeType" size="small" :ellipsis="hideText">
+                      <nut-tabs v-model="timeType" size="small" :ellipsis="hideText" @change="changeTypeTab(item)">
                         <nut-tab-pane :title="_item.key" :pane-key="_item.key" v-for="(_item, _key) in changeTabList" :key="_key">
                           <div class="reward_list" v-for="(item, index) in rewardDetailList" :key="index">
                             <div class="img_box">
@@ -216,14 +217,14 @@
     initTableList();
   });
   const changeTypeTab = (item) => {
-    console.log(item, rewardType.value, activePool.value, timeType.value, 'changeTypeTab');
     findId();
     getTimeRewardData();
   };
   const findId = () => {
+    console.log(poolList.value, activePool.value);
     for (let i = 0; i < poolList.value.length; i++) {
       if (poolList.value[i].groupname === activePool.value) {
-        curIot.value = poolList.value[i].groupid;
+        curIot.value = poolList.value[i].deviceid;
       }
     }
   };
@@ -237,7 +238,12 @@
       pList = myPoolList;
     } else if (rewardType.value === 'iot') {
       let myIotList = JSON.parse(window.localStorage.getItem('myIotList'));
-      pList = myIotList;
+      for (let i = 0; i < myIotList.length; i++) {
+        if (myIotList[i].listList.length > 0) {
+          pList = myIotList[i].listList;
+        }
+      }
+      //   pList = myIotList;
     }
     if (pList && pList.length > 0) {
       poolList.value = pList;

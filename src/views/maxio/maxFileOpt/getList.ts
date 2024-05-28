@@ -5,8 +5,10 @@
 
 import { s3Url, poolUrl, maxUrl } from '@/setting.js';
 
-// import * as Prox from '@/pb/net_pb.js';
-import * as Prox from '@/pb/prox_pb.js';
+// import * as Prox from '@/pb/prox_pb.js';
+// import * as grpcService from '@/pb/net_grpc_web_pb.js';
+
+import * as Prox from '@/pb/net_pb.js';
 import * as grpcService from '@/pb/net_grpc_web_pb.js';
 
 import { get_vood_token, searchDeviceEarningsAPI } from '@/api/index';
@@ -18,6 +20,7 @@ import { getfilesize } from "@/utils/util";
 export default function getList(deviceData) {
     const myPoolList = ref([] as any);
     const myIotList = ref([] as any);
+    const myIotNumber = ref(0);
     const mySpaceInfo = ref({} as any);
     const MinerReward = ref('');
     const IOTReward = ref('');
@@ -66,7 +69,7 @@ export default function getList(deviceData) {
     let deviceToken = ref('');
     const appType = ref('');
     const header = computed(() => {
-        let headerProx2 = new Prox.default.ProxHeader();
+        let headerProx2 = new Prox.default.Header();
         headerProx2.setPeerid(currentDeviceData.value.peer_id);
         headerProx2.setId(currentDeviceData.value.foggie_id);
         headerProx2.setToken(deviceToken.value);
@@ -75,7 +78,7 @@ export default function getList(deviceData) {
     });
     rewardList.value = [
         { name: 'Minning', number: '0', type: 'pool', count: 0 },
-        { name: 'IOT', number: '0', type: 'iot', count: 0 },
+        { name: 'IOT', number: '0', type: 'iot', count: 0, iotNumber: 0 },
         { name: 'Filecoin Station', number: '0', type: 'ipfs', count: 0 },
     ];
     const getMyList = async (deviceData) => {
@@ -92,7 +95,7 @@ export default function getList(deviceData) {
         deviceToken.value = _token;
 
         let server = new grpcService.default.APIClient(maxUrl, null, null);
-        let header = new Prox.default.ProxHeader();
+        let header = new Prox.default.Header();
         let request = new Prox.default.ProxF2PGetMiner();
         // console.log(server, header, 'getMyListgetMyList');
         header.setPeerid(deviceData.peer_id);
@@ -119,7 +122,7 @@ export default function getList(deviceData) {
                 // console.log(myPoolList.value, 'myPoolList')
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
                     { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
 
@@ -134,8 +137,9 @@ export default function getList(deviceData) {
         initSpaceInfo(deviceData, _token, appType.value, metadata);
     };
     const initIotList = async (deviceData, _token, appType, metadata) => {
+        myIotNumber.value = 0;
         let server = new grpcService.default.APIClient(maxUrl, null, null);
-        let header = new Prox.default.ProxHeader();
+        let header = new Prox.default.Header();
         let request = new Prox.default.ProxF2PGetIOT();
         header.setPeerid(deviceData.peer_id);
         header.setId(deviceData.foggie_id);
@@ -149,10 +153,15 @@ export default function getList(deviceData) {
             // console.log(res, 'f2PGetIOTList', res.toObject());
             if (res) {
                 myIotList.value = res.toObject().dataList;
+                for (var i = 0; i < myIotList.value.length; i++) {
+                    if (myIotList.value[i].listList.length > 0) {
+                        myIotNumber.value = myIotNumber.value + 1;
+                    }
+                }
                 // console.log(myIotList.value, 'myIotList')
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
                     { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
                 window.localStorage.setItem("myIotList", JSON.stringify(myIotList.value));
@@ -171,7 +180,7 @@ export default function getList(deviceData) {
     };
     const initSpaceInfo = async (deviceData, _token, appType, metadata) => {
         let server = new grpcService.default.APIClient(maxUrl, null, null);
-        let header = new Prox.default.ProxHeader();
+        let header = new Prox.default.Header();
         let request = new Prox.default.ProxF2PGetSpace();
         header.setPeerid(deviceData.peer_id);
         header.setId(deviceData.foggie_id);
@@ -235,7 +244,7 @@ export default function getList(deviceData) {
                 window.localStorage.setItem("MinerReward", MinerReward.value);
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
                     { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
             }
@@ -248,7 +257,7 @@ export default function getList(deviceData) {
                 IOTReward.value = res.result.counts;
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length },
+                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
                     { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
                 window.localStorage.setItem("IOTReward", JSON.stringify(IOTReward.value));
@@ -258,7 +267,7 @@ export default function getList(deviceData) {
     };
     const getFileStatistics = async (deviceData, _token, appType, metadata) => {
         let server = new grpcService.default.APIClient(maxUrl, null, null);
-        let header = new Prox.default.ProxHeader();
+        let header = new Prox.default.Header();
         let request = new Prox.default.ProxRequestStatistics();
         header.setPeerid(deviceData.peer_id);
         header.setId(deviceData.foggie_id);

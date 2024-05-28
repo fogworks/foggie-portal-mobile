@@ -79,6 +79,10 @@
     color: #71d1e0;
     color: #fac858;
     white-space: nowrap;
+    background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(89deg, #0e91dc 10%, #77bbea 40%, #df7a3a 50%, #ffd07f 100%);
+    font-size: 28px;
   }
   .maxio_img {
     width: 70px;
@@ -90,7 +94,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 98;
+    z-index: 200;
     &:hover {
       transform: scale(1.1);
     }

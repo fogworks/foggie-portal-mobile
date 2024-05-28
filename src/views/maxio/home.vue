@@ -28,10 +28,11 @@
             </div>
           </div>
         </div>
-        <div class="maxio_img" @click="showOfflineBox">
-          <!-- <img :src="userAvatar ? userAvatar : require('@/assets/user.png')" class="user_img" /> -->
-          <!-- <icon-img></icon-img> -->
+        <!-- <div class="maxio_img" @click="showOfflineBox">
           <img src="@/assets/maxio/offline.svg" class="user_img" />
+        </div> -->
+        <div class="maxio_img running_img" @click="showOfflineBox">
+          <img src="@/assets/maxio/running.svg" class="user_img" />
         </div>
       </div>
       <div class="maxio_home_content">
@@ -113,7 +114,14 @@
         </div>
       </div>
     </div>
-    <offline :isShowOffline="isShowOffline" @closeBuy="showOfflineBox"></offline>
+    <!-- <offline :isShowOffline="isShowOffline" @closeBuy="showOfflineBox" :currentBucketData="currentBucketData"></offline> -->
+    <offlineList
+      :isShowOffline="isShowOffline"
+      @closeBuy="showOfflineBox"
+      :currentBucketData="currentBucketData"
+      :isOfflineArr="isOfflineArr"
+      :MaxTokenMap="MaxTokenMap"
+    ></offlineList>
   </div>
 </template>
 
@@ -125,9 +133,10 @@
   //   import topLink from './component/topLink.vue';
   import topHead from './component/topHead.vue';
   import offline from './component/offline.vue';
+  import offlineList from './component/offlineList.vue';
   import iconImg from './iconImg.vue';
   import useOrderList from './maxFileOpt/useAllOrderList';
-  import { search_cloud } from '@/api';
+  import { search_cloud, get_vood_token } from '@/api';
   import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
@@ -148,6 +157,9 @@
   const { resetData, loadMore, allOrderList, hasMore, infinityValue, total, maxTableData, historyData, runningData } = useOrderList();
   const router = useRouter();
   const route = useRoute();
+  const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
+  const isOfflineList = ref(false);
+  const isOfflineArr = ref([]);
   const showLeft = ref(false);
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
   //   const leftBucketList = ref([]);
@@ -157,15 +169,6 @@
   const leftBucketList = computed(() => {
     return allOrderList.value;
   });
-  //   const maxTableDataCy = computed(() => {
-  //     return maxTableData.value;
-  //   });
-  //   const runningDataCy = computed(() => {
-  //     return runningData.value;
-  //   });
-  //   const historyDataCy = computed(() => {
-  //     return historyData.value;
-  //   });
   const changeList = (type) => {
     if (type === 'maxio') {
       isShowMaxio.value = !isShowMaxio.value;
@@ -272,10 +275,6 @@
     // }
     // topText.value = topShow.value ? '离线任务创建中......' : '';
   };
-  //   onMounted(async () => {
-  //     await loadMoreFun();
-  //     initSetBucket();
-  //   });
   const setBucket = async (item) => {
     console.log('setBucket--0---------', item);
     window.localStorage.setItem('homeChooseBucket', JSON.stringify(item));
@@ -299,6 +298,31 @@
       currentBucketData.value = item;
       changeList('maxio');
     }
+    initToken();
+  };
+  const initToken = async () => {
+    let token = await get_vood_token({ vood_id: currentBucketData.value.device_id });
+    if (token) {
+      userStore.setMaxTokenMap({
+        id: currentBucketData.value.device_id,
+        token: token.data.token_type + ' ' + token.data.access_token,
+      });
+    }
+  };
+  const initOfflineList = () => {
+    isOfflineList.value = true;
+    isOfflineArr.value = [
+      {
+        title: 'abctitleee.png',
+        progress: 100,
+        status: 'paus',
+      },
+      {
+        title: '122.pdf',
+        progress: 80,
+        status: 'paus',
+      },
+    ];
   };
   watch(leftBucketList, (val) => {
     if (val.length > 0) {
@@ -312,9 +336,11 @@
     cloudCodeIsBind,
     async (val) => {
       if (val) {
+        window.localStorage.removeItem('homeChooseBucket');
         userStore.setambRefuse(false);
         await loadMoreFun();
         initSetBucket();
+        initOfflineList();
       }
     },
     {

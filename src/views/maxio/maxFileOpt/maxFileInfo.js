@@ -1,8 +1,11 @@
 import { s3Url, poolUrl, maxUrl } from '@/setting.js';
 
-// import * as Prox from '@/pb/net_pb.js';
-import * as Prox from '@/pb/prox_pb.js';
+// import * as Prox from '@/pb/prox_pb.js';
+// import * as grpcService from '@/pb/net_grpc_web_pb.js';
+
+import * as Prox from '@/pb/net_pb.js';
 import * as grpcService from '@/pb/net_grpc_web_pb.js';
+
 import { get_vood_token } from '@/api/index';
 import { showToast, showDialog } from '@nutui/nutui';
 import { useUserStore } from '@/store/modules/user';
@@ -35,7 +38,7 @@ export default function initMaxFile() {
       return;
     }
     let server = new grpcService.default.APIClient(maxUrl, null, null);
-    header.value = new Prox.default.ProxHeader();
+    header.value = new Prox.default.Header();
     header.value.setPeerid(deviceData.peer_id);
     header.value.setId(deviceData.foggie_id);
     header.value.setToken(_token);
@@ -66,7 +69,7 @@ export default function initMaxFile() {
     }
     return new Promise((resolve, reject) => {
       let server = new grpcService.default.APIClient(maxUrl, null, null);
-      header.value = new Prox.default.ProxHeader();
+      header.value = new Prox.default.Header();
       header.value.setPeerid(deviceData.peer_id);
       header.value.setId(deviceData.foggie_id);
       header.value.setToken(_token);
@@ -122,7 +125,7 @@ export default function initMaxFile() {
 
     let _token = token.split(' ')[1];
     let server = new grpcService.default.APIClient(maxUrl, null, null);
-    header.value = new Prox.default.ProxHeader();
+    header.value = new Prox.default.Header();
     header.value.setPeerid(deviceData.peer_id);
     header.value.setId(deviceData.foggie_id);
     header.value.setToken(_token);
@@ -131,52 +134,53 @@ export default function initMaxFile() {
     let request = new Prox.default.ProxGExtractCode();
     request.setHeader(header.value);
     request.setCid(chooseItem.cid);
-    request.setKey(encodeURIComponent(chooseItem.key));
+    // request.setKey(encodeURIComponent(chooseItem.key));
     let exp = periodValue[0].toString();
-    request.setExp(periodValue[0]);
-    console.log(deviceData, deviceData.device_id, MaxTokenMap, periodValue[0], exp, chooseItem.cid, chooseItem.key);
-    // string cid = 2;
-    // string key = 3;
-    // string exp = 4;
+    let _date = new Date().getTime() + periodValue[0];
+    let _tdate = moment.utc(_date).format('YYYY-MM-DDTHH:mm:ss');
+    let _exp = _tdate + 'Z';
+    request.setExp(_exp);
 
     let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
     let metadata = {
       'X-Custom-Date': date + 'Z',
       'X-Sid': deviceData.peer_id,
     };
-    console.log(request, header.value);
+    console.log('generateExtractCode------generateExtractCode------generateExtractCode------', request, header.value);
     server.generateExtractCode(request, metadata, (err, res) => {
       if (err) {
         isError.value = true;
+        showShareDialog.value = false;
         console.log('generateExtractCode------111222:', err);
       } else if (res) {
-        console.log(res, 'resss');
+        console.log('generateExtractCode--resss', res, res.array, res.array[0]);
+        let code = res.array && res.array.length && res.array[0];
+        let _str = `foggie://${deviceData.peer_id}/${deviceData.foggie_id}/${chooseItem.cid}?pwd=${code}`;
+        // foggie://peerid/foggieid/cid?pwd=xxxx
+        showShareDialog.value = false;
+        httpCopyLink.value = _str;
+        let src = require('@/assets/svg/home/http2.svg');
+        let str = `<div>
+          <img style="height:60px; padding:0 20px;" src=${src}> 
+          </div> <div  class='http_share_text'>The link has been generated, please copy it.</div>`;
+        showDialog({
+          title: 'Http Link',
+          content: str,
+          okText: 'Copy',
+          noCancelBtn: true,
+          customClass: 'BuyOrderClass',
+          onOk: () => {
+            copyLink(httpCopyLink.value);
+            httpCopyLink.value = '';
+            showShareDialog.value = false;
+          },
+          beforeClose: () => {
+            httpCopyLink.value = '';
+            showShareDialog.value = false;
+            return true;
+          },
+        });
       }
-    });
-
-    showShareDialog.value = false;
-    let link = 'cqy dameilv';
-    httpCopyLink.value = link;
-    let src = require('@/assets/svg/home/http2.svg');
-    let str = `<div>
-      <img style="height:60px; padding:0 20px;" src=${src}> 
-      </div> <div  class='http_share_text'>The link has been generated, please copy it.</div>`;
-    showDialog({
-      title: 'Http Link',
-      content: str,
-      okText: 'Copy',
-      noCancelBtn: true,
-      customClass: 'BuyOrderClass',
-      onOk: () => {
-        copyLink(httpCopyLink.value);
-        httpCopyLink.value = '';
-        showShareDialog.value = false;
-      },
-      beforeClose: () => {
-        httpCopyLink.value = '';
-        showShareDialog.value = false;
-        return true;
-      },
     });
   };
   const copyLink = async (text) => {

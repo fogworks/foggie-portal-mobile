@@ -3,8 +3,10 @@ import { ref } from 'vue';
 import { showToast, showDialog } from '@nutui/nutui';
 // import * as Prox from '@/pb/prox_pb.js';
 // import * as grpcService from '@/pb/prox_grpc_web_pb.js';
-// import * as Prox from '@/pb/net_pb.js';
-import * as Prox from '@/pb/prox_pb.js';
+// import * as Prox from '@/pb/prox_pb.js';
+// import * as grpcService from '@/pb/net_grpc_web_pb.js';
+
+import * as Prox from '@/pb/net_pb.js';
 import * as grpcService from '@/pb/net_grpc_web_pb.js';
 import { getLink } from '@/api/index.ts';
 import { useUserStore } from '@/store/modules/user';
@@ -94,7 +96,7 @@ export default function useShare(orderInfo, header, deviceType, metadata1) {
     let mp_domain = '';
     console.log(item, 'pinnnnitem', item.key, item.fullName);
     server = new grpcService.default.APIClient(maxUrl, null, null);
-    let header = new Prox.default.ProxHeader();
+    let header = new Prox.default.Header();
     let token = MaxTokenMap.value[orderInfo.value.device_id];
     token = token.split(' ')[1];
 

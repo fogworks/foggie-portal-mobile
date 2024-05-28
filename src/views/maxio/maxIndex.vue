@@ -12,7 +12,7 @@
             <!-- <img src="@/assets/maxio/reward2.svg" v-if="item.type === 'ipfs'" /> -->
             <!-- <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" /> -->
           </div>
-          <span class="pool_name">{{ item.name }}({{ item.count }})</span>
+          <span class="pool_name">{{ item.name }}({{ item.type === 'iot' ? item.iotNumber : item.count }})</span>
           <span class="reward_value">{{ item.number }} DMC</span>
         </div>
       </div>
@@ -157,7 +157,7 @@
     if (!chartData.length) {
       return;
     }
-    let colorArr = ['#00FF00', '#40B2FB', '#00FFFF', '#6841e1', '#FEFF00', '#F59543', '#FF59AB', '#FF4F2C'];
+    let colorArr = ['#00FF00', '#40B2FB', '#00FFFF', '#ec7f40', '#6841e1', '#FEFF00', '#F59543', '#FF59AB', '#FF4F2C'];
     let _value = chartData.map((item) => item.value);
     let totalSum = _value.reduce((a, b) => {
       return a + b;
@@ -242,7 +242,7 @@
           },
           emphasis: {
             label: {
-              show: true,
+              show: false,
               fontSize: 20,
               fontWeight: 'bold',
             },
