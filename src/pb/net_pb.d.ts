@@ -3529,6 +3529,9 @@ export class PInfo extends jspb.Message {
   getIdx(): number;
   setIdx(value: number): void;
 
+  getCompleted(): number;
+  setCompleted(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PInfo.AsObject;
   static toObject(includeInstance: boolean, msg: PInfo): PInfo.AsObject;
@@ -3549,6 +3552,7 @@ export namespace PInfo {
     duration: number,
     provider: string,
     idx: number,
+    completed: number,
   }
 }
 

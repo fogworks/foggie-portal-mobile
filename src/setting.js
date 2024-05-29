@@ -10,7 +10,9 @@ export const dappUrl = 'https://dapp.u2i.net/';
 export const browserUrl = 'https://mumbai.polygonscan.com';
 export const vpsUrl = 'https://devlop.fogworks.io';
 // export const maxUrl = 'http://154.31.41.36:8080';
-export const maxUrl = 'http://hk-cloud.fogworks.io:8080';
+// export const maxUrl = 'http://hk-cloud.fogworks.io:8080';
+export const maxUrl = 'https://cloud.fogworks.io';
+
 // export const maxUrl = 'http://localhost:9007';
 
 // export const shareUrl = "https://grey.share.fogworks.io";

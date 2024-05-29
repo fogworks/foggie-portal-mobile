@@ -199,6 +199,8 @@
   };
 
   const showLists = () => {
+    // let _url = 'http://172.16.20.118:7007';
+    // let server = new grpcService.default.APIClient(_url, null, null);
     let server = new grpcService.default.APIClient(maxUrl, null, null);
     let request = new Prox.default.PinningListRequest();
     request.setHeader(header.value);
@@ -208,6 +210,7 @@
       'X-Custom-Date': date + 'Z',
       'X-Sid': currentBucketData.value.peer_id,
     };
+    console.log('-----ListPinnings', request, header.value);
     // Header header = 1;
     // string status = 2;
     // string pinType = 3;
@@ -216,7 +219,8 @@
     // int32 limit = 6;
     // string match = 7;
     // repeated string cids = 8;
-    // request.setStatus('');
+    request.setStatus('');
+    request.setLimit(3);
     // request.setBefore('2024-02-09T00:00:00Z');
     // request.setAfter('2024-06-09T00:00:00Z');
     server.listPinnings(request, metadata, (err, res) => {
@@ -226,7 +230,7 @@
       if (res) {
         let data = res.getPinningsList();
         let obj = res.toObject();
-        console.log(res, '----ListPinnings', data, obj);
+        console.log('----ListPinnings', obj);
       }
     });
   };
@@ -258,7 +262,7 @@
           isAdd.value = false;
           return;
         }
-
+        // let _url = 'http://172.16.20.118:7007';
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let request = new Prox.default.FetchRequest();
         let name = `cqy0528/${offlineLinkName.value}`;

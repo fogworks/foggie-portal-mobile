@@ -682,25 +682,26 @@
       type === 'ico' ||
       type === 'webp'
     ) {
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value, item);
       imgHttpLink = getHttpShare(
         accessKeyId.value,
         secretAccessKey.value,
         item.key,
         type === 'ico' || type === 'svg' ? false : true,
         deviceData.value,
+        item,
       );
     } else if (type === 'mp3') {
       type = 'audio';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value) + '&inline=true';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value, item);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value, item) + '&inline=true';
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value) + '&inline=true';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value, item);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value, item) + '&inline=true';
     } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value);
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value, item);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value, item);
     } else {
       isSystemImg = true;
     }
@@ -946,7 +947,7 @@
       if (val) {
         // console.log(deviceData.value, 'maxfileList----0000');
         await initToken(deviceData.value);
-        // initSk(deviceData.value, maxToken.value);
+        await initSk(deviceData.value, maxToken.value);
         getFileList();
         getSummary(deviceData.value, maxToken.value);
 

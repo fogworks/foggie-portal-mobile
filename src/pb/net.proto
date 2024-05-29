@@ -636,6 +636,7 @@ message PInfo {
   uint64 duration  = 6;
   string provider = 7;
   int32 idx = 8;
+  uint64 completed = 9;
 
 }
 message PinningInfo {

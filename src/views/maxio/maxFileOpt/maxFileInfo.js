@@ -1,8 +1,5 @@
 import { s3Url, poolUrl, maxUrl } from '@/setting.js';
 
-// import * as Prox from '@/pb/prox_pb.js';
-// import * as grpcService from '@/pb/net_grpc_web_pb.js';
-
 import * as Prox from '@/pb/net_pb.js';
 import * as grpcService from '@/pb/net_grpc_web_pb.js';
 
@@ -56,6 +53,7 @@ export default function initMaxFile() {
         isError.value = true;
         console.log('listCreds------111222:', err);
       } else if (res.array.length > 0) {
+        console.log('listCreds------success:', res.array);
         accessKeyId.value = res.array[0][0][0];
         secretAccessKey.value = res.array[0][0][1];
         // console.log(res.array[0][0][1], 'secretAccessKey111111111', res.array[0][0][0]);
@@ -105,17 +103,34 @@ export default function initMaxFile() {
       });
     });
   };
-  const getHttpShare = (awsAccessKeyId, awsSecretAccessKey, keyName, thumb, deviceData) => {
+  const getHttpShare = (awsAccessKeyId, awsSecretAccessKey, keyName, thumb, deviceData, item) => {
+    // console.log(awsAccessKeyId, awsSecretAccessKey, item, 'itemitem', item.key);
+    // 构建要签名的字符串
     const objectKey = encodeURIComponent(keyName);
-    // const baseUrl = `http://154.31.41.36:9900`;//9009
-    const baseUrl = maxUrl;
-    let token = MaxTokenMap.value[deviceData.device_id];
-    token = Base64.encode(token.split(' ')[1]);
+    const date = new Date().toUTCString();
+    const httpMethod = 'GET'; // HTTP 方法，GET
+    const contentType = 'application/octet-stream'; // 可选：设置 Content-Type 标头 为：“application/octet-stream”
+    const contentMd5 = ''; // 可选：设置 Content-MD5 标头。，设置为“”
+    const canonicalizedAmzHeaders = ''; // 可选：设置自定义标头，设置为“”
+    const canonicalizedResource = `${keyName}`; // 文件名称，encode 之前的key
+    const expirationTime = Math.floor(Date.now() / 1000) + (isMobileDevice.value ? periodValue.value[0] : periodValue.value);
+    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n${expirationTime}\n${canonicalizedAmzHeaders}\n${canonicalizedResource}`;
+
+    // 如果存在thumb 选项 不需要加入到signature中
+
+    // 计算签名
+    let hmac = HmacSHA1(signature, awsSecretAccessKey);
+    let signatureBase64 = enc.Base64.stringify(hmac);
+
+    signatureBase64 = encodeURIComponent(signatureBase64);
+    // const url = `http://xxx/o/peerid/foggieid/key/${objectKey}?AWSAccessKeyId="xxx"&Expires="xxx"&Signature="xxx"`;
     if (thumb) {
-      let str = `${baseUrl}/o/${deviceData.peer_id}/${deviceData.foggie_id}/${objectKey}?thumb=true&token=${token}`;
+      //   let str = `${baseUrl}/o/${deviceData.peer_id}/${deviceData.foggie_id}/${objectKey}?thumb=true&token=${token}`;
+      let str = `${maxUrl}/o/${deviceData.peer_id}/${deviceData.foggie_id}/${objectKey}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${signatureBase64}&thumb=true`;
+      //   console.log(signature, 'signature', awsAccessKeyId);
       return str;
     }
-    let str = `${baseUrl}/o/${deviceData.peer_id}/${deviceData.foggie_id}/${objectKey}?token=${token}`;
+    let str = `${maxUrl}/o/${deviceData.peer_id}/${deviceData.foggie_id}/${objectKey}?AWSAccessKeyId=${awsAccessKeyId}&Expires=${expirationTime}&Signature=${signatureBase64}`;
     return str;
   };
   const showShareDialog = ref(false);
@@ -146,7 +161,7 @@ export default function initMaxFile() {
       'X-Custom-Date': date + 'Z',
       'X-Sid': deviceData.peer_id,
     };
-    console.log('generateExtractCode------generateExtractCode------generateExtractCode------', request, header.value);
+    // console.log('generateExtractCode------generateExtractCode------generateExtractCode------', request, header.value);
     server.generateExtractCode(request, metadata, (err, res) => {
       if (err) {
         isError.value = true;

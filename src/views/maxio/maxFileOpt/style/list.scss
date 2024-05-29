@@ -346,8 +346,11 @@
     color: $main_blue;
   }
   .top_title {
-    margin-left: 80px;
     font-family: Avenir, Helvetica, Arial, sans-serif;
+    color: #fff;
+    text-align: left;
+    width: 100%;
+    display: inline-block;
   }
   .check_top {
     display: flex;
@@ -438,8 +441,10 @@
     box-sizing: border-box;
     // padding: 20px;
     .new_folder {
-      width: 50px;
-      height: 50px;
+      width: 70px;
+      height: 70px;
+      margin-right: 10px;
+      cursor: pointer;
     }
 
     .nut-searchbar {
@@ -725,9 +730,6 @@
     .detail_back {
       width: 60px;
       height: 60px;
-    }
-    .top_title {
-      margin-left: 60px;
     }
     .check_top {
       padding: 20px 20px;

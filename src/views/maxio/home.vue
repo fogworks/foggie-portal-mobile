@@ -32,7 +32,7 @@
           <img src="@/assets/maxio/offline.svg" class="user_img" />
         </div> -->
         <div class="maxio_img running_img" @click="showOfflineBox">
-          <img src="@/assets/maxio/running.svg" class="user_img" />
+          <img src="@/assets/maxio/running.svg" class="running_img" />
         </div>
       </div>
       <div class="maxio_home_content">

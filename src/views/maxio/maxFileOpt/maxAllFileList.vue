@@ -9,7 +9,7 @@
           isNewFolder = true;
           renameShow = true;
         "
-        v-show="category == 0 && isMobileOrder && isAvailableOrder"
+        v-show="category === 0"
         class="new_folder"
       ></IconNewFolder>
       <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
@@ -47,7 +47,11 @@
     </div> -->
     <!-- </nut-sticky> -->
     <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
+
     <template v-else-if="category != 1">
+      <span class="top_title">
+        {{ prefix.at(-1) || '' }}
+      </span>
       <nut-infinite-loading
         v-if="tableData.length"
         load-more-txt="No more content"
@@ -270,6 +274,7 @@
   import IconCardType from '~icons/home/cardType.svg';
   import IconBucket from '~icons/home/bucket.svg';
   import IconPlay from '~icons/home/play.svg';
+  import IconNewFolder from '~icons/home/new_folder1.svg';
   import IconDelete from '~icons/home/delete.svg';
   import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
   import ErrorPage from '@/views/errorPage/index.vue';
@@ -400,7 +405,7 @@
   const appType = ref('');
   appType.value = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
   const deviceToken = ref('');
-  const { accessKeyId, secretAccessKey, getHttpShare, getSummary } = maxFileInfo();
+  const { accessKeyId, secretAccessKey, getHttpShare, initSk, getSummary } = maxFileInfo();
   const header = computed(() => {
     let headerProx2 = new Prox.default.Header();
     headerProx2.setPeerid(deviceData.value.peer_id);
@@ -678,8 +683,14 @@
     // header.setApptype(appType);
     // header.value = header;
     // console.log(header, '---proxxxxhead------', header.value);
-
-    listObject.setPrefix('');
+    let list_prefix = '';
+    if (prefix?.length) {
+      list_prefix = prefix.join('/');
+      if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
+        list_prefix = encodeURIComponent(list_prefix) + '/';
+      }
+    }
+    listObject.setPrefix(list_prefix);
     listObject.setDelimiter('');
     listObject.setEncodingType('');
     listObject.setMaxKeys(20);
@@ -1005,25 +1016,26 @@
       type === 'ico' ||
       type === 'webp'
     ) {
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value, item);
       imgHttpLink = getHttpShare(
         accessKeyId.value,
         secretAccessKey.value,
         item.key,
         type === 'ico' || type === 'svg' ? false : true,
         deviceData.value,
+        item,
       );
     } else if (type === 'mp3') {
       type = 'audio';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value) + '&inline=true';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value, item);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value, item) + '&inline=true';
     } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value) + '&inline=true';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value, item);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value, item) + '&inline=true';
     } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value);
-      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value);
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, true, deviceData.value, item);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, item.key, false, deviceData.value, item);
     } else {
       isSystemImg = true;
     }
@@ -1074,12 +1086,12 @@
       // header.setToken(MaxTokenMap);
       // header.setApptype(appType);
       // header.value = header;
-      //   if (prefixArg?.length) {
-      //     list_prefix = prefixArg.join('/');
-      //     if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
-      //       list_prefix = list_prefix + '/';
-      //     }
-      //   }
+      if (prefixArg?.length) {
+        list_prefix = prefixArg.join('/');
+        if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
+          list_prefix = list_prefix + '/';
+        }
+      }
       ProxFindRequest.setHeader(header.value);
       ProxFindRequest.setPrefix(list_prefix);
       server.findObjects(ProxFindRequest, metadata.value, (err: any, res: { getContentsList: () => any[] }) => {
@@ -1444,6 +1456,7 @@
     });
     console.log(token.data.access_token, '0-------token.data.access_token');
     deviceToken.value = token.data.access_token;
+    await initSk(deviceData.value, deviceToken.value);
     initPage();
   });
   console.log(header.value, 'header.value');

@@ -24576,6 +24576,7 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
         duration: jspb.Message.getFieldWithDefault(msg, 6, 0),
         provider: jspb.Message.getFieldWithDefault(msg, 7, ''),
         idx: jspb.Message.getFieldWithDefault(msg, 8, 0),
+        completed: jspb.Message.getFieldWithDefault(msg, 9, 0),
       };
 
     if (includeInstance) {
@@ -24642,6 +24643,10 @@ proto.proto.PInfo.deserializeBinaryFromReader = function (msg, reader) {
         var value = /** @type {number} */ (reader.readInt32());
         msg.setIdx(value);
         break;
+      case 9:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setCompleted(value);
+        break;
       default:
         reader.skipField();
         break;
@@ -24700,6 +24705,10 @@ proto.proto.PInfo.serializeBinaryToWriter = function (message, writer) {
   f = message.getIdx();
   if (f !== 0) {
     writer.writeInt32(8, f);
+  }
+  f = message.getCompleted();
+  if (f !== 0) {
+    writer.writeUint64(9, f);
   }
 };
 
@@ -24829,6 +24838,22 @@ proto.proto.PInfo.prototype.getIdx = function () {
  */
 proto.proto.PInfo.prototype.setIdx = function (value) {
   return jspb.Message.setProto3IntField(this, 8, value);
+};
+
+/**
+ * optional uint64 completed = 9;
+ * @return {number}
+ */
+proto.proto.PInfo.prototype.getCompleted = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.PInfo} returns this
+ */
+proto.proto.PInfo.prototype.setCompleted = function (value) {
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 /**

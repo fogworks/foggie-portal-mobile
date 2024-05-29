@@ -5,7 +5,7 @@
         <div class="card_border_box">
           <div class="card-sd_title">
             <span class="sd_title">
-              {{ currentItem.device_id && textSubStr(currentItem.device_id) }}
+              {{ currentItem && currentItem.device_id && textSubStr(currentItem.device_id) }}
               <!-- <nut-noticebar :text="text" background="transparent" color="#fff" :left-icon="false" /> -->
             </span>
           </div>
