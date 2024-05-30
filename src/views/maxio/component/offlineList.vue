@@ -11,7 +11,7 @@
                 <img src="@/assets/maxio/file.svg" />
               </div>
               <div class="show_offline_item_content">
-                <div class="show_offline_item_title"> {{ item.title }}</div>
+                <div class="show_offline_item_title"> {{ item.name }}</div>
                 <div class="show_offline_item_progress">
                   <nut-progress
                     size="small"
@@ -21,15 +21,26 @@
                   />
                 </div>
                 <div class="show_offline_item_bottom">
-                  <div class="show_offline_item_left"> 云添加 </div>
+                  <div class="show_offline_item_left"> 离线下载 </div>
                   <div class="show_offline_item_center">
-                    <div class="show_offline_item_have">0.4GB </div>
+                    <div class="show_offline_item_have">
+                      {{
+                        item.pinsList &&
+                        item.pinsList.length &&
+                        item.pinsList[0].completed &&
+                        item.pinsList[0].completed &&
+                        getfilesize(item.pinsList[0].completed)
+                      }}
+                    </div>
                     /
-                    <div class="show_offline_item_total"> 2.2GB</div>
+                    <div class="show_offline_item_total">
+                      {{ item.pinsList && item.pinsList.length && item.pinsList[0].size && getfilesize(item.pinsList[0].size) }}</div
+                    >
                   </div>
                   <div class="show_offline_item_right">
                     <img src="@/assets/maxio/download.svg" />
-                    1MB/s
+
+                    {{ item.pinsList && item.pinsList.length && item.pinsList[0] && item.pinsList[0].averagespeed }}/s
                   </div>
                 </div>
               </div>
@@ -94,6 +105,7 @@
   import { get_vood_token } from '@/api/index';
   import { showToast } from '@nutui/nutui';
   import { useUserStore } from '@/store/modules/user';
+  import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
   const userStore = useUserStore();
   import moment from 'moment';
   import * as Prox from '@/pb/net_pb.js';
@@ -128,7 +140,7 @@
   watch(
     isOfflineArr,
     (val) => {
-      offlineList.value = val;
+      //   offlineList.value = val;
     },
     { deep: true },
   );
@@ -152,7 +164,7 @@
     },
     { deep: true },
   );
-  offlineList.value = isOfflineArr.value;
+  //   offlineList.value = isOfflineArr.value;
 
   //   去添加离线下载任务
   const showLink = () => {
@@ -169,7 +181,7 @@
     if (currentTab.value === 'history') {
       offlineList.value = [];
     } else {
-      offlineList.value = isOfflineArr.value;
+      //   offlineList.value = isOfflineArr.value;
     }
   };
   const getTokenMap = async () => {
@@ -226,11 +238,13 @@
     server.listPinnings(request, metadata, (err, res) => {
       if (err) {
         console.log('-----ListPinnings---err123---:', err);
+        offlineList.value = [];
       }
       if (res) {
         let data = res.getPinningsList();
         let obj = res.toObject();
-        console.log('----ListPinnings', obj);
+        offlineList.value = obj && obj.pinningsList;
+        console.log('----ListPinnings', obj, offlineList.value);
       }
     });
   };
@@ -427,7 +441,7 @@
       .show_offline_item_content {
         width: calc(100% - 120px);
         .show_offline_item_title {
-          font-size: 30px;
+          font-size: 28px;
           margin-bottom: 10px;
         }
         .show_offline_item_progress {

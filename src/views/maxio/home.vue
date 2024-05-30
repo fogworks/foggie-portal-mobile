@@ -127,6 +127,7 @@
 
 <script setup>
   import { ref, toRefs, computed, onMounted } from 'vue';
+  import { showToast } from '@nutui/nutui';
   import CloudComponent from './cloud.vue';
   import maxIndex from './maxIndex.vue';
   import sd from './sd.vue';

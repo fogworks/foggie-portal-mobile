@@ -412,7 +412,6 @@
     headerProx2.setId(deviceData.value.foggie_id);
     headerProx2.setToken(deviceToken.value);
     headerProx2.setApptype(appType.value);
-    // console.log(header.value, 'header.value');
     return headerProx2;
   });
   const { cloudPin } = useShare(deviceData, header, deviceData.value && deviceData.value.deviceType, {});
@@ -572,7 +571,6 @@
         checkData = [chooseItem.value];
       }
     }
-    console.log(checkData);
     if (type === 'move') {
       movePrefix.value = [];
       moveShow.value = true;
@@ -663,7 +661,7 @@
   const uploadComplete = (file: any) => {};
 
   async function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
-    console.log('getFileListgetFileList------', deviceData.value);
+    // console.log('getFileListgetFileList------', deviceData.value);
     if (!deviceData.value.device_id) {
       return;
     }
@@ -704,7 +702,6 @@
     listObject.setDate('');
     requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
-    // console.log(requestReq, metadata, header.value, '----listObjects-----');
     server.listObjects(
       requestReq,
       metadata,
@@ -796,7 +793,7 @@
             prefixpins: res.getPrefixpinsList(),
           };
           isError.value = false;
-          //   console.log(transferData, 'transferDatatransferDatatransferData');
+          // console.log(transferData, 'transferDatatransferDatatransferData');
           initRemoteData(transferData, reset, 0);
           showToast.hide('file_list');
         } else if (err) {
@@ -827,7 +824,7 @@
       showToast.hide('file_list');
       return;
     }
-    console.log('data', data);
+
     if (data.err) {
       showToast.fail('Failed to  retrieve data. Please try again later');
     }
@@ -841,9 +838,8 @@
         imgArray.value = [];
       }
     }
-    // if (!accessKeyId.value) {
-    //   await getOrderInfo();
-    // }
+    console.log('initRemoteData', data, dir);
+    // isPin
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
 
@@ -902,17 +898,14 @@
     }
     currentFolder.value = data.prefix;
     window.sessionStorage.setItem('currentFolder', currentFolder.value);
-    // console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
+    console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
+    // datalist
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
       let isDir = data?.content[j].contentType == 'application/x-directory' ? true : false;
       const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
 
-      // imgHttpLink, isSystemImg, imgHttpLarge
-
-      // let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
       const imgData = await handleImg(data.content[j], type, isDir);
-      //   console.log('----------contentType', data?.content[j].contentType);
       const url = imgData.imgHttpLink;
       const isSystemImg = imgData.isSystemImg;
       const url_large = imgData.imgHttpLarge;
@@ -920,6 +913,9 @@
       let file_id = data.content[j].fileId;
 
       let name = data.content[j].key;
+      if (name === currentFolder.value) {
+        return;
+      }
 
       if (data.prefix) {
         name = name.split(decodeURIComponent(data.prefix))[1];
@@ -974,7 +970,6 @@
         nftInfoList: data.content[j].nftInfoList,
         thumb: data.content[j].thumb,
       };
-      //   console.log(item, 'data.content[j]');
 
       if (moveShow.value) {
       } else {
@@ -1070,7 +1065,6 @@
       // server = new grpcService.default.ServiceClient(ip, null, null);
       let server = new grpcService.default.APIClient(maxUrl, null, null);
       let ProxFindRequest = new Prox.default.FindRequest();
-      console.log(header.value, 'header.valueheader.value');
 
       ProxFindRequest.setHeader(header.value);
       ProxFindRequest.setCid('');
@@ -1144,7 +1138,7 @@
               },
             );
           isError.value = false;
-          console.log(transferData, 'search------transferDatatransferData');
+          //   console.log(transferData, 'search------transferDatatransferData');
           initRemoteData({ content: transferData }, true, category.value);
         } else {
           isError.value = true;
@@ -1182,7 +1176,6 @@
     const signData = await get_order_sign(param);
     socketDate.value = signData?.result?.data?.timestamp;
     socketToken.value = signData?.result?.data?.sign;
-    console.log('initWebSocket-----------');
     const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
     fileSocket.value = new WebSocket(url);
     fileSocket.value.onopen = () => {
@@ -1198,7 +1191,6 @@
     fileSocket.value.onmessage = (event: { data: string }) => {
       const message = JSON.parse(event.data);
       const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
-      console.log('Received message from server:', message, currentFolderStr);
       const uploadFileName = window.sessionStorage.getItem('uploadFileName');
       let fileInfo = message.fileInfo;
       let dirArr = fileInfo.keys;
@@ -1216,14 +1208,14 @@
         }
       }
 
-      console.log(
-        '888888',
-        dirArr,
-        dirFile,
-        currentFolderStr,
-        dirFile === decodeURIComponent(currentFolderStr),
-        dirFileName !== uploadFileName,
-      );
+      //   console.log(
+      //     '888888',
+      //     dirArr,
+      //     dirFile,
+      //     currentFolderStr,
+      //     dirFile === decodeURIComponent(currentFolderStr),
+      //     dirFileName !== uploadFileName,
+      //   );
       if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
         if (detailShow.value) {
           setTimeout(() => {
@@ -1254,7 +1246,6 @@
     }
   }
   const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
-    console.log('doSocketFn', msg, tableData.value);
     const action = msg.action;
     const fileInfo = msg.fileInfo;
     const keys = fileInfo.keys;
@@ -1302,7 +1293,7 @@
         const isSystemImg = imgData.isSystemImg;
         const url_large = imgData.imgHttpLarge;
 
-        console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
+        // console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
 
         let imageInfo = {
           aperture: '',
@@ -1442,7 +1433,6 @@
       }
       if (val == 1) {
       } else {
-        console.log(category.value, 'categorycategorycategory');
         doSearch('', prefix.value, true);
       }
     },
@@ -1454,12 +1444,10 @@
       id: deviceData.value.device_id,
       token: token.data.token_type + ' ' + token.data.access_token,
     });
-    console.log(token.data.access_token, '0-------token.data.access_token');
     deviceToken.value = token.data.access_token;
     await initSk(deviceData.value, deviceToken.value);
     initPage();
   });
-  console.log(header.value, 'header.value');
 
   onBeforeUnmount(() => {
     if (fileSocket.value) {
