@@ -7,7 +7,6 @@ import { showToast } from '@nutui/nutui';
 import * as Prox from '@/pb/net_pb.js';
 import * as grpcService from '@/pb/net_grpc_web_pb.js';
 import '@nutui/nutui/dist/packages/toast/style';
-import useOrderInfo from './useOrderInfo.js';
 import { s3Url, poolUrl, maxUrl } from '@/setting.js';
 import moment from 'moment';
 

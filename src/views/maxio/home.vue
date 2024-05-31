@@ -133,11 +133,10 @@
   import sd from './sd.vue';
   //   import topLink from './component/topLink.vue';
   import topHead from './component/topHead.vue';
-  import offline from './component/offline.vue';
+  //   import offline from './component/offline.vue';
   import offlineList from './component/offlineList.vue';
   import iconImg from './iconImg.vue';
   import useOrderList from './maxFileOpt/useAllOrderList';
-  import { search_cloud, get_vood_token } from '@/api';
   import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
@@ -298,16 +297,6 @@
       showBucket.value = false;
       currentBucketData.value = item;
       changeList('maxio');
-    }
-    initToken();
-  };
-  const initToken = async () => {
-    let token = await get_vood_token({ vood_id: currentBucketData.value.device_id });
-    if (token) {
-      userStore.setMaxTokenMap({
-        id: currentBucketData.value.device_id,
-        token: token.data.token_type + ' ' + token.data.access_token,
-      });
     }
   };
   const initOfflineList = () => {

@@ -3,7 +3,6 @@ import { s3Url, poolUrl, maxUrl } from '@/setting.js';
 import * as Prox from '@/pb/net_pb.js';
 import * as grpcService from '@/pb/net_grpc_web_pb.js';
 
-import { get_vood_token } from '@/api/index';
 import { showToast, showDialog } from '@nutui/nutui';
 import { useUserStore } from '@/store/modules/user';
 const userStore = useUserStore();
@@ -12,6 +11,7 @@ import { getfilesize } from '@/utils/util';
 import { Base64 } from 'js-base64';
 import { HmacSHA1, enc } from 'crypto-js';
 const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
+const MyAkList = computed(() => userStore.getMyAkList);
 
 export default function initMaxFile() {
   const accessKeyId = ref('');
@@ -30,38 +30,46 @@ export default function initMaxFile() {
 
   const header = ref({});
   const initSk = async (deviceData, _token) => {
-    // console.log(deviceData, 'initSk');
     if (!deviceData.device_id) {
       return;
     }
-    let server = new grpcService.default.APIClient(maxUrl, null, null);
-    header.value = new Prox.default.Header();
-    header.value.setPeerid(deviceData.peer_id);
-    header.value.setId(deviceData.foggie_id);
-    header.value.setToken(_token);
-    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-    header.value.setApptype(appType);
-    let request = new Prox.default.GetCredRequest();
-    request.setHeader(header.value);
-    let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
-    let metadata = {
-      'X-Custom-Date': date + 'Z',
-      'X-Sid': deviceData.peer_id,
-    };
-    server.listCreds(request, metadata, (err, res) => {
-      if (err) {
-        isError.value = true;
-        console.log('listCreds------111222:', err);
-      } else if (res.array.length > 0) {
-        // console.log('listCreds------success:', res.array);
-        accessKeyId.value = res.array[0][0][0];
-        secretAccessKey.value = res.array[0][0][1];
-        // console.log(res.array[0][0][1], 'secretAccessKey111111111', res.array[0][0][0]);
-      }
-    });
+    if (MyAkList.value && MyAkList.value.secretAccessKey) {
+      accessKeyId.value = MyAkList.value.accessKeyId;
+      secretAccessKey.value = MyAkList.value.secretAccessKey;
+    } else {
+      console.log(MyAkList.value, ' MyAkList.value');
+      let server = new grpcService.default.APIClient(maxUrl, null, null);
+      header.value = new Prox.default.Header();
+      header.value.setPeerid(deviceData.peer_id);
+      header.value.setId(deviceData.foggie_id);
+      header.value.setToken(_token);
+      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+      header.value.setApptype(appType);
+      let request = new Prox.default.GetCredRequest();
+      request.setHeader(header.value);
+      let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
+      let metadata = {
+        'X-Custom-Date': date + 'Z',
+        'X-Sid': deviceData.peer_id,
+      };
+      server.listCreds(request, metadata, (err, res) => {
+        if (err) {
+          isError.value = true;
+          console.log('listCreds------111222:', err);
+        } else if (res.array.length > 0) {
+          // console.log('listCreds------success:', res.array);
+          accessKeyId.value = res.array[0][0][0];
+          secretAccessKey.value = res.array[0][0][1];
+          userStore.setMyAkList({
+            accessKeyId: accessKeyId.value,
+            secretAccessKey: secretAccessKey.value,
+          });
+          // console.log(res.array[0][0][1], 'secretAccessKey111111111', res.array[0][0][0]);
+        }
+      });
+    }
   };
   const getSummary = (deviceData, _token) => {
-    // console.log(deviceData.device_id, deviceData, 'getSummary');
     if (!deviceData.device_id) {
       return;
     }

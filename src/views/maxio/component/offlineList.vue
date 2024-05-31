@@ -196,7 +196,7 @@
         offlineLink.value = '';
         offlineLinkName.value = '';
         // console.log(MaxTokenMap.value, 'MaxTokenMap.value');
-        if (MaxTokenMap.value) {
+        if (MaxTokenMap.value && MaxTokenMap.value[currentBucketData.value.device_id]) {
           deviceData.value = currentBucketData.value;
           let token = MaxTokenMap.value[currentBucketData.value.device_id];
           token = token.split(' ')[1];
@@ -209,8 +209,6 @@
     },
     { deep: true },
   );
-  //   offlineList.value = isOfflineArr.value;
-
   //   去添加离线下载任务
   const showLink = () => {
     showAdd.value = true;
@@ -230,6 +228,7 @@
     // }
   };
   const getTokenMap = async () => {
+    console.log('offline---getTokenMap');
     if (deviceData.value && deviceData.value.device_id) {
       let token = await get_vood_token({ vood_id: deviceData.value.device_id });
       if (token) {

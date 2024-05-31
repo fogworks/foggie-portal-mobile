@@ -76,7 +76,7 @@
       <span class="title">Recent Files</span>
       <span class="see_all" @click="changeTab('file')">Go File></span>
     </div>
-    <maxFileList :cloudQuery="cloudQuery" :deviceData="currentTabItem"></maxFileList>
+    <maxFileList :cloudQuery="cloudQuery" :deviceData="currentTabItem" :CurrentToken="CurrentToken"></maxFileList>
     <!-- </div> -->
     <!-- <div class="maxio_home_title">Devices Rewards</div>
     <div class="maxio_home_card maxio_reward_card" @click="changeTab('reward')">
@@ -100,7 +100,8 @@
   import maxFileList from './maxFileList.vue';
   const userStore = useUserStore();
   const CurrentLeftTab = computed(() => userStore.getCurrentLeftTab);
-  const { getMyList, myPoolList, myIotList, MinerReward, IOTReward, rewardList, spaceData, fileListArr, header } = getList();
+  const { getMyList, myPoolList, myIotList, MinerReward, IOTReward, rewardList, spaceData, fileListArr, header, initToken, CurrentToken } =
+    getList();
   const cloudQuery = ref({});
   const props = defineProps({
     showLeft: Boolean,
@@ -145,7 +146,7 @@
       router.push({ path: '/maxio' });
     }
   };
-  onMounted(() => {
+  onMounted(async () => {
     // console.log(window.localStorage.homeChooseBucket, 'onMounted-----homeChooseBucket');
     // if (window.localStorage.homeChooseBucket) {
     //   console.log(JSON.parse(window.localStorage.homeChooseBucket), '1111-----homeChooseBucket');
@@ -162,6 +163,7 @@
     let totalSum = _value.reduce((a, b) => {
       return a + b;
     });
+    console.log(totalSum, 'totalSum');
     chartData = chartData.filter((item) => {
       return item.name !== 'total' && item.name !== 'remaining';
     });
@@ -458,16 +460,16 @@
     CurrentLeftTab,
     async (val) => {
       if (val) {
-        currentTabItem.value = val;
-        // console.log(val, val.device_id, 'index----CurrentLeftTabwatch', currentTabItem.value);
-        cloudQuery.value = {
-          id: currentTabItem.value.id,
-          // uuid: currentTabItem.value.uuid,
-          // amb_uuid: item.amb_uuid,
-          // domain: item.domain,
-        };
+        console.log('CurrentLeftTab', 'CurrentLeftTab', val);
         if (val.device_id) {
-          await getMyList(val);
+          currentTabItem.value = val;
+          if (!cloudQuery.value.id) {
+            await initToken(val);
+            await getMyList(val);
+          }
+          cloudQuery.value = {
+            id: currentTabItem.value.id,
+          };
         }
       }
     },

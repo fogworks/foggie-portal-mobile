@@ -17,7 +17,8 @@ interface StoreUser {
     ambRefuse: boolean;
     curStepIndex: any;
     maxTokenMap: any;
-    currentLeftTab: any
+    currentLeftTab: any,
+    myAkList: Object
 }
 
 export const useUserStore = defineStore({
@@ -37,6 +38,7 @@ export const useUserStore = defineStore({
         //     ? JSON.parse(window.localStorage.getItem("homeChooseBucket"))
         //     : {},
         currentLeftTab: {},
+        myAkList: {}
     }),
     getters: {
         getUserInfo(): any {
@@ -66,6 +68,9 @@ export const useUserStore = defineStore({
         },
         getCurrentLeftTab(): any {
             return this.currentLeftTab;
+        },
+        getMyAkList(): any {
+            return this.myAkList;
         },
     },
     actions: {
@@ -113,6 +118,9 @@ export const useUserStore = defineStore({
         },
         setCurrentLeftTab(data) {
             this.currentLeftTab = data;
+        },
+        setMyAkList(data) {
+            this.myAkList = data;
         },
     },
     persist: {

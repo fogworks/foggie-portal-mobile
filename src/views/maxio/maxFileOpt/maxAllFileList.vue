@@ -140,7 +140,7 @@
         <div style="margin-top: 10px"> </div>
       </nut-empty>
     </template>
-    <ImgList
+    <!-- <ImgList
       ref="imgListRef"
       :orderId="route.query.id"
       :mintType="mintType"
@@ -151,7 +151,7 @@
       @selectAll="selectAll"
       @rowClick="rowClick"
       v-else
-    ></ImgList>
+    ></ImgList> -->
 
     <!-- checkbox action -->
     <Teleport to="body">
@@ -273,7 +273,7 @@
   import * as Prox from '@/pb/net_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
   import ActionComponent from './actionComponent.vue';
-  import ImgList from './imgList.vue';
+  //   import ImgList from './imgList.vue';
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
   import uploader from './uploader.vue';
@@ -371,9 +371,6 @@
   });
   provide('isMobileOrder', isMobileOrder);
 
-  const fileSocket = ref('');
-  const socketDate = ref('');
-  const socketToken = ref('');
   const showSocketDialog = ref(false);
   const currentFolder = ref('');
   const isError = ref(false);
@@ -1079,8 +1076,6 @@
       });
       tableLoading.value = true;
       let type = deviceData.value.device_type == 'space' || deviceData.value.device_type == 3 ? 'space' : 'foggie';
-      // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
-      // server = new grpcService.default.ServiceClient(ip, null, null);
       let server = new grpcService.default.APIClient(maxUrl, null, null);
       let ProxFindRequest = new Prox.default.FindRequest();
 
@@ -1090,14 +1085,6 @@
       ProxFindRequest.setFileid('');
       let list_prefix: string;
       list_prefix = '';
-
-      // let header = new Prox.default.Header();
-      // const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-      // header.setPeerid(deviceData.value.peer_id);
-      // header.setId(deviceData.value.foggie_id);
-      // header.setToken(MaxTokenMap);
-      // header.setApptype(appType);
-      // header.value = header;
       if (prefixArg?.length) {
         list_prefix = prefixArg.join('/');
         if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
@@ -1169,75 +1156,6 @@
     doSearch('', prefix.value, true);
   };
 
-  const initWebSocket = async () => {
-    let param = {
-      order_uuid: route?.query?.uuid,
-    };
-    const signData = await get_order_sign(param);
-    socketDate.value = signData?.result?.data?.timestamp;
-    socketToken.value = signData?.result?.data?.sign;
-    const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
-    fileSocket.value = new WebSocket(url);
-    fileSocket.value.onopen = () => {
-      const authMessage = {
-        action: 'AUTH',
-        userID: deviceData.value.foggie_id,
-        token: socketToken.value,
-        date: socketDate.value,
-      };
-      fileSocket.value.send(JSON.stringify(authMessage));
-    };
-
-    fileSocket.value.onmessage = (event: { data: string }) => {
-      const message = JSON.parse(event.data);
-      const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
-      const uploadFileName = window.sessionStorage.getItem('uploadFileName');
-      let fileInfo = message.fileInfo;
-      let dirArr = fileInfo.keys;
-      const updateBy = fileInfo.updateBy;
-      let dirFile = '';
-      let dirFileName = '';
-      if (dirArr && dirArr.length > 0) {
-        let index = dirArr[0].lastIndexOf('/');
-        if (index > -1) {
-          dirFile = dirArr[0].substring(0, index + 1);
-          dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
-        } else {
-          dirFile = '';
-          dirFileName = dirArr[0];
-        }
-      }
-
-      //   console.log(
-      //     '888888',
-      //     dirArr,
-      //     dirFile,
-      //     currentFolderStr,
-      //     dirFile === decodeURIComponent(currentFolderStr),
-      //     dirFileName !== uploadFileName,
-      //   );
-      if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
-        if (detailShow.value) {
-          setTimeout(() => {
-            initWebSocket();
-          }, 3000);
-        } else {
-          doSocketFn(message);
-        }
-      }
-    };
-
-    fileSocket.value.onclose = (event: any) => {
-      console.log('WebSocket connection closed:', event, fileSocket.value);
-      if (fileSocket.value) {
-        console.log('WebSocket connection again:');
-        initPage();
-      }
-    };
-    fileSocket.value.onerror = (event: any) => {
-      console.error('WebSocket connection error:', event);
-    };
-  };
   function swipeChange(index) {
     imgStartIndex.value = index;
     chooseItem.value = imgArray.value[index];
@@ -1245,157 +1163,6 @@
       showToast.text('The file is too large, please download and view');
     }
   }
-  const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
-    const action = msg.action;
-    const fileInfo = msg.fileInfo;
-    const keys = fileInfo.keys;
-    const bucket = fileInfo.bucket;
-    const cid = fileInfo.cid;
-    if (!action || !keys || keys.length === 0) {
-      refresh();
-      return;
-    }
-
-    if (action === 'FILE_ADD') {
-      let index = keys[0].lastIndexOf('/');
-      let name = keys[0].substring(index + 1);
-      const date = transferGMTTime(fileInfo.lastModified * 1000);
-      const _cid = cid && cid[0] ? cid[0] : '';
-      const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
-      if (!target) {
-        const type = keys[0].substring(keys[0].lastIndexOf('.') + 1).toLowerCase();
-        const data = {
-          cid: _cid,
-          key: keys[0],
-        };
-        const imgData = await handleImg(data, type, false);
-        let category = 0;
-        if (
-          type === 'png' ||
-          type === 'bmp' ||
-          type === 'gif' ||
-          type === 'jpeg' ||
-          type === 'jpg' ||
-          type === 'svg' ||
-          type === 'heif' ||
-          type === 'webp' ||
-          type === 'ico'
-        ) {
-          category = 1;
-        } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
-          category = 2;
-        } else if (type === 'mp3') {
-          category = 3;
-        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
-          category = 4;
-        }
-        const url = imgData.imgHttpLink;
-        const isSystemImg = imgData.isSystemImg;
-        const url_large = imgData.imgHttpLarge;
-
-        // console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
-
-        let imageInfo = {
-          aperture: '',
-          datetime: '', //拍摄时间
-          exposuretime: '', //ev曝光量
-          exptime: '', //曝光时间
-          orientation: '', //方向
-          focallength: '', //焦距
-          Flash: false, //是否使用闪光灯
-          software: '', // 使用软件
-          iso: '', //iso
-          camerainfo: '', //手机厂商及其机型
-          gps: '', //经纬度
-          resolution: '', //像素
-        };
-        let isShowDetail = false;
-
-        if (fileInfo.image_infos && Object.keys(fileInfo.image_infos).length > 0) {
-          let key = Object.keys(fileInfo.image_infos)[0];
-          let imageObj = fileInfo.image_infos[key];
-          if (imageObj && imageObj.addition) {
-            isShowDetail = true;
-            imageInfo.aperture = imageObj.addition.aperture;
-            imageInfo.datetime = moment(imageObj.addition.date_time, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
-            imageInfo.exposuretime = imageObj.addition?.exposure_time; //ev曝光量
-            imageInfo.exptime = imageObj.addition?.exp_time; //曝光时间
-            imageInfo.orientation = imageObj.addition?.orientation; //方向
-            imageInfo.focallength = imageObj.addition?.focal_length; //焦距
-            imageInfo.Flash = imageObj.addition?.flash || false; //是否使用闪光灯
-            imageInfo.software = imageObj.addition?.software; // 使用软件
-            imageInfo.iso = imageObj.addition?.iso.charCodeAt(0);
-            imageInfo.camerainfo = imageObj?.camera_info; //手机厂商及其机型
-            imageInfo.gps = imageObj?.gps; //经纬度
-            imageInfo.resolution = imageObj?.resolution; //像素
-          }
-          console.log('FILE_ADD-----------tableData', imageInfo);
-        }
-
-        let item = {
-          isDir: false,
-          checked: false,
-          name,
-          category,
-          fileType: 2,
-          fullName: keys[0],
-          key: keys[0],
-          idList: [
-            {
-              name: 'IPFS',
-              code: '',
-            },
-            {
-              name: 'CYFS',
-              code: '',
-            },
-          ],
-          date,
-          pubkey: _cid,
-          cid: _cid,
-          imgUrl: url,
-          imgUrlLarge: url_large,
-          share: {},
-          isSystemImg,
-          canShare: _cid ? true : false,
-          isPin: false,
-          isPinCyfs: false,
-          type,
-          isShowDetail,
-          imageInfo,
-        };
-        tableData.value.push(item);
-        if (item.category == 1) {
-          item.src = item.imgUrlLarge;
-          imgArray.value.push(item);
-        }
-      }
-    } else if (action === 'FILE_PIN') {
-      const curName = fileInfo.keys[0];
-      const curDir = window.sessionStorage.getItem('currentFolder');
-      tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
-        if (el.cid === cid[0]) {
-          el.isPin = true;
-        } else if (
-          curName.charAt(curName.length - 1) === '/' &&
-          decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
-        ) {
-          el.isPin = true;
-          if (!el.cid && cid[0]) {
-            el.cid = cid[0];
-          }
-        }
-      });
-    } else if (action === 'FILE_CHANGE') {
-    } else if (action === 'FILE_DELETE') {
-      console.log('FILE_DELETE', keys);
-      tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
-      imgArray.value = imgArray.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
-      cancelSelect();
-    } else if (action === 'FILE_PINNING') {
-    }
-  };
-
   const fileItemPopupIsShow = ref(false);
   function clickFIleItem(params) {
     chooseItem.value = params;
@@ -1403,7 +1170,6 @@
   }
 
   const fileItemDetailPopupIsShow = ref(false); // 文件详情展示 例如 光圈 曝光时间等
-
   function clickFIleItemDetail(params) {
     console.log(params);
     fileItemDetailPopupIsShow.value = true;
@@ -1440,22 +1206,30 @@
     { deep: true },
   );
   onMounted(async () => {
-    let token = await get_vood_token({ vood_id: deviceData.value.device_id });
-    userStore.setMaxTokenMap({
-      id: deviceData.value.device_id,
-      token: token.data.token_type + ' ' + token.data.access_token,
-    });
-    deviceToken.value = token.data.access_token;
+    console.log('maxfileAllList---get_vood_token');
+    initToken();
+  });
+  const initToken = async () => {
+    let token = '';
+    console.log(MaxTokenMap.value, 'maxfilelist----initTokeninitToken--MaxTokenMap.value');
+    if (MaxTokenMap.value && MaxTokenMap.value[deviceData.value.device_id]) {
+      token = MaxTokenMap.value[deviceData.value.device_id];
+      token = token.split(' ')[1];
+      deviceToken.value = token;
+    } else {
+      console.log('maxfilelist--initTokeninitToken---initToken');
+      token = await get_vood_token({ vood_id: deviceData.value.device_id });
+      if (token) {
+        userStore.setMaxTokenMap({
+          id: deviceData.value.device_id,
+          token: token.data.token_type + ' ' + token.data.access_token,
+        });
+      }
+      deviceToken.value = token.data.access_token;
+    }
     await initSk(deviceData.value, deviceToken.value);
     initPage();
-  });
-
-  onBeforeUnmount(() => {
-    if (fileSocket.value) {
-      fileSocket.value.close();
-      fileSocket.value = null;
-    }
-  });
+  };
 
   const initPage = async () => {
     if (route?.query?.prefix) {
@@ -1463,11 +1237,9 @@
     }
     let category1 = route.query.category || '0';
     switchType(category1);
-    // initWebSocket();
   };
   const refresh = async () => {
     cancelSelect();
-    // await getOrderInfo();
     doSearch('', prefix.value, true);
   };
 </script>

@@ -429,7 +429,7 @@
   import { Search2, TriangleUp, Loading, MoreX, Tips } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
-  import { get_vood_token } from '@/api/index';
+
   import useShare from './useShare.js';
   import HLSVideo from './hlsVideo.vue';
   import MyAudio from './myAudio.vue';
@@ -448,7 +448,6 @@
   import getFileType from '@/utils/getFileType.ts';
   import maxFileInfo from './maxFileInfo.js';
   const { confirmHttpShare, showShareDialog, periodValue } = maxFileInfo();
-  const { getOrderInfo } = useOrderInfo();
 
   const isMobileDevice = computed(() => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -472,6 +471,7 @@
   ]);
   let server;
   const props = defineProps({
+    CurrentToken: String,
     category: [String, Number],
     header: Object,
     orderInfo: Object,
@@ -782,12 +782,9 @@
     if (!orderInfo.value.device_id) {
       return;
     }
-    let token = await get_vood_token({ vood_id: orderInfo.value.device_id });
-    userStore.setMaxTokenMap({
-      id: orderInfo.value.device_id,
-      token: token.data.token_type + ' ' + token.data.access_token,
-    });
-    let _token = token.data.access_token;
+
+    let _token = CurrentToken.value;
+
     let server = new grpcService.default.APIClient(maxUrl, null, null);
     let header = new Prox.default.ProxHeader();
     let listObject = new Prox.default.ProxListObjectsRequest();
@@ -958,9 +955,7 @@
         dirData.value = [];
       }
     }
-    if (!accessKeyId.value) {
-      await getOrderInfo();
-    }
+
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
       if (data.prefix) {

@@ -1,23 +1,18 @@
 // import { useOrderStore } from '@/store/modules/order';
 
-// import * as pb from '@/pb/prox_grpc_web_pb';
-// import * as grpc from '@/pb/prox_pb';
-
-import { s3Url, poolUrl, maxUrl } from '@/setting.js';
-
-// import * as Prox from '@/pb/prox_pb.js';
-// import * as grpcService from '@/pb/net_grpc_web_pb.js';
-
+import { maxUrl } from '@/setting.js';
 import * as Prox from '@/pb/net_pb.js';
 import * as grpcService from '@/pb/net_grpc_web_pb.js';
 
 import { get_vood_token, searchDeviceEarningsAPI } from '@/api/index';
 import { useUserStore } from '@/store/modules/user';
 const userStore = useUserStore();
+const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
 import moment from 'moment';
 import { getfilesize } from "@/utils/util";
 
 export default function getList(deviceData) {
+    const CurrentToken = ref('' as any);
     const myPoolList = ref([] as any);
     const myIotList = ref([] as any);
     const myIotNumber = ref(0);
@@ -81,26 +76,40 @@ export default function getList(deviceData) {
         { name: 'IOT', number: '0', type: 'iot', count: 0, iotNumber: 0 },
         { name: 'Filecoin Station', number: '0', type: 'ipfs', count: 0 },
     ];
+    const initToken = async (deviceData) => {
+        let token = '';
+        console.log(MaxTokenMap.value, 'getlist-initTokeninitToken--MaxTokenMap.value');
+        if (MaxTokenMap.value && MaxTokenMap.value[deviceData.device_id]) {
+            token = MaxTokenMap.value[deviceData.device_id];
+            token = token.split(' ')[1];
+            CurrentToken.value = token;
+        } else {
+            console.log('home--initTokeninitToken---initToken');
+            token = await get_vood_token({ vood_id: deviceData.device_id });
+            if (token) {
+                userStore.setMaxTokenMap({
+                    id: deviceData.device_id,
+                    token: token.data.token_type + ' ' + token.data.access_token,
+                });
+            }
+            CurrentToken.value = token.data.access_token;
+            console.log(' CurrentToken.value', CurrentToken.value);
+        }
+    };
     const getMyList = async (deviceData) => {
         if (!deviceData.device_id) {
             return;
         }
         currentDeviceData.value = deviceData;
-        let token = await get_vood_token({ vood_id: deviceData.device_id });
-        userStore.setMaxTokenMap({
-            id: deviceData.device_id,
-            token: token.data.token_type + " " + token.data.access_token,
-        });
-        let _token = token.data.access_token;
-        deviceToken.value = _token;
 
+        let token = '';
+        let _token = CurrentToken.value;
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let header = new Prox.default.Header();
         let request = new Prox.default.F2PGetMiner();
-        // console.log(server, header, 'getMyListgetMyList');
         header.setPeerid(deviceData.peer_id);
         header.setId(deviceData.foggie_id);
-        header.setToken(_token);
+        header.setToken(token);
 
         appType.value = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
         header.setApptype(appType.value);
@@ -199,8 +208,11 @@ export default function getList(deviceData) {
                 // console.log(mySpaceInfo.value, 'mySpaceInfo')
                 for (var key in mySpaceInfo.value) {
                     let _item = { name: key, value: mySpaceInfo.value[key] }
-                    spaceData.value.push(_item);
+                    if (key !== 'total') {
+                        spaceData.value.push(_item);
+                    }
                 }
+                console.log(spaceData.value, 'spaceDataspaceData');
                 window.localStorage.setItem("spaceData", JSON.stringify(spaceData.value));
                 // console.log(spaceData.value, ' spaceData.value')
             }
@@ -312,6 +324,8 @@ export default function getList(deviceData) {
         mySpaceInfo,
         spaceData,
         fileListArr,
-        header
+        header,
+        CurrentToken,
+        initToken
     }
 }
