@@ -168,7 +168,7 @@ export default function useAllOrderList() {
 
             return new Promise((resolve, reject) => {
                 let server = new grpcService.default.ServiceClient(`https://${bucketObject[el][0]}.${poolUrl}:7007`, null, null);
-                let request = new Prox.default.ProxRequestSummaryIds();
+                let request = new Prox.default.RequestSummaryIds();
                 request.setHeader(header);
 
                 request.setIdsList(foggieIdObject[el]);

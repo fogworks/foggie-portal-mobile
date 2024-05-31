@@ -189,7 +189,7 @@ export default function useOrderInfo() {
   const getSummary = () => {
     return new Promise((resolve, reject) => {
       let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
-      let request = new Prox.default.ProxRequestSummaryIds();
+      let request = new Prox.default.RequestSummaryIds();
       request.setHeader(header.value);
 
       request.setIdsList([orderInfo.value.foggie_id]);

@@ -41,7 +41,7 @@ export default function initMaxFile() {
     header.value.setToken(_token);
     const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
     header.value.setApptype(appType);
-    let request = new Prox.default.ProxGetCredRequest();
+    let request = new Prox.default.GetCredRequest();
     request.setHeader(header.value);
     let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
     let metadata = {
@@ -53,7 +53,7 @@ export default function initMaxFile() {
         isError.value = true;
         console.log('listCreds------111222:', err);
       } else if (res.array.length > 0) {
-        console.log('listCreds------success:', res.array);
+        // console.log('listCreds------success:', res.array);
         accessKeyId.value = res.array[0][0][0];
         secretAccessKey.value = res.array[0][0][1];
         // console.log(res.array[0][0][1], 'secretAccessKey111111111', res.array[0][0][0]);
@@ -73,7 +73,7 @@ export default function initMaxFile() {
       header.value.setToken(_token);
       const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
       header.value.setApptype(appType);
-      let request = new Prox.default.ProxRequestSummaryIds();
+      let request = new Prox.default.RequestSummaryIds();
       request.setHeader(header.value);
       let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
       let metadata = {
@@ -146,12 +146,12 @@ export default function initMaxFile() {
     header.value.setToken(_token);
     const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
     header.value.setApptype(appType);
-    let request = new Prox.default.ProxGExtractCode();
+    let request = new Prox.default.GExtractCode();
     request.setHeader(header.value);
     request.setCid(chooseItem.cid);
     // request.setKey(encodeURIComponent(chooseItem.key));
     let exp = periodValue[0].toString();
-    let _date = new Date().getTime() + periodValue[0];
+    let _date = new Date().getTime() + periodValue[0] * 1000;
     let _tdate = moment.utc(_date).format('YYYY-MM-DDTHH:mm:ss');
     let _exp = _tdate + 'Z';
     request.setExp(_exp);
@@ -161,7 +161,15 @@ export default function initMaxFile() {
       'X-Custom-Date': date + 'Z',
       'X-Sid': deviceData.peer_id,
     };
-    // console.log('generateExtractCode------generateExtractCode------generateExtractCode------', request, header.value);
+    console.log(
+      'generateExtractCode------generateExtractCode------generateExtractCode------',
+      request,
+      header.value,
+      new Date().getTime(),
+      periodValue[0],
+      _date,
+      _exp,
+    );
     server.generateExtractCode(request, metadata, (err, res) => {
       if (err) {
         isError.value = true;

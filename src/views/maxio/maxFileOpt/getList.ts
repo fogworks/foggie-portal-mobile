@@ -96,7 +96,7 @@ export default function getList(deviceData) {
 
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let header = new Prox.default.Header();
-        let request = new Prox.default.ProxF2PGetMiner();
+        let request = new Prox.default.F2PGetMiner();
         // console.log(server, header, 'getMyListgetMyList');
         header.setPeerid(deviceData.peer_id);
         header.setId(deviceData.foggie_id);
@@ -140,7 +140,7 @@ export default function getList(deviceData) {
         myIotNumber.value = 0;
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let header = new Prox.default.Header();
-        let request = new Prox.default.ProxF2PGetIOT();
+        let request = new Prox.default.F2PGetIOT();
         header.setPeerid(deviceData.peer_id);
         header.setId(deviceData.foggie_id);
         header.setToken(_token);
@@ -181,7 +181,7 @@ export default function getList(deviceData) {
     const initSpaceInfo = async (deviceData, _token, appType, metadata) => {
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let header = new Prox.default.Header();
-        let request = new Prox.default.ProxF2PGetSpace();
+        let request = new Prox.default.F2PGetSpace();
         header.setPeerid(deviceData.peer_id);
         header.setId(deviceData.foggie_id);
         header.setToken(_token);
@@ -268,7 +268,7 @@ export default function getList(deviceData) {
     const getFileStatistics = async (deviceData, _token, appType, metadata) => {
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let header = new Prox.default.Header();
-        let request = new Prox.default.ProxRequestStatistics();
+        let request = new Prox.default.RequestStatistics();
         header.setPeerid(deviceData.peer_id);
         header.setId(deviceData.foggie_id);
         header.setToken(_token);

@@ -67,6 +67,10 @@
             <IconDownload color="#222224"></IconDownload>
             Download
           </div>
+          <div @click="handlerClick('delete')">
+            <IconDelete color="#222224"></IconDelete>
+            Delete
+          </div>
         </div>
         <div class="ipfs" v-if="chooseItem.isPin || chooseItem.cid">
           <p v-if="chooseItem.isPin && chooseItem.cid">

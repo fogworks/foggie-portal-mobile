@@ -228,7 +228,7 @@
   const detailRow = reactive({ value: {} });
 
   const handleRow = (row) => {
-    // console.log('handleRow-------', row, row.name.substring(row.name.lastIndexOf('.') + 1));
+    console.log('handleRow-------', row, row.name.substring(row.name.lastIndexOf('.') + 1));
     detailRow.value = row;
     const type = row.name.substring(row.name.lastIndexOf('.') + 1);
 
@@ -259,10 +259,10 @@
       });
     } else {
       let prefix = detailRow.value.fullName.split('/').slice(0, -1);
-      //   router.push({
-      //     name: 'FileList',
-      //     query: { ...cloudQuery.value, category: 0, prefix: prefix.join('/'), bucketName: bucketName.value },
-      //   });
+      router.push({
+        path: '/maxFile',
+        query: { ...cloudQuery.value, category: 0, prefix: prefix.join('/') },
+      });
     }
   };
   const $cordovaPlugins = inject('$cordovaPlugins');

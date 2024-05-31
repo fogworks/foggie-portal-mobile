@@ -3,13 +3,12 @@
     <!-- file_Top -->
     <!-- <nut-sticky class="file_Top" top="0"> -->
     <!-- search_bar -->
-    <div class="search_bar" v-if="category !== 1">
+    <div class="search_bar">
       <IconNewFolder
         @click="
           isNewFolder = true;
           renameShow = true;
         "
-        v-show="category === 0"
         class="new_folder"
       ></IconNewFolder>
       <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
@@ -49,9 +48,20 @@
     <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
 
     <template v-else-if="category != 1">
-      <span class="top_title">
-        {{ prefix.at(-1) || '' }}
-      </span>
+      <div class="top_back_box">
+        <div
+          class="top_back"
+          @click="
+            prefix.splice(-1);
+            prefixChange();
+          "
+          v-if="prefix.length > 0"
+        >
+        </div>
+        <!-- {{ prefix.at(-1) || '' }} -->
+        <span class="top_title"> {{ prefix.join('/') }} </span>
+      </div>
+
       <nut-infinite-loading
         v-if="tableData.length"
         load-more-txt="No more content"
@@ -229,6 +239,7 @@
       @getFileList="getFileList"
       @uploadComplete="uploadComplete"
       v-if="deviceData && deviceData.device_id"
+      :prefix="prefix"
     ></uploader>
     <Teleport to="body">
       <nut-dialog
@@ -259,9 +270,6 @@
 </template>
 
 <script setup lang="ts">
-  //   import * as Prox from '@/pb/prox_pb.js';
-  //   import * as grpcService from '@/pb/net_grpc_web_pb.js';
-
   import * as Prox from '@/pb/net_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
   import ActionComponent from './actionComponent.vue';
@@ -427,7 +435,7 @@
   const { deleteItem } = useDelete(
     tableLoading,
     () => {
-      checkedItem.value = [];
+      getFileList('', prefix.value, true);
     },
     deviceData,
     header,
@@ -463,8 +471,6 @@
   const imgUrl = ref('');
 
   const cancelSelect = () => {
-    // isCheckMode.value = false;
-
     checkedItem.value = [];
   };
   const selectAll = () => {
@@ -658,13 +664,23 @@
     showTypeCheckPop.value = false;
   };
 
-  const uploadComplete = (file: any) => {};
+  const uploadComplete = (file: any) => {
+    console.log('uploadComplete');
+    getFileList('', prefix.value, true);
+  };
 
   async function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
-    // console.log('getFileListgetFileList------', deviceData.value);
+    console.log(prefix, 'aaaaaa---dd-d-dlist', deviceData.value.device_id);
     if (!deviceData.value.device_id) {
       return;
     }
+    showToast.loading('Loading', {
+      cover: true,
+      coverColor: 'rgba(0,0,0,0.45)',
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+    });
     let server = new grpcService.default.APIClient(maxUrl, null, null);
     let listObject = new Prox.default.ListObjectsRequest();
     let requestReq = new Prox.default.ListObjectsReq();
@@ -673,14 +689,6 @@
       'X-Custom-Date': date + 'Z',
       'X-Sid': deviceData.value.peer_id,
     };
-    // let header = new Prox.default.Header();
-    // const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-    // header.setPeerid(deviceData.value.peer_id);
-    // header.setId(deviceData.value.foggie_id);
-    // header.setToken(_token);
-    // header.setApptype(appType);
-    // header.value = header;
-    // console.log(header, '---proxxxxhead------', header.value);
     let list_prefix = '';
     if (prefix?.length) {
       list_prefix = prefix.join('/');
@@ -688,8 +696,18 @@
         list_prefix = encodeURIComponent(list_prefix) + '/';
       }
     }
+    let delimiter = '';
+    let categoryParam = '';
+    if (moveShow.value) {
+      delimiter = '/';
+      categoryParam = '0';
+    } else {
+      delimiter = category.value != 0 ? '' : '/';
+      categoryParam = category.value;
+    }
+    console.log(prefix, list_prefix, delimiter, 'getFileList---delimiterdelimiterdelimiter', categoryParam);
     listObject.setPrefix(list_prefix);
-    listObject.setDelimiter('');
+    listObject.setDelimiter(delimiter);
     listObject.setEncodingType('');
     listObject.setMaxKeys(20);
     listObject.setStartAfter('');
@@ -1146,24 +1164,6 @@
       });
     }
   }
-  const getSignHeaders = (objectKey: string) => {
-    const date = new Date().toUTCString();
-    const httpMethod = 'GET';
-    const contentType = '';
-    const contentMd5 = '';
-    const canonicalizedAmzHeaders = '';
-    const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
-    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
-
-    let hmac = HmacSHA1(signature, secretAccessKey.value);
-    const signatureBase64 = enc.Base64.stringify(hmac);
-
-    const headers = {
-      'x-amz-date': date,
-      Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
-    };
-    return headers;
-  };
   const prefixChange = () => {
     cancelSelect();
     doSearch('', prefix.value, true);
@@ -1426,6 +1426,7 @@
   watch(
     category,
     async (val, old) => {
+      console.log('categorycategorycategory', val);
       cancelSelect();
       if (old == 1) {
         imgListRef?.value?.resetChecked();
@@ -1457,9 +1458,12 @@
   });
 
   const initPage = async () => {
-    prefix.value = [];
-    let category1 = 0;
+    if (route?.query?.prefix) {
+      prefix.value = route?.query?.prefix?.split('/');
+    }
+    let category1 = route.query.category || '0';
     switchType(category1);
+    // initWebSocket();
   };
   const refresh = async () => {
     cancelSelect();

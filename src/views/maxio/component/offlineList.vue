@@ -6,7 +6,7 @@
       <nut-tabs v-model="currentTab" @change="changeTypeTab">
         <nut-tab-pane title="正在传输" pane-key="current">
           <div class="show_offline_list">
-            <div class="show_offline_item" v-for="(item, index) in offlineList" :key="index">
+            <div class="show_offline_item" v-for="(item, index) in my_runningList" :key="index">
               <div class="show_offline_itemImgBox">
                 <img src="@/assets/maxio/file.svg" />
               </div>
@@ -21,7 +21,7 @@
                   />
                 </div>
                 <div class="show_offline_item_bottom">
-                  <div class="show_offline_item_left"> 离线下载 </div>
+                  <div class="show_offline_item_left"> 离线下载({{ item.status }}) </div>
                   <div class="show_offline_item_center">
                     <div class="show_offline_item_have">
                       {{
@@ -37,14 +37,14 @@
                       {{ item.pinsList && item.pinsList.length && item.pinsList[0].size && getfilesize(item.pinsList[0].size) }}</div
                     >
                   </div>
-                  <div class="show_offline_item_right">
+                  <div class="show_offline_item_right" v-if="item.status === 'pinning'">
                     <img src="@/assets/maxio/download.svg" />
 
                     {{ item.pinsList && item.pinsList.length && item.pinsList[0] && item.pinsList[0].averagespeed }}/s
                   </div>
                 </div>
               </div>
-              <div class="show_offline_item_option">
+              <div class="show_offline_item_option" v-if="item.status === 'pinning'">
                 <img
                   src="@/assets/maxio/pause.svg"
                   class="user_img"
@@ -58,20 +58,61 @@
                   v-if="item.statusType === 'stop'"
                 />
               </div>
+            </div>
+            <div class="offline_empty" v-if="my_runningList.length === 0">
+              <img src="@/assets/maxio/emptyList.svg" />
             </div> </div
         ></nut-tab-pane>
         <nut-tab-pane title="已完成" pane-key="history">
           <div class="show_offline_list">
-            <div class="show_offline_item" v-for="(item, index) in offlineList" :key="index">
+            <div class="show_offline_item" v-for="(item, index) in my_offLineList" :key="index">
               <div class="show_offline_itemImgBox">
-                <img src="@/assets/maxio/running.svg" class="user_img" />
+                <img src="@/assets/maxio/file.svg" />
               </div>
               <div class="show_offline_item_content">
-                <div class="show_offline_item_title"> {{ item.title }}</div>
+                <div class="show_offline_item_title"> {{ item.name }}</div>
+                <div class="show_offline_item_provider" v-if="item.pinsList && item.pinsList.length > 0">
+                  {{ item.pinsList && item.pinsList.length && item.pinsList[0].provider }}</div
+                >
+                <div class="show_offline_item_progress" v-if="item.status === 'pinned'">
+                  <nut-progress
+                    size="small"
+                    :percentage="100"
+                    stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+                  />
+                </div>
+                <div class="show_offline_item_progress" v-if="item.status === 'failed'">
+                  <nut-progress
+                    size="small"
+                    :percentage="0"
+                    stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+                  />
+                </div>
+                <div class="show_offline_item_bottom">
+                  <div class="show_offline_item_left"> {{ item.status }}</div>
+                  <div class="show_offline_item_center">
+                    <!-- <div class="show_offline_item_have">
+                      {{
+                        item.pinsList &&
+                        item.pinsList.length &&
+                        item.pinsList[0].completed &&
+                        item.pinsList[0].completed &&
+                        getfilesize(item.pinsList[0].completed)
+                      }}
+                    </div> -->
+                    <!-- / -->
+                    <div class="show_offline_item_total">
+                      {{ item.pinsList && item.pinsList.length && item.pinsList[0].size && getfilesize(item.pinsList[0].size) }}</div
+                    >
+                  </div>
+                  <div class="show_offline_item_right">
+                    {{ item.pinsList && item.pinsList.length && item.pinsList[0] && item.pinsList[0].duration }}S
+                  </div>
+                </div>
               </div>
-              <div class="show_offline_item_option"> </div>
-            </div> </div
-        ></nut-tab-pane>
+            </div>
+          </div>
+        </nut-tab-pane>
       </nut-tabs>
 
       <div class="offline_box">
@@ -111,6 +152,10 @@
   import * as Prox from '@/pb/net_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
   const currentTab = ref('current');
+
+  const my_offLineList = ref([]);
+  const my_runningList = ref([]);
+  const myTotalList = ref([]);
 
   const offlineLink = ref('');
   const offlineLinkName = ref('');
@@ -178,11 +223,11 @@
     offlineList.value[index].statusType = type;
   };
   const changeTypeTab = () => {
-    if (currentTab.value === 'history') {
-      offlineList.value = [];
-    } else {
-      //   offlineList.value = isOfflineArr.value;
-    }
+    // if (currentTab.value === 'history') {
+    //   offlineList.value = [];
+    // } else {
+    //     offlineList.value = isOfflineArr.value;
+    // }
   };
   const getTokenMap = async () => {
     if (deviceData.value && deviceData.value.device_id) {
@@ -211,26 +256,14 @@
   };
 
   const showLists = () => {
-    // let _url = 'http://172.16.20.118:7007';
-    // let server = new grpcService.default.APIClient(_url, null, null);
     let server = new grpcService.default.APIClient(maxUrl, null, null);
     let request = new Prox.default.PinningListRequest();
     request.setHeader(header.value);
-    // console.log('showLists---request', request, header.value, server);
     let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
     let metadata = {
       'X-Custom-Date': date + 'Z',
       'X-Sid': currentBucketData.value.peer_id,
     };
-    console.log('-----ListPinnings', request, header.value);
-    // Header header = 1;
-    // string status = 2;
-    // string pinType = 3;
-    // string before = 4;
-    // string after = 5;
-    // int32 limit = 6;
-    // string match = 7;
-    // repeated string cids = 8;
     request.setStatus('');
     request.setLimit(3);
     // request.setBefore('2024-02-09T00:00:00Z');
@@ -243,14 +276,20 @@
       if (res) {
         let data = res.getPinningsList();
         let obj = res.toObject();
-        offlineList.value = obj && obj.pinningsList;
-        console.log('----ListPinnings', obj, offlineList.value);
+        myTotalList.value = obj && obj.pinningsList;
+
+        my_offLineList.value = myTotalList.value.filter((item) => {
+          return item.status !== 'pinning' && item.status !== 'queued';
+        });
+        my_runningList.value = myTotalList.value.filter((item) => {
+          return item.status === 'pinning' || item.status === 'queued';
+        });
+
+        console.log('----ListPinnings', obj, myTotalList.value, my_offLineList.value, my_runningList.value);
       }
     });
   };
   const addLink = () => {
-    // console.log('addLink', offlineLink.value, offlineLinkName.value, header.value);
-    // return;
     isAdd.value = true;
     if (!offlineLinkName.value) {
       showToast.text('请填写离线下载文件名');
@@ -276,7 +315,6 @@
           isAdd.value = false;
           return;
         }
-        // let _url = 'http://172.16.20.118:7007';
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let request = new Prox.default.FetchRequest();
         let name = `cqy0528/${offlineLinkName.value}`;
@@ -289,18 +327,19 @@
           'X-Custom-Date': date + 'Z',
           'X-Sid': currentBucketData.value.peer_id,
         };
-        // console.log(request, 'asyncFetchObjectasyncFetchObject--request');
 
         server.asyncFetchObject(request, metadata, (err, res) => {
           if (err) {
             console.log('AsyncFetchObject---err---:', err);
             isAdd.value = false;
+            showListPage();
             return;
           }
           if (res) {
             console.log(res, 'AsyncFetchObject');
             isAdd.value = false;
             showListPage();
+            return;
           }
         });
       } else {
@@ -421,12 +460,19 @@
 
   .show_offline_list {
     color: #fff;
+    .offline_empty {
+      //   img {
+      //     width: 100px;
+      //     height: 100px;
+      //   }
+    }
     .show_offline_item {
       display: flex;
       align-items: center;
       justify-content: space-around;
       padding: 20px 0;
       border-bottom: 1px solid #ffffff40;
+
       .show_offline_itemImgBox {
         margin-right: 20px;
         display: flex;
@@ -443,6 +489,14 @@
         .show_offline_item_title {
           font-size: 28px;
           margin-bottom: 10px;
+        }
+        .show_offline_item_provider {
+          font-size: 20px;
+          width: 90%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          cursor: pointer;
         }
         .show_offline_item_progress {
         }

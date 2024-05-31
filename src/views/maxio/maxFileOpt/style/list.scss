@@ -341,16 +341,27 @@
     width: 60px;
     height: 60px;
   }
+  .top_back_box {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+    .top_back::before {
+      background-image: url('@/assets/arrow-left-max.svg');
+      background-color: transparent !important;
+    }
+  }
   .top_back {
     margin: 0;
     color: $main_blue;
   }
+
   .top_title {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     color: #fff;
     text-align: left;
     width: 100%;
     display: inline-block;
+    margin-left: 88px;
   }
   .check_top {
     display: flex;

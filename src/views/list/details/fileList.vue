@@ -1128,10 +1128,12 @@
   };
 
   const uploadComplete = (file: any) => {
+    console.log('uploadComplete');
     // getFileList('', prefix.value, true);
   };
 
   function getFileList(scroll: string, prefix: any[], reset = false) {
+    console.log(prefix, prefix.value, 'aaaaaa---dd-d-dlist');
     showToast.loading('Loading', {
       //   cover: true,
       //   customClass: 'app_loading',

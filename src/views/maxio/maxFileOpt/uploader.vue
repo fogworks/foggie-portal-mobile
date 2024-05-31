@@ -58,9 +58,10 @@
   interface Props {
     orderInfo?: any;
     isMobileOrder?: boolean;
+    prefix?: any;
   }
   const props = defineProps<Props>();
-  const { orderInfo } = toRefs(props);
+  const { orderInfo, prefix } = toRefs(props);
   const uploadList = ref<any[]>([]);
   const uploaderList = ref<any[]>([]);
   const successStatus = ref<number>(201); //bucket上传是204 maxio是201
@@ -117,7 +118,7 @@
       window.sessionStorage.setItem('uploadFileName', fileItem.name);
 
       uploadStatus.value = 'success';
-      emits('getFileList');
+      //   emits('getFileList');
       delay(() => {
         uploadProgressIsShow.value = false;
       }, 2000);
@@ -188,9 +189,17 @@
     return new Promise(async (resolve, reject) => {
       let token = MaxTokenMap.value[orderInfo.value.device_id];
       token = token.split(' ')[1];
+      let prefixStr = '';
+      if (prefix.value.length > 0) {
+        prefixStr = prefix.value.join('/') + '/';
+      }
+      console.log(prefix.value, prefixStr + options.sourceFile.name, 'refixStr + options.sourceFile.name');
+      let Key = encodeURIComponent(prefixStr + options.sourceFile.name);
       let _form = new FormData();
       xhr.setRequestHeader('Authorization', token);
-      _form.append('Key', options.sourceFile.name); // prefix + name
+      //   Key: encodeURIComponent(prefixStr + fileCopy.name),
+      //   _form.append('Key', options.sourceFile.name); // prefix + name
+      _form.append('Key', Key); // prefix + name
       _form.append('Success_action_status', 201);
       _form.append('file', options.sourceFile);
 
