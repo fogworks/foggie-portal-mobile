@@ -2,13 +2,35 @@
   <div class="offlineBox" :class="[isShowOffline ? 'showOff' : 'hideOff']">
     <div class="closeImg" @click="closeBuy"></div>
     <div class="offlinelist_Box" v-if="!showAdd">
-      <div class="offline_title">离线下载任务</div>
+      <div class="offline_title">离线下载</div>
+      <div class="offline_box offline_add_btn_box">
+        <nut-button class="offline_add_link" type="primary" @click="showLink">添加离线下载</nut-button>
+      </div>
+
       <nut-tabs v-model="currentTab" @change="changeTypeTab">
         <nut-tab-pane title="正在传输" pane-key="current">
+          <div class="update_line" @click="updateList" v-if="!isListLoading">
+            <img src="@/assets/maxio/update.svg" />
+            <span>Update List</span>
+          </div>
+
           <div class="show_offline_list">
             <div class="show_offline_item" v-for="(item, index) in my_runningList" :key="index">
               <div class="show_offline_itemImgBox">
-                <img src="@/assets/maxio/file.svg" />
+                <!-- <img src="@/assets/maxio/file.svg" /> -->
+                <img
+                  src="@/assets/maxio/http.svg"
+                  v-if="item.pinsList && item.pinsList.length && item.pinsList[0].provider.indexOf('http') > -1"
+                />
+                <img
+                  src="@/assets/maxio/ftp.svg"
+                  v-else-if="item.pinsList && item.pinsList.length && item.pinsList[0].provider.indexOf('ftp:') > -1"
+                />
+                <img
+                  src="@/assets/maxio/ipfsLink.svg"
+                  v-else-if="item.pinsList && item.pinsList.length && item.pinsList[0].provider.indexOf('ipfs') > -1"
+                />
+                <img src="@/assets/maxio/link.svg" v-else />
               </div>
               <div class="show_offline_item_content">
                 <div class="show_offline_item_title"> {{ item.name }}</div>
@@ -21,7 +43,10 @@
                   />
                 </div>
                 <div class="show_offline_item_bottom">
-                  <div class="show_offline_item_left"> 离线下载({{ item.status }}) </div>
+                  <!-- <div class="show_offline_item_left"> 离线下载({{ item.status }}) </div> -->
+                  <div class="show_offline_item_left">
+                    离线下载({{ item.status === 'pulling' || item.status === 'active' ? 'downloading' : item.status }})
+                  </div>
                   <div class="show_offline_item_center">
                     <div class="show_offline_item_have">
                       {{
@@ -59,15 +84,35 @@
                 />
               </div>
             </div>
-            <div class="offline_empty" v-if="my_runningList.length === 0">
+            <div class="offline_empty" v-if="my_runningList.length === 0 && !isListLoading">
               <img src="@/assets/maxio/emptyList.svg" />
-            </div> </div
-        ></nut-tab-pane>
+            </div>
+            <div v-if="my_runningList.length === 0 && isListLoading" class="offf_loading_box_wrap">
+              <loadingImg></loadingImg>
+            </div>
+            <!-- <div class="offline_empty" v-if="my_runningList.length === 0 && isListLoading">
+
+            </div> -->
+          </div></nut-tab-pane
+        >
         <nut-tab-pane title="已完成" pane-key="history">
           <div class="show_offline_list">
             <div class="show_offline_item" v-for="(item, index) in my_offLineList" :key="index">
               <div class="show_offline_itemImgBox">
-                <img src="@/assets/maxio/file.svg" />
+                <!-- <img src="@/assets/maxio/file.svg" /> -->
+                <img
+                  src="@/assets/maxio/http.svg"
+                  v-if="item.pinsList && item.pinsList.length && item.pinsList[0].provider.indexOf('http') > -1"
+                />
+                <img
+                  src="@/assets/maxio/ftp.svg"
+                  v-else-if="item.pinsList && item.pinsList.length && item.pinsList[0].provider.indexOf('ftp:') > -1"
+                />
+                <img
+                  src="@/assets/maxio/ipfsLink.svg"
+                  v-else-if="item.pinsList && item.pinsList.length && item.pinsList[0].provider.indexOf('ipfs') > -1"
+                />
+                <img src="@/assets/maxio/link.svg" v-else />
               </div>
               <div class="show_offline_item_content">
                 <div class="show_offline_item_title"> {{ item.name }}</div>
@@ -89,7 +134,11 @@
                   />
                 </div>
                 <div class="show_offline_item_bottom">
-                  <div class="show_offline_item_left"> {{ item.status }}</div>
+                  <div class="show_offline_item_left">
+                    <img src="@/assets/maxio/complete.svg" v-if="item.status === 'pinned' || item.status === 'pulled'" />
+                    <img src="@/assets/maxio/failed.svg" v-if="item.status !== 'pinned' && item.status !== 'pulled'" />
+                    {{ item.status === 'pinned' || item.status === 'pulled' ? 'complete' : 'failed' }}</div
+                  >
                   <div class="show_offline_item_center">
                     <!-- <div class="show_offline_item_have">
                       {{
@@ -106,19 +155,21 @@
                     >
                   </div>
                   <div class="show_offline_item_right">
-                    {{ item.pinsList && item.pinsList.length && item.pinsList[0] && item.pinsList[0].duration }}S
+                    {{ item.pinsList && item.pinsList.length && item.pinsList[0] && item.pinsList[0].duration }}s
                   </div>
                 </div>
               </div>
             </div>
+            <div class="offline_empty" v-if="my_offLineList.length === 0 && !isListLoading">
+              <img src="@/assets/maxio/emptyList.svg" />
+            </div>
+            <div v-if="my_offLineList.length === 0 && isListLoading" class="offf_loading_box_wrap">
+              <loadingImg></loadingImg>
+            </div>
           </div>
         </nut-tab-pane>
       </nut-tabs>
-
-      <div class="offline_box">
-        <nut-button class="offline_add_link" type="primary" @click="showLink">去添加离线下载任务</nut-button>
-      </div></div
-    >
+    </div>
     <div class="offline_add_Box" v-if="showAdd">
       <div class="offline_title">添加离线下载链接</div>
       <div class="offline_box">
@@ -126,7 +177,10 @@
         <nut-textarea v-model="offlineLink" rows="3" placeholder="支持IPFS/FOGGIE/HTTP/FTP/磁力链接" />
         <div class="offline_label">文件名</div>
         <nut-input v-model="offlineLinkName" placeholder="离线下载文件名"></nut-input>
-        <nut-button class="offline_add_link" type="primary" @click="addLink" :disabled="isAdd">Add12</nut-button>
+        <div class="bottom_btns">
+          <nut-button class="offline_add_link_add offline_add_link_back" type="primary" @click="showAdd = false">Back</nut-button>
+          <nut-button class="offline_add_link_add" type="primary" @click="addLink" :disabled="isAdd">AddLink</nut-button>
+        </div>
       </div>
     </div>
   </div>
@@ -152,6 +206,7 @@
   import * as Prox from '@/pb/net_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
   const currentTab = ref('current');
+  import loadingImg from '@/components/loadingImg/index.vue';
 
   const my_offLineList = ref([]);
   const my_runningList = ref([]);
@@ -168,6 +223,7 @@
   const statusType = ref('start');
   const showAdd = ref(false);
   const isAdd = ref(false);
+  const isListLoading = ref(false);
   const closeBuy = () => {
     emits('closeBuy');
   };
@@ -193,6 +249,9 @@
     isShowOffline,
     (val) => {
       if (val) {
+        showAdd.value = false;
+        isAdd.value = false;
+        showToast.hide('');
         offlineLink.value = '';
         offlineLinkName.value = '';
         // console.log(MaxTokenMap.value, 'MaxTokenMap.value');
@@ -214,6 +273,10 @@
     showAdd.value = true;
   };
   const showListPage = () => {
+    showAdd.value = false;
+    showLists();
+  };
+  const updateList = () => {
     showAdd.value = false;
     showLists();
   };
@@ -255,6 +318,14 @@
   };
 
   const showLists = () => {
+    isListLoading.value = true;
+    // showToast.loading('Loading', {
+    //   cover: true,
+    //   coverColor: 'rgba(0,0,0,0.45)',
+    //   customClass: 'app_loading',
+    //   icon: loadingImg,
+    //   loadingRotate: false,
+    // });
     let server = new grpcService.default.APIClient(maxUrl, null, null);
     let request = new Prox.default.PinningListRequest();
     request.setHeader(header.value);
@@ -264,13 +335,15 @@
       'X-Sid': currentBucketData.value.peer_id,
     };
     request.setStatus('');
-    request.setLimit(3);
+    request.setLimit(10);
     // request.setBefore('2024-02-09T00:00:00Z');
     // request.setAfter('2024-06-09T00:00:00Z');
+    // console.log(request, header.value, 'header.value');
     server.listPinnings(request, metadata, (err, res) => {
       if (err) {
         console.log('-----ListPinnings---err123---:', err);
         offlineList.value = [];
+        isListLoading.value = false;
       }
       if (res) {
         let data = res.getPinningsList();
@@ -278,12 +351,12 @@
         myTotalList.value = obj && obj.pinningsList;
 
         my_offLineList.value = myTotalList.value.filter((item) => {
-          return item.status !== 'pinning' && item.status !== 'queued';
+          return item.status !== 'pinning' && item.status !== 'queued' && item.status !== 'active';
         });
         my_runningList.value = myTotalList.value.filter((item) => {
-          return item.status === 'pinning' || item.status === 'queued';
+          return item.status === 'pinning' || item.status === 'queued' || item.status === 'active';
         });
-
+        isListLoading.value = false;
         console.log('----ListPinnings', obj, myTotalList.value, my_offLineList.value, my_runningList.value);
       }
     });
@@ -316,7 +389,7 @@
         }
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let request = new Prox.default.FetchRequest();
-        let name = `cqy0528/${offlineLinkName.value}`;
+        let name = `offlineFolder/${offlineLinkName.value}`;
         request.setHeader(header.value);
         request.setUrl(offlineLink.value);
         request.setName(name);
@@ -326,7 +399,8 @@
           'X-Custom-Date': date + 'Z',
           'X-Sid': currentBucketData.value.peer_id,
         };
-
+        isAdd.value = false;
+        showListPage();
         server.asyncFetchObject(request, metadata, (err, res) => {
           if (err) {
             console.log('AsyncFetchObject---err---:', err);
@@ -356,8 +430,9 @@
     top: 150px;
     left: 8%;
     width: 80%;
-    height: 500px;
+    height: 800px;
     height: auto;
+    // overflow-y: scroll;
     border: 1px solid #373737;
     border: 1px solid #ffffff36;
     border-radius: 10px;
@@ -375,6 +450,30 @@
     height: 40px;
     margin: 20px;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .update_line {
+    display: flex;
+    color: #4aa245;
+    font-weight: bold;
+    align-items: center;
+    justify-content: end;
+    border-bottom: 1px solid #373737;
+    padding-bottom: 10px;
+    margin-top: -20px;
+    cursor: pointer;
+    font-size: 26px;
+    background-clip: text;
+    color: transparent;
+    background-image: -webkit-linear-gradient(1deg, #0e91dc 10%, #77bbea 40%, #df7a3a 50%, #ffd07f 100%);
+    background-image: linear-gradient(89deg, #0e91dc 10%, #77bbea 40%, #df7a3a 50%, #ffd07f 100%);
+    img {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+    }
   }
   .offline_label {
     color: #fff;
@@ -382,6 +481,14 @@
     margin-bottom: 10px;
     font-weight: bold;
     margin-top: 20px;
+  }
+  .offline_add_btn_box {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #373737;
+    padding-bottom: 10px;
   }
   .offline_box {
     padding: 10px;
@@ -397,7 +504,7 @@
       width: 100%;
       color: #fff;
     }
-    .offline_add_link {
+    .offline_add_link_add {
       margin: 30px auto;
       display: block;
       width: 400px;
@@ -411,10 +518,41 @@
         transform: scale(1.1);
       }
     }
+    .offline_add_link {
+      margin-left: 10px;
+      //   margin: 30px auto;
+      display: block;
+      padding: 0 8px !important;
+      font-size: 22px;
+      height: 60px;
+      border-radius: 10px;
+      background: #ffc97a !important;
+      width: 200px;
+      //   background: #3872e0 !important;
+      background-image: linear-gradient(89deg, #199dec 0%, #0061a3 0%, #df6b22 0%, #ffd07f 100%) !important;
+      color: #fff;
+      font-weight: bold !important;
+      cursor: pointer;
+      border: 1px solid #fff;
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+  .bottom_btns {
+    display: flex;
+    .offline_add_link_add {
+      width: 40%;
+      background-image: linear-gradient(89deg, #199dec 0%, #0061a3 0%, #df6b22 0%, #ffd07f 100%) !important;
+    }
+    .offline_add_link_back {
+      background-image: none !important;
+    }
   }
   .hideOff {
     transform: translateY(-600px);
     opacity: 0;
+    z-index: -1;
   }
   .showOff {
     transform: translateY(0);
@@ -459,6 +597,8 @@
 
   .show_offline_list {
     color: #fff;
+    height: 500px !important;
+    overflow-y: scroll;
     .offline_empty {
       //   img {
       //     width: 100px;
@@ -473,7 +613,7 @@
       border-bottom: 1px solid #ffffff40;
 
       .show_offline_itemImgBox {
-        margin-right: 20px;
+        // margin-right: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -511,6 +651,13 @@
         }
       }
     }
+    .offf_loading_box_wrap {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .show_offline_item_bottom {
       margin-top: 12px;
       display: flex;
@@ -519,6 +666,13 @@
       justify-content: space-between;
       //   font-weight: bold;
       .show_offline_item_left {
+        display: flex;
+        align-items: center;
+        img {
+          width: 24px;
+          height: 24px;
+          margin-right: 8px;
+        }
       }
       .show_offline_item_center {
         display: flex;

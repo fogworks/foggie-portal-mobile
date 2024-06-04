@@ -109,7 +109,7 @@ export default function getList(deviceData) {
         let request = new Prox.default.F2PGetMiner();
         header.setPeerid(deviceData.peer_id);
         header.setId(deviceData.foggie_id);
-        header.setToken(token);
+        header.setToken(_token);
 
         appType.value = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
         header.setApptype(appType.value);
@@ -128,7 +128,7 @@ export default function getList(deviceData) {
             // console.log(res.toObject().result.dataList);
             if (res) {
                 myPoolList.value = res.toObject().result.dataList;
-                // console.log(myPoolList.value, 'myPoolList')
+                console.log(myPoolList.value, 'myPoolList')
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
@@ -252,7 +252,7 @@ export default function getList(deviceData) {
 
         searchDeviceEarningsAPI(params1).then((res) => {
             if (res && res.result) {
-                MinerReward.value = res.result.counts;
+                MinerReward.value = res.result.counts && Number(res.result.counts).toFixed(4);
                 window.localStorage.setItem("MinerReward", MinerReward.value);
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
@@ -266,7 +266,7 @@ export default function getList(deviceData) {
         searchDeviceEarningsAPI(params2).then((res) => {
             // console.log(res, 'iot222');
             if (res && res.result) {
-                IOTReward.value = res.result.counts;
+                IOTReward.value = res.result.counts && Number(res.result.counts).toFixed(4);
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },

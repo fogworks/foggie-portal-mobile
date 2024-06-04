@@ -31,7 +31,7 @@
         <!-- <div class="maxio_img" @click="showOfflineBox">
           <img src="@/assets/maxio/offline.svg" class="user_img" />
         </div> -->
-        <div class="maxio_img running_img" @click="showOfflineBox">
+        <div class="maxio_img running_img" @click="showOfflineBox" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']">
           <img src="@/assets/maxio/running.svg" class="running_img" />
         </div>
       </div>
@@ -211,6 +211,7 @@
   };
 
   const changeMenu = (item, _type) => {
+    // console.log('changeMenuchangeMenu', item, _type);
     window.localStorage.homeChooseBucket = JSON.stringify(item);
     userStore.setCurrentLeftTab(item);
     if (item.device_type === 3) {
@@ -226,7 +227,7 @@
       showBucket.value = false;
       currentBucketData.value = item;
     }
-    console.log(currentBucketData.value, 'changeMenu', currentBucketData.value.state);
+    console.log(currentBucketData.value, 'changeMenu', currentBucketData.value.device_id);
   };
   const gotoBucketDetail = (item) => {
     router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });

@@ -50,6 +50,12 @@
           height: 60px;
         }
       }
+      .optionBox_delete {
+        color: red !important;
+        svg {
+          color: red !important;
+        }
+      }
     }
     .ipfs {
       border-radius: 25px;
@@ -483,7 +489,7 @@
       box-sizing: border-box;
       flex-direction: column;
       padding: 0.5rem;
-      width: 240px;
+      width: 140px;
       border: none;
       border-radius: 10px;
       .mask {

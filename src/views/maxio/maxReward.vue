@@ -122,7 +122,7 @@
                               <div class="title">{{ _item.key }} Reward</div>
                               <div class="time">{{ handleTime(item) }}</div>
                             </div>
-                            <div class="reward_list_value">+ {{ item.income }}</div>
+                            <div class="reward_list_value">+ {{ item.income && Number(item.income).toFixed(4) }}</div>
                           </div>
                           <div v-if="!rewardDetailList.length">
                             <img src="@/assets/maxio/empty.svg" alt="" style="" class="empty_img" />
@@ -155,7 +155,7 @@
   const route = useRoute();
   const showLeft = ref(true);
   const rewardType = ref('pool');
-  const timeType = ref('day');
+  const timeType = ref('Day');
   const activePool = ref('');
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
@@ -176,9 +176,9 @@
   const iotList = ref([]);
   const currentItem = ref({});
   const changeTabList = ref([
-    { key: 'Day', value: 'day' },
-    { key: 'Week', value: 'week' },
-    { key: 'Month', value: 'month' },
+    { key: 'Day', value: 'Day' },
+    { key: 'Week', value: 'Week' },
+    { key: 'Month', value: 'Month' },
   ]);
   //   const rewardDetailList = [
   //     {
@@ -278,12 +278,14 @@
         cycle: timeType.value,
         bucket: '',
         iot_device_id: curIot.value,
-        total: true,
+        total: false,
       };
     }
+    // console.log(timeType.value, 'timeType.valuetimeType.value');
 
     searchDeviceEarningsAPI(params1).then((res) => {
       if (res && res.result) {
+        // console.log(res.result, 'sesweses');
         rewardDetailList.value = res.result.counts;
       }
     });
@@ -402,7 +404,7 @@
           width: 70px;
           height: 70px;
           box-shadow: #ffd700 0px 0px 1.066667vw;
-          border: 1px solid #ffd700;
+          //   border: 1px solid #ffd700;
           //   box-shadow:
           //     rgba(0, 0, 0, 0.25) 0px 54px 55px,
           //     rgba(0, 0, 0, 0.12) 0px -12px 30px,
@@ -426,12 +428,13 @@
     }
     .time {
       font-size: 18px;
-      font-weight: normal;
+      font-weight: bolder;
     }
   }
   .reward_list_value {
     font-style: normal !important;
     font-size: 22px;
+    color: #dfba33;
   }
   .empty_img {
     width: 200px;

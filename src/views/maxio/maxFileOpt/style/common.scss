@@ -368,6 +368,12 @@
   animation: changeImgSize 5.5s linear alternate infinite;
   cursor: pointer;
 }
+.showOfflineIcon {
+  visibility: visible !important;
+}
+.hideOfflineIcon {
+  visibility: hidden !important;
+}
 @keyframes changeImgSize {
   0% {
     transform: rotate(0deg);

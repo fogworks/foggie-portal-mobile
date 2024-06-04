@@ -67,7 +67,7 @@
             <IconDownload color="#222224"></IconDownload>
             Download
           </div>
-          <div @click="handlerClick('delete')">
+          <div @click="handlerClick('delete')" class="optionBox_delete">
             <IconDelete color="#222224"></IconDelete>
             Delete
           </div>

@@ -8,6 +8,7 @@
             <img src="@/assets/maxio/pool.svg" v-if="item.type === 'pool'" />
             <img src="@/assets/maxio/room2.svg" v-if="item.type === 'iot'" />
             <img src="@/assets/maxio/ipfs.svg" v-if="item.type === 'ipfs'" />
+            <!-- <img src="@/assets/maxio/station.png" v-if="item.type === 'ipfs'" /> -->
             <!-- <img src="@/assets/maxio/reward1.svg" v-if="item.type === 'iot'" /> -->
             <!-- <img src="@/assets/maxio/reward2.svg" v-if="item.type === 'ipfs'" /> -->
             <!-- <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" /> -->
@@ -221,7 +222,7 @@
           color: '#ffffff',
           fontSize: 11,
         },
-        x: '68%', //文字位置
+        x: '58%', //文字位置
         y: '32%', //文字位置
       },
       series: [
@@ -463,10 +464,10 @@
         console.log('CurrentLeftTab', 'CurrentLeftTab', val);
         if (val.device_id) {
           currentTabItem.value = val;
-          if (!cloudQuery.value.id) {
-            await initToken(val);
-            await getMyList(val);
-          }
+          //   if (!cloudQuery.value.id) {
+          await initToken(val);
+          await getMyList(val);
+          //   }
           cloudQuery.value = {
             id: currentTabItem.value.id,
           };

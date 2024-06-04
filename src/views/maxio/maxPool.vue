@@ -48,7 +48,7 @@
         <div class="maxio_home_rightContent maxio_sd_rightContent" :class="[showLeft ? 'maxWidth' : '']">
           <sd>
             <div class="maxio_home_card maxio_pool_card" v-for="(item, index) in poolList" :key="index">
-              <div class="pool_name">{{ item.bucket }}</div>
+              <div class="pool_name" style="visibility: hidden">{{ item.bucket }}</div>
               <div class="pool_detail">
                 <div class="pool_space">
                   <div class="pool_space_title">
