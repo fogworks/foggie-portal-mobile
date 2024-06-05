@@ -21,12 +21,35 @@
 <script setup>
   import { ref, toRefs, computed, onMounted } from 'vue';
   const currentItem = ref({});
-  onMounted(() => {
-    currentItem.value = window.localStorage.homeChooseBucket && JSON.parse(window.localStorage.homeChooseBucket);
+  const props = defineProps({
+    currentBucketData: {
+      type: Object,
+      default: () => {},
+    },
   });
+  const { currentBucketData } = toRefs(props);
+  watch(
+    currentBucketData,
+    async (val) => {
+      if (val) {
+        if (val) {
+          currentItem.value = val;
+        }
+      }
+    },
+    {
+      deep: true,
+      immediate: true,
+    },
+  );
+  onMounted(() => {});
+
   const textSubStr = (text) => {
     if (text) {
-      return text.substring(0, 4) + '...' + text.substring(text.length - 4, text.length);
+      let arr = text.split('-');
+      let str = arr[arr.length - 1];
+      return str.toUpperCase();
+      //   return text.substring(0, 4) + '...' + text.substring(text.length - 4, text.length);
     }
   };
 </script>

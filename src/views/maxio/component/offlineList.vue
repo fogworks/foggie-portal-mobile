@@ -2,11 +2,12 @@
   <div class="offlineBox" :class="[isShowOffline ? 'showOff' : 'hideOff']">
     <div class="closeImg" @click="closeBuy"></div>
     <div class="offlinelist_Box" v-if="!showAdd">
-      <div class="offline_title">离线下载</div>
-      <div class="offline_box offline_add_btn_box">
-        <nut-button class="offline_add_link" type="primary" @click="showLink">添加离线下载</nut-button>
+      <div class="offline_title"
+        >离线下载
+        <div class="offline_box offline_add_btn_box">
+          <nut-button class="offline_add_link" type="primary" @click="showLink">添加离线下载</nut-button>
+        </div>
       </div>
-
       <nut-tabs v-model="currentTab" @change="changeTypeTab">
         <nut-tab-pane title="正在传输" pane-key="current">
           <div class="update_line" @click="updateList" v-if="!isListLoading">
@@ -117,9 +118,13 @@
               <div class="show_offline_item_content">
                 <div class="show_offline_item_title"> {{ item.name }}</div>
                 <div class="show_offline_item_provider" v-if="item.pinsList && item.pinsList.length > 0">
-                  {{ item.pinsList && item.pinsList.length && item.pinsList[0].provider }}</div
+                  {{
+                    item.pinsList && item.pinsList.length && item.pinsList[0].provider.indexOf('127.0.0.1') > -1
+                      ? item.pinsList[0].cid
+                      : item.pinsList[0].provider
+                  }}</div
                 >
-                <div class="show_offline_item_progress" v-if="item.status === 'pinned'">
+                <div class="show_offline_item_progress" v-if="item.status === 'pinned' || item.status === 'pulled'">
                   <nut-progress
                     size="small"
                     :percentage="100"
@@ -158,6 +163,7 @@
                     {{ item.pinsList && item.pinsList.length && item.pinsList[0] && item.pinsList[0].duration }}s
                   </div>
                 </div>
+                <div class="show_created"> {{ transferUTCTime(item.created) }} </div>
               </div>
             </div>
             <div class="offline_empty" v-if="my_offLineList.length === 0 && !isListLoading">
@@ -174,7 +180,12 @@
       <div class="offline_title">添加离线下载链接</div>
       <div class="offline_box">
         <div class="offline_label">链接地址</div>
-        <nut-textarea v-model="offlineLink" rows="3" placeholder="支持IPFS/FOGGIE/HTTP/FTP/磁力链接" />
+        <nut-textarea
+          v-model="offlineLink"
+          rows="3"
+          placeholder="支持IPFS/FOGGIE/HTTP/FTP/磁力链接"
+          @change="changeLinkName(offlineLink)"
+        />
         <div class="offline_label">文件名</div>
         <nut-input v-model="offlineLinkName" placeholder="离线下载文件名"></nut-input>
         <div class="bottom_btns">
@@ -271,6 +282,14 @@
   //   去添加离线下载任务
   const showLink = () => {
     showAdd.value = true;
+  };
+  const changeLinkName = (link) => {
+    let arrr = link.split('/');
+    let name = arrr[arrr.length - 1];
+    if (name.indexOf('?') > -1) {
+      name = name.split('?')[0];
+    }
+    offlineLinkName.value = name;
   };
   const showListPage = () => {
     showAdd.value = false;
@@ -483,12 +502,16 @@
     margin-top: 20px;
   }
   .offline_add_btn_box {
-    width: 100%;
+    // width: 100%;
+    // width: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-bottom: 1px solid #373737;
     padding-bottom: 10px;
+    .offline_add_link {
+      width: 160px !important;
+    }
   }
   .offline_box {
     padding: 10px;
@@ -628,6 +651,10 @@
         .show_offline_item_title {
           font-size: 28px;
           margin-bottom: 10px;
+          background-clip: text;
+          color: transparent;
+          background-image: linear-gradient(89deg, #1495ef 0%, #df7a3a 50%, #ffd07f 100%);
+          font-weight: bold;
         }
         .show_offline_item_provider {
           font-size: 20px;
@@ -636,6 +663,7 @@
           text-overflow: ellipsis;
           white-space: nowrap;
           cursor: pointer;
+          //   text-decoration: underline;
         }
         .show_offline_item_progress {
         }
@@ -690,6 +718,11 @@
           height: 30px;
         }
       }
+    }
+    .show_created {
+      font-size: 20px;
+      color: #f8f8f8;
+      margin-top: 5px;
     }
   }
 </style>

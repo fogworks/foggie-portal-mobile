@@ -68,7 +68,7 @@
           </div>
 
           <!-- home_bucket222 -->
-          <div class="menu_img" @click="changeList('history')">
+          <div class="menu_img" @click="changeList('history')" v-if="historyDataCy.length">
             <div class="image-container history">
               <img src="@/assets/maxio/hbucket.svg" class="left_max_png" />
               <div class="watermark">
@@ -98,13 +98,13 @@
         </div>
 
         <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="!showBucket" :class="[showLeft ? 'maxWidth' : '']">
-          <sd>
+          <sd :currentBucketData="currentBucketData">
             <max-index :showLeft="showLeft"></max-index>
           </sd>
         </div>
 
         <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="showBucket" :class="[showLeft ? 'maxWidth' : '']">
-          <sd>
+          <sd :currentBucketData="currentBucketData">
             <div v-if="!cloudQuery.uuid" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
               <img src="@/assets/maxio/empty.png" alt="" />
             </div>
@@ -227,7 +227,7 @@
       showBucket.value = false;
       currentBucketData.value = item;
     }
-    console.log(currentBucketData.value, 'changeMenu', currentBucketData.value.device_id);
+    // console.log(currentBucketData.value, 'changeMenu', currentBucketData.value.device_id);
   };
   const gotoBucketDetail = (item) => {
     router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });

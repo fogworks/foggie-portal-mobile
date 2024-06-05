@@ -71,9 +71,8 @@
   const formData = ref<any>({});
 
   const beforeupload = async (file: any) => {
-    // console.log('-----000------beforeupload---------------');
+    // console.log('-----000------beforeupload---------------', file.length, orderInfo.value.peer_id);
     return new Promise(async (resolve, reject) => {
-      const { orderInfo } = props;
       let fileArr: any = [];
       for (let i = 0; i < file.length; i++) {
         let fileCopy = file[i];
@@ -89,7 +88,7 @@
         fileArr.push(fileCopy);
       }
       //   uploadUri.value = `http://154.31.41.36:8080/o/${orderInfo.peer_id}/${orderInfo.foggie_id}`;
-      uploadUri.value = `${maxUrl}/o/${orderInfo.peer_id}/${orderInfo.foggie_id}`;
+      uploadUri.value = `${maxUrl}/o/${orderInfo.value.peer_id}/${orderInfo.value.foggie_id}`;
       uploaderList.value = fileArr;
       resolve(fileArr);
     });
@@ -190,7 +189,7 @@
       let token = MaxTokenMap.value[orderInfo.value.device_id];
       token = token.split(' ')[1];
       let prefixStr = '';
-      if (prefix.value.length > 0) {
+      if (prefix.value && prefix.value.length > 0) {
         prefixStr = prefix.value.join('/') + '/';
       }
       console.log(prefix.value, prefixStr + options.sourceFile.name, 'refixStr + options.sourceFile.name');

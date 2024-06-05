@@ -1,24 +1,25 @@
 <template>
-  <div class="pool_index_box">
-    <div class="maxio_home_card" @click="changeTab('reward')">
-      <div class="maxio_pool_list">
-        <div class="maxio_pool_item" v-for="(item, index) in rewardList" :key="index">
-          <div class="img_bg reward_bg">
-            <!-- <img src="@/assets/maxio/reward.svg" v-if="item.type === 'pool'" /> -->
-            <img src="@/assets/maxio/pool.svg" v-if="item.type === 'pool'" />
-            <img src="@/assets/maxio/room2.svg" v-if="item.type === 'iot'" />
-            <img src="@/assets/maxio/ipfs.svg" v-if="item.type === 'ipfs'" />
-            <!-- <img src="@/assets/maxio/station.png" v-if="item.type === 'ipfs'" /> -->
-            <!-- <img src="@/assets/maxio/reward1.svg" v-if="item.type === 'iot'" /> -->
-            <!-- <img src="@/assets/maxio/reward2.svg" v-if="item.type === 'ipfs'" /> -->
-            <!-- <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" /> -->
+  <nut-pull-refresh v-model="refresh" @refresh="refreshFun">
+    <div class="pool_index_box">
+      <div class="maxio_home_card" @click="changeTab('reward')">
+        <div class="maxio_pool_list">
+          <div class="maxio_pool_item" v-for="(item, index) in rewardList" :key="index">
+            <div class="img_bg reward_bg">
+              <!-- <img src="@/assets/maxio/reward.svg" v-if="item.type === 'pool'" /> -->
+              <img src="@/assets/maxio/pool.svg" v-if="item.type === 'pool'" />
+              <img src="@/assets/maxio/room2.svg" v-if="item.type === 'iot'" />
+              <img src="@/assets/maxio/ipfs.svg" v-if="item.type === 'ipfs'" />
+              <!-- <img src="@/assets/maxio/station.png" v-if="item.type === 'ipfs'" /> -->
+              <!-- <img src="@/assets/maxio/reward1.svg" v-if="item.type === 'iot'" /> -->
+              <!-- <img src="@/assets/maxio/reward2.svg" v-if="item.type === 'ipfs'" /> -->
+              <!-- <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" /> -->
+            </div>
+            <span class="pool_name">{{ item.name }}({{ item.type === 'iot' ? item.iotNumber : item.count }})</span>
+            <span class="reward_value">{{ item.number }} DMC</span>
           </div>
-          <span class="pool_name">{{ item.name }}({{ item.type === 'iot' ? item.iotNumber : item.count }})</span>
-          <span class="reward_value">{{ item.number }} DMC</span>
         </div>
       </div>
-    </div>
-    <!-- <div class="maxio_home_card">
+      <!-- <div class="maxio_home_card">
       <div class="maxio_pool_list">
         <div class="maxio_pool_item pool_item_ipfs" v-for="(item, index) in poolList" :key="index">
           <div class="img_bg pool_bg" v-if="item.type === 'pool'" @click="changeTab(item.type)">
@@ -34,56 +35,57 @@
         </div>
       </div>
     </div> -->
-    <div class="today_file">
-      <span class="title">Space Use</span>
-    </div>
-    <div class="maxio_home_card space_card">
-      <div class="space_card_left"
-        ><MyEcharts style="width: 100%; height: 120px" :options="chartOptions" :showLeft="showLeft"></MyEcharts>
+      <div class="today_file">
+        <span class="title">Space Use</span>
       </div>
-    </div>
+      <div class="maxio_home_card space_card">
+        <div class="space_card_left"
+          ><MyEcharts style="width: 100%; height: 120px" :options="chartOptions" :showLeft="showLeft"></MyEcharts>
+        </div>
+      </div>
 
-    <div class="today_file">
-      <span class="title">Category</span>
-    </div>
-    <div class="maxio_home_card space_card" @click="changeTab('file')">
-      <div class="space_card_right">
-        <!-- <div class="local_title">Category</div> -->
-        <div class="file_items_groups">
-          <div class="file_items" v-for="(item, index) in fileListArr" :key="index">
-            <div class="svg_box">
-              <IconImage v-if="item.type === 'Photos'"></IconImage>
-              <IconDocument v-if="item.type === 'Documents'"></IconDocument>
-              <IconVideo v-if="item.type === 'Videos'"></IconVideo>
-              <IconAudio2 v-if="item.type === 'Audio'"></IconAudio2>
-              <IconOther v-if="item.type === 'Other'"></IconOther>
-            </div>
-            <div class="file_detail">
-              <div class="file_name">{{ item.name }}</div>
-              <div class="file_size">
-                <span class="file_space">{{ getfilesize(item.total) }}</span>
-                <span class="file_number"> ({{ item.number }} Files)</span>
+      <div class="today_file">
+        <span class="title">Category</span>
+      </div>
+      <div class="maxio_home_card space_card" @click="changeTab('file')">
+        <div class="space_card_right">
+          <!-- <div class="local_title">Category</div> -->
+          <div class="file_items_groups">
+            <div class="file_items" v-for="(item, index) in fileListArr" :key="index">
+              <div class="svg_box">
+                <IconImage v-if="item.type === 'Photos'"></IconImage>
+                <IconDocument v-if="item.type === 'Documents'"></IconDocument>
+                <IconVideo v-if="item.type === 'Videos'"></IconVideo>
+                <IconAudio2 v-if="item.type === 'Audio'"></IconAudio2>
+                <IconOther v-if="item.type === 'Other'"></IconOther>
+              </div>
+              <div class="file_detail">
+                <div class="file_name">{{ item.name }}</div>
+                <div class="file_size">
+                  <span class="file_space">{{ getfilesize(item.total) }}</span>
+                  <span class="file_number"> ({{ item.number }} Files)</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- <div class="maxio_home_title">Depins({{ deviceNumber }})</div> -->
-    <!-- <div class="maxio_home_card" @click="changeTab('iot')"> -->
-    <!-- <img src="@/assets/maxio/maxlist.jpg" alt="" style="width: 100%" /> -->
-    <div class="today_file">
-      <span class="title">Recent Files</span>
-      <span class="see_all" @click="changeTab('file')">Go File></span>
-    </div>
-    <maxFileList :cloudQuery="cloudQuery" :deviceData="currentTabItem" :CurrentToken="CurrentToken"></maxFileList>
-    <!-- </div> -->
-    <!-- <div class="maxio_home_title">Devices Rewards</div>
+      <!-- <div class="maxio_home_title">Depins({{ deviceNumber }})</div> -->
+      <!-- <div class="maxio_home_card" @click="changeTab('iot')"> -->
+      <!-- <img src="@/assets/maxio/maxlist.jpg" alt="" style="width: 100%" /> -->
+      <div class="today_file">
+        <span class="title">Recent Files</span>
+        <span class="see_all" @click="changeTab('file')">Go File></span>
+      </div>
+      <maxFileList :cloudQuery="cloudQuery" :deviceData="currentTabItem" :CurrentToken="CurrentToken"></maxFileList>
+      <!-- </div> -->
+      <!-- <div class="maxio_home_title">Devices Rewards</div>
     <div class="maxio_home_card maxio_reward_card" @click="changeTab('reward')">
       <img src="@/assets/maxio/rewardLine.png" alt="" />
     </div> -->
-  </div>
+    </div>
+  </nut-pull-refresh>
 </template>
 
 <script setup>
@@ -99,6 +101,9 @@
   import getList from './maxFileOpt/getList.ts';
   import { useUserStore } from '@/store/modules/user';
   import maxFileList from './maxFileList.vue';
+  import { showDialog, showToast } from '@nutui/nutui';
+  import loadingImg from '@/components/loadingImg/index.vue';
+  const refresh = ref(false);
   const userStore = useUserStore();
   const CurrentLeftTab = computed(() => userStore.getCurrentLeftTab);
   const { getMyList, myPoolList, myIotList, MinerReward, IOTReward, rewardList, spaceData, fileListArr, header, initToken, CurrentToken } =
@@ -220,9 +225,10 @@
         },
         subtextStyle: {
           color: '#ffffff',
-          fontSize: 11,
+          fontSize: 10,
+          x: '50%', //文字位置
         },
-        x: '58%', //文字位置
+        x: '66%', //文字位置
         y: '32%', //文字位置
       },
       series: [
@@ -457,16 +463,43 @@
       series: seriesData,
     };
   };
+  const refreshFun = async () => {
+    if (CurrentLeftTab.value.device_id) {
+      currentTabItem.value = CurrentLeftTab.value;
+      await initToken(CurrentLeftTab.value);
+      showToast.loading('Loading', {
+        cover: true,
+        coverColor: 'rgba(0,0,0,0.45)',
+        customClass: 'app_loading',
+        icon: loadingImg,
+        loadingRotate: false,
+      });
+      await getMyList(CurrentLeftTab.value);
+      refresh.value = false;
+      showToast.hide('file_list');
+      cloudQuery.value = {
+        id: currentTabItem.value.id,
+      };
+    }
+  };
   watch(
     CurrentLeftTab,
     async (val) => {
       if (val) {
-        console.log('CurrentLeftTab', 'CurrentLeftTab', val);
+        // console.log('CurrentLeftTab', 'CurrentLeftTab', val);
         if (val.device_id) {
           currentTabItem.value = val;
           //   if (!cloudQuery.value.id) {
           await initToken(val);
+          showToast.loading('Loading', {
+            cover: true,
+            coverColor: 'rgba(0,0,0,0.45)',
+            customClass: 'app_loading',
+            icon: loadingImg,
+            loadingRotate: false,
+          });
           await getMyList(val);
+          showToast.hide('file_list');
           //   }
           cloudQuery.value = {
             id: currentTabItem.value.id,

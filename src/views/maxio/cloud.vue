@@ -1,166 +1,168 @@
 <template>
-  <div>
-    <div :class="['top_box', isAvailableOrder ? '' : 'isHistory', showText ? 'showHight' : 'hideHight']" v-if="!loadingAnmation">
-      <nut-row class="order-detail">
-        <nut-col :span="24" class="order-content_wrap">
-          <TriangleDown v-if="!showText" @click="showText = true" class="my_svg_icon show_avg" color="#fff"></TriangleDown>
-          <TriangleUp v-if="showText" @click="showText = false" class="my_svg_icon" color="#fff"></TriangleUp>
-        </nut-col>
-        <div class="main_detail_box">
-          <div class="progress_box">
-            <div class="text">Used</div>
-            <div class="user_circle"> {{ Number(((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100).toFixed(2) }}% </div>
+  <nut-pull-refresh v-model="isRefresh" @refresh="refreshFun">
+    <div>
+      <div :class="['top_box', isAvailableOrder ? '' : 'isHistory', showText ? 'showHight' : 'hideHight']" v-if="!loadingAnmation">
+        <nut-row class="order-detail">
+          <nut-col :span="24" class="order-content_wrap">
+            <TriangleDown v-if="!showText" @click="showText = true" class="my_svg_icon show_avg" color="#fff"></TriangleDown>
+            <TriangleUp v-if="showText" @click="showText = false" class="my_svg_icon" color="#fff"></TriangleUp>
+          </nut-col>
+          <div class="main_detail_box">
+            <div class="progress_box">
+              <div class="text">Used</div>
+              <div class="user_circle"> {{ Number(((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100).toFixed(2) }}% </div>
+            </div>
           </div>
-        </div>
-        <nut-col :span="12" class="order-count left_count" v-if="showText">
-          <nut-cell>
-            <IconMdiF color="#9F9BEF" />
-            File:&nbsp;<span>{{ filesCount }}</span>
-          </nut-cell>
-          <nut-cell>
-            <IconSpace color="#7F7AE9" />
-            Space:&nbsp;<span>{{ getfilesize(orderInfo.value.total_space, 'B') }}</span>
-          </nut-cell>
-          <nut-cell>
-            <IconRiPie color="#7F7AE9" />
-            Used:&nbsp;<span>{{ getfilesize(usedSize, 'B') }}</span>
-          </nut-cell>
-          <nut-cell>
-            <Order />
-            ID:&nbsp;<span>{{ orderInfo.value?.foggie_id }}</span>
-          </nut-cell>
-          <nut-cell>
-            <Clock />
-            Expiration:&nbsp;<span>{{ transferUTCTime(orderInfo.value.expire) }}</span>
-          </nut-cell>
-          <nut-cell>
-            <Refresh />
-            Status:&nbsp;<span>{{ statusTypes[orderInfo.value.state] }}</span>
-          </nut-cell>
-        </nut-col>
-      </nut-row>
-    </div>
-    <div class="detail_box" v-if="!loadingAnmation">
-      <div class="today_file">
-        <span class="title">Recent Files</span>
-        <span class="see_all" @click="gotoOrderDetail(cloudQuery)">See All ></span>
+          <nut-col :span="12" class="order-count left_count" v-if="showText">
+            <nut-cell>
+              <IconMdiF color="#9F9BEF" />
+              File:&nbsp;<span>{{ filesCount }}</span>
+            </nut-cell>
+            <nut-cell>
+              <IconSpace color="#7F7AE9" />
+              Space:&nbsp;<span>{{ getfilesize(orderInfo.value.total_space, 'B') }}</span>
+            </nut-cell>
+            <nut-cell>
+              <IconRiPie color="#7F7AE9" />
+              Used:&nbsp;<span>{{ getfilesize(usedSize, 'B') }}</span>
+            </nut-cell>
+            <nut-cell>
+              <Order />
+              ID:&nbsp;<span>{{ orderInfo.value?.foggie_id }}</span>
+            </nut-cell>
+            <nut-cell>
+              <Clock />
+              Expiration:&nbsp;<span>{{ transferUTCTime(orderInfo.value.expire) }}</span>
+            </nut-cell>
+            <nut-cell>
+              <Refresh />
+              Status:&nbsp;<span>{{ statusTypes[orderInfo.value.state] }}</span>
+            </nut-cell>
+          </nut-col>
+        </nut-row>
       </div>
-      <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
-      <template v-else-if="tableData.length">
-        <!-- imgData -->
-        <div class="file_list file_list_img" v-if="imgData.length">
-          <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
-            <nut-image
-              v-if="item.imgUrl || item.originalSize <= 102400"
-              show-loading
-              show-error
-              round
-              radius="5px"
-              :src="item.imgUrl || item.imgUrlLarge"
-              fit="cover"
-              position="center"
-            >
-              <template #loading>
-                <Loading width="16" height="16"></Loading>
-              </template>
-            </nut-image>
-            <IconImage v-else></IconImage>
-          </div>
+      <div class="detail_box" v-if="!loadingAnmation">
+        <div class="today_file">
+          <span class="title">Recent Files</span>
+          <span class="see_all" @click="gotoOrderDetail(cloudQuery)">See All ></span>
         </div>
-        <!-- otherData -->
-        <div class="file_list" v-if="otherData.length">
-          <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
-            <div :class="['left_icon_box']">
-              <img v-if="item.isDir && item.name == 'pinning'" class="cloud_pin" src="@/assets/cloud_pin.png" alt="" />
-              <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+        <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
+        <template v-else-if="tableData.length">
+          <!-- imgData -->
+          <div class="file_list file_list_img" v-if="imgData.length">
+            <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
               <nut-image
-                v-else-if="item.category != 0 && item.category != 4 && item.imgUrl"
+                v-if="item.imgUrl || item.originalSize <= 102400"
                 show-loading
                 show-error
                 round
                 radius="5px"
-                :src="item.imgUrl"
+                :src="item.imgUrl || item.imgUrlLarge"
                 fit="cover"
                 position="center"
-                style="width: 100%; height: 100%"
               >
                 <template #loading>
                   <Loading width="16" height="16"></Loading>
                 </template>
               </nut-image>
-              <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-              <img v-else :src="getFileType(item.name)" alt="" />
-              <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
-            </div>
-            <div class="name_box">
-              <p>{{ item.name }}</p>
-              <p>{{ item.date || '' }}</p>
-            </div>
-            <div class="right_radio" @click.stop>
-              <MoreX @click="clickFIleItem(item)" width="40px" height="25px" />
+              <IconImage v-else></IconImage>
             </div>
           </div>
-        </div>
-      </template>
-      <nut-empty
-        v-else
-        style="padding: 10px 0 50px 0; border: 1px dashed #fff; border-radius: 10px"
-        description="No data,Go ahead and upload it."
-        image="error"
-      >
-      </nut-empty>
+          <!-- otherData -->
+          <div class="file_list" v-if="otherData.length">
+            <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
+              <div :class="['left_icon_box']">
+                <img v-if="item.isDir && item.name == 'pinning'" class="cloud_pin" src="@/assets/cloud_pin.png" alt="" />
+                <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+                <nut-image
+                  v-else-if="item.category != 0 && item.category != 4 && item.imgUrl"
+                  show-loading
+                  show-error
+                  round
+                  radius="5px"
+                  :src="item.imgUrl"
+                  fit="cover"
+                  position="center"
+                  style="width: 100%; height: 100%"
+                >
+                  <template #loading>
+                    <Loading width="16" height="16"></Loading>
+                  </template>
+                </nut-image>
+                <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+                <img v-else :src="getFileType(item.name)" alt="" />
+                <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
+              </div>
+              <div class="name_box">
+                <p>{{ item.name }}</p>
+                <p>{{ item.date || '' }}</p>
+              </div>
+              <div class="right_radio" @click.stop>
+                <MoreX @click="clickFIleItem(item)" width="40px" height="25px" />
+              </div>
+            </div>
+          </div>
+        </template>
+        <nut-empty
+          v-else
+          style="padding: 10px 0 50px 0; border: 1px dashed #fff; border-radius: 10px"
+          description="No data,Go ahead and upload it."
+          image="error"
+        >
+        </nut-empty>
 
-      <!-- ActionComponent -->
-      <ActionComponent
-        v-model:fileItemPopupIsShow="fileItemPopupIsShow"
-        v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
-        v-model:renameShow="renameShow"
-        v-model:moveShow="moveShow"
-        v-model:detailShow="detailShow"
-        v-model:imgStartIndex="imgStartIndex"
-        v-model:wordVisible="wordVisible"
-        :category="0"
-        :header="header"
-        :prefix="[]"
-        :isAvailableOrder="isAvailableOrder"
-        :chooseItem="detailRow.value"
-        :images="images"
-        :imgUrl="imgUrl"
+        <!-- ActionComponent -->
+        <ActionComponent
+          v-model:fileItemPopupIsShow="fileItemPopupIsShow"
+          v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
+          v-model:renameShow="renameShow"
+          v-model:moveShow="moveShow"
+          v-model:detailShow="detailShow"
+          v-model:imgStartIndex="imgStartIndex"
+          v-model:wordVisible="wordVisible"
+          :category="0"
+          :header="header"
+          :prefix="[]"
+          :isAvailableOrder="isAvailableOrder"
+          :chooseItem="detailRow.value"
+          :images="images"
+          :imgUrl="imgUrl"
+          :isMobileOrder="isMobileOrder"
+          :isNewFolder="false"
+          :selectArr="selectArr"
+          :bucketName="bucketName"
+          :metadata="metadata"
+          :orderInfo="orderInfo"
+          :isCheckMode="false"
+          :accessKeyId="accessKeyId"
+          :secretAccessKey="secretAccessKey"
+          @refresh="refresh"
+          @handlerClick="handlerClick"
+          @swipeChange="swipeChange"
+          @clickFIleItemDetail="clickFIleItemDetail"
+          @clickFIleItem="clickFIleItem"
+        ></ActionComponent>
+      </div>
+      <div class="skeleton-picture" v-if="loadingAnmation" style="width: 100%">
+        <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
+        </nut-skeleton>
+        <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
+        </nut-skeleton>
+        <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
+        </nut-skeleton>
+      </div>
+      <uploader
+        v-if="isMobileOrder && isAvailableOrder"
+        :getSummary="getSummary"
         :isMobileOrder="isMobileOrder"
-        :isNewFolder="false"
-        :selectArr="selectArr"
         :bucketName="bucketName"
-        :metadata="metadata"
-        :orderInfo="orderInfo"
-        :isCheckMode="false"
         :accessKeyId="accessKeyId"
         :secretAccessKey="secretAccessKey"
-        @refresh="refresh"
-        @handlerClick="handlerClick"
-        @swipeChange="swipeChange"
-        @clickFIleItemDetail="clickFIleItemDetail"
-        @clickFIleItem="clickFIleItem"
-      ></ActionComponent>
+        :orderInfo="orderInfo"
+        @uploadComplete="uploadComplete"
+      ></uploader>
     </div>
-    <div class="skeleton-picture" v-if="loadingAnmation" style="width: 100%">
-      <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
-      </nut-skeleton>
-      <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
-      </nut-skeleton>
-      <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
-      </nut-skeleton>
-    </div>
-    <uploader
-      v-if="isMobileOrder && isAvailableOrder"
-      :getSummary="getSummary"
-      :isMobileOrder="isMobileOrder"
-      :bucketName="bucketName"
-      :accessKeyId="accessKeyId"
-      :secretAccessKey="secretAccessKey"
-      :orderInfo="orderInfo"
-      @uploadComplete="uploadComplete"
-    ></uploader>
-  </div>
+  </nut-pull-refresh>
 </template>
 
 <script setup lang="ts">
@@ -173,6 +175,7 @@
   import IconMdiF from '~icons/home/png.svg';
   import IconRiPie from '~icons/home/pie.svg';
   import IconSpace from '~icons/home/space.svg';
+  import loadingImg from '@/components/loadingImg/index.vue';
   import { MoreX, HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
@@ -184,6 +187,7 @@
   import useShare from '@/views/list/details/useShare.js';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import { valid_upload, get_order_sign } from '@/api/index';
+
   import '@nutui/nutui/dist/packages/toast/style';
   import useDelete from '@/views/list/details/useDelete.js';
   import moment from 'moment';
@@ -195,6 +199,7 @@
       default: () => {},
     },
   });
+  const isRefresh = ref(false);
   const { cloudQuery } = toRefs(props);
   const showText = ref(false);
   const statusTypes = {
@@ -630,13 +635,6 @@
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
     console.log('changeTab1111');
 
-    // showToast.loading('Loading', {
-    //   cover: true,
-    //   customClass: 'app_loading',
-    //   icon: loadingImg,
-    //   loadingRotate: false,
-    //   id: 'file_list',
-    // });
     let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     console.log('ip:', ip);
     console.log('metadata.value:', metadata.value);
@@ -913,6 +911,22 @@
     getSummary();
   };
 
+  const refreshFun = async () => {
+    // showToast.loading('Loading', {
+    //   cover: true,
+    //   coverColor: 'rgba(0,0,0,0.45)',
+    //   customClass: 'app_loading',
+    //   icon: loadingImg,
+    //   loadingRotate: false,
+    // });
+    detailShow.value = false;
+    isRefresh.value = false;
+    await getOrderInfo(true, cloudQuery.value.uuid);
+    getFileList();
+    getSummary();
+    // showToast.hide('file_list');
+  };
+
   const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
     console.log('doSocketFn', msg, tableData.value);
     const action = msg.action;
@@ -1134,11 +1148,19 @@
     () => cloudQuery.value.uuid,
     async (val) => {
       if (val) {
+        // showToast.loading('Loading', {
+        //   cover: true,
+        //   coverColor: 'rgba(0,0,0,0.45)',
+        //   customClass: 'app_loading',
+        //   icon: loadingImg,
+        //   loadingRotate: false,
+        // });
         await getOrderInfo(true, cloudQuery.value.uuid);
         if (bucketName.value) {
           getFileList();
           getSummary();
           initWebSocket();
+          //   showToast.hide('file_list');
         }
       }
     },

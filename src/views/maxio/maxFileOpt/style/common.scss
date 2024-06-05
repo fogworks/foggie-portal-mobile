@@ -253,9 +253,9 @@
 .active_img {
   //   border: 1px dashed #fff;
   //   border: 1px solid #71d1e0;
-  border: 2px solid #ffd602;
+  border-left: 6px solid #ffd602;
   //   border: 2px dashed #fac858;
-  border-radius: 6px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -267,6 +267,8 @@
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
     rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
   background: #00000039;
+  background: rgb(222 213 213 / 37%);
+  transition: all 0.15s ease;
 }
 .maxio_home_rightContent {
   transition: all 0.8s;
@@ -433,6 +435,9 @@
   background: transparent;
 }
 .maxio_child_bg {
+  .card_border_box {
+    padding-top: 0;
+  }
   .maxio_home_head {
     margin-top: 30px;
     margin-bottom: 30px;

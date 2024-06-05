@@ -406,7 +406,8 @@
 
   const deviceData = ref({});
   const bucketName = ref('');
-  deviceData.value = JSON.parse(window.localStorage.homeChooseBucket);
+  console.log(window.localStorage.homeChooseBucket, 'window.localStorage.homeChooseBucket');
+  deviceData.value = window.localStorage.homeChooseBucket && JSON.parse(window.localStorage.homeChooseBucket);
   const appType = ref('');
   appType.value = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
   const deviceToken = ref('');

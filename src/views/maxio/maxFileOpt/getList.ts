@@ -78,7 +78,7 @@ export default function getList(deviceData) {
     ];
     const initToken = async (deviceData) => {
         let token = '';
-        console.log(MaxTokenMap.value, 'getlist-initTokeninitToken--MaxTokenMap.value');
+        // console.log(MaxTokenMap.value, 'getlist-initTokeninitToken--MaxTokenMap.value');
         if (MaxTokenMap.value && MaxTokenMap.value[deviceData.device_id]) {
             token = MaxTokenMap.value[deviceData.device_id];
             token = token.split(' ')[1];
@@ -128,7 +128,7 @@ export default function getList(deviceData) {
             // console.log(res.toObject().result.dataList);
             if (res) {
                 myPoolList.value = res.toObject().result.dataList;
-                console.log(myPoolList.value, 'myPoolList')
+                // console.log(myPoolList.value, 'myPoolList')
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
@@ -212,7 +212,7 @@ export default function getList(deviceData) {
                         spaceData.value.push(_item);
                     }
                 }
-                console.log(spaceData.value, 'spaceDataspaceData');
+                // console.log(spaceData.value, 'spaceDataspaceData');
                 window.localStorage.setItem("spaceData", JSON.stringify(spaceData.value));
                 // console.log(spaceData.value, ' spaceData.value')
             }

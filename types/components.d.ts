@@ -40,6 +40,7 @@ declare module 'vue' {
     NutPicker: typeof import('@nutui/nutui')['Picker']
     NutPopup: typeof import('@nutui/nutui')['Popup']
     NutProgress: typeof import('@nutui/nutui')['Progress']
+    NutPullRefresh: typeof import('@nutui/nutui')['PullRefresh']
     NutRadio: typeof import('@nutui/nutui')['Radio']
     NutRadioGroup: typeof import('@nutui/nutui')['RadioGroup']
     NutRange: typeof import('@nutui/nutui')['Range']
