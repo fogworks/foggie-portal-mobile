@@ -14,14 +14,15 @@
 
         <div class="maxio_title_box">
           <div class="maxio_title" v-if="!showBucket">
-            <img src="@/assets/maxio/maxio.png" alt="" />
+            <img src="@/assets/maxio/maxio1.png" alt="" />
             <div class="title_text">
               <div class="max_name"> {{ currentBucketData.dedicatedip || 'MAX IO-' + currentBucketData.id }}</div>
               <!-- <div class="max_name"> （MAXIO-{{ currentBucketData.id }} ）</div> -->
             </div>
           </div>
           <div class="maxio_title" v-if="showBucket">
-            <img src="@/assets/home_bucket.png" alt="" />
+            <!-- <img src="@/assets/home_bucket.png" alt="" /> -->
+            <img src="@/assets/maxio/cloud.svg" alt="" />
             <div class="title_text">
               <div class="max_name"> {{ currentBucketData.domain || 'Order' + currentBucketData.order_id }}</div>
               <!-- <div class="max_name"> （Bucket-001）</div> -->
@@ -48,13 +49,17 @@
               :key="index"
               :class="[item.device_type == 'maxio' && currentBucketData.id === item.id ? 'active_img' : '', 'menu_img']"
             >
-              <img src="@/assets/maxio/maxio.png" alt="" class="left_max_pngs" />
+              <!-- <img src="@/assets/maxio/maxio.png" alt="" class="left_max_pngs" /> -->
+              <img src="@/assets/maxio/maxio1.png" alt="" class="left_max_pngs" />
               <div class="title_text" v-if="item.device_type === 'maxio'">{{ item.dedicatedip || 'MAX IO' + item.index + 1 }}</div>
             </div>
           </div>
 
           <!-- home_bucket111 -->
-          <div class="menu_img" @click="changeList('bucket')"> <img src="@/assets/maxio/hbucket.svg" class="left_max_png" /> </div>
+          <div class="menu_img" @click="changeList('bucket')">
+            <!-- <img src="@/assets/maxio/hbucket.svg" class="left_max_png" />  -->
+            <img src="@/assets/maxio/cloud1.svg" class="left_max_png" />
+          </div>
           <div class="isShowMaxio" :class="[isShowBucket ? 'showMax' : 'hideMax']">
             <div
               v-for="(item, index) in runningDataCy"
@@ -62,7 +67,8 @@
               :key="index"
               :class="[item.device_type == 3 && currentBucketData.uuid === item.uuid ? 'active_img' : '', 'menu_img']"
             >
-              <img src="@/assets/home_bucket.png" alt="" />
+              <!-- <img src="@/assets/home_bucket.png" alt="" /> -->
+              <img src="@/assets/maxio/cloud.svg" alt="" />
               <div class="title_text">{{ item.domain || 'Order' + item.order_id }}</div>
             </div>
           </div>
@@ -70,7 +76,8 @@
           <!-- home_bucket222 -->
           <div class="menu_img" @click="changeList('history')" v-if="historyDataCy.length">
             <div class="image-container history">
-              <img src="@/assets/maxio/hbucket.svg" class="left_max_png" />
+              <!-- <img src="@/assets/maxio/hbucket.svg" class="left_max_png" /> -->
+              <img src="@/assets/maxio/cloud1.svg" class="left_max_png" />
               <div class="watermark">
                 <!-- <img src="@/assets/maxio/history.svg" class="small" /> -->
                 history
@@ -85,7 +92,8 @@
               :class="[item.device_type == 3 && currentBucketData.uuid === item.uuid ? 'active_img' : '', 'menu_img']"
             >
               <div class="image-container" alt="">
-                <img src="@/assets/home_bucket.png" />
+                <!-- <img src="@/assets/home_bucket.png" /> -->
+                <img src="@/assets/maxio/cloud.svg" alt="" />
                 <div class="watermark">History</div>
               </div>
               <div class="title_text">{{ item.domain || 'Order' + item.order_id }}</div>

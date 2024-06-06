@@ -1687,7 +1687,7 @@
       justify-content: space-between;
       align-items: center;
       margin: 10px 0;
-      font-size: 32px;
+      font-size: 28px;
       font-weight: bold;
 
       .title {

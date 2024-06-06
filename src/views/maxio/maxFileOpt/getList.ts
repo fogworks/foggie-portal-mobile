@@ -73,7 +73,7 @@ export default function getList(deviceData) {
     });
     rewardList.value = [
         { name: 'Minning', number: '0', type: 'pool', count: 0 },
-        { name: 'IOT', number: '0', type: 'iot', count: 0, iotNumber: 0 },
+        { name: 'IoT', number: '0', type: 'iot', count: 0, iotNumber: 0 },
         { name: 'Filecoin Station', number: '0', type: 'ipfs', count: 0 },
     ];
     const initToken = async (deviceData) => {
@@ -131,7 +131,7 @@ export default function getList(deviceData) {
                 // console.log(myPoolList.value, 'myPoolList')
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
+                    { name: 'IoT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
                     { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
 
@@ -170,7 +170,7 @@ export default function getList(deviceData) {
                 // console.log(myIotList.value, 'myIotList')
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
+                    { name: 'IoT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
                     { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
                 window.localStorage.setItem("myIotList", JSON.stringify(myIotList.value));
@@ -256,7 +256,7 @@ export default function getList(deviceData) {
                 window.localStorage.setItem("MinerReward", MinerReward.value);
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
+                    { name: 'IoT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
                     { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
             }
@@ -269,7 +269,7 @@ export default function getList(deviceData) {
                 IOTReward.value = res.result.counts && Number(res.result.counts).toFixed(4);
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
-                    { name: 'IOT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
+                    { name: 'IoT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
                     { name: 'Filecoin Station', number: '0.0000', type: 'ipfs', count: 0 },
                 ];
                 window.localStorage.setItem("IOTReward", JSON.stringify(IOTReward.value));

@@ -705,6 +705,9 @@
         background: hsl(209, 95%, 90.1%);
         background: hsl(242.31deg 79.6% 82.69%);
         background: #cc6228;
+        background: #aeff00;
+        background-image: linear-gradient(295deg, #aeff00 0%, #432f2b 100%);
+        // background-image: linear-gradient(90deg, #0cc0df 0%, #ffde59 100%);
 
         svg {
           color: hsl(211, 100%, 43.2%);

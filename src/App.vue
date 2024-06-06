@@ -186,6 +186,9 @@
 
   .nut-popup {
     z-index: 20000 !important;
+    background: #000 !important;
+    color: #fff !important;
+    border: 1px solid #373737 !important;
     .nut-dialog:not(.CustomName) {
       //   background-color: #2d2e41 !important;
       box-shadow: inset 0 0 0 0.5px hsl(0deg 0% 100% / 30%);
@@ -193,7 +196,8 @@
       .nut-dialog__header,
       .nut-dialog__content {
         color: #f5f7fb;
-        color: #000;
+        // color: #000;
+        color: #fff !important;
       }
 
       .nut-button--primary {
@@ -201,11 +205,15 @@
         border: 0px;
         font-size: 32px;
         font-weight: 600;
+        background: transparent;
+        border: 1px solid #f8f8f8 !important;
+        color: #fff !important;
       }
 
       .nut-dialog__footer-ok {
         // background-image: linear-gradient(135deg, #5b6954 0%, #9cb77d 100%);
         margin-left: 10px !important;
+        background-image: linear-gradient(295deg, #aeff00 0%, #432f2b 100%) !important;
       }
 
       .nut-dialog__footer-cancel {

@@ -203,10 +203,19 @@
   }
   .left_max_png {
     object-fit: cover;
-    border: 2px solid #ccc;
+    // border: 2px solid #ccc;
     border-radius: 50%;
     padding: 10px;
-    border: 0.266667vw solid #ffffff69;
+    // border: 0.266667vw solid #ffffff69;
+    // background-image: linear-gradient(90deg, #0cc0df 0%, #ffde59 100%) 1;
+    // border: 5px solid;
+    // border-image: linear-gradient(to right, #0cc0df, #ffde59) 1;
+    border: 6px solid transparent;
+    border-radius: 50%;
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(to right, #222, #222), linear-gradient(to right, #0cc0df, #ffde59);
+    background-image: linear-gradient(to right, #222, #222), linear-gradient(266deg, rgb(255, 158, 13), #2d91dc);
     cursor: pointer;
     box-shadow:
       rgba(0, 0, 0, 0.4) 0px 2px 4px,
@@ -253,7 +262,8 @@
 .active_img {
   //   border: 1px dashed #fff;
   //   border: 1px solid #71d1e0;
-  border-left: 6px solid #ffd602;
+  border-left: 6px solid #ff9e0d;
+  //   border-left: 6px solid #46bcb0;
   //   border: 2px dashed #fac858;
   border-radius: 4px;
   display: flex;
@@ -268,6 +278,7 @@
     rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
   background: #00000039;
   background: rgb(222 213 213 / 37%);
+  background: rgb(222 213 213 / 22%);
   transition: all 0.15s ease;
 }
 .maxio_home_rightContent {
@@ -378,10 +389,10 @@
 }
 @keyframes changeImgSize {
   0% {
-    transform: rotate(0deg);
+    transform: rotateY(0deg);
   }
   100% {
-    transform: rotate(360deg);
+    transform: rotateY(360deg);
   }
 }
 .image-container {

@@ -390,7 +390,7 @@
       .reward_list {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        // justify-content: space-between;
         font-size: 26px;
         padding: 10px 0;
         border-bottom: 1px dashed #f8f8f8;
@@ -422,7 +422,8 @@
   .reward_list_center {
     font-size: 22px;
     font-style: normal !important;
-    text-align: left;
+    text-align: center;
+    width: calc(100% - 180px);
     .title {
       height: 30px;
     }
