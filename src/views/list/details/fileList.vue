@@ -374,7 +374,8 @@
   import IconDelete from '~icons/home/delete.svg';
   import IconTwitter from '~icons/home/twitter.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';
-  import IconNewFolder from '~icons/home/new_folder.svg';
+  //   import IconNewFolder from '~icons/home/new_folder.svg';
+  import IconNewFolder from '~icons/home/new_folder1.svg';
   import IconAllCate from '~icons/home/all-cate.svg';
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
@@ -2065,9 +2066,15 @@
           align-items: center;
           justify-content: space-evenly;
           color: #222224;
+          border-radius: 25px;
+          border: 1px solid #ddd1d1;
+          background-color: #f1f1f1;
+          background-color: transparent;
+          color: #fff;
           svg {
             width: 60px;
             height: 60px;
+            color: #fff;
           }
         }
       }
@@ -2075,6 +2082,7 @@
         border-radius: 25px;
         border: 1px solid #ddd1d1;
         background-color: #f1f1f1;
+
         p {
           display: grid;
           grid-template-columns: auto 100px;
@@ -3088,6 +3096,10 @@
           padding: 20px 0;
           --nut-searchbar-width: 600px;
           --nut-searchbar-input-height: 70px;
+          border: 1px solid #fff;
+          border-radius: 10px;
+          background: transparent !important;
+          color: #fff !important;
         }
         .nut-button {
           width: 300px;

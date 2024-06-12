@@ -63,6 +63,8 @@
         border-radius: 25px;
         border: 1px solid #ddd1d1;
         background-color: #f1f1f1;
+        background: transparent !important;
+        color: #fff !important;
         height: 170px;
         display: flex;
         flex-direction: column;
@@ -73,6 +75,13 @@
           width: 60px;
           height: 60px;
           color: #000;
+          color: #fff !important;
+        }
+      }
+      .optionBox_delete {
+        color: red !important;
+        svg {
+          color: red !important;
         }
       }
     }
@@ -80,6 +89,7 @@
       border-radius: 25px;
       border: 1px solid #ddd1d1;
       background-color: #f1f1f1;
+      background: transparent;
       p {
         display: grid;
         grid-template-columns: auto 100px;
@@ -101,6 +111,7 @@
         svg {
           height: 60px;
           width: 60px;
+          color: #fff;
         }
       }
       p:last-child {

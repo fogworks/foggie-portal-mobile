@@ -69,7 +69,7 @@
         <MyEcharts :options="chartOptions2" class="income_charts"></MyEcharts>
       </div>
 
-      <div class="balance_chart" v-if="_listData.length">
+      <!-- <div class="balance_chart" v-if="_listData.length">
         <MyEcharts style="width: 100%; height: 200px" :options="orderChartOption"></MyEcharts>
       </div>
       <div v-if="_listData.length">
@@ -79,10 +79,6 @@
         <nut-infinite-loading v-if="listData.length" class="list_box" load-more-txt="No more content" :has-more="false">
           <div class="list_item" v-for="(item, index) in listData">
             <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-              <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
-          <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
-          <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
-              <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
               <img src="@/assets/DMC_Token1.png" alt="" />
             </div>
 
@@ -92,17 +88,13 @@
               <span :class="['earnings']">
                 <span v-if="item.profit > 0">+{{ item.profit }}</span>
                 <span v-else style="font-size: 12px">No gain for now</span>
-                <!-- <IconArrowRight style="vertical-align: text-top" width="1.1rem" height="1.1rem" color="#5F57FF"></IconArrowRight
-          > -->
+           
               </span>
             </div>
-            <!-- <div
-          ><span>{{ item.pst }} PST</span> <span class="time">{{ transferUTCTime(item.order_created_at) }}</span>
-        </div> -->
           </div>
         </nut-infinite-loading>
         <nut-empty v-else description="No data" image="error"></nut-empty>
-      </div>
+      </div> -->
     </div>
     <BasicModal :show="dialogShow" @update:show="dialogShow = false">
       <div class="my_dialog_content_box">
@@ -824,9 +816,9 @@
     const [start, end] = shortcuts[timeTypeNumber]();
     const postData = !start && !end ? {} : { start_time: start, end_time: end };
 
-    search_order_profit(postData).then((res) => {
-      listData.value = res.result || [];
-    });
+    // search_order_profit(postData).then((res) => {
+    //   listData.value = res.result || [];
+    // });
   }
 
   const getLineOptions = () => {
@@ -1258,6 +1250,7 @@
   .order_profit_title {
     padding-left: 20px;
     font-weight: bold;
+    color: #fff;
     span {
       font-size: 20px;
       font-weight: normal;

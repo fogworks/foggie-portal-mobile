@@ -75,13 +75,13 @@
                   src="@/assets/maxio/pause.svg"
                   class="user_img"
                   @click="changeStatus(item, index, 'stop')"
-                  v-if="item.statusType !== 'stop'"
+                  v-if="item.status !== 'pinning'"
                 />
                 <img
                   src="@/assets/maxio/pause1.svg"
                   class="user_img"
                   @click="changeStatus(item, index, 'start')"
-                  v-if="item.statusType === 'stop'"
+                  v-if="item.status === 'pinning'"
                 />
               </div>
             </div>
@@ -164,6 +164,9 @@
                   </div>
                 </div>
                 <div class="show_created"> {{ transferUTCTime(item.created) }} </div>
+              </div>
+              <div class="show_offline_item_option">
+                <img src="@/assets/maxio/delete.svg" class="user_img" @click="changeStatus(item, index, 'delete')" />
               </div>
             </div>
             <div class="offline_empty" v-if="my_offLineList.length === 0 && !isListLoading">
@@ -293,14 +296,80 @@
   };
   const showListPage = () => {
     showAdd.value = false;
-    showLists();
+    showLists(true);
   };
   const updateList = () => {
     showAdd.value = false;
-    showLists();
+    showLists(true);
   };
   const changeStatus = (item, index, type) => {
-    offlineList.value[index].statusType = type;
+    // offlineList.value[index].statusType = type;
+    if (type === 'delete') {
+      deleteItem(item, index, type);
+    }
+  };
+  const deleteItem = (item, index, type) => {
+    console.log(item, index, type);
+    let server = new grpcService.default.APIClient(maxUrl, null, null);
+    let request = new Prox.default.FetchPinningRequest();
+    request.setHeader(header.value);
+    let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
+    let metadata = {
+      'X-Custom-Date': date + 'Z',
+      'X-Sid': currentBucketData.value.peer_id,
+    };
+    request.setPinningid(item.requestid);
+    server.deleteFetchObject(request, metadata, (err, res) => {
+      if (err) {
+        console.log('-----ListPinnings---err123---:', err);
+      }
+      if (res) {
+        console.log(res, 'deleteetedtgeiydehdiuedhiu');
+        showLists();
+      }
+    });
+  };
+  const cancelItem = (item, index, type) => {
+    console.log(item, index, type);
+    let server = new grpcService.default.APIClient(maxUrl, null, null);
+    let request = new Prox.default.FetchPinningRequest();
+    request.setHeader(header.value);
+    let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
+    let metadata = {
+      'X-Custom-Date': date + 'Z',
+      'X-Sid': currentBucketData.value.peer_id,
+    };
+    request.setPinningid(item.requestid);
+    server.cancelFetchObject(request, metadata, (err, res) => {
+      if (err) {
+        console.log('-----ListPinnings---err123---:', err);
+      }
+      if (res) {
+        console.log(res, 'deleteetedtgeiydehdiuedhiu');
+        showLists();
+      }
+    });
+  };
+  const resumeItem = (item, index, type) => {
+    console.log(item, index, type);
+    let server = new grpcService.default.APIClient(maxUrl, null, null);
+    let request = new Prox.default.FetchPinningRequest();
+    request.setHeader(header.value);
+    let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
+    let metadata = {
+      'X-Custom-Date': date + 'Z',
+      'X-Sid': currentBucketData.value.peer_id,
+    };
+    request.setPinningid(item.requestid);
+    server.resumeFetchObject(request, metadata, (err, res) => {
+      if (err) {
+        console.log('-----ListPinnings---err123---:', err);
+      }
+      if (res) {
+        console.log(res, 'deleteetedtgeiydehdiuedhiu');
+        showLists();
+      }
+    });
   };
   const changeTypeTab = () => {
     // if (currentTab.value === 'history') {
@@ -333,11 +402,14 @@
     headerProx2.setApptype(appType.value);
     header.value = headerProx2;
     // console.log('initHeaderinitHeader', header.value);
-    showLists();
+    showLists(true);
   };
 
-  const showLists = () => {
-    isListLoading.value = true;
+  const showLists = (type) => {
+    if (type) {
+      isListLoading.value = true;
+    }
+
     // showToast.loading('Loading', {
     //   cover: true,
     //   coverColor: 'rgba(0,0,0,0.45)',
@@ -368,6 +440,7 @@
         let data = res.getPinningsList();
         let obj = res.toObject();
         myTotalList.value = obj && obj.pinningsList;
+        console.log(myTotalList.value, 'myTotalList.value');
 
         my_offLineList.value = myTotalList.value.filter((item) => {
           return item.status !== 'pinning' && item.status !== 'queued' && item.status !== 'active';
@@ -649,7 +722,7 @@
       .show_offline_item_content {
         width: calc(100% - 120px);
         .show_offline_item_title {
-          font-size: 28px;
+          font-size: 22px;
           margin-bottom: 10px;
           background-clip: text;
           color: transparent;
@@ -673,9 +746,15 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        background: #ffffff29;
+        border-radius: 50%;
         img {
-          width: 60px;
-          height: 60px;
+          //   width: 50px;
+          padding: 10px;
+          width: auto;
+          height: 40px;
+          overflow: hidden;
+          clear: both;
         }
       }
     }

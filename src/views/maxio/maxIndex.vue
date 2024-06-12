@@ -14,8 +14,8 @@
               <!-- <img src="@/assets/maxio/reward2.svg" v-if="item.type === 'ipfs'" /> -->
               <!-- <img src="@/assets/maxio/iot.svg" v-if="item.type === 'iot'" style="width: 120%; height: 120%" /> -->
             </div>
-            <span class="pool_name">{{ item.name }}({{ item.type === 'iot' ? item.iotNumber : item.count }})</span>
-            <span class="reward_value">{{ item.number }} DMC</span>
+            <span class="pool_name">{{ item.name }} ({{ item.type === 'iot' ? item.iotNumber : item.count }}) </span>
+            <span class="reward_value">{{ item.number }} {{ item.type === 'ipfs' ? 'FIL' : 'DMC' }}</span>
           </div>
         </div>
       </div>
@@ -76,7 +76,7 @@
       <!-- <img src="@/assets/maxio/maxlist.jpg" alt="" style="width: 100%" /> -->
       <div class="today_file">
         <span class="title">Recent Files</span>
-        <span class="see_all" @click="changeTab('file')">Go File></span>
+        <span class="see_all" @click="changeTab('file')">See All ></span>
       </div>
       <maxFileList :cloudQuery="cloudQuery" :deviceData="currentTabItem" :CurrentToken="CurrentToken"></maxFileList>
       <!-- </div> -->

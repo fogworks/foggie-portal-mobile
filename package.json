@@ -45,6 +45,7 @@
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.9",
     "echarts": "^5.4.3",
+    "ethers": "^6.8.1",
     "fake-progress": "^1.0.4",
     "google-protobuf": "^3.21.2",
     "grpc": "^1.24.11",
@@ -70,7 +71,8 @@
     "vue-cordova": "^0.1.2",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.3",
-    "vue3-pdf-app": "^1.0.3"
+    "vue3-pdf-app": "^1.0.3",
+    "w3name": "^1.0.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",

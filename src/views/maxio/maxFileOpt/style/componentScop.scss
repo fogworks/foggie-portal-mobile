@@ -101,6 +101,13 @@
       padding-left: 0;
       padding-right: 0;
       box-shadow: none;
+      padding-left: 0;
+      padding-right: 0;
+      box-shadow: none;
+      border: 1px solid #fff;
+      border-radius: 10px;
+      background: transparent !important;
+      color: #fff !important;
     }
     .nut-textarea {
       padding-left: 0;
@@ -114,10 +121,15 @@
   svg {
     display: block;
     margin: 0 auto;
+    color: #ff9e0d !important;
   }
   :deep {
     .nut-searchbar {
       padding: 20px 0;
+      background: transparent;
+      border: 1px solid #fff;
+      border-radius: 10px;
+      color: #fff !important;
     }
     .nut-button {
       margin-top: 40px;

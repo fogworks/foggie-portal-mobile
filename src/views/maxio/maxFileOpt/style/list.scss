@@ -64,7 +64,8 @@
       border-radius: 25px;
       border: 1px solid #ddd1d1;
       //   background-color: #f1f1f1;
-      background-color: transparent;
+      background-color: transparent !important;
+      color: #fff !important;
       p {
         display: grid;
         grid-template-columns: auto 100px;
@@ -209,7 +210,7 @@
 }
 .card-body {
   .nut-button--primary {
-    background: var(--nut-button-primary-background-color, linear-gradient(235deg, #48eaec 0%, #31313d 100%));
+    // background: var(--nut-button-primary-background-color, linear-gradient(235deg, #48eaec 0%, #31313d 100%));
     // background-image: linear-gradient(295deg, #aeff00 0%, #432f2b 100%) !important;
   }
 }
@@ -934,13 +935,15 @@
     .rename_box {
       margin-top: 40px;
       padding: 0 40px;
-      .nut-cell {
-        padding-left: 0;
-        padding-right: 0;
-        box-shadow: none;
-        border: 1px solid #fff;
-        border-radius: 10px;
-        background: transparent !important;
+      :deep {
+        .nut-cell {
+          padding-left: 0;
+          padding-right: 0;
+          box-shadow: none;
+          border: 1px solid #fff;
+          border-radius: 10px;
+          background: transparent !important;
+        }
       }
       .nut-textarea {
         padding-left: 0;
@@ -961,6 +964,7 @@
         --nut-searchbar-input-height: 70px;
         border: 1px solid #fff;
         border-radius: 10px;
+        background: transparent !important;
       }
       .nut-button {
         width: 300px;

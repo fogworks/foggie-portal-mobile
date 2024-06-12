@@ -206,6 +206,7 @@
         font-size: 32px;
         font-weight: 600;
         background: transparent;
+        // background: #ffc139 !important;
         border: 1px solid #f8f8f8 !important;
         color: #fff !important;
       }

@@ -20,9 +20,11 @@ body {
   background: #fff;
 }
 .nut-button--info {
-  background: #5758a0;
+  /* background: #5758a0; */
   /* background: rgba(181, 186, 202, 0.38) !important; */
   border-radius: 20px;
+  background: #ff9e0d !important;
+  background-image: linear-gradient(to right, #222, #222), linear-gradient(266deg, rgb(255, 158, 13), #2d91dc);
 }
 .top_back {
   position: relative;

@@ -1327,6 +1327,11 @@
           align-items: center;
           justify-content: space-evenly;
           color: #222224;
+          border-radius: 25px;
+          border: 1px solid #ddd1d1;
+          background-color: #f1f1f1;
+          background-color: transparent;
+
           svg {
             width: 60px;
             height: 60px;
@@ -1338,6 +1343,8 @@
         border-radius: 25px;
         border: 1px solid #ddd1d1;
         background-color: #f1f1f1;
+        background-color: transparent !important;
+        color: #fff !important;
         p {
           display: grid;
           grid-template-columns: auto 100px;
@@ -1482,6 +1489,7 @@
       margin-top: 20px;
       text-align: center;
       color: $main_blue;
+      color: #fff;
       img,
       svg {
         display: block;
@@ -1565,6 +1573,10 @@
     :deep {
       .nut-searchbar {
         padding: 20px 0;
+        border: 1px solid #fff;
+        border-radius: 10px;
+        background: transparent !important;
+        color: #fff !important;
       }
       .nut-button {
         margin-top: 40px;

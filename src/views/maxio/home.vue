@@ -40,7 +40,8 @@
         <div class="maxio_home_leftMenu" :class="[showLeft ? '' : 'minWidth']" ref="listRef">
           <!-- home_bucket000 -->
           <div class="menu_img" @click="changeList('maxio')">
-            <img src="@/assets/maxio/maxio_name.png" class="left_max_png" />
+            <!-- <img src="@/assets/maxio/maxio_name.png" class="left_max_png" /> -->
+            <img src="@/assets/maxio/maxio1.png" alt="" class="left_max_png" />
           </div>
           <div class="isShowMaxio" :class="[isShowMaxio ? 'showMax' : 'hideMax']">
             <div
