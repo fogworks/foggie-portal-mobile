@@ -10,10 +10,10 @@
       </div>
       <nut-tabs v-model="currentTab" @change="changeTypeTab">
         <nut-tab-pane title="正在传输" pane-key="current">
-          <div class="update_line" @click="updateList" v-if="!isListLoading">
+          <!-- <div class="update_line" @click="updateList" v-if="!isListLoading">
             <img src="@/assets/maxio/update.svg" />
             <span>Update List</span>
-          </div>
+          </div> -->
 
           <div class="show_offline_list">
             <div class="show_offline_item" v-for="(item, index) in my_runningList" :key="index">
@@ -46,7 +46,7 @@
                 <div class="show_offline_item_bottom">
                   <!-- <div class="show_offline_item_left"> 离线下载({{ item.status }}) </div> -->
                   <div class="show_offline_item_left">
-                    离线下载({{ item.status === 'pulling' || item.status === 'active' ? 'downloading' : item.status }})
+                    ({{ item.status === 'pulling' || item.status === 'active' ? 'downloading' : item.status }})
                   </div>
                   <div class="show_offline_item_center">
                     <div class="show_offline_item_have">
@@ -63,26 +63,27 @@
                       {{ item.pinsList && item.pinsList.length && item.pinsList[0].size && getfilesize(item.pinsList[0].size) }}</div
                     >
                   </div>
-                  <div class="show_offline_item_right" v-if="item.status === 'pinning'">
+                  <div class="show_offline_item_right" v-if="item.status === 'pinning' || item.status === 'active'">
                     <img src="@/assets/maxio/download.svg" />
 
                     {{ item.pinsList && item.pinsList.length && item.pinsList[0] && item.pinsList[0].averagespeed }}/s
                   </div>
                 </div>
               </div>
-              <div class="show_offline_item_option" v-if="item.status === 'pinning'">
+              <div class="show_offline_item_option" v-if="item.status === 'active' || item.status === 'pinning'">
                 <img
                   src="@/assets/maxio/pause.svg"
                   class="user_img"
                   @click="changeStatus(item, index, 'stop')"
-                  v-if="item.status !== 'pinning'"
+                  v-if="item.status === 'active' || item.status === 'pinning'"
                 />
                 <img
                   src="@/assets/maxio/pause1.svg"
                   class="user_img"
                   @click="changeStatus(item, index, 'start')"
-                  v-if="item.status === 'pinning'"
+                  v-if="item.status !== 'active' && item.status !== 'pinning'"
                 />
+                <img src="@/assets/maxio/delete.svg" class="user_img" @click="changeStatus(item, index, 'delete')" />
               </div>
             </div>
             <div class="offline_empty" v-if="my_runningList.length === 0 && !isListLoading">
@@ -191,6 +192,7 @@
         />
         <div class="offline_label">文件名</div>
         <nut-input v-model="offlineLinkName" placeholder="离线下载文件名"></nut-input>
+        <div class="folder_title">Save As: offlineFolder/{{ offlineLinkName }}</div>
         <div class="bottom_btns">
           <nut-button class="offline_add_link_add offline_add_link_back" type="primary" @click="showAdd = false">Back</nut-button>
           <nut-button class="offline_add_link_add" type="primary" @click="addLink" :disabled="isAdd">AddLink</nut-button>
@@ -238,6 +240,8 @@
   const showAdd = ref(false);
   const isAdd = ref(false);
   const isListLoading = ref(false);
+  const refreshInterval = ref(null);
+  const refreshTimer = ref(10000);
   const closeBuy = () => {
     emits('closeBuy');
   };
@@ -287,6 +291,9 @@
     showAdd.value = true;
   };
   const changeLinkName = (link) => {
+    if (link.indexOf('magnet:?') > -1) {
+      return;
+    }
     let arrr = link.split('/');
     let name = arrr[arrr.length - 1];
     if (name.indexOf('?') > -1) {
@@ -304,8 +311,13 @@
   };
   const changeStatus = (item, index, type) => {
     // offlineList.value[index].statusType = type;
+    console.log('changeStatus----', type);
     if (type === 'delete') {
       deleteItem(item, index, type);
+    } else if (type === 'stop') {
+      cancelItem(item, index, type);
+    } else if (type === 'start') {
+      resumeItem(item, index, type);
     }
   };
   const deleteItem = (item, index, type) => {
@@ -321,11 +333,11 @@
     request.setPinningid(item.requestid);
     server.deleteFetchObject(request, metadata, (err, res) => {
       if (err) {
-        console.log('-----ListPinnings---err123---:', err);
+        console.log('-----deleteItem---err123---:', err);
       }
       if (res) {
-        console.log(res, 'deleteetedtgeiydehdiuedhiu');
-        showLists();
+        console.log('deleteetedtgeiydehdiuedhiu');
+        showLists(true);
       }
     });
   };
@@ -342,7 +354,7 @@
     request.setPinningid(item.requestid);
     server.cancelFetchObject(request, metadata, (err, res) => {
       if (err) {
-        console.log('-----ListPinnings---err123---:', err);
+        console.log('-----cancelFetchObject---err123---:', err);
       }
       if (res) {
         console.log(res, 'deleteetedtgeiydehdiuedhiu');
@@ -363,7 +375,7 @@
     request.setPinningid(item.requestid);
     server.resumeFetchObject(request, metadata, (err, res) => {
       if (err) {
-        console.log('-----ListPinnings---err123---:', err);
+        console.log('-----resumeItem---err123---:', err);
       }
       if (res) {
         console.log(res, 'deleteetedtgeiydehdiuedhiu');
@@ -371,7 +383,9 @@
       }
     });
   };
+
   const changeTypeTab = () => {
+    // console.log(currentTab.value, 'changeTypeTabchangeTypeTabchangeTypeTab-currentTab');
     // if (currentTab.value === 'history') {
     //   offlineList.value = [];
     // } else {
@@ -406,10 +420,13 @@
   };
 
   const showLists = (type) => {
+    console.log('showLists-----', type);
     if (type) {
       isListLoading.value = true;
     }
-
+    // my_runningList.value = [];
+    // my_offLineList.value = [];
+    // myTotalList.value = [];
     // showToast.loading('Loading', {
     //   cover: true,
     //   coverColor: 'rgba(0,0,0,0.45)',
@@ -435,21 +452,49 @@
         console.log('-----ListPinnings---err123---:', err);
         offlineList.value = [];
         isListLoading.value = false;
+        if (refreshInterval.value) clearInterval(refreshInterval.value);
       }
       if (res) {
         let data = res.getPinningsList();
         let obj = res.toObject();
         myTotalList.value = obj && obj.pinningsList;
-        console.log(myTotalList.value, 'myTotalList.value');
+        // console.log(myTotalList.value, 'myTotalList.value');
 
         my_offLineList.value = myTotalList.value.filter((item) => {
           return item.status !== 'pinning' && item.status !== 'queued' && item.status !== 'active';
         });
         my_runningList.value = myTotalList.value.filter((item) => {
+          let progress = 0;
+          let completed = 0;
+          let size = 0;
+          completed = item.pinsList && item.pinsList.length && item.pinsList[0].completed && item.pinsList[0].completed;
+
+          size = item.pinsList && item.pinsList.length && item.pinsList[0].size;
+
+          item.progress = completed && size ? Number(completed / size).toFixed(2) * 100 : 0;
+          //   console.log(
+          //     'item.progress-----',
+          //     completed,
+          //     size,
+          //     item.progress,
+          //     item.status,
+          //     item.status === 'pinning' || item.status === 'queued' || item.status === 'active',
+          //   );
           return item.status === 'pinning' || item.status === 'queued' || item.status === 'active';
         });
         isListLoading.value = false;
-        console.log('----ListPinnings', obj, myTotalList.value, my_offLineList.value, my_runningList.value);
+        console.log('----ListPinnings', obj, myTotalList.value, my_runningList.value.length);
+        // && currentTab.value === 'current'
+        if (my_runningList.value.length > 0) {
+          console.log('my_runningList.value.length ', my_runningList.value.length);
+          if (!refreshInterval.value) {
+            refreshInterval.value = setInterval(() => {
+              showLists();
+            }, refreshTimer.value);
+          }
+        } else {
+          if (refreshInterval.value) clearInterval(refreshInterval.value);
+        }
       }
     });
   };
@@ -493,6 +538,7 @@
         };
         isAdd.value = false;
         showListPage();
+        console.log('asyncFetchObject-request', request);
         server.asyncFetchObject(request, metadata, (err, res) => {
           if (err) {
             console.log('AsyncFetchObject---err---:', err);
@@ -514,6 +560,9 @@
       }
     }
   };
+  onUnmounted(() => {
+    if (refreshInterval.value) clearInterval(refreshInterval.value);
+  });
 </script>
 
 <style lang="scss">
@@ -573,6 +622,17 @@
     margin-bottom: 10px;
     font-weight: bold;
     margin-top: 20px;
+  }
+  .folder_title {
+    color: #fff;
+    font-size: 3.2vw;
+    margin-top: 2.666667vw;
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    cursor: pointer;
   }
   .offline_add_btn_box {
     // width: 100%;
@@ -746,7 +806,7 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        background: #ffffff29;
+        // background: #ffffff29;
         border-radius: 50%;
         img {
           //   width: 50px;
@@ -775,6 +835,7 @@
       .show_offline_item_left {
         display: flex;
         align-items: center;
+        white-space: nowrap;
         img {
           width: 24px;
           height: 24px;
@@ -784,8 +845,10 @@
       .show_offline_item_center {
         display: flex;
         .show_offline_item_have {
+          white-space: nowrap;
         }
         .show_offline_item_total {
+          white-space: nowrap;
         }
       }
       .show_offline_item_right {

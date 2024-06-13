@@ -1,10 +1,10 @@
 import moment from 'moment';
 import { get_reCAPTCHA_Score_API } from '@/api/index';
-// import { ethers } from 'ethers';
-// import { Name } from 'w3name';
-// const ethers = require("ethers");
-import * as ethers from 'ethers';
-const Name = require("w3name");
+// import * as ethers from 'ethers';
+// import * as w3name from 'w3name';
+const ethers = require("ethers");
+const w3name = require("w3name");
+
 
 function getScheduledRewards(_ethAddress) {
     return new Promise((resolve, reject) => {
@@ -15,7 +15,9 @@ function getScheduledRewards(_ethAddress) {
         let abi = "";
 
         const getRewards = async () => {
+            // const response = await fetch('./abi.json');
             const response = await fetch('/public/abi.json');
+            console.log(response, '---responseresponse');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -41,8 +43,8 @@ function getScheduledRewards(_ethAddress) {
 
         async function getContractAddresses() {
             const CONTRACT_ADDRESSES_IPNS_KEY = "k51qzi5uqu5dmaqrefqazad0ca8b24fb79zlacfjw2awdt5gjf2cr6jto5jyqe";
-            const name = Name.parse(CONTRACT_ADDRESSES_IPNS_KEY);
-            const revision = await Name.resolve(name);
+            const name = w3name.parse(CONTRACT_ADDRESSES_IPNS_KEY);
+            const revision = await w3name.resolve(name);
             return revision.value.split("\n").filter(Boolean);
         }
 
