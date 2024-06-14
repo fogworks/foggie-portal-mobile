@@ -336,7 +336,7 @@
     cloudCodeIsBind,
     async (val) => {
       if (val) {
-        window.localStorage.removeItem('homeChooseBucket');
+        // window.localStorage.removeItem('homeChooseBucket');
         userStore.setambRefuse(false);
         await loadMoreFun();
         initSetBucket();

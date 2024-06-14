@@ -137,6 +137,11 @@
     border-radius: 10px;
     // margin: 2.666667vw;
   }
+  .maxio_child_bg {
+    .card_border_box {
+      padding-top: 0;
+    }
+  }
 
   .card-content::before {
     // content: '';

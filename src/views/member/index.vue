@@ -287,6 +287,7 @@
         // console.log('取消');
       },
       onOk: () => {
+        window.localStorage.removeItem('homeChooseBucket');
         userStore.logout();
         userStore.setCloudCodeIsBind(false);
         userStore.setcurStepIndex(1);

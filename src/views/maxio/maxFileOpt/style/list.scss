@@ -1086,3 +1086,65 @@
     }
   }
 }
+.list_card_top {
+  border-radius: 0;
+  width: 100% !important;
+  font-style: normal;
+
+  .local_title {
+    white-space: nowrap;
+    font-size: 24px;
+    text-align: left;
+    padding-left: 14px;
+  }
+  .file_items_groups {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .file_items {
+    width: 44%;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    line-height: 30px;
+    border-bottom: 0.5px dashed #6f7681;
+    padding: 10px 5px;
+    .file_name {
+      font-size: 22px;
+      text-align: left;
+      font-style: normal;
+    }
+    .file_size {
+      display: flex;
+      font-size: 16px;
+
+      font-style: normal;
+      span {
+        white-space: nowrap;
+      }
+      .file_number {
+        font-weight: bold;
+        font-weight: normal;
+        font-size: 14px;
+      }
+      .file_space {
+        margin-right: 8px;
+        color: #fac858;
+      }
+    }
+    .svg_box {
+      text-align: center;
+      margin-right: 6px;
+      margin-right: 12px;
+
+      svg {
+        width: 40px;
+        height: 40px;
+        vertical-align: middle;
+      }
+    }
+  }
+}

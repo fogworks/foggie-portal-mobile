@@ -332,6 +332,8 @@ export default function getList(deviceData) {
         header.setToken(_token);
         header.setApptype(appType);
         request.setHeader(header);
+        let total = 0;
+        let size = 0;
         // console.log(server.statistics, 'server.statistics', header);
         server.statistics(request, metadata, (err: any, res: { array: any }) => {
             if (err) {
@@ -352,9 +354,16 @@ export default function getList(deviceData) {
                         fileListArr.value[index - 1].number = item.getCount();
                         fileListArr.value[index - 1].capacity = getfilesize(item.getTotal(),);
                         fileListArr.value[index - 1].total = item.getTotal();
+                        total = total + Number(fileListArr.value[index - 1].number);
+                        size = size + item.getTotal();
                     }
                 });
+                let _sat = {
+                    total,
+                    size
+                }
                 window.localStorage.setItem("fileListArr", JSON.stringify(fileListArr.value));
+                window.localStorage.setItem("fileListSat", JSON.stringify(_sat));
                 // console.log(fileListArr.value, 'fileListArr');
             }
         });

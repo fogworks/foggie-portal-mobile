@@ -47,11 +47,11 @@
       <div class="today_file">
         <span class="title">Category</span>
       </div>
-      <div class="maxio_home_card space_card" @click="changeTab('file')">
+      <div class="maxio_home_card space_card">
         <div class="space_card_right">
           <!-- <div class="local_title">Category</div> -->
           <div class="file_items_groups">
-            <div class="file_items" v-for="(item, index) in fileListArr" :key="index">
+            <div class="file_items" v-for="(item, index) in fileListArr" :key="index" @click="changeTab('file', item.type)">
               <div class="svg_box">
                 <IconImage v-if="item.type === 'Photos'"></IconImage>
                 <IconDocument v-if="item.type === 'Documents'"></IconDocument>
@@ -135,7 +135,7 @@
     // { value: 100, name: 'Other', count: 5 },
   ];
 
-  const changeTab = (type) => {
+  const changeTab = (type, name) => {
     if (type === 'index') {
       router.push({ path: '/home' });
     } else if (type === 'pool') {
@@ -143,7 +143,20 @@
     } else if (type === 'iot') {
       router.push({ path: '/maxIOT' });
     } else if (type === 'file') {
-      router.push({ path: '/maxFile' });
+      //   router.push({ path: '/maxFile${query ? `?type=${query}` : ''}`' });
+      let category = '';
+      if (name === 'Photos') {
+        category = 1;
+      } else if (name === 'Documents') {
+        category = 4;
+      } else if (name === 'Videos') {
+        category = 2;
+      } else if (name === 'Audio') {
+        category = 3;
+      } else {
+        category = 0;
+      }
+      router.push(`/maxFile?category=${category}`);
     } else if (type === 'reward') {
       router.push({ path: '/maxReward' });
     } else if (type === 'set') {

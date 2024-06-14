@@ -17,12 +17,12 @@
       <div>
         <IconListType
           style="margin: 0 10px; width: 2rem; height: 2rem; vertical-align: middle"
-          v-if="cardMode && category != 1"
+          v-if="cardMode"
           @click="cardMode = !cardMode"
         ></IconListType>
         <IconCardType
           style="margin: 0 10px; width: 1.5rem; height: 2rem; vertical-align: middle"
-          v-else-if="!cardMode && category != 1"
+          v-else-if="!cardMode"
           @click="cardMode = !cardMode"
         ></IconCardType>
       </div>
@@ -46,8 +46,8 @@
     </div> -->
     <!-- </nut-sticky> -->
     <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
-
-    <template v-else-if="category != 1">
+    <!-- v-else-if="category != 1" -->
+    <template v-else>
       <div class="top_back_box">
         <div
           class="top_back"
@@ -60,6 +60,41 @@
         </div>
         <!-- {{ prefix.at(-1) || '' }} -->
         <span class="top_title"> {{ prefix.join('/') }} </span>
+      </div>
+      <div class="maxio_home_card" v-if="prefix.length < 1">
+        <div class="list_card_top">
+          <!-- <div class="local_title">Category</div> -->
+          <div class="file_items_groups">
+            <div class="file_items" @click="changeTab('all')">
+              <div class="svg_box">
+                <IconOther></IconOther>
+              </div>
+              <div class="file_detail">
+                <div class="file_name">All</div>
+                <div class="file_size">
+                  <span class="file_space">{{ getfilesize(size) }}</span>
+                  <span class="file_number"> ({{ total }} Files)</span>
+                </div>
+              </div>
+            </div>
+            <div class="file_items" v-for="(item, index) in fileListArr" :key="index" @click="changeTab(item.type)">
+              <div class="svg_box">
+                <IconImage v-if="item.type === 'Photos'"></IconImage>
+                <IconDocument v-if="item.type === 'Documents'"></IconDocument>
+                <IconVideo v-if="item.type === 'Videos'"></IconVideo>
+                <IconAudio2 v-if="item.type === 'Audio'"></IconAudio2>
+                <IconOther v-if="item.type === 'Other'"></IconOther>
+              </div>
+              <div class="file_detail">
+                <div class="file_name">{{ item.name }}</div>
+                <div class="file_size">
+                  <span class="file_space">{{ getfilesize(item.total) }}</span>
+                  <span class="file_number"> ({{ item.number }} Files)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <nut-infinite-loading
@@ -291,8 +326,14 @@
   import IconRename from '~icons/home/rename.svg';
   import IconMove from '~icons/home/move.svg';
   import IconDownload from '~icons/home/download.svg';
+  import IconAudio2 from '~icons/home/maudio.svg';
+  import IconImage from '~icons/home/mimage.svg';
+  import IconDocument from '~icons/home/mdoc.svg';
+  import IconVideo from '~icons/home/mvideo.svg';
+  import IconOther from '~icons/home/mother.svg';
   import { reactive, toRefs, watch, onMounted, onBeforeUnmount } from 'vue';
   import { useRoute } from 'vue-router';
+  const router = useRouter();
   import { Search2, TriangleUp, Loading, MoreX, Tips } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
@@ -403,10 +444,21 @@
   } = toRefs(state);
 
   let metadata = ref({});
-
+  category.value = route.query.category || 0;
   const deviceData = ref({});
   const bucketName = ref('');
-  console.log(window.localStorage.homeChooseBucket, 'window.localStorage.homeChooseBucket');
+  const fileListArr = ref([]);
+  const total = ref(0);
+  const size = ref(0);
+  fileListArr.value = JSON.parse(window.localStorage.getItem('fileListArr'));
+  let sat = JSON.parse(window.localStorage.getItem('fileListSat'));
+  total.value = sat.total;
+  size.value = sat.size;
+
+  fileListArr.value = fileListArr.value.filter((item) => {
+    return item.name !== 'Other';
+  });
+  //   console.log(window.localStorage.homeChooseBucket, 'window.localStorage.homeChooseBucket');
   deviceData.value = window.localStorage.homeChooseBucket && JSON.parse(window.localStorage.homeChooseBucket);
   const appType = ref('');
   appType.value = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
@@ -430,6 +482,20 @@
     return arr;
   });
 
+  const changeTab = (type) => {
+    if (type === 'Photos') {
+      category.value = 1;
+    } else if (type === 'Documents') {
+      category.value = 4;
+    } else if (type === 'Videos') {
+      category.value = 2;
+    } else if (type === 'Audio') {
+      category.value = 3;
+    } else {
+      category.value = 0;
+    }
+    doSearch('', prefix.value, true);
+  };
   const { deleteItem } = useDelete(
     tableLoading,
     () => {
@@ -668,7 +734,8 @@
   };
 
   async function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
-    console.log(prefix, 'aaaaaa---dd-d-dlist', deviceData.value.device_id);
+    console.log('----getFileList------');
+    // console.log(prefix, 'aaaaaa---dd-d-dlist', deviceData.value.device_id);
     if (!deviceData.value.device_id) {
       return;
     }
@@ -703,7 +770,7 @@
       delimiter = category.value != 0 ? '' : '/';
       categoryParam = category.value;
     }
-    console.log(prefix, list_prefix, delimiter, 'getFileList---delimiterdelimiterdelimiter', categoryParam);
+    console.log(prefix, list_prefix, delimiter, 'getFileList---delimiterdelimiterdelimiter', categoryParam, category.value);
     listObject.setPrefix(list_prefix);
     listObject.setDelimiter(delimiter);
     listObject.setEncodingType('');
@@ -714,10 +781,11 @@
     listObject.setKeyMarker('');
     listObject.setOrderby('lastmodifiedtime desc');
     listObject.setTags('');
-    listObject.setCategory(0);
+    listObject.setCategory(category.value);
     listObject.setDate('');
     requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
+    console.log('requestReq', requestReq);
     server.listObjects(
       requestReq,
       metadata,
@@ -809,7 +877,7 @@
             prefixpins: res.getPrefixpinsList(),
           };
           isError.value = false;
-          // console.log(transferData, 'transferDatatransferDatatransferData');
+          //   console.log('transferDatatransferDatatransferData', transferData);
           initRemoteData(transferData, reset, 0);
           showToast.hide('file_list');
         } else if (err) {
@@ -1058,12 +1126,12 @@
   provide('handleImg', handleImg);
 
   function doSearch(scroll: string = '', prefixArg: any[] = [], reset = false) {
-    console.log('----doSearch------');
+    console.log('----doSearch------', category.value);
     // if (tableLoading.value) return false;
-    if (category.value == 1 && !moveShow.value && !renameShow.value) {
-      imgListRef.value.refresh();
-      return;
-    }
+    // if (category.value == 1 && !moveShow.value && !renameShow.value) {
+    //   imgListRef.value.refresh();
+    //   return;
+    // }
     if (keyWord.value == '') {
       getFileList(scroll, prefixArg, reset);
     } else {
@@ -1144,7 +1212,7 @@
               },
             );
           isError.value = false;
-          //   console.log(transferData, 'search------transferDatatransferData');
+          console.log('search------transferDatatransferData', transferData);
           initRemoteData({ content: transferData }, true, category.value);
         } else {
           isError.value = true;
@@ -1190,25 +1258,27 @@
     { deep: true },
   );
 
-  watch(
-    category,
-    async (val, old) => {
-      console.log('categorycategorycategory', val);
-      cancelSelect();
-      if (old == 1) {
-        imgListRef?.value?.resetChecked();
-        imgCheckedData.value = [];
-      }
-      if (val == 1) {
-      } else {
-        doSearch('', prefix.value, true);
-      }
-    },
-    { deep: true },
-  );
+  //   watch(
+  //     category,
+  //     async (val, old) => {
+  //       console.log('categorycategorycategory', val, val, old);
+  //       cancelSelect();
+  //       //   if (old == 1) {
+  //       //     imgListRef?.value?.resetChecked();
+  //       //     imgCheckedData.value = [];
+  //       //   }
+  //       //   if (val == 1) {
+  //       //   } else {
+  //       //     doSearch('', prefix.value, true);
+  //       //   }
+  //       doSearch('', prefix.value, true);
+  //     },
+  //     { deep: true },
+  //   );
   onMounted(async () => {
     console.log('maxfileAllList---get_vood_token');
     initToken();
+    doSearch('', prefix.value, true);
   });
   const initToken = async () => {
     let token = '';

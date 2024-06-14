@@ -46,7 +46,7 @@
                 <div class="show_offline_item_bottom">
                   <!-- <div class="show_offline_item_left"> 离线下载({{ item.status }}) </div> -->
                   <div class="show_offline_item_left">
-                    ({{ item.status === 'pulling' || item.status === 'active' ? 'downloading' : item.status }})
+                    {{ item.status === 'pulling' || item.status === 'active' ? 'downloading' : item.status }}
                   </div>
                   <div class="show_offline_item_center">
                     <div class="show_offline_item_have">
@@ -83,7 +83,7 @@
                   @click="changeStatus(item, index, 'start')"
                   v-if="item.status !== 'active' && item.status !== 'pinning'"
                 />
-                <img src="@/assets/maxio/delete.svg" class="user_img" @click="changeStatus(item, index, 'delete')" />
+                <!-- <img src="@/assets/maxio/delete.svg" class="user_img" @click="changeStatus(item, index, 'delete')" /> -->
               </div>
             </div>
             <div class="offline_empty" v-if="my_runningList.length === 0 && !isListLoading">
@@ -836,6 +836,7 @@
         display: flex;
         align-items: center;
         white-space: nowrap;
+        font-size: 20px;
         img {
           width: 24px;
           height: 24px;
@@ -846,15 +847,19 @@
         display: flex;
         .show_offline_item_have {
           white-space: nowrap;
+          font-size: 20px;
         }
         .show_offline_item_total {
           white-space: nowrap;
+          font-size: 20px;
         }
       }
       .show_offline_item_right {
         display: flex;
         align-items: center;
         justify-content: center;
+        white-space: nowrap;
+        font-size: 20px;
         img {
           width: 30px;
           height: 30px;
