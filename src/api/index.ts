@@ -118,7 +118,7 @@ export const bind_user_promo = (data) => {
 
 export const calc_merkle = (data: any) => {
     return request({
-        url: `${nodeUrl}/order/calc_merkle`,
+        url: `${nodeUrl}/ambnode/order/calc_merkle`,
         method: 'POST',
         data,
     });
@@ -126,7 +126,7 @@ export const calc_merkle = (data: any) => {
 
 export const save_upload = (data: any) => {
     return request({
-        url: `${nodeUrl}/file/save_upload`,
+        url: `${nodeUrl}/ambnode/file/save_upload`,
         method: 'POST',
         data,
     });
@@ -134,7 +134,7 @@ export const save_upload = (data: any) => {
 
 export const get_merkle = (data: any) => {
     return request({
-        url: `${nodeUrl}/order/get_merkle`,
+        url: `${nodeUrl}/ambnode/order/get_merkle`,
         method: 'POST',
         data,
     });
@@ -142,7 +142,7 @@ export const get_merkle = (data: any) => {
 
 export const valid_upload = (data: any) => {
     return request({
-        url: `${nodeUrl}/file/valid_upload`,
+        url: `${nodeUrl}/ambnode/file/valid_upload`,
         method: 'POST',
         data,
     });
@@ -150,7 +150,7 @@ export const valid_upload = (data: any) => {
 
 export const get_merkle_record = (data: any) => {
     return request({
-        url: `${nodeUrl}/order/get_merkle_record`,
+        url: `${nodeUrl}/ambnode/order/get_merkle_record`,
         method: 'POST',
         data,
     });

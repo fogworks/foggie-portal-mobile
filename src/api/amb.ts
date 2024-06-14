@@ -65,21 +65,21 @@ export function user_withdraw(data) {
 }
 export function node_order_buy(ip, data) {
   return request({
-    url: nodeUrl + '/order/buy',
+    url: nodeUrl + '/ambnode/order/buy',
     method: 'POST',
     data,
   });
 }
 export function order_buy_state(ip, data) {
   return request({
-    url: nodeUrl + '/order/get_buy_order_status',
+    url: nodeUrl + '/ambnode/order/get_buy_order_status',
     method: 'POST',
     data,
   });
 }
 export const closedOrderApi = (data) => {
   return request({
-    url: nodeUrl + `/order/cancel`,
+    url: nodeUrl + `/ambnode/order/cancel`,
     method: 'POST',
     data,
   });
@@ -87,21 +87,21 @@ export const closedOrderApi = (data) => {
 
 export function node_order_search(ip, data) {
   return request({
-    url: nodeUrl + '/order/search',
+    url: nodeUrl + '/ambnode/order/search',
     method: 'POST',
     data,
   });
 }
 export function get_average_price(ip, data) {
   return request({
-    url: nodeUrl + '/order/get_average_price',
+    url: nodeUrl + '/ambnode/order/get_average_price',
     method: 'POST',
     data,
   });
 }
 export function tag_mobile_upload(ip, data) {
   return request({
-    url: nodeUrl + '/order/tag_mobile_upload',
+    url: nodeUrl + '/ambnode/order/tag_mobile_upload',
     method: 'POST',
     data,
   });
@@ -115,7 +115,7 @@ export function user_recharge(data) {
 }
 export function node_order_buy_assign_bill(ip, data) {
   return request({
-    url: nodeUrl + '/order/buy_assign_bill',
+    url: nodeUrl + '/ambnode/order/buy_assign_bill',
     method: 'POST',
     data,
   });
@@ -241,7 +241,7 @@ export function get_exchange_rate() {
 
 export function sync_challenge(data) {
   return request({
-    url: nodeUrl + `/order/sync_challenge`,
+    url: nodeUrl + `/ambnode/order/sync_challenge`,
     method: 'POST',
     data,
   });

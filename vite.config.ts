@@ -75,6 +75,12 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     secure: false,
                     // rewrite: (path) => path.replace(/^\/api/, ""),
                 },
+                '^/ambnode': {
+                    target: 'https://amb.u2i.net',
+                    changeOrigin: true,
+                    secure: false,
+                    // rewrite: (path) => path.replace(/^\/api/, ""),
+                },
                 '^/order': {
                     target: 'http://45.207.245.24:28080',
                     changeOrigin: true,
