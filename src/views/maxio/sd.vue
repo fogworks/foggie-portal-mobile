@@ -244,8 +244,9 @@
     // background: rgba(13, 13, 13, 0.38);
     // color: hsl(210deg 9.33% 50.33%);
     // text-shadow: 0 1px 1px hsla(0, 0%, 100%, 0.8);
-    background: rgb(13 13 13 / 0%);
+    // background: rgb(13 13 13 / 0%);
     color: hsl(210deg 9.33% 50.33% / 53%);
+    color: hsl(210deg 15.55% 3.45% / 53%);
     text-shadow: 0 1px 1px hsl(0deg 0% 100% / 70%);
     letter-spacing: 8px;
   }

@@ -90,7 +90,8 @@
                           <nut-tab-pane :title="_item.key" :pane-key="_item.value" v-for="(_item, _key) in changeTabList" :key="_key">
                             <div class="reward_list" v-for="(item, index) in rewardDetailList" :key="index">
                               <div class="img_box">
-                                <img src="@/assets/maxio/reward.svg" alt="" />
+                                <!-- <img src="@/assets/maxio/reward.svg" alt="" /> -->
+                                <img src="@/assets/DMC_Token1.png" alt="" />
                               </div>
                               <div class="reward_list_center">
                                 <div class="title">{{ _item.key }} Reward</div>
@@ -116,7 +117,8 @@
                         <nut-tab-pane :title="_item.key" :pane-key="_item.key" v-for="(_item, _key) in changeTabList" :key="_key">
                           <div class="reward_list" v-for="(item, index) in rewardDetailList" :key="index">
                             <div class="img_box">
-                              <img src="@/assets/maxio/reward.svg" alt="" />
+                              <!-- <img src="@/assets/maxio/reward.svg" alt="" /> -->
+                              <img src="@/assets/DMC_Token1.png" alt="" />
                             </div>
                             <div class="reward_list_center">
                               <div class="title">{{ _item.key }} Reward</div>
@@ -155,7 +157,7 @@
   const route = useRoute();
   const showLeft = ref(true);
   const rewardType = ref('pool');
-  const timeType = ref('Day');
+  const timeType = ref('Daily');
   const activePool = ref('');
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
@@ -176,7 +178,7 @@
   const iotList = ref([]);
   const currentItem = ref({});
   const changeTabList = ref([
-    { key: 'Day', value: 'Day' },
+    { key: 'Daily', value: 'Daily' },
     { key: 'Week', value: 'Week' },
     { key: 'Month', value: 'Month' },
   ]);
@@ -403,7 +405,7 @@
           background-color: transparent;
           width: 70px;
           height: 70px;
-          box-shadow: #ffd700 0px 0px 1.066667vw;
+          //   box-shadow: #ffd700 0px 0px 1.066667vw;
           //   border: 1px solid #ffd700;
           //   box-shadow:
           //     rgba(0, 0, 0, 0.25) 0px 54px 55px,
@@ -412,8 +414,8 @@
           //     rgba(0, 0, 0, 0.17) 0px 12px 13px,
           //     rgba(0, 0, 0, 0.09) 0px -3px 5px;
           img {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
           }
         }
       }

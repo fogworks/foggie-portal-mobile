@@ -70,7 +70,10 @@
                   </div>
                 </div>
               </div>
-              <div class="show_offline_item_option" v-if="item.status === 'active' || item.status === 'pinning'">
+              <div
+                class="show_offline_item_option"
+                v-if="item.status === 'active' || item.status === 'pinning' || item.status === 'cancel'"
+              >
                 <img
                   src="@/assets/maxio/pause.svg"
                   class="user_img"
@@ -81,9 +84,14 @@
                   src="@/assets/maxio/pause1.svg"
                   class="user_img"
                   @click="changeStatus(item, index, 'start')"
-                  v-if="item.status !== 'active' && item.status !== 'pinning'"
+                  v-if="item.status === 'cancel'"
                 />
-                <!-- <img src="@/assets/maxio/delete.svg" class="user_img" @click="changeStatus(item, index, 'delete')" /> -->
+                <img
+                  src="@/assets/maxio/delete.svg"
+                  class="user_img"
+                  @click="changeStatus(item, index, 'delete')"
+                  v-if="item.status === 'cancel'"
+                />
               </div>
             </div>
             <div class="offline_empty" v-if="my_runningList.length === 0 && !isListLoading">
@@ -336,7 +344,7 @@
         console.log('-----deleteItem---err123---:', err);
       }
       if (res) {
-        console.log('deleteetedtgeiydehdiuedhiu');
+        console.log(res.array && res.array[0], 'deleteetedtgeiydehdiuedhiu');
         showLists(true);
       }
     });
@@ -357,7 +365,7 @@
         console.log('-----cancelFetchObject---err123---:', err);
       }
       if (res) {
-        console.log(res, 'deleteetedtgeiydehdiuedhiu');
+        console.log(res.array && res.array[0], 'cancelFetchObjectcancelFetchObjectcancelFetchObject');
         showLists();
       }
     });
@@ -378,7 +386,7 @@
         console.log('-----resumeItem---err123---:', err);
       }
       if (res) {
-        console.log(res, 'deleteetedtgeiydehdiuedhiu');
+        console.log(res.array && res.array[0], 'resumeFetchObjectresumeFetchObjectresumeFetchObject');
         showLists();
       }
     });
@@ -461,7 +469,7 @@
         // console.log(myTotalList.value, 'myTotalList.value');
 
         my_offLineList.value = myTotalList.value.filter((item) => {
-          return item.status !== 'pinning' && item.status !== 'queued' && item.status !== 'active';
+          return item.status !== 'pinning' && item.status !== 'queued' && item.status !== 'active' && item.status !== 'cancel';
         });
         my_runningList.value = myTotalList.value.filter((item) => {
           let progress = 0;
@@ -480,7 +488,7 @@
           //     item.status,
           //     item.status === 'pinning' || item.status === 'queued' || item.status === 'active',
           //   );
-          return item.status === 'pinning' || item.status === 'queued' || item.status === 'active';
+          return item.status === 'pinning' || item.status === 'queued' || item.status === 'active' || item.status === 'cancel';
         });
         isListLoading.value = false;
         console.log('----ListPinnings', obj, myTotalList.value, my_runningList.value.length);
@@ -524,6 +532,8 @@
           isAdd.value = false;
           return;
         }
+        offlineLinkName.value = '';
+        offlineLink.value = '';
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let request = new Prox.default.FetchRequest();
         let name = `offlineFolder/${offlineLinkName.value}`;
@@ -780,7 +790,8 @@
         }
       }
       .show_offline_item_content {
-        width: calc(100% - 120px);
+        width: calc(100% - 140px);
+        padding: 0 10px;
         .show_offline_item_title {
           font-size: 22px;
           margin-bottom: 10px;
@@ -788,6 +799,10 @@
           color: transparent;
           background-image: linear-gradient(89deg, #1495ef 0%, #df7a3a 50%, #ffd07f 100%);
           font-weight: bold;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          width: 100%;
+          overflow: hidden;
         }
         .show_offline_item_provider {
           font-size: 20px;

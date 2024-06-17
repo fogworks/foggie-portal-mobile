@@ -2100,6 +2100,7 @@
             text-overflow: ellipsis;
             font-size: 25px;
             color: #222224;
+            color: #fff !important;
           }
           svg {
             height: 60px;

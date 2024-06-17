@@ -146,10 +146,10 @@
       <div class="skeleton-picture" v-if="loadingAnmation" style="width: 100%">
         <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
         </nut-skeleton>
-        <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
+        <!-- <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
         </nut-skeleton>
         <nut-skeleton width="250px" height="15px" animated avatar avatar-size="60px" row="3" style="margin: 20px 0px; width: 100%">
-        </nut-skeleton>
+        </nut-skeleton> -->
       </div>
       <uploader
         v-if="isMobileOrder && isAvailableOrder"

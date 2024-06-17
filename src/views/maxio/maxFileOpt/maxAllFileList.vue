@@ -11,17 +11,27 @@
         "
         class="new_folder"
       ></IconNewFolder>
-      <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
-        <template #rightin> <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" /> </template>
+      <img src="@/assets/maxio/search.svg" class="search_img" @click="showSearch" v-if="!isShowSearch" />
+      <nut-searchbar
+        @clear="doSearch('', prefix, true)"
+        placeholder="Search By Name"
+        v-model="keyWord"
+        :class="[isShowSearch ? 'maxWidth' : 'min']"
+        class="top_search_bar"
+      >
+        <template #rightin>
+          <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" />
+          <img src="@/assets/maxio/Close.svg" class="search_img_icon" @click="isShowSearch = false" />
+        </template>
       </nut-searchbar>
       <div>
         <IconListType
-          style="margin: 0 10px; width: 2rem; height: 2rem; vertical-align: middle"
+          style="margin: 0 10px; width: 24px; height: 24px; vertical-align: middle"
           v-if="cardMode"
           @click="cardMode = !cardMode"
         ></IconListType>
         <IconCardType
-          style="margin: 0 10px; width: 1.5rem; height: 2rem; vertical-align: middle"
+          style="margin: 0 10px; width: 24px; height: 24px; vertical-align: middle"
           v-else-if="!cardMode"
           @click="cardMode = !cardMode"
         ></IconCardType>
@@ -61,10 +71,20 @@
         <!-- {{ prefix.at(-1) || '' }} -->
         <span class="top_title"> {{ prefix.join('/') }} </span>
       </div>
-      <div class="maxio_home_card" v-if="prefix.length < 1">
+      <div class="list_card_top_line" v-if="prefix.length < 1">
         <div class="list_card_top">
-          <!-- <div class="local_title">Category</div> -->
-          <div class="file_items_groups">
+          <div class="list_card_top_item" @click="changeTab('all')" :class="[category === 0 ? 'active' : '']"> All </div>
+          <div
+            class="list_card_top_item"
+            v-for="(item, key) in fileListArr"
+            :key="key"
+            @click="changeTab(item.type)"
+            :class="[category === key + 1 ? 'active' : '']"
+          >
+            {{ item.name }}
+          </div>
+
+          <!-- <div class="file_items_groups">
             <div class="file_items" @click="changeTab('all')">
               <div class="svg_box">
                 <IconOther></IconOther>
@@ -78,6 +98,7 @@
               </div>
             </div>
             <div class="file_items" v-for="(item, index) in fileListArr" :key="index" @click="changeTab(item.type)">
+
               <div class="svg_box">
                 <IconImage v-if="item.type === 'Photos'"></IconImage>
                 <IconDocument v-if="item.type === 'Documents'"></IconDocument>
@@ -93,7 +114,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -122,7 +143,8 @@
                   src="@/assets/cloud_pin.png"
                   alt=""
                 />
-                <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+                <!-- <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" /> -->
+                <img v-if="item.isDir" src="@/assets/maxio/folder.svg" alt="" />
                 <nut-image
                   v-else-if="item.category != 0 && item.imgUrl"
                   show-loading
@@ -356,7 +378,7 @@
   let server = null;
   const route = useRoute();
   const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
-
+  const hideText = false;
   const state = reactive({
     cardMode: false,
     actionRef: '',
@@ -403,6 +425,7 @@
     wordVisible: false,
   });
   const imgListRef = ref('');
+  const isShowSearch = ref(false);
   const isMobileOrder = computed(() => {
     if (deviceData.value.electronic_type == '0') {
       return true;
@@ -482,6 +505,9 @@
     return arr;
   });
 
+  const showSearch = () => {
+    isShowSearch.value = true;
+  };
   const changeTab = (type) => {
     if (type === 'Photos') {
       category.value = 1;

@@ -127,11 +127,11 @@
             <div class="title">About</div>
           </setting>
           <setting @click="router.push('/shop')">
-            <img src="@/assets/maxio/shop.svg" style="width: 45px; height: 45px; display: inline-block" />
+            <img src="@/assets/maxio/shop1.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">Shop</div>
           </setting>
           <setting @click="router.push('/nft')">
-            <img src="@/assets/maxio/nft.svg" style="width: 45px; height: 45px; display: inline-block" />
+            <img src="@/assets/maxio/nft1.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">NFT</div>
           </setting>
         </div>
