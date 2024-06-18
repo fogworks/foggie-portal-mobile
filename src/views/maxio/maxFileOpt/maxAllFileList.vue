@@ -73,7 +73,9 @@
       </div>
       <div class="list_card_top_line" v-if="prefix.length < 1">
         <div class="list_card_top">
-          <div class="list_card_top_item" @click="changeTab('all')" :class="[category === 0 ? 'active' : '']"> All </div>
+          <div class="list_card_top_item" @click="changeTab('all')" :class="[category === 0 || category === '0' ? 'active' : '']">
+            All
+          </div>
           <div
             class="list_card_top_item"
             v-for="(item, key) in fileListArr"

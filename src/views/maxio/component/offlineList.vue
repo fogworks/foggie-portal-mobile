@@ -3,13 +3,13 @@
     <div class="closeImg" @click="closeBuy"></div>
     <div class="offlinelist_Box" v-if="!showAdd">
       <div class="offline_title"
-        >离线下载
+        >Offline Download
         <div class="offline_box offline_add_btn_box">
-          <nut-button class="offline_add_link" type="primary" @click="showLink">添加离线下载</nut-button>
+          <nut-button class="offline_add_link" type="primary" @click="showLink">Add</nut-button>
         </div>
       </div>
       <nut-tabs v-model="currentTab" @change="changeTypeTab">
-        <nut-tab-pane title="正在传输" pane-key="current">
+        <nut-tab-pane title="Downloading" pane-key="current">
           <!-- <div class="update_line" @click="updateList" v-if="!isListLoading">
             <img src="@/assets/maxio/update.svg" />
             <span>Update List</span>
@@ -105,7 +105,7 @@
             </div> -->
           </div></nut-tab-pane
         >
-        <nut-tab-pane title="已完成" pane-key="history">
+        <nut-tab-pane title="Completed" pane-key="history">
           <div class="show_offline_list">
             <div class="show_offline_item" v-for="(item, index) in my_offLineList" :key="index">
               <div class="show_offline_itemImgBox">
@@ -189,17 +189,17 @@
       </nut-tabs>
     </div>
     <div class="offline_add_Box" v-if="showAdd">
-      <div class="offline_title">添加离线下载链接</div>
+      <div class="offline_title">Add Offline Download</div>
       <div class="offline_box">
-        <div class="offline_label">链接地址</div>
+        <div class="offline_label">Url Adresss</div>
         <nut-textarea
           v-model="offlineLink"
           rows="3"
-          placeholder="支持IPFS/FOGGIE/HTTP/FTP/磁力链接"
+          placeholder="Support IPFS/FOGGIE/HTTP/FTP/magnetic link"
           @change="changeLinkName(offlineLink)"
         />
-        <div class="offline_label">文件名</div>
-        <nut-input v-model="offlineLinkName" placeholder="离线下载文件名"></nut-input>
+        <div class="offline_label">FileName</div>
+        <nut-input v-model="offlineLinkName" placeholder="FileName"></nut-input>
         <div class="folder_title">Save As: offlineFolder/{{ offlineLinkName }}</div>
         <div class="bottom_btns">
           <nut-button class="offline_add_link_add offline_add_link_back" type="primary" @click="showAdd = false">Back</nut-button>
@@ -294,7 +294,6 @@
     },
     { deep: true },
   );
-  //   去添加离线下载任务
   const showLink = () => {
     showAdd.value = true;
   };
@@ -509,12 +508,12 @@
   const addLink = () => {
     isAdd.value = true;
     if (!offlineLinkName.value) {
-      showToast.text('请填写离线下载文件名');
+      showToast.text('Please fill in the  file name');
       isAdd.value = false;
       return;
     }
     if (!offlineLink.value) {
-      showToast.text('请填写离线下载链接');
+      showToast.text('Please fill in the link address');
       isAdd.value = false;
       return;
     } else {
@@ -532,8 +531,6 @@
           isAdd.value = false;
           return;
         }
-        offlineLinkName.value = '';
-        offlineLink.value = '';
         let server = new grpcService.default.APIClient(maxUrl, null, null);
         let request = new Prox.default.FetchRequest();
         let name = `offlineFolder/${offlineLinkName.value}`;
@@ -554,17 +551,21 @@
             console.log('AsyncFetchObject---err---:', err);
             isAdd.value = false;
             showListPage();
+            offlineLinkName.value = '';
+            offlineLink.value = '';
             return;
           }
           if (res) {
             console.log(res, 'AsyncFetchObject');
             isAdd.value = false;
             showListPage();
+            offlineLinkName.value = '';
+            offlineLink.value = '';
             return;
           }
         });
       } else {
-        showToast.text('离线下载支持IPFS/FOGGIE/HTTP/FTP/磁力链接,请填写规范的链接地址');
+        showToast.text('Offline download supports IPFS/FOGGIE/HTTP/FTP/magnetic link, please fill in the standard link address');
         isAdd.value = false;
         return;
       }

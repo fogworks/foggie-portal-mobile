@@ -47,7 +47,7 @@
         </div>
         <div class="maxio_home_rightContent maxio_sd_rightContent" :class="[showLeft ? 'maxWidth' : '']">
           <sd>
-            <div class="maxio_home_card maxio_pool_card" v-for="(item, index) in poolList" :key="index">
+            <div class="maxio_home_card maxio_pool_card" v-for="(item, index) in poolList" :key="index" @click="gotoReward">
               <div class="pool_name" style="visibility: hidden">{{ item.bucket }}</div>
               <div class="pool_detail">
                 <div class="pool_space">
@@ -149,6 +149,9 @@
   };
   const handleTime = (item) => {
     return moment.utc(item.createdat).local().format('YYYY-MM-DD HH:mm:ss');
+  };
+  const gotoReward = () => {
+    router.push({ path: '/maxReward' });
   };
 </script>
 

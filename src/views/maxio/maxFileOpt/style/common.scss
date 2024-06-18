@@ -199,6 +199,7 @@
       opacity: 0;
       height: 0;
       transform: translateY(-500px);
+      z-index: -100;
     }
   }
   .left_max_png {

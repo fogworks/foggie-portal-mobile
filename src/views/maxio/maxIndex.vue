@@ -482,7 +482,7 @@
       await initToken(CurrentLeftTab.value);
       showToast.loading('Loading', {
         cover: true,
-        coverColor: 'rgba(0,0,0,0.45)',
+        coverColor: 'rgba(0,0,0,0)',
         customClass: 'app_loading',
         icon: loadingImg,
         loadingRotate: false,
@@ -499,18 +499,17 @@
     CurrentLeftTab,
     async (val) => {
       if (val) {
-        // console.log('CurrentLeftTab', 'CurrentLeftTab', val);
         if (val.device_id) {
           currentTabItem.value = val;
           //   if (!cloudQuery.value.id) {
-          await initToken(val);
           showToast.loading('Loading', {
             cover: true,
-            coverColor: 'rgba(0,0,0,0.45)',
+            coverColor: 'rgba(0,0,0,0)',
             customClass: 'app_loading',
             icon: loadingImg,
             loadingRotate: false,
           });
+          await initToken(val);
           await getMyList(val);
           showToast.hide('file_list');
           //   }

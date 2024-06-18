@@ -83,7 +83,11 @@ export default function useAllOrderList() {
         }).then(async (res) => {
             let data = res.data;
             let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
-            maxTableData.value = maxList;
+            // maxTableData.value = maxList;
+            for (let i = 0; i < 10; i++) {
+                maxTableData.value = maxTableData.value.concat(maxList);
+            }
+
         });
 
         await search_cloud({ ps: 100, pn: 1, order_state, start_time, end_time, buy_result, ...postData })
@@ -102,7 +106,11 @@ export default function useAllOrderList() {
                 // listData.value = [...listData.value, ...cloudList];
 
                 cloudList.sort((a, b) => a.state - b.state);
-                listData.value = [...cloudList];
+                // listData.value = [...cloudList];
+                for (let i = 0; i < 10; i++) {
+                    listData.value = listData.value.concat(cloudList);
+                }
+
                 historyData.value = listData.value.filter((s) => {
                     return [4, 5].includes(s.state)
                 }) || [];
@@ -110,6 +118,7 @@ export default function useAllOrderList() {
                     return [0, 1, 2, 3, 6].includes(s.state)
                 }) || [];
                 infinityValue.value = false;
+                console.log(cloudList, listData.value, '  listData.value', runningData.value);
                 isError.value = false;
                 if (getUsedSpace) {
                     getAllUsedSpace();

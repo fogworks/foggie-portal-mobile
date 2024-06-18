@@ -111,6 +111,7 @@
       height: 70px;
       line-height: 70px;
       background-color: #cbcacf;
+      background-color: #cbcacf63;
       font-weight: 600;
       font-size: 28px;
       display: flex;
@@ -127,6 +128,7 @@
       padding: 20px 20px;
       border-bottom: 4px solid #adacb1;
       background-color: #dfdee3;
+      background-color: #cbcacf63;
       & > div {
         height: 40px;
         line-height: 40px;
@@ -136,6 +138,7 @@
     }
     .fileItemDetail_bottom {
       background-color: #dfdee3;
+      background-color: #cbcacf63;
       display: grid;
       padding: 0px 20px;
       grid-template-columns: repeat(5, 1fr);

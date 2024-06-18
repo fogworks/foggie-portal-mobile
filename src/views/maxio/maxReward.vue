@@ -261,13 +261,14 @@
     let params1 = {};
     let start = '';
     let end = '';
+    let _timeType = timeType.value === 'Daily' ? 'Day' : timeType.value;
     if (rewardType.value === 'pool') {
       params1 = {
         device_id: currentItem.value.device_id,
         asset_type: type,
         start_time: '',
         end_time: '',
-        cycle: timeType.value,
+        cycle: _timeType,
         bucket: activePool.value,
         total: false,
       };
@@ -277,7 +278,7 @@
         asset_type: type,
         start_time: '',
         end_time: '',
-        cycle: timeType.value,
+        cycle: _timeType,
         bucket: '',
         iot_device_id: curIot.value,
         total: false,

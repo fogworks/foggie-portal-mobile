@@ -33,7 +33,7 @@
         <img v-else-if="chooseItem.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
         <img v-else :src="getFileType(chooseItem.name)" alt="" />
         <div class="fileItem_header_right">
-          <div style="width: 75%">{{ chooseItem.fullName }}</div>
+          <div style="width: 50%">{{ chooseItem.fullName }}</div>
           <div v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
         </div>
       </div>
@@ -117,7 +117,7 @@
       <div class="fileItem_header">
         <img v-if="chooseItem.imgUrl" :src="chooseItem.imgUrl" alt="" />
         <div class="fileItem_header_right">
-          <div style="width: 85%">{{ chooseItem.fullName }}</div>
+          <div style="width: 50%">{{ chooseItem.fullName }}</div>
           <div>{{ chooseItem.imageInfo?.datetime }} · {{ chooseItem.size }}</div>
         </div>
       </div>
