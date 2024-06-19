@@ -722,8 +722,17 @@
 
   const refresh = async () => {
     detailShow.value = false;
+    tableData.value = [];
+    imgData.value = [];
+    otherData.value = [];
     getFileList();
   };
+  onMounted(() => {
+    tableData.value = [];
+    imgData.value = [];
+    otherData.value = [];
+    console.log('onMounted', tableData.value, imgData.value, otherData.value);
+  });
 
   watch(
     () => CurrentToken.value,
@@ -731,6 +740,10 @@
       if (val) {
         // console.log('getFileList--------------------------------', val);
         await initSk(deviceData.value, val);
+        tableData.value = [];
+        imgData.value = [];
+        otherData.value = [];
+        console.log(tableData.value, imgData.value, otherData.value);
         getFileList();
         getSummary(deviceData.value, val);
       }

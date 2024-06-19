@@ -84,9 +84,11 @@ export default function useAllOrderList() {
             let data = res.data;
             let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
             maxTableData.value = maxList;
-            // for (let i = 0; i < 10; i++) {
-            //     maxTableData.value = maxTableData.value.concat(maxList);
-            // }
+            for (let i = 0; i < 20; i++) {
+                // maxTableData.value = maxTableData.value.concat(maxList);
+                let _ip = `1.1.1.${i}`;
+                maxTableData.value.push({ 'device_id': 'device_iddevice_id' + i, 'dedicatedip': _ip, 'device_type': 'maxio', 'id': _ip });
+            }
         });
 
         await search_cloud({ ps: 100, pn: 1, order_state, start_time, end_time, buy_result, ...postData })
@@ -106,9 +108,10 @@ export default function useAllOrderList() {
 
                 cloudList.sort((a, b) => a.state - b.state);
                 listData.value = [...cloudList];
-                // for (let i = 0; i < 10; i++) {
-                //     listData.value = listData.value.concat(cloudList);
-                // }
+                for (let i = 0; i < 40; i++) {
+                    listData.value = listData.value.concat(cloudList);
+                    // listData.value.push({ 'device_id': 'device_iddevice_id' })
+                }
 
                 historyData.value = listData.value.filter((s) => {
                     return [4, 5].includes(s.state)

@@ -74,11 +74,11 @@
       <!-- <div class="maxio_home_title">Depins({{ deviceNumber }})</div> -->
       <!-- <div class="maxio_home_card" @click="changeTab('iot')"> -->
       <!-- <img src="@/assets/maxio/maxlist.jpg" alt="" style="width: 100%" /> -->
-      <div class="today_file">
+      <div class="today_file" v-if="CurrentToken">
         <span class="title">Recent Files</span>
         <span class="see_all" @click="changeTab('file')">See All ></span>
       </div>
-      <maxFileList :cloudQuery="cloudQuery" :deviceData="currentTabItem" :CurrentToken="CurrentToken"></maxFileList>
+      <maxFileList :cloudQuery="cloudQuery" :deviceData="currentTabItem" :CurrentToken="CurrentToken" v-if="CurrentToken"></maxFileList>
       <!-- </div> -->
       <!-- <div class="maxio_home_title">Devices Rewards</div>
     <div class="maxio_home_card maxio_reward_card" @click="changeTab('reward')">
@@ -175,6 +175,7 @@
   });
   const initOptions = (chartData) => {
     if (!chartData.length) {
+      chartOptions.value = {};
       return;
     }
     let colorArr = ['#00FF00', '#40B2FB', '#00FFFF', '#ec7f40', '#6841e1', '#FEFF00', '#F59543', '#FF59AB', '#FF4F2C'];
@@ -502,6 +503,14 @@
         if (val.device_id) {
           currentTabItem.value = val;
           //   if (!cloudQuery.value.id) {
+          window.localStorage.removeItem('myPoolList');
+          window.localStorage.removeItem('rewardList');
+          window.localStorage.removeItem('myIotList');
+          window.localStorage.removeItem('spaceData');
+          window.localStorage.removeItem('MinerReward');
+          window.localStorage.removeItem('IOTReward');
+          window.localStorage.removeItem('fileListArr');
+          window.localStorage.removeItem('fileListSat');
           showToast.loading('Loading', {
             cover: true,
             coverColor: 'rgba(0,0,0,0)',
@@ -512,7 +521,6 @@
           await initToken(val);
           await getMyList(val);
           showToast.hide('file_list');
-          //   }
           cloudQuery.value = {
             id: currentTabItem.value.id,
           };

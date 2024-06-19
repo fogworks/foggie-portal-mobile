@@ -136,6 +136,42 @@
   justify-content: space-between;
   //   height: 100%;
   overflow-y: scroll;
+  position: relative;
+}
+.show_max_more {
+  position: fixed;
+  top: 50%;
+  left: 90px;
+  z-index: 9999;
+  cursor: pointer;
+  animation: rightLoop 1s linear alternate infinite;
+  img {
+    width: 60px;
+    height: 60px;
+    opacity: 0.5;
+  }
+  @keyframes rightLoop {
+    0% {
+      transform: scale(0.96);
+      transform: translateX(-10px);
+    }
+    50% {
+      transform: scale(1);
+      // transform: rotateY(90deg);
+      transform: translateX(0px);
+    }
+    100% {
+      transform: translateX(10px);
+    }
+  }
+}
+.rotate_more {
+  top: 50%;
+  left: 10px !important;
+  //   right: 90px !important;
+  img {
+    transform: rotateY(180deg);
+  }
 }
 .maxio_home_leftMenu {
   //   box-shadow: #d3d3eb 0px -3px 8px 2px;
@@ -181,6 +217,11 @@
   border: 1px solid #373737;
   background: #212121;
 
+  position: absolute;
+  top: 0px;
+  left: 0;
+  height: 100%;
+
   .isShowMaxio {
     transition: all 0.8s;
     width: 100%;
@@ -200,6 +241,22 @@
       height: 0;
       transform: translateY(-500px);
       z-index: -100;
+    }
+  }
+  &.isShowMoreList {
+    width: 600px;
+    > .menu_img {
+      align-items: start;
+    }
+    .isShowMaxio {
+      display: flex;
+      flex-wrap: wrap;
+      .menu_img {
+        width: 24%;
+      }
+      &.showMax {
+        min-height: 400px;
+      }
     }
   }
   .left_max_png {
@@ -285,6 +342,7 @@
 .maxio_home_rightContent {
   transition: all 0.8s;
   width: calc(100% - 120px);
+  margin-left: 10px;
   height: 100%;
   width: 100%;
   box-sizing: border-box;
@@ -439,12 +497,14 @@
   border-radius: 20px;
   background: #00000039;
   padding: 20px;
+  margin-left: 108px;
 }
 
 .minWidth {
   width: 0 !important;
   transform: translateX(-140px);
   background: transparent;
+  margin-left: 0px;
 }
 .maxio_child_bg {
   .card_border_box {

@@ -77,8 +77,8 @@
                     >
                     <nut-tabs v-model="activePool" size="small" :ellipsis="hideText" v-if="poolList.length > 1" @change="changeTypeTab()">
                       <nut-tab-pane
-                        :title="item.bucket || item.groupname"
-                        :pane-key="item.bucket || item.groupname"
+                        :title="item.bucket || item.deviceid"
+                        :pane-key="item.bucket || item.deviceid"
                         v-for="(item, index) in poolList"
                         :key="index"
                       >
@@ -225,7 +225,7 @@
   const findId = () => {
     console.log(poolList.value, activePool.value);
     for (let i = 0; i < poolList.value.length; i++) {
-      if (poolList.value[i].groupname === activePool.value) {
+      if (poolList.value[i].deviceid === activePool.value) {
         curIot.value = poolList.value[i].deviceid;
       }
     }
@@ -249,7 +249,8 @@
     }
     if (pList && pList.length > 0) {
       poolList.value = pList;
-      activePool.value = poolList.value[0].bucket || poolList.value[0].groupname;
+      activePool.value = poolList.value[0].bucket || poolList.value[0].deviceid;
+      //+ poolList.value[0].deviceid
     } else {
       poolList.value = [];
       activePool.value = '';

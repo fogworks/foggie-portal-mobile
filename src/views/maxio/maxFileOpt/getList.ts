@@ -81,6 +81,10 @@ export default function getList(deviceData) {
     const initToken = async (deviceData) => {
         let token = '';
         // console.log(MaxTokenMap.value, 'getlist-initTokeninitToken--MaxTokenMap.value');
+        CurrentToken.value = '';
+        if (deviceData.deploy_svc_gateway_state !== 'finish') {
+            return;
+        }
         if (MaxTokenMap.value && MaxTokenMap.value[deviceData.device_id]) {
             token = MaxTokenMap.value[deviceData.device_id];
             token = token.split(' ')[1];
@@ -99,7 +103,57 @@ export default function getList(deviceData) {
         }
     };
     const getMyList = async (deviceData) => {
+        rewardList.value = [
+            { name: 'Minning', number: '0', type: 'pool', count: 0 },
+            { name: 'IoT', number: '0', type: 'iot', count: 0, iotNumber: 0 },
+            { name: 'filstation', number: 0, type: 'ipfs', count: 0 },
+        ];
+        spaceData.value = [];
+        myPoolList.value = [];
+        myIotList.value = [];
+        MinerReward.value = '';
+        IOTReward.value = '';
+        fileListArr.value = [
+            {
+                type: "Photos",
+                number: "",
+                capacity: "",
+                name: "Images",
+                total: 0,
+            },
+            {
+                type: "Videos",
+                number: "",
+                capacity: "",
+                name: "Videos",
+                total: 0,
+            },
+            {
+                type: "Audio",
+                number: "",
+                capacity: "",
+                name: "Audio",
+                total: 0,
+            },
+            {
+                type: "Documents",
+                number: "",
+                capacity: "",
+                name: "Documents",
+                total: 0,
+            },
+            {
+                type: "Other",
+                number: "",
+                capacity: "",
+                name: "Other",
+                total: 0,
+            },
+        ];
         if (!deviceData.device_id) {
+            return;
+        }
+        if (deviceData.deploy_svc_gateway_state !== 'finish') {
             return;
         }
         filReward.value = 0;

@@ -36,8 +36,14 @@
           <img src="@/assets/maxio/running.svg" class="running_img" />
         </div>
       </div>
+      <div class="show_max_more" @click="showMoreList" v-if="!isShowMoreList">
+        <img src="@/assets/maxio/more.svg" />
+      </div>
+      <div class="show_max_more rotate_more" @click="hideMoreList" v-if="isShowMoreList">
+        <img src="@/assets/maxio/more.svg" />
+      </div>
       <div class="maxio_home_content">
-        <div class="maxio_home_leftMenu" :class="[showLeft ? '' : 'minWidth']" ref="listRef">
+        <div class="maxio_home_leftMenu" :class="[showLeft ? (isShowMoreList ? 'isShowMoreList' : '') : 'minWidth']" ref="listRef">
           <!-- home_bucket000 -->
           <div class="menu_img" @click="changeList('maxio')">
             <!-- <img src="@/assets/maxio/maxio_name.png" class="left_max_png" /> -->
@@ -175,6 +181,7 @@
   const maxTableDataCy = ref([]);
   const runningDataCy = ref([]);
   const historyDataCy = ref([]);
+  const isShowMoreList = ref(false);
   const leftBucketList = computed(() => {
     return allOrderList.value;
   });
@@ -218,7 +225,12 @@
       await loadMore([0, 1, 2, 3, 4, 6], '', '', '', postData);
     } catch {}
   };
-
+  const showMoreList = () => {
+    isShowMoreList.value = true;
+  };
+  const hideMoreList = () => {
+    isShowMoreList.value = false;
+  };
   const changeMenu = (item, _type) => {
     // console.log('changeMenuchangeMenu', item, _type);
     window.localStorage.homeChooseBucket = JSON.stringify(item);
