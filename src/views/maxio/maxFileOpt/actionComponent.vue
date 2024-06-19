@@ -33,7 +33,7 @@
         <img v-else-if="chooseItem.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
         <img v-else :src="getFileType(chooseItem.name)" alt="" />
         <div class="fileItem_header_right">
-          <div style="width: 50%">{{ chooseItem.fullName }}</div>
+          <div style="width: 200px">{{ chooseItem.fullName }}</div>
           <div v-if="!chooseItem.isDir">{{ chooseItem.date }} · {{ chooseItem.size }}</div>
         </div>
       </div>
@@ -362,6 +362,10 @@
                 <div>
                   <IconDownload @click="handlerClick('download')"></IconDownload>
                   <p>Download</p>
+                </div>
+                <div>
+                  <img src="@/assets/maxio/maxPng.svg" @click="handlerClick('maxPng')" class="maxPng" />
+                  <p>View</p>
                 </div>
               </div>
             </template>

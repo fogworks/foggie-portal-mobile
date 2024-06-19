@@ -9,10 +9,22 @@ import * as grpcService from '@/pb/net_grpc_web_pb.js';
 import '@nutui/nutui/dist/packages/toast/style';
 import { s3Url, poolUrl, maxUrl } from '@/setting.js';
 import moment from 'moment';
-
-export default function useDelete(tableLoading, refresh, orderInfo, header, _metadata) {
+import { useUserStore } from '@/store/modules/user';
+const userStore = useUserStore();
+const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
+const header = computed(() => {});
+export default function useDelete(tableLoading, refresh, orderInfo) {
   const deleteItem = (item) => {
     tableLoading.value = true;
+    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+    let token = MaxTokenMap.value[orderInfo.value.device_id];
+    token = token && token.split(' ')[1];
+    let header = new Prox.default.Header();
+    header.setPeerid(orderInfo.value.peer_id);
+    header.setId(orderInfo.value.foggie_id);
+    header.setToken(token);
+    header.setApptype(appType);
+
     let cids = [];
     let prefixes = [];
     let objects = '';
@@ -39,21 +51,21 @@ export default function useDelete(tableLoading, refresh, orderInfo, header, _met
     ProxDeleteObjectRequest.setObjectType('normal');
     ProxDeleteObjectRequest.setPrefixesList(prefixes);
     let ProxDeleteObjectReq = new Prox.default.DeleteObjectReq();
-    ProxDeleteObjectReq.setHeader(header.value);
+    ProxDeleteObjectReq.setHeader(header);
     ProxDeleteObjectReq.setRequest(ProxDeleteObjectRequest);
 
     let server = new grpcService.default.APIClient(maxUrl, null, null);
     console.log('ProxDeleteObjectReq', ProxDeleteObjectReq);
     server.deleteObject(ProxDeleteObjectReq, metadata.value, (err, res) => {
       if (res) {
-        console.log(res);
+        console.log(res, 'Delete succeeded');
         showToast.success('Delete succeeded');
         tableLoading.value = false;
         nextTick(() => {
           refresh();
         });
       } else {
-        console.log('---deleteObject----', err);
+        console.log('---deleteObject---Delete Failed-', err);
         tableLoading.value = false;
         showToast.fail('Delete Failed');
       }

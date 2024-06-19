@@ -185,11 +185,21 @@
   const fileSocket = ref('');
   const socketDate = ref('');
   const socketToken = ref('');
+  const isMaxPng = ref(false);
+  const isMaxPngUrl = ref('');
   const images = computed(() => {
     let arr = [];
     imgData.value.filter((el) => {
       if (arr.length < 20) {
-        arr.push(el.imgUrl);
+        if (isMaxPng.value) {
+          if (isMaxPngUrl.value === el.imgUrlLarge) {
+            arr.push(el.imgUrlLarge);
+          } else {
+            arr.push(el.imgUrl);
+          }
+        } else {
+          arr.push(el.imgUrl);
+        }
       }
     });
     return arr;
@@ -200,11 +210,10 @@
   const { deleteItem } = useDelete(
     tableLoading,
     () => {
-      //   refresh();
+      refresh();
     },
-    // deviceData,
+    deviceData,
     // header,
-    // metadata,
   );
   function swipeChange(index) {
     imgStartIndex.value = index;
@@ -381,6 +390,9 @@
 
         onOk,
       });
+    } else if (type === 'maxPng') {
+      isMaxPngUrl.value = detailRow.value.imgUrlLarge;
+      isMaxPng.value = true;
     }
   };
 
@@ -2110,7 +2122,9 @@
   .custom-action_sheet {
     display: flex;
     flex-direction: column;
-
+    .nut-action-sheet__title {
+      background-color: #211d1d !important;
+    }
     & > div:not(:last-child) {
       padding: 10px 20px;
       width: 100%;
@@ -2123,6 +2137,7 @@
     & > div:last-child {
       height: 100px;
       background-color: #f7f7f7;
+      background-color: #211d1d;
       font-size: 32px;
       display: flex;
       justify-content: center;

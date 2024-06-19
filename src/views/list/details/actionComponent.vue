@@ -1272,11 +1272,15 @@
     & > div:last-child {
       height: 100px;
       background-color: #f7f7f7;
+      background-color: #211d1d;
       font-size: 32px;
       display: flex;
       justify-content: center;
       align-items: center;
       font-weight: 600;
+    }
+    .nut-action-sheet__title {
+      background-color: #211d1d !important;
     }
   }
 

@@ -498,11 +498,22 @@
     return headerProx2;
   });
   const { cloudPin } = useShare(deviceData, header, deviceData.value && deviceData.value.deviceType, {});
+  const isMaxPng = ref(false);
+  const isMaxPngUrl = ref('');
   provide('getSummary', getSummary);
   const images = computed(() => {
     let arr = [];
     imgArray.value.filter((el) => {
-      arr.push(el.src);
+      //   arr.push(el.src);
+      if (isMaxPng.value) {
+        if (isMaxPngUrl.value === el.imgUrlLarge) {
+          arr.push(el.imgUrlLarge);
+        } else {
+          arr.push(el.imgUrl);
+        }
+      } else {
+        arr.push(el.imgUrl);
+      }
     });
     return arr;
   });
@@ -672,6 +683,9 @@
     if (type === 'move') {
       movePrefix.value = [];
       moveShow.value = true;
+    } else if (type === 'maxPng') {
+      isMaxPngUrl.value = chooseItem.value.imgUrlLarge;
+      isMaxPng.value = true;
     } else if (type === 'download') {
       const objectKey = encodeURIComponent(checkData[0].fullName);
       //   let url = `http://154.31.41.36:9900/o/${deviceData.value.peer_id}/${deviceData.value.foggie_id}/${objectKey}`;

@@ -2300,7 +2300,9 @@
   .custom-action_sheet {
     display: flex;
     flex-direction: column;
-
+    .nut-action-sheet__title {
+      background-color: #211d1d !important;
+    }
     & > div:not(:last-child) {
       padding: 10px 20px;
       width: 100%;
