@@ -51,13 +51,13 @@ export default function getList(deviceData) {
             name: "Documents",
             total: 0,
         },
-        {
-            type: "Other",
-            number: "",
-            capacity: "",
-            name: "Other",
-            total: 0,
-        },
+        // {
+        //     type: "Other",
+        //     number: "",
+        //     capacity: "",
+        //     name: "Other",
+        //     total: 0,
+        // },
     ]);
     let allCount = ref(0);
     let allSize = ref("");
@@ -76,7 +76,7 @@ export default function getList(deviceData) {
     rewardList.value = [
         { name: 'Minning', number: '0', type: 'pool', count: 0 },
         { name: 'IoT', number: '0', type: 'iot', count: 0, iotNumber: 0 },
-        { name: 'filstation', number: 0, type: 'ipfs', count: 0 },
+        { name: 'Filstation', number: 0, type: 'ipfs', count: 0 },
     ];
     const initToken = async (deviceData) => {
         let token = '';
@@ -106,7 +106,7 @@ export default function getList(deviceData) {
         rewardList.value = [
             { name: 'Minning', number: '0', type: 'pool', count: 0 },
             { name: 'IoT', number: '0', type: 'iot', count: 0, iotNumber: 0 },
-            { name: 'filstation', number: 0, type: 'ipfs', count: 0 },
+            { name: 'Filstation', number: 0, type: 'ipfs', count: 0 },
         ];
         spaceData.value = [];
         myPoolList.value = [];
@@ -142,13 +142,13 @@ export default function getList(deviceData) {
                 name: "Documents",
                 total: 0,
             },
-            {
-                type: "Other",
-                number: "",
-                capacity: "",
-                name: "Other",
-                total: 0,
-            },
+            // {
+            //     type: "Other",
+            //     number: "",
+            //     capacity: "",
+            //     name: "Other",
+            //     total: 0,
+            // },
         ];
         if (!deviceData.device_id) {
             return;
@@ -160,7 +160,7 @@ export default function getList(deviceData) {
         rewardList.value = [
             { name: 'Minning', number: '0', type: 'pool', count: 0 },
             { name: 'IoT', number: '0', type: 'iot', count: 0, iotNumber: 0 },
-            { name: 'filstation', number: 0, type: 'ipfs', count: 0 },
+            { name: 'Filstation', number: 0, type: 'ipfs', count: 0 },
         ];
         currentDeviceData.value = deviceData;
 
@@ -194,7 +194,7 @@ export default function getList(deviceData) {
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IoT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
-                    { name: 'filstation', number: '0.0000', type: 'ipfs', count: filReward.value },
+                    { name: 'Filstation', number: '0.0000', type: 'ipfs', count: filReward.value },
                 ];
 
             }
@@ -235,7 +235,7 @@ export default function getList(deviceData) {
                         rewardList.value = [
                             { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                             { name: 'IoT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
-                            { name: 'filstation', number: filReward.value, type: 'ipfs', count: 0 },
+                            { name: 'Filstation', number: filReward.value, type: 'ipfs', count: 0 },
                         ];
                         window.localStorage.setItem("rewardList", JSON.stringify(rewardList.value));
                     });
@@ -271,7 +271,7 @@ export default function getList(deviceData) {
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IoT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
-                    { name: 'filstation', number: filReward.value, type: 'ipfs', count: 0 },
+                    { name: 'Filstation', number: filReward.value, type: 'ipfs', count: 0 },
                 ];
                 window.localStorage.setItem("myIotList", JSON.stringify(myIotList.value));
                 window.localStorage.setItem("rewardList", JSON.stringify(rewardList.value));
@@ -307,14 +307,16 @@ export default function getList(deviceData) {
                 mySpaceInfo.value = res.toObject().result;
                 // console.log(mySpaceInfo.value, 'mySpaceInfo')
                 for (var key in mySpaceInfo.value) {
-                    let _item = { name: key, value: mySpaceInfo.value[key] }
+                    let _item = {
+                        name: key.charAt(0).toUpperCase() + key.slice(1)
+                        , value: mySpaceInfo.value[key]
+                    }
                     if (key !== 'total') {
                         spaceData.value.push(_item);
                     }
                 }
                 // console.log(spaceData.value, 'spaceDataspaceData');
                 window.localStorage.setItem("spaceData", JSON.stringify(spaceData.value));
-                // console.log(spaceData.value, ' spaceData.value')
             }
 
         });
@@ -357,7 +359,7 @@ export default function getList(deviceData) {
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IoT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
-                    { name: 'filstation', number: filReward.value, type: 'ipfs', count: 0 },
+                    { name: 'Filstation', number: filReward.value, type: 'ipfs', count: 0 },
                 ];
             }
             // console.log(res, 'pool111', MinerReward.value);
@@ -370,7 +372,7 @@ export default function getList(deviceData) {
                 rewardList.value = [
                     { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },
                     { name: 'IoT', number: IOTReward.value, type: 'iot', count: myIotList.value.length, iotNumber: myIotNumber.value },
-                    { name: 'filstation', number: filReward.value, type: 'ipfs', count: 0 },
+                    { name: 'Filstation', number: filReward.value, type: 'ipfs', count: 0 },
                 ];
                 window.localStorage.setItem("IOTReward", JSON.stringify(IOTReward.value));
                 window.localStorage.setItem("rewardList", JSON.stringify(rewardList.value));
@@ -404,7 +406,7 @@ export default function getList(deviceData) {
                 allSize.value = getfilesize(res.getCategorysum().getTotal());
                 res.getCategoriesList().map((item: any) => {
                     let index = item.getCategory();
-                    if (index > 0) {
+                    if (index > 0 && index < 5) {
                         fileListArr.value[index - 1].number = item.getCount();
                         fileListArr.value[index - 1].capacity = getfilesize(item.getTotal(),);
                         fileListArr.value[index - 1].total = item.getTotal();

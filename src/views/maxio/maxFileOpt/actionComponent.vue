@@ -438,7 +438,10 @@
   import HLSVideo from './hlsVideo.vue';
   import MyAudio from './myAudio.vue';
   //   import * as Prox from '@/pb/net_pb.js';
-  import * as Prox from '@/pb/prox_pb.js';
+  //   import * as Prox from '@/pb/prox_pb.js';
+  //   import * as grpcService from '@/pb/net_grpc_web_pb.js';
+
+  import * as Prox from '@/pb/net_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
   import useOrderInfo from './useOrderInfo.js';
   import '@nutui/nutui/dist/packages/dialog/style';
@@ -787,12 +790,12 @@
       return;
     }
 
-    let _token = CurrentToken.value;
+    // let _token = CurrentToken.value;
 
     let server = new grpcService.default.APIClient(maxUrl, null, null);
-    let header = new Prox.default.ProxHeader();
-    let listObject = new Prox.default.ProxListObjectsRequest();
-    let requestReq = new Prox.default.ProxListObjectsReq();
+    // let header = new Prox.default.ProxHeader();
+    let listObject = new Prox.default.ListObjectsRequest();
+    let requestReq = new Prox.default.ListObjectsReq();
     const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
     let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
     let metadata = {
@@ -800,14 +803,15 @@
       'X-Sid': orderInfo.value.peer_id,
     };
 
-    header.setPeerid(orderInfo.value.peer_id);
-    header.setId(orderInfo.value.foggie_id);
-    header.setToken(_token);
-    header.setApptype(appType);
+    // header.setPeerid(orderInfo.value.peer_id);
+    // header.setId(orderInfo.value.foggie_id);
+    // header.setToken(_token);
+    // header.setApptype(appType);
 
     // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     // server = new grpcService.default.ServiceClient(ip, null, null);
     // let listObject = new Prox.default.ProxListObjectsRequest();
+
     listObject.setPrefix(list_prefix);
     let delimiter: string;
     let categoryParam: string | number;
@@ -831,8 +835,9 @@
     listObject.setCategory(categoryParam);
     listObject.setDate('');
     // let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
+    console.log('---requestReq---', requestReq);
     server.listObjects(
       requestReq,
       metadata,
@@ -925,7 +930,7 @@
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
           showToast.hide('file_list');
-          console.log('err----', err);
+          console.log('err--listObjectslistObjects--', err);
         }
       },
     );
@@ -949,7 +954,7 @@
       showToast.hide('file_list');
       return;
     }
-    console.log('data', data);
+    // console.log('data', data);
     if (data.err) {
       showToast.fail('Failed to  retrieve data. Please try again later');
     }
@@ -1172,9 +1177,9 @@
         }
         return false;
       }
-      let ip = `https://${bucketName.value}.${poolUrl}:7007`;
-      server = new grpcService.default.ServiceClient(ip, null, null);
-      let ProxRenameObject = new Prox.default.ProxRenameObject();
+      //   let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+      server = new grpcService.default.APIClient(maxUrl, null, null);
+      let ProxRenameObject = new Prox.default.RenameObject();
       ProxRenameObject.setHeader(header.value);
       ProxRenameObject.setSourceobject(encodeURIComponent(checkData[index].fullName));
       ProxRenameObject.setTargetobject(encodeURIComponent(targetObject(checkData[index])));

@@ -10,6 +10,7 @@
         </div>
 
         <div class="maxio_title_box">
+          <img src="@/assets/maxio/beta.svg" class="betaPng" />
           <div class="maxio_title">
             <img src="@/assets/maxio/maxio.png" alt="" />
             <div class="title_text">
@@ -40,6 +41,12 @@
           </div>
           <div class="menu_img" @click="changeTab('pool')">
             <img src="@/assets/maxio/pool.svg" alt="" />
+          </div>
+          <div class="menu_img" @click="changeTab('airdrop')">
+            <img src="@/assets/maxio/airDrop.svg" alt="" />
+          </div>
+          <div class="menu_img" @click="changeTab('wallet')">
+            <img src="@/assets/maxio/walletBind.svg" alt="" />
           </div>
           <!-- <div class="menu_img" @click="changeTab('set')">
             <img src="@/assets/maxio/set.svg" alt="" />
@@ -309,6 +316,10 @@
       router.push({ path: '/maxSet' });
     } else if (type === 'home') {
       router.push({ path: '/maxio' });
+    } else if (type === 'airdrop') {
+      router.push({ path: '/airDropList' });
+    } else if (type === 'wallet') {
+      router.push({ path: '/walletList' });
     }
   };
   const handleTime = (item) => {

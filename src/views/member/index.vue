@@ -2,6 +2,11 @@
   <div class="userInfo">
     <div class="user_bg_box">
       <div class="userHeader">
+        <div class="userHeaderLogo">
+          <img src="@/assets/maxio/dmcLogo.png" />
+          <!-- <img src="@/assets/maxio/foggLogo1.png" /> -->
+          <img src="@/assets/maxio/fogLogo.png" class="fogLogo" />
+        </div>
         <div class="user_header_box">
           <div style="position: relative">
             <img :src="userAvatar ? userAvatar : require('@/assets/user.svg')" alt="" srcset="" @click="clickInput" />
@@ -12,6 +17,7 @@
           </div>
 
           <div class="user_header_box_content">
+            <!-- <img src="@/assets/maxio/beta.svg" class="betaPng" /> -->
             <div class="accTitle">{{ dmcAccount }}</div>
             <div class="email">Email: {{ email }}</div>
             <!-- <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div> -->
@@ -535,12 +541,26 @@
 
         & > .user_header_box_content {
           //   text-align: center;
+          position: relative;
           .accTitle {
             color: #fff;
             font-size: 40px;
             font-weight: 600;
             font-family: 'Times New Roman', Times, serif;
             line-height: 40px;
+            position: relative;
+            &::after {
+              content: '';
+              background: url('@/assets/maxio/beta.svg') center center;
+              background-size: 90px auto;
+              background-repeat: no-repeat;
+              position: absolute;
+              top: -5px;
+              //   right: 0;
+              width: 100px;
+              height: 50px;
+              margin-left: 10px;
+            }
           }
 
           .email {
@@ -564,6 +584,16 @@
             span {
               color: #fff;
             }
+          }
+          .betaPng {
+            position: absolute;
+            right: 40px;
+            top: -20px;
+            width: 80px !important;
+            height: auto !important;
+            border: none !important;
+            border-radius: 0;
+            box-shadow: none !important;
           }
         }
       }
@@ -645,6 +675,19 @@
             margin-top: 10px;
           }
         }
+      }
+    }
+    .userHeaderLogo {
+      display: flex;
+      border-bottom: 1px solid #dccfcf30;
+      padding-bottom: 7px;
+      margin: 0 -40px;
+      img {
+        // height: 90px;
+        // width: auto;
+        width: 50%;
+        height: auto;
+        object-fit: contain;
       }
     }
 

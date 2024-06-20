@@ -329,8 +329,12 @@
 </template>
 
 <script setup lang="ts">
+  //   import * as Prox from '@/pb/net_pb.js';
+  //   import * as grpcService from '@/pb/net_grpc_web_pb.js';
+
   import * as Prox from '@/pb/net_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
+
   import ActionComponent from './actionComponent.vue';
   //   import ImgList from './imgList.vue';
   import useDelete from './useDelete.js';
@@ -1189,7 +1193,7 @@
       let type = deviceData.value.device_type == 'space' || deviceData.value.device_type == 3 ? 'space' : 'foggie';
       let server = new grpcService.default.APIClient(maxUrl, null, null);
       let ProxFindRequest = new Prox.default.FindRequest();
-
+      console.log('---header.value-----', header.value);
       ProxFindRequest.setHeader(header.value);
       ProxFindRequest.setCid('');
       ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
@@ -1320,17 +1324,24 @@
   onMounted(async () => {
     console.log('maxfileAllList---get_vood_token');
     initToken();
-    doSearch('', prefix.value, true);
   });
   const initToken = async () => {
     let token = '';
-    console.log(MaxTokenMap.value, 'maxfilelist----initTokeninitToken--MaxTokenMap.value');
+    // console.log(
+    //   MaxTokenMap.value,
+    //   deviceData.value.device_id,
+    //   MaxTokenMap.value[deviceData.value.device_id],
+    //   'maxfilelist----initTokeninitToken--MaxTokenMap.value',
+    // );
     if (MaxTokenMap.value && MaxTokenMap.value[deviceData.value.device_id]) {
       token = MaxTokenMap.value[deviceData.value.device_id];
       token = token.split(' ')[1];
       deviceToken.value = token;
+      doSearch('', prefix.value, true);
+      await initSk(deviceData.value, deviceToken.value);
+      initPage();
     } else {
-      console.log('maxfilelist--initTokeninitToken---initToken');
+      console.log('no---token----maxfilelist--initTokeninitToken---initToken');
       token = await get_vood_token({ vood_id: deviceData.value.device_id });
       if (token) {
         userStore.setMaxTokenMap({
@@ -1339,9 +1350,10 @@
         });
       }
       deviceToken.value = token.data.access_token;
+      doSearch('', prefix.value, true);
+      await initSk(deviceData.value, deviceToken.value);
+      initPage();
     }
-    await initSk(deviceData.value, deviceToken.value);
-    initPage();
   };
 
   const initPage = async () => {

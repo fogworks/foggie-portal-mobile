@@ -204,6 +204,16 @@
     });
     return arr;
   });
+  const appType = ref('');
+  appType.value = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+  const header = computed(() => {
+    let headerProx2 = new Prox.default.Header();
+    headerProx2.setPeerid(deviceData.value.peer_id);
+    headerProx2.setId(deviceData.value.foggie_id);
+    headerProx2.setToken(CurrentToken.value);
+    headerProx2.setApptype(appType.value);
+    return headerProx2;
+  });
   const selectArr = computed(() => {
     return [detailRow.value];
   });
@@ -284,7 +294,7 @@
     if (type === 'download') {
       const objectKey = encodeURIComponent(checkData.fullName);
       const headers = getSignHeaders(objectKey);
-      console.log('headers:', headers);
+      //   console.log('headers:', headers);
       const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
       if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
         $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
@@ -569,7 +579,7 @@
 
       let cur_cid = '';
       for (let i = 0; i < data.prefixpins?.length; i++) {
-        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
+        if (data.prefixpins[i]?.prefix === data.prefix && data.prefixpins[i]?.cid) {
           cur_cid = data.prefixpins[i].cid;
         }
       }

@@ -13,6 +13,7 @@
         </div>
 
         <div class="maxio_title_box">
+          <img src="@/assets/maxio/beta.svg" class="betaPng" />
           <div class="maxio_title" v-if="!showBucket">
             <img src="@/assets/maxio/maxio1.png" alt="" />
             <div class="title_text">
@@ -234,6 +235,7 @@
   const changeMenu = (item, _type) => {
     // console.log('changeMenuchangeMenu', item, _type);
     window.localStorage.homeChooseBucket = JSON.stringify(item);
+    isShowMoreList.value = false;
     userStore.setCurrentLeftTab(item);
     if (item.device_type === 3) {
       currentBucketData.value = item;

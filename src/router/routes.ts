@@ -334,6 +334,24 @@ export const routes = [
                 },
             },
             {
+                path: 'airDropList',
+                name: 'AirDropList',
+                component: () => import('@/views/maxio/airDropList.vue'),
+                meta: {
+                    notBar: true,
+                    notKeepAlive: true,
+                },
+            },
+            {
+                path: 'walletList',
+                name: 'WalletList',
+                component: () => import('@/views/maxio/walletList.vue'),
+                meta: {
+                    notBar: true,
+                    notKeepAlive: true,
+                },
+            },
+            {
                 path: 'maxSet',
                 name: 'maxSet',
                 component: () => import('@/views/maxio/maxSet.vue'),
