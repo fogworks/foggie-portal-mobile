@@ -21,7 +21,7 @@
       >
         <template #rightin>
           <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" />
-          <img src="@/assets/maxio/Close.svg" class="search_img_icon" @click="isShowSearch = false" />
+          <img src="@/assets/maxio/searchBack.svg" class="search_img_icon" @click="isShowSearch = false" />
         </template>
       </nut-searchbar>
       <div>
@@ -124,8 +124,8 @@
         v-if="tableData.length"
         load-more-txt="No more content"
         :class="['file_list', cardMode ? 'card_list' : '']"
-        v-model="infinityValue"
-        :has-more="!!continuationToken"
+        v-model="hasMore"
+        :has-more="hasMore"
         @load-more="loadMore"
       >
         <nut-checkbox-group v-model="checkedItem" ref="group" :max="30">
@@ -176,7 +176,7 @@
                     <Loading width="16" height="16"></Loading>
                   </template>
                 </nut-image>
-                <IconImage1 v-else-if="item.category == 1"></IconImage1>
+                <!-- <IconImage1 v-else-if="item.category == 1"></IconImage1> -->
                 <img v-else :src="getFileType(item.name)" alt="" />
                 <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
               </template>
@@ -395,7 +395,6 @@
     category: '',
     keyWord: '',
     infinityValue: false,
-    hasMore: false,
     showActionPop: false,
     tableData: [],
     chooseItem: {
@@ -444,6 +443,7 @@
   const showSocketDialog = ref(false);
   const currentFolder = ref('');
   const isError = ref(false);
+
   const {
     actionRef,
     imgPreRef,
@@ -521,7 +521,13 @@
     });
     return arr;
   });
-
+  const hasMore = computed(() => {
+    if (continuationToken.value) {
+      return true;
+    } else {
+      return false;
+    }
+  });
   const showSearch = () => {
     isShowSearch.value = true;
   };
@@ -781,7 +787,7 @@
 
   async function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
     // console.log('----getFileList------');
-    console.log(scroll, 'aaaaaa---dd-d-dlist', deviceData.value.device_id, tableData.value);
+    console.log(scroll, prefix, 'aaaaaa---dd-d-dlist', deviceData.value.device_id, tableData.value);
     if (!deviceData.value.device_id) {
       return;
     }
@@ -923,7 +929,7 @@
             prefixpins: res.getPrefixpinsList(),
           };
           isError.value = false;
-          console.log('transferDatatransferDatatransferData', res);
+          console.log('transferDatatransferDatatransferData', transferData);
           initRemoteData(transferData, reset, 0);
           showToast.hide('file_list');
         } else if (err) {
@@ -1114,6 +1120,7 @@
         }
       }
     }
+
     if (data.isTruncated) {
       if (moveShow.value) {
         continuationToken2.value = data.continuationToken;
@@ -1121,8 +1128,9 @@
         continuationToken.value = data.continuationToken;
       }
     } else {
-      continuationToken.value = '';
+      continuationToken.value = false;
     }
+    console.log(data.isTruncated, 'data.isTruncated)', continuationToken.value);
     // console.log('max--alll-tableDate', tableData.value);
     tableLoading.value = false;
     showToast.hide('file_list');
@@ -1338,9 +1346,9 @@
       token = MaxTokenMap.value[deviceData.value.device_id];
       token = token.split(' ')[1];
       deviceToken.value = token;
+      initPage();
       doSearch('', prefix.value, true);
       await initSk(deviceData.value, deviceToken.value);
-      initPage();
     } else {
       console.log('no---token----maxfilelist--initTokeninitToken---initToken');
       token = await get_vood_token({ vood_id: deviceData.value.device_id });
@@ -1351,13 +1359,14 @@
         });
       }
       deviceToken.value = token.data.access_token;
+      initPage();
       doSearch('', prefix.value, true);
       await initSk(deviceData.value, deviceToken.value);
-      initPage();
     }
   };
 
   const initPage = async () => {
+    console.log(route?.query?.prefix, 'route?.query?.prefix');
     if (route?.query?.prefix) {
       prefix.value = route?.query?.prefix?.split('/');
     }

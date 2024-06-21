@@ -126,7 +126,7 @@
                 <img src="@/assets/maxio/link.svg" v-else />
               </div>
               <div class="show_offline_item_content">
-                <div class="show_offline_item_title"> {{ item.name }}</div>
+                <div class="show_offline_item_title" @click="gotoFile(item.name)"> {{ item.name }}</div>
                 <div class="show_offline_item_provider" v-if="item.pinsList && item.pinsList.length > 0">
                   {{
                     item.pinsList && item.pinsList.length && item.pinsList[0].provider.indexOf('127.0.0.1') > -1
@@ -238,6 +238,8 @@
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
   const currentTab = ref('current');
   import loadingImg from '@/components/loadingImg/index.vue';
+  import { useRouter } from 'vue-router';
+  const router = useRouter();
 
   const my_offLineList = ref([]);
   const my_runningList = ref([]);
@@ -425,6 +427,21 @@
     // } else {
     //     offlineList.value = isOfflineArr.value;
     // }
+  };
+  const gotoFile = (name) => {
+    console.log(name, 'gotoFile');
+    let _name = name.split('/');
+    let file = _name[_name.length - 1];
+    let folder = name.replace(file, '');
+    console.log(folder, '11111');
+    let prefix = folder.split('/').slice(0, -1);
+    const cloudQuery = {
+      id: deviceData.value.id,
+    };
+    router.push({
+      path: '/maxFile',
+      query: { ...cloudQuery, category: 0, prefix: prefix.join('/') },
+    });
   };
   const getTokenMap = async () => {
     console.log('offline---getTokenMap');
@@ -825,12 +842,14 @@
           margin-bottom: 10px;
           background-clip: text;
           color: transparent;
-          background-image: linear-gradient(89deg, #1495ef 0%, #df7a3a 50%, #ffd07f 100%);
+          //   background-image: linear-gradient(89deg, #1495ef 0%, #df7a3a 50%, #ffd07f 100%);
           font-weight: bold;
           white-space: nowrap;
           text-overflow: ellipsis;
           width: 100%;
           overflow: hidden;
+          color: rgb(255, 158, 13);
+          text-decoration: underline;
         }
         .show_offline_item_provider {
           font-size: 20px;
