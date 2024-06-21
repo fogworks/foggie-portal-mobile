@@ -90,7 +90,6 @@ export default function getList(deviceData) {
             token = token.split(' ')[1];
             CurrentToken.value = token;
         } else {
-            console.log('home--initTokeninitToken---initToken');
             token = await get_vood_token({ vood_id: deviceData.device_id });
             if (token) {
                 userStore.setMaxTokenMap({
@@ -99,7 +98,7 @@ export default function getList(deviceData) {
                 });
             }
             CurrentToken.value = token.data.access_token;
-            console.log(' CurrentToken.value', CurrentToken.value);
+            // console.log(' CurrentToken.value', CurrentToken.value);
         }
     };
     const getMyList = async (deviceData) => {
@@ -230,7 +229,7 @@ export default function getList(deviceData) {
                     // console.log(res, 'ressss', add, address);
                     address && getScheduledRewards(address).then((res) => {
                         let value = res.rewards && Number(res.rewards) / 1e18;
-                        console.log('getScheduledRewards----eee', res, value);
+                        // console.log('getScheduledRewards----eee', res, value);
                         filReward.value = Number(value).toFixed(4);
                         rewardList.value = [
                             { name: 'Minning', number: MinerReward.value, type: 'pool', count: myPoolList.value.length },

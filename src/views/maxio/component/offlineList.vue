@@ -111,7 +111,7 @@
               <div class="show_offline_itemImgBox">
                 <!-- <img src="@/assets/maxio/file.svg" /> -->
                 <img
-                  src="@/assets/maxio/http.svg"
+                  src="@/assets/maxio/http1.svg"
                   v-if="item.pinsList && item.pinsList.length && item.pinsList[0].provider.indexOf('http') > -1"
                 />
                 <img
@@ -122,6 +122,7 @@
                   src="@/assets/maxio/ipfsLink.svg"
                   v-else-if="item.pinsList && item.pinsList.length && item.pinsList[0].provider.indexOf('ipfs') > -1"
                 />
+                <img src="@/assets/logo-dog.svg" v-else-if="item.pinsList && item.pinsList.length && item.pinsList[0].cid" />
                 <img src="@/assets/maxio/link.svg" v-else />
               </div>
               <div class="show_offline_item_content">
@@ -151,7 +152,7 @@
                   <div class="show_offline_item_left">
                     <img src="@/assets/maxio/complete.svg" v-if="item.status === 'pinned' || item.status === 'pulled'" />
                     <img src="@/assets/maxio/failed.svg" v-if="item.status !== 'pinned' && item.status !== 'pulled'" />
-                    {{ item.status === 'pinned' || item.status === 'pulled' ? 'complete' : 'failed' }}</div
+                    {{ item.status === 'pinned' || item.status === 'pulled' ? 'Complete' : 'Failed' }}</div
                   >
                   <div class="show_offline_item_center">
                     <!-- <div class="show_offline_item_have">
@@ -169,7 +170,13 @@
                     >
                   </div>
                   <div class="show_offline_item_right">
-                    {{ item.pinsList && item.pinsList.length && item.pinsList[0] && item.pinsList[0].duration }}s
+                    {{
+                      item.pinsList &&
+                      item.pinsList.length &&
+                      item.pinsList[0] &&
+                      item.pinsList[0].duration &&
+                      convertSecondsToHMS(item.pinsList[0].duration)
+                    }}
                   </div>
                 </div>
                 <div class="show_created"> {{ transferUTCTime(item.created) }} </div>
@@ -199,7 +206,7 @@
           @change="changeLinkName(offlineLink)"
         />
         <div class="offline_label">FileName</div>
-        <nut-input v-model="offlineLinkName" placeholder="FileName"></nut-input>
+        <nut-input v-model="offlineLinkName" placeholder="FileName" clearable show-clear-icon></nut-input>
         <div class="folder_title">Save As: offlineFolder/{{ offlineLinkName }}</div>
         <div class="bottom_btns">
           <nut-button class="offline_add_link_add offline_add_link_back" type="primary" @click="showAdd = false">Back</nut-button>
@@ -308,6 +315,26 @@
     }
     offlineLinkName.value = name;
   };
+  const convertSecondsToHMS = (seconds, dateFormat = 'imss') => {
+    var obj = {};
+    obj.H = Number.parseInt(seconds / 3600);
+    obj.i = Number.parseInt((seconds - obj.H * 3600) / 60);
+    obj.s = Number.parseInt(seconds - obj.H * 3600 - obj.i * 60);
+    // if (obj.H < 10) {
+    //   obj.H = '0' + obj.H;
+    // }
+    // if (obj.i < 10) {
+    //   obj.i = '0' + obj.i;
+    // }
+    if (obj.s < 10) {
+      obj.s = '0' + obj.s;
+    }
+
+    // 3.解析
+    var rs = dateFormat.replace('H', obj.H).replace('i', obj.i).replace('s', obj.s);
+    return rs;
+  };
+
   const showListPage = () => {
     showAdd.value = false;
     showLists(true);

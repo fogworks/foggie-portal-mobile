@@ -16,7 +16,7 @@
         @clear="doSearch('', prefix, true)"
         placeholder="Search By Name"
         v-model="keyWord"
-        :class="[isShowSearch ? 'maxWidth' : 'min']"
+        :class="[isShowSearch ? 'maxWidthSearch' : 'minWidthSearch']"
         class="top_search_bar"
       >
         <template #rightin>
@@ -780,8 +780,8 @@
   };
 
   async function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
-    console.log('----getFileList------');
-    // console.log(prefix, 'aaaaaa---dd-d-dlist', deviceData.value.device_id);
+    // console.log('----getFileList------');
+    console.log(scroll, 'aaaaaa---dd-d-dlist', deviceData.value.device_id, tableData.value);
     if (!deviceData.value.device_id) {
       return;
     }
@@ -816,7 +816,7 @@
       delimiter = category.value != 0 ? '' : '/';
       categoryParam = category.value;
     }
-    console.log(prefix, list_prefix, delimiter, 'getFileList---delimiterdelimiterdelimiter', categoryParam, category.value);
+    // console.log(prefix, list_prefix, delimiter, 'getFileList---delimiterdelimiterdelimiter', categoryParam, category.value);
     listObject.setPrefix(list_prefix);
     listObject.setDelimiter(delimiter);
     listObject.setEncodingType('');
@@ -825,13 +825,13 @@
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
     listObject.setKeyMarker('');
-    listObject.setOrderby('lastmodifiedtime desc');
+    listObject.setOrderby(''); //lastmodifiedtime desc
     listObject.setTags('');
     listObject.setCategory(category.value);
     listObject.setDate('');
     requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
-    console.log('requestReq', requestReq);
+    console.log('max----requestReq', requestReq);
     server.listObjects(
       requestReq,
       metadata,
@@ -923,7 +923,7 @@
             prefixpins: res.getPrefixpinsList(),
           };
           isError.value = false;
-          //   console.log('transferDatatransferDatatransferData', transferData);
+          console.log('transferDatatransferDatatransferData', res);
           initRemoteData(transferData, reset, 0);
           showToast.hide('file_list');
         } else if (err) {
@@ -968,7 +968,7 @@
         imgArray.value = [];
       }
     }
-    console.log('initRemoteData', data, dir);
+    // console.log('max--fileList---initRemoteData', data, dir);
     // isPin
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
@@ -1028,7 +1028,7 @@
     }
     currentFolder.value = data.prefix;
     window.sessionStorage.setItem('currentFolder', currentFolder.value);
-    console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
+    // console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
     // datalist
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
@@ -1123,6 +1123,7 @@
     } else {
       continuationToken.value = '';
     }
+    // console.log('max--alll-tableDate', tableData.value);
     tableLoading.value = false;
     showToast.hide('file_list');
   };
@@ -1172,7 +1173,7 @@
   provide('handleImg', handleImg);
 
   function doSearch(scroll: string = '', prefixArg: any[] = [], reset = false) {
-    console.log('----doSearch------', category.value);
+    console.log('----doSearch------', category.value, scroll);
     // if (tableLoading.value) return false;
     // if (category.value == 1 && !moveShow.value && !renameShow.value) {
     //   imgListRef.value.refresh();
@@ -1322,7 +1323,7 @@
   //     { deep: true },
   //   );
   onMounted(async () => {
-    console.log('maxfileAllList---get_vood_token');
+    // console.log('maxfileAllList---get_vood_token');
     initToken();
   });
   const initToken = async () => {

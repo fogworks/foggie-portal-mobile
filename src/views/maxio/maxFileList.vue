@@ -234,14 +234,14 @@
   }
   function clickFIleItem(params) {
     detailRow.value = params;
-    console.log(params, 'clickFIleItemclickFIleItemparams', detailRow.value, detailRow.value.originalSize);
+    // console.log(params, 'clickFIleItemclickFIleItemparams', detailRow.value, detailRow.value.originalSize);
     fileItemPopupIsShow.value = true;
     if (detailRow.value.originalSize > 1024 * 1024 * 200 && detailRow.value.category == 1) {
       showToast.text('The file is too large, please download and view');
     }
   }
   function clickFIleItemDetail(params) {
-    console.log('list00-----clickFIleItemDetail', params);
+    // console.log('list00-----clickFIleItemDetail', params);
     fileItemDetailPopupIsShow.value = true;
   }
   order_id.value = cloudQuery.value.id;
@@ -251,7 +251,7 @@
   const detailRow = reactive({ value: {} });
 
   const handleRow = (row) => {
-    console.log('handleRow-------', row, row.name.substring(row.name.lastIndexOf('.') + 1));
+    // console.log('handleRow-------', row, row.name.substring(row.name.lastIndexOf('.') + 1));
     detailRow.value = row;
     const type = row.name.substring(row.name.lastIndexOf('.') + 1);
 
@@ -269,7 +269,7 @@
       wordVisible.value = true;
     } else if (['doc', 'docx'].includes(type)) {
       wordVisible.value = true;
-      console.log(row.imgUrlLarge);
+      //   console.log(row.imgUrlLarge);
     } else if (['ppt', 'pptx'].includes(type)) {
     } else if (row.imgUrlLarge) {
       imgUrl.value = row.imgUrlLarge;
@@ -313,7 +313,7 @@
             }
           })
           .then((blob) => {
-            console.log(blob, 'blob');
+            // console.log(blob, 'blob');
             console.log('Blob type:', blob.type);
 
             // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
@@ -428,14 +428,14 @@
     header.setApptype(appType);
 
     listObject.setPrefix('');
-    listObject.setDelimiter('');
+    listObject.setDelimiter('/');
     listObject.setEncodingType('');
     listObject.setMaxKeys(20);
     listObject.setStartAfter('');
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
     listObject.setKeyMarker('');
-    listObject.setOrderby('lastmodifiedtime desc');
+    listObject.setOrderby(''); //lastmodifiedtime desc
     listObject.setTags('');
     listObject.setCategory(0);
     listObject.setDate('');
@@ -633,10 +633,10 @@
         name = name.split(data.prefix)[1];
       }
       if (name.indexOf('/') > 0 && name[name.length - 1] != '/') {
-        console.log(name.indexOf('/') > 0, 'name.indexOf(' / ') > 0');
+        // console.log(name.indexOf('/') > 0, 'name.indexOf(' / ') > 0');
         name = name.split('/')[name.split('/').length - 1];
       } else if (name.indexOf('/') > 0) {
-        console.log(name.indexOf('/') > 0, 'name.indexOf(' / ') > 01111111');
+        // console.log(name.indexOf('/') > 0, 'name.indexOf(' / ') > 01111111');
         name = name.split('/')[name.split('/').length - 2];
       }
       let isPersistent = data.content[j].isPersistent;
@@ -741,7 +741,7 @@
     tableData.value = [];
     imgData.value = [];
     otherData.value = [];
-    console.log('onMounted', tableData.value, imgData.value, otherData.value);
+    // console.log('onMounted', tableData.value, imgData.value, otherData.value);
   });
 
   watch(
@@ -753,7 +753,7 @@
         tableData.value = [];
         imgData.value = [];
         otherData.value = [];
-        console.log(tableData.value, imgData.value, otherData.value);
+        // console.log(tableData.value, imgData.value, otherData.value);
         getFileList();
         getSummary(deviceData.value, val);
       }
@@ -785,6 +785,7 @@
   watch(
     tableData,
     (val) => {
+      //   console.log('max--tableDate', tableData.value);
       if (val.length) {
         imgData.value = [];
         otherData.value = [];

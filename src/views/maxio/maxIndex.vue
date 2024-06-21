@@ -183,7 +183,7 @@
     let totalSum = _value.reduce((a, b) => {
       return a + b;
     });
-    console.log(totalSum, 'totalSum');
+    // console.log(totalSum, 'totalSum');
     chartData = chartData.filter((item) => {
       return item.name !== 'total' && item.name !== 'remaining';
     });

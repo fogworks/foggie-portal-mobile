@@ -37,7 +37,7 @@ export default function initMaxFile() {
       accessKeyId.value = MyAkList.value.accessKeyId;
       secretAccessKey.value = MyAkList.value.secretAccessKey;
     } else {
-      console.log(MyAkList.value, ' MyAkList.value');
+      //   console.log(MyAkList.value, ' MyAkList.value');
       let server = new grpcService.default.APIClient(maxUrl, null, null);
       header.value = new Prox.default.Header();
       header.value.setPeerid(deviceData.peer_id);
@@ -106,7 +106,7 @@ export default function initMaxFile() {
           });
           filesCount.value = contentList?.[0]?.count || 0;
           usedSize.value = contentList?.[0]?.total || 0;
-          console.log('getSummary', filesCount.value, usedSize.value);
+          //   console.log('getSummary', filesCount.value, usedSize.value);
         }
       });
     });

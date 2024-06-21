@@ -300,7 +300,7 @@
     // topText.value = topShow.value ? '离线任务创建中......' : '';
   };
   const setBucket = async (item) => {
-    console.log('setBucket--0---------', item);
+    // console.log('setBucket--0---------', item);
     window.localStorage.setItem('homeChooseBucket', JSON.stringify(item));
     userStore.setCurrentLeftTab(item);
     if (item.device_type === 3) {

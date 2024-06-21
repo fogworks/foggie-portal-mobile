@@ -822,6 +822,7 @@
       delimiter = category.value != 0 ? '' : '/';
       categoryParam = category.value;
     }
+    console.log('categoryParamcategoryParamcategoryParam', delimiter, categoryParam);
     listObject.setDelimiter(delimiter);
     listObject.setEncodingType('');
     listObject.setMaxKeys(30);
@@ -837,7 +838,7 @@
     // let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
-    console.log('---requestReq---', requestReq);
+    console.log('---action--11111equestReq---', requestReq);
     server.listObjects(
       requestReq,
       metadata,
@@ -925,8 +926,8 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
-          console.log(transferData, 'transferData,transferData');
-          console.log(res, 'res,res');
+          console.log('transferData,transferData', transferData);
+          //   console.log(res, 'res,res');
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
           showToast.hide('file_list');
@@ -1020,7 +1021,7 @@
     }
     currentFolder.value = data.prefix;
     window.sessionStorage.setItem('currentFolder', currentFolder.value);
-    console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
+    // console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
     if (data.isTruncated) {
       if (moveShow.value) {
         continuationToken2.value = data.continuationToken;
@@ -1086,7 +1087,7 @@
     // server = new grpcService.default.ServiceClient(ip, null, null);
 
     let server = new grpcService.default.APIClient(maxUrl, null, null);
-    let header = new Prox.default.ProxHeader();
+    let header = new Prox.default.Header();
     header.setPeerid(orderInfo.value.peer_id);
     header.setId(orderInfo.value.foggie_id);
     let token = MaxTokenMap.value[orderInfo.value.device_id];
@@ -1101,7 +1102,7 @@
     };
 
     if (isNewFolder.value) {
-      let ProxFileInfo = new Prox.default.ProxFileInfo();
+      let ProxFileInfo = new Prox.default.FileInfo();
       ProxFileInfo.setHeader(header);
       ProxFileInfo.setKey(targetObject());
       ProxFileInfo.setContenttype('application/x-directory');

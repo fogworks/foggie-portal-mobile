@@ -10,14 +10,14 @@ function getScheduledRewards(_ethAddress) {
     return new Promise((resolve, reject) => {
         // const ethAddress = _ethAddress ? _ethAddress : '0x6D29549Ce7B7b65218737C7B2a5804e1B5226588';
         const ethAddress = _ethAddress;
-        console.log("getScheduledRewardsgetScheduledRewards", ethAddress)
+        // console.log("getScheduledRewardsgetScheduledRewards", ethAddress)
         const provider = ethers.providers ? new ethers.providers.JsonRpcProvider('https://api.node.glif.io/rpc/v1') : new ethers.JsonRpcProvider('https://api.node.glif.io/rpc/v1');
         let abi = "";
 
         const getRewards = async () => {
             // const response = await fetch('./abi.json');
             const response = await fetch('/public/abi.json');
-            console.log(response, '---responseresponse');
+            // console.log(response, '---responseresponse');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -59,7 +59,7 @@ function getScheduledRewards(_ethAddress) {
             try {
                 // return await contract.rewardsScheduledFor(ethAddress);
                 const d = await contract.rewardsScheduledFor(ethAddress);
-                console.log('dddddd-----', d.toString(), '---', d._hex);
+                // console.log('dddddd-----', d.toString(), '---', d._hex);
                 return d.toString();
             } catch (err: any) {
                 console.error("Failed to get scheduled rewards:", err.stack);
