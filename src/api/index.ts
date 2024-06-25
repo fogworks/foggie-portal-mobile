@@ -377,3 +377,10 @@ export const campaignNew = (data) => {
         data,
     });
 }
+export function getAirdropDes() {
+    let url = `${mscUrl}/msc/global/airdrop/desc/get`;
+    return request({
+        url: url,
+        method: "get",
+    });
+}
