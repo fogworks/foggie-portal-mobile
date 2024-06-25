@@ -127,6 +127,7 @@
     font-style: italic;
     .commng_soon {
       background-image: linear-gradient(89deg, #0e91dc 10%, #77bbea 40%, #df7a3a 50%, #ffd07f 100%);
+      background-image: linear-gradient(89deg, #c0e0be 10%, #7ce86c 40%, #689950 50%, #9dfc37 100%);
       color: transparent;
       background-clip: text;
       line-height: 1;

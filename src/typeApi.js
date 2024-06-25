@@ -26,6 +26,7 @@ export default function typeApi() {
       shareUrl: 'https://amb.u2i.net',
       webUrl: 'https://amb.u2i.net',
       vpsUrl: 'https://devlop.fogworks.io',
+      mscUrl: 'http://45.207.245.24:6066',
     };
     // return {
     //   apiUrl: '/android_proxy',
@@ -42,6 +43,7 @@ export default function typeApi() {
       shareUrl: '',
       webUrl: '',
       vpsUrl: '',
+      mscUrl: '',
     };
   }
 }

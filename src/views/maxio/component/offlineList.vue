@@ -665,6 +665,7 @@
     color: transparent;
     background-image: -webkit-linear-gradient(1deg, #0e91dc 10%, #77bbea 40%, #df7a3a 50%, #ffd07f 100%);
     background-image: linear-gradient(89deg, #0e91dc 10%, #77bbea 40%, #df7a3a 50%, #ffd07f 100%);
+    background-image: linear-gradient(89deg, #c0e0be 10%, #7ce86c 40%, #689950 50%, #3ede31 100%);
     img {
       width: 30px;
       height: 30px;

@@ -1133,8 +1133,13 @@
     padding: 6px 10px;
     background-color: #625d73;
     border-radius: 10px;
+    color: #fff;
+    font-weight: bold;
     &.active {
       background: #f7cc4f;
+      background: #aeff00;
+      color: #000;
+      font-weight: bold;
     }
   }
 
@@ -1180,6 +1185,7 @@
       .file_space {
         margin-right: 8px;
         color: #fac858;
+        color: #88f948;
       }
     }
     .svg_box {

@@ -347,6 +347,7 @@
         font-weight: bolder;
         &.active {
           color: #fac858;
+          color: #88f948;
         }
       }
       .nut-tabs__titles {
@@ -360,6 +361,7 @@
       .nut-tabs__titles-item__line {
         background: linear-gradient(345deg, #6841ea 0%, rgb(243 206 10) 100%) !important;
         background: linear-gradient(345deg, #e29219 0%, rgb(224 214 33) 100%) !important;
+        background: linear-gradient(275deg, #5edc74 0%, rgb(224, 214, 33) 100%) !important;
         width: 80% !important;
         border-radius: 10px;
         font-weight: bolder;
@@ -451,6 +453,8 @@
     font-style: normal !important;
     font-size: 22px;
     color: #dfba33;
+    color: #5edc74;
+    white-space: nowrap;
   }
   .empty_img {
     width: 200px;

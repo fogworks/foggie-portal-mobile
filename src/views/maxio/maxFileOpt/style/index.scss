@@ -64,6 +64,7 @@
       white-space: nowrap;
       color: #fac858;
       color: #f99e0f;
+      color: #40e114;
     }
     .pool_number {
       font-size: 20px;
@@ -129,6 +130,7 @@
         .file_space {
           margin-right: 8px;
           color: #fac858;
+          color: #88f948;
         }
       }
       .svg_box {
@@ -160,9 +162,15 @@
 .iot_temp_line {
   //   color: #44dbdd;
   color: #ffd07f;
+  background-image: linear-gradient(275deg, #5edc74 0%, rgb(224, 214, 33) 100%) !important;
+  background-clip: text;
+  color: transparent;
   position: relative;
   span {
     position: relative;
+    background-image: linear-gradient(275deg, #5edc74 0%, rgb(224, 214, 33) 100%) !important;
+    background-clip: text;
+    color: transparent;
 
     // background-clip: text;
     // color: transparent;
@@ -173,13 +181,16 @@
 .iot_temp_unit span::after {
   content: '°C';
   position: absolute;
+  //   background-image: linear-gradient(275deg, #5edc74 0%, rgb(224, 214, 33) 100%) !important;
+  //   background-clip: text;
+  color: #5edc74;
   right: 0;
   top: -10px;
   display: block;
   width: 0px;
   height: 30px;
   font-size: 20px;
-  background-color: #ffffff5c;
+  //   background-color: #ffffff5c;
 }
 .pool_item_ipfs {
   width: 33% !important;
@@ -244,6 +255,7 @@
       font-size: 20px;
       margin-left: 10px;
       color: #f9c721;
+      color: #5edc74;
       //   color: #44dbdd;
     }
   }
@@ -291,6 +303,7 @@
     .pool_space_title {
       display: flex;
       color: #fac858;
+      color: #88f948;
       font-weight: bolder;
       font-size: 30px;
       margin-bottom: 12px;
@@ -305,6 +318,7 @@
     padding: 14px;
     box-sizing: border-box;
     background-image: linear-gradient(224deg, #0e91dc 10%, #77bbea 40%, #df7a3a 50%, #ffd07f 100%);
+    background-image: linear-gradient(355deg, #5edc74 10%, #5faf4a 40%, #41ef08 50%, #568549 100%);
     img {
       width: 100% !important;
       animation: poolChange 1s linear alternate infinite;

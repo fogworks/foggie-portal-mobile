@@ -51,6 +51,7 @@
               <div class="commng_soon">Coming soon...</div>
               <img src="@/assets/maxio/comming.svg" />
             </div>
+            <div class="airdorp_root"></div>
           </sd>
         </div>
       </div>
@@ -106,51 +107,5 @@
 <style lang="scss" scoped>
   @import url('./maxFileOpt/style/common.scss');
   @import url('./maxFileOpt/style/index.scss');
-  .maxio_home_pool {
-    .empty_img {
-      margin-top: 150px;
-    }
-    .empty_img_text {
-      font-size: 26px;
-      margin-top: 20px;
-    }
-  }
-  .commng_soon_box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 800px;
-    flex-direction: column;
-    font-weight: bold;
-    font-size: 74px;
-    white-space: nowrap;
-    font-style: italic;
-    .commng_soon {
-      background-image: linear-gradient(89deg, #0e91dc 10%, #77bbea 40%, #df7a3a 50%, #ffd07f 100%);
-      color: transparent;
-      background-clip: text;
-      line-height: 1;
-    }
-    .commng_soon_1 {
-      font-size: 60px;
-      background-image: linear-gradient(90deg, #ff61d3 18%, #c60000 100%);
-      color: transparent;
-      background-clip: text;
-    }
-    img {
-      width: 100px;
-      height: 100px;
-      margin-top: 60px;
-      animation: changeComm 3s linear infinite;
-    }
-    @keyframes changeComm {
-      10% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(180deg);
-      }
-    }
-  }
+  @import url('./maxFileOpt/style/airdrop.scss');
 </style>

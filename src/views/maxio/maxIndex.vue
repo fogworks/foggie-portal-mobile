@@ -178,7 +178,7 @@
       chartOptions.value = {};
       return;
     }
-    let colorArr = ['#00FF00', '#40B2FB', '#00FFFF', '#ec7f40', '#6841e1', '#FEFF00', '#F59543', '#FF59AB', '#FF4F2C'];
+    let colorArr = ['#00FF00', '#40B2FB', '#00FFFF', '#9dfc37', '#7cd0b4', '#FEFF00', '#F59543', '#FF59AB', '#FF4F2C'];
     let _value = chartData.map((item) => item.value);
     let totalSum = _value.reduce((a, b) => {
       return a + b;

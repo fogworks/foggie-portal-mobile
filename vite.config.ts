@@ -51,6 +51,12 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
             hmr: true,
             https: ISHttps ? true : false,
             proxy: {
+                '^/msc': {
+                    target: 'http://45.207.245.24:6066',
+                    changeOrigin: true,
+                    secure: false,
+                    // rewrite: (path) => path.replace(/^\/api/, ""),
+                },
                 '^/assets': {
                     target: 'http://m.vofocorp.com',
                     changeOrigin: true,

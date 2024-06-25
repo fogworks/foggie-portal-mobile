@@ -186,7 +186,7 @@
               <p v-if="!cardMode">{{ item.date || '' }}</p>
             </div>
             <div @click.stop v-if="item.isPin && !cardMode" class="ipfs_info">
-              <IconIPFS v-if="item.isPin" color="#fbbd58"></IconIPFS>
+              <IconIPFS v-if="item.isPin" color="#88f848"></IconIPFS>
             </div>
             <div :class="['mask', 'right_radio', isCheckMode ? 'isChecking' : '']" @click.stop>
               <nut-checkbox v-if="isCheckMode" :label="item.name"></nut-checkbox>

@@ -1,6 +1,6 @@
 import request, { http } from '@/utils/request';
 import typeApi from '@/typeApi.js';
-const { apiUrl, vpsUrl, shareUrl, chainUrl, nodeUrl, webUrl } = typeApi();
+const { apiUrl, vpsUrl, shareUrl, chainUrl, nodeUrl, webUrl, mscUrl } = typeApi();
 export function login(data: object) {
     return http.post(`${apiUrl}/api_accounts/accounts/login`, {
         ...data,
@@ -351,3 +351,29 @@ export const deviceEstimateProfit = (data, controller) => {
         data,
     });
 };
+
+
+export const campaignCenterChain = (data) => {
+    let url = `${mscUrl}/msc/campaign/center/chain`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+export const campaignCenterList = (data) => {
+    let url = `${mscUrl}/msc/campaign/center/campaign_list`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+export const campaignNew = (data) => {
+    let url = `${mscUrl}/msc/campaign/center/current_end_campaign`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
