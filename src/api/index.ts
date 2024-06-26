@@ -384,3 +384,19 @@ export function getAirdropDes() {
         method: "get",
     });
 }
+export function get_campaignApply(data) {
+    let url = `${mscUrl}/msc/campaign/apply/get`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+export function get_campaignDetail(data) {
+    let url = `${mscUrl}/msc/campaign/detail/get`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}

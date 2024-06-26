@@ -82,8 +82,20 @@
                   </div>
                 </div>
               </div>
+              <!-- status_list_tab -->
+              <div class="status_list_tab">
+                <nut-tabs v-model="currentStatus" size="small" :ellipsis="hideText" @change="changeStatus">
+                  <nut-tab-pane
+                    :title="item.label"
+                    :pane-key="item.value"
+                    class="reward_pool_box_parent"
+                    v-for="(item, index) in statusList"
+                    :key="index"
+                  ></nut-tab-pane>
+                </nut-tabs>
+              </div>
               <!-- list_card_top_line -->
-              <div class="list_card_top_line">
+              <div class="list_card_top_line" v-if="currentStatus === 'active'">
                 <div class="list_card_top">
                   <div class="list_card_top_item" @click="changeGroupTab('all')" :class="[activeGroup === 'all' ? 'active' : '']">
                     All
@@ -99,11 +111,12 @@
                   </div>
                 </div>
               </div>
-              <div class="airdrop_capm_list">
+
+              <div class="airdrop_capm_list" v-if="currentStatus === 'active'">
                 <div class="airdrop_capm_item" v-for="(detail, index) in currentList" :key="index">
                   <div class="airdrop_capm_item_top">
                     <img :src="detail.currency_logo" v-if="detail.currency_logo" />
-                    <img src="@/assets/maxio/reward.svg" v-else />
+                    <img src="@/assets/maxio/chain.svg" v-else />
                     <span
                       >{{ detail.chain_name }}<span class="unit">({{ detail.currency }})</span></span
                     >
@@ -140,7 +153,53 @@
                       <span class="str">({{ showTimeStr }})</span>
                     </div>
 
-                    <div class="airdrop_capm_item_btn"> 立即参与 </div>
+                    <div class="airdrop_capm_item_btn" @click="gotoDetail(detail)"> 立即参与 </div>
+                  </div>
+                </div>
+                <div v-if="!currentList.length">
+                  <img src="@/assets/maxio/empty.svg" alt="" style="" class="empty_img" />
+                  <div class="empty_img_text">There are currently no activities available....</div>
+                </div>
+              </div>
+
+              <div class="airdrop_capm_list" v-if="currentStatus === 'history'">
+                <div class="airdrop_capm_item" v-for="(detail, index) in historyList" :key="index">
+                  <div class="airdrop_capm_item_top">
+                    <img :src="detail.currency_logo" v-if="detail.currency_logo" />
+                    <img src="@/assets/maxio/reward.svg" v-else />
+                    <span
+                      >{{ detail.chain_name }}<span class="unit">({{ detail.currency }})</span></span
+                    >
+                  </div>
+                  <div class="airdrop_capm_item_content">
+                    <span>{{ detail.slogan }}</span>
+                    <img :src="detail.cover" />
+                  </div>
+                  <div class="airdrop_capm_item_keyList">
+                    <img src="@/assets/maxio/name.svg" />:
+                    <span class="airdrop_capm_item_keyValue">{{ detail.title }}</span>
+                  </div>
+                  <div class="airdrop_capm_item_keyList">
+                    <img src="@/assets/maxio/walletBind.svg" />:
+                    <span class="airdrop_capm_item_keyValue">{{ detail.wallet }}</span>
+                  </div>
+                  <div class="airdrop_capm_item_keyList">
+                    <img :src="detail.currency_logo" v-if="detail.currency_logo" />
+                    <img src="@/assets/maxio/reward.svg" v-else />:
+                    <span class="airdrop_capm_item_keyValue"
+                      >{{ detail.amount }}<span class="unit">{{ detail.currency }}</span></span
+                    >
+                  </div>
+                  <div class="airdrop_capm_item_keyList">
+                    <img src="@/assets/maxio/clock.svg" />:
+                    <span class="airdrop_capm_item_keyValue"> {{ detail.create_time && transferUTCTime(detail.create_time) }}</span>
+                  </div>
+                  <div class="airdrop_capm_item_btnLine">
+                    <!-- :class="[(detail.status == 4 && compTime(detail)) || detail.status == 6 ? 'participate' : 'notparticipate']" -->
+                    <div class="airdrop_capm_item_btn participate">
+                      {{ historyStatus[detail.status] }}
+                    </div>
+                    <div class="airdrop_capm_item_btn"> 去提现 </div>
                   </div>
                 </div>
                 <div v-if="!currentList.length">
@@ -157,7 +216,19 @@
 </template>
 
 <script setup>
-  import { ref, toRefs, computed, onMounted } from 'vue';
+  import { ref, toRefs, computed, onMounted, onUnmounted } from 'vue';
+  import loadingImg from '@/components/loadingImg/index.vue';
+  import { showToast } from '@nutui/nutui';
+  const historyStatus = ref({
+    1: 'Initial',
+    2: 'Not selected',
+    3: 'Selected',
+    4: 'Calculated',
+    5: 'Claimed',
+    6: 'Claim failed',
+    7: 'Received',
+    9: 'Withdrawal suspended',
+  });
   import sd from './sd.vue';
   import moment from 'moment';
   const router = useRouter();
@@ -176,13 +247,23 @@
   const allList = ref([]);
   const currentList = ref([]);
   const showTimeStr = ref('');
-  import { campaignCenterChain, campaignCenterList, campaignNew, getAirdropDes } from '@/api/index';
+  const statusList = ref([
+    { label: 'Active', value: 'active' },
+    { label: 'History', value: 'history' },
+  ]);
+  const currentStatus = ref('active');
+  const historyList = ref([]);
+
+  import { campaignCenterChain, campaignCenterList, campaignNew, getAirdropDes, get_campaignApply } from '@/api/index';
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
   };
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
   const currentItem = ref({});
   const poolList = ref([]);
+  const changeStatus = (val, val1) => {
+    console.log('changeStatus', val, val1, currentStatus.value);
+  };
   const getDes = () => {
     getAirdropDes().then((res) => {
       if (res?.data) {
@@ -191,6 +272,13 @@
     });
   };
   const initCnter = async () => {
+    showToast.loading('Loading', {
+      cover: true,
+      coverColor: 'rgba(0,0,0,0.45)',
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+    });
     allList.value = [];
     centerData.value = [];
     newList.value = await campaignNew();
@@ -215,6 +303,7 @@
         }
       }
       currentList.value = allList.value;
+      showToast.hide('');
       //   console.log(allList.value, allList.value.length, 'allList.value ', centerData.value, currentList.value);
     }
   };
@@ -292,7 +381,67 @@
     getDes();
     initCnter();
     initTimer();
+    initHistory();
   });
+  const compTime = (item) => {
+    let apply_for_start_time = item.apply_for_start_time;
+    const startTime = new Date(apply_for_start_time).getTime();
+    const now = Date.now();
+    const diff = Math.max(0, Math.floor((now - startTime) / 1000));
+    if (diff > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  const initHistory = () => {
+    let data = {
+      key: '',
+      maxioUuid: currentItem.value.device_id,
+      pageNo: 1,
+      pageSize: 10,
+    };
+    get_campaignApply(data).then((res) => {
+      console.log('initHistory', res);
+      let _historyList = {
+        code: 200,
+        msg: 'Succeed',
+        data: {
+          list: [
+            {
+              id: 11,
+              maxio_uuid: '03000200-0400-0500-0006-000700080009',
+              chain_id: 137,
+              chain_name: 'Polygon Mainnet',
+              chain_group_id: 1,
+              chain_group_name: 'EVM',
+              currency: 'MATIC',
+              wallet: '0xf97bb5db0c5aee67051faea1669110eed171cc10',
+              amount: '0',
+              start_time: '2024-06-26T06:55:49.000Z',
+              end_time: '2024-06-28T07:48:53.000Z',
+              apply_for_start_time: '2024-06-28T16:00:00.000Z',
+              apply_for_end_time: '2044-06-28T16:00:00.000Z',
+              campaign_id: 34,
+              title: 'iotxmainx------cc',
+              type: 2,
+              status: 3,
+              update_time: '2024-06-26T08:05:33.000Z',
+              create_time: '2024-06-26T08:05:33.000Z',
+              tags: '{}',
+            },
+          ],
+          total: 1,
+        },
+        time: 1719391356204,
+      };
+      historyList.value = _historyList.data.list;
+    });
+  };
+  const gotoDetail = (item) => {
+    window.localStorage.setItem('currentActive', JSON.stringify(item));
+    router.push({ path: '/airDropDetail' });
+  };
   const changeTab = (type) => {
     if (type === 'index') {
       router.push({ path: '/home' });
@@ -323,4 +472,42 @@
   @import url('./maxFileOpt/style/common.scss');
   @import url('./maxFileOpt/style/index.scss');
   @import url('./maxFileOpt/style/airdrop.scss');
+</style>
+<style lang="scss">
+  .status_list_tab {
+    border-radius: 10px;
+    .nut-tabs__titles {
+      padding: 0 10px;
+    }
+    .nut-tabs__titles-item,
+    .nut-tab-pane,
+    .nut-tabs__titles {
+      background: transparent;
+      color: #fff !important;
+      font-weight: bolder;
+      &.active {
+        color: #fac858;
+        color: #88f948 !important;
+      }
+    }
+    .nut-tabs__titles {
+      background: #f8f8f866;
+      background: #5b695469;
+      border-radius: 10px;
+      padding: 0px 4px;
+      margin: 10px 0;
+      height: 66px !important;
+    }
+    .nut-tabs__titles-item__line {
+      background: linear-gradient(345deg, #6841ea 0%, rgb(243 206 10) 100%) !important;
+      background: linear-gradient(345deg, #e29219 0%, rgb(224 214 33) 100%) !important;
+      background: linear-gradient(275deg, #5edc74 0%, rgb(224, 214, 33) 100%) !important;
+      width: 80% !important;
+      border-radius: 10px;
+      font-weight: bolder;
+    }
+    .nut-tab-pane {
+      padding: 14px 16px !important;
+    }
+  }
 </style>

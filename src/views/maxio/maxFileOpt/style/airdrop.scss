@@ -105,6 +105,7 @@
 }
 .list_card_top_line {
   margin: 20px 0;
+  margin-top: -10px;
   border-bottom: 1px solid #373737;
   padding-bottom: 20px;
   .list_card_top {
@@ -227,27 +228,7 @@
         font-weight: bold;
       }
     }
-    .airdrop_capm_item_keyList {
-      display: flex;
-      align-items: center;
-      justify-content: start;
-      font-size: 18px;
-      margin: 10px 0;
-      img {
-        width: 30px;
-        height: 30px;
-        margin-right: 10px;
-      }
-      .airdrop_capm_item_keyValue {
-        margin-left: 10px;
-        .unit {
-          font-size: 16px;
-          color: #aeff00;
-          font-weight: bold;
-          margin-left: 8px;
-        }
-      }
-    }
+
     .airdrop_capm_item_btnLine {
       width: 100%;
       display: flex;
@@ -266,7 +247,7 @@
       .participate {
         background-color: #c7f2dd;
         color: green;
-        background: #f9eef145;
+        // background: #f9eef145;
         border-radius: 6px;
       }
       .notparticipate {
@@ -287,6 +268,27 @@
       .str {
         font-size: 16px;
       }
+    }
+  }
+}
+.airdrop_capm_item_keyList {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  font-size: 18px;
+  margin: 10px 0;
+  img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+  }
+  .airdrop_capm_item_keyValue {
+    margin-left: 10px;
+    .unit {
+      font-size: 16px;
+      color: #aeff00;
+      font-weight: bold;
+      margin-left: 8px;
     }
   }
 }

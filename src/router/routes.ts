@@ -343,6 +343,15 @@ export const routes = [
                 },
             },
             {
+                path: 'airDropDetail',
+                name: 'AirDropDetail',
+                component: () => import('@/views/maxio/airDropDetail.vue'),
+                meta: {
+                    notBar: true,
+                    notKeepAlive: true,
+                },
+            },
+            {
                 path: 'walletList',
                 name: 'WalletList',
                 component: () => import('@/views/maxio/walletList.vue'),

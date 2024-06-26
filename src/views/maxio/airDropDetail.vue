@@ -1,0 +1,283 @@
+<template>
+  <div class="airdrop_detail_root">
+    <div class="airdrop_detail_head">
+      <div class="maxio_img" @click="changeTab('home')">
+        <img src="@/assets/maxio/back.svg" alt="" class="icon_img" />
+      </div>
+      <span>{{ currentItem.title }}</span>
+    </div>
+    <div class="airdrop_detail_content">
+      <img :src="currentItem.cover" v-if="currentItem.cover" class="head_img" />
+      <img src="@/assets/maxio/foggLogo1.png" v-else class="head_img" />
+
+      <div class="airdrop_capm_itemList">
+        <img :src="currentItem.currency_logo" v-if="currentItem.currency_logo" />
+        <img src="@/assets/maxio/chain.svg" v-else />
+        <span>{{ currentItem.chain_name }}</span>
+      </div>
+      <div class="airdrop_capm_itemList slogan">
+        {{ currentItem.slogan }}
+      </div>
+
+      <div class="airdrop_capm_item_keyList">
+        <div class="title">
+          <img :src="currentItem.currency_logo" v-if="currentItem.currency_logo" /> <img src="@/assets/maxio/reward.svg" v-else />Airdrop
+          Offerings:</div
+        >
+        <span class="airdrop_capm_item_keyValue"
+          >{{ currentItem.amount }}<span class="unit">{{ currentItem.currency }}</span></span
+        >
+      </div>
+      <div class="airdrop_capm_item_keyList">
+        <div class="title"><img src="@/assets/maxio/pp.svg" />Participants:</div>
+        <span class="airdrop_capm_item_keyValue">{{ currentItem.participants || 0 }}</span>
+      </div>
+      <div class="airdrop_capm_item_keyList">
+        <div class="title"><img src="@/assets/maxio/clock.svg" />Airdrop Period:</div>
+        <span class="airdrop_capm_item_keyValue">
+          {{ currentItem.start_time && transferUTCTime(currentItem.start_time) }}-{{
+            currentItem.end_time && transferUTCTime(currentItem.end_time)
+          }}</span
+        >
+      </div>
+      <div class="airdrop_capm_item_keyList">
+        <div class="title"> <img src="@/assets/maxio/clock.svg" />Airdrop Received:</div>
+        <span class="airdrop_capm_item_keyValue"> {{ currentItem.campaignStatus == 8 ? currentItem.credited_amount : '****' }}</span>
+      </div>
+      <div class="airdrop_capm_item_keyList">
+        <div class="airdrop_capm_item_btn participate">
+          {{ activeStatus[currentItem.campaignStatus] }}
+        </div>
+        {{ detailDownCount }}
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+  import { ref, toRefs, computed, onMounted, onUnmounted } from 'vue';
+  import { get_campaignDetail } from '@/api/index';
+  import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
+  const router = useRouter();
+  const route = useRoute();
+  const currentItem = ref({});
+  const currentData = ref({});
+  const currentDeviceItem = ref({});
+  const detailTime = ref(null);
+  const detailDownCount = ref('');
+  const activeStatus = ref({
+    1: 'Pending',
+    2: 'Ongoing',
+    3: ' Applied successfully',
+    4: 'Not allocated',
+    5: 'Allocated',
+    6: 'Allocated',
+    7: 'Withdraw in progress',
+    8: 'Withdraw successfully',
+    9: 'Withdraw failed',
+    13: 'COMPLETED',
+    11: 'Event suspended',
+    12: ' Withdraw suspended',
+  });
+  onMounted(() => {
+    currentData.value = JSON.parse(window.localStorage.getItem('currentActive'));
+    currentDeviceItem.value = JSON.parse(window.localStorage.homeChooseBucket);
+    initDetail();
+  });
+  onUnmounted(() => {
+    clearInterval(detailTime.value);
+  });
+
+  const initDetail = () => {
+    const data = {
+      campaignId: currentData.value.campaign_id,
+      maxioUuid: currentDeviceItem.value.device_id,
+    };
+    get_campaignDetail(data).then((res) => {
+      //   console.log('get_campaignDetail', res);
+      currentItem.value = res.data;
+      detailTime.value = setInterval(() => {
+        detailDownCountFn();
+      }, 1000);
+    });
+  };
+  const detailDownCountFn = () => {
+    const now = Date.now();
+    if (currentItem.value.campaignStatus == 1) {
+      const startTime = new Date(currentItem.value.start_time).getTime();
+      const diff = Math.max(0, Math.floor((startTime - now) / 1000));
+      if (diff > 0) {
+        const hours = Math.floor(diff / 3600);
+        const minutes = Math.floor((diff % 3600) / 60);
+        const seconds = diff % 60;
+        detailDownCount.value = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
+          .toString()
+          .padStart(2, '0')}`;
+      } else {
+        refreshDetail();
+        detailDownCount.value = '';
+      }
+    } else if (currentItem.value.campaignStatus == 5 || currentItem.value.campaignStatus == 3) {
+      const startTime = new Date(currentItem.value.apply_for_start_time).getTime();
+      const diff = Math.max(0, Math.floor((startTime - now) / 1000));
+      if (diff > 0) {
+        const hours = Math.floor(diff / 3600);
+        const minutes = Math.floor((diff % 3600) / 60);
+        const seconds = diff % 60;
+        detailDownCount.value = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
+          .toString()
+          .padStart(2, '0')}`;
+      } else {
+        refreshDetail();
+        detailDownCount.value = '';
+      }
+    } else {
+      detailDownCount.value = '';
+    }
+  };
+  const changeTab = () => {
+    router.push({ path: '/airDropList' });
+  };
+</script>
+
+<style lang="scss" scoped>
+  @import url('./maxFileOpt/style/common.scss');
+  @import url('./maxFileOpt/style/index.scss');
+  .airdrop_detail_root {
+    .airdrop_detail_head {
+      display: flex;
+      color: #fff;
+      align-items: center;
+      width: 100%;
+      height: 60px;
+      padding: 20px;
+      border-bottom: 1px solid #373737;
+      .maxio_img {
+        width: 70px;
+        height: 70px;
+        background: transparent;
+        border-radius: 30%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 200;
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+      img {
+        width: 60px;
+      }
+      span {
+        width: 100%;
+        display: inline-block;
+        text-align: center;
+        font-size: 40px;
+        font-weight: bold;
+      }
+    }
+    .airdrop_detail_content {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 30px;
+      flex-direction: column;
+      .head_img {
+        width: 90%;
+        height: auto;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #8fe527ab;
+        margin-bottom: 20px;
+      }
+      .airdrop_capm_itemList {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        font-size: 18px;
+        margin: 10px 0;
+        width: 90%;
+        color: #fff;
+        &.slogan {
+          font-size: 30px;
+          background-clip: text;
+          color: transparent;
+          background-image: linear-gradient(89deg, #c0e0be 10%, #7ce86c 40%, #689950 50%, #3ede31 100%);
+          white-space: pre;
+          font-weight: bolder;
+        }
+        img {
+          width: 40px;
+          height: 40px;
+          margin-right: 10px;
+        }
+        span {
+          margin-left: 10px;
+          font-size: 34px;
+          font-weight: bold;
+        }
+      }
+      .airdrop_capm_item_keyList {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 18px;
+        margin: 10px 0;
+        width: 90%;
+        color: #fff;
+        img {
+          width: 40px;
+          height: 40px;
+          margin-right: 10px;
+        }
+        span {
+          margin-left: 10px;
+          font-size: 34px;
+          font-weight: bold;
+        }
+        .airdrop_capm_item_keyValue,
+        .title {
+          font-size: 22px;
+          font-weight: bold;
+          white-space: nowrap;
+          display: flex;
+          align-items: center;
+          .unit {
+            font-size: 16px;
+            color: #aeff00;
+            font-weight: bold;
+            margin-left: 8px;
+          }
+        }
+        .airdrop_capm_item_keyValue {
+          color: #aeff00;
+          font-size: 20px;
+          font-weight: normal;
+          font-weight: bold;
+        }
+      }
+      .airdrop_capm_item_btn {
+        border-radius: 16px;
+        padding: 6px 20px;
+        color: #000;
+        font-size: 20px;
+        font-weight: bolder;
+        background: #3ede31;
+      }
+      .participate {
+        background-color: #c7f2dd;
+        color: green;
+        // background: #f9eef145;
+        border-radius: 6px;
+      }
+      .notparticipate {
+        background-color: #ffc9da;
+        color: #e24141;
+        background: #f9eef145;
+        border-radius: 6px;
+      }
+    }
+  }
+</style>
