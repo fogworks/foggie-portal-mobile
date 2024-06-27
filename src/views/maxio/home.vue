@@ -37,10 +37,10 @@
           <img src="@/assets/maxio/running.svg" class="running_img" />
         </div>
       </div>
-      <div class="show_max_more" @click="showMoreList" v-if="!isShowMoreList">
+      <div class="show_max_more" @click="showMoreList" v-if="!isShowMoreList && maxTableData.length > 20">
         <img src="@/assets/maxio/more.svg" />
       </div>
-      <div class="show_max_more rotate_more" @click="hideMoreList" v-if="isShowMoreList">
+      <div class="show_max_more rotate_more" @click="hideMoreList" v-if="isShowMoreList && maxTableData.length > 20">
         <img src="@/assets/maxio/more.svg" />
       </div>
       <div class="maxio_home_content">

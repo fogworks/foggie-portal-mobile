@@ -400,3 +400,20 @@ export function get_campaignDetail(data) {
         data,
     });
 }
+export function campaignApply(data) {
+    let url = `${mscUrl}/msc/campaign/apply`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+
+export function post_campaignClaim(data) {
+    let url = `${mscUrl}/msc/campaign/claim`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}

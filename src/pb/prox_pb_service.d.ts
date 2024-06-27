@@ -127,7 +127,7 @@ type ServiceGetBlock = {
   readonly requestStream: false;
   readonly responseStream: true;
   readonly requestType: typeof prox_pb.ProxGetBlockRequest;
-  readonly responseType: typeof prox_pb.ProxGetBlockResponse;
+  readonly responseType: typeof prox_pb.ProxGetResponse;
 };
 
 type ServiceGetCarMeta = {
@@ -136,7 +136,7 @@ type ServiceGetCarMeta = {
   readonly requestStream: false;
   readonly responseStream: true;
   readonly requestType: typeof prox_pb.ProxGetCarMetaRequest;
-  readonly responseType: typeof prox_pb.ProxGetCarMetaResponse;
+  readonly responseType: typeof prox_pb.ProxGetResponse;
 };
 
 type ServiceGetObject = {
@@ -585,8 +585,8 @@ export class ServiceClient {
     requestMessage: prox_pb.ProxListObjectsReq,
     callback: (error: ServiceError|null, responseMessage: prox_pb.ProxListObjectsResp|null) => void
   ): UnaryResponse;
-  getBlock(requestMessage: prox_pb.ProxGetBlockRequest, metadata?: grpc.Metadata): ResponseStream<prox_pb.ProxGetBlockResponse>;
-  getCarMeta(requestMessage: prox_pb.ProxGetCarMetaRequest, metadata?: grpc.Metadata): ResponseStream<prox_pb.ProxGetCarMetaResponse>;
+  getBlock(requestMessage: prox_pb.ProxGetBlockRequest, metadata?: grpc.Metadata): ResponseStream<prox_pb.ProxGetResponse>;
+  getCarMeta(requestMessage: prox_pb.ProxGetCarMetaRequest, metadata?: grpc.Metadata): ResponseStream<prox_pb.ProxGetResponse>;
   getObject(requestMessage: prox_pb.ProxGetRequest, metadata?: grpc.Metadata): ResponseStream<prox_pb.ProxGetResponse>;
   getObjects(requestMessage: prox_pb.ProxGetRequests, metadata?: grpc.Metadata): ResponseStream<prox_pb.ProxGetResponse>;
   searchObject(requestMessage: prox_pb.ProxSearchRequest, metadata?: grpc.Metadata): ResponseStream<prox_pb.ProxSearchResponse>;

@@ -800,13 +800,13 @@ proto.proto.APIPromiseClient.prototype.asyncFetchObject =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.GetBlockRequest,
- *   !proto.proto.GetBlockResponse>}
+ *   !proto.proto.GetResponse>}
  */
 const methodDescriptor_API_GetBlock = new grpc.web.MethodDescriptor(
   '/proto.API/GetBlock',
   grpc.web.MethodType.SERVER_STREAMING,
   proto.proto.GetBlockRequest,
-  proto.proto.GetBlockResponse,
+  proto.proto.GetResponse,
   /**
    * @param {!proto.proto.GetBlockRequest} request
    * @return {!Uint8Array}
@@ -814,7 +814,7 @@ const methodDescriptor_API_GetBlock = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.proto.GetBlockResponse.deserializeBinary
+  proto.proto.GetResponse.deserializeBinary
 );
 
 
@@ -822,7 +822,7 @@ const methodDescriptor_API_GetBlock = new grpc.web.MethodDescriptor(
  * @param {!proto.proto.GetBlockRequest} request The request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.proto.GetBlockResponse>}
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.GetResponse>}
  *     The XHR Node Readable Stream
  */
 proto.proto.APIClient.prototype.getBlock =
@@ -839,7 +839,7 @@ proto.proto.APIClient.prototype.getBlock =
  * @param {!proto.proto.GetBlockRequest} request The request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.proto.GetBlockResponse>}
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.GetResponse>}
  *     The XHR Node Readable Stream
  */
 proto.proto.APIPromiseClient.prototype.getBlock =
@@ -856,13 +856,13 @@ proto.proto.APIPromiseClient.prototype.getBlock =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.GetCarMetaRequest,
- *   !proto.proto.GetCarMetaResponse>}
+ *   !proto.proto.GetResponse>}
  */
 const methodDescriptor_API_GetCarMeta = new grpc.web.MethodDescriptor(
   '/proto.API/GetCarMeta',
   grpc.web.MethodType.SERVER_STREAMING,
   proto.proto.GetCarMetaRequest,
-  proto.proto.GetCarMetaResponse,
+  proto.proto.GetResponse,
   /**
    * @param {!proto.proto.GetCarMetaRequest} request
    * @return {!Uint8Array}
@@ -870,7 +870,7 @@ const methodDescriptor_API_GetCarMeta = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.proto.GetCarMetaResponse.deserializeBinary
+  proto.proto.GetResponse.deserializeBinary
 );
 
 
@@ -878,7 +878,7 @@ const methodDescriptor_API_GetCarMeta = new grpc.web.MethodDescriptor(
  * @param {!proto.proto.GetCarMetaRequest} request The request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.proto.GetCarMetaResponse>}
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.GetResponse>}
  *     The XHR Node Readable Stream
  */
 proto.proto.APIClient.prototype.getCarMeta =
@@ -895,7 +895,7 @@ proto.proto.APIClient.prototype.getCarMeta =
  * @param {!proto.proto.GetCarMetaRequest} request The request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.proto.GetCarMetaResponse>}
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.GetResponse>}
  *     The XHR Node Readable Stream
  */
 proto.proto.APIPromiseClient.prototype.getCarMeta =

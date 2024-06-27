@@ -25947,7 +25947,7 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
       obj = {
         ipfs: jspb.Message.getFieldWithDefault(msg, 1, 0),
         localData: jspb.Message.getFieldWithDefault(msg, 2, 0),
-        lot: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        iot: jspb.Message.getFieldWithDefault(msg, 3, 0),
         miningPool: jspb.Message.getFieldWithDefault(msg, 4, 0),
         remaining: jspb.Message.getFieldWithDefault(msg, 5, 0),
         total: jspb.Message.getFieldWithDefault(msg, 6, 0),
@@ -25995,7 +25995,7 @@ proto.proto.F2PGetSpaceResult.deserializeBinaryFromReader = function (msg, reade
         break;
       case 3:
         var value = /** @type {number} */ (reader.readUint64());
-        msg.setLot(value);
+        msg.setIot(value);
         break;
       case 4:
         var value = /** @type {number} */ (reader.readUint64());
@@ -26044,7 +26044,7 @@ proto.proto.F2PGetSpaceResult.serializeBinaryToWriter = function (message, write
   if (f !== 0) {
     writer.writeUint64(2, f);
   }
-  f = message.getLot();
+  f = message.getIot();
   if (f !== 0) {
     writer.writeUint64(3, f);
   }
@@ -26095,10 +26095,10 @@ proto.proto.F2PGetSpaceResult.prototype.setLocalData = function (value) {
 };
 
 /**
- * optional uint64 lot = 3;
+ * optional uint64 iot = 3;
  * @return {number}
  */
-proto.proto.F2PGetSpaceResult.prototype.getLot = function () {
+proto.proto.F2PGetSpaceResult.prototype.getIot = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -26106,7 +26106,7 @@ proto.proto.F2PGetSpaceResult.prototype.getLot = function () {
  * @param {number} value
  * @return {!proto.proto.F2PGetSpaceResult} returns this
  */
-proto.proto.F2PGetSpaceResult.prototype.setLot = function (value) {
+proto.proto.F2PGetSpaceResult.prototype.setIot = function (value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -29132,7 +29132,6 @@ proto.proto.F2PGetAppResp.prototype.hasResult = function () {
 };
 
 // goog.object.extend(exports, proto.proto);
-
 const exportedObject = {};
 goog.object.extend(exportedObject, proto.proto);
 module.exports = exportedObject;

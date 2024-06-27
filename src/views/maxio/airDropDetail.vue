@@ -10,15 +10,25 @@
       <img :src="currentItem.cover" v-if="currentItem.cover" class="head_img" />
       <img src="@/assets/maxio/foggLogo1.png" v-else class="head_img" />
 
-      <div class="airdrop_capm_itemList">
+      <div class="airdrop_capm_itemList titleLine">
         <img :src="currentItem.currency_logo" v-if="currentItem.currency_logo" />
         <img src="@/assets/maxio/chain.svg" v-else />
         <span>{{ currentItem.chain_name }}</span>
+        <div class="airdrop_capm_item_btn participate">
+          {{ activeStatus[currentItem.campaignStatus] }}
+        </div>
       </div>
       <div class="airdrop_capm_itemList slogan">
         {{ currentItem.slogan }}
       </div>
 
+      <div class="airdrop_capm_item_keyList">
+        <div class="title">
+          <img src="@/assets/maxio/walletBind.svg" />
+          wallet:</div
+        >
+        <span class="airdrop_capm_item_keyValue">{{ currentItem.wallet ? currentItem.wallet : "You haven't bound your wallet yet" }}</span>
+      </div>
       <div class="airdrop_capm_item_keyList">
         <div class="title">
           <img :src="currentItem.currency_logo" v-if="currentItem.currency_logo" /> <img src="@/assets/maxio/reward.svg" v-else />Airdrop
@@ -45,10 +55,45 @@
         <span class="airdrop_capm_item_keyValue"> {{ currentItem.campaignStatus == 8 ? currentItem.credited_amount : '****' }}</span>
       </div>
       <div class="airdrop_capm_item_keyList">
-        <div class="airdrop_capm_item_btn participate">
+        <!-- <div class="airdrop_capm_item_btn participate">
           {{ activeStatus[currentItem.campaignStatus] }}
-        </div>
-        {{ detailDownCount }}
+        </div> -->
+        <div v-if="currentItem.campaignStatus == 1 || currentItem.campaignStatus == 5"> {{ detailDownCount }}</div>
+      </div>
+      <div class="airdrop_capm_itemList tips">
+        <span v-if="currentItem.campaignStatus == 1 && currentItem.wallet">The Event is coming very soon</span>
+        <span v-if="currentItem.campaignStatus == 2 && currentItem.wallet && currentItem.type == 1 && Number(currentItem?.inventory) <= 0"
+          >This event is extremely hot and the number of participants has reached the limit. Thank you.</span
+        >
+        <span v-if="currentItem.campaignStatus == 5"
+          >We will enable withdrawals after {{ transferUTCTime(currentItem.apply_for_start_time) }}</span
+        >
+        <span v-if="(currentItem.campaignStatus == 1 || currentItem.campaignStatus == 2) && !currentItem.wallet"
+          >You haven't bound your wallet yet. Please bind your wallet first before participating in the event.</span
+        >
+      </div>
+      <div class="airdrop_detail_btn_line">
+        <div
+          class="airdrop_detail_btn"
+          v-if="
+            currentItem.campaignStatus == 2 &&
+            currentItem.wallet &&
+            (currentItem.type == 2 || (currentItem.type == 1 && Number(currentItem?.inventory) > 0))
+          "
+          @click="toApply"
+        >
+          Apply</div
+        >
+        <div
+          class="airdrop_detail_btn"
+          v-if="(currentItem.campaignStatus == 1 || currentItem.campaignStatus == 2) && !currentItem.wallet"
+          @click="toBind"
+        >
+          Bind</div
+        >
+        <div class="airdrop_detail_btn" v-if="currentItem.campaignStatus == 6 || currentItem.campaignStatus == 9" @click="toWithdraw">
+          withDraw</div
+        >
       </div>
     </div>
   </div>
@@ -56,7 +101,8 @@
 
 <script setup>
   import { ref, toRefs, computed, onMounted, onUnmounted } from 'vue';
-  import { get_campaignDetail } from '@/api/index';
+  import { get_campaignDetail, campaignApply, post_campaignClaim } from '@/api/index';
+  import { showToast } from '@nutui/nutui';
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
   const router = useRouter();
   const route = useRoute();
@@ -138,6 +184,93 @@
   const changeTab = () => {
     router.push({ path: '/airDropList' });
   };
+  const toBind = async () => {
+    const ua = navigator.userAgent;
+    const isIOS = /iphone|ipad|ipod|ios/i.test(ua);
+    const isAndroid = /android|XiaoMi|MiuiBrowser/i.test(ua);
+    const isMobile = isIOS || isAndroid;
+    const isOKApp = /OKApp/i.test(ua);
+    console.log(isMobile && !isOKApp, 'isMobile && !isOKApp');
+    if (isMobile && !isOKApp) {
+      const encodedUrl =
+        'https://www.okx.com/download?deeplink=' + encodeURIComponent('okx://wallet/dapp/url?dappUrl=' + encodeURIComponent(location.href));
+      window.location.href = encodedUrl;
+    } else if (window.okxwallet) {
+      const accounts = await window.okxwallet.request({
+        method: 'eth_requestAccounts',
+      });
+      console.log(accounts, 'aaaaaaaaaaaaa-aaaaaaaaa');
+    }
+  };
+  const toApply = () => {
+    // console.log(currentItem.value, 'currentItem.value');
+    let data = {
+      campaignId: currentItem.value.campaign_id,
+      maxioUuid: currentDeviceItem.value.device_id,
+      wallet: currentItem.value.wallet,
+      chainId: currentItem.value.chain_id,
+      chainGroupId: currentItem.value.chain_group_id,
+    };
+    campaignApply(data).then((r) => {
+      if (r?.data == 1) {
+        showToast.success('You have applied the airdrop successfully please wait to withdraw');
+        initDetail();
+      } else if (r?.data?.fail == 20022) {
+        showToast.fail(r?.data?.message);
+      }
+    });
+  };
+  const toWithdraw = () => {
+    let data = {
+      campaignId: currentItem.value.campaign_id,
+      maxioUuid: deviceData.device_id,
+    };
+    post_campaignClaim(data).then((r) => {
+      showToast.success('Added to the withdrawal queue...');
+      initDetail();
+    });
+    //     if (currentItem.value?.priority && currentItem.value?.priority < 4) {
+    //     ElMessageBox.confirm(
+    //       `<img class="confirm-fireworks" src="${require('@/assets/MAXIO/yanhua.svg')}" /><img class="confirm-fireworks" src="${require('@/assets/MAXIO/yanhua.svg')}" /><img class="confirm-fireworks" src="${require('@/assets/MAXIO/yanhua.svg')}" /><span class="confirm-fireworks-span">Congrats! You are number ${currentItem.value.priority} of MAX IO holders and share another 20% incentives! </span>`,
+    //       "Notice",
+    //       {
+    //         confirmButtonText: "OK",
+    //         dangerouslyUseHTMLString: true,
+    //         "close-on-click-modal": false,
+    //       }
+    //     )
+    //       .then(() => {
+    //         let data = {
+    //           campaignId: currentItem.value.campaign_id,
+    //           maxioUuid: deviceData.device_id,
+    //         };
+    //         post_campaignClaim(data).then((r) => {
+    //           ElNotification({
+    //             title: "Success",
+    //             message: "Added to the withdrawal queue",
+    //             type: "success",
+    //             position: "bottom-left",
+    //           });
+    //           initDetail();
+    //         });
+    //       })
+    //       .catch(() => {});
+    //   } else {
+    //     let data = {
+    //       campaignId: currentItem.value.campaign_id,
+    //       maxioUuid: deviceData.device_id,
+    //     };
+    //     post_campaignClaim(data).then((r) => {
+    //       ElNotification({
+    //         title: "Success",
+    //         message: "Added to the withdrawal queue",
+    //         type: "success",
+    //         position: "bottom-left",
+    //       });
+    //       initDetail();
+    //     });
+    //   }
+  };
 </script>
 
 <style lang="scss" scoped>
@@ -200,6 +333,21 @@
         margin: 10px 0;
         width: 90%;
         color: #fff;
+        &.titleLine {
+          border-bottom: 1px solid #ffffff87;
+          padding-bottom: 10px;
+        }
+        &.tips {
+          span {
+            font-size: 28px;
+            background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(89deg, #c0e0be 10%, #7ce86c 40%, #689950 50%, #3ede31 100%);
+            background-image: linear-gradient(275deg, #c0e0be 10%, #80bc01 40%, #54ce19 50%, #3ede31 100%);
+            white-space: pre-wrap;
+            font-weight: bolder;
+          }
+        }
         &.slogan {
           font-size: 30px;
           background-clip: text;
@@ -223,8 +371,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-size: 18px;
-        margin: 10px 0;
+        font-size: 20px;
+        margin: 20px 0;
         width: 90%;
         color: #fff;
         img {
@@ -239,7 +387,7 @@
         }
         .airdrop_capm_item_keyValue,
         .title {
-          font-size: 22px;
+          font-size: 24px;
           font-weight: bold;
           white-space: nowrap;
           display: flex;
@@ -271,12 +419,28 @@
         color: green;
         // background: #f9eef145;
         border-radius: 6px;
+        margin-left: 20px;
       }
       .notparticipate {
         background-color: #ffc9da;
         color: #e24141;
         background: #f9eef145;
         border-radius: 6px;
+      }
+    }
+    .airdrop_detail_btn_line {
+      margin-top: 20px;
+      .airdrop_detail_btn {
+        border-radius: 30px;
+        width: 380px;
+        height: 70px;
+        color: #000;
+        text-align: center;
+        line-height: 70px;
+        font-size: 30px;
+        font-weight: bolder;
+        background-image: linear-gradient(89deg, #c0e0be 10%, #7ce86c 40%, #4de204 50%, #3ede31 100%);
+        // background: #3ede31;
       }
     }
   }

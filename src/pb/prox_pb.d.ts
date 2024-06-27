@@ -3058,6 +3058,9 @@ export class ProxPInfo extends jspb.Message {
   getIdx(): number;
   setIdx(value: number): void;
 
+  getCompleted(): number;
+  setCompleted(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ProxPInfo.AsObject;
   static toObject(includeInstance: boolean, msg: ProxPInfo): ProxPInfo.AsObject;
@@ -3078,6 +3081,7 @@ export namespace ProxPInfo {
     duration: number,
     provider: string,
     idx: number,
+    completed: number,
   }
 }
 
@@ -3754,8 +3758,8 @@ export class ProxF2PGetSpaceResult extends jspb.Message {
   getLocalData(): number;
   setLocalData(value: number): void;
 
-  getLot(): number;
-  setLot(value: number): void;
+  getIot(): number;
+  setIot(value: number): void;
 
   getMiningPool(): number;
   setMiningPool(value: number): void;
@@ -3780,7 +3784,7 @@ export namespace ProxF2PGetSpaceResult {
   export type AsObject = {
     ipfs: number,
     localData: number,
-    lot: number,
+    iot: number,
     miningPool: number,
     remaining: number,
     total: number,

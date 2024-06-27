@@ -686,8 +686,8 @@ service API {
   rpc GetObject(GetRequest) returns (stream GetResponse) {}
   rpc FetchObject(FetchRequest) returns (stream GetResponse) {}
   rpc AsyncFetchObject(FetchRequest) returns (PinningInfo) {}
-  rpc GetBlock(GetBlockRequest) returns (stream GetBlockResponse) {}
-  rpc GetCarMeta(GetCarMetaRequest) returns (stream GetCarMetaResponse) {}
+  rpc GetBlock(GetBlockRequest) returns (stream GetResponse) {}
+  rpc GetCarMeta(GetCarMetaRequest) returns (stream GetResponse) {}
   rpc GetObjects(GetRequests) returns (stream GetResponse) {}
   rpc GetObjectInfo(GetRequest) returns (Object) {}
   rpc DeleteObject(DeleteObjectReq)returns(DeleteResp){}
@@ -729,7 +729,7 @@ message F2PGetMiner {
 message F2PGetSpaceResult {
   uint64 ipfs = 1;
   uint64 local_data = 2;
-  uint64 lot = 3;
+  uint64 iot = 3;
   uint64 mining_pool = 4;
   uint64 remaining = 5;
   uint64 total = 6;

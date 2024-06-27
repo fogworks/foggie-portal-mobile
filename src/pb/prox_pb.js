@@ -21702,6 +21702,7 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
         duration: jspb.Message.getFieldWithDefault(msg, 6, 0),
         provider: jspb.Message.getFieldWithDefault(msg, 7, ''),
         idx: jspb.Message.getFieldWithDefault(msg, 8, 0),
+        completed: jspb.Message.getFieldWithDefault(msg, 9, 0),
       };
 
     if (includeInstance) {
@@ -21768,6 +21769,10 @@ proto.proto.ProxPInfo.deserializeBinaryFromReader = function (msg, reader) {
         var value = /** @type {number} */ (reader.readInt32());
         msg.setIdx(value);
         break;
+      case 9:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setCompleted(value);
+        break;
       default:
         reader.skipField();
         break;
@@ -21826,6 +21831,10 @@ proto.proto.ProxPInfo.serializeBinaryToWriter = function (message, writer) {
   f = message.getIdx();
   if (f !== 0) {
     writer.writeInt32(8, f);
+  }
+  f = message.getCompleted();
+  if (f !== 0) {
+    writer.writeUint64(9, f);
   }
 };
 
@@ -21955,6 +21964,22 @@ proto.proto.ProxPInfo.prototype.getIdx = function () {
  */
 proto.proto.ProxPInfo.prototype.setIdx = function (value) {
   return jspb.Message.setProto3IntField(this, 8, value);
+};
+
+/**
+ * optional uint64 completed = 9;
+ * @return {number}
+ */
+proto.proto.ProxPInfo.prototype.getCompleted = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPInfo} returns this
+ */
+proto.proto.ProxPInfo.prototype.setCompleted = function (value) {
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 /**
@@ -26098,7 +26123,7 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
       obj = {
         ipfs: jspb.Message.getFieldWithDefault(msg, 1, 0),
         localData: jspb.Message.getFieldWithDefault(msg, 2, 0),
-        lot: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        iot: jspb.Message.getFieldWithDefault(msg, 3, 0),
         miningPool: jspb.Message.getFieldWithDefault(msg, 4, 0),
         remaining: jspb.Message.getFieldWithDefault(msg, 5, 0),
         total: jspb.Message.getFieldWithDefault(msg, 6, 0),
@@ -26146,7 +26171,7 @@ proto.proto.ProxF2PGetSpaceResult.deserializeBinaryFromReader = function (msg, r
         break;
       case 3:
         var value = /** @type {number} */ (reader.readUint64());
-        msg.setLot(value);
+        msg.setIot(value);
         break;
       case 4:
         var value = /** @type {number} */ (reader.readUint64());
@@ -26195,7 +26220,7 @@ proto.proto.ProxF2PGetSpaceResult.serializeBinaryToWriter = function (message, w
   if (f !== 0) {
     writer.writeUint64(2, f);
   }
-  f = message.getLot();
+  f = message.getIot();
   if (f !== 0) {
     writer.writeUint64(3, f);
   }
@@ -26246,10 +26271,10 @@ proto.proto.ProxF2PGetSpaceResult.prototype.setLocalData = function (value) {
 };
 
 /**
- * optional uint64 lot = 3;
+ * optional uint64 iot = 3;
  * @return {number}
  */
-proto.proto.ProxF2PGetSpaceResult.prototype.getLot = function () {
+proto.proto.ProxF2PGetSpaceResult.prototype.getIot = function () {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -26257,7 +26282,7 @@ proto.proto.ProxF2PGetSpaceResult.prototype.getLot = function () {
  * @param {number} value
  * @return {!proto.proto.ProxF2PGetSpaceResult} returns this
  */
-proto.proto.ProxF2PGetSpaceResult.prototype.setLot = function (value) {
+proto.proto.ProxF2PGetSpaceResult.prototype.setIot = function (value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 

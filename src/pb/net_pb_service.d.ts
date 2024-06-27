@@ -163,7 +163,7 @@ type APIGetBlock = {
   readonly requestStream: false;
   readonly responseStream: true;
   readonly requestType: typeof net_pb.GetBlockRequest;
-  readonly responseType: typeof net_pb.GetBlockResponse;
+  readonly responseType: typeof net_pb.GetResponse;
 };
 
 type APIGetCarMeta = {
@@ -172,7 +172,7 @@ type APIGetCarMeta = {
   readonly requestStream: false;
   readonly responseStream: true;
   readonly requestType: typeof net_pb.GetCarMetaRequest;
-  readonly responseType: typeof net_pb.GetCarMetaResponse;
+  readonly responseType: typeof net_pb.GetResponse;
 };
 
 type APIGetObjects = {
@@ -627,8 +627,8 @@ export class APIClient {
     requestMessage: net_pb.FetchRequest,
     callback: (error: ServiceError|null, responseMessage: net_pb.PinningInfo|null) => void
   ): UnaryResponse;
-  getBlock(requestMessage: net_pb.GetBlockRequest, metadata?: grpc.Metadata): ResponseStream<net_pb.GetBlockResponse>;
-  getCarMeta(requestMessage: net_pb.GetCarMetaRequest, metadata?: grpc.Metadata): ResponseStream<net_pb.GetCarMetaResponse>;
+  getBlock(requestMessage: net_pb.GetBlockRequest, metadata?: grpc.Metadata): ResponseStream<net_pb.GetResponse>;
+  getCarMeta(requestMessage: net_pb.GetCarMetaRequest, metadata?: grpc.Metadata): ResponseStream<net_pb.GetResponse>;
   getObjects(requestMessage: net_pb.GetRequests, metadata?: grpc.Metadata): ResponseStream<net_pb.GetResponse>;
   getObjectInfo(
     requestMessage: net_pb.GetRequest,

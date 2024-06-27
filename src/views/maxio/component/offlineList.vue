@@ -39,7 +39,7 @@
                   <nut-progress
                     size="small"
                     :percentage="item.progress"
-                    stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+                    stroke-color="linear-gradient(234deg, rgb(119 255 18) 0%, rgb(62 158 83) 32.8156%, rgb(209 190 102) 100%)"
                     status="active"
                   />
                 </div>
@@ -138,14 +138,14 @@
                   <nut-progress
                     size="small"
                     :percentage="100"
-                    stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+                    stroke-color="linear-gradient(234deg, rgb(119 255 18) 0%, rgb(62 158 83) 32.8156%, rgb(209 190 102) 100%)"
                   />
                 </div>
                 <div class="show_offline_item_progress" v-if="item.status === 'failed'">
                   <nut-progress
                     size="small"
                     :percentage="0"
-                    stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+                    stroke-color="linear-gradient(234deg, rgb(119 255 18) 0%, rgb(62 158 83) 32.8156%, rgb(209 190 102) 100%)"
                   />
                 </div>
                 <div class="show_offline_item_bottom">
@@ -742,6 +742,7 @@
       width: 200px;
       //   background: #3872e0 !important;
       background-image: linear-gradient(89deg, #199dec 0%, #0061a3 0%, #df6b22 0%, #ffd07f 100%) !important;
+      background-image: linear-gradient(244deg, #51bb25 0%, #0061a3 0%, #84d32e 0%, #272523 100%) !important;
       color: #fff;
       font-weight: bold !important;
       cursor: pointer;
@@ -802,6 +803,7 @@
       color: #d3ab2c !important;
       .nut-tabs__titles-item__line {
         background: linear-gradient(90deg, #2478be 0%, rgb(248 185 108) 100%) !important;
+        background: linear-gradient(275deg, #5edc74 0%, rgb(224, 214, 33) 100%) !important;
         width: 100% !important;
       }
     }
@@ -850,6 +852,7 @@
           width: 100%;
           overflow: hidden;
           color: rgb(255, 158, 13);
+          color: #7ce86c;
           text-decoration: underline;
         }
         .show_offline_item_provider {

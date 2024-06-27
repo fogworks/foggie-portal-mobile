@@ -133,7 +133,7 @@ Service.GetBlock = {
   requestStream: false,
   responseStream: true,
   requestType: prox_pb.ProxGetBlockRequest,
-  responseType: prox_pb.ProxGetBlockResponse
+  responseType: prox_pb.ProxGetResponse
 };
 
 Service.GetCarMeta = {
@@ -142,7 +142,7 @@ Service.GetCarMeta = {
   requestStream: false,
   responseStream: true,
   requestType: prox_pb.ProxGetCarMetaRequest,
-  responseType: prox_pb.ProxGetCarMetaResponse
+  responseType: prox_pb.ProxGetResponse
 };
 
 Service.GetObject = {

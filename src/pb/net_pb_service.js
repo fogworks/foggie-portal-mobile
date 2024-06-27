@@ -169,7 +169,7 @@ API.GetBlock = {
   requestStream: false,
   responseStream: true,
   requestType: net_pb.GetBlockRequest,
-  responseType: net_pb.GetBlockResponse
+  responseType: net_pb.GetResponse
 };
 
 API.GetCarMeta = {
@@ -178,7 +178,7 @@ API.GetCarMeta = {
   requestStream: false,
   responseStream: true,
   requestType: net_pb.GetCarMetaRequest,
-  responseType: net_pb.GetCarMetaResponse
+  responseType: net_pb.GetResponse
 };
 
 API.GetObjects = {

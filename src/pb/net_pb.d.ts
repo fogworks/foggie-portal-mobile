@@ -3731,8 +3731,8 @@ export class F2PGetSpaceResult extends jspb.Message {
   getLocalData(): number;
   setLocalData(value: number): void;
 
-  getLot(): number;
-  setLot(value: number): void;
+  getIot(): number;
+  setIot(value: number): void;
 
   getMiningPool(): number;
   setMiningPool(value: number): void;
@@ -3757,7 +3757,7 @@ export namespace F2PGetSpaceResult {
   export type AsObject = {
     ipfs: number,
     localData: number,
-    lot: number,
+    iot: number,
     miningPool: number,
     remaining: number,
     total: number,

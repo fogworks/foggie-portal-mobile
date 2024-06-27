@@ -1,7 +1,7 @@
 <template>
   <div class="info_box">
     <div class="top_box">
-      <TopBack>UserInfo</TopBack>
+      <TopBack>User Info</TopBack>
     </div>
     <nut-cell-group title="My Account" class="info_title">
       <nut-cell v-if="userInfo.email" title="Email" :desc="userInfo.email"></nut-cell>

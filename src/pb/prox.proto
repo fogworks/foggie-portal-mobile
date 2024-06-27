@@ -575,6 +575,7 @@ message ProxPInfo {
 	uint64 duration  = 6;
 	string provider = 7;
 	int32 idx = 8;
+	uint64 completed = 9;
 
 }
 message ProxPinningInfo {
@@ -618,8 +619,8 @@ service Service {
 	rpc ListMultipart(ProxListUploadReq)returns(ProxListMultipartUploadResponse){}
 	rpc ListObjectParts(ProxListPartsReq)returns(ProxListPartsResponse){}
 	rpc ListObjects(ProxListObjectsReq)returns(ProxListObjectsResp){}
-	rpc GetBlock(ProxGetBlockRequest) returns (stream ProxGetBlockResponse) {}
-	rpc GetCarMeta(ProxGetCarMetaRequest) returns (stream ProxGetCarMetaResponse) {}
+	rpc GetBlock(ProxGetBlockRequest) returns (stream ProxGetResponse) {}
+	rpc GetCarMeta(ProxGetCarMetaRequest) returns (stream ProxGetResponse) {}
 	rpc GetObject(ProxGetRequest) returns (stream ProxGetResponse) {}
 	rpc GetObjects(ProxGetRequests) returns (stream ProxGetResponse) {}
 	rpc SearchObject(ProxSearchRequest) returns (stream ProxSearchResponse) {}
@@ -747,7 +748,7 @@ message ProxF2PGetAppData {
 message ProxF2PGetSpaceResult {
 	uint64 ipfs = 1;
 	uint64 local_data = 2;
-	uint64 lot = 3;
+	uint64 iot = 3;
 	uint64 mining_pool = 4;
 	uint64 remaining = 5;
 	uint64 total = 6;

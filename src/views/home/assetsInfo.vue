@@ -65,7 +65,7 @@
           <div class="service_img">
             <img src="@/assets/newIcon/userInfo.png" alt="" />
           </div>
-          <div class="service_item_title">Asset Info</div>
+          <div class="service_item_title">User Info</div>
         </div>
       </div>
     </div>
