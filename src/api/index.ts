@@ -417,3 +417,13 @@ export function post_campaignClaim(data) {
         data,
     });
 }
+
+export function campaignBind(data) {
+    let url = `${mscUrl}/msc/chain/bind`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+

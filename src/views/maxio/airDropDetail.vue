@@ -101,7 +101,8 @@
 
 <script setup>
   import { ref, toRefs, computed, onMounted, onUnmounted } from 'vue';
-  import { get_campaignDetail, campaignApply, post_campaignClaim } from '@/api/index';
+  import { get_campaignDetail, campaignApply, post_campaignClaim, campaignBind } from '@/api/index';
+  import { Web3 } from 'web3';
   import { showToast } from '@nutui/nutui';
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
   const router = useRouter();
@@ -191,6 +192,15 @@
     const isMobile = isIOS || isAndroid;
     const isOKApp = /OKApp/i.test(ua);
     console.log(isMobile && !isOKApp, 'isMobile && !isOKApp');
+    // const web3 = new Web3(window.ethereum);
+    // const message = 'Signature request from FoggieMAX';
+    // web3.eth.personal.sign(message, '0xf97bb5db0c5aee67051faea1669110eed171cc10', '').then((signature) => {
+    //   const messageHash = web3.utils.sha3(message);
+    //   const publicKey = web3.eth.accounts.recover(messageHash, signature);
+    //   console.log(publicKey, 'ssssss');
+    //   return;
+    // });
+    // return;
     if (isMobile && !isOKApp) {
       const encodedUrl =
         'https://www.okx.com/download?deeplink=' + encodeURIComponent('okx://wallet/dapp/url?dappUrl=' + encodeURIComponent(location.href));
@@ -199,7 +209,31 @@
       const accounts = await window.okxwallet.request({
         method: 'eth_requestAccounts',
       });
-      console.log(accounts, 'aaaaaaaaaaaaa-aaaaaaaaa');
+      showToast.success('accounts---' + accounts);
+      let publicKey = '';
+      const web3 = new Web3(window.ethereum);
+      showToast.success('ethereumethereum---' + window.ethereum);
+      const message = 'Signature request from FoggieMAX';
+      web3.eth.personal.sign(message, accounts, '').then((signature) => {
+        const messageHash = web3.utils.sha3(message);
+        const publicKey = web3.eth.accounts.recover(messageHash, signature);
+        showToast.success('publicKey---' + publicKey);
+        let d = {
+          maxioUuid: currentDeviceItem.value.device_id,
+          wallet: accounts,
+          publicKey: publicKey,
+          chainGroupId: currentItem.value.chain_group_id,
+          chainId: currentItem.value.chain_id,
+        };
+        campaignBind(d).then((r) => {
+          if (r?.data) {
+            showToast.success('Bind success!!!!!');
+            initDetail();
+          }
+        });
+      });
+
+      //   console.log(accounts, 'aaaaaaaaaaaaa-aaaaaaaaa');
     }
   };
   const toApply = () => {
@@ -277,6 +311,7 @@
   @import url('./maxFileOpt/style/common.scss');
   @import url('./maxFileOpt/style/index.scss');
   .airdrop_detail_root {
+    height: 100%;
     .airdrop_detail_head {
       display: flex;
       color: #fff;
@@ -314,11 +349,14 @@
       width: 100%;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: start;
       margin-top: 30px;
       flex-direction: column;
+      padding-bottom: 20px;
+      overflow-y: scroll;
+      height: calc(100% - 60px);
       .head_img {
-        width: 90%;
+        width: 85%;
         height: auto;
         object-fit: cover;
         border-radius: 4px;
@@ -372,7 +410,7 @@
         align-items: center;
         justify-content: space-between;
         font-size: 20px;
-        margin: 20px 0;
+        margin: 10px 0;
         width: 90%;
         color: #fff;
         img {
