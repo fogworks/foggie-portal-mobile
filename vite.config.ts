@@ -49,7 +49,8 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
         server: {
             host: true,
             hmr: true,
-            https: ISHttps ? true : false,
+            // https: ISHttps ? true : false,
+            https: true,
             proxy: {
                 '^/msc': {
                     target: 'http://45.207.245.24:6066',

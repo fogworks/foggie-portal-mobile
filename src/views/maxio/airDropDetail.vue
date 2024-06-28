@@ -43,6 +43,10 @@
         <span class="airdrop_capm_item_keyValue">{{ currentItem.participants || 0 }}</span>
       </div>
       <div class="airdrop_capm_item_keyList">
+        <div class="title"> <img src="@/assets/maxio/reward.svg" />Airdrop Received:</div>
+        <span class="airdrop_capm_item_keyValue"> {{ currentItem.campaignStatus == 8 ? currentItem.credited_amount : '****' }}</span>
+      </div>
+      <div class="airdrop_capm_item_keyList">
         <div class="title"><img src="@/assets/maxio/clock.svg" />Airdrop Period:</div>
         <span class="airdrop_capm_item_keyValue">
           {{ currentItem.start_time && transferUTCTime(currentItem.start_time) }}-{{
@@ -50,15 +54,12 @@
           }}</span
         >
       </div>
-      <div class="airdrop_capm_item_keyList">
-        <div class="title"> <img src="@/assets/maxio/clock.svg" />Airdrop Received:</div>
-        <span class="airdrop_capm_item_keyValue"> {{ currentItem.campaignStatus == 8 ? currentItem.credited_amount : '****' }}</span>
-      </div>
-      <div class="airdrop_capm_item_keyList">
-        <!-- <div class="airdrop_capm_item_btn participate">
-          {{ activeStatus[currentItem.campaignStatus] }}
-        </div> -->
-        <div v-if="currentItem.campaignStatus == 1 || currentItem.campaignStatus == 5"> {{ detailDownCount }}</div>
+
+      <div class="airdrop_capm_item_keyList" v-if="currentItem.campaignStatus == 1 || currentItem.campaignStatus == 5">
+        <div class="title">
+          <img src="@/assets/maxio/time.svg" />{{ currentItem.campaignStatus == 1 ? 'Event countdown begins' : 'Withdraw countdown' }}</div
+        >
+        <span class="airdrop_capm_item_keyValue"> {{ detailDownCount }}</span>
       </div>
       <div class="airdrop_capm_itemList tips">
         <span v-if="currentItem.campaignStatus == 1 && currentItem.wallet">The Event is coming very soon</span>
@@ -66,7 +67,8 @@
           >This event is extremely hot and the number of participants has reached the limit. Thank you.</span
         >
         <span v-if="currentItem.campaignStatus == 5"
-          >We will enable withdrawals after {{ transferUTCTime(currentItem.apply_for_start_time) }}</span
+          >You have successfully participated in the event!We will enable withdrawals after
+          {{ transferUTCTime(currentItem.apply_for_start_time) }}</span
         >
         <span v-if="(currentItem.campaignStatus == 1 || currentItem.campaignStatus == 2) && !currentItem.wallet"
           >You haven't bound your wallet yet. Please bind your wallet first before participating in the event.</span
@@ -136,12 +138,13 @@
   });
 
   const initDetail = () => {
+    console.log('------initDetail-----');
     const data = {
       campaignId: currentData.value.campaign_id,
       maxioUuid: currentDeviceItem.value.device_id,
     };
     get_campaignDetail(data).then((res) => {
-      //   console.log('get_campaignDetail', res);
+      console.log('get_campaignDetail', res);
       currentItem.value = res.data;
       detailTime.value = setInterval(() => {
         detailDownCountFn();
@@ -191,14 +194,13 @@
     const isAndroid = /android|XiaoMi|MiuiBrowser/i.test(ua);
     const isMobile = isIOS || isAndroid;
     const isOKApp = /OKApp/i.test(ua);
-    console.log(isMobile && !isOKApp, 'isMobile && !isOKApp');
-    // const web3 = new Web3(window.ethereum);
+    window.ethereum.enable();
+    const web3 = new Web3(window.ethereum);
     // const message = 'Signature request from FoggieMAX';
     // web3.eth.personal.sign(message, '0xf97bb5db0c5aee67051faea1669110eed171cc10', '').then((signature) => {
     //   const messageHash = web3.utils.sha3(message);
     //   const publicKey = web3.eth.accounts.recover(messageHash, signature);
-    //   console.log(publicKey, 'ssssss');
-    //   return;
+    //   console.log(signature, publicKey, 'ssssss');
     // });
     // return;
     if (isMobile && !isOKApp) {
@@ -209,31 +211,35 @@
       const accounts = await window.okxwallet.request({
         method: 'eth_requestAccounts',
       });
-      showToast.success('accounts---' + accounts);
       let publicKey = '';
-      const web3 = new Web3(window.ethereum);
-      showToast.success('ethereumethereum---' + window.ethereum);
       const message = 'Signature request from FoggieMAX';
-      web3.eth.personal.sign(message, accounts, '').then((signature) => {
-        const messageHash = web3.utils.sha3(message);
-        const publicKey = web3.eth.accounts.recover(messageHash, signature);
-        showToast.success('publicKey---' + publicKey);
-        let d = {
-          maxioUuid: currentDeviceItem.value.device_id,
-          wallet: accounts,
-          publicKey: publicKey,
-          chainGroupId: currentItem.value.chain_group_id,
-          chainId: currentItem.value.chain_id,
-        };
-        campaignBind(d).then((r) => {
-          if (r?.data) {
-            showToast.success('Bind success!!!!!');
-            initDetail();
-          }
-        });
-      });
-
-      //   console.log(accounts, 'aaaaaaaaaaaaa-aaaaaaaaa');
+      window.okxwallet
+        .request({
+          method: 'eth_sign',
+          params: [accounts, message],
+        })
+        .then((signature) => {
+          //   showToast.success('signature---' + signature);
+          const messageHash = web3.utils.sha3(message);
+          const publicKey = web3.eth.accounts.recover(messageHash, signature);
+          showToast.success('publicKey---' + publicKey);
+          let d = {
+            maxioUuid: currentDeviceItem.value.device_id,
+            wallet: accounts,
+            publicKey: publicKey,
+            chainGroupId: currentItem.value.chain_group_id,
+            chainId: currentItem.value.chain_id,
+          };
+          campaignBind(d).then((r) => {
+            if (r?.data) {
+              showToast.success('Bind success!!!!!');
+              initDetail();
+            } else {
+              showToast.success('Bind failed!!!!!');
+            }
+          });
+        })
+        .catch((error) => console.error);
     }
   };
   const toApply = () => {
@@ -376,7 +382,10 @@
           padding-bottom: 10px;
         }
         &.tips {
+          justify-content: center;
+          margin-top: 40px;
           span {
+            text-indent: 20px;
             font-size: 28px;
             background-clip: text;
             color: transparent;
@@ -384,6 +393,8 @@
             background-image: linear-gradient(275deg, #c0e0be 10%, #80bc01 40%, #54ce19 50%, #3ede31 100%);
             white-space: pre-wrap;
             font-weight: bolder;
+            line-height: 40px;
+            // text-align: center;
           }
         }
         &.slogan {

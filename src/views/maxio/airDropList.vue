@@ -148,12 +148,23 @@
                     <div class="airdrop_capm_item_btn" :class="[detail.participate ? 'participate' : 'notparticipate']">
                       {{ detail.participate ? 'Applied' : 'Not applied' }}
                     </div>
-                    <div class="info_line_time">
+                    <!-- <div class="airdrop_capm_item_btn" :class="[detail.participate ? 'participate' : 'notparticipate']">
+                      {{ activeStatus[detail.status] }}
+                    </div> -->
+                    <div class="info_line_time" v-if="handleTimeShow(detail) !== 0">
                       {{ handleTimeShow(detail) }}
                       <span class="str">({{ showTimeStr }})</span>
                     </div>
 
-                    <div class="airdrop_capm_item_btn" @click="gotoDetail(detail)"> 立即参与 </div>
+                    <div
+                      class="airdrop_capm_item_btn"
+                      @click="gotoDetail(detail)"
+                      :class="[detail.participate ? 'airdrop_capm_item_btnColor' : '']"
+                      v-if="handleTime(detail) || detail.participate"
+                    >
+                      {{ detail.participate ? '查看活动' : '立即参与' }}
+                    </div>
+                    <div v-if="!detail.participate && !handleTime(detail)" class="airdrop_capm_item_btn notparticipate">活动已结束</div>
                   </div>
                 </div>
                 <div v-if="!currentList.length">
@@ -192,14 +203,38 @@
                   </div>
                   <div class="airdrop_capm_item_keyList">
                     <img src="@/assets/maxio/clock.svg" />:
+                    <span class="airdrop_capm_item_keyValue">
+                      {{ detail.start_time && transferUTCTime(detail.start_time) }}-{{
+                        detail.end_time && transferUTCTime(detail.end_time)
+                      }}</span
+                    >
+                  </div>
+                  <div class="airdrop_capm_item_keyList">
+                    <img src="@/assets/maxio/hand.svg" />:
                     <span class="airdrop_capm_item_keyValue"> {{ detail.create_time && transferUTCTime(detail.create_time) }}</span>
                   </div>
+                  <div class="airdrop_capm_item_keyList">
+                    <img src="@/assets/maxio/time.svg" />:
+                    <span class="airdrop_capm_item_keyValue">
+                      {{ detail.create_time && transferUTCTime(detail.apply_for_end_time) }}
+                      <span class="smallTips" v-if="detail.status == 4 && !compTime(detail)">(It's not yet time for withdrawal)</span></span
+                    >
+                  </div>
                   <div class="airdrop_capm_item_btnLine">
-                    <!-- :class="[(detail.status == 4 && compTime(detail)) || detail.status == 6 ? 'participate' : 'notparticipate']" -->
                     <div class="airdrop_capm_item_btn participate">
                       {{ historyStatus[detail.status] }}
                     </div>
-                    <div class="airdrop_capm_item_btn"> 去提现 </div>
+                    <!-- <div class="airdrop_capm_item_btn" v-if="detail.status == 4 && !compTime(detail)">
+                      It's not yet time for withdrawal
+                    </div> -->
+                    <div class="airdrop_capm_item_btn airdrop_capm_item_btnColor" @click="gotoDetail(detail)"> 查看活动 </div>
+                    <div
+                      class="airdrop_capm_item_btn"
+                      v-if="(detail.status == 4 && compTime(detail)) || detail.status == 6"
+                      @click="toWithdraw(detail)"
+                    >
+                      去提现
+                    </div>
                   </div>
                 </div>
                 <div v-if="!currentList.length">
@@ -229,6 +264,20 @@
     7: 'Received',
     9: 'Withdrawal suspended',
   });
+  const activeStatus = ref({
+    1: 'Pending',
+    2: 'Ongoing',
+    3: ' Applied successfully',
+    4: 'Not allocated',
+    5: 'Allocated',
+    6: 'Allocated',
+    7: 'Withdraw in progress',
+    8: 'Withdraw successfully',
+    9: 'Withdraw failed',
+    13: 'COMPLETED',
+    11: 'Event suspended',
+    12: ' Withdraw suspended',
+  });
   import sd from './sd.vue';
   import moment from 'moment';
   const router = useRouter();
@@ -249,12 +298,12 @@
   const showTimeStr = ref('');
   const statusList = ref([
     { label: 'Active', value: 'active' },
-    { label: 'History', value: 'history' },
+    { label: 'My Activities', value: 'history' },
   ]);
   const currentStatus = ref('active');
   const historyList = ref([]);
 
-  import { campaignCenterChain, campaignCenterList, campaignNew, getAirdropDes, get_campaignApply } from '@/api/index';
+  import { campaignCenterChain, campaignCenterList, campaignNew, getAirdropDes, get_campaignApply, post_campaignClaim } from '@/api/index';
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
   };
@@ -325,6 +374,15 @@
       activeDownCountFn();
     }, 1000);
   };
+  const handleTime = (time) => {
+    let now = Date.now();
+    const endTime = new Date(time.end_time).getTime();
+    if (now > endTime) {
+      return false;
+    } else {
+      return true;
+    }
+  };
   const handleTimeShow = (list) => {
     let now = Date.now();
     const startTime = new Date(list.start_time).getTime();
@@ -370,6 +428,16 @@
       }
     }
   };
+  const toWithdraw = (item) => {
+    let data = {
+      campaignId: item.campaign_id,
+      maxioUuid: currentItem.value.device_id,
+    };
+    post_campaignClaim(data).then((r) => {
+      showToast.success('Added to the withdrawal queue...');
+      initHistory();
+    });
+  };
   onMounted(() => {
     currentItem.value = JSON.parse(window.localStorage.homeChooseBucket);
     let myPoolList = JSON.parse(window.localStorage.getItem('myPoolList'));
@@ -403,39 +471,40 @@
     };
     get_campaignApply(data).then((res) => {
       console.log('initHistory', res);
-      let _historyList = {
-        code: 200,
-        msg: 'Succeed',
-        data: {
-          list: [
-            {
-              id: 11,
-              maxio_uuid: '03000200-0400-0500-0006-000700080009',
-              chain_id: 137,
-              chain_name: 'Polygon Mainnet',
-              chain_group_id: 1,
-              chain_group_name: 'EVM',
-              currency: 'MATIC',
-              wallet: '0xf97bb5db0c5aee67051faea1669110eed171cc10',
-              amount: '0',
-              start_time: '2024-06-26T06:55:49.000Z',
-              end_time: '2024-06-28T07:48:53.000Z',
-              apply_for_start_time: '2024-06-28T16:00:00.000Z',
-              apply_for_end_time: '2044-06-28T16:00:00.000Z',
-              campaign_id: 34,
-              title: 'iotxmainx------cc',
-              type: 2,
-              status: 3,
-              update_time: '2024-06-26T08:05:33.000Z',
-              create_time: '2024-06-26T08:05:33.000Z',
-              tags: '{}',
-            },
-          ],
-          total: 1,
-        },
-        time: 1719391356204,
-      };
-      historyList.value = _historyList.data.list;
+      historyList.value = res.data.list;
+      //   let _historyList = {
+      //     code: 200,
+      //     msg: 'Succeed',
+      //     data: {
+      //       list: [
+      //         {
+      //           id: 11,
+      //           maxio_uuid: '03000200-0400-0500-0006-000700080009',
+      //           chain_id: 137,
+      //           chain_name: 'Polygon Mainnet',
+      //           chain_group_id: 1,
+      //           chain_group_name: 'EVM',
+      //           currency: 'MATIC',
+      //           wallet: '0xf97bb5db0c5aee67051faea1669110eed171cc10',
+      //           amount: '0',
+      //           start_time: '2024-06-26T06:55:49.000Z',
+      //           end_time: '2024-06-28T07:48:53.000Z',
+      //           apply_for_start_time: '2024-06-28T16:00:00.000Z',
+      //           apply_for_end_time: '2044-06-28T16:00:00.000Z',
+      //           campaign_id: 34,
+      //           title: 'iotxmainx------cc',
+      //           type: 2,
+      //           status: 3,
+      //           update_time: '2024-06-26T08:05:33.000Z',
+      //           create_time: '2024-06-26T08:05:33.000Z',
+      //           tags: '{}',
+      //         },
+      //       ],
+      //       total: 1,
+      //     },
+      //     time: 1719391356204,
+      //   };
+      //   historyList.value = _historyList.data.list;
     });
   };
   const gotoDetail = (item) => {
