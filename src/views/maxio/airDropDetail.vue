@@ -27,7 +27,18 @@
           <img src="@/assets/maxio/walletBind.svg" />
           wallet:</div
         >
-        <span class="airdrop_capm_item_keyValue">{{ currentItem.wallet ? currentItem.wallet : "You haven't bound your wallet yet" }}</span>
+        <span class="airdrop_capm_item_keyValue"
+          >{{ currentItem.wallet ? currentItem.wallet : "You haven't bound your wallet yet" }}
+          <div
+            class="airdrop_line_btn"
+            v-if="(currentItem.campaignStatus == 1 || currentItem.campaignStatus == 2) && !currentItem.wallet"
+            @click="toBind"
+          >
+            Bind</div
+          >
+          <div class="airdrop_line_btn" v-if="currentItem.wallet" @click="unBindWallet"> Unbind</div>
+          <!-- <div class="airdrop_line_btn" v-if="!currentItem.wallet" @click="unBindWallet"> Unbind</div> -->
+        </span>
       </div>
       <div class="airdrop_capm_item_keyList">
         <div class="title">
@@ -96,16 +107,17 @@
         <div class="airdrop_detail_btn" v-if="currentItem.campaignStatus == 6 || currentItem.campaignStatus == 9" @click="toWithdraw">
           withDraw</div
         >
+        <!-- <div class="airdrop_detail_btn" v-if="currentItem.wallet" @click="unBindWallet"> Unbind</div> -->
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-  import { ref, toRefs, computed, onMounted, onUnmounted } from 'vue';
-  import { get_campaignDetail, campaignApply, post_campaignClaim, campaignBind } from '@/api/index';
+  import { ref, toRefs, computed, onMounted, onUnmounted, createVNode } from 'vue';
+  import { get_campaignDetail, campaignApply, post_campaignClaim, campaignBind, campaignUnbindValid, campaignUnbind } from '@/api/index';
   import { Web3 } from 'web3';
-  import { showToast } from '@nutui/nutui';
+  import { showToast, showDialog } from '@nutui/nutui';
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
   const router = useRouter();
   const route = useRoute();
@@ -188,13 +200,50 @@
   const changeTab = () => {
     router.push({ path: '/airDropList' });
   };
+  const unBindWallet = (item) => {
+    const onOk = async () => {
+      const d = {
+        maxioUuid: currentDeviceItem.value.device_id,
+        chainGroupId: currentItem.value.chain_group_id,
+      };
+      campaignUnbindValid(d).then((r) => {
+        if (r.code == 20038) {
+          campaignUnbind(d)
+            .then((r) => {
+              if (r?.data) {
+                showToast.success('Unbind success');
+                initDetail();
+              }
+            })
+            .catch(() => {});
+        } else if (r.data) {
+          showToast.success('Unbind success');
+          initDetail();
+        } else {
+          showToast.fail('The event is in progress and wallet cannot be unbinded');
+          initDetail();
+        }
+      });
+    };
+    showDialog({
+      title: 'UnBind Wallet',
+      content: createVNode(
+        'span',
+        { style: { color: 'white' } },
+        'Are you sure to unbind wallet?Once unbound, you CAN NOT receive airdrop any more.',
+      ),
+      onCancel: () => {},
+      onOk,
+    });
+  };
   const toBind = async () => {
+    showToast.success('isOKApp---' + '11');
     const ua = navigator.userAgent;
     const isIOS = /iphone|ipad|ipod|ios/i.test(ua);
     const isAndroid = /android|XiaoMi|MiuiBrowser/i.test(ua);
     const isMobile = isIOS || isAndroid;
     const isOKApp = /OKApp/i.test(ua);
-    window.ethereum.enable();
+    window.ethereum && window.ethereum.enable();
     const web3 = new Web3(window.ethereum);
     // const message = 'Signature request from FoggieMAX';
     // web3.eth.personal.sign(message, '0xf97bb5db0c5aee67051faea1669110eed171cc10', '').then((signature) => {
@@ -203,6 +252,7 @@
     //   console.log(signature, publicKey, 'ssssss');
     // });
     // return;
+    // showToast.success('isOKApp---' + isOKApp);
     if (isMobile && !isOKApp) {
       const encodedUrl =
         'https://www.okx.com/download?deeplink=' + encodeURIComponent('okx://wallet/dapp/url?dappUrl=' + encodeURIComponent(location.href));
@@ -263,7 +313,7 @@
   const toWithdraw = () => {
     let data = {
       campaignId: currentItem.value.campaign_id,
-      maxioUuid: deviceData.device_id,
+      maxioUuid: currentDeviceItem.device_id,
     };
     post_campaignClaim(data).then((r) => {
       showToast.success('Added to the withdrawal queue...');
@@ -363,7 +413,8 @@
       height: calc(100% - 60px);
       .head_img {
         width: 85%;
-        height: auto;
+        width: auto;
+        height: 400px;
         object-fit: cover;
         border-radius: 4px;
         border: 1px solid #8fe527ab;
@@ -477,9 +528,24 @@
         border-radius: 6px;
       }
     }
+    .airdrop_line_btn {
+      margin-left: 8px;
+      border-radius: 16px;
+      width: auto;
+      height: 32px;
+      color: #000;
+      padding: 5px 20px;
+      text-align: center;
+      line-height: 32px;
+      font-size: 14px;
+      font-weight: bolder;
+      background-image: linear-gradient(89deg, #c0e0be 10%, #7ce86c 40%, #4de204 50%, #3ede31 100%);
+      background-image: linear-gradient(197deg, #ede118 10%, #e2de23 40%, #ffd07f 50%, #e0ac0e 100%);
+    }
     .airdrop_detail_btn_line {
       margin-top: 20px;
       .airdrop_detail_btn {
+        margin-bottom: 20px;
         border-radius: 30px;
         width: 380px;
         height: 70px;

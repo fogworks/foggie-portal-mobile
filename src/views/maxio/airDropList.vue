@@ -162,9 +162,15 @@
                       :class="[detail.participate ? 'airdrop_capm_item_btnColor' : '']"
                       v-if="handleTime(detail) || detail.participate"
                     >
-                      {{ detail.participate ? '查看活动' : '立即参与' }}
+                      {{ detail.participate ? 'View Activities' : 'Join Now' }}
                     </div>
-                    <div v-if="!detail.participate && !handleTime(detail)" class="airdrop_capm_item_btn notparticipate">活动已结束</div>
+                    <div
+                      v-if="!detail.participate && !handleTime(detail)"
+                      class="airdrop_capm_item_btn notparticipate"
+                      @click="gotoDetail(detail)"
+                    >
+                      The activity has ended</div
+                    >
                   </div>
                 </div>
                 <div v-if="!currentList.length">
@@ -227,19 +233,19 @@
                     <!-- <div class="airdrop_capm_item_btn" v-if="detail.status == 4 && !compTime(detail)">
                       It's not yet time for withdrawal
                     </div> -->
-                    <div class="airdrop_capm_item_btn airdrop_capm_item_btnColor" @click="gotoDetail(detail)"> 查看活动 </div>
+                    <div class="airdrop_capm_item_btn airdrop_capm_item_btnColor" @click="gotoDetail(detail)"> View Activities </div>
                     <div
                       class="airdrop_capm_item_btn"
                       v-if="(detail.status == 4 && compTime(detail)) || detail.status == 6"
                       @click="toWithdraw(detail)"
                     >
-                      去提现
+                      Withdraw
                     </div>
                   </div>
                 </div>
-                <div v-if="!currentList.length">
+                <div v-if="!historyList.length">
                   <img src="@/assets/maxio/empty.svg" alt="" style="" class="empty_img" />
-                  <div class="empty_img_text">There are currently no activities available....</div>
+                  <div class="empty_img_text">There is no history of participating in activities under your current account...</div>
                 </div>
               </div>
             </div>

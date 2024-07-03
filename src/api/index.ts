@@ -426,4 +426,21 @@ export function campaignBind(data) {
         data,
     });
 }
+export function campaignUnbindValid(data) {
+    let url = `${mscUrl}/msc/chain/unbind_valid`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+
+export function campaignUnbind(data) {
+    let url = `${mscUrl}/msc/chain/unbind`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
 
