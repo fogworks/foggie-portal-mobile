@@ -18,7 +18,9 @@ interface StoreUser {
     curStepIndex: any;
     maxTokenMap: any;
     currentLeftTab: any,
-    myAkList: Object
+    myAkList: Object,
+    maxBind: boolean,
+    maxWallet: string,
 }
 
 export const useUserStore = defineStore({
@@ -38,7 +40,9 @@ export const useUserStore = defineStore({
         //     ? JSON.parse(window.localStorage.getItem("homeChooseBucket"))
         //     : {},
         currentLeftTab: {},
-        myAkList: {}
+        myAkList: {},
+        maxBind: false,
+        maxWallet: '',
     }),
     getters: {
         getUserInfo(): any {
@@ -49,6 +53,12 @@ export const useUserStore = defineStore({
         },
         getRefreshToken(): any {
             return this.refreshToken || '';
+        },
+        getMaxBind(): any {
+            return this.maxBind;
+        },
+        getMaxWallet(): any {
+            return this.maxWallet;
         },
 
         getBalance(): any {
@@ -95,9 +105,17 @@ export const useUserStore = defineStore({
         setRefreshToken(refreshToken: any) {
             this.refreshToken = refreshToken;
         },
+        setMaxBind(bool: boolean) {
+            this.maxBind = bool;
+        },
+        setMaxWallet(wallet: string) {
+            this.maxWallet = wallet;
+        },
         logout() {
             this.token = '';
             this.refreshToken = '';
+            this.maxBind = false;
+            this.maxWallet = '';
             this.info = {};
             this.cloudCodeIsBind = false;
             Cookies.remove('access_token');
@@ -126,6 +144,6 @@ export const useUserStore = defineStore({
     persist: {
         key: 'token',
         storage: localStorage,
-        paths: ['token', 'refreshToken'],
+        paths: ['token', 'refreshToken', 'maxBind', 'maxWallet'],
     },
 });

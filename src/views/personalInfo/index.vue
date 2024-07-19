@@ -10,7 +10,7 @@
 
     <nut-cell-group title="Binding Information" class="info_title">
       <nut-cell v-if="!userInfo.dmc" title="Withdrawal account" desc="Unbound" @click="openBindDMCDiaolg"></nut-cell>
-      <nut-cell v-else title="Withdrawal account" :desc="userInfo.dmc"></nut-cell>
+      <nut-cell v-else title="Withdrawal account" :desc="maxBind ? maxWallet : userInfo.dmc"></nut-cell>
       <nut-cell
         class="not_amb"
         v-if="!userInfo.amb_promo_code || !cloudCodeIsBind"
@@ -72,6 +72,10 @@
   const userInfo = computed(() => useStore.getUserInfo);
   const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
   const cloudCodeIsBind = computed(() => useStore.getCloudCodeIsBind);
+
+  const maxBind = computed(() => useStore.getMaxBind);
+  const maxWallet = computed(() => useStore.getMaxWallet);
+
   const { showAllWalletList, showAccountList, accountsList } = useLinkAccounts();
   const choosedWallet = ref('');
   const bindAmbCode = inject('bindAmbCode');

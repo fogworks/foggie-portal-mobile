@@ -113,6 +113,7 @@
   const userInfo = computed(() => userStore.getUserInfo);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
   const curStepIndex = computed(() => userStore.getCurStepIndex); // 1 绑定大使邀请码
+  const maxBind = computed(() => userStore.getMaxBind);
 
   import DMCWalletLogin from '@/views/login/DMCWalletLoginHook.ts';
   const { isHasDmcwallet, dmcWalletLogin } = DMCWalletLogin();
@@ -333,7 +334,7 @@
               // 如果报错，则对错误进⾏捕获并处理
           } else {
           if(userInfo.value.dmc){
-            if(result.account_name != userInfo.value.dmc){
+            if(result.account_name != userInfo.value.dmc && !maxBind.value){
               showDialog({
                 title: 'Warning',
                 content: createVNode('span', { style: {} }, 'Account conflict, whether to switch to the current account?'),
@@ -442,7 +443,7 @@
             // approved
             await getOrder()
             if (orderTotal.value == 0 ) {
-              if(!window.localStorage.getItem('hasCloudApproved')){
+              if(!window.localStorage.getItem('hasCloudApproved') && !maxBind.value){
                 window.localStorage.hasCloudApproved = true
                 const onOk = () => {
                 router.push({ name: 'Shop',  });

@@ -106,6 +106,12 @@
     searchType: '0',
   });
   const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
+  import { useUserStore } from '@/store/modules/user';
+  const userStore = useUserStore();
+
+  const maxBind = computed(() => userStore.getMaxBind);
+  const maxWallet = computed(() => userStore.getMaxWallet);
+
 
   const { searchType, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
 
@@ -150,12 +156,14 @@
   const searchTypeChange = () => {
     resetData();
     const [start, end] = shortcuts[timeType.value]();
-    loadMore(start, end, searchType.value);
+    const address = maxBind.value ? maxWallet.value : '';
+    loadMore(start, end, searchType.value, address);
   };
   const timeTypeChange = () => {
     resetData();
     const [start, end] = shortcuts[timeType.value]();
-    loadMore(start, end, searchType.value);
+    const address = maxBind.value ? maxWallet.value : '';
+    loadMore(start, end, searchType.value, address);
   };
   // watch(
   //   searchType,
@@ -176,7 +184,8 @@
     const [start, end] = shortcuts[timeType.value]();
     getUserAssets();
     resetData();
-    loadMore(start, end, searchType.value);
+    const address = maxBind.value ? maxWallet.value : '';
+    loadMore(start, end, searchType.value, address);
   });
 </script>
 

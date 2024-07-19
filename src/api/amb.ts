@@ -50,9 +50,9 @@ export function get_order_node(uuid) {
   });
 }
 
-export function get_user_dmc() {
+export function get_user_dmc(address) {
   return request({
-    url: `${apiUrl}/ambmgr/asset/get_user_dmc`,
+    url: address ? `${apiUrl}/ambmgr/asset/get_user_dmc?address=${address}`: `${apiUrl}/ambmgr/asset/get_user_dmc`,
     method: 'GET',
   });
 }
@@ -122,7 +122,7 @@ export function node_order_buy_assign_bill(ip, data) {
 }
 export function get_user_withdraw(data) {
   return request({
-    url: `${apiUrl}/ambmgr/asset/get_user_withdraw?pn=${data.pn}&ps=${data.ps}`,
+    url: data.address ? `${apiUrl}/ambmgr/asset/get_user_withdraw?address=${data.address}?pn=${data.pn}&ps=${data.ps}` :`${apiUrl}/ambmgr/asset/get_user_withdraw?pn=${data.pn}&ps=${data.ps}`,
     method: 'POST',
     data,
   });

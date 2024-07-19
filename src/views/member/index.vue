@@ -200,6 +200,7 @@
   import { formatNumber } from '@/utils/util';
   import { ambAddress } from '@/setting';
   import setting from './setting.vue';
+
   const showSettings = ref(false);
 
   const uploadRef = ref();
@@ -212,6 +213,8 @@
   const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
   const user_code = computed(() => userStore.getUserInfo?.user_code);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+  const maxBind = computed(() => userStore.getMaxBind);
+  const maxWallet = computed(() => userStore.getMaxWallet);
 
   const visible = ref<boolean>(false);
 
@@ -264,7 +267,9 @@
     showToast.success('Copy succeeded,Use this code to quickly associate wallet accounts in the Dapp');
   }
   function loadUserDmc() {
-    get_user_dmc()
+
+    if (maxBind.value) {
+      get_user_dmc(maxWallet.value)
       .then((res) => {
         if (res.code == 200) {
           const data = res.result?.data;
@@ -275,6 +280,20 @@
         }
       })
       .catch((err) => {});
+    } else {
+      get_user_dmc()
+      .then((res) => {
+        if (res.code == 200) {
+          const data = res.result?.data;
+          money.Balance = formatNumber(data?.balance);
+          money.Recharge = formatNumber(data?.Recharge);
+          money.withdraw = formatNumber(data?.withdraw);
+          money.income = formatNumber(data?.income);
+        }
+      })
+      .catch((err) => {});
+    }
+    
   }
   const gotoDetail = (path): void => {
     router.push(path);

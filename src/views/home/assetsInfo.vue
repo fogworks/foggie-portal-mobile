@@ -12,19 +12,20 @@
             <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
           </div>
           <div class="usd_text" v-if="dmc2usdRate && cloudBalance && cloudBalance != '--'">
-            ≈ {{ formatNumber(dmc2usdRate * cloudBalance)?.integerPart
-            }}<span style="font-size: 13px">.{{ formatNumber(dmc2usdRate * cloudBalance)?.decimalPart }}</span> USD
+            ≈ {{ formatNumber(dmc2usdRate * Number(cloudBalance))?.integerPart
+            }}<span style="font-size: 13px">.{{ formatNumber(dmc2usdRate * Number(cloudBalance))?.decimalPart }}</span> USD
           </div>
         </div>
       </div>
       <div class="card_row_1 pst-row">
         <div>
           <p>Recharge</p>
-          <p class="column_value">{{ cloudRecharge >= 0 ? cloudRecharge.toFixed(4) : cloudRecharge }} DMC</p>
+          <p class="column_value">{{ Number(cloudRecharge) >= 0 ? Number(cloudRecharge).toFixed(4) : cloudRecharge }} DMC</p>
         </div>
         <div @click="gotoPage('transactionRecords', '1')">
           <p>Withdrawn</p>
-          <p class="column_value">{{ cloudWithdraw >= 0 ? cloudWithdraw.toFixed(4) : cloudWithdraw }} DMC</p>
+          <p v-if="maxBind" class="column_value">{{ maxBalance >= 0 ? maxBalance.toFixed(4) : maxBalance }} DMC</p>
+          <p v-else class="column_value">{{ Number(cloudWithdraw) >= 0 ? Number(cloudWithdraw).toFixed(4) : cloudWithdraw }} DMC</p>
         </div>
       </div>
     </div>
@@ -146,9 +147,9 @@
 </template>
 
 <script lang="ts" setup>
+  import { ref, onMounted, computed } from 'vue';
   import googleVerificationHook from './googleVerificationHook.ts';
   const {
-    bindOtp,
     openGoogleSetting,
     changeIsVerified,
     isLoading,
@@ -166,17 +167,24 @@
   const router = useRouter();
   import useUserAssets from './useUserAssets.ts';
   const { getUserAssets, getExchangeRate, dmc2usdRate, cloudBalance, cloudRecharge, cloudWithdraw } = useUserAssets();
+
+  import { get_user_dmc } from '@/api/amb';
+
+
   const userStore = useUserStore();
-  onMounted(async () => {
-    getUserAssets();
-    getExchangeRate();
-  });
+ 
   const cloudBalanceNum = computed(() => {
     return formatNumber(cloudBalance.value);
   });
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
   const dmcAccount = computed(() => userStore.getUserInfo?.dmc);
-  const promo_code = computed(() => userStore.getUserInfo?.amb_promo_code);
+
+  const maxBind = computed(() => userStore.getMaxBind);
+  const maxWallet = computed(() => userStore.getMaxWallet);
+  const maxWithdraw = ref(0);
+  const maxBalance = ref(0);
+
+
   const bindAmbCode = inject('bindAmbCode');
   const openBindDMCDiaolg = inject('openBindDMCDiaolg');
   const showWithdraw = () => {
@@ -219,6 +227,17 @@
       router.push('/personalInfo');
     }
   };
+  onMounted(async () => {
+    if (maxBind.value) {
+      const r = await get_user_dmc(maxWallet.value);
+      if (r.code == 200) {
+        maxWithdraw.value = r.result.data.withdraw;
+        maxBalance.value = r.result.data.balance;
+      }
+    }
+    getUserAssets();
+    getExchangeRate();
+  });
 </script>
 
 <style lang="scss">

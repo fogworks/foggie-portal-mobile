@@ -5,6 +5,7 @@ import {
     check_wallet,
     wallet_register,
     updateUser,
+    user,
 } from '@/api';
 import { useUserStore } from '@/store/modules/user';
 import { useRouter, useRoute } from 'vue-router';
@@ -28,11 +29,13 @@ export default function DMCWalletLogin() {
                         const sign = res.result;
                         check_wallet({ address: account, wallet_type: 'dmc' })
                             .then(async (res_) => {
-                                if (res_.data.register || res_.data.bind) {
-                                    walletLogin();
+                                if (res_.data.max_bind) {
+                                    walletLogin(null, true);
+                                } else if (res_.data.register || res_.data.bind  ) {
+                                    walletLogin(null, null);
                                 } else {
                                     wallet_register({ address: account, wallet_type: 'dmc' }).then((res) => {
-                                        walletLogin(res.data.id);
+                                        walletLogin(res.data.id, null);
                                     });
                                 }
                             })
@@ -40,7 +43,7 @@ export default function DMCWalletLogin() {
                                 window.alert(error);
                             });
 
-                        function walletLogin(ID = null) {
+                        function walletLogin(ID = null, max_bind: any) {
                             showToast.loading('Connecting', {
                                 cover: true,
                                 customClass: 'app_loading',
@@ -66,6 +69,12 @@ export default function DMCWalletLogin() {
 
                                         userStore.setToken(token);
                                         userStore.setRefreshToken(refresh_token);
+                                        if (max_bind) {
+                                            userStore.setMaxBind(true);
+                                            userStore.setMaxWallet(account);
+                                        } else {
+                                            userStore.setMaxBind(false);
+                                        }
 
                                         if (ID) {
                                             nextTick(() => {

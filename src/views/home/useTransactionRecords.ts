@@ -3,6 +3,7 @@ import { showToast } from '@nutui/nutui';
 import { transferUTCTimeDay } from '@/utils/util';
 import loadingImg from '@/components/loadingImg/index.vue';
 
+
 export default function useOrderList(getBarOptions) {
   const shortcuts = {
     0: () => {
@@ -46,7 +47,7 @@ export default function useOrderList(getBarOptions) {
     total.value = 0;
     listData.value = [];
   };
-  const loadMore = async (start_time = '', end_time = '', type = 0) => {
+  const loadMore = async (start_time = '', end_time = '', type = 0, address = '') => {
     showToast.loading('Loading', {
       cover: true,
       customClass: 'app_loading',
@@ -66,7 +67,7 @@ export default function useOrderList(getBarOptions) {
           showToast.hide();
         });
     } else {
-      await get_user_withdraw({ ps: ps.value, pn: pn.value, start_time, end_time })
+      await get_user_withdraw({ ps: ps.value, pn: pn.value, start_time, end_time, address })
         .then((res) => {
           total.value = res.result.total;
           const cloudList = res.result.data;

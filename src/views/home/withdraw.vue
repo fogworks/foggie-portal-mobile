@@ -11,7 +11,8 @@
           <div class="rechargeRecord" @click="router.push(`/transactionRecords?type=1`)">Withdraw Record</div>
           <div class="total_income">
             <div class="balance_text">
-              <span>{{ cloudWithdraw >= 0 ? cloudWithdraw.toFixed(4) : cloudWithdraw }}</span>
+              <span v-if="maxBind">{{ maxWithdraw >= 0 ? maxWithdraw.toFixed(4) : maxWithdraw }}</span>
+              <span v-else>{{ cloudWithdraw >= 0 ? cloudWithdraw.toFixed(4) : cloudWithdraw }}</span>
               <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
             </div>
           </div>
@@ -30,14 +31,14 @@
           </div>
           <div class="dot">
             <img class="top_img" src="@/assets/DMC_Token1.png" alt="" />
-            <span>{{ dmc }}</span>
+            <span>{{ maxBind ? maxWallet : dmc }}</span>
             <span class="small">(Receiving account)</span>
           </div>
         </div>
         <div class="ticket_box">
           <div class="title_item">
             <p>Withdrawal Account:</p>
-            <p class="dmc_account">{{ dmc }}</p>
+            <p class="dmc_account">{{ maxBind ? maxWallet : dmc }}</p>
           </div>
           <div class="title_item">
             <!-- <p>Please enter the withdrawal amount:</p> -->
@@ -74,7 +75,7 @@
               <van-number-keyboard v-model="code" :show="showKeyboard" @blur="showKeyboard = false" />
             </Teleport>
           </div>
-          <div class="real_amount balance"> Balance: {{ cloudBalance }} DMC </div>
+          <div class="real_amount balance"> Balance: {{ maxBind ? maxBalance : cloudBalance }} DMC </div>
           <div v-if="realAmount != '--'" class="real_amount"> The amount expected to arrive is {{ realAmount }} DMC</div>
           <div v-else class="real_amount">Failed to get agent pumping rate, please retry </div>
           <div class="tips">
@@ -169,9 +170,15 @@
   import { useUserStore } from '@/store/modules/user';
   import { showToast, showDialog } from '@nutui/nutui';
   import useUserAssets from './useUserAssets.ts';
+import { get_user_dmc } from '@/api/amb';
+
   import { get_otp, verify_otp_token, withdraw_otp, check_bind_otp, get_commission_rate, user_withdraw, getIsVerifiedAPI } from '@/api/amb';
   const userStore = useUserStore();
   const dmc = computed(() => userStore.getUserInfo.dmc);
+  const maxBind = computed(() => userStore.getMaxBind);
+  const maxWallet = computed(() => userStore.getMaxWallet);
+  const maxWithdraw = ref(0);
+  const maxBalance = ref(0);
   const email = computed(() => userStore.getUserInfo.email);
   const router = useRouter();
   const state = reactive({
@@ -218,7 +225,7 @@
     });
   };
   const getAll = () => {
-    amount.value = cloudBalance.value + '';
+    amount.value =  maxBind.value ? maxBalance.value + '' : cloudBalance.value + '';
   };
   const formatAmount = (val) => {
     if (val == 0) {
@@ -333,7 +340,12 @@
       showToast.fail('Please fill in the amount to be withdrawn');
       return false;
     }
-    if (+cloudBalance.value < +amount.value) {
+    if (maxBind.value) {
+      if (+maxBalance.value < +amount.value) {
+        showToast.fail('Exceeding the maximum withdrawable amount');
+        return false;
+      }
+    } else if (+cloudBalance.value < +amount.value) {
       showToast.fail('Exceeding the maximum withdrawable amount');
       return false;
     }
@@ -344,7 +356,11 @@
         icon: loadingImg,
         loadingRotate: false,
       });
-      user_withdraw({ quantity: +amount.value, token: window.btoa(code.value) })
+      let address = '';
+      if (maxBind.value) {
+        address = maxWallet.value;
+      }
+      user_withdraw({ quantity: +amount.value, token: window.btoa(code.value), address })
         .then((res) => {
           if (res.code == 200) {
             amount.value = '';
@@ -402,9 +418,17 @@
     },
     { deep: true },
   );
-  onMounted(() => {
+  onMounted(async () => {
     initGoogle();
-    getUserAssets();
+    if (maxBind.value) {
+      const r = await get_user_dmc(maxWallet.value);
+      if (r.code == 200) {
+        maxWithdraw.value = r.result.data.withdraw;
+        maxBalance.value = r.result.data.balance;
+      }
+    } else {
+      getUserAssets();
+    }
     getCommissionRate();
   });
   onUnmounted(() => {
