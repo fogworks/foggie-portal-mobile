@@ -166,7 +166,7 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   import IconCopy from '~icons/home/copy.svg';
   import { reactive, toRefs, computed } from 'vue';
-  import { check_account, transfer_valid, bind_valid } from '@/api';
+  import { user } from '@/api';
   import { useUserStore } from '@/store/modules/user';
   import { showToast, showDialog } from '@nutui/nutui';
   import useUserAssets from './useUserAssets.ts';
@@ -359,6 +359,8 @@ import { get_user_dmc } from '@/api/amb';
       let address = '';
       if (maxBind.value) {
         address = maxWallet.value;
+      } else {
+        address = dmc.value;
       }
       user_withdraw({ quantity: +amount.value, token: window.btoa(code.value), address })
         .then((res) => {
@@ -427,6 +429,7 @@ import { get_user_dmc } from '@/api/amb';
         maxBalance.value = r.result.data.balance;
       }
     } else {
+      await user();
       getUserAssets();
     }
     getCommissionRate();

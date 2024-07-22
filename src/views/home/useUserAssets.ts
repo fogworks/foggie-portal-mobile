@@ -1,8 +1,11 @@
 import { get_user_dmc, get_exchange_rate } from '@/api/amb';
 import { useUserStore } from '@/store/modules/user';
 
+
+
 export default function useUserAssets() {
-  const useStore = useUserStore();
+  const userStore = useUserStore();
+
   const cloudBalance = ref('--');
   const cloudPst = ref('--');
   const cloudIncome = ref('--');
@@ -10,11 +13,15 @@ export default function useUserAssets() {
   const cloudTodayIncome = ref('--');
   const dmc2usdRate = ref(0);
   const cloudRecharge = ref('--');
+  const dmc = computed(() => {
+    return userStore.getUserInfo?.dmc;
+  });
+
   function getUserAssets() {
-    return get_user_dmc().then((res) => {
+    return get_user_dmc(dmc.value).then((res) => {
       if (res?.result?.data) {
         cloudBalance.value = res?.result?.data?.balance.toFixed(4) || 0;
-        useStore.setBalance(res.result.data.balance);
+        userStore.setBalance(res.result.data.balance);
         cloudPst.value = res.result.data.pst || '--';
         cloudIncome.value = res.result.data.income;
         cloudWithdraw.value = res.result.data.withdraw;

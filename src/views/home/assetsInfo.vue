@@ -5,7 +5,18 @@
     </div>
     <div inset class="assets-card">
       <div class="card_row_1 card_header">
-        <div class="total_income">
+        <div class="total_income" v-if="maxBind">
+          <div class="balance_text">
+            <span>{{ maxBalanceNum?.integerPart }}</span>
+            <span style="font-size: 13px">.{{ maxBalanceNum?.decimalPart }}</span>
+            <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
+          </div>
+          <div class="usd_text" v-if="dmc2usdRate && maxBalance">
+            ≈ {{ formatNumber(dmc2usdRate * Number(maxBalance))?.integerPart
+            }}<span style="font-size: 13px">.{{ formatNumber(dmc2usdRate * Number(maxBalance))?.decimalPart }}</span> USD
+          </div>
+        </div>
+        <div class="total_income" v-else>
           <div class="balance_text">
             <span>{{ cloudBalanceNum?.integerPart }}</span>
             <span style="font-size: 13px">.{{ cloudBalanceNum?.decimalPart }}</span>
@@ -176,6 +187,11 @@
   const cloudBalanceNum = computed(() => {
     return formatNumber(cloudBalance.value);
   });
+
+  const maxBalanceNum = computed(() => {
+    return formatNumber(maxBalance.value);
+  });
+
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
   const dmcAccount = computed(() => userStore.getUserInfo?.dmc);
 

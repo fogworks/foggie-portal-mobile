@@ -18,7 +18,7 @@
 
           <div class="user_header_box_content">
             <!-- <img src="@/assets/maxio/beta.svg" class="betaPng" /> -->
-            <div class="accTitle">{{ dmcAccount }}</div>
+            <div class="accTitle">{{ maxBind ? maxWallet : dmcAccount }}</div>
             <div class="email">Email: {{ email }}</div>
             <!-- <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div> -->
             <!-- <div class="email" v-if="promo_code">promoCode: {{ promo_code }}</div> -->

@@ -185,6 +185,7 @@
     (newValue) => {
       let params = {
         query_time: [] as { start_time: string; end_time: string }[],
+        // address: "yigedabaichi",
       };
 
       if (newValue == 'All') {
