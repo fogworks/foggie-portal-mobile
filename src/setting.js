@@ -13,8 +13,10 @@ export const minSize = 5;
 // // export const maxUrl = 'http://hk-cloud.fogworks.io:8080';
 // export const maxUrl = 'https://cloud.fogworks.io';
 // export const mscUrl = 'http://45.207.245.24:6066';
+// export const dmUrl = 'http://45.207.245.24:12255';
 
-// export const maxUrl = 'http://localhost:9007';
+
+// export const maxUrl = 'http://localhost:9007';†
 
 // export const shareUrl = "https://grey.share.fogworks.io";
 // export const s3Url = "s3.vofocorp.com";
@@ -26,6 +28,8 @@ export const minSize = 5;
 // export const vpsUrl = 'https://grey.m.fogworks.io';
 // export const maxUrl = '127.0.0.1:8007';
 // export const mscUrl = 'https://w3stream.vofocorp.com';
+// export const dmUrl = 'http://45.207.245.24:12255';
+
 
 export const shareUrl = 'https://share.fogworks.io';
 export const s3Url = 's3.vofocorp.com';
@@ -37,5 +41,6 @@ export const browserUrl = 'https://polygonscan.com';
 export const vpsUrl = 'https://pool.fogworks.io';
 export const maxUrl = 'https://cloud.fogworks.io';
 export const mscUrl = 'http://45.207.245.24:6066';
+// export const dmUrl = 'http://45.207.245.24:12255';
 
 // export const maxUrl = '127.0.0.1:8007';

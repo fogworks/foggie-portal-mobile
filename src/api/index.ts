@@ -444,3 +444,44 @@ export function campaignUnbind(data) {
     });
 }
 
+
+export function getDmOrder(data: any) {
+    let url = `/dm/order/get`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+
+
+export function dm_calc_price(data: any) {
+    let url = `/dm/order/calc_price`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+
+
+export function get_available_capacity() {
+    let url = `/dm/storage/available_capacity`;
+    return request({
+        url: url,
+        method: "get",
+    });
+}
+
+
+export function dm_order_buy(data: any) {
+    let url = `/dm/order/buy`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+
+
+

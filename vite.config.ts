@@ -228,6 +228,13 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     changeOrigin: true,
                     secure: false,
                 },
+                '^/dm': {
+                    target: 'http://45.207.245.24:12255',
+                    changeOrigin: true,
+                    secure: false,
+                },
+
+                
             },
         },
         plugins: [

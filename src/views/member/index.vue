@@ -194,7 +194,7 @@
   import IconCopy from '~icons/home/copy.svg';
   import { createVNode, inject } from 'vue';
   import { useRouter } from 'vue-router';
-  import { user, setUserAvatarApi, search_cloud } from '@/api/index';
+  import { user, setUserAvatarApi } from '@/api/index';
   import { get_user_dmc, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
   import { onMounted, reactive, ref } from 'vue';
   import { formatNumber } from '@/utils/util';
@@ -424,42 +424,6 @@
 
   /* 调用扫码功能 */
   const requestCameraPermission = debounce(() => {
-    // const postData = {
-    //   sort_type: 'created_at',
-    //   ascending: false,
-    //   is_domain: true,
-    //   electronic_type: '0',
-    // };
-    // // await loadBucket([0, 1, 2, 3, 6], '', '', '', postData);
-    // search_cloud({
-    //   ps: 2,
-    //   pn: 1,
-    //   order_state: [0, 1, 2, 3, 6],
-    //   start_time: '',
-    //   end_time: '',
-    //   buy_result: 'success',
-    //   ...postData,
-    // }).then((res) => {
-    //   let total = res.result?.total || 0;
-    //   if (total == 1) {
-    //     let item = res.result.data[0];
-    //     router.push({
-    //       name: 'listDetails',
-    //       query: {
-    //         id: item.order_id,
-    //         uuid: item.uuid,
-    //         amb_uuid: item.amb_uuid,
-    //         income: item.income,
-    //         mintType: '0',
-    //       },
-    //     });
-
-    //   } else {
-    //     router.push({
-    //       name: 'BucketList',
-    //     });
-    //   }
-    // });
 
     router.push({ path: '/scanQRCodes' });
   }, 300);

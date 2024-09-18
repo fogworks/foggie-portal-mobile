@@ -14,19 +14,10 @@
 
         <div class="maxio_title_box">
           <img src="@/assets/maxio/beta.svg" class="betaPng" />
-          <div class="maxio_title" v-if="!showBucket">
+          <div class="maxio_title">
             <img src="@/assets/maxio/maxio1.png" alt="" />
             <div class="title_text">
-              <div class="max_name"> {{ currentBucketData.dedicatedip || 'MAX IO-' + currentBucketData.id }}</div>
-              <!-- <div class="max_name"> （MAXIO-{{ currentBucketData.id }} ）</div> -->
-            </div>
-          </div>
-          <div class="maxio_title" v-if="showBucket">
-            <!-- <img src="@/assets/home_bucket.png" alt="" /> -->
-            <img src="@/assets/maxio/cloud.svg" alt="" />
-            <div class="title_text">
-              <div class="max_name"> {{ currentBucketData.domain || 'Order' + currentBucketData.order_id }}</div>
-              <!-- <div class="max_name"> （Bucket-001）</div> -->
+              <div class="max_name"> {{ currentBucketData.domain || currentBucketData.order_id }}</div>
             </div>
           </div>
         </div>
@@ -43,7 +34,7 @@
       <div class="show_max_more rotate_more" @click="hideMoreList" v-if="isShowMoreList && maxTableData.length > 20">
         <img src="@/assets/maxio/more.svg" />
       </div>
-      <div class="maxio_home_content">
+      <div class="maxio_home_content" v-if="currentBucketData.order_id">
         <div class="maxio_home_leftMenu" :class="[showLeft ? (isShowMoreList ? 'isShowMoreList' : '') : 'minWidth']" ref="listRef">
           <!-- home_bucket000 -->
           <div class="menu_img" @click="changeList('maxio')">
@@ -129,6 +120,10 @@
           </sd>
         </div>
       </div>
+      <nut-empty v-else description="No Order" image="error"></nut-empty>
+      
+
+      <div style="position: absolute; bottom: 100px; text-align: center; width: 100%; cursor: pointer" @click="toBuyOrder">+buy Order</div>
     </div>
     <!-- <offline :isShowOffline="isShowOffline" @closeBuy="showOfflineBox" :currentBucketData="currentBucketData"></offline> -->
     <offlineList
@@ -142,7 +137,7 @@
 </template>
 
 <script setup>
-  import { ref, toRefs, computed, onMounted } from 'vue';
+  import { ref, toRefs, computed } from 'vue';
   import { showToast } from '@nutui/nutui';
   import CloudComponent from './cloud.vue';
   import maxIndex from './maxIndex.vue';
@@ -154,8 +149,9 @@
   import iconImg from './iconImg.vue';
   import useOrderList from './maxFileOpt/useAllOrderList';
   import { useUserStore } from '@/store/modules/user';
+  import { search_cloud, getDmOrder } from '@/api';
+
   const userStore = useUserStore();
-  const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
   let currentBucketData = ref({});
   const isShowMaxio = ref(false);
   const isShowBucket = ref(false);
@@ -178,7 +174,7 @@
   const isOfflineArr = ref([]);
   const showLeft = ref(false);
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
-  //   const leftBucketList = ref([]);
+  const address = computed(() => userStore.getUserInfo?.address);
   const maxTableDataCy = ref([]);
   const runningDataCy = ref([]);
   const historyDataCy = ref([]);
@@ -338,6 +334,10 @@
       },
     ];
   };
+
+  const toBuyOrder = () => {
+    router.push('/shop')
+  };
   watch(leftBucketList, (val) => {
     if (val.length > 0) {
       showLeft.value = true;
@@ -346,22 +346,22 @@
       showLeft.value = false;
     }
   });
-  watch(
-    cloudCodeIsBind,
-    async (val) => {
-      if (val) {
-        // window.localStorage.removeItem('homeChooseBucket');
-        userStore.setambRefuse(false);
-        await loadMoreFun();
-        initSetBucket();
-        initOfflineList();
-      }
-    },
-    {
-      deep: true,
-      immediate: true,
-    },
-  );
+  watch(address, (val) => {
+    if (val.length > 0) {
+      const d = {
+        wallet: val,
+        pageNo: 1,
+        pageSize: 100,
+      };
+      getDmOrder(d).then((res) => {
+        if (res.code === 200) {
+          maxTableData.value = res.data.list;
+        }
+      });
+      
+    } else {
+    }
+  });
 </script>
 
 <style lang="scss">

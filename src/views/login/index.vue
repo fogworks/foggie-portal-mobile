@@ -33,8 +33,8 @@
           <template v-if="isMobileDevice && !hasProvider">
             <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
               <div class="login-img">
-                <span style="color: #fff">Metamask</span>
-                <div class="img-metamask"><MetaMask></MetaMask></div>
+                <span style="color: #fff">Okx</span>
+                <div class="img-metamask"><OKX></OKX></div>
               </div>
             </a>
             <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
@@ -45,8 +45,8 @@
           </template>
           <template v-else>
             <div class="login-img" @click.stop="loginWithMeta">
-              <span>Metamask</span>
-              <div class="img-metamask"><MetaMask></MetaMask></div>
+              <span>Okx</span>
+              <div class="img-metamask"><OKX></OKX></div>
             </div>
             <!-- <nut-button block type="info" @click.stop="loginWithMeta" :loading="loading" style="margin-top: 30px; font-size: 16px">
             Sign in with Metamask</nut-button
@@ -144,7 +144,7 @@
   import { init, useOnboard } from '@web3-onboard/vue';
   import metamaskSDK from '@web3-onboard/metamask';
   import detectEthereumProvider from '@metamask/detect-provider';
-  import MetaMask from '~icons/home/metamask.svg';
+  import OKX from '~icons/home/okx.svg';
   import IconEth from '~icons/home/eth.svg';
   import IconLink from '~icons/home/link.svg';
   import IconEmail from '~icons/ic/baseline-email.svg';

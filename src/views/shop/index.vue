@@ -3,110 +3,28 @@
     <div class="out_blue">
       <div class="inside_blue">
         <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
-        <p class="title">Require space</p>
-        <p class="total_balance">Available Amount</p>
-        <p class="total_balance_value" v-if="cloudBalance">{{ cloudBalance }} DMC</p>
-
         <div class="balance_options">
-          <div class="action_item">
-            <router-link to="/recharge" style="color: #b9d4ff; font-size: 14px"> Recharge </router-link>
-          </div>
-          <div class="action_item recharge_item">
-            <a style="color: #b9d4ff; font-size: 14px" @click="dialogShow = true"> why Recharge? </a>
-          </div>
         </div>
       </div>
     </div>
     <div class="vip_order_choose">
       <div class="vip_title">Select space and time</div>
       <div class="img_list">
-        <img src="@/assets/vipOrder.png" @click="submit" />
-        <img src="@/assets/customOrder.svg" class="customOrder" @click="showTop = true" />
+        <!-- <img src="@/assets/vipOrder.png" @click="submit" /> -->
+        <img src="@/assets/vipOrder.png" class="customOrder" @click="toBuy" />
       </div>
     </div>
-    <div class="out_price_box">
-      <!-- <p> -->
-      <div class="vip_title">Exclusive Order </div>
-      <!-- <IconSetting @click="showTop = true"></IconSetting> -->
-      <!-- </p> -->
-      <div class="price_box">
-        <span style="white-space: nowrap"> Estimated 24 weeks purchase price: </span>
-        <br />
-        <span style="text-align: center; margin-bottom: 10px; color: #e5960f" class="price_box_text">
-          100 GB = {{ middleTotalPrice2 }} DMC</span
-        >
-        Estimated 24 weeks reward: <br />
-        <span style="text-align: center; color: #e5960f" class="price_box_text">
-          + {{ (perGoldenPSTIncome * 100).toFixed(0) }} DMC/<span>100 GB </span></span
-        >
-      </div>
-    </div>
-    <div class="vip_right">
-      <div class="vip_title">Exclusive Rights</div>
-      <div class="vip_list">
-        <div class="vip_list_item">
-          <div class="vip_list_img">
-            <img src="@/assets/shopCloud.svg" style="width: 80px; height: 40px" />
-          </div>
-          <div class="vip_list_text">
-            <div class="vip_list_title">More Space</div>
-            <div class="vip_list_sub_title">Min 100GB space provided</div>
-          </div>
-        </div>
-        <div class="vip_list_item">
-          <div class="vip_list_img">
-            <img src="@/assets/shopTicket.svg" />
-          </div>
-          <div class="vip_list_text">
-            <div class="vip_list_title">Bigger Discount</div>
-            <div class="vip_list_sub_title">lowest purchase price</div>
-          </div>
-        </div>
-        <div class="vip_list_item">
-          <div class="vip_list_img">
-            <img src="@/assets/shopPeople.svg" />
-          </div>
-          <div class="vip_list_text">
-            <div class="vip_list_title">Higher Reward</div>
-            <div class="vip_list_sub_title">Greater reward than before</div>
-          </div>
-        </div>
-        <div class="vip_list_item">
-          <div class="vip_list_img">
-            <img src="@/assets/shopVip.svg" />
-          </div>
-          <div class="vip_list_text">
-            <div class="vip_list_title">Gold Mining Pool</div>
-            <div class="vip_list_sub_title">Gold mining pool selection</div>
-          </div>
-        </div>
-      </div>
+    <div class="space-info" v-if="isShowSpaceInfo">
+      <p>Weeks: {{ shopForm.week }}</p>
+      <p>Space: {{ shopForm.quantity }}GB</p>
+      <p>Price: {{ calc_price.total }}</p>
+      <p  @click="copySecret(address)">Payment account: {{ address }} <IconCopy color="#246bf7"></IconCopy></p>
+      <p  @click="copySecret(calc_price.to)">Receiving account: {{ calc_price.to }} <IconCopy color="#246bf7"></IconCopy></p>
+
+      <nut-input v-model="txid" placeholder="Please enter the transaction hash" />
+      <nut-button type="primary" @click="confirmBuy">Confirm</nut-button>
     </div>
 
-    <!-- <div class="middle_content">
-      <div class="product_box">
-        <div class="product_card">
-          <p
-            >General Orders <br />
-            (48 Weeks)</p
-          >
-          <p>{{ (perMpPSTIncome * 100).toFixed(4) }} DMC/100 GB</p>
-        </div>
-        <span style="font-weight: bold"> VS</span>
-
-        <div class="product_card">
-          <p>
-            Your Orders <br />
-            (48 Weeks)</p
-          >
-          <p>{{ (perGoldenPSTIncome * 100).toFixed(0) }} DMC/100 GB</p>
-        </div>
-      </div>
-      <div class="title">Your orders will receive a higher amount of Reward.</div>
-    </div> -->
-
-    <!-- <nut-button block class="buy_btn" type="info" @click="submit" :loading="loading">Buy</nut-button> -->
-    <!-- <nut-button block class="buy_btn" type="warning" v-else @click="loadCurReferenceRate" :loading="loading"> Retry </nut-button> -->
     <Teleport to="body">
       <nut-popup position="top" :style="{ height: '480px' }" round v-model:visible="showTop">
         <nut-form class="query_form" :model-value="shopForm">
@@ -125,8 +43,8 @@
             <nut-input-number
               @focus="buyDisabled = true"
               @blur="buyDisabled = false"
-              :max="9999999999"
-              :min="100"
+              :max="maxSpace"
+              :min="1"
               decimal-places="0"
               v-model="shopForm.quantity"
               step="1"
@@ -137,13 +55,6 @@
           <div style="padding: 10px 20px; font-size: 11px; font-style: italic">
             The maximum data security guarantee for the chain is only 52 weeks
           </div>
-          <div style="text-align: center" class="order-tip">
-            <strong> Reference price: </strong>
-            <strong class="price">
-              {{ middleTotalPrice || '--' }} DMC <span style="font-size: 12px">({{ shopForm.quantity }}GB/{{ shopForm.week }} Weeks)</span>
-            </strong>
-          </div>
-          <!-- <p class="middle_title" v-if="!loading && !curReferenceRate">No eligible orders were found. Please search and try again</p> -->
           <div class="bottom_btn">
             <nut-button type="warning" plain :loading="loading" @click="showTop = false"> Cancel </nut-button>
             <nut-button type="warning" @click="submit" :disabled="buyDisabled" :loading="loading"> Buy </nut-button>
@@ -152,148 +63,33 @@
       </nut-popup>
     </Teleport>
 
-    <Teleport to="body">
-      <nut-popup position="bottom" pop-class="confirm_pop" round :style="{ height: 'auto' }" v-model:visible="showBuy">
-        <h3 class="buyOrderTitle"> Pre-trading information</h3>
-        <div class="storagebox">
-          <!-- <img src="@/assets/shujuguifan.svg" alt="" srcset="" /> -->
-          <img src="@/assets/VIP.svg" alt="" srcset="" />
-          <div class="BaseBox">
-            <!-- <div class="base_box">
-            <span class="span1">Price:</span>
-            <span class="span2">{{ (curReferenceRate / 10000).toFixed(4) }}</span>
-            <span class="span2">/GB</span>
-            <span class="span2">/Week</span>
-          </div> -->
-            <div class="base_box1">
-              <span class="s1">{{ shopForm.quantity }} GB</span>
-              <span class="s2">+</span>
-              <span class="s1">{{ shopForm.week }} W</span>
-            </div>
-          </div>
-        </div>
-        <div class="storageDetail">
-          <div class="rowBox">
-            <div class="row_box">
-              <span class="row_box_title">Unit Price</span>
-              <span class="row_box_value">{{ (curReferenceRate / 10000).toFixed(4) }} (GB/Week)</span>
-            </div>
-            <div class="row_box">
-              <span class="row_box_title">Base Price</span>
-              <span class="row_box_value">{{ base_Price }} <span>DMC</span></span>
-            </div>
-            <div class="row_box">
-              <span class="row_box_title">Deposit</span>
-              <span class="row_box_value">{{ deposit_ratio_Price }} <span>DMC</span></span>
-            </div>
-            <div class="row_box" style="border-bottom-style: solid" v-if="shopForm.floating_ratio">
-              <span class="row_box_title">Variation Price</span>
-              <span class="row_box_value"
-                >{{ ((+base_Price + +deposit_ratio_Price) * (shopForm.floating_ratio / 100)).toFixed(4) }}&nbsp;<span>DMC</span></span
-              >
-            </div>
-            <div class="row_box">
-              <span class="row_box_title">Lowest Limit Total</span>
-              <span class="row_box_value">{{ (+base_Price + +deposit_ratio_Price).toFixed(4) }} <span>DMC</span></span>
-            </div>
-            <div class="row_box">
-              <span class="row_box_title">Upper Limit Total</span>
-              <span class="row_box_value">{{ totalPrice }} <span>DMC</span></span>
-            </div>
-          </div>
-          <!-- <div class="row_tips">
-          <div>* The order book is only partly open during the outcry phase。</div>
-          <div>* When orders match such as to enable a transaction to be executed, the indicative auction price is shown。</div>
-          <div
-            >* This is the price that would result for the auction if the price determination were to take place at this point in
-            time。</div
-          >
-        </div> -->
-        </div>
-        <!-- stroke-color="linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%)" -->
-        <div class="bottom_btn">
-          <nut-progress
-            v-if="buyOrderIsSuccess"
-            :percentage="progressPercentage"
-            :text-inside="true"
-            size="large"
-            status="active"
-            stroke-color="linear-gradient(135deg, #18191b 0%, #eeb40a 45%, rgb(113, 99, 76) 83%, #eaeef9 100%)"
-            style="margin: 30px auto"
-            class="confirmBuy_btn"
-          >
-          </nut-progress>
-          <nut-button block type="warning" :disabled="buyOrderIsSuccess" @click="confirmBuy" :loading="loading"> Confirm Buy </nut-button>
-        </div>
-
-        <!-- <ul class="buyOrderTips">
-        <li>The order book is only partly open during the outcry phase。</li>
-        <li>When orders match such as to enable a transaction to be executed, the indicative auction price is shown</li>
-        <li>This is the price that would result for the auction if the price determination were to take place at this point in time</li>
-      </ul>
-
-      <nut-cell-group>
-        <nut-cell title="Space" :desc="shopForm.quantity + ' GB'"></nut-cell>
-        <nut-cell title="Weeks" :desc="shopForm.week"></nut-cell>
-        <nut-cell title="Deposit Ratio" :desc="deposit_ratio"></nut-cell>
-        <nut-cell title="Floating Ratio" :desc="shopForm.floating_ratio + '%'"></nut-cell>
-        <nut-cell title="Unit Price" :desc="(curReferenceRate / 10000).toFixed(4) + ' DMC/GB/Week'"></nut-cell>
-        <nut-cell class="total_price" title="Total Price" :desc="totalPrice + ' DMC'"></nut-cell>
-      </nut-cell-group> -->
-      </nut-popup>
-    </Teleport>
-    <BasicModal :show="dialogShow" @update:show="dialogShow = false">
-      <div class="my_dialog_content_box">
-        <div class="my_dialog_title">why Recharge?</div>
-        <div class="my_dialog_content">
-          <div class="my_dialog_content_p">
-            In order to improve the efficiency of buying orders, we have set up an agent account for you. When paying orders, you can
-            directly deduct money from the agent account.
-          </div>
-          <div class="my_dialog_content_p"
-            >Therefore, we recommend that you recharge a certain amount of money into your agent account before purchasing. This will
-            greatly improve the efficiency of buying orders.</div
-          >
-        </div>
-      </div>
-    </BasicModal>
+   
   </div>
 </template>
 
 <script setup lang="ts" name="Shop">
-  import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
-  import IconSetting from '~icons/home/setting.svg';
   import { toRefs, reactive, onMounted } from 'vue';
-  import { buy_order, node_order_buy, order_buy_state, node_order_search, get_average_price, query_node } from '@/api/amb';
-  import { showToast, showDialog } from '@nutui/nutui';
-  import { useRouter } from 'vue-router';
-  import useDmcTrade from './useDmcTrade.js';
-  import useUserAssets from '../home/useUserAssets.ts';
-  import { debounce, delay } from 'lodash';
-  import FakeProgress from 'fake-progress';
-  const dialogShow = ref(false);
+  import IconCopy from '~icons/home/copy.svg';
+
+  import { dm_calc_price, get_available_capacity, dm_order_buy } from '@/api';
+  import { showToast } from '@nutui/nutui';
+
+
+  const isShowSpaceInfo = ref(true);
+
+  const calc_price = ref({
+    orderId: '',
+    total: '',
+    contract: '',
+    to: '',
+  });
+
+  const txid = ref('');
 
   import { useUserStore } from '@/store/modules/user';
   const userStore = useUserStore();
-  const dmc = computed(() => userStore.getUserInfo.dmc);
-  const email = computed(() => userStore.getUserInfo.email);
-  const uuid = computed(() => userStore.getUserInfo.uuid);
 
-  // import useUpdateDMC from './useUpdateDMC';
-  // const { getAmbDmc, targetAccount } = useUpdateDMC();
-
-  const fake = reactive(
-    new FakeProgress({
-      timeConstant: 10000,
-      autoStart: true,
-    }),
-  );
-  const progressPercentage = computed(() => Math.floor(fake.progress * 100));
-
-  const { getUserAssets, cloudBalance } = useUserAssets();
-  const { perMpPSTIncome, perGoldenPSTIncome } = useDmcTrade();
-  const router = useRouter();
   const state = reactive({
     shopForm: {
       quantity: 100 as number,
@@ -314,241 +110,61 @@
     priceNode: '',
     buyDisabled: false,
   });
-  const { buyDisabled, priceNode, nodeInfo, showBuy, middle_price, deposit_ratio, showTop, shopForm, curReferenceRate, loading } =
-    toRefs(state);
-  const getAveragePrice = async () => {
-    let params = {
-      week: state.shopForm.week,
-      floating_ratio: state.shopForm.floating_ratio,
-      pst: state.shopForm.quantity,
-    };
+  const { buyDisabled, showTop, shopForm, loading } = toRefs(state);
 
-    get_average_price(priceNode.value, {
-      week: state.shopForm.week,
-      storage: state.shopForm.quantity,
-      poolType: 'golden', //vofo.*  / golden
-      size: 5,
-    })
-      .then((res) => {
-        if (res.code == 200 && res.data) {
-          middle_price.value = res.data;
-          // curReferenceRate.value = res.data[0].price;
-          // deposit_ratio.value = res.data[0].depositRatio;
-        }
-      })
-      .finally(() => {});
-  };
-  const deposit_ratio_Price = computed(() => {
-    return ((curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity).toFixed(4) || '0';
-  });
-  const totalPrice = computed(() => {
-    let baseTotal = (
-      (curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity +
-      (curReferenceRate.value / 10000) * deposit_ratio.value * state.shopForm.quantity
-    ).toFixed(4);
-    let floatTotal = (+baseTotal * (1 + state.shopForm.floating_ratio / 100)).toFixed(4);
-    if (+cloudBalance.value >= baseTotal && +cloudBalance.value < floatTotal) {
-      state.shopForm.floating_ratio = 0;
-      return cloudBalance.value;
-    } else {
-      return floatTotal;
-    }
-  });
-  const base_Price = computed(() => {
-    let total = (curReferenceRate.value / 10000) * state.shopForm.week * state.shopForm.quantity;
-    return total.toFixed(4) || '0';
-  });
+  const address = computed(() => userStore.getUserInfo?.address);
 
-  const middleTotalPrice = computed(() => {
-    console.log(middle_price.value);
-
-    let total =
-      ((middle_price.value / 10000) * state.shopForm.week * state.shopForm.quantity +
-        (middle_price.value / 10000) * 1 * state.shopForm.quantity) *
-      (1 + state.shopForm.floating_ratio / 100);
-    return total.toFixed(4);
-  });
-  const middleTotalPrice2 = computed(() => {
-    console.log(middle_price.value);
-
-    let total =
-      (middle_price.value / 10000) * state.shopForm.week * state.shopForm.quantity +
-      (middle_price.value / 10000) * 1 * state.shopForm.quantity;
-    return total.toFixed(4);
-  });
   async function submit() {
-    if (state.shopForm.quantity < 100) {
-      showToast.text('Minimum number of spaces is 100');
-      return false;
-    }
-    loading.value = true;
-    node_order_search(priceNode.value, {
-      week: state.shopForm.week,
-      storage: state.shopForm.quantity,
-      poolType: 'golden', //vofo.*  / golden
-      size: 5,
-    })
-      .then((res) => {
-        loading.value = false;
-        if (res.code == 200 && res.data.length) {
-          curReferenceRate.value = res.data[0].price;
-          deposit_ratio.value = res.data[0].depositRatio;
-          showBuy.value = true;
-        }
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-  }
-
-  const buyOrderIsSuccess = ref(false); // 是否买单成功
-  const confirmBuy = async () => {
-    // let nodeIp ='http://'+ res.result.node_address;
-    // let nodeIp = 'http://154.31.41.124:18080';
-    console.log(cloudBalance.value < totalPrice.value);
-    console.log(cloudBalance.value);
-    console.log(totalPrice.value);
-    loading.value = true;
-
-    await getUserAssets();
-
-    if (+cloudBalance.value < +totalPrice.value) {
-      let rechargeDMC = (totalPrice.value - cloudBalance.value).toFixed(4);
-      // showToast.text(`Insufficient balance and projected need to top up ${rechargeDMC}DMC`);
-      showBuy.value = false;
-      loading.value = false;
-      showTop.value = false;
-      const dmcOk = () => {
-        router.push({ path: '/recharge', query: { rechargeDMC } });
-      };
-      let src = require('@/assets/DMC_token.png');
-      let str = `<img class="bind_img" src=${src} style="height:60px;"/>
-      <p style='word-break:break-word;color:red;text-align:left;'>Insufficient balance and projected need to top up ${rechargeDMC}DMC</p>`;
-      showDialog({
-        title: 'The balance is insufficient',
-        content: str,
-        noCancelBtn: true,
-        okText: 'Recharge',
-        onOk: dmcOk,
-      });
-      return false;
-    }
-    let params = {
-      week: state.shopForm.week,
-      floating_ratio: state.shopForm.floating_ratio / 100,
-      pst: state.shopForm.quantity + '',
-      total_price: (+totalPrice.value).toFixed(4),
+    const d = {
+      wallet: address.value,
+      space: shopForm.value.quantity,
+      epoch: shopForm.value.week,
     };
-    const nodeRes = await buy_order(params);
-    console.log(nodeRes);
-
-    if (nodeRes.code !== 200) {
-      showToast.fail(`Apologies for the delay, Please Try Again Later`);
-      loading.value = false;
-      return false;
-    }
-
-    nodeInfo.value.buyOrderUuid = nodeRes.result.uuid;
-    nodeInfo.value.amb_user_uuid = nodeRes.result.amb_user_uuid;
-    node_order_buy(nodeInfo.value.nodeIp, {
-      minPrice: curReferenceRate.value / 10000,
-      maxPrice: ((curReferenceRate.value / 10000) * (1 + state.shopForm.floating_ratio / 100)).toFixed(4),
-      buyOrderUuid: nodeInfo.value.buyOrderUuid,
-      userUuid: nodeInfo.value.amb_user_uuid,
-      period: state.shopForm.week.toString(),
-      pst: state.shopForm.quantity,
-      totalPrice: (+totalPrice.value).toFixed(4),
-      memo: `${nodeInfo.value.buyOrderUuid}_Order_buy`,
-      deviceType: 3,
-      poolType: 'golden', //vofo.*  / golden
-      terminalType: 2,
-      foggieUserAddress: dmc.value,
-      foggieEmail: email.value,
-      foggieUserUuid: uuid.value,
-    })
-      .then((res) => {
-        loading.value = false;
-
-        if (res.code == 200) {
-          fake.progress = 0;
-          fake.start();
-          buyOrderIsSuccess.value = true;
-          loadOrderBuyState();
-        }
-      })
-      .catch(() => {
-        loading.value = false;
-      });
-  };
-  function loadOrderBuyState() {
-    order_buy_state(nodeInfo.value.nodeIp, { buyOrderUuid: nodeInfo.value.buyOrderUuid })
-      .then((res) => {
-        if (res.code == 200) {
-          if (res.data.orderId && res.data.orderId != '') {
-            fake.end();
-
-            let src = require('@/assets/DMC_Token1.png');
-            let str = `<img class="bind_img nut-icon-am-jump nut-icon-am-infinite" src=${src} style="height:60px; padding: 20px;"/>
-    <div class='buyOrderItem'><span>Order ID:</span> <span>${res.data?.orderId}</span></div >
-    <div class='buyOrderItem'><span>Total price:</span> <span>${res.data?.totalPrice} DMC</span></div >
-    <div class='buyOrderItem'><span>Total Space:</span> <span>${res.data?.pst} GB </span></div >
-    <div class='buyOrderItem'><span>Service time:</span> <span>${res.data?.epoch} Weeks</span></div > `;
-            delay(() => {
-              showTop.value = false;
-              showBuy.value = false;
-              showDialog({
-                title: 'Purchase Successfully',
-                content: str,
-                okText: 'Go Bucket',
-                cancelText: 'Go Home',
-                customClass: 'BuyOrderClass',
-                onOk: () => {
-                  router.push({ name: 'listDetails', query: { id: res.data?.orderId, uuid: res.data?.uuid, amb_uuid: res.data?.ambUuid } });
-                },
-                onCancel: () => {
-                  router.push('/home');
-                },
-                beforeClose: () => {
-                  buyOrderIsSuccess.value = false;
-                  fake.progress = 0;
-                  fake.end();
-                  setTimeout(() => {
-                    getUserAssets();
-                  }, 2000);
-                  return true;
-                },
-              });
-            }, 1000);
-          } else {
-            delay(() => {
-              loadOrderBuyState();
-            }, 1000);
-          }
-        } else {
-          fake.stop();
-        }
-      })
-      .catch(() => {
-        fake.stop();
-      });
+    dm_calc_price(d).then((res) => {
+      if (res.code == 200) {
+        calc_price.value = res.data;
+        isShowSpaceInfo.value = true;
+        showTop.value = false;
+      }
+    });
   }
 
-  const queryPriceNode = () => {
-    return query_node()
-      .then((res) => {
-        if (res.code == 200) {
-          const nodeList = res.result.data.filter((el) => el.is_active);
-          // priceNode.value = `http://${nodeList?.[0].ip_address}:28080`;
-          // if (priceNode.value) return true;
-          return true;
-        } else {
-          return false;
-        }
-      })
-      .catch(() => {
-        return false;
-      });
+  const confirmBuy = async () => {
+    // alert(txid.value);
+    // txid.value = '0x2bbed9335d1a23ad51b1e4ea7baf3cafe49d466302c557705ea95027451fd7fc';
+    if (!txid.value) {
+      return;
+    }
+    const d = {
+      // orderId: 8,
+      orderId: calc_price.value.orderId,
+      transactionId: txid.value,
+    }
+    dm_order_buy(d).then((res) => {
+      if (res.code == 200) {
+        showToast.success('Order success');
+        isShowSpaceInfo.value = false;
+      }
+    });
   };
+
+  const maxSpace = ref(0);
+
+  const copySecret = (key: string) => {
+    var input = document.createElement('textarea');
+    input.value = key;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('Copy');
+    document.body.removeChild(input);
+    showToast.success('Copy succeeded');
+  }
+
+  const toBuy = () => {
+    showTop.value = true;
+    isShowSpaceInfo.value = false;
+  };
+
   watch(
     showTop,
     (val) => {
@@ -560,18 +176,11 @@
   );
 
   onMounted(async () => {
-    let res = await queryPriceNode();
-    if (res) {
-      getAveragePrice();
-    }
-    getUserAssets();
-  });
-  onActivated(async () => {
-    let res = await queryPriceNode();
-    if (res) {
-      getAveragePrice();
-    }
-    getUserAssets();
+    get_available_capacity().then((res) => {
+      if (res.code == 200) {
+        maxSpace.value = res.data;
+      }
+    });
   });
 </script>
 
@@ -731,7 +340,7 @@
 
   .out_blue {
     position: relative;
-    height: 290px;
+    height: 120px;
     // background: #43a3fd;
     border-radius: 0 0 50px 50px;
 
@@ -740,7 +349,7 @@
       position: absolute;
       top: 0;
       width: 100%;
-      height: 345px;
+      height: 100px;
       background: #5264f9;
       background: #c2d0dc36;
       border-radius: 0 0 50px 50px;
@@ -751,7 +360,7 @@
       .back_img {
         position: absolute;
         left: 20px;
-        top: 40px;
+        top: 20px;
         width: 60px;
         height: 60px;
         color: #fff;
@@ -781,26 +390,26 @@
         margin-top: 0px;
       }
 
-      &::before,
-      &::after {
-        content: '';
-        position: absolute;
-        top: -10px;
-        right: -240px;
-        transform: rotate(55deg);
-        display: block;
-        width: 350px;
-        height: 350px;
-        border-radius: 60px;
-        border: 5px solid #c72ff8;
-        border: 0.666667vw solid #be8120;
-      }
+      // &::before,
+      // &::after {
+      //   content: '';
+      //   position: absolute;
+      //   top: -10px;
+      //   right: -240px;
+      //   transform: rotate(55deg);
+      //   display: block;
+      //   width: 350px;
+      //   height: 350px;
+      //   border-radius: 60px;
+      //   border: 5px solid #c72ff8;
+      //   border: 0.666667vw solid #be8120;
+      // }
 
-      &::after {
-        transform: rotate(39deg);
-        border: 5px solid #3eb9ff;
-        border: 0.666667vw solid #9c8f7b;
-      }
+      // &::after {
+      //   transform: rotate(39deg);
+      //   border: 5px solid #3eb9ff;
+      //   border: 0.666667vw solid #9c8f7b;
+      // }
     }
   }
 
@@ -1241,5 +850,8 @@
     .customOrder {
       margin-top: 10px;
     }
+  }
+  .space-info {
+    color: #fff;
   }
 </style>
