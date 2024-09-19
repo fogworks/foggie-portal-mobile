@@ -10,33 +10,33 @@
           <div class="main_detail_box">
             <div class="progress_box">
               <div class="text">Used</div>
-              <div class="user_circle"> {{ Number(((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100).toFixed(2) }}% </div>
+              <!-- <div class="user_circle"> {{ Number(((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100).toFixed(2) }}% </div> -->
             </div>
           </div>
           <nut-col :span="12" class="order-count left_count" v-if="showText">
-            <nut-cell>
+            <!-- <nut-cell>
               <IconMdiF color="#9F9BEF" />
               File:&nbsp;<span>{{ filesCount }}</span>
-            </nut-cell>
+            </nut-cell> -->
             <nut-cell>
               <IconSpace color="#7F7AE9" />
-              Space:&nbsp;<span>{{ getfilesize(orderInfo.value.total_space, 'B') }}</span>
+              Space:&nbsp;<span>{{ cloudQuery.space}}GB</span>
             </nut-cell>
-            <nut-cell>
+            <!-- <nut-cell>
               <IconRiPie color="#7F7AE9" />
               Used:&nbsp;<span>{{ getfilesize(usedSize, 'B') }}</span>
-            </nut-cell>
+            </nut-cell> -->
             <nut-cell>
               <Order />
-              ID:&nbsp;<span>{{ orderInfo.value?.foggie_id }}</span>
+              ID:&nbsp;<span>{{ cloudQuery?.order_id }}</span>
             </nut-cell>
             <nut-cell>
               <Clock />
-              Expiration:&nbsp;<span>{{ transferUTCTime(orderInfo.value.expire) }}</span>
+              Expiration:&nbsp;<span>{{ transferUTCTime(cloudQuery.expire) }}</span>
             </nut-cell>
             <nut-cell>
               <Refresh />
-              Status:&nbsp;<span>{{ statusTypes[orderInfo.value.state] }}</span>
+              Status:&nbsp;<span>{{ statusTypes[cloudQuery.status] }}</span>
             </nut-cell>
           </nut-col>
         </nut-row>
@@ -44,10 +44,9 @@
       <div class="detail_box" v-if="!loadingAnmation">
         <div class="today_file">
           <span class="title">Recent Files</span>
-          <span class="see_all" @click="gotoOrderDetail(cloudQuery)">See All ></span>
+          <!-- <span class="see_all" @click="gotoOrderDetail(cloudQuery)">See All ></span> -->
         </div>
-        <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
-        <template v-else-if="tableData.length">
+        <template v-if="tableData.length">
           <!-- imgData -->
           <div class="file_list file_list_img" v-if="imgData.length">
             <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
@@ -202,14 +201,14 @@
   const isRefresh = ref(false);
   const { cloudQuery } = toRefs(props);
   const showText = ref(false);
+  // '订单状态 1 初始 2 买单中 3 生效 4 购买失败 5 订单超时 6 废弃'
   const statusTypes = {
-    0: 'Consensus not reached',
-    1: 'Consensus reached',
-    2: 'Insufficient advance deposit to cancel the next cycle',
-    3: 'Sufficient funds in advance',
-    4: 'Bucket over',
-    5: 'Canceled',
-    6: 'Cancellation of the next cycle',
+    1: 'Initial',
+    2: 'Buying',
+    3: 'Effective',
+    4: 'Purchase Failed',
+    5: 'Order Timeout',
+    6: 'Abandoned',
   };
   //   const loadingAnmation = ref(true);
   const {
@@ -224,11 +223,14 @@
     deviceType,
     orderInfo,
     getOrderInfo,
-    isAvailableOrder,
+    getOrderInfo1,
+    // isAvailableOrder,
     isError,
     loadingAnmation,
   } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
+  const isAvailableOrder = ref(true);
+
   const {
     httpCopyLink,
     copyLink,
@@ -260,7 +262,7 @@
     if (orderInfo.value.electronic_type == '0') {
       return true;
     } else {
-      return false;
+      return true;
     }
   });
 
@@ -349,7 +351,7 @@
     { deep: true },
   );
 
-  const gotoOrderDetail = (item) => {
+  const gotoOrderDetail = (item: any) => {
     if (!item.domain) {
       router.push({
         name: 'listDetails',
@@ -374,7 +376,6 @@
   };
   const uploadComplete = () => {
     console.log('uploadComplete');
-    getFileList();
     // refresh();
   };
   const getMerkleState = (timeout = true) => {
@@ -440,146 +441,10 @@
     }
   };
 
-  const $cordovaPlugins = inject('$cordovaPlugins');
   const handlerClick = async (type: string) => {
-    const checkData = JSON.parse(JSON.stringify(detailRow.value));
-    console.log(checkData, 'checkData');
-
-    if (type === 'download') {
-      const objectKey = encodeURIComponent(checkData.fullName);
-      const headers = getSignHeaders(objectKey);
-      console.log('headers:', headers);
-      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
-      if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
-        $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
-      } else {
-        showToast.text('The download is in progress, please wait patiently');
-        fetch(url, { method: 'GET', headers })
-          .then((response) => {
-            if (response.ok) {
-              // 创建一个 Blob 对象，并将响应数据写入其中
-              console.log('Success', response);
-              return response.blob();
-            } else {
-              showToast.fail('Download failed, please try again');
-              // 处理错误响应
-              console.error('Error:', response.status, response.statusText);
-            }
-          })
-          .then((blob) => {
-            console.log(blob, 'blob');
-            console.log('Blob type:', blob.type);
-
-            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-            const a = document.createElement('a');
-            console.log("document.createElement('a')");
-
-            a.href = URL.createObjectURL(blob);
-            console.log(a.href);
-
-            a.download = checkData.fullName;
-            console.log(a.download);
-
-            // 将 <a> 元素添加到文档中，并模拟点击
-            document.body.appendChild(a);
-            console.log('添加');
-            a.click();
-            console.log('点击');
-
-            document.body.removeChild(a);
-          })
-          .catch((error) => {
-            showToast.fail('Download failed, please try again');
-            // 处理网络错误
-            console.error('Network Error:', error);
-          });
-      }
-    } else if (type === 'share') {
-      await doShare(checkData);
-    } else if (type === 'move') {
-      moveShow.value = true;
-    } else if (type == 'rename') {
-      renameShow.value = true;
-    } else if (type === 'delete') {
-      const onOk = async () => {
-        deleteItem([checkData]);
-        fileItemPopupIsShow.value = false;
-      };
-      showDialog({
-        title: 'Warning',
-        content: 'Are you sure you want to delete?',
-        cancelText: 'Cancel',
-        okText: 'Confirm',
-        popClass: 'dialog_class_delete',
-        onOk,
-      });
-    } else if (type == 'nft') {
-      createNFT(checkData, accessKeyId.value, secretAccessKey.value, bucketName.value);
-    } else if (type === 'pin') {
-      const onOk = async () => {
-        await cloudPin(checkData, 'ipfs');
-        // detailRow.value.isPin = true;
-        detailShow.value = false;
-        getFileList();
-      };
-      showDialog({
-        title: 'Warning',
-        content: 'Are you sure you want to execute IPFS PIN?',
-        cancelText: 'Cancel',
-        okText: 'Confirm',
-        onOk,
-      });
-    } else if (type === 'un pin') {
-      const onOk = async () => {
-        const d = await cloudPin(checkData, 'ipfs', 'unpin');
-        if (d) {
-          imgData.value.map((el: { cid: any }) => {
-            if (el.cid && el.cid == checkData.cid) {
-              el.isPin = false;
-            }
-          });
-          otherData.value.map((el: { cid: any }) => {
-            if (el.cid && el.cid == checkData.cid) {
-              el.isPin = false;
-            }
-          });
-          detailRow.value.isPin = false;
-        }
-        // doSearch('', prefix.value, true);
-      };
-      showDialog({
-        title: 'Warning',
-        content: 'Are you sure you want to execute IPFS UNPIN?',
-        cancelText: 'Cancel',
-        okText: 'Confirm',
-        popClass: 'dialog_class_delete',
-
-        onOk,
-      });
-    }
+   
   };
-  const getSignHeaders = (objectKey) => {
-    // const objectKey = encodeURIComponent(checkData[0].fullName);
-    const date = new Date().toUTCString();
 
-    const httpMethod = 'GET';
-    const contentType = '';
-    const contentMd5 = '';
-    const canonicalizedAmzHeaders = '';
-    // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
-    const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
-
-    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
-
-    let hmac = HmacSHA1(signature, secretAccessKey.value);
-    const signatureBase64 = enc.Base64.stringify(hmac);
-
-    const headers = {
-      'x-amz-date': date,
-      Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
-    };
-    return headers;
-  };
 
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
     let imgHttpLink = '';
@@ -632,11 +497,13 @@
     }
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
-  function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
+  const getFileList = (scroll: string = '', prefix: any[] = [], reset = true)=> {
     console.log('changeTab1111');
 
-    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+    // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+    let ip = `https://${cloudQuery.value.rpc.split(':')[0]}:7007`;
     console.log('ip:', ip);
+    console.log('header.value:', header.value);
     console.log('metadata.value:', metadata.value);
     console.log('metadata.value:', JSON.stringify(metadata.value));
 
@@ -759,416 +626,28 @@
       },
     );
   }
-  const initRemoteData = async (
-    data: {
-      commonPrefixes?: any;
-      content: any;
-      continuationToken?: any;
-      isTruncated?: any;
-      maxKeys?: any;
-      nextMarker?: any;
-      prefix?: any;
-      prefixpins?: any;
-      err?: any;
-    },
-    reset = false,
-    category: number,
-  ) => {
-    if (!data) {
-      tableLoading.value = false;
-      return;
-    }
-    if (data.err) {
-      showToast.fail('Failed to  retrieve data. Please try again later');
-    }
-    let dir = [].join('/');
-    if (reset) {
-      tableData.value = [];
-    }
-    if (!accessKeyId.value) {
-      await getOrderInfo(true, cloudQuery.value.uuid);
-    }
-    for (let i = 0; i < data.commonPrefixes?.length; i++) {
-      let name = data.commonPrefixes[i];
-      if (data.prefix) {
-        // name = name.split(data.prefix)[1];
-        name = name.split('/')[name.split('/').length - 2] + '/';
-      }
 
-      let cur_cid = '';
-      for (let i = 0; i < data.prefixpins?.length; i++) {
-        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
-          cur_cid = data.prefixpins[i].cid;
-        }
-      }
 
-      let item = {
-        isDir: true,
-        checked: false,
-        name,
-        category: 0,
-        fileType: 1,
-
-        fullName: data.commonPrefixes[i],
-        key: data.commonPrefixes[i],
-        idList: [
-          {
-            name: 'IPFS',
-            code: cur_cid,
-          },
-          {
-            name: 'CYFS',
-            code: '',
-          },
-        ],
-        date: '-',
-        size: '',
-        status: '-',
-        type: 'application/x-directory',
-        file_id: '',
-        pubkey: '',
-        cid: cur_cid,
-        imgUrl: '',
-        imgUrlLarge: '',
-        share: {},
-        isSystemImg: false,
-        canShare: false,
-      };
-
-      tableData.value.push(item);
-    }
-
-    for (let j = 0; j < data?.content?.length; j++) {
-      let date = transferUTCTime(data.content[j].lastModified);
-      let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
-      const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
-      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
-      let cid = data.content[j].cid;
-      let file_id = data.content[j].fileId;
-
-      let name = data.content[j].key;
-      if (data.prefix) {
-        name = name.split(data.prefix)[1];
-      }
-      if (name.indexOf('/') > 0 && name[name.length - 1] != '/') {
-        name = name.split('/')[name.split('/').length - 1];
-      } else if (name.indexOf('/') > 0) {
-        name = name.split('/')[name.split('/').length - 2];
-      }
-      let isPersistent = data.content[j].isPersistent;
-      console.log(data.content[j], 'data.content[j]');
-
-      let item = {
-        imageInfo: data.content[j].imageInfo,
-        isShowDetail: data.content[j].isShowDetail,
-        isDir: isDir,
-        checked: false,
-        name,
-        category: data.content[j].category,
-        fileType: 2,
-        fullName: data.content[j].key,
-        key: data.content[j].key,
-        idList: [
-          {
-            name: 'IPFS',
-            code: data.content[j].isPin ? cid : '',
-          },
-          {
-            name: 'CYFS',
-            code: data.content[j].isPinCyfs ? file_id : '',
-          },
-        ],
-        date,
-        size: getfilesize(data.content[j].size),
-        originalSize: data.content[j].size,
-        status: cid || file_id ? 'Published' : '-',
-        type: data.content[j].contentType,
-        file_id: file_id,
-        pubkey: cid,
-        cid,
-        imgUrl: data.content[j].thumb && data.content[j].thumb != 'b' ? url : '',
-        imgUrlLarge: url_large,
-        share: {},
-        isSystemImg,
-        canShare: cid ? true : false,
-        isPersistent,
-        isPin: data.content[j].isPin,
-        isPinCyfs: data.content[j].isPinCyfs,
-      };
-
-      tableData.value.push(item);
-    }
-
-    console.log(tableData.value, 'tableData.value');
-
-    tableLoading.value = false;
-  };
 
   const refresh = async () => {
     detailShow.value = false;
-    await getOrderInfo(true, cloudQuery.value.uuid);
-    getFileList();
-    getSummary();
+    // await getOrderInfo(true, cloudQuery.value.uuid);
+    // getSummary();
   };
 
   const refreshFun = async () => {
-    // showToast.loading('Loading', {
-    //   cover: true,
-    //   coverColor: 'rgba(0,0,0,0.45)',
-    //   customClass: 'app_loading',
-    //   icon: loadingImg,
-    //   loadingRotate: false,
-    // });
     detailShow.value = false;
     isRefresh.value = false;
-    await getOrderInfo(true, cloudQuery.value.uuid);
+  };
+
+  onMounted(async ()=>{
+    
+    await getOrderInfo1(cloudQuery.value);
     getFileList();
-    getSummary();
-    // showToast.hide('file_list');
-  };
+  })
 
-  const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
-    console.log('doSocketFn', msg, tableData.value);
-    const action = msg.action;
-    const fileInfo = msg.fileInfo;
-    const keys = fileInfo.keys;
-    const bucket = fileInfo.bucket;
-    const cid = fileInfo.cid;
-    if (!action || !keys || keys.length === 0) {
-      refresh();
-      return;
-    }
 
-    if (action === 'FILE_ADD') {
-      let index = keys[0].lastIndexOf('/');
-      let name = keys[0].substring(index + 1);
-      const date = transferGMTTime(fileInfo.lastModified * 1000);
-      const _cid = cid && cid[0] ? cid[0] : '';
-      const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
-      if (!target) {
-        const type = keys[0].substring(keys[0].lastIndexOf('.') + 1).toLowerCase();
-        const data = {
-          cid: _cid,
-          key: keys[0],
-        };
-        const imgData = await handleImg(data, type, false);
-        let category = 0;
-        if (
-          type === 'png' ||
-          type === 'bmp' ||
-          type === 'gif' ||
-          type === 'jpeg' ||
-          type === 'jpg' ||
-          type === 'svg' ||
-          type === 'heif' ||
-          type === 'webp' ||
-          type === 'ico'
-        ) {
-          category = 1;
-        } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
-          category = 2;
-        } else if (type === 'mp3') {
-          category = 3;
-        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
-          category = 4;
-        }
-        const url = imgData.imgHttpLink;
-        const isSystemImg = imgData.isSystemImg;
-        const url_large = imgData.imgHttpLarge;
 
-        console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
-
-        let imageInfo = {
-          aperture: '',
-          datetime: '', //拍摄时间
-          exposuretime: '', //ev曝光量
-          exptime: '', //曝光时间
-          orientation: '', //方向
-          focallength: '', //焦距
-          Flash: false, //是否使用闪光灯
-          software: '', // 使用软件
-          iso: '', //iso
-          camerainfo: '', //手机厂商及其机型
-          gps: '', //经纬度
-          resolution: '', //像素
-        };
-        let isShowDetail = false;
-
-        if (fileInfo.image_infos && Object.keys(fileInfo.image_infos).length > 0) {
-          let key = Object.keys(fileInfo.image_infos)[0];
-          let imageObj = fileInfo.image_infos[key];
-          if (imageObj && imageObj.addition) {
-            isShowDetail = true;
-            imageInfo.aperture = imageObj.addition.aperture;
-            imageInfo.datetime = moment(imageObj.addition.date_time, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
-            imageInfo.exposuretime = imageObj.addition?.exposure_time; //ev曝光量
-            imageInfo.exptime = imageObj.addition?.exp_time; //曝光时间
-            imageInfo.orientation = imageObj.addition?.orientation; //方向
-            imageInfo.focallength = imageObj.addition?.focal_length; //焦距
-            imageInfo.Flash = imageObj.addition?.flash || false; //是否使用闪光灯
-            imageInfo.software = imageObj.addition?.software; // 使用软件
-            imageInfo.iso = imageObj.addition?.iso.charCodeAt(0);
-            imageInfo.camerainfo = imageObj?.camera_info; //手机厂商及其机型
-            imageInfo.gps = imageObj?.gps; //经纬度
-            imageInfo.resolution = imageObj?.resolution; //像素
-          }
-          console.log('FILE_ADD-----------tableData', imageInfo);
-        }
-
-        let item = {
-          isDir: false,
-          checked: false,
-          name,
-          category,
-          fileType: 2,
-          fullName: keys[0],
-          key: keys[0],
-          idList: [
-            {
-              name: 'IPFS',
-              code: '',
-            },
-            {
-              name: 'CYFS',
-              code: '',
-            },
-          ],
-          date,
-          pubkey: _cid,
-          cid: _cid,
-          imgUrl: url,
-          imgUrlLarge: url_large,
-          share: {},
-          isSystemImg,
-          canShare: _cid ? true : false,
-          isPin: false,
-          isPinCyfs: false,
-          type,
-          isShowDetail,
-          imageInfo,
-        };
-        tableData.value.unshift(item);
-      }
-    } else if (action === 'FILE_PIN') {
-      const curName = fileInfo.keys[0];
-      const curDir = window.sessionStorage.getItem('currentFolder');
-      tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
-        if (el.cid === cid[0]) {
-          el.isPin = true;
-        } else if (
-          curName.charAt(curName.length - 1) === '/' &&
-          decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
-        ) {
-          el.isPin = true;
-          if (!el.cid && cid[0]) {
-            el.cid = cid[0];
-          }
-        }
-      });
-    } else if (action === 'FILE_CHANGE') {
-    } else if (action === 'FILE_DELETE') {
-      console.log('FILE_DELETE', keys);
-      // tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
-      // imgArray.value = imgArray.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
-    } else if (action === 'FILE_PINNING') {
-    }
-  };
-  const initWebSocket = async () => {
-    let param = {
-      order_uuid: cloudQuery.value.uuid,
-    };
-    const signData = await get_order_sign(param);
-    socketDate.value = signData?.result?.data?.timestamp;
-    socketToken.value = signData?.result?.data?.sign;
-    console.log('initWebSocket-----------');
-    const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
-    fileSocket.value = new WebSocket(url);
-    fileSocket.value.onopen = () => {
-      const authMessage = {
-        action: 'AUTH',
-        userID: orderInfo.value.foggie_id,
-        token: socketToken.value,
-        date: socketDate.value,
-      };
-      fileSocket.value.send(JSON.stringify(authMessage));
-    };
-
-    fileSocket.value.onmessage = (event: { data: string }) => {
-      const message = JSON.parse(event.data);
-      const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
-      console.log('Received message from server:', message, currentFolderStr);
-      const uploadFileName = window.sessionStorage.getItem('uploadFileName');
-      let fileInfo = message.fileInfo;
-      let dirArr = fileInfo.keys;
-      const updateBy = fileInfo.updateBy;
-      let dirFile = '';
-      let dirFileName = '';
-      if (dirArr && dirArr.length > 0) {
-        let index = dirArr[0].lastIndexOf('/');
-        if (index > -1) {
-          dirFile = dirArr[0].substring(0, index + 1);
-          dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
-        } else {
-          dirFile = '';
-          dirFileName = dirArr[0];
-        }
-      }
-
-      console.log(
-        '888888',
-        dirArr,
-        dirFile,
-        currentFolderStr,
-        dirFile === decodeURIComponent(currentFolderStr),
-        dirFileName !== uploadFileName,
-      );
-      if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
-        if (detailShow.value) {
-          setTimeout(() => {
-            initWebSocket();
-          }, 3000);
-        } else {
-          doSocketFn(message);
-        }
-      }
-    };
-
-    fileSocket.value.onclose = (event: any) => {
-      console.log('WebSocket connection closed:', event, fileSocket.value);
-      if (fileSocket.value) {
-        console.log('WebSocket connection again:');
-        initWebSocket();
-      }
-    };
-    fileSocket.value.onerror = (event: any) => {
-      console.error('WebSocket connection error:', event);
-    };
-  };
-  watch(
-    () => cloudQuery.value.uuid,
-    async (val) => {
-      if (val) {
-        // showToast.loading('Loading', {
-        //   cover: true,
-        //   coverColor: 'rgba(0,0,0,0.45)',
-        //   customClass: 'app_loading',
-        //   icon: loadingImg,
-        //   loadingRotate: false,
-        // });
-        await getOrderInfo(true, cloudQuery.value.uuid);
-        if (bucketName.value) {
-          getFileList();
-          getSummary();
-          initWebSocket();
-          //   showToast.hide('file_list');
-        }
-      }
-    },
-    {
-      deep: true,
-      immediate: true,
-    },
-  );
   onUnmounted(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });

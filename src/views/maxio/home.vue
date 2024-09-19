@@ -1,13 +1,9 @@
 <template>
   <div class="maxio_home_bg">
     <div class="maxio_home">
-      <!-- <div class="top_link_box">
-        <topHead :topType="topType" :topShow="!topShow" :topText="topText" @closeBuy="closeBuy"></topHead>
-      </div> -->
       <div class="maxio_home_head">
         <div class="maxio_home_headLogo">
           <div class="maxio_logo" @click="doShowLeft">
-            <!-- <img src="@/assets/maxio/list.svg" alt="" /> -->
             <img src="@/assets/maxio/change.svg" alt="" />
           </div>
         </div>
@@ -15,15 +11,12 @@
         <div class="maxio_title_box">
           <img src="@/assets/maxio/beta.svg" class="betaPng" />
           <div class="maxio_title">
-            <img src="@/assets/maxio/maxio1.png" alt="" />
+            <img src="@/assets/maxio/cloud1.svg" alt="" />
             <div class="title_text">
-              <div class="max_name"> {{ currentBucketData.domain || currentBucketData.order_id }}</div>
+              <div class="max_name"> Order{{ currentBucketData.order_id }}</div>
             </div>
           </div>
         </div>
-        <!-- <div class="maxio_img" @click="showOfflineBox">
-          <img src="@/assets/maxio/offline.svg" class="user_img" />
-        </div> -->
         <div class="maxio_img running_img" @click="showOfflineBox" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']">
           <img src="@/assets/maxio/running.svg" class="running_img" />
         </div>
@@ -36,10 +29,8 @@
       </div>
       <div class="maxio_home_content" v-if="currentBucketData.order_id">
         <div class="maxio_home_leftMenu" :class="[showLeft ? (isShowMoreList ? 'isShowMoreList' : '') : 'minWidth']" ref="listRef">
-          <!-- home_bucket000 -->
           <div class="menu_img" @click="changeList('maxio')">
-            <!-- <img src="@/assets/maxio/maxio_name.png" class="left_max_png" /> -->
-            <img src="@/assets/maxio/maxio1.png" alt="" class="left_max_png" />
+            <img src="@/assets/maxio/cloud1.svg" alt="" class="left_max_png" />
           </div>
           <div class="isShowMaxio" :class="[isShowMaxio ? 'showMax' : 'hideMax']">
             <div
@@ -48,37 +39,15 @@
               :key="index"
               :class="[item.device_type == 'maxio' && currentBucketData.id === item.id ? 'active_img' : '', 'menu_img']"
             >
-              <!-- <img src="@/assets/maxio/maxio.png" alt="" class="left_max_pngs" /> -->
-              <img src="@/assets/maxio/maxio1.png" alt="" class="left_max_pngs" />
-              <div class="title_text" v-if="item.device_type === 'maxio'">{{ item.dedicatedip || 'MAX IO' + item.index + 1 }}</div>
+              <img src="@/assets/maxio/cloud1.svg" alt="" class="left_max_pngs" />
+              <div class="title_text">{{ 'Order' + item.order_id }}</div>
             </div>
           </div>
 
-          <!-- home_bucket111 -->
-          <div class="menu_img" @click="changeList('bucket')">
-            <!-- <img src="@/assets/maxio/hbucket.svg" class="left_max_png" />  -->
-            <img src="@/assets/maxio/cloud1.svg" class="left_max_png" />
-          </div>
-          <div class="isShowMaxio" :class="[isShowBucket ? 'showMax' : 'hideMax']">
-            <div
-              v-for="(item, index) in runningDataCy"
-              @click="changeMenu(item)"
-              :key="index"
-              :class="[item.device_type == 3 && currentBucketData.uuid === item.uuid ? 'active_img' : '', 'menu_img']"
-            >
-              <!-- <img src="@/assets/home_bucket.png" alt="" /> -->
-              <img src="@/assets/maxio/cloud.svg" alt="" />
-              <div class="title_text">{{ item.domain || 'Order' + item.order_id }}</div>
-            </div>
-          </div>
-
-          <!-- home_bucket222 -->
           <div class="menu_img" @click="changeList('history')" v-if="historyDataCy.length">
             <div class="image-container history">
-              <!-- <img src="@/assets/maxio/hbucket.svg" class="left_max_png" /> -->
               <img src="@/assets/maxio/cloud1.svg" class="left_max_png" />
               <div class="watermark">
-                <!-- <img src="@/assets/maxio/history.svg" class="small" /> -->
                 history
               </div>
             </div>
@@ -91,41 +60,26 @@
               :class="[item.device_type == 3 && currentBucketData.uuid === item.uuid ? 'active_img' : '', 'menu_img']"
             >
               <div class="image-container" alt="">
-                <!-- <img src="@/assets/home_bucket.png" /> -->
                 <img src="@/assets/maxio/cloud.svg" alt="" />
                 <div class="watermark">History</div>
               </div>
               <div class="title_text">{{ item.domain || 'Order' + item.order_id }}</div>
             </div>
           </div>
-
-          <!-- <div class="menu_img buy_img" @click="buyOrder">
-            <img src="@/assets/maxio/buy.svg" class="left_max_png" />
-          </div> -->
         </div>
 
-        <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="!showBucket" :class="[showLeft ? 'maxWidth' : '']">
+        <div class="maxio_home_rightContent maxio_sd_rightContent bbb" :class="[showLeft ? 'maxWidth' : '']">
           <sd :currentBucketData="currentBucketData">
-            <max-index :showLeft="showLeft"></max-index>
-          </sd>
-        </div>
-
-        <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="showBucket" :class="[showLeft ? 'maxWidth' : '']">
-          <sd :currentBucketData="currentBucketData">
-            <div v-if="!cloudQuery.uuid" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
+            <div v-if="!cloudQuery.id" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
               <img src="@/assets/maxio/empty.png" alt="" />
             </div>
-            <!-- v-if="currentBucketData.state !== 0" -->
-            <CloudComponent :cloudQuery="cloudQuery" v-if="cloudQuery.uuid"></CloudComponent>
+            <CloudComponent :cloudQuery="currentBucketData" v-if="currentBucketData.id"></CloudComponent>
           </sd>
         </div>
       </div>
       <nut-empty v-else description="No Order" image="error"></nut-empty>
-      
-
-      <div style="position: absolute; bottom: 100px; text-align: center; width: 100%; cursor: pointer" @click="toBuyOrder">+buy Order</div>
+      <nut-button type="primary" class="buy-order" @click="toBuyOrder">Buy Order</nut-button>
     </div>
-    <!-- <offline :isShowOffline="isShowOffline" @closeBuy="showOfflineBox" :currentBucketData="currentBucketData"></offline> -->
     <offlineList
       :isShowOffline="isShowOffline"
       @closeBuy="showOfflineBox"
@@ -137,7 +91,7 @@
 </template>
 
 <script setup>
-  import { ref, toRefs, computed } from 'vue';
+  import { ref, toRefs, computed, onMounted } from 'vue';
   import { showToast } from '@nutui/nutui';
   import CloudComponent from './cloud.vue';
   import maxIndex from './maxIndex.vue';
@@ -149,7 +103,7 @@
   import iconImg from './iconImg.vue';
   import useOrderList from './maxFileOpt/useAllOrderList';
   import { useUserStore } from '@/store/modules/user';
-  import { search_cloud, getDmOrder } from '@/api';
+  import { getDmOrder } from '@/api';
 
   const userStore = useUserStore();
   let currentBucketData = ref({});
@@ -166,7 +120,7 @@
   const topText = ref('');
   const topShow = ref(false);
   const { cloudQuery, showBucket } = toRefs(state);
-  const { resetData, loadMore, allOrderList, hasMore, infinityValue, total, maxTableData, historyData, runningData } = useOrderList();
+  const { allOrderList, hasMore, infinityValue, total, maxTableData, historyData, runningData } = useOrderList();
   const router = useRouter();
   const route = useRoute();
   const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
@@ -210,18 +164,6 @@
     showLeft.value = !showLeft.value;
   };
 
-  const loadMoreFun = async () => {
-    try {
-      const postData = {
-        sort_type: 'expire',
-        ascending: false,
-        // is_domain: 1,
-        electronic_type: '0',
-        // domain: '',
-      };
-      await loadMore([0, 1, 2, 3, 4, 6], '', '', '', postData);
-    } catch {}
-  };
   const showMoreList = () => {
     isShowMoreList.value = true;
   };
@@ -229,44 +171,23 @@
     isShowMoreList.value = false;
   };
   const changeMenu = (item, _type) => {
-    // console.log('changeMenuchangeMenu', item, _type);
+    console.log('changeMenuchangeMenu', item, _type);
     window.localStorage.homeChooseBucket = JSON.stringify(item);
     isShowMoreList.value = false;
     userStore.setCurrentLeftTab(item);
-    if (item.device_type === 3) {
-      currentBucketData.value = item;
-      cloudQuery.value = {
-        id: item.order_id,
-        uuid: item.uuid,
-        amb_uuid: item.amb_uuid,
-        domain: item.domain,
-      };
-      showBucket.value = true;
-    } else {
-      showBucket.value = false;
-      currentBucketData.value = item;
-    }
+    currentBucketData.value = item;
+    cloudQuery.value = {
+      id: item.order_id,
+      uuid: item.uuid,
+      amb_uuid: item.amb_uuid,
+      domain: item.domain,
+    };
+    showBucket.value = true;
+    console.log('cloudQuery=======', cloudQuery.value);
     // console.log(currentBucketData.value, 'changeMenu', currentBucketData.value.device_id);
   };
   const gotoBucketDetail = (item) => {
     router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });
-  };
-  const initSetBucket = () => {
-    showBucket.value = true;
-    // console.log(window.localStorage.homeChooseBucke, '000------window.localStorage.homeChooseBucke');
-    if (window.localStorage.homeChooseBucket) {
-      setBucket(JSON.parse(window.localStorage.homeChooseBucket));
-    } else if (leftBucketList.value.length) {
-      //   let bucketList = leftBucketList.value.filter((el) => el.domain);
-      let bucketList = leftBucketList.value;
-      if (bucketList.length) {
-        setBucket(bucketList[0]);
-      } else {
-        showToast.text('Please select a bucket and set the bucket name.');
-      }
-    } else {
-      showToast.text('empty data');
-    }
   };
 
   const closeBuy = () => {
@@ -336,8 +257,30 @@
   };
 
   const toBuyOrder = () => {
-    router.push('/shop')
+    router.push('/shop');
   };
+  const initData = () => {
+    if (address.value) {
+      const d = {
+        wallet: address.value,
+        pageNo: 1,
+        pageSize: 100,
+      };
+      getDmOrder(d).then((res) => {
+        if (res.code === 200) {
+          maxTableData.value = res.data.list;
+          currentBucketData.value = maxTableData.value[0] ? maxTableData.value[0] : {};
+          console.log(currentBucketData.value, 'currentBucketData.value');
+          cloudQuery.value = {
+            id: currentBucketData.value.order_id,
+          };
+        }
+      });
+    }
+  };
+  onMounted(() => {
+    initData();
+  });
   watch(leftBucketList, (val) => {
     if (val.length > 0) {
       showLeft.value = true;
@@ -356,9 +299,14 @@
       getDmOrder(d).then((res) => {
         if (res.code === 200) {
           maxTableData.value = res.data.list;
+
+          currentBucketData.value = maxTableData.value[0] ? maxTableData.value[0] : {};
+          cloudQuery.value = {
+            id: currentBucketData.value.order_id,
+          };
+          console.log(currentBucketData.value, 'currentBucketData.value');
         }
       });
-      
     } else {
     }
   });
@@ -387,4 +335,13 @@
   //     background: #00000039;
   //     padding: 20px;
   //   }
+  .buy-order {
+    position: absolute;
+    bottom: 50px;
+    text-align: center;
+    width: 300px;
+    cursor: pointer;
+    z-index: 1;
+    right: 150px;
+  }
 </style>

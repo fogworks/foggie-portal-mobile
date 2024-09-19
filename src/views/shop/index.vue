@@ -3,8 +3,7 @@
     <div class="out_blue">
       <div class="inside_blue">
         <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
-        <div class="balance_options">
-        </div>
+        <div class="balance_options"> </div>
       </div>
     </div>
     <div class="vip_order_choose">
@@ -18,11 +17,16 @@
       <p>Weeks: {{ shopForm.week }}</p>
       <p>Space: {{ shopForm.quantity }}GB</p>
       <p>Price: {{ calc_price.total }}</p>
-      <p  @click="copySecret(address)">Payment account: {{ address }} <IconCopy color="#246bf7"></IconCopy></p>
-      <p  @click="copySecret(calc_price.to)">Receiving account: {{ calc_price.to }} <IconCopy color="#246bf7"></IconCopy></p>
+      <p @click="copySecret(address)"
+        >Payment account: {{ address ? `${address.substr(0, 6)}...${address.substr(-6)}` : address }} <IconCopy color="#246bf7"></IconCopy
+      ></p>
+      <p @click="copySecret(calc_price.to)"
+        >Receiving account: {{ calc_price.to ? `${calc_price.to.substr(0, 6)}...${calc_price.to.substr(-6)}` : calc_price.to }}
+        <IconCopy color="#246bf7"></IconCopy
+      ></p>
 
-      <nut-input v-model="txid" placeholder="Please enter the transaction hash" />
-      <nut-button type="primary" @click="confirmBuy">Confirm</nut-button>
+      <nut-input style="color: #666" v-model="txid" placeholder="Please enter the transaction hash" />
+      <nut-button type="primary" @click="confirmBuy" style="margin-top: 10px">Confirm</nut-button>
     </div>
 
     <Teleport to="body">
@@ -62,8 +66,6 @@
         </nut-form>
       </nut-popup>
     </Teleport>
-
-   
   </div>
 </template>
 
@@ -75,8 +77,7 @@
   import { dm_calc_price, get_available_capacity, dm_order_buy } from '@/api';
   import { showToast } from '@nutui/nutui';
 
-
-  const isShowSpaceInfo = ref(true);
+  const isShowSpaceInfo = ref(false);
 
   const calc_price = ref({
     orderId: '',
@@ -139,7 +140,7 @@
       // orderId: 8,
       orderId: calc_price.value.orderId,
       transactionId: txid.value,
-    }
+    };
     dm_order_buy(d).then((res) => {
       if (res.code == 200) {
         showToast.success('Order success');
@@ -158,7 +159,7 @@
     document.execCommand('Copy');
     document.body.removeChild(input);
     showToast.success('Copy succeeded');
-  }
+  };
 
   const toBuy = () => {
     showTop.value = true;
@@ -852,6 +853,11 @@
     }
   }
   .space-info {
+    width: 90%;
+    margin: 0 auto;
     color: #fff;
+    p {
+      margin: 5px 0;
+    }
   }
 </style>

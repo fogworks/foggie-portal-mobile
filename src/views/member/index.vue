@@ -19,7 +19,7 @@
           <div class="user_header_box_content">
             <!-- <img src="@/assets/maxio/beta.svg" class="betaPng" /> -->
             <div class="accTitle">{{ maxBind ? maxWallet : dmcAccount }}</div>
-            <div class="email">Email: {{ email }}</div>
+            <div class="email">Account: {{ address ? `${address.substr(0,6)}...${address.substr(-6)}` : email }}<IconCopy @click="copyCode(address)"></IconCopy></div>
             <!-- <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div> -->
             <!-- <div class="email" v-if="promo_code">promoCode: {{ promo_code }}</div> -->
             <div class="email" v-if="user_code">UserCode: {{ user_code }} <IconCopy @click="copyCode(user_code)"></IconCopy></div>
@@ -41,7 +41,7 @@
             <span style="font-size: 12px">.{{ money.Recharge.decimalPart }}</span>
           </div>
         </div> -->
-          <div>
+          <!-- <div>
             <div class="key">Reward</div>
             <div class="value" v-if="cloudCodeIsBind" @click="gotoDetail('/assetsInfo')">
               <span style="font-size: 18px">{{ money.income.integerPart }}</span>
@@ -55,7 +55,7 @@
               <span style="font-size: 18px">{{ money.withdraw.integerPart }}</span>
               <span style="font-size: 12px">.{{ money.withdraw.decimalPart }}</span>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="scanQR" @click="requestCameraPermission">
           <Scan2 color="#fff" width="25px" height="25px"></Scan2>
@@ -123,7 +123,7 @@
           </nut-col>
         </nut-row>
 
-        <div class="router_list" v-if="!showSettings">
+        <!-- <div class="router_list" v-if="!showSettings">
           <setting @click="gotoDetail('/assetsInfo')">
             <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">Assets</div>
@@ -140,7 +140,7 @@
             <img src="@/assets/maxio/nft1.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">NFT</div>
           </setting>
-        </div>
+        </div> -->
 
         <div class="logOutBtn" @click="logout">
           <span style="margin-left: 45px">Log out</span>
@@ -215,6 +215,7 @@
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
   const maxBind = computed(() => userStore.getMaxBind);
   const maxWallet = computed(() => userStore.getMaxWallet);
+  const address = computed(() => userStore.getUserInfo?.address);
 
   const visible = ref<boolean>(false);
 
@@ -257,14 +258,14 @@
     withdraw: <object>{ integerPart: 0, decimalPart: 0 },
     income: <object>{ integerPart: 0, decimalPart: 0 },
   });
-  function copyCode(text) {
+  function copyCode(text: string) {
     var input = document.createElement('input');
     input.value = text;
     document.body.appendChild(input);
     input.select();
     document.execCommand('Copy');
     document.body.removeChild(input);
-    showToast.success('Copy succeeded,Use this code to quickly associate wallet accounts in the Dapp');
+    showToast.success('Copy succeeded');
   }
   function loadUserDmc() {
 
@@ -534,7 +535,7 @@
             position: relative;
             &::after {
               content: '';
-              background: url('@/assets/maxio/beta.svg') center center;
+              // background: url('@/assets/maxio/beta.svg') center center;
               background-size: 90px auto;
               background-repeat: no-repeat;
               position: absolute;

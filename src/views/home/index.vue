@@ -1831,27 +1831,27 @@
           }
         });
       });
-      if (newVal) {
-        userStore.setambRefuse(false);
-        getOrder();
-        getUserAssets();
-        getExchangeRate();
-        initNFT();
-        getNoBucketOrder();
-        await loadMoreFun();
-        console.log(listData.value.length, 'listData.length');
-        if (window.localStorage.homeChooseBucket) {
-          setBucket(JSON.parse(window.localStorage.homeChooseBucket));
-        } else if (leftBucketList.value.length) {
-          let bucketList = leftBucketList.value.filter((el) => el.domain);
-          if (bucketList.length) {
-            setBucket(bucketList[0]);
-          } else {
-            showRight.value = true;
-            showToast.text('Please select a bucket and set the bucket name.');
-          }
-        }
-      }
+      // if (newVal) {
+      //   userStore.setambRefuse(false);
+      //   getOrder();
+      //   getUserAssets();
+      //   getExchangeRate();
+      //   initNFT();
+      //   getNoBucketOrder();
+      //   await loadMoreFun();
+      //   console.log(listData.value.length, 'listData.length');
+      //   if (window.localStorage.homeChooseBucket) {
+      //     setBucket(JSON.parse(window.localStorage.homeChooseBucket));
+      //   } else if (leftBucketList.value.length) {
+      //     let bucketList = leftBucketList.value.filter((el) => el.domain);
+      //     if (bucketList.length) {
+      //       setBucket(bucketList[0]);
+      //     } else {
+      //       showRight.value = true;
+      //       showToast.text('Please select a bucket and set the bucket name.');
+      //     }
+      //   }
+      // }
     },
     { deep: true, immediate: true },
   );

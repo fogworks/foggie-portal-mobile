@@ -44,7 +44,7 @@
         }"
       >
         <div class="optionBox">
-          <template v-if="isAvailableOrder">
+          <!-- <template v-if="isAvailableOrder">
             <div @click="handlerClick('share')" v-if="!chooseItem.isDir">
               <IconShare color="#222224 "></IconShare>
               <span>Share</span>
@@ -61,7 +61,7 @@
               <IconMove :color="category != 1 || !isMobileOrder ? '#222224' : '#ffffff5c'"></IconMove>
               Move
             </div>
-          </template>
+          </template> -->
 
           <div @click="handlerClick('download')">
             <IconDownload color="#222224"></IconDownload>
@@ -86,7 +86,7 @@
           </p>
         </div>
 
-        <nut-button
+        <!-- <nut-button
           v-if="isAvailableOrder"
           block
           type="primary"
@@ -94,7 +94,7 @@
           @click="handlerClick('delete')"
         >
           <template #icon><IconDelete /> </template>Delete</nut-button
-        >
+        > -->
       </div>
     </nut-popup>
     <!-- iso -->

@@ -577,8 +577,8 @@
   onMounted(async () => {
     if (userStore.getToken) {
      await initFoggieDate()
-      bindAmbCode()
-      initWebSocket();
+      // bindAmbCode()
+      // initWebSocket();
   
       // bindUser();
     }
