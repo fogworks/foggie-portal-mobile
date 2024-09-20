@@ -63,69 +63,6 @@
     <div class="detail_box">
       <div class="detail_box_toolbox">
         <div class="type_check_box type_check_box1" v-if="!mintType || mintType == 0">
-          <!-- <div
-            :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
-            @click="getKey"
-          >
-            <div class="svg_box svg_box2 order-icon-recycle">
-              <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
-            </div>
-            <p>S3 Service</p>
-          </div>
-          <div
-            class="type_item s3key"
-            @click="
-              router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })
-            "
-          >
-            <div class="svg_box svg_box2 order-icon-node-tree">
-              <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
-            </div>
-            <p>Miner Tool</p>
-          </div> -->
-          <!-- <nut-swiper
-            pagination-color="#496af2"
-            :init-page="page"
-            :loop="true"
-            auto-play="0"
-            height="150"
-            :pagination-visible="true"
-            :is-prevent-default="false"
-          >
-            <nut-swiper-item>
-              <div
-                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
-                @click="getKey"
-              >
-                <div class="svg_box svg_box2 order-icon-recycle">
-                  <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
-                </div>
-                <p>S3 Service</p>
-              </div>
-              <div
-                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
-                @click="getIPFSService"
-              >
-                <div class="svg_box svg_box2 order-icon-recycle">
-                  <img src="@/assets/ipfs.png" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
-                </div>
-                <p>IPFS Pinning</p>
-              </div>
-            </nut-swiper-item>
-            <nut-swiper-item>
-              <div
-                class="type_item s3key"
-                @click="
-                  router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })
-                "
-              >
-                <div class="svg_box svg_box2 order-icon-node-tree">
-                  <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
-                </div>
-                <p>Miner Tool</p>
-              </div>
-            </nut-swiper-item>
-          </nut-swiper> -->
           <van-swipe :loop="true">
             <van-swipe-item>
               <div
@@ -322,9 +259,9 @@
           <p class="bucket_tip" style="text-align: left; word-break: break-word"
             >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
             (-), and must start and end with lowercase letters or numbers.Sensitive information is recommended to be encrypted and uploaded.
-            <span @click="dialogShow = true" style="text-align: right; width: 100%; display: inline-block; text-decoration: underline"
+            <!-- <span @click="dialogShow = true" style="text-align: right; width: 100%; display: inline-block; text-decoration: underline"
               >what is Bucket?</span
-            >
+            > -->
           </p>
 
           <p
@@ -340,10 +277,10 @@
           >
             <span>Bucket Name</span> <span>Required</span>
           </p>
-          <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
+          <!-- <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input> -->
           <template #footer>
             <!-- <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button> -->
-            <nut-button type="primary" @click="createName" :loading="isNameLoading">Confirm</nut-button>
+            <nut-button type="primary" @click="createName1" :loading="isNameLoading">Confirm</nut-button>
           </template>
         </nut-dialog>
       </Teleport>
@@ -438,7 +375,7 @@
   import useOrderInfo from './useOrderInfo.js';
   import useShare from './useShare.js';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
-  import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload, get_order_sign } from '@/api/index';
+  import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload, get_order_sign, dm_order_name_set } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
@@ -474,6 +411,7 @@
     deviceType,
     orderInfo,
     getOrderInfo,
+    getOrderInfo1,
     isAvailableOrder,
     isError,
   } = useOrderInfo();
@@ -631,80 +569,6 @@
     },
     { deep: true },
   );
-  const getMerkleState = (timeout = true) => {
-    const d = {
-      orderId: order_id.value,
-    };
-    valid_upload(d).then((res) => {
-      if (res.data?.data) {
-        // TODO
-        isDisabled.value = true;
-        if (timeout) {
-          merkleTimeOut = setTimeout(() => {
-            getMerkleState(timeout);
-          }, 30000);
-        }
-      } else {
-        if (isDisabled.value) {
-          // showToast.success('Merkle creation is complete and you can proceed to upload the file');
-        }
-        isDisabled.value = false;
-      }
-    });
-  };
-  const beforeupload = (file: any) => {
-    return new Promise(async (resolve, reject) => {
-      let nowTime = new Date().getTime();
-      let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
-      let time = ((+endTime - +nowTime) / 1000).toFixed(0);
-      if (time > 4 * 60) {
-        time = time - 60 * 60;
-      }
-      if (time > 0) {
-        let content = 'Upload files after ' + getSecondTime(+time);
-        showToast.fail(content);
-        reject(false);
-      }
-      const fileCopy = file[0]; // 保存file变量的副本
-      const d = {
-        orderId: order_id.value,
-      };
-      let merkleRes = await valid_upload(d);
-      if (merkleRes?.data) {
-        isDisabled.value = false;
-      } else {
-        // showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
-        isDisabled.value = true;
-        getMerkleState(true);
-        reject();
-      }
-
-      uploadUri.value = `https://${bucketName.value}.${poolUrl}:6008/o/`;
-
-      const policy = {
-        expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
-        conditions: [
-          { bucket: bucketName.value },
-          { acl: 'public-read' }, // 设置 ACL（可根据需求更改）
-          ['starts-with', fileCopy, prefix.value], // Key 以 "uploads/" 开头
-          ['starts-with', '$Content-Type', ''], // Content-Type 为空
-        ],
-      };
-      const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
-
-      let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
-      const signature = enc.Base64.stringify(hmac);
-
-      formData.value = {};
-      formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
-      formData.value.Policy = policyBase64;
-      formData.value.Signature = signature;
-      formData.value.Awsaccesskeyid = accessKeyId.value;
-
-      formData.value.category = getType(fileCopy.name);
-      resolve([fileCopy]);
-    });
-  };
 
   const imgUrl = ref('');
   const detailRow = reactive({ value: {} });
@@ -1009,101 +873,11 @@
     { leading: true, trailing: true },
   );
 
-  const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
-    console.log('uploadSuccess', responseText, option, fileItem);
-    console.log(option, 'option');
-    uploadStatus.value = 'success';
-
-    delay(() => {
-      uploadProgressIsShow.value = false;
-    }, 2000);
-    getFileList();
-    const updateUsedSpace = () => {
-      return update_order_size({
-        used_space: +option.sourceFile.size,
-        order_id: +order_id.value,
-        device_type: 'mobile',
-      })
-        .then((res) => {
-          if (res.code == 200) {
-            // getOrderInfo(false);
-            uploadRef.value.clearUploadQueue();
-          } else {
-            setTimeout(() => {
-              updateUsedSpace();
-            }, 3000);
-          }
-        })
-        .catch(() => {
-          setTimeout(() => {
-            updateUsedSpace();
-          }, 3000);
-        });
-    };
-    await updateUsedSpace();
-    if (orderInfo.value.mobile_upload == undefined) {
-      await getOrderInfo(false);
-    }
-
-    // let uploadLine = 1024 * 1024 * 50;
-    let uploadLine = 1024 * 1024 * 1;
-
-    let used_space = usedSize || 0;
-    if (uploadLine >= used_space) {
-      // let needSpace = getfilesize(uploadLine - used_space);
-      // showToast.text(`At least ${needSpace} of files need to be uploaded to submit Merkle`);
-      return false;
-    }
-    const d = {
-      orderId: order_id.value,
-      uuid: amb_uuid.value,
-      // uuid: 'fb08ae12-c5fb-4b24-88d9-746339b72fd0',
-      orderUuid: memo.value,
-      rpc: orderInfo.value.rpc,
-    };
-    calc_merkle(d).then((res) => {
-      console.log('calc_merkle-----', res);
-    });
-    // uploadRef.value.clearUploadQueue();
-  };
-
   const uploadComplete = () => {
     console.log('uploadComplete');
     // getFileList();
   };
 
-  const onProgress = ({ event, options, percentage }: any) => {
-    console.log('onProgress', event, options, percentage);
-    uploadProgress.value = percentage;
-    downloadProgress(event.loaded, event.total);
-  };
-
-  const onStart = ({ options }: any) => {
-    uploadProgress.value = 0;
-    uploadProgressIsShow.value = true;
-    uploadStatus.value = 'uploading';
-    console.log('onStart', options);
-  };
-
-  const onFailure = ({ responseText, option, fileItem }: any) => {
-    console.log('onFailure', '-----', responseText, '-----', option, '-----', fileItem);
-    delay(() => {
-      uploadProgressIsShow.value = false;
-    }, 3000);
-    uploadStatus.value = 'error';
-    uploadRef.value.clearUploadQueue();
-  };
-
-  const onChange = ({ fileList, event }: any) => {
-    console.log('--------------2');
-    console.log('onChange', fileList, event);
-  };
-
-  const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
-    xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
-    xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
-    xhr.send(options.formData);
-  };
   const getKey = () => {
     if (orderInfo.value.electronic_type == '1' || !isAvailableOrder.value) {
       return false;
@@ -1123,6 +897,38 @@
         query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain },
       });
     }
+  };
+
+  const createName1 = () => {
+    if (isNameLoading.value) {
+      return;
+    }
+    isNameLoading.value = true;
+
+    const d = {
+      orderId: route.query.order_id,
+    };
+    dm_order_name_set(d).then(async (res) => {
+      isNameLoading.value = false;
+      if (res.code == 200) {
+        showToast.success('Create successfully');
+        dialogVisible.value = false;
+        const obj = {
+          rpc: route.query.rpc,
+          peer_id: route.query.peer_id,
+          foggie_id: route.query.foggie_id,
+          signature: route.query.signature,
+          sign_timestamp: route.query.sign_timestamp,
+          order_id: route.query.order_id,
+          domain: route.query.domain,
+        };
+        await getOrderInfo1(obj);
+        getFileList();
+        getSummary();
+      } else {
+        showToast.fail('Create failed');
+      }
+    });
   };
 
   const createName = async () => {
@@ -1175,9 +981,18 @@
           if (order_result.code == 200) {
             if (!order_result?.data?.result) {
               bucketName.value = newBucketName.value;
-              getOrderInfo();
+              const obj = {
+                rpc: route.query.rpc,
+                peer_id: route.query.peer_id,
+                foggie_id: route.query.foggie_id,
+                signature: route.query.signature,
+                sign_timestamp: route.query.sign_timestamp,
+                order_id: route.query.order_id,
+                domain: route.query.domain,
+              };
+              getOrderInfo1(obj);
               getSummary();
-              initWebSocket();
+              // initWebSocket();
               isNameLoading.value = false;
               showToast.hide();
             }
@@ -1441,7 +1256,16 @@
       tableData.value = [];
     }
     if (!accessKeyId.value) {
-      await getOrderInfo();
+      const obj = {
+        rpc: route.query.rpc,
+        peer_id: route.query.peer_id,
+        foggie_id: route.query.foggie_id,
+        signature: route.query.signature,
+        sign_timestamp: route.query.sign_timestamp,
+        order_id: route.query.order_id,
+        domain: route.query.domain,
+      };
+      await getOrderInfo1(obj);
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
@@ -1595,7 +1419,16 @@
   };
   const refresh = async () => {
     detailShow.value = false;
-    await getOrderInfo();
+    const obj = {
+      rpc: route.query.rpc,
+      peer_id: route.query.peer_id,
+      foggie_id: route.query.foggie_id,
+      signature: route.query.signature,
+      sign_timestamp: route.query.sign_timestamp,
+      order_id: route.query.order_id,
+      domain: route.query.domain,
+    };
+    await getOrderInfo1(obj);
     getFileList();
     getSummary();
   };
@@ -1635,266 +1468,256 @@
       },
     });
   }
-  const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
-    console.log('doSocketFn', msg, tableData.value);
-    const action = msg.action;
-    const fileInfo = msg.fileInfo;
-    const keys = fileInfo.keys;
-    const bucket = fileInfo.bucket;
-    const cid = fileInfo.cid;
-    if (!action || !keys || keys.length === 0) {
-      refresh();
+  // const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
+  //   console.log('doSocketFn', msg, tableData.value);
+  //   const action = msg.action;
+  //   const fileInfo = msg.fileInfo;
+  //   const keys = fileInfo.keys;
+  //   const bucket = fileInfo.bucket;
+  //   const cid = fileInfo.cid;
+  //   if (!action || !keys || keys.length === 0) {
+  //     refresh();
+  //     return;
+  //   }
+
+  //   if (action === 'FILE_ADD') {
+  //     let index = keys[0].lastIndexOf('/');
+  //     let name = keys[0].substring(index + 1);
+  //     const date = transferGMTTime(fileInfo.lastModified * 1000);
+  //     const _cid = cid && cid[0] ? cid[0] : '';
+  //     const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
+  //     if (!target) {
+  //       const type = keys[0].substring(keys[0].lastIndexOf('.') + 1).toLowerCase();
+  //       const data = {
+  //         cid: _cid,
+  //         key: keys[0],
+  //       };
+  //       const imgData = await handleImg(data, type, false);
+  //       let category = 0;
+  //       if (
+  //         type === 'png' ||
+  //         type === 'bmp' ||
+  //         type === 'gif' ||
+  //         type === 'jpeg' ||
+  //         type === 'jpg' ||
+  //         type === 'svg' ||
+  //         type === 'heif' ||
+  //         type === 'webp' ||
+  //         type === 'ico'
+  //       ) {
+  //         category = 1;
+  //       } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
+  //         category = 2;
+  //       } else if (type === 'mp3') {
+  //         category = 3;
+  //       } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
+  //         category = 4;
+  //       }
+  //       const url = imgData.imgHttpLink;
+  //       const isSystemImg = imgData.isSystemImg;
+  //       const url_large = imgData.imgHttpLarge;
+
+  //       console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
+
+  //       let imageInfo = {
+  //         aperture: '',
+  //         datetime: '', //拍摄时间
+  //         exposuretime: '', //ev曝光量
+  //         exptime: '', //曝光时间
+  //         orientation: '', //方向
+  //         focallength: '', //焦距
+  //         Flash: false, //是否使用闪光灯
+  //         software: '', // 使用软件
+  //         iso: '', //iso
+  //         camerainfo: '', //手机厂商及其机型
+  //         gps: '', //经纬度
+  //         resolution: '', //像素
+  //       };
+  //       let isShowDetail = false;
+
+  //       if (fileInfo.image_infos && Object.keys(fileInfo.image_infos).length > 0) {
+  //         let key = Object.keys(fileInfo.image_infos)[0];
+  //         let imageObj = fileInfo.image_infos[key];
+  //         if (imageObj && imageObj.addition) {
+  //           isShowDetail = true;
+  //           imageInfo.aperture = imageObj.addition.aperture;
+  //           imageInfo.datetime = moment(imageObj.addition.date_time, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+  //           imageInfo.exposuretime = imageObj.addition?.exposure_time; //ev曝光量
+  //           imageInfo.exptime = imageObj.addition?.exp_time; //曝光时间
+  //           imageInfo.orientation = imageObj.addition?.orientation; //方向
+  //           imageInfo.focallength = imageObj.addition?.focal_length; //焦距
+  //           imageInfo.Flash = imageObj.addition?.flash || false; //是否使用闪光灯
+  //           imageInfo.software = imageObj.addition?.software; // 使用软件
+  //           imageInfo.iso = imageObj.addition?.iso.charCodeAt(0);
+  //           imageInfo.camerainfo = imageObj?.camera_info; //手机厂商及其机型
+  //           imageInfo.gps = imageObj?.gps; //经纬度
+  //           imageInfo.resolution = imageObj?.resolution; //像素
+  //         }
+  //         console.log('FILE_ADD-----------tableData', imageInfo);
+  //       }
+
+  //       let item = {
+  //         isDir: false,
+  //         checked: false,
+  //         name,
+  //         category,
+  //         fileType: 2,
+  //         fullName: keys[0],
+  //         key: keys[0],
+  //         idList: [
+  //           {
+  //             name: 'IPFS',
+  //             code: '',
+  //           },
+  //           {
+  //             name: 'CYFS',
+  //             code: '',
+  //           },
+  //         ],
+  //         date,
+  //         pubkey: _cid,
+  //         cid: _cid,
+  //         imgUrl: url,
+  //         imgUrlLarge: url_large,
+  //         share: {},
+  //         isSystemImg,
+  //         canShare: _cid ? true : false,
+  //         isPin: false,
+  //         isPinCyfs: false,
+  //         type,
+  //         isShowDetail,
+  //         imageInfo,
+  //       };
+  //       tableData.value.unshift(item);
+  //     }
+  //   } else if (action === 'FILE_PIN') {
+  //     const curName = fileInfo.keys[0];
+  //     const curDir = window.sessionStorage.getItem('currentFolder');
+  //     tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
+  //       if (el.cid === cid[0]) {
+  //         el.isPin = true;
+  //       } else if (
+  //         curName.charAt(curName.length - 1) === '/' &&
+  //         decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
+  //       ) {
+  //         el.isPin = true;
+  //         if (!el.cid && cid[0]) {
+  //           el.cid = cid[0];
+  //         }
+  //       }
+  //     });
+  //   } else if (action === 'FILE_CHANGE') {
+  //   } else if (action === 'FILE_DELETE') {
+  //     console.log('FILE_DELETE', keys);
+  //     // tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+  //     // imgArray.value = imgArray.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+  //   } else if (action === 'FILE_PINNING') {
+  //   }
+  // };
+  // const initWebSocket = async () => {
+  //   let param = {
+  //     order_uuid: route?.query?.uuid,
+  //   };
+  //   const signData = await get_order_sign(param);
+  //   socketDate.value = signData?.result?.data?.timestamp;
+  //   socketToken.value = signData?.result?.data?.sign;
+  //   console.log('initWebSocket-----------');
+  //   const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
+  //   fileSocket.value = new WebSocket(url);
+  //   fileSocket.value.onopen = () => {
+  //     const authMessage = {
+  //       action: 'AUTH',
+  //       userID: orderInfo.value.foggie_id,
+  //       token: socketToken.value,
+  //       date: socketDate.value,
+  //     };
+  //     fileSocket.value.send(JSON.stringify(authMessage));
+  //   };
+
+  //   fileSocket.value.onmessage = (event: { data: string }) => {
+  //     const message = JSON.parse(event.data);
+  //     const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
+  //     console.log('Received message from server:', message, currentFolderStr);
+  //     const uploadFileName = window.sessionStorage.getItem('uploadFileName');
+  //     let fileInfo = message.fileInfo;
+  //     let dirArr = fileInfo.keys;
+  //     const updateBy = fileInfo.updateBy;
+  //     let dirFile = '';
+  //     let dirFileName = '';
+  //     if (dirArr && dirArr.length > 0) {
+  //       let index = dirArr[0].lastIndexOf('/');
+  //       if (index > -1) {
+  //         dirFile = dirArr[0].substring(0, index + 1);
+  //         dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
+  //       } else {
+  //         dirFile = '';
+  //         dirFileName = dirArr[0];
+  //       }
+  //     }
+
+  //     console.log(
+  //       '888888',
+  //       dirArr,
+  //       dirFile,
+  //       currentFolderStr,
+  //       dirFile === decodeURIComponent(currentFolderStr),
+  //       dirFileName !== uploadFileName,
+  //     );
+  //     if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
+  //       if (detailShow.value) {
+  //         setTimeout(() => {
+  //           initWebSocket();
+  //         }, 3000);
+  //       } else {
+  //         doSocketFn(message);
+  //       }
+  //     }
+  //   };
+
+  //   fileSocket.value.onclose = (event: any) => {
+  //     console.log('WebSocket connection closed:', event, fileSocket.value);
+  //     if (fileSocket.value) {
+  //       console.log('WebSocket connection again:');
+  //       initWebSocket();
+  //     }
+  //   };
+  //   fileSocket.value.onerror = (event: any) => {
+  //     console.error('WebSocket connection error:', event);
+  //   };
+  // };
+  onMounted(async () => {
+    if (!route.query.domain) {
+      dialogVisible.value = true;
       return;
     }
 
-    if (action === 'FILE_ADD') {
-      let index = keys[0].lastIndexOf('/');
-      let name = keys[0].substring(index + 1);
-      const date = transferGMTTime(fileInfo.lastModified * 1000);
-      const _cid = cid && cid[0] ? cid[0] : '';
-      const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
-      if (!target) {
-        const type = keys[0].substring(keys[0].lastIndexOf('.') + 1).toLowerCase();
-        const data = {
-          cid: _cid,
-          key: keys[0],
-        };
-        const imgData = await handleImg(data, type, false);
-        let category = 0;
-        if (
-          type === 'png' ||
-          type === 'bmp' ||
-          type === 'gif' ||
-          type === 'jpeg' ||
-          type === 'jpg' ||
-          type === 'svg' ||
-          type === 'heif' ||
-          type === 'webp' ||
-          type === 'ico'
-        ) {
-          category = 1;
-        } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
-          category = 2;
-        } else if (type === 'mp3') {
-          category = 3;
-        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
-          category = 4;
-        }
-        const url = imgData.imgHttpLink;
-        const isSystemImg = imgData.isSystemImg;
-        const url_large = imgData.imgHttpLarge;
+    console.log('bucketName.value=====111', bucketName.value);
 
-        console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
-
-        let imageInfo = {
-          aperture: '',
-          datetime: '', //拍摄时间
-          exposuretime: '', //ev曝光量
-          exptime: '', //曝光时间
-          orientation: '', //方向
-          focallength: '', //焦距
-          Flash: false, //是否使用闪光灯
-          software: '', // 使用软件
-          iso: '', //iso
-          camerainfo: '', //手机厂商及其机型
-          gps: '', //经纬度
-          resolution: '', //像素
-        };
-        let isShowDetail = false;
-
-        if (fileInfo.image_infos && Object.keys(fileInfo.image_infos).length > 0) {
-          let key = Object.keys(fileInfo.image_infos)[0];
-          let imageObj = fileInfo.image_infos[key];
-          if (imageObj && imageObj.addition) {
-            isShowDetail = true;
-            imageInfo.aperture = imageObj.addition.aperture;
-            imageInfo.datetime = moment(imageObj.addition.date_time, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
-            imageInfo.exposuretime = imageObj.addition?.exposure_time; //ev曝光量
-            imageInfo.exptime = imageObj.addition?.exp_time; //曝光时间
-            imageInfo.orientation = imageObj.addition?.orientation; //方向
-            imageInfo.focallength = imageObj.addition?.focal_length; //焦距
-            imageInfo.Flash = imageObj.addition?.flash || false; //是否使用闪光灯
-            imageInfo.software = imageObj.addition?.software; // 使用软件
-            imageInfo.iso = imageObj.addition?.iso.charCodeAt(0);
-            imageInfo.camerainfo = imageObj?.camera_info; //手机厂商及其机型
-            imageInfo.gps = imageObj?.gps; //经纬度
-            imageInfo.resolution = imageObj?.resolution; //像素
-          }
-          console.log('FILE_ADD-----------tableData', imageInfo);
-        }
-
-        let item = {
-          isDir: false,
-          checked: false,
-          name,
-          category,
-          fileType: 2,
-          fullName: keys[0],
-          key: keys[0],
-          idList: [
-            {
-              name: 'IPFS',
-              code: '',
-            },
-            {
-              name: 'CYFS',
-              code: '',
-            },
-          ],
-          date,
-          pubkey: _cid,
-          cid: _cid,
-          imgUrl: url,
-          imgUrlLarge: url_large,
-          share: {},
-          isSystemImg,
-          canShare: _cid ? true : false,
-          isPin: false,
-          isPinCyfs: false,
-          type,
-          isShowDetail,
-          imageInfo,
-        };
-        tableData.value.unshift(item);
-      }
-    } else if (action === 'FILE_PIN') {
-      const curName = fileInfo.keys[0];
-      const curDir = window.sessionStorage.getItem('currentFolder');
-      tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
-        if (el.cid === cid[0]) {
-          el.isPin = true;
-        } else if (
-          curName.charAt(curName.length - 1) === '/' &&
-          decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
-        ) {
-          el.isPin = true;
-          if (!el.cid && cid[0]) {
-            el.cid = cid[0];
-          }
-        }
-      });
-    } else if (action === 'FILE_CHANGE') {
-    } else if (action === 'FILE_DELETE') {
-      console.log('FILE_DELETE', keys);
-      // tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
-      // imgArray.value = imgArray.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
-    } else if (action === 'FILE_PINNING') {
-    }
-  };
-  const initWebSocket = async () => {
-    let param = {
-      order_uuid: route?.query?.uuid,
+    const obj = {
+      rpc: route.query.rpc,
+      peer_id: route.query.peer_id,
+      foggie_id: route.query.foggie_id,
+      signature: route.query.signature,
+      sign_timestamp: route.query.sign_timestamp,
+      order_id: route.query.order_id,
+      domain: route.query.domain,
     };
-    const signData = await get_order_sign(param);
-    socketDate.value = signData?.result?.data?.timestamp;
-    socketToken.value = signData?.result?.data?.sign;
-    console.log('initWebSocket-----------');
-    const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
-    fileSocket.value = new WebSocket(url);
-    fileSocket.value.onopen = () => {
-      const authMessage = {
-        action: 'AUTH',
-        userID: orderInfo.value.foggie_id,
-        token: socketToken.value,
-        date: socketDate.value,
-      };
-      fileSocket.value.send(JSON.stringify(authMessage));
-    };
+    await getOrderInfo1(obj);
 
-    fileSocket.value.onmessage = (event: { data: string }) => {
-      const message = JSON.parse(event.data);
-      const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
-      console.log('Received message from server:', message, currentFolderStr);
-      const uploadFileName = window.sessionStorage.getItem('uploadFileName');
-      let fileInfo = message.fileInfo;
-      let dirArr = fileInfo.keys;
-      const updateBy = fileInfo.updateBy;
-      let dirFile = '';
-      let dirFileName = '';
-      if (dirArr && dirArr.length > 0) {
-        let index = dirArr[0].lastIndexOf('/');
-        if (index > -1) {
-          dirFile = dirArr[0].substring(0, index + 1);
-          dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
-        } else {
-          dirFile = '';
-          dirFileName = dirArr[0];
-        }
-      }
-
-      console.log(
-        '888888',
-        dirArr,
-        dirFile,
-        currentFolderStr,
-        dirFile === decodeURIComponent(currentFolderStr),
-        dirFileName !== uploadFileName,
-      );
-      if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
-        if (detailShow.value) {
-          setTimeout(() => {
-            initWebSocket();
-          }, 3000);
-        } else {
-          doSocketFn(message);
-        }
-      }
-    };
-
-    fileSocket.value.onclose = (event: any) => {
-      console.log('WebSocket connection closed:', event, fileSocket.value);
-      if (fileSocket.value) {
-        console.log('WebSocket connection again:');
-        initWebSocket();
-      }
-    };
-    fileSocket.value.onerror = (event: any) => {
-      console.error('WebSocket connection error:', event);
-    };
-  };
-  onMounted(async () => {
-    await getOrderInfo();
-
-    // if (orderInfo.value.electronic_type == '0') {
+    console.log('bucketName.value=====', bucketName.value);
     if (bucketName.value) {
       getFileList();
       getSummary();
-      initWebSocket();
+      // initWebSocket();
     } else {
       dialogVisible.value = true;
-      setDefaultName();
+      // setDefaultName();
     }
     syncChallenge();
-
-    // } else {
-    //   getFileList();
-    //   getSummary();
-    // }
   });
-  // onDeactivated(() => {
-  //   if (merkleTimeOut) clearTimeout(merkleTimeOut);
-  // });
   onUnmounted(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });
-  // watch(
-  //   () => route.query,
-  //   async () => {
-  //     dialogVisible.value = false;
-  //     await getOrderInfo();
-  //     // if (orderInfo.value.electronic_type == '0') {
-  //     if (bucketName.value) {
-  //       getFileList();
-  //     } else {
-  //       dialogVisible.value = true;
-  //       setDefaultName();
-  //     }
-  //     // } else {
-  //     //   getFileList();
-  //     // }
-  //   },
-  //   { deep: true },
-  // );
   provide('getSummary', getSummary);
   provide('isMobileOrder', isMobileOrder);
 </script>
@@ -2638,7 +2461,8 @@
     }
   }
   .detail_box_toolbox {
-    display: flex;
+    // display: flex;
+    display: none;
   }
 
   .creat-name {

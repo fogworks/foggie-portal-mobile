@@ -44,7 +44,7 @@
       <div class="detail_box" v-if="!loadingAnmation">
         <div class="today_file">
           <span class="title">Recent Files</span>
-          <!-- <span class="see_all" @click="gotoOrderDetail(cloudQuery)">See All ></span> -->
+          <span class="see_all" @click="gotoOrderDetail(cloudQuery)">See All ></span>
         </div>
         <template v-if="tableData.length">
           <!-- imgData -->
@@ -151,17 +151,52 @@
         </nut-skeleton> -->
       </div>
       <uploader
-        v-if="isMobileOrder && isAvailableOrder"
+        v-if="isMobileOrder && isAvailableOrder && cloudQuery.domain"
         :getSummary="getSummary"
         :isMobileOrder="isMobileOrder"
         :bucketName="bucketName"
         :accessKeyId="accessKeyId"
         :secretAccessKey="secretAccessKey"
-        :orderInfo="orderInfo"
+        :orderInfo="cloudQuery"
         @uploadComplete="uploadComplete"
       ></uploader>
     </div>
   </nut-pull-refresh>
+  <!-- <Teleport to="body">
+        <nut-dialog
+          v-model:visible="dialogVisible"
+          title="Bucket Name"
+          :close-on-click-overlay="false"
+          :show-cancel="false"
+          :show-confirm="false"
+          custom-class="CustomName BucketName"
+          overlayClass="CustomOverlay"
+        >
+          <template #header>
+            <span class="icon" style="margin-right: 5px">
+              <IconBucket color="#000"></IconBucket>
+            </span>
+            Create a Bucket
+          </template>
+
+          <p
+            style="
+              margin-top: 10px;
+              margin-bottom: 5px;
+              font-weight: 600;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              color: #000;
+            "
+          >
+            <span>Bucket Name</span> <span>Required</span>
+          </p>
+          <template #footer>
+            <nut-button type="primary" @click="createName" :loading="isNameLoading">Confirm</nut-button>
+          </template>
+        </nut-dialog>
+      </Teleport> -->
 </template>
 
 <script setup lang="ts">
@@ -185,7 +220,7 @@
   import useOrderInfo from '@/views/list/details/useOrderInfo.js';
   import useShare from '@/views/list/details/useShare.js';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
-  import { valid_upload, get_order_sign } from '@/api/index';
+  import { valid_upload, get_order_sign, dm_order_name_set } from '@/api/index';
 
   import '@nutui/nutui/dist/packages/toast/style';
   import useDelete from '@/views/list/details/useDelete.js';
@@ -333,6 +368,12 @@
   amb_uuid.value = cloudQuery.value.amb_uuid;
   income.value = cloudQuery.value.income;
   let merkleTimeOut;
+  const dialogVisible = ref(false);
+  const isNameLoading = ref(false);
+
+  const createName = ()=> {
+
+  }
   watch(
     tableData,
     (val) => {
@@ -356,23 +397,37 @@
       router.push({
         name: 'listDetails',
         query: {
-          id: item.order_id,
-          uuid: item.uuid,
-          amb_uuid: item.amb_uuid,
+          // id: item.order_id,
+          // uuid: item.uuid,
+          // amb_uuid: item.amb_uuid,
+          // domain: item.domain,
           domain: item.domain,
+          rpc: item.rpc,
+          peer_id: item.peer_id,
+          foggie_id: item.foggie_id,
+          signature: item.signature,
+          sign_timestamp: item.sign_timestamp,
+          order_id: item.order_id,
         },
       });
-    } else {
+    } else{
       router.push({
         name: 'FileList',
         query: {
-          id: item.order_id,
-          uuid: item.uuid,
-          amb_uuid: item.amb_uuid,
+          // id: item.order_id,
+          // uuid: item.uuid,
+          // amb_uuid: item.amb_uuid,
           domain: item.domain,
+          rpc: item.rpc,
+          peer_id: item.peer_id,
+          foggie_id: item.foggie_id,
+          signature: item.signature,
+          sign_timestamp: item.sign_timestamp,
+          order_id: item.order_id,
         },
       });
     }
+    
   };
   const uploadComplete = () => {
     console.log('uploadComplete');
@@ -447,6 +502,7 @@
 
 
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
+    console.log('handleImg====122', item, type, isDir);
     let imgHttpLink = '';
     let imgHttpLarge = '';
     type = type.toLowerCase();
@@ -454,10 +510,11 @@
     let cid = item.cid;
     let key = item.key;
 
-    let ip = orderInfo.value.rpc.split(':')[0];
-    let port = orderInfo.value.rpc.split(':')[1];
-    let Id = orderInfo.value.foggie_id;
-    let peerId = orderInfo.value.peer_id;
+    let ip = cloudQuery.value.rpc.split(':')[0];
+    let port = cloudQuery.value.rpc.split(':')[1];
+    let Id = cloudQuery.value.foggie_id;
+    let peerId = cloudQuery.value.peer_id;
+
     if (
       type === 'png' ||
       type === 'bmp' ||
@@ -477,7 +534,6 @@
         item.key,
         type === 'ico' || type === 'svg' ? false : true,
       );
-      // console.log('--------imgHttpLarge', imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
@@ -498,14 +554,9 @@
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   const getFileList = (scroll: string = '', prefix: any[] = [], reset = true)=> {
-    console.log('changeTab1111');
 
     // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
-    let ip = `https://${cloudQuery.value.rpc.split(':')[0]}:7007`;
-    console.log('ip:', ip);
-    console.log('header.value:', header.value);
-    console.log('metadata.value:', metadata.value);
-    console.log('metadata.value:', JSON.stringify(metadata.value));
+    let ip = `https://${cloudQuery.value.domain}.${poolUrl}:7007`;
 
     server = new grpcService.default.ServiceClient(ip, null, null);
     let listObject = new Prox.default.ProxListObjectsRequest();
@@ -541,6 +592,7 @@
         },
       ) => {
         if (res) {
+          console.log('res----list', res);
           const transferData = {
             commonPrefixes: res.getCommonprefixesList(),
             content: res
@@ -640,10 +692,156 @@
     isRefresh.value = false;
   };
 
+  const initRemoteData = async (
+    data: {
+      commonPrefixes?: any;
+      content: any;
+      continuationToken?: any;
+      isTruncated?: any;
+      maxKeys?: any;
+      nextMarker?: any;
+      prefix?: any;
+      prefixpins?: any;
+      err?: any;
+    },
+    reset = false,
+    category: number,
+  ) => {
+    if (!data) {
+      tableLoading.value = false;
+      return;
+    }
+    if (data.err) {
+      showToast.fail('Failed to  retrieve data. Please try again later');
+    }
+    let dir = [].join('/');
+    if (reset) {
+      tableData.value = [];
+    }
+    if (!accessKeyId.value) {
+      await getOrderInfo(true, cloudQuery.value.uuid);
+    }
+    for (let i = 0; i < data.commonPrefixes?.length; i++) {
+      let name = data.commonPrefixes[i];
+      if (data.prefix) {
+        // name = name.split(data.prefix)[1];
+        name = name.split('/')[name.split('/').length - 2] + '/';
+      }
+
+      let cur_cid = '';
+      for (let i = 0; i < data.prefixpins?.length; i++) {
+        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
+          cur_cid = data.prefixpins[i].cid;
+        }
+      }
+
+      let item = {
+        isDir: true,
+        checked: false,
+        name,
+        category: 0,
+        fileType: 1,
+
+        fullName: data.commonPrefixes[i],
+        key: data.commonPrefixes[i],
+        idList: [
+          {
+            name: 'IPFS',
+            code: cur_cid,
+          },
+          {
+            name: 'CYFS',
+            code: '',
+          },
+        ],
+        date: '-',
+        size: '',
+        status: '-',
+        type: 'application/x-directory',
+        file_id: '',
+        pubkey: '',
+        cid: cur_cid,
+        imgUrl: '',
+        imgUrlLarge: '',
+        share: {},
+        isSystemImg: false,
+        canShare: false,
+      };
+
+      tableData.value.push(item);
+    }
+
+    for (let j = 0; j < data?.content?.length; j++) {
+      let date = transferUTCTime(data.content[j].lastModified);
+      let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
+      const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
+      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+      let cid = data.content[j].cid;
+      let file_id = data.content[j].fileId;
+
+      let name = data.content[j].key;
+      if (data.prefix) {
+        name = name.split(data.prefix)[1];
+      }
+      if (name.indexOf('/') > 0 && name[name.length - 1] != '/') {
+        name = name.split('/')[name.split('/').length - 1];
+      } else if (name.indexOf('/') > 0) {
+        name = name.split('/')[name.split('/').length - 2];
+      }
+      let isPersistent = data.content[j].isPersistent;
+      let item = {
+        imageInfo: data.content[j].imageInfo,
+        isShowDetail: data.content[j].isShowDetail,
+        isDir: isDir,
+        checked: false,
+        name,
+        category: data.content[j].category,
+        fileType: 2,
+        fullName: data.content[j].key,
+        key: data.content[j].key,
+        idList: [
+          {
+            name: 'IPFS',
+            code: data.content[j].isPin ? cid : '',
+          },
+          {
+            name: 'CYFS',
+            code: data.content[j].isPinCyfs ? file_id : '',
+          },
+        ],
+        date,
+        size: getfilesize(data.content[j].size),
+        originalSize: data.content[j].size,
+        status: cid || file_id ? 'Published' : '-',
+        type: data.content[j].contentType,
+        file_id: file_id,
+        pubkey: cid,
+        cid,
+        imgUrl: data.content[j].thumb && data.content[j].thumb != 'b' ? url : '',
+        imgUrlLarge: url_large,
+        share: {},
+        isSystemImg,
+        canShare: cid ? true : false,
+        isPersistent,
+        isPin: data.content[j].isPin,
+        isPinCyfs: data.content[j].isPinCyfs,
+      };
+
+      tableData.value.push(item);
+    }
+    tableLoading.value = false;
+  };
+
   onMounted(async ()=>{
     
-    await getOrderInfo1(cloudQuery.value);
-    getFileList();
+    
+    if (!cloudQuery.value.domain) {
+      dialogVisible.value = true;
+    } else {
+      await getOrderInfo1(cloudQuery.value);
+      getFileList();
+    }
+    
   })
 
 

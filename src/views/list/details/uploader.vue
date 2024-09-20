@@ -23,7 +23,6 @@
       <nut-button type="info" class="upload_btn" size="small">
         <IconPlus></IconPlus>
 
-        <!-- <img src="@/assets/newIcon/upload.png" alt="" srcset="" /> -->
       </nut-button>
     </nut-uploader>
     <nut-button
@@ -82,32 +81,19 @@
     isMobileOrder?: boolean;
     getSummary?: any;
   }
-  // const getSummary = inject('getSummary');
   const props = defineProps<Props>();
   const { getSummary, bucketName, prefix, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
 
   const uploadList = ref<any[]>([]);
 
   const uploaderList = ref<any[]>([]);
-  // const props = defineProps({
-  //   bucketName: [String],
-  //   accessKeyId: [String],
-  //   secretAccessKey: [String],
-  //   orderInfo: [Object],
-  // });
-
-  // const { bucketName, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
-
-  // const getOrderInfo = inject('getOrderInfo');
 
   const route = useRoute();
 
-  // const successStatus = ref<number>(201);
   const successStatus = ref<number>(204); //bucket上传是204 maxio是201
 
   const uploadRef = ref<any>(null);
   const uploadUri = ref<string>('');
-  // const prefix = ref<string>('');
   const isDisabled = ref<boolean>(false);
   const formData = ref<any>({});
 
@@ -116,26 +102,27 @@
   const amb_uuid = ref<any>('');
 
   let merkleTimeOut = null;
-  const getMerkleState = (timeout = true) => {
-    const d = {
-      orderId: order_id.value,
-    };
-    return valid_upload(d).then((res) => {
-      if (res?.data) {
-        isDisabled.value = false;
-        clearTimeout(merkleTimeOut);
-      } else {
-        if (timeout) {
-          merkleTimeOut = setTimeout(() => {
-            getMerkleState(timeout);
-          }, 30000);
-        }
-        isDisabled.value = true;
-      }
-    });
-  };
+  // const getMerkleState = (timeout = true) => {
+  //   const d = {
+  //     orderId: order_id.value,
+  //   };
+  //   return valid_upload(d).then((res) => {
+  //     if (res?.data) {
+  //       isDisabled.value = false;
+  //       clearTimeout(merkleTimeOut);
+  //     } else {
+  //       if (timeout) {
+  //         merkleTimeOut = setTimeout(() => {
+  //           getMerkleState(timeout);
+  //         }, 30000);
+  //       }
+  //       isDisabled.value = true;
+  //     }
+  //   });
+  // };
   const beforeupload = async (file: any) => {
     return new Promise(async (resolve, reject) => {
+      console.log('beforeupload-----', props);
       const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
       if (!bucketName || !accessKeyId || !secretAccessKey) {
         showToast.fail('The data is abnormal, please refresh the page and try again.');
@@ -156,56 +143,27 @@
           // 使用新文件名创建一个新的文件对象
           fileCopy = new File([blob], newFileName, { type: fileCopy.type });
         }
-
-        // uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
-
-        // const policy = {
-        //   expiration: new Date(Date.now() + 3600 * 1000),
-        //   conditions: [
-        //     { bucket: bucketName },
-        //     { acl: 'public-read' },
-        //     ['starts-with', fileCopy, prefixStr],
-        //     ['starts-with', '$Content-Type', ''],
-        //   ],
-        // };
-        // const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
-
-        // let hmac = HmacSHA1(policyBase64, secretAccessKey ?? '');
-        // const signature = enc.Base64.stringify(hmac);
-        // const md5Hash = await calculateMD5(fileCopy);
-        // const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-
-        // formData.value = {
-        //   Key: encodeURIComponent(prefixStr + fileCopy.name),
-        //   Policy: policyBase64,
-        //   Signature: signature,
-        //   Awsaccesskeyid: accessKeyId,
-        //   category: getType(fileCopy.name),
-        //   'Content-Md5': md5Hash,
-        //   'App-Type': appType,
-        // };
         uploadList.value.push(fileCopy);
         fileArr.push(fileCopy);
       }
-      console.log(orderInfo.value.orderId, 'orderinfo');
-      console.log(order_id.value, 'orderinfo');
+      // console.log(orderInfo.value.orderId, 'orderinfo');
+      // console.log(order_id.value, 'orderinfo');
 
-      const d = { orderId: order_id.value };
-      let merkleRes = await valid_upload(d);
-      if (merkleRes?.data) {
-        isDisabled.value = false;
-      } else {
-        isDisabled.value = true;
-        showToast.warn(merkleRes.msg || 'Merkle is being built, not allowed to upload file.');
-        if (!merkleTimeOut) {
-          merkleTimeOut = setTimeout(() => {
-            getMerkleState(true);
-          }, 30000);
-        }
-        return reject();
-      }
+      // const d = { orderId: order_id.value };
+      // let merkleRes = await valid_upload(d);
+      // if (merkleRes?.data) {
+      //   isDisabled.value = false;
+      // } else {
+      //   isDisabled.value = true;
+      //   showToast.warn(merkleRes.msg || 'Merkle is being built, not allowed to upload file.');
+      //   if (!merkleTimeOut) {
+      //     merkleTimeOut = setTimeout(() => {
+      //       getMerkleState(true);
+      //     }, 30000);
+      //   }
+      //   return reject();
+      // }
 
-      // uploadUri.value = `http://127.0.0.1:9009/o/`;
       uploadUri.value = `https://${bucketName}.${poolUrl}:6008/o/`;
       console.log('uploadList------', uploadList.value);
 
@@ -276,26 +234,25 @@
 
       uploadStatus.value = 'success';
 
-      // emits('getFileList');
 
-      let used_space = await getSummary.value();
-      if (!amb_uuid.value) {
-        let res = await get_unique_order({ order_uuid: route?.query?.uuid });
-        amb_uuid.value = res?.result?.data?.amb_uuid;
-      }
-      if (used_space) {
-        const d = {
-          orderId: order_id.value,
-          uuid: amb_uuid.value,
-          orderUuid: memo.value,
-          rpc: props.orderInfo.value.rpc,
-          fileSize: option?.sourceFile?.size,
-          usedSpace: used_space,
-        };
-        await save_upload(d).then((res) => {
-          console.log('save_upload-----', res);
-        });
-      }
+      // let used_space = await getSummary.value();
+      // if (!amb_uuid.value) {
+      //   let res = await get_unique_order({ order_uuid: route?.query?.uuid });
+      //   amb_uuid.value = res?.result?.data?.amb_uuid;
+      // }
+      // if (used_space) {
+      //   const d = {
+      //     orderId: order_id.value,
+      //     uuid: amb_uuid.value,
+      //     orderUuid: memo.value,
+      //     rpc: props.orderInfo.value.rpc,
+      //     fileSize: option?.sourceFile?.size,
+      //     usedSpace: used_space,
+      //   };
+      //   await save_upload(d).then((res) => {
+      //     console.log('save_upload-----', res);
+      //   });
+      // }
 
       delay(() => {
         uploadProgressIsShow.value = false;
@@ -308,7 +265,7 @@
   };
 
   const onProgress = ({ event, option, percentage }: any) => {
-    console.log('onProgress', option.sourceFile.name, percentage);
+    console.log('onProgress=====', option, option.sourceFile.name, percentage);
     uploadProgress.value = percentage;
     downloadProgress(event.loaded, event.total);
   };
@@ -317,14 +274,14 @@
     uploadProgress.value = 0;
     uploadProgressIsShow.value = true;
     uploadStatus.value = 'uploading';
-    console.log('onStart', option);
+    console.log('onStart======', option);
     // isDisabled.value = true;
   };
 
   const onFailure = ({ responseText, option, fileItem }: any) => {
-    debugger;
+    // debugger;
     if (isUploadComplete.value) {
-      console.log(responseText, option, fileItem);
+      console.log('faile------',responseText, option, fileItem);
 
       showToast.fail('Upload failed, please try again later');
       delay(() => {
@@ -357,6 +314,7 @@
         isUploadComplete.value = true;
       }
       try {
+        
         let response = await sendRequest(xhrArray.value[i].xhr, xhrArray.value[i].options);
         console.log('Response:', response);
       } catch (error) {
@@ -415,18 +373,15 @@
       }
       _form.append('file', options.sourceFile);
 
-      // _form.append("Id", "baeqaemjq");
-      // _form.append("PeerId", "12D3KooWQcfuGqvwGEBeKEjYZXm2vBxLUmcBfgqJNwXnBCyiHugU");
-      // _form.append("Token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTEwMTc4MzksInVzZXJuYW1lIjpudWxsLCJlbWFpbCI6Im5uZDFAeXlkLmNvbSIsImRldmljZV9pZCI6IjY2MDAzNTAwLWI1MWUtMTFlZS1hYzRhLWJmZjYzMTQzMGMwMCIsImhvc3RfaWQiOiIiLCJwZWVyX2lkIjoiIiwiYWNjb3VudCI6IiIsImF1dGhvcml6ZWQiOnRydWV9.8ldxfyt8KfBbcpYBQL1y6Rjue4goDOde550ZrwR8aRA');
-      // _form.append("Key", options.headers.Key);
-      // _form.append("Success_action_status", "201");
-      // _form.append("file", options.sourceFile, options.sourceFile.name);
-
       options.formData = _form;
       xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
+      // xhr.setRequestHeader('x-amz-meta-file-size', options.sourceFile.size.toString());
       xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
 
+console.log('-----------123', options.sourceFile.size.toString(), options.sourceFile.type);
+console.log(xhr.setRequestHeader);
       xhr.onload = function () {
+
         if (this.status >= 200 && this.status < 300) {
           resolve(xhr.response);
         } else {
@@ -436,6 +391,7 @@
       xhr.onerror = function () {
         reject();
       };
+
       xhr.send(options.formData);
     });
   };
@@ -452,24 +408,16 @@
     isDisabled,
   });
   onMounted(() => {
-    console.log(11111111111111111);
-    console.log(orderInfo.value, 'orderInfo.value.orderId');
+    // console.log(11111111111111111);
+    // console.log(orderInfo.value, 'orderInfo.value.orderId');
 
-    memo.value = route.query.uuid || orderInfo.value.value.uuid;
-    order_id.value = route.query.id || orderInfo.value.value.orderId;
-    amb_uuid.value = route.query.amb_uuid || orderInfo.value.value.amb_uuid;
-    console.log(order_id.value, 'order_id');
-
-    // document.querySelector('.nut-uploader__input')?.addEventListener('click', () => {
-    //   showNotify.primary('Sensitive information is recommended to be encrypted and uploaded', {
-    //     'class-name': 'notify_primary',
-    //     position: 'bottom',
-    //     duration: 5000,
-    //   });
-    // });
+    // memo.value = route.query.uuid || orderInfo.value.value.uuid;
+    // order_id.value = route.query.id || orderInfo.value.value.orderId;
+    // amb_uuid.value = route.query.amb_uuid || orderInfo.value.value.amb_uuid;
+    // console.log(order_id.value, 'order_id');
   });
   onUnmounted(() => {
-    clearTimeout(merkleTimeOut);
+    // clearTimeout(merkleTimeOut);
   });
 </script>
 

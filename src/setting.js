@@ -33,7 +33,8 @@ export const minSize = 5;
 
 export const shareUrl = 'https://share.fogworks.io';
 export const s3Url = 's3.vofocorp.com';
-export const poolUrl = 'us1.vofocorp.com';
+// export const poolUrl = 'us1.vofocorp.com';
+export const poolUrl = 'us.u2i.net';
 export const ambAddress = 'https://ambadmin.fogworks.io';
 export const redirectUrl = 'https://m.fogworks.io/';
 export const dappUrl = 'https://dapp.fogworks.io/';

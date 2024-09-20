@@ -483,5 +483,12 @@ export function dm_order_buy(data: any) {
     });
 }
 
-
+export function dm_order_name_set(data: any) {
+    let url = `/dm/order/name_set`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
 

@@ -27,17 +27,25 @@ export default function useOrderInfo() {
   const orderInfo2 = computed(() => getOrderInfoList.value(orderId));
   let headerProx = new Prox.default.ProxHeader();
   // let header = new Prox.default.ProxHeader();
+  // const header = computed(() => {
+  //   let headerProx2 = new Prox.default.ProxHeader();
+  //   headerProx2.setPeerid(orderInfo2.value?.header?.array?.[0]);
+  //   headerProx2.setId(orderInfo2.value?.header?.array?.[1]);
+  //   headerProx2.setToken(orderInfo2.value?.header?.array?.[2]);
+  //   headerProx2.setApptype(orderInfo2.value?.header?.array?.[3]);
+  //   return headerProx2;
+  // });
   const header = computed(() => {
     let headerProx2 = new Prox.default.ProxHeader();
-    headerProx2.setPeerid(orderInfo2.value?.header?.array?.[0]);
-    headerProx2.setId(orderInfo2.value?.header?.array?.[1]);
-    headerProx2.setToken(orderInfo2.value?.header?.array?.[2]);
-    headerProx2.setApptype(orderInfo2.value?.header?.array?.[3]);
+    headerProx2.setPeerid(orderSignInfo.value?.header?.array?.[0]);
+    headerProx2.setId(orderSignInfo.value?.header?.array?.[1]);
+    headerProx2.setToken(orderSignInfo.value?.header?.array?.[2]);
+    headerProx2.setApptype(orderSignInfo.value?.header?.array?.[3]);
     return headerProx2;
   });
-  const secretAccessKey = computed(() => orderInfo2.value?.secretAccessKey);
-  const accessKeyId = computed(() => orderInfo2.value?.accessKeyId);
-  const metadata = computed(() => orderInfo2.value?.metadata);
+  const secretAccessKey = computed(() => orderSignInfo.value?.secretAccessKey);
+  const accessKeyId = computed(() => orderSignInfo.value?.accessKeyId);
+  const metadata = computed(() => orderSignInfo.value?.metadata);
   const bucketName = ref('');
   // const accessKeyId = ref('');
   // const secretAccessKey = ref('');
@@ -225,6 +233,9 @@ export default function useOrderInfo() {
     let cur_token = obj.signature;
     let date = obj.sign_timestamp;
     let order_id = obj.order_id;
+    let domain = obj.domain;
+
+    bucketName.value = domain;
     orderId.value = obj.order_id;
     try {
 
@@ -245,11 +256,15 @@ export default function useOrderInfo() {
     }
    
     return new Promise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`https://${ip}:7007`, null, null);
+      // let server = new grpcService.default.ServiceClient(`https://${ip}:7007`, null, null);
+      let server = new grpcService.default.ServiceClient(`https://${domain}.${poolUrl}:7007`, null, null);
+
       let request = new Prox.default.ProxGetCredRequest();
-      request.setHeader(new Prox.default.ProxHeader());
-      console.log('metadata==11:', request, metadata.value);
-      server.listCreds(request, metadata.value, async (err, res) => {
+      request.setHeader(orderSignInfo.value.header);
+
+      console.log('metadata==22:', orderSignInfo.value.metadata);
+      console.log('metadata==11:', request, orderSignInfo.value.header);
+      server.listCreds(request, orderSignInfo.value.metadata, async (err, res) => {
         if (err) {
           isError.value = true;
           console.log('err------111222:', err);
