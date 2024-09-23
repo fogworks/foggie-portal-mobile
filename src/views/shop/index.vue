@@ -21,7 +21,7 @@
           <nut-form-item label="Custom Cycle">
             <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
           </nut-form-item>
-          <nut-form-item label="Space(GB) Min: 100 GB">
+          <nut-form-item :label="maxSpaceText">
             <nut-input-number
               @focus="buyDisabled = true"
               @blur="buyDisabled = false"
@@ -53,7 +53,7 @@
         <span class="p_label">Space: </span><span>{{ shopForm.quantity }} GB</span></p
       >
       <p>
-        <span class="p_label">Price:</span><span>{{ calc_price.total }}</span>
+        <span class="p_label">Price:</span><span>{{ calc_price.total }} DMCX</span>
       </p>
       <p @click="copySecret(address)">
         <span class="p_label">Payment account: </span
@@ -102,7 +102,7 @@
 
   const state = reactive({
     shopForm: {
-      quantity: 100 as number,
+      quantity: 1 as number,
       week: 24,
       floating_ratio: 5,
     },
@@ -139,37 +139,34 @@
     });
   }
 
-  import tokenABI from "./GWTToken.json";
-  const tokenAddress = "0x848e56Ad13B728a668Af89459851EfD8a89C9F58";
-  import Web3 from "web3";
+  import tokenABI from './GWTToken.json';
+  const tokenAddress = '0x848e56Ad13B728a668Af89459851EfD8a89C9F58';
+  import Web3 from 'web3';
 
-
-  const submit1 = async() => {
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const web3 = new Web3(window.ethereum);
-      const accounts = await web3.eth.getAccounts();
-      const sender = accounts[0];
-      const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
-      const count = 1;
-      const amount = web3.utils.toWei(count, "ether");
-      // const amount = query.count;
-      const recipient = '0xb7c7b00bfe2930c0c6496ce0134075393837685d';
-      const gasPrice = await web3.eth.getGasPrice();
-      try {
-        const tx = await tokenContract.methods
-          .transfer(recipient, amount)
-          .send({ from: sender, gasPrice: gasPrice });
-          console.log('transfer-------tx',tx);
-      } catch (error) {
-        console.log('transfer-------',error);
-      }
-
+  const submit1 = async () => {
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const web3 = new Web3(window.ethereum);
+    const accounts = await web3.eth.getAccounts();
+    const sender = accounts[0];
+    const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
+    const count = 1;
+    const amount = web3.utils.toWei(count, 'ether');
+    // const amount = query.count;
+    const recipient = '0xb7c7b00bfe2930c0c6496ce0134075393837685d';
+    const gasPrice = await web3.eth.getGasPrice();
+    try {
+      const tx = await tokenContract.methods.transfer(recipient, amount).send({ from: sender, gasPrice: gasPrice });
+      console.log('transfer-------tx', tx);
+    } catch (error) {
+      console.log('transfer-------', error);
+    }
   };
 
   const confirmBuy = async () => {
     // alert(txid.value);
     // txid.value = '0x2bbed9335d1a23ad51b1e4ea7baf3cafe49d466302c557705ea95027451fd7fc';
     if (!txid.value) {
+      showToast.fail('Please enter the transaction hash');
       return;
     }
     const d = {
@@ -187,6 +184,7 @@
   };
 
   const maxSpace = ref(0);
+  const maxSpaceText = ref(' Space(GB) Max: 1 GB');
 
   const copySecret = (key: string) => {
     var input = document.createElement('textarea');
@@ -225,6 +223,8 @@
     get_available_capacity().then((res) => {
       if (res.code == 200) {
         maxSpace.value = res.data;
+        maxSpaceText.value = `Space(GB) Max: ${maxSpace.value} GB`;
+        shopForm.value.quantity = res.data;
       }
     });
   });
@@ -712,6 +712,7 @@
       .nut-range-button .number {
         font-weight: 800;
         transform: translate3d(0, 100%, 0);
+        color: #9dfc37;
       }
       .nut-input-number {
         user-select: none;

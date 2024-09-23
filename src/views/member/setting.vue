@@ -37,6 +37,10 @@
       rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
       rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
     background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1490196078) 0%, rgba(255, 255, 255, 0.3215686275) 100%);
+    background-image: linear-gradient(344deg, rgb(10 10 9 / 95%) 0%, rgb(174 255 0 / 79%) 100%);
+  }
+  .wave-disable {
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1490196078) 0%, rgba(255, 255, 255, 0.3215686275) 100%);
   }
 
   .my_wave {

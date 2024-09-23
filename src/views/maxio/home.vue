@@ -20,8 +20,7 @@
         <!-- <div class="maxio_img running_img" @click="showOfflineBox" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']">
           <img src="@/assets/maxio/running.svg" class="running_img" />
         </div> -->
-        <div class="maxio_img running_img" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']">
-        </div>
+        <div class="maxio_img running_img" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']"> </div>
       </div>
       <div class="show_max_more" @click="showMoreList" v-if="!isShowMoreList && maxTableData.length > 20">
         <img src="@/assets/maxio/more.svg" />
@@ -66,6 +65,9 @@
               <div class="title_text">{{ item.domain || 'Order' + item.order_id }}</div>
             </div>
           </div>
+          <div class="shop_img menu_img" @click="toBuyOrder">
+            <img src="@/assets/maxio/shop.svg" />
+          </div>
         </div>
 
         <div class="maxio_home_rightContent maxio_sd_rightContent bbb" :class="[showLeft ? 'maxWidth' : '']">
@@ -77,8 +79,10 @@
           </sd>
         </div>
       </div>
-      <nut-empty v-else description="No Order" image="error"></nut-empty>
-      <nut-button type="primary" class="buy-order" @click="toBuyOrder">Buy Order</nut-button>
+      <div v-else class="empty_box_wrap">
+        <nut-empty description="You currently have no available orders." image="error"></nut-empty>
+        <nut-button type="primary" class="buy-order" @click="toBuyOrder">Buy Order</nut-button>
+      </div>
     </div>
     <offlineList
       :isShowOffline="isShowOffline"
@@ -336,12 +340,12 @@
   //     padding: 20px;
   //   }
   .buy-order {
-    position: absolute;
-    bottom: 50px;
     text-align: center;
     width: 300px;
     cursor: pointer;
+    background-image: linear-gradient(76deg, #aeff00 0%, #528653 100%) !important;
+    border: 1px solid #aeff00;
     z-index: 1;
-    right: 150px;
+    font-weight: bold;
   }
 </style>

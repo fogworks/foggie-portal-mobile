@@ -135,21 +135,21 @@
             <img src="@/assets/maxio/cs.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">About</div>
           </setting>
-          <setting @click="gotoDetail('/assetsInfo')">
+          <setting @click="gotoDetail('/assetsInfo')" class="wave-disable">
             <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">Assets</div>
           </setting>
-          <setting @click="gotoDetail('/nft')">
+          <setting @click="gotoDetail('/nft')" class="wave-disable">
             <img src="@/assets/maxio/nft1.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">NFT</div>
           </setting>
         </div>
 
         <div class="logOutBtn" @click="logout">
-          <span style="margin-left: 45px">Log out</span>
-          <div class="outBnt">
+          <span style="text-align: center; width: 100%">Log out</span>
+          <!-- <div class="outBnt">
             <ArrowRight2 color="#5771F9" />
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -857,6 +857,7 @@
         height: 100px;
         background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         background-image: linear-gradient(135deg, #ffffff26 0%, #ffffff52 100%);
+        background-image: linear-gradient(206deg, rgb(174 255 0) 0%, rgb(26 24 24) 100%);
         border: 1px solid #ffffff05;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
