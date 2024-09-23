@@ -29,7 +29,7 @@
           </div>
         </template>
         <p> Sign in with Ethereum </p>
-        <template v-if="!isHasDmcwallet">
+        <template v-if="isHasWallet">
           <template v-if="isMobileDevice && !hasProvider">
             <a :href="`https://metamask.app.link/dapp/${redirectUrl}`">
               <div class="login-img">
@@ -70,7 +70,7 @@
           > -->
         </template>
       </van-tab>
-      <van-tab name="2" v-if="!isHasDmcwallet">
+      <van-tab name="2" v-if="!isHasWallet">
         <template #title>
           <div class="tab_header">
             <div :class="[activeType == 2 ? 'isChecked' : '']" @click="activeType = '2'">
@@ -92,7 +92,7 @@
           <img src="@/assets/wechat.png" class="img-google" />
         </div> -->
       </van-tab>
-      <van-tab name="3" v-if="!isHasDmcwallet">
+      <van-tab name="3" v-if="!isHasWallet">
         <template #title>
           <div class="tab_header">
             <div :class="[activeType == 3 ? 'isChecked' : '']" @click="activeType = '3'">
@@ -173,6 +173,8 @@
   import Cookies from 'js-cookie';
   import DMCWalletLogin from '@/views/login/DMCWalletLoginHook.ts';
   const { isHasDmcwallet, dmcWalletLogin } = DMCWalletLogin();
+
+  const isHasWallet = ref<any>(true);
 
   // const MMSDK = new MetaMaskSDK(
   //   {

@@ -35,14 +35,17 @@ export default function useOrderInfo() {
   //   headerProx2.setApptype(orderInfo2.value?.header?.array?.[3]);
   //   return headerProx2;
   // });
-  const header = computed(() => {
-    let headerProx2 = new Prox.default.ProxHeader();
-    headerProx2.setPeerid(orderSignInfo.value?.header?.array?.[0]);
-    headerProx2.setId(orderSignInfo.value?.header?.array?.[1]);
-    headerProx2.setToken(orderSignInfo.value?.header?.array?.[2]);
-    headerProx2.setApptype(orderSignInfo.value?.header?.array?.[3]);
-    return headerProx2;
-  });
+  // const header = computed(() => {
+  //   let headerProx2 = new Prox.default.ProxHeader();
+  //   headerProx2.setPeerid(orderSignInfo.value?.header?.array?.[0]);
+  //   headerProx2.setId(orderSignInfo.value?.header?.array?.[1]);
+  //   headerProx2.setToken(orderSignInfo.value?.header?.array?.[2]);
+  //   headerProx2.setApptype(orderSignInfo.value?.header?.array?.[3]);
+  //   console.log('headerProx2==11:=================', headerProx2);
+  //   return headerProx2;
+  // });
+
+  const header = ref(new Prox.default.ProxHeader());
   const secretAccessKey = computed(() => orderSignInfo.value?.secretAccessKey);
   const accessKeyId = computed(() => orderSignInfo.value?.accessKeyId);
   const metadata = computed(() => orderSignInfo.value?.metadata);
@@ -119,6 +122,7 @@ export default function useOrderInfo() {
       // console.log('cur_token==11:', cur_token);
       headerProx.setToken(cur_token);
       orderSignInfo.value.header = headerProx;
+      header.value = headerProx;
       await orderStore.setOrderInfoList(uuid || orderInfo.value.uuid, orderSignInfo.value);
       orderInfo.value.used_space = 0;
     } catch {
@@ -259,6 +263,7 @@ export default function useOrderInfo() {
       };
       headerProx.setToken(cur_token);
       orderSignInfo.value.header = headerProx;
+      header.value = headerProx;
     } catch {
       isError.value = true;
       showToast.hide('order_info_id');

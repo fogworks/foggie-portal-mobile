@@ -216,12 +216,17 @@
     });
     let data = await user();
     if (data) {
+      console.log('user_info', data.data);
       userStore.setInfo({
         ...data.data,
       });
+      if (data.data?.address) {
+        userStore.setAddress(data.data.address);
+      }
       if(isHasDmcwallet.value){
         initLoginDMCAccount()
       }
+      console.log(userStore.getAddress)
     }
     showToast.hide('user_info')
   };

@@ -55,7 +55,7 @@ service.interceptors.response.use(
         userStore.setcurStepIndex(1);
         router.push('/login');
         return;
-      } else if (code === 420) {
+      } else if (code === 420 && response.config.url?.indexOf('/api_accounts') > -1) {
         let res = await refreshToken();
         if (res && res.data && res.data.access_token) {
           let token = res.data.access_token;

@@ -606,6 +606,7 @@
     tableLoading,
     () => {
       checkedItem.value = [];
+      doSearch('', prefix, true);
     },
     orderInfo,
     header,

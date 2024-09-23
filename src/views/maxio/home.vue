@@ -132,7 +132,7 @@
   const isOfflineArr = ref([]);
   const showLeft = ref(false);
   const userAvatar = computed(() => userStore.getUserInfo?.image_path);
-  const address = computed(() => userStore.getUserInfo?.address);
+  const address = computed(() => userStore.getAddress);
   const maxTableDataCy = ref([]);
   const runningDataCy = ref([]);
   const historyDataCy = ref([]);
@@ -187,8 +187,6 @@
       domain: item.domain,
     };
     showBucket.value = true;
-    console.log('cloudQuery=======', cloudQuery.value);
-    // console.log(currentBucketData.value, 'changeMenu', currentBucketData.value.device_id);
   };
   const gotoBucketDetail = (item) => {
     router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });
@@ -294,6 +292,7 @@
     }
   });
   watch(address, (val) => {
+    console.log(val, 'addressaddressaddress');
     if (val.length > 0) {
       const d = {
         wallet: val,

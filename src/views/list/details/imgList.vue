@@ -73,10 +73,13 @@
   import loadingImg from '@/components/loadingImg/index.vue';
   import { poolUrl } from '@/setting.js';
   import { list } from 'postcss';
+  import { useRoute, useRouter } from 'vue-router';
+  const route = useRoute();
+
 
   let server;
   // import { isCloudCanUpload_Api } from '@/api/upload';
-  const { header, metadata, deviceType, orderInfo, bucketName, getOrderInfo } = useOrderInfo();
+  const { header, metadata, deviceType, orderInfo, bucketName, getOrderInfo, getOrderInfo1 } = useOrderInfo();
   const imgCheckedData = reactive({
     value: {},
   });
@@ -219,10 +222,7 @@
     }
     let list_prefix = '';
     tableLoading.value = true;
-    if (deviceType.value == 'space' || deviceType.value == 3) {
-      getReomteData(scroll, list_prefix, reset, date, max_keys);
-    } else {
-    }
+    getReomteData(scroll, list_prefix, reset, date, max_keys);
   };
   const getReomteData = (scroll, prefix, reset = false, date = '', max_keys) => {
     tableLoading.value = true;
@@ -384,7 +384,17 @@
     });
   };
   const init = async () => {
-    await getOrderInfo();
+    const obj = {
+      rpc: route.query.rpc,
+      peer_id: route.query.peer_id,
+      foggie_id: route.query.foggie_id,
+      signature: route.query.signature,
+      sign_timestamp: route.query.sign_timestamp,
+      order_id: route.query.order_id,
+      domain: route.query.domain,
+    };
+    await getOrderInfo1(obj);
+    // await getOrderInfo();
     await getTimeLine();
     isReady.value = true;
   };
@@ -438,13 +448,12 @@
   watch(
     isReady,
     (val) => {
-      console.log(val);
       getFileList();
     },
     { deep: true },
   );
   onMounted(async () => {
-    await getOrderInfo();
+    // await getOrderInfo();
     init();
     // nextTick(() => {
     //   refCheckAll();
@@ -465,6 +474,7 @@
     padding: 10px;
     overflow-y: auto;
     .img-box {
+      color: #fff;
       .img-name {
         font-size: 12px;
         line-height: 15px;

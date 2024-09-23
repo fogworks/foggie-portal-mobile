@@ -10,7 +10,9 @@
           <div class="main_detail_box">
             <div class="progress_box">
               <div class="text">Used</div>
-              <div class="user_circle"> {{ Number(((usedSize || 0) / (cloudQuery.space * 1024 * 1024 * 1024 || 1)) * 100).toFixed(2) }}% </div>
+              <div class="user_circle">
+                {{ Number(((usedSize || 0) / (cloudQuery.space * 1024 * 1024 * 1024 || 1)) * 100).toFixed(2) }}%
+              </div>
             </div>
           </div>
           <nut-col :span="12" class="order-count left_count" v-if="showText">
@@ -20,7 +22,7 @@
             </nut-cell>
             <nut-cell>
               <IconSpace color="#7F7AE9" />
-              Space:&nbsp;<span>{{ cloudQuery.space}}GB</span>
+              Space:&nbsp;<span>{{ cloudQuery.space }}GB</span>
             </nut-cell>
             <nut-cell>
               <IconRiPie color="#7F7AE9" />
@@ -371,9 +373,7 @@
   const dialogVisible = ref(false);
   const isNameLoading = ref(false);
 
-  const createName = ()=> {
-
-  }
+  const createName = () => {};
   watch(
     tableData,
     (val) => {
@@ -410,7 +410,7 @@
           order_id: item.order_id,
         },
       });
-    } else{
+    } else {
       router.push({
         name: 'FileList',
         query: {
@@ -427,11 +427,10 @@
         },
       });
     }
-    
   };
   const uploadComplete = () => {
     console.log('uploadComplete');
-    // refresh();
+    refresh();
   };
   const getMerkleState = (timeout = true) => {
     const d = {
@@ -497,9 +496,122 @@
   };
 
   const handlerClick = async (type: string) => {
-   
-  };
+    const checkData = JSON.parse(JSON.stringify(detailRow.value));
+    console.log(checkData, 'checkData');
 
+    if (type === 'download') {
+      const objectKey = encodeURIComponent(checkData.fullName);
+      const headers = getSignHeaders(objectKey);
+      console.log('headers:', headers);
+      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
+      if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+        $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
+      } else {
+        showToast.text('The download is in progress, please wait patiently');
+        fetch(url, { method: 'GET', headers })
+          .then((response) => {
+            if (response.ok) {
+              // 创建一个 Blob 对象，并将响应数据写入其中
+              console.log('Success', response);
+              return response.blob();
+            } else {
+              showToast.fail('Download failed, please try again');
+              // 处理错误响应
+              console.error('Error:', response.status, response.statusText);
+            }
+          })
+          .then((blob) => {
+            console.log(blob, 'blob');
+            console.log('Blob type:', blob.type);
+
+            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+            const a = document.createElement('a');
+            console.log("document.createElement('a')");
+
+            a.href = URL.createObjectURL(blob);
+            console.log(a.href);
+
+            a.download = checkData.fullName;
+            console.log(a.download);
+
+            // 将 <a> 元素添加到文档中，并模拟点击
+            document.body.appendChild(a);
+            console.log('添加');
+            a.click();
+            console.log('点击');
+
+            document.body.removeChild(a);
+          })
+          .catch((error) => {
+            showToast.fail('Download failed, please try again');
+            // 处理网络错误
+            console.error('Network Error:', error);
+          });
+      }
+    } else if (type === 'share') {
+      await doShare(checkData);
+    } else if (type === 'move') {
+      moveShow.value = true;
+    } else if (type == 'rename') {
+      renameShow.value = true;
+    } else if (type === 'delete') {
+      const onOk = async () => {
+        deleteItem([checkData]);
+        fileItemPopupIsShow.value = false;
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to delete?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+        onOk,
+      });
+    } else if (type == 'nft') {
+      createNFT(checkData, accessKeyId.value, secretAccessKey.value, bucketName.value);
+    } else if (type === 'pin') {
+      const onOk = async () => {
+        await cloudPin(checkData, 'ipfs');
+        // detailRow.value.isPin = true;
+        detailShow.value = false;
+        getFileList();
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS PIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        onOk,
+      });
+    } else if (type === 'un pin') {
+      const onOk = async () => {
+        const d = await cloudPin(checkData, 'ipfs', 'unpin');
+        if (d) {
+          imgData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          otherData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          detailRow.value.isPin = false;
+        }
+        // doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS UNPIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+
+        onOk,
+      });
+    }
+  };
 
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
     console.log('handleImg====122', item, type, isDir);
@@ -554,8 +666,7 @@
     }
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
-  const getFileList = (scroll: string = '', prefix: any[] = [], reset = true)=> {
-
+  const getFileList = (scroll: string = '', prefix: any[] = [], reset = true) => {
     // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     let ip = `https://${cloudQuery.value.domain}.${poolUrl}:7007`;
 
@@ -576,6 +687,7 @@
     let requestReq = new Prox.default.ProxListObjectsReq();
     requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
+
     server.listObjects(
       requestReq,
       metadata.value,
@@ -593,7 +705,7 @@
         },
       ) => {
         if (res) {
-          console.log('res----list', res);
+          console.log('res----list', res.getContentList());
           const transferData = {
             commonPrefixes: res.getCommonprefixesList(),
             content: res
@@ -678,14 +790,14 @@
         }
       },
     );
-  }
-
-
+  };
 
   const refresh = async () => {
     console.log('refresh========');
     detailShow.value = false;
     // await getOrderInfo(true, cloudQuery.value.uuid);
+    await getOrderInfo1(cloudQuery.value);
+    getFileList();
     getSummary();
   };
 
@@ -837,26 +949,32 @@
     tableLoading.value = false;
   };
 
-  onMounted(async ()=>{
-    
-    
+  onMounted(async () => {
     if (!cloudQuery.value.domain) {
       dialogVisible.value = true;
     } else {
+      console.log('refresh========1');
       await getOrderInfo1(cloudQuery.value);
       getFileList();
       getSummary();
     }
-    
-  })
-
-
+  });
 
   onUnmounted(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });
   provide('getSummary', getSummary);
   provide('isMobileOrder', isMobileOrder);
+
+  watch(
+    cloudQuery,
+    async (val) => {
+      if (val.domain) {
+        refresh();
+      }
+    },
+    { deep: true },
+  );
 </script>
 
 <style lang="scss" scoped>

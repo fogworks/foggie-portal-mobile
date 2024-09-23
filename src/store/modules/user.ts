@@ -3,6 +3,7 @@ import { useCookies } from '@vueuse/integrations/useCookies';
 import { defineStore } from 'pinia';
 import Cookies from 'js-cookie';
 import { setTokenMap, getTokenMap } from "@/utils/tokenMap";
+import { get } from 'vant/lib/utils';
 
 const { VITE_TOKEN_KEY } = import.meta.env;
 const token = useCookies().get(VITE_TOKEN_KEY as string);
@@ -21,6 +22,7 @@ interface StoreUser {
     myAkList: Object,
     maxBind: boolean,
     maxWallet: string,
+    address: string;
 }
 
 export const useUserStore = defineStore({
@@ -29,6 +31,7 @@ export const useUserStore = defineStore({
         token: token,
         refreshToken: refreshToken,
         info: {},
+        address: '',
         balance: 0,
         cloudCodeIsBind: false,
         ambRefuse: false, //
@@ -82,6 +85,9 @@ export const useUserStore = defineStore({
         getMyAkList(): any {
             return this.myAkList;
         },
+        getAddress(): any {
+            return this.address;
+        },
     },
     actions: {
         setCloudCodeIsBind(bool: boolean) {
@@ -95,6 +101,9 @@ export const useUserStore = defineStore({
         },
         setToken(token: string) {
             this.token = token;
+        },
+        setAddress(address: string) {
+            this.address = address;
         },
         setInfo(info: any) {
             this.info = info ? info : '';
@@ -117,6 +126,7 @@ export const useUserStore = defineStore({
             this.maxBind = false;
             this.maxWallet = '';
             this.info = {};
+            this.address = '';
             this.cloudCodeIsBind = false;
             Cookies.remove('access_token');
             Cookies.remove('refresh_token');
