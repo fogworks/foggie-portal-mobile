@@ -98,7 +98,7 @@
               {{ prefix.at(-1) || '' }}
             </span>
           </template>
-          <nut-checkbox style="flex: 0 0 60px" v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
+          <!-- <nut-checkbox style="flex: 0 0 60px" v-model="isCheckMode" label="Multiple">Edit</nut-checkbox> -->
           <IconListType
             style="width: 2rem; height: 2rem; vertical-align: middle"
             v-if="cardMode && category != 1"
@@ -2491,7 +2491,8 @@
         }
       }
       p {
-        color: #051e56;
+        // color: #051e56;
+        color: #fff;
       }
       // &:nth-child(1) {
       //   .svg_box {
@@ -2971,7 +2972,8 @@
           }
         }
         p {
-          color: #051e56;
+          // color: #051e56;
+          color: #fff;
         }
       }
     }

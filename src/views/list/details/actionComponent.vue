@@ -68,7 +68,7 @@
             Download
           </div>
         </div>
-        <div class="ipfs" v-if="chooseItem.isPin || chooseItem.cid">
+        <!-- <div class="ipfs" v-if="chooseItem.isPin || chooseItem.cid">
           <p v-if="chooseItem.isPin && chooseItem.cid">
             <span>{{ handleID(`ipfs://${chooseItem.cid}`) }} </span>
             <IconCopy color="#222224" @click="copyIPFS('ipfs', chooseItem)"></IconCopy>
@@ -84,7 +84,7 @@
             <span> {{ handleID(`${browserUrl}/nft/${nft.getContractid()}/${nft.getTokenid()}`) }} </span>
             <IconCopy color="#262628" @click="copyNft(nft)"></IconCopy>
           </p>
-        </div>
+        </div> -->
 
         <!-- <nut-button
           v-if="isAvailableOrder"
@@ -738,6 +738,7 @@
             prefixes.push(el.fullName.replace('/', ''));
           }
         });
+        console.log('prefixes', prefixes, checkData);
         request.setPrefixesList(JSON.parse(JSON.stringify(prefixes)));
         stream = server.getObjects(request, metadata.value);
       }

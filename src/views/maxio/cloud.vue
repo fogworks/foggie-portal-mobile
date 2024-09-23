@@ -51,7 +51,7 @@
           <div class="file_list file_list_img" v-if="imgData.length">
             <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
               <nut-image
-                v-if="item.imgUrl || item.originalSize <= 102400"
+                v-if="item.imgUrl || item.originalSize <= 102400 || item.imgUrlLarge"
                 show-loading
                 show-error
                 round
@@ -534,6 +534,7 @@
         item.key,
         type === 'ico' || type === 'svg' ? false : true,
       );
+      console.log('----------img1', imgHttpLink, imgHttpLarge);
     } else if (type === 'mp3') {
       type = 'audio';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
@@ -707,6 +708,7 @@
     reset = false,
     category: number,
   ) => {
+    console.log('data================', data);
     if (!data) {
       tableLoading.value = false;
       return;
@@ -776,6 +778,7 @@
       let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
       const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
       let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+      console.log('url=====', url);
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
@@ -829,6 +832,7 @@
 
       tableData.value.push(item);
     }
+    console.log('tableData=====', tableData.value);
     tableLoading.value = false;
   };
 

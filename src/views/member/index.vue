@@ -123,7 +123,7 @@
           </nut-col>
         </nut-row>
 
-        <!-- <div class="router_list" v-if="!showSettings">
+        <div class="router_list" v-if="!showSettings">
           <setting @click="gotoDetail('/assetsInfo')">
             <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">Assets</div>
@@ -140,7 +140,7 @@
             <img src="@/assets/maxio/nft1.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">NFT</div>
           </setting>
-        </div> -->
+        </div>
 
         <div class="logOutBtn" @click="logout">
           <span style="margin-left: 45px">Log out</span>

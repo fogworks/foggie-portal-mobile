@@ -34,7 +34,7 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     userStore.setCloudCodeIsBind(false);    
-    if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget' || to.name == 'Guide' || to.name == 'Middleware') {
+    if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget' || to.name == 'Middleware') {
       next();
     } else {
 
@@ -46,7 +46,7 @@ router.beforeEach((to, from, next) => {
         });
       } else {
         next({
-          name: 'Guide', query: {
+          name: 'Login', query: {
             publicKey: to.query?.publicKey
           }
         });
