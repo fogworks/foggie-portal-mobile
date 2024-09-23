@@ -19,7 +19,10 @@
           <div class="user_header_box_content">
             <!-- <img src="@/assets/maxio/beta.svg" class="betaPng" /> -->
             <div class="accTitle">{{ maxBind ? maxWallet : dmcAccount }}</div>
-            <div class="email">Account: {{ address ? `${address.substr(0,6)}...${address.substr(-6)}` : email }}<IconCopy @click="copyCode(address)"></IconCopy></div>
+            <div class="email"
+              >Account: {{ address ? `${address.substr(0, 6)}...${address.substr(-6)}` : email
+              }}<IconCopy @click="copyCode(address)"></IconCopy
+            ></div>
             <!-- <div class="email balance"><span>Balance: </span>{{ money.Balance.integerPart }}.{{ money.Balance.decimalPart }} DMC</div> -->
             <!-- <div class="email" v-if="promo_code">promoCode: {{ promo_code }}</div> -->
             <div class="email" v-if="user_code">UserCode: {{ user_code }} <IconCopy @click="copyCode(user_code)"></IconCopy></div>
@@ -124,19 +127,19 @@
         </nut-row>
 
         <div class="router_list" v-if="!showSettings">
-          <setting @click="gotoDetail('/assetsInfo')">
-            <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
-            <div class="title">Assets</div>
+          <setting @click="gotoDetail('/shop')">
+            <img src="@/assets/maxio/shop1.svg" style="width: 45px; height: 45px; display: inline-block" />
+            <div class="title">Shop</div>
           </setting>
           <setting @click="changeTab('setting')">
             <img src="@/assets/maxio/cs.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">About</div>
           </setting>
-          <setting @click="router.push('/shop')">
-            <img src="@/assets/maxio/shop1.svg" style="width: 45px; height: 45px; display: inline-block" />
-            <div class="title">Shop</div>
+          <setting @click="gotoDetail('/assetsInfo')">
+            <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
+            <div class="title">Assets</div>
           </setting>
-          <setting @click="router.push('/nft')">
+          <setting @click="gotoDetail('/nft')">
             <img src="@/assets/maxio/nft1.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">NFT</div>
           </setting>
@@ -185,7 +188,8 @@
 <script lang="ts" setup name="MemberPage">
   import { useUserStore } from '@/store/modules/user';
   import { ArrowRight2, Photograph, Scan2 } from '@nutui/icons-vue';
-  import { showDialog } from '@nutui/nutui';
+  import { showDialog, showNotify } from '@nutui/nutui';
+  import '@nutui/nutui/dist/packages/notify/style';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/toast/style';
@@ -201,6 +205,10 @@
   import { ambAddress } from '@/setting';
   import setting from './setting.vue';
 
+  const cusBgNotify = () => {
+    let text = 'We Are Comming Soon......';
+    showNotify.text(text, { color: '#000', background: '#9dfc37', position: 'bottom' });
+  };
   const showSettings = ref(false);
 
   const uploadRef = ref();
@@ -268,36 +276,39 @@
     showToast.success('Copy succeeded');
   }
   function loadUserDmc() {
-
     if (maxBind.value) {
       get_user_dmc(maxWallet.value)
-      .then((res) => {
-        if (res.code == 200) {
-          const data = res.result?.data;
-          money.Balance = formatNumber(data?.balance);
-          money.Recharge = formatNumber(data?.Recharge);
-          money.withdraw = formatNumber(data?.withdraw);
-          money.income = formatNumber(data?.income);
-        }
-      })
-      .catch((err) => {});
+        .then((res) => {
+          if (res.code == 200) {
+            const data = res.result?.data;
+            money.Balance = formatNumber(data?.balance);
+            money.Recharge = formatNumber(data?.Recharge);
+            money.withdraw = formatNumber(data?.withdraw);
+            money.income = formatNumber(data?.income);
+          }
+        })
+        .catch((err) => {});
     } else {
       get_user_dmc()
-      .then((res) => {
-        if (res.code == 200) {
-          const data = res.result?.data;
-          money.Balance = formatNumber(data?.balance);
-          money.Recharge = formatNumber(data?.Recharge);
-          money.withdraw = formatNumber(data?.withdraw);
-          money.income = formatNumber(data?.income);
-        }
-      })
-      .catch((err) => {});
+        .then((res) => {
+          if (res.code == 200) {
+            const data = res.result?.data;
+            money.Balance = formatNumber(data?.balance);
+            money.Recharge = formatNumber(data?.Recharge);
+            money.withdraw = formatNumber(data?.withdraw);
+            money.income = formatNumber(data?.income);
+          }
+        })
+        .catch((err) => {});
     }
-    
   }
   const gotoDetail = (path): void => {
-    router.push(path);
+    if (path === '/assetsInfo' || path === '/nft') {
+      cusBgNotify();
+      return;
+    } else {
+      router.push(path);
+    }
   };
 
   const goToPrivacy = () => {
@@ -425,7 +436,6 @@
 
   /* 调用扫码功能 */
   const requestCameraPermission = debounce(() => {
-
     router.push({ path: '/scanQRCodes' });
   }, 300);
 

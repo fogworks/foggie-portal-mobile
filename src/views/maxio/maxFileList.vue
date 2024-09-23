@@ -959,7 +959,7 @@
       max-height: 500px;
     }
     &.showHight {
-      height: 540px;
+      //   height: 540px;
       .progress_box {
         width: 140px;
         height: 140px;

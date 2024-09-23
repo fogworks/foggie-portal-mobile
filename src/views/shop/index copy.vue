@@ -2,15 +2,37 @@
   <div style="height: auto; padding-bottom: 50px">
     <div class="out_blue">
       <div class="inside_blue">
-        <IconArrowLeft class="back_img" @click="shopBack"></IconArrowLeft>
+        <IconArrowLeft class="back_img" @click="$router.go(-1)"></IconArrowLeft>
         <div class="balance_options"> Shop</div>
       </div>
     </div>
-    <div class="vip_order_choose" v-if="!isShowSpaceInfo">
+    <div class="vip_order_choose">
       <div class="vip_title">Select space and time</div>
       <div class="img_list">
+        <!-- <img src="@/assets/vipOrder.png" @click="submit" /> -->
+        <img src="@/assets/vipOrder.png" class="customOrder" @click="toBuy" />
+      </div>
+    </div>
+    <div class="space-info" v-if="isShowSpaceInfo">
+      <p>Weeks: {{ shopForm.week }}</p>
+      <p>Space: {{ shopForm.quantity }}GB</p>
+      <p>Price: {{ calc_price.total }}</p>
+      <p @click="copySecret(address)"
+        >Payment account: {{ address ? `${address.substr(0, 6)}...${address.substr(-6)}` : address }} <IconCopy color="#246bf7"></IconCopy
+      ></p>
+      <p @click="copySecret(calc_price.to)"
+        >Receiving account: {{ calc_price.to ? `${calc_price.to.substr(0, 6)}...${calc_price.to.substr(-6)}` : calc_price.to }}
+        <IconCopy color="#246bf7"></IconCopy
+      ></p>
+
+      <nut-input style="color: #666" v-model="txid" placeholder="Please enter the transaction hash" />
+      <nut-button type="primary" @click="confirmBuy" style="margin-top: 10px">Confirm</nut-button>
+    </div>
+
+    <Teleport to="body">
+      <nut-popup position="top" :style="{ height: '480px' }" round v-model:visible="showTop">
         <nut-form class="query_form" :model-value="shopForm">
-          <!-- <div class="custom_order">Custom</div> -->
+          <div class="custom_order">Custom</div>
           <nut-form-item label="Service Period">
             <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
               <nut-radio shape="button" :label="52">52 weeks</nut-radio>
@@ -34,45 +56,16 @@
               placeholder="Space"
             />
           </nut-form-item>
-          <div style="padding: 10px 20px; font-size: 11px; font-style: italic; font-weight: bold">
+          <div style="padding: 10px 20px; font-size: 11px; font-style: italic">
             The maximum data security guarantee for the chain is only 52 weeks
           </div>
           <div class="bottom_btn">
-            <!-- <nut-button type="warning" plain :loading="loading" @click="showTop = false"> Cancel </nut-button> -->
-            <nut-button type="warning" @click="submit" :disabled="buyDisabled" :loading="loading"> Confirm </nut-button>
+            <nut-button type="warning" plain :loading="loading" @click="showTop = false"> Cancel </nut-button>
+            <nut-button type="warning" @click="submit" :disabled="buyDisabled" :loading="loading"> Buy </nut-button>
           </div>
         </nut-form>
-      </div>
-    </div>
-    <div class="space-info" v-if="isShowSpaceInfo">
-      <div class="vip_title">Your Order Summary</div>
-      <p>
-        <span class="p_label">Weeks: </span><span>{{ shopForm.week }} WEEK</span></p
-      >
-      <p>
-        <span class="p_label">Space: </span><span>{{ shopForm.quantity }} GB</span></p
-      >
-      <p>
-        <span class="p_label">Price:</span><span>{{ calc_price.total }}</span>
-      </p>
-      <p @click="copySecret(address)">
-        <span class="p_label">Payment account: </span
-        ><span>{{ address ? `${address.substr(0, 6)}...${address.substr(-6)}` : address }} <IconCopy color="#bef508"></IconCopy></span>
-      </p>
-      <p @click="copySecret(calc_price.to)">
-        <span class="p_label">Receiving account:</span
-        ><span
-          >{{ calc_price.to ? `${calc_price.to.substr(0, 6)}...${calc_price.to.substr(-6)}` : calc_price.to }}
-          <IconCopy color="#bef508"></IconCopy
-        ></span>
-      </p>
-
-      <nut-input style="color: #666" v-model="txid" placeholder="Please enter the transaction hash" />
-      <div class="bottom_btn">
-        <nut-button type="warning" plain :loading="loading" @click="isShowSpaceInfo = false"> Cancel </nut-button>
-        <nut-button type="primary" @click="confirmBuy" style="margin-top: 10px">Buy</nut-button>
-      </div>
-    </div>
+      </nut-popup>
+    </Teleport>
   </div>
 </template>
 
@@ -80,8 +73,6 @@
   import IconArrowLeft from '~icons/home/arrow-left.svg';
   import { toRefs, reactive, onMounted } from 'vue';
   import IconCopy from '~icons/home/copy.svg';
-  import { useRouter } from 'vue-router';
-  const router = useRouter();
 
   import { dm_calc_price, get_available_capacity, dm_order_buy } from '@/api';
   import { showToast } from '@nutui/nutui';
@@ -152,9 +143,8 @@
     };
     dm_order_buy(d).then((res) => {
       if (res.code == 200) {
-        showToast.success('You have successfully made the purchase and can check it in your order');
+        showToast.success('Order success');
         isShowSpaceInfo.value = false;
-        router.push('/home');
       }
     });
   };
@@ -174,14 +164,6 @@
   const toBuy = () => {
     showTop.value = true;
     isShowSpaceInfo.value = false;
-  };
-  const shopBack = () => {
-    console.log('shopBack', isShowSpaceInfo.value);
-    if (isShowSpaceInfo.value) {
-      isShowSpaceInfo.value = false;
-    } else {
-      router.back();
-    }
   };
 
   watch(
@@ -323,12 +305,10 @@
         background: linear-gradient(135deg, #5200ae 0%, #5200ae 45%, #4062bb 83%, #4062bb 100%);
         background: linear-gradient(135deg, #1d2027 0%, #f1bc23 45%, rgb(31 28 23) 83%, #eaeef9 100%);
         background: linear-gradient(135deg, #18191b 0%, #eeb40a 45%, rgb(113 99 76) 83%, #eaeef9 100%);
-        background: linear-gradient(329deg, #9fd72f 0%, #99d017 25%, rgb(42 42 41) 83%, #181b24 100%);
         font-size: 40px;
         border: 0px;
         color: #ffffff;
         font-weight: 600px;
-        font-weight: bolder;
       }
       .nut-button--disabled {
         background: #aaa !important;
@@ -639,47 +619,26 @@
   }
 
   .query_form {
-    // padding: 0 20px 20px 20px;
-    color: #9dfc37;
+    padding: 0 20px 20px 20px;
     .custom_order {
       text-align: center;
       font-size: 36px;
     }
     :deep {
-      .nut-range-bar {
-        background: var(--nut-range-bar-bg-color, linear-gradient(135deg, #7ed412 0%, #a9f108 100%));
-      }
-      .nut-range::before {
-        background-color: #ffffff !important;
-      }
-      .nut-radio__button--active {
-        background: #9dfc37 !important;
-        color: #000;
-        border: #9dfc37;
-      }
-      .nut-range-button {
-        background: #9dfc37;
-      }
-      .nut-input-number__icon {
-        color: #fff !important;
-      }
       .nut-form-item {
         flex-direction: column;
         height: 180px;
-        background: transparent !important;
 
         .nut-form-item__label {
           width: 100%;
           margin-bottom: 20px;
           font-weight: 800;
-          color: #9dfc37;
         }
       }
 
       .nut-cell-group__wrap {
         padding-bottom: 20px;
         box-shadow: none;
-        background: transparent !important;
       }
 
       .nut-range-button .number {
@@ -724,10 +683,7 @@
         .nut-button {
           width: 40%;
           background: linear-gradient(135deg, #c8d4ec 0%, #e9b212 25%, rgb(35 23 3) 83%, #eaeef9 100%);
-          background: linear-gradient(329deg, #9fd72f 0%, #99d017 25%, rgb(42 42 41) 83%, #181b24 100%);
           border: none;
-          color: #fff;
-          font-weight: bolder;
 
           &.nut-button--disabled {
             background: #aaa !important;
@@ -747,10 +703,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: calc(100% - 60px);
+    width: 100%;
     margin-top: 20px;
     position: absolute;
-    left: 60px;
+    left: 40px;
     top: 20px;
     color: #fff;
     font-weight: bolder;
@@ -871,7 +827,6 @@
   }
   .vip_order_choose {
     border: 5px solid #f3d1a2;
-    border: 0.666667vw solid #bef508;
     margin: 20px;
     border-radius: 10px;
     background: #fff;
@@ -881,13 +836,9 @@
     color: #fff;
     background: #ffffff26;
     .vip_title {
-      font-size: 44px;
+      font-size: 34px;
       font-weight: bold;
       margin-bottom: 20px;
-      text-align: center;
-      background: -webkit-linear-gradient(240deg, #c4b625 20.27%, #9dfc37 92.67%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
     padding-bottom: 20px;
     .img_list {
@@ -911,66 +862,8 @@
     width: 90%;
     margin: 0 auto;
     color: #fff;
-    border: 5px solid #f3d1a2;
-    border: 0.666667vw solid #bef508;
-    margin: 20px;
-    border-radius: 10px;
-    background: #fff;
-    padding: 20px;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    margin-top: 70px;
-    color: #fff;
-    background: #ffffff26;
-    .vip_title {
-      font-size: 44px;
-      font-weight: bold;
-      margin-bottom: 20px;
-      text-align: center;
-      background: -webkit-linear-gradient(240deg, #c4b625 20.27%, #9dfc37 92.67%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
     p {
       margin: 5px 0;
-      height: 70px;
-      line-height: 70px;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: #a1ee08;
-      font-weight: 800;
-      color: #9dfc37;
-      font-size: 28px;
-      .p_label {
-        font-weight: bold;
-        color: #fff;
-      }
-    }
-    .bottom_btn {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      position: relative;
-      margin-top: 40px;
-      :deep {
-        .nut-button {
-          width: 40%;
-          background: linear-gradient(329deg, #9fd72f 0%, #99d017 25%, rgb(42 42 41) 83%, #181b24 100%);
-          border: none;
-          font-weight: bolder;
-
-          &.nut-button--disabled {
-            background: #aaa !important;
-            opacity: 0.28 !important;
-          }
-          &.nut-button--plain {
-            background: #fff !important;
-            border: 1px solid #262016;
-            color: #2b1d06;
-          }
-        }
-      }
     }
   }
 </style>

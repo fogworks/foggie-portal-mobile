@@ -1930,7 +1930,7 @@
       max-height: 500px;
     }
     .showHight {
-      height: 360px;
+      //   height: 360px;
       max-height: 500px;
     }
     .hideHight {

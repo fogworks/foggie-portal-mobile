@@ -47,9 +47,7 @@
           <div class="menu_img" @click="changeList('history')" v-if="historyDataCy.length">
             <div class="image-container history">
               <img src="@/assets/maxio/cloud1.svg" class="left_max_png" />
-              <div class="watermark">
-                history
-              </div>
+              <div class="watermark"> history </div>
             </div>
           </div>
           <div class="isShowMaxio" :class="[isShowHistory ? 'showMax' : 'hideMax']">
