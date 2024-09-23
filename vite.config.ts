@@ -77,7 +77,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     // rewrite: (path) => path.replace(/^\/api/, ""),
                 },
                 '^/api_accounts': {
-                    target: 'http://m.vofocorp.com',
+                    target: 'https://devlop.fogworks.io',
                     changeOrigin: true,
                     secure: false,
                     // rewrite: (path) => path.replace(/^\/api/, ""),
@@ -107,7 +107,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     // rewrite: (path) => path.replace(/^\/api/, ""),
                 },
                 '^/ambmgr': {
-                    target: 'http://m.vofocorp.com',
+                    target: 'https://devlop.fogworks.io',
                     changeOrigin: true,
                     secure: false,
                     // rewrite: (path) => path.replace(/^\/api/, ""),

@@ -10,22 +10,22 @@
           <div class="main_detail_box">
             <div class="progress_box">
               <div class="text">Used</div>
-              <!-- <div class="user_circle"> {{ Number(((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100).toFixed(2) }}% </div> -->
+              <div class="user_circle"> {{ Number(((usedSize || 0) / (cloudQuery.space * 1024 * 1024 * 1024 || 1)) * 100).toFixed(2) }}% </div>
             </div>
           </div>
           <nut-col :span="12" class="order-count left_count" v-if="showText">
-            <!-- <nut-cell>
+            <nut-cell>
               <IconMdiF color="#9F9BEF" />
               File:&nbsp;<span>{{ filesCount }}</span>
-            </nut-cell> -->
+            </nut-cell>
             <nut-cell>
               <IconSpace color="#7F7AE9" />
               Space:&nbsp;<span>{{ cloudQuery.space}}GB</span>
             </nut-cell>
-            <!-- <nut-cell>
+            <nut-cell>
               <IconRiPie color="#7F7AE9" />
               Used:&nbsp;<span>{{ getfilesize(usedSize, 'B') }}</span>
-            </nut-cell> -->
+            </nut-cell>
             <nut-cell>
               <Order />
               ID:&nbsp;<span>{{ cloudQuery?.order_id }}</span>
@@ -151,7 +151,7 @@
         </nut-skeleton> -->
       </div>
       <uploader
-        v-if="isMobileOrder && isAvailableOrder && cloudQuery.domain"
+        v-if="isAvailableOrder && cloudQuery.domain"
         :getSummary="getSummary"
         :isMobileOrder="isMobileOrder"
         :bucketName="bucketName"
@@ -683,9 +683,10 @@
 
 
   const refresh = async () => {
+    console.log('refresh========');
     detailShow.value = false;
     // await getOrderInfo(true, cloudQuery.value.uuid);
-    // getSummary();
+    getSummary();
   };
 
   const refreshFun = async () => {
@@ -844,6 +845,7 @@
     } else {
       await getOrderInfo1(cloudQuery.value);
       getFileList();
+      getSummary();
     }
     
   })

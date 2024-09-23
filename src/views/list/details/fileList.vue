@@ -313,9 +313,8 @@
       @clickFIleItemDetail="clickFIleItemDetail"
       @clickFIleItem="clickFIleItem"
     ></ActionComponent>
-
     <uploader
-      v-if="isMobileOrder && isAvailableOrder"
+      v-if="isAvailableOrder"
       :getSummary="getSummary"
       :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
@@ -476,7 +475,7 @@
     if (orderInfo.value.electronic_type == '0') {
       return true;
     } else {
-      return false;
+      return true;
     }
   });
   const isMobileDevice = computed(() => {
@@ -529,7 +528,7 @@
   } = toRefs(state);
 
   const {
-    isAvailableOrder,
+    // isAvailableOrder,
     isError,
     getSummary,
     bucketName,
@@ -542,6 +541,8 @@
     getOrderInfo,
     getOrderInfo1,
   } = useOrderInfo();
+  const isAvailableOrder = ref(true);
+
   provide('getSummary', getSummary);
   const {
     httpCopyLink,
@@ -1131,7 +1132,7 @@
 
   const uploadComplete = (file: any) => {
     console.log('uploadComplete');
-    // getFileList('', prefix.value, true);
+    getFileList('', prefix.value, true);
   };
 
   function getFileList(scroll: string, prefix: any[], reset = false) {
@@ -1553,6 +1554,7 @@
     showToast.hide('file_list');
   };
   function doSearch(scroll: string = '', prefixArg: any[] = [], reset = false) {
+    console.log('doSearch========', scroll, prefixArg, keyWord.value);
     if (tableLoading.value) return false;
     if (category.value == 1 && !moveShow.value && !renameShow.value) {
       imgListRef.value.refresh();
@@ -1566,6 +1568,7 @@
       //   getFileList('', prefix.value, false);
       // }
     } else {
+
       showToast.loading('Loading', {
         // cover: true,
         // customClass: 'app_loading',
@@ -1582,11 +1585,7 @@
       });
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
-      if (type == 'space') {
-        // let ip = orderInfo.value.rpc.split(':')[0];
-        // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-
-        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+      let ip = `https://${bucketName.value}.${poolUrl}:7007`;
         server = new grpcService.default.ServiceClient(ip, null, null);
 
         let ProxFindRequest = new Prox.default.ProxFindRequest();
@@ -1602,7 +1601,6 @@
           }
         }
         ProxFindRequest.setPrefix(list_prefix);
-        // console.log(ProxFindRequest, 'ProxFindRequestProxFindRequest');
 
         server.findObjects(ProxFindRequest, metadata.value, (err: any, res: { getContentsList: () => any[] }) => {
           infinityValue.value = false;
@@ -1630,25 +1628,6 @@
                   getImages: () => any;
                   getThumb: () => any;
                 }) => {
-                  console.log(el, 'el---');
-                  // const imageObj = el.getImages().toObject();
-                  // const imageInfo = {};
-                  // let isShowDetail = false;
-                  // if (imageObj.camerainfo?.make) {
-                  //   isShowDetail = true;
-                  //   imageInfo.aperture = imageObj.addition.aperture; //光圈
-                  //   imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
-                  //   imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
-                  //   imageInfo.exptime = imageObj.addition.exptime; //曝光时间
-                  //   imageInfo.orientation = imageObj.addition.orientation; //方向
-                  //   imageInfo.focallength = imageObj.addition.focallength; //焦距
-                  //   imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
-                  //   imageInfo.software = imageObj.addition.software; // 使用软件
-                  //   imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
-                  //   imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
-                  //   imageInfo.gps = imageObj.gps; //经纬度
-                  //   imageInfo.resolution = imageObj.resolution; //像素
-                  // }
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1679,7 +1658,6 @@
             isError.value = true;
           }
         });
-      }
     }
   }
 
@@ -2539,6 +2517,7 @@
       }
       .nut-searchbar__search-input {
         --nut-searchbar-input-background: #f5f8fd;
+        color: #fff;
       }
     }
   }

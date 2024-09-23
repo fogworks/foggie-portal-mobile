@@ -87,41 +87,6 @@ export default function useOrderInfo() {
     try {
       let res = await get_unique_order({ order_uuid: uuid || route?.query?.uuid });
       const resData = res.result.data;
-      // orderInfo.value.amb_uuid = resData.amb_uuid;
-      // orderInfo.value.benchmark = resData.benchmark;
-      // orderInfo.value.bill_id = resData.bill_id;
-      // orderInfo.value.created_at = resData.created_at;
-      // orderInfo.value.device_type = resData.device_type;
-      // orderInfo.value.domain = resData.domain;
-      // orderInfo.value.electronic_type = resData.electronic_type;
-      // orderInfo.value.expire = resData.expire;
-      // orderInfo.value.fault = resData.fault;
-      // orderInfo.value.foggie_id = resData.foggie_id;
-      // orderInfo.value.foggie_version = resData.foggie_version;
-      // orderInfo.value.id = resData.id;
-      // orderInfo.value.income = resData.income;
-      // orderInfo.value.is_domain = resData.is_domain;
-      // orderInfo.value.memo = resData.memo;
-      // orderInfo.value.miner = resData.miner;
-      // orderInfo.value.mp_address = resData.mp_address;
-      // orderInfo.value.mp_domain = resData.mp_domain;
-      // orderInfo.value.orderId = resData.orderId;
-      // orderInfo.value.order_created_at = resData.order_created_at;
-      // orderInfo.value.peer_id = resData.peer_id;
-      // orderInfo.value.pool_type = resData.pool_type;
-      // orderInfo.value.pool_wallet_acc = resData.pool_wallet_acc;
-      // orderInfo.value.price = resData.price;
-      // orderInfo.value.pst = resData.pst;
-      // orderInfo.value.result = resData.result;
-      // orderInfo.value.rpc = resData.rpc;
-      // orderInfo.value.sign = resData.sign;
-      // orderInfo.value.state = resData.state;
-      // orderInfo.value.total_price = resData.total_price;
-      // orderInfo.value.total_space = resData.total_space;
-      // orderInfo.value.transaction_id = resData.transaction_id;
-      // orderInfo.value.used_space = resData.used_space;
-      // orderInfo.value.user = resData.user;
-      // orderInfo.value.uuid = resData.uuid;
       orderInfo.value = resData;
       bucketName.value = orderInfo.value.domain;
       orderInfo.value.used_space = 0;
@@ -211,6 +176,50 @@ export default function useOrderInfo() {
           // reject(false);
           resolve(false);
         } else {
+          console.log('res.getContentsList()------:', res.getContentsList());
+
+          const contentList = res.getContentsList().map((el) => {
+            return {
+              count: el.getCount(),
+              id: el.getId(),
+              total: el.getTotal(),
+            };
+          });
+          filesCount.value = contentList?.[0]?.count || 0;
+          usedSize.value = contentList?.[0]?.total || 0;
+          resolve(contentList?.[0]?.total || 0);
+        }
+      });
+    });
+  };
+
+
+  const getSummary1 = (obj) => {
+    let ip = obj.rpc.split(':')[0];
+    let peer_id = obj.peer_id;
+    let foggie_id = obj.foggie_id;
+    let cur_token = obj.signature;
+    let date = obj.sign_timestamp;
+    let order_id = obj.order_id;
+    let domain = obj.domain;
+
+    bucketName.value = domain;
+    orderId.value = obj.order_id;
+    return new Promise((resolve, reject) => {
+      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${poolUrl}:7007`, null, null);
+      let request = new Prox.default.ProxRequestSummaryIds();
+      request.setHeader(header.value);
+
+      request.setIdsList([orderInfo.value.foggie_id]);
+
+      console.log(`https://${bucketName.value}.${poolUrl}:7007`, 'bucketNamebucketNamebucketNamebucketName');
+
+      server.summaryInfo(request, metadata.value, (err, res) => {
+        if (err) {
+          console.log('errsummry------:', err);
+          // reject(false);
+          resolve(false);
+        } else {
           const contentList = res.getContentsList().map((el) => {
             return {
               count: el.getCount(),
@@ -234,6 +243,7 @@ export default function useOrderInfo() {
     let date = obj.sign_timestamp;
     let order_id = obj.order_id;
     let domain = obj.domain;
+    orderInfo.value = obj;
 
     bucketName.value = domain;
     orderId.value = obj.order_id;

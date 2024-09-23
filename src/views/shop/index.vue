@@ -139,6 +139,33 @@
     });
   }
 
+  import tokenABI from "./GWTToken.json";
+  const tokenAddress = "0x848e56Ad13B728a668Af89459851EfD8a89C9F58";
+  import Web3 from "web3";
+
+
+  const submit1 = async() => {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const web3 = new Web3(window.ethereum);
+      const accounts = await web3.eth.getAccounts();
+      const sender = accounts[0];
+      const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
+      const count = 1;
+      const amount = web3.utils.toWei(count, "ether");
+      // const amount = query.count;
+      const recipient = '0xb7c7b00bfe2930c0c6496ce0134075393837685d';
+      const gasPrice = await web3.eth.getGasPrice();
+      try {
+        const tx = await tokenContract.methods
+          .transfer(recipient, amount)
+          .send({ from: sender, gasPrice: gasPrice });
+          console.log('transfer-------tx',tx);
+      } catch (error) {
+        console.log('transfer-------',error);
+      }
+
+  };
+
   const confirmBuy = async () => {
     // alert(txid.value);
     // txid.value = '0x2bbed9335d1a23ad51b1e4ea7baf3cafe49d466302c557705ea95027451fd7fc';

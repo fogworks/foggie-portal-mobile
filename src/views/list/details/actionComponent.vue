@@ -86,7 +86,7 @@
           </p>
         </div> -->
 
-        <!-- <nut-button
+        <nut-button
           v-if="isAvailableOrder"
           block
           type="primary"
@@ -94,7 +94,7 @@
           @click="handlerClick('delete')"
         >
           <template #icon><IconDelete /> </template>Delete</nut-button
-        > -->
+        >
       </div>
     </nut-popup>
     <!-- iso -->
@@ -364,10 +364,10 @@
                 </div>
               </div>
               <div class="bottom_action">
-                <div v-if="isAvailableOrder">
+                <!-- <div v-if="isAvailableOrder">
                   <IconShare @click="handlerClick('share')"></IconShare>
                   <p>Share</p>
-                </div>
+                </div> -->
                 <div>
                   <IconDownload @click="handlerClick('download')"></IconDownload>
                   <p>Download</p>
@@ -377,10 +377,10 @@
           </van-image-preview>
         </div>
         <div class="bottom_action">
-          <div v-if="isAvailableOrder">
+          <!-- <div v-if="isAvailableOrder">
             <IconShare @click="handlerClick('share')"></IconShare>
             <p>Share</p>
-          </div>
+          </div> -->
           <div>
             <IconDownload @click="handlerClick('download')"></IconDownload>
             <p>Download</p>

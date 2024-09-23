@@ -17,8 +17,10 @@
             </div>
           </div>
         </div>
-        <div class="maxio_img running_img" @click="showOfflineBox" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']">
+        <!-- <div class="maxio_img running_img" @click="showOfflineBox" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']">
           <img src="@/assets/maxio/running.svg" class="running_img" />
+        </div> -->
+        <div class="maxio_img running_img" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']">
         </div>
       </div>
       <div class="show_max_more" @click="showMoreList" v-if="!isShowMoreList && maxTableData.length > 20">
