@@ -31,9 +31,24 @@ export const minSize = 5;
 // export const dmUrl = 'http://45.207.245.24:12255';
 
 
-export const shareUrl = 'https://share.fogworks.io';
-export const s3Url = 's3.vofocorp.com';
+// export const shareUrl = 'https://share.fogworks.io';
+// export const s3Url = 's3.vofocorp.com';
 // export const poolUrl = 'us1.vofocorp.com';
+// export const ambAddress = 'https://ambadmin.fogworks.io';
+// export const redirectUrl = 'https://m.fogworks.io/';
+// export const dappUrl = 'https://dapp.fogworks.io/';
+// export const browserUrl = 'https://polygonscan.com';
+// export const vpsUrl = 'https://pool.fogworks.io';
+// export const maxUrl = 'https://cloud.fogworks.io';
+// export const mscUrl = 'http://45.207.245.24:6066';
+// export const dmUrl = 'http://45.207.245.24:12255';
+
+// export const maxUrl = '127.0.0.1:8007';
+
+
+
+export const shareUrl = 'https://share.dev.u2i.net';
+export const s3Url = 's3.vofocorp.com';
 export const poolUrl = 'us.u2i.net';
 export const ambAddress = 'https://ambadmin.fogworks.io';
 export const redirectUrl = 'https://m.fogworks.io/';
@@ -42,6 +57,3 @@ export const browserUrl = 'https://polygonscan.com';
 export const vpsUrl = 'https://pool.fogworks.io';
 export const maxUrl = 'https://cloud.fogworks.io';
 export const mscUrl = 'http://45.207.245.24:6066';
-// export const dmUrl = 'http://45.207.245.24:12255';
-
-// export const maxUrl = '127.0.0.1:8007';

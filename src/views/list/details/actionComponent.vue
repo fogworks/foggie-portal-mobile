@@ -44,7 +44,7 @@
         }"
       >
         <div class="optionBox">
-          <!-- <template v-if="isAvailableOrder">
+          <template v-if="isAvailableOrder">
             <div @click="handlerClick('share')" v-if="!chooseItem.isDir">
               <IconShare color="#222224 "></IconShare>
               <span>Share</span>
@@ -61,14 +61,14 @@
               <IconMove :color="category != 1 || !isMobileOrder ? '#222224' : '#ffffff5c'"></IconMove>
               Move
             </div>
-          </template> -->
+          </template>
 
           <div @click="handlerClick('download')">
             <IconDownload color="#222224"></IconDownload>
             Download
           </div>
         </div>
-        <!-- <div class="ipfs" v-if="chooseItem.isPin || chooseItem.cid">
+        <div class="ipfs" v-if="chooseItem.isPin || chooseItem.cid">
           <p v-if="chooseItem.isPin && chooseItem.cid">
             <span>{{ handleID(`ipfs://${chooseItem.cid}`) }} </span>
             <IconCopy color="#222224" @click="copyIPFS('ipfs', chooseItem)"></IconCopy>
@@ -84,7 +84,7 @@
             <span> {{ handleID(`${browserUrl}/nft/${nft.getContractid()}/${nft.getTokenid()}`) }} </span>
             <IconCopy color="#262628" @click="copyNft(nft)"></IconCopy>
           </p>
-        </div> -->
+        </div>
 
         <nut-button
           v-if="isAvailableOrder"
@@ -364,10 +364,10 @@
                 </div>
               </div>
               <div class="bottom_action">
-                <!-- <div v-if="isAvailableOrder">
+                <div v-if="isAvailableOrder">
                   <IconShare @click="handlerClick('share')"></IconShare>
                   <p>Share</p>
-                </div> -->
+                </div>
                 <div>
                   <IconDownload @click="handlerClick('download')"></IconDownload>
                   <p>Download</p>
@@ -377,10 +377,10 @@
           </van-image-preview>
         </div>
         <div class="bottom_action">
-          <!-- <div v-if="isAvailableOrder">
+          <div v-if="isAvailableOrder">
             <IconShare @click="handlerClick('share')"></IconShare>
             <p>Share</p>
-          </div> -->
+          </div>
           <div>
             <IconDownload @click="handlerClick('download')"></IconDownload>
             <p>Download</p>
@@ -1190,6 +1190,9 @@
         checkData = [chooseItem.value];
       }
     }
+    if (movePrefix.value.join('.') === prefix.value.join('.')) {
+      return;
+    }
     const targetObject = (val: { name: string }) => {
       if (movePrefix.value.length) {
         return movePrefix.value.join('/') + '/' + val.name;
@@ -1394,7 +1397,7 @@
         padding: 0px 20px;
         height: 70px;
         line-height: 70px;
-        background-color: #cbcacf;
+        // background-color: #cbcacf;
         font-weight: 600;
         font-size: 28px;
         display: flex;
@@ -1410,7 +1413,7 @@
       .fileItemDetail_Body {
         padding: 20px 20px;
         border-bottom: 4px solid #adacb1;
-        background-color: #dfdee3;
+        // background-color: #dfdee3;
         & > div {
           height: 40px;
           line-height: 40px;
@@ -1419,7 +1422,7 @@
         }
       }
       .fileItemDetail_bottom {
-        background-color: #dfdee3;
+        // background-color: #dfdee3;
         display: grid;
         padding: 0px 20px;
         grid-template-columns: repeat(5, 1fr);

@@ -378,8 +378,6 @@
       // xhr.setRequestHeader('x-amz-meta-file-size', options.sourceFile.size.toString());
       xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
 
-console.log('-----------123', options.sourceFile.size.toString(), options.sourceFile.type);
-console.log(xhr.setRequestHeader);
       xhr.onload = function () {
 
         if (this.status >= 200 && this.status < 300) {
@@ -432,6 +430,7 @@ console.log(xhr.setRequestHeader);
     width: 80px;
     height: 80px;
     cursor: pointer;
+    color: #666;
     svg,
     img {
       width: 100%;

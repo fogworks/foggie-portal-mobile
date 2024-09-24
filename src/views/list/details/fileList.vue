@@ -606,7 +606,7 @@
     tableLoading,
     () => {
       checkedItem.value = [];
-      doSearch('', prefix, true);
+      // doSearch('', prefix, true);
     },
     orderInfo,
     header,
@@ -1133,7 +1133,7 @@
 
   const uploadComplete = (file: any) => {
     console.log('uploadComplete');
-    getFileList('', prefix.value, true);
+    // getFileList('', prefix.value, true);
   };
 
   function getFileList(scroll: string, prefix: any[], reset = false) {
@@ -1239,7 +1239,8 @@
                   const imageObj = el.getImages().toObject();
                   const imageInfo = {};
                   let isShowDetail = false;
-                  if (imageObj.camerainfo?.make) {
+                  console.log('imageObj-----', imageObj);
+                  if (imageObj.camerainfo?.make || imageObj.addition?.aperture) {
                     isShowDetail = true;
                     imageInfo.aperture = imageObj.addition.aperture; //光圈
                     imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
@@ -1740,7 +1741,7 @@
 
     switchType(category1);
 
-    // initWebSocket();
+    initWebSocket();
   };
   // onUnmounted(() => {
   //   closeSocket();
@@ -1760,77 +1761,77 @@
     doSearch('', prefix.value, true);
   };
 
-  // const initWebSocket = async () => {
-  //   let param = {
-  //     order_uuid: route?.query?.uuid,
-  //   };
-  //   const signData = await get_order_sign(param);
-  //   socketDate.value = signData?.result?.data?.timestamp;
-  //   socketToken.value = signData?.result?.data?.sign;
-  //   console.log('initWebSocket-----------');
-  //   const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
-  //   fileSocket.value = new WebSocket(url);
-  //   fileSocket.value.onopen = () => {
-  //     const authMessage = {
-  //       action: 'AUTH',
-  //       userID: orderInfo.value.foggie_id,
-  //       token: socketToken.value,
-  //       date: socketDate.value,
-  //     };
-  //     fileSocket.value.send(JSON.stringify(authMessage));
-  //   };
+  const initWebSocket = async () => {
+    let param = {
+      order_uuid: route?.query?.uuid,
+    };
+    const signData = await get_order_sign(param);
+    socketDate.value = signData?.result?.data?.timestamp;
+    socketToken.value = signData?.result?.data?.sign;
+    const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
+    console.log('initWebSocket-----------', url);
+    fileSocket.value = new WebSocket(url);
+    fileSocket.value.onopen = () => {
+      const authMessage = {
+        action: 'AUTH',
+        userID: orderInfo.value.foggie_id,
+        token: socketToken.value,
+        date: socketDate.value,
+      };
+      fileSocket.value.send(JSON.stringify(authMessage));
+    };
 
-  //   fileSocket.value.onmessage = (event: { data: string }) => {
-  //     const message = JSON.parse(event.data);
-  //     const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
-  //     console.log('Received message from server:', message, currentFolderStr);
-  //     const uploadFileName = window.sessionStorage.getItem('uploadFileName');
-  //     let fileInfo = message.fileInfo;
-  //     let dirArr = fileInfo.keys;
-  //     const updateBy = fileInfo.updateBy;
-  //     let dirFile = '';
-  //     let dirFileName = '';
-  //     if (dirArr && dirArr.length > 0) {
-  //       let index = dirArr[0].lastIndexOf('/');
-  //       if (index > -1) {
-  //         dirFile = dirArr[0].substring(0, index + 1);
-  //         dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
-  //       } else {
-  //         dirFile = '';
-  //         dirFileName = dirArr[0];
-  //       }
-  //     }
+    fileSocket.value.onmessage = (event: { data: string }) => {
+      const message = JSON.parse(event.data);
+      const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
+      console.log('Received message from server:', message, currentFolderStr);
+      const uploadFileName = window.sessionStorage.getItem('uploadFileName');
+      let fileInfo = message.fileInfo;
+      let dirArr = fileInfo.keys;
+      const updateBy = fileInfo.updateBy;
+      let dirFile = '';
+      let dirFileName = '';
+      if (dirArr && dirArr.length > 0) {
+        let index = dirArr[0].lastIndexOf('/');
+        if (index > -1) {
+          dirFile = dirArr[0].substring(0, index + 1);
+          dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
+        } else {
+          dirFile = '';
+          dirFileName = dirArr[0];
+        }
+      }
 
-  //     console.log(
-  //       '888888',
-  //       dirArr,
-  //       dirFile,
-  //       currentFolderStr,
-  //       dirFile === decodeURIComponent(currentFolderStr),
-  //       dirFileName !== uploadFileName,
-  //     );
-  //     if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
-  //       if (detailShow.value) {
-  //         setTimeout(() => {
-  //           initWebSocket();
-  //         }, 3000);
-  //       } else {
-  //         doSocketFn(message);
-  //       }
-  //     }
-  //   };
+      console.log(
+        '888888',
+        dirArr,
+        dirFile,
+        currentFolderStr,
+        dirFile === decodeURIComponent(currentFolderStr),
+        dirFileName !== uploadFileName,
+      );
+      if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
+        if (detailShow.value) {
+          setTimeout(() => {
+            initWebSocket();
+          }, 3000);
+        } else {
+          doSocketFn(message);
+        }
+      }
+    };
 
-  //   fileSocket.value.onclose = (event: any) => {
-  //     console.log('WebSocket connection closed:', event, fileSocket.value);
-  //     if (fileSocket.value) {
-  //       console.log('WebSocket connection again:');
-  //       initPage();
-  //     }
-  //   };
-  //   fileSocket.value.onerror = (event: any) => {
-  //     console.error('WebSocket connection error:', event);
-  //   };
-  // };
+    fileSocket.value.onclose = (event: any) => {
+      console.log('WebSocket connection closed:', event, fileSocket.value);
+      if (fileSocket.value) {
+        console.log('WebSocket connection again:');
+        initPage();
+      }
+    };
+    fileSocket.value.onerror = (event: any) => {
+      console.error('WebSocket connection error:', event);
+    };
+  };
   function swipeChange(index) {
     imgStartIndex.value = index;
     chooseItem.value = imgArray.value[index];
@@ -2143,7 +2144,7 @@
         padding: 0px 20px;
         height: 70px;
         line-height: 70px;
-        background-color: #cbcacf;
+        // background-color: #cbcacf;
         font-weight: 600;
         font-size: 28px;
         display: flex;
@@ -2159,7 +2160,7 @@
       .fileItemDetail_Body {
         padding: 20px 20px;
         border-bottom: 4px solid #adacb1;
-        background-color: #dfdee3;
+        // background-color: #dfdee3;
         & > div {
           height: 40px;
           line-height: 40px;
@@ -2168,7 +2169,7 @@
         }
       }
       .fileItemDetail_bottom {
-        background-color: #dfdee3;
+        // background-color: #dfdee3;
         display: grid;
         padding: 0px 20px;
         grid-template-columns: repeat(5, 1fr);

@@ -1,6 +1,24 @@
 <template>
   <nut-pull-refresh v-model="isRefresh" @refresh="refreshFun">
     <div>
+      <div class="maxio_home_card">
+        <div class="maxio_pool_list">
+          <div class="maxio_pool_item">
+            <div class="img_bg reward_bg">
+              <div class="img_bg reward_bg"><img src="@/assets/maxio/pool.svg" /></div>
+            </div>
+            <span class="pool_name">Stake</span>
+            <span class="reward_value">{{ cloudQuery.paid_price }} DMCX</span>
+          </div>
+          <div class="maxio_pool_item">
+            <div class="img_bg reward_bg">
+              <div class="img_bg reward_bg"><img src="@/assets/maxio/reward.svg" /></div>
+            </div>
+            <span class="pool_name">Reward</span>
+            <span class="reward_value">0 DMCX</span>
+          </div>
+        </div>
+      </div>
       <div :class="['top_box', isAvailableOrder ? '' : 'isHistory', showText ? 'showHight' : 'hideHight']" v-if="!loadingAnmation">
         <nut-row class="order-detail">
           <nut-col :span="24" class="order-content_wrap">
@@ -42,6 +60,32 @@
             </nut-cell>
           </nut-col>
         </nut-row>
+      </div>
+      <div class="today_file">
+        <span class="title">Category</span>
+      </div>
+      <div class="maxio_home_card space_card">
+        <div class="space_card_right">
+          <!-- <div class="local_title">Category</div> -->
+          <div class="file_items_groups">
+            <div class="file_items" v-for="(item, index) in fileListArr" :key="index" @click="changeTab(item.type)">
+              <div class="svg_box">
+                <IconImage v-if="item.type === 'Photos'"></IconImage>
+                <IconDocument v-if="item.type === 'Documents'"></IconDocument>
+                <IconVideo v-if="item.type === 'Videos'"></IconVideo>
+                <IconAudio2 v-if="item.type === 'Audio'"></IconAudio2>
+                <IconOther v-if="item.type === 'Other'"></IconOther>
+              </div>
+              <div class="file_detail">
+                <div class="file_name">{{ item.name }}</div>
+                <div class="file_size">
+                  <span class="file_space">{{ getfilesize(item.total) }}</span>
+                  <span class="file_number"> ({{ item.number }} Files)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="detail_box" v-if="!loadingAnmation">
         <div class="today_file">
@@ -207,6 +251,10 @@
   import getFileType from '@/utils/getFileType.ts';
   //   import IconImage from '~icons/home/image.svg';
   import IconImage from '~icons/home/mimage.svg';
+  import IconAudio2 from '~icons/home/maudio.svg';
+  import IconDocument from '~icons/home/mdoc.svg';
+  import IconVideo from '~icons/home/mvideo.svg';
+  import IconOther from '~icons/home/mother.svg';
   import IconPlay from '~icons/home/play.svg';
   import IconMdiF from '~icons/home/png.svg';
   import IconRiPie from '~icons/home/pie.svg';
@@ -247,6 +295,44 @@
     5: 'Order Timeout',
     6: 'Abandoned',
   };
+
+  const fileListArr = ref([
+    {
+      type: 'Photos',
+      number: '',
+      capacity: '',
+      name: 'Images',
+      total: 0,
+    },
+    {
+      type: 'Videos',
+      number: '',
+      capacity: '',
+      name: 'Videos',
+      total: 0,
+    },
+    {
+      type: 'Audio',
+      number: '',
+      capacity: '',
+      name: 'Audio',
+      total: 0,
+    },
+    {
+      type: 'Documents',
+      number: '',
+      capacity: '',
+      name: 'Documents',
+      total: 0,
+    },
+    // {
+    //     type: "Other",
+    //     number: "",
+    //     capacity: "",
+    //     name: "Other",
+    //     total: 0,
+    // },
+  ]);
   //   const loadingAnmation = ref(true);
   const {
     filesCount,
@@ -947,6 +1033,35 @@
     }
     console.log('tableData=====', tableData.value);
     tableLoading.value = false;
+  };
+
+  const changeTab = (name) => {
+    let category = '';
+    if (name === 'Photos') {
+      category = 1;
+    } else if (name === 'Documents') {
+      category = 4;
+    } else if (name === 'Videos') {
+      category = 2;
+    } else if (name === 'Audio') {
+      category = 3;
+    } else {
+      category = 0;
+    }
+    router.push({
+      name: 'FileList',
+      query: {
+        domain: cloudQuery.value.domain,
+        rpc: cloudQuery.value.rpc,
+        peer_id: cloudQuery.value.peer_id,
+        foggie_id: cloudQuery.value.foggie_id,
+        signature: cloudQuery.value.signature,
+        sign_timestamp: cloudQuery.value.sign_timestamp,
+        order_id: cloudQuery.value.order_id,
+        category,
+        bucketName,
+      },
+    });
   };
 
   onMounted(async () => {
@@ -2302,6 +2417,7 @@
 </style>
 
 <style lang="scss" scoped>
+  @import url('./maxFileOpt/style/index.scss');
   .custom-action_sheet {
     display: flex;
     flex-direction: column;

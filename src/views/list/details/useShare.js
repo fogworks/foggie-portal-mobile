@@ -36,7 +36,7 @@ export default function useShare(orderInfo, header, deviceType, metadata) {
   const desc = ref('1 hour');
   const periodValue = ref(isMobileDevice.value ? [3600] : 3600);
   const imgUrl = ref('');
-  const imgDesc = ref('');
+  const imgDesc = ref('Please input description');
   const shareType = ref('');
   const httpCopyLink = ref('');
   const userInfo = computed(() => userStore.getUserInfo);
