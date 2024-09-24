@@ -52,8 +52,8 @@
       <p>
         <span class="p_label">Space: </span><span>{{ shopForm.quantity }} GB</span></p
       >
-      <p>
-        <span class="p_label">Price:</span><span>{{ calc_price.total }} DMCX</span>
+      <p @click="copySecret(calc_price.total)">
+        <span class="p_label">Price:</span><span>{{ calc_price.total }} DMCX<IconCopy color="#bef508"></IconCopy></span>
       </p>
       <p @click="copySecret(address)">
         <span class="p_label">Payment account: </span
@@ -122,7 +122,7 @@
   });
   const { buyDisabled, showTop, shopForm, loading } = toRefs(state);
 
-  const address = computed(() => userStore.getUserInfo?.address);
+  const address = computed(() => userStore.getUserInfo?.address || userStore.getAddress);
 
   async function submit() {
     const d = {

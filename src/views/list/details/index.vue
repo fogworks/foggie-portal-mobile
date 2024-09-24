@@ -913,18 +913,21 @@
       if (res.code == 200) {
         showToast.success('Create successfully');
         dialogVisible.value = false;
-        const obj = {
-          rpc: route.query.rpc,
-          peer_id: route.query.peer_id,
-          foggie_id: route.query.foggie_id,
-          signature: route.query.signature,
-          sign_timestamp: route.query.sign_timestamp,
-          order_id: route.query.order_id,
-          domain: route.query.domain,
-        };
-        await getOrderInfo1(obj);
-        getFileList();
-        getSummary();
+        router.push({ name: 'Home' });
+
+        // const obj = {
+        //   rpc: route.query.rpc,
+        //   peer_id: route.query.peer_id,
+        //   foggie_id: route.query.foggie_id,
+        //   signature: route.query.signature,
+        //   sign_timestamp: route.query.sign_timestamp,
+        //   order_id: route.query.order_id,
+        //   domain: route.query.domain,
+        // };
+        // console.log('obj----------', obj)
+        // await getOrderInfo1(obj);
+        // getFileList();
+        // getSummary();
       } else {
         showToast.fail('Create failed');
       }
