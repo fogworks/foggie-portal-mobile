@@ -368,14 +368,15 @@
     if (res.code == 200) {
       showToast.success('You have successfully made the purchase and can check it in your order');
       isShowSpaceInfo.value = false;
-      currentPage.value = 'calc';
+      //   currentPage.value = 'calc';
+      const tx = await transferFn();
+      if (!tx?.transactionHash) {
+        showToast.fail('Transaction failed');
+        return;
+      }
       router.push('/home');
     }
-    const tx = await transferFn();
-    if (!tx?.transactionHash) {
-      showToast.fail('Transaction failed');
-      return;
-    }
+
     // web3.eth.personal.sign(message, '0xf97bb5db0c5aee67051faea1669110eed171cc10', '').then((signature) => {
     //   dm_order_stake(d).then((res) => {
     //     if (res.code == 200) {
