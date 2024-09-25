@@ -350,7 +350,7 @@
     let _date = date + 'Z';
     const message = `${Number(shopForm.value.week)}\n${Number(shopForm.value.quantity)}\n${calc_price.value.total}\n${_date}`;
     // const message = `${Number(shopForm.value.week)}&${Number(shopForm.value.quantity)}&${calc_price.value.total}&${_date}`;
-    let signature = await web3.eth.personal.sign(message, '0xf97bb5db0c5aee67051faea1669110eed171cc10', '');
+    let signature = await web3.eth.personal.sign(message, address.value, '');
     const d = {
       // orderId: 8,
       //   orderId: calc_price.value.orderId,
@@ -369,6 +369,7 @@
       showToast.success('You have successfully made the purchase and can check it in your order');
       isShowSpaceInfo.value = false;
       currentPage.value = 'calc';
+      router.push('/home');
     }
     const tx = await transferFn();
     if (!tx?.transactionHash) {
