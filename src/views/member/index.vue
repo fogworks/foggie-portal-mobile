@@ -223,7 +223,8 @@
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
   const maxBind = computed(() => userStore.getMaxBind);
   const maxWallet = computed(() => userStore.getMaxWallet);
-  const address = computed(() => userStore.getUserInfo?.address);
+  const address = computed(() => userStore.getUserInfo?.address || userStore.getAddress);
+
 
   const visible = ref<boolean>(false);
 

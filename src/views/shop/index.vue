@@ -275,24 +275,48 @@
 
   import tokenABI from './GWTToken.json';
   const tokenAddress = '0x848e56Ad13B728a668Af89459851EfD8a89C9F58';
+  const X_LAYER_CHAIN_ID = '0xc4';
 
-  const submit1 = async () => {
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const web3 = new Web3(window.ethereum);
-    const accounts = await web3.eth.getAccounts();
-    const sender = accounts[0];
-    const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
-    const count = 1;
-    const amount = web3.utils.toWei(count, 'ether');
-    // const amount = query.count;
-    const recipient = '0xb7c7b00bfe2930c0c6496ce0134075393837685d';
-    const gasPrice = await web3.eth.getGasPrice();
-    try {
-      const tx = await tokenContract.methods.transfer(recipient, amount).send({ from: sender, gasPrice: gasPrice });
-      console.log('transfer-------tx', tx);
-    } catch (error) {
-      console.log('transfer-------', error);
+  const transferFn = async () => {
+    let tx = {
+      transactionHash: '',
+    };
+    if (typeof window.ethereum !== 'undefined') {
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const web3 = new Web3(window.ethereum);
+      const accounts = await web3.eth.getAccounts();
+      const sender = accounts[0];
+      const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
+      const count = calc_price.value.total;
+      const amount = web3.utils.toWei(count.toString(), 'ether');
+      const recipient = calc_price.value.to;
+      const gasPrice = await web3.eth.getGasPrice();
+
+      const chainId = await web3.eth.getChainId();
+      console.log('Current Chain ID:', chainId);
+
+      if (chainId !== parseInt(X_LAYER_CHAIN_ID, 16)) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: X_LAYER_CHAIN_ID }],
+          });
+          console.log('Switched to X Layer network');
+        } catch (switchError) {
+          console.error('Failed to switch to X Layer network', switchError);
+          alert('Please switch to the X Layer network in your wallet.');
+          return;
+        }
+      }
+
+      try {
+        tx = await tokenContract.methods.transfer(recipient, amount).send({ from: sender, gasPrice: gasPrice });
+        console.log('transfer-------tx', tx);
+      } catch (error) {
+        console.log('transfer-------', error);
+      }
     }
+    return tx;
   };
 
   const confirmBuy = async () => {
@@ -302,6 +326,11 @@
     //   showToast.fail('Please enter the transaction hash');
     //   return;
     // }
+    const tx = await transferFn();
+    if (!(tx?.transactionHash)) {
+      showToast.fail('Transaction failed');
+      return;
+    }
     const d = {
       // orderId: 8,
       //   orderId: calc_price.value.orderId,

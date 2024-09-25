@@ -199,7 +199,7 @@ export default function useOrderInfo() {
 
 
   const getSummary1 = (obj) => {
-    let ip = obj.rpc.split(':')[0];
+    // let ip = obj.rpc.split(':')[0];
     let peer_id = obj.peer_id;
     let foggie_id = obj.foggie_id;
     let cur_token = obj.signature;
@@ -240,7 +240,7 @@ export default function useOrderInfo() {
   };
 
   const getOrderInfo1 = async (obj) => {
-    let ip = obj.rpc.split(':')[0];
+    // let ip = obj.rpc.split(':')[0];
     let peer_id = obj.peer_id;
     let foggie_id = obj.foggie_id;
     let cur_token = obj.signature;

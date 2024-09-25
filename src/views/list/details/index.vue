@@ -1716,7 +1716,7 @@
       dialogVisible.value = true;
       // setDefaultName();
     }
-    syncChallenge();
+    // syncChallenge();
   });
   onUnmounted(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);

@@ -3,17 +3,25 @@
     <div>
       <div class="maxio_home_card">
         <div class="maxio_pool_list">
+          <div class="maxio_pool_item" @click="getKey">
+            <div class="img_bg reward_bg"><img src="@/assets/maxio/bucket.svg" /></div>
+            <span class="pool_name">S3 Service</span>
+          </div>
+          <div class="maxio_pool_item" @click="getIPFSService">
+            <div class="img_bg reward_bg"><img src="@/assets/maxio/ipfs.svg" /></div>
+            <span class="pool_name">IPFS Pinning</span>
+          </div>
+        </div>
+      </div>
+      <div class="maxio_home_card">
+        <div class="maxio_pool_list">
           <div class="maxio_pool_item">
-            <div class="img_bg reward_bg">
-              <div class="img_bg reward_bg"><img src="@/assets/maxio/pool.svg" /></div>
-            </div>
+            <div class="img_bg reward_bg"><img src="@/assets/maxio/pool.svg" /></div>  
             <span class="pool_name">Stake</span>
             <span class="reward_value">{{ cloudQuery.paid_price }} DMCX</span>
           </div>
           <div class="maxio_pool_item">
-            <div class="img_bg reward_bg">
-              <div class="img_bg reward_bg"><img src="@/assets/maxio/reward.svg" /></div>
-            </div>
+            <div class="img_bg reward_bg"><img src="@/assets/maxio/reward.svg" /></div>
             <span class="pool_name">Reward</span>
             <span class="reward_value">0 DMCX</span>
           </div>
@@ -432,6 +440,29 @@
     header,
     metadata,
   );
+
+  const getKey = () => {
+
+    // domain: item.domain,
+    //       rpc: item.rpc,
+    //       peer_id: item.peer_id,
+    //       foggie_id: item.foggie_id,
+    //       signature: item.signature,
+    //       sign_timestamp: item.sign_timestamp,
+    //       order_id: item.order_id,
+    router.push({
+        name: 'getKey',
+        query: { domain: cloudQuery.value.domain, peer_id: cloudQuery.value.peer_id, foggie_id: cloudQuery.value.foggie_id, signature: cloudQuery.value.signature, sign_timestamp: cloudQuery.value.sign_timestamp, order_id: cloudQuery.value.order_id },
+      });
+  };
+
+  const getIPFSService = () => {
+    router.push({
+        name: 'IPFSService',
+        query: { domain: cloudQuery.value.domain, peer_id: cloudQuery.value.peer_id, foggie_id: cloudQuery.value.foggie_id, signature: cloudQuery.value.signature, sign_timestamp: cloudQuery.value.sign_timestamp, order_id: cloudQuery.value.order_id },
+      });
+  };
+
   function swipeChange(index) {
     imgStartIndex.value = index;
     detailRow.value = imgData.value[index];

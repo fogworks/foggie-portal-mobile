@@ -293,68 +293,70 @@
 
   const getKeys = async () => {
     loading.value = true;
-    await get_unique_order({ order_uuid: route?.query?.uuid }).then(async (res: any) => {
-      peer_id.value = res.result.data.peer_id;
-      foggie_id.value = res.result.data.foggie_id;
-      token.value = res.result.data.sign;
-      let param = {
-        order_uuid: route?.query?.uuid,
-      };
+    peer_id.value = route.query.peer_id;
+    foggie_id.value = route.query.foggie_id;
+    token.value = route.query.signature;
+    // let param = {
+    //   order_uuid: route?.query?.uuid,
+    // };
 
-      const signData = await get_order_sign(param);
-      console.log('signData==:', signData);
-      token.value = signData?.result?.data?.sign;
-      const date = signData?.result?.data?.timestamp;
+    // const signData = await get_order_sign(param);
+    // console.log('signData==:', signData);
+    // token.value = signData?.result?.data?.sign;
+    // const date = signData?.result?.data?.timestamp;
+    const date = route.query.sign_timestamp;
 
-      let server = new pb.default.ServiceClient(ip.value, null, null);
-      let header = new grpc.default.ProxHeader();
-      header.setPeerid(peer_id.value);
-      header.setId(foggie_id.value);
-      header.setToken(token.value);
-      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-      header.setApptype(appType);
+    let server = new pb.default.ServiceClient(ip.value, null, null);
+    let header = new grpc.default.ProxHeader();
+    header.setPeerid(peer_id.value);
+    header.setId(foggie_id.value);
+    header.setToken(token.value);
+    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+    header.setApptype(appType);
 
-      let request = new grpc.default.ProxGetCredRequest();
-      request.setHeader(header);
-      // console.log('-------metadata:',  grpcWeb.Metadata, grpc, pb)
-      // let metadata = new grpcWeb.Metadata();
-      // metadata.add('Date', date);
-      let metadata = {
-        'X-Custom-Date': date,
-      };
-      console.log('metadata==:', metadata);
-      server.listCreds(request, metadata, (err: any, res: { array: any }) => {
-        loading.value = false;
-        if (err) {
-          console.log('err------11:', err);
-        } else {
-          console.log('res.array[0]==:', res.array[0]);
-          for (let i = 0; i < res.array[0].length; i++) {
-            const ak = res.array[0][i][0];
-            const sk = res.array[0][i][1];
-            if (ak.indexOf('FOG') !== 0) {
-              dynamicForm.state.tels.push({
-                key: Date.now(),
-                accessKey: ak,
-                secretKey: sk,
-                eyeState: false,
-              });
-            }
+    let request = new grpc.default.ProxGetCredRequest();
+    request.setHeader(header);
+    // console.log('-------metadata:',  grpcWeb.Metadata, grpc, pb)
+    // let metadata = new grpcWeb.Metadata();
+    // metadata.add('Date', date);
+    let metadata = {
+      'X-Custom-Date': date,
+    };
+    console.log('metadata==:', metadata);
+    server.listCreds(request, metadata, (err: any, res: { array: any }) => {
+      loading.value = false;
+      if (err) {
+        console.log('err------11:', err);
+      } else {
+        console.log('res.array[0]==:', res.array[0]);
+        for (let i = 0; i < res.array[0].length; i++) {
+          const ak = res.array[0][i][0];
+          const sk = res.array[0][i][1];
+          if (ak.indexOf('FOG') !== 0) {
+            dynamicForm.state.tels.push({
+              key: Date.now(),
+              accessKey: ak,
+              secretKey: sk,
+              eyeState: false,
+            });
           }
         }
-      });
+      }
     });
   };
+
   const onOk = async (index: number) => {
     console.log('deleteConfirm', index);
 
-    let param = {
-      order_uuid: route?.query?.uuid,
-    };
-    const signData = await get_order_sign(param);
-    console.log('signData==:', signData);
-    token.value = signData?.result?.data?.sign;
-    const date = signData?.result?.data?.timestamp;
+    // let param = {
+    //   order_uuid: route?.query?.uuid,
+    // };
+    // const signData = await get_order_sign(param);
+    // console.log('signData==:', signData);
+    // token.value = signData?.result?.data?.sign;
+    // const date = signData?.result?.data?.timestamp;
+    token.value = route.query.signature;
+    const date = route.query.sign_timestamp;
     let metadata = {
       'X-Custom-Date': date,
     };

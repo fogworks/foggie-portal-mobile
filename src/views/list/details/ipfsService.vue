@@ -49,7 +49,7 @@
   import * as grpc from '@/pb/prox_pb';
 
   // import * as grpcWeb from 'grpc-web';
-  const { accessKeyId, secretAccessKey, header, metadata, getOrderInfo, isAvailableOrder, isError } = useOrderInfo();
+  const { accessKeyId, secretAccessKey, header, metadata, getOrderInfo, getOrderInfo1, isAvailableOrder, isError } = useOrderInfo();
   const router = useRouter();
   const route = useRoute();
   const ip = ref<any>('');
@@ -60,7 +60,7 @@
   const bucketName = ref<any>('');
   const domain = ref<any>('');
   domain.value = route.query.domain;
-  bucketName.value = route.query.bucketName;
+  bucketName.value = route.query.domain;
   const bucketUrl = ref<any>('');
   const loading = ref(false);
   bucketUrl.value = `https://${bucketName.value}.${poolUrl}:6008/pinning`;
@@ -97,7 +97,17 @@
 
   const add = async () => {
     if (!accessKeyId.value || isError.value) {
-      await getOrderInfo();
+      // await getOrderInfo();
+      let d = {
+        peer_id: route.query.peer_id,
+        foggie_id: route.query.foggie_id,
+        signature: route.query.signature,
+        sign_timestamp: route.query.sign_timestamp,
+        order_id: route.query.order_id,
+        domain: route.query.domain,
+      }
+
+      await getOrderInfo1(d);
     }
     let server = new pb.default.ServiceClient(ip.value, null, null);
     let request = new grpc.default.ProxGeneratePinCredRequest();
