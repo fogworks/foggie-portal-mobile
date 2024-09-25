@@ -512,3 +512,21 @@ export function dm_order_name_set(data: any) {
     });
 }
 
+export function dm_order_name_check(data: any) {
+    let url = `/dm/order/check_domain`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+
+
+export function dm_order_get_token(data: any) {
+    let url = `/dm/order/get_token`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}

@@ -75,7 +75,7 @@
             <div v-if="!cloudQuery.id" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
               <img src="@/assets/maxio/empty.png" alt="" />
             </div>
-            <CloudComponent :cloudQuery="currentBucketData" v-if="currentBucketData.id"></CloudComponent>
+            <CloudComponent :cloudQuery="currentBucketData" v-if="currentBucketData.id" @setDomainSuccess="setDomainSuccess"></CloudComponent>
           </sd>
         </div>
       </div>
@@ -279,6 +279,11 @@
         }
       });
     }
+  };
+
+  const setDomainSuccess = (data) => {
+    console.log('setDomainSuccess', data);
+    initData();
   };
   onMounted(() => {
     initData();

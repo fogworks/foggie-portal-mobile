@@ -280,7 +280,7 @@
     }
   }
   .top_tips2 {
-    background: #fff;
+    // background: #fff;
     font-size: 0.8rem;
     .valid {
       font-size: 0.8rem;

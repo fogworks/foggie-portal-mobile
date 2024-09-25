@@ -1,4 +1,4 @@
-import { get_unique_order, get_order_sign } from '@/api/index';
+import { get_unique_order, get_order_sign, dm_order_get_token } from '@/api/index';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/store/modules/user';
 import { useOrderStore } from '@/store/modules/order';
@@ -248,9 +248,14 @@ export default function useOrderInfo() {
     let order_id = obj.order_id;
     let domain = obj.domain;
     orderInfo.value = obj;
-
+    
     bucketName.value = domain;
     orderId.value = obj.order_id;
+    const signData = await dm_order_get_token({ orderId: order_id });
+    if (signData?.data?.signature) {
+      cur_token = signData?.data?.signature;
+      date = signData?.data?.timestamp
+    }
     try {
 
       // orderInfo.value.rpc = '218.2.96.99:6007';

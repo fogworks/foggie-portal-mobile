@@ -16,7 +16,7 @@
       <div class="maxio_home_card">
         <div class="maxio_pool_list">
           <div class="maxio_pool_item">
-            <div class="img_bg reward_bg"><img src="@/assets/maxio/pool.svg" /></div>  
+            <div class="img_bg reward_bg"><img src="@/assets/maxio/pool.svg" /></div>
             <span class="pool_name">Stake</span>
             <span class="reward_value">{{ cloudQuery.paid_price }} DMCX</span>
           </div>
@@ -251,11 +251,58 @@
           </template>
         </nut-dialog>
       </Teleport> -->
+
+  <Teleport to="body">
+    <nut-dialog
+      v-model:visible="dialogVisible"
+      title="Bucket Name"
+      :close-on-click-overlay="false"
+      :show-cancel="false"
+      :show-confirm="false"
+      custom-class="CustomName BucketName"
+      overlayClass="CustomOverlay"
+    >
+      <template #header>
+        <span class="icon" style="margin-right: 5px">
+          <IconBucket color="#000"></IconBucket>
+          <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%" />
+        </span>
+        Create a Bucket
+      </template>
+
+      <p class="bucket_tip" style="text-align: left; word-break: break-word"
+        >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
+        (-), and must start and end with lowercase letters or numbers.Sensitive information is recommended to be encrypted and uploaded.
+        <span @click="dialogShow = true" style="text-align: right; width: 100%; display: inline-block; text-decoration: underline"
+          >what is Bucket?</span
+        >
+      </p>
+
+      <p
+        style="
+          margin-top: 10px;
+          margin-bottom: 5px;
+          font-weight: 600;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: #000;
+        "
+      >
+        <span>Bucket Name</span> <span>Required</span>
+      </p>
+      <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
+      <template #footer>
+        <nut-button type="primary" style="font-size: 12px" @click="dialogVisible = false">Operate Later</nut-button>
+        <nut-button type="primary" @click="createName" :loading="isNameLoading">Confirm</nut-button>
+      </template>
+    </nut-dialog>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
   import ActionComponent from '@/views/list/details/actionComponent.vue';
-  import { ref, onMounted, watch, createVNode, provide } from 'vue';
+  import { ref, onMounted, watch, createVNode, provide, defineEmits } from 'vue';
   import getFileType from '@/utils/getFileType.ts';
   //   import IconImage from '~icons/home/image.svg';
   import IconImage from '~icons/home/mimage.svg';
@@ -278,7 +325,7 @@
   import useOrderInfo from '@/views/list/details/useOrderInfo.js';
   import useShare from '@/views/list/details/useShare.js';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
-  import { valid_upload, get_order_sign, dm_order_name_set } from '@/api/index';
+  import { valid_upload, get_order_sign, dm_order_name_set, dm_order_name_check } from '@/api/index';
 
   import '@nutui/nutui/dist/packages/toast/style';
   import useDelete from '@/views/list/details/useDelete.js';
@@ -291,6 +338,13 @@
       default: () => {},
     },
   });
+
+  const emits = defineEmits(['setDomainSuccess']);
+
+  const dialogShow = ref(false);
+  const newBucketName = ref<string>('');
+  const showCreateName = ref<boolean>(true);
+
   const isRefresh = ref(false);
   const { cloudQuery } = toRefs(props);
   const showText = ref(false);
@@ -442,7 +496,6 @@
   );
 
   const getKey = () => {
-
     // domain: item.domain,
     //       rpc: item.rpc,
     //       peer_id: item.peer_id,
@@ -450,17 +503,39 @@
     //       signature: item.signature,
     //       sign_timestamp: item.sign_timestamp,
     //       order_id: item.order_id,
+    if (!cloudQuery.value.domain) {
+      dialogVisible.value = true;
+      return;
+    }
     router.push({
-        name: 'getKey',
-        query: { domain: cloudQuery.value.domain, peer_id: cloudQuery.value.peer_id, foggie_id: cloudQuery.value.foggie_id, signature: cloudQuery.value.signature, sign_timestamp: cloudQuery.value.sign_timestamp, order_id: cloudQuery.value.order_id },
-      });
+      name: 'getKey',
+      query: {
+        domain: cloudQuery.value.domain,
+        peer_id: cloudQuery.value.peer_id,
+        foggie_id: cloudQuery.value.foggie_id,
+        signature: cloudQuery.value.signature,
+        sign_timestamp: cloudQuery.value.sign_timestamp,
+        order_id: cloudQuery.value.order_id,
+      },
+    });
   };
 
   const getIPFSService = () => {
+    if (!cloudQuery.value.domain) {
+      dialogVisible.value = true;
+      return;
+    }
     router.push({
-        name: 'IPFSService',
-        query: { domain: cloudQuery.value.domain, peer_id: cloudQuery.value.peer_id, foggie_id: cloudQuery.value.foggie_id, signature: cloudQuery.value.signature, sign_timestamp: cloudQuery.value.sign_timestamp, order_id: cloudQuery.value.order_id },
-      });
+      name: 'IPFSService',
+      query: {
+        domain: cloudQuery.value.domain,
+        peer_id: cloudQuery.value.peer_id,
+        foggie_id: cloudQuery.value.foggie_id,
+        signature: cloudQuery.value.signature,
+        sign_timestamp: cloudQuery.value.sign_timestamp,
+        order_id: cloudQuery.value.order_id,
+      },
+    });
   };
 
   function swipeChange(index) {
@@ -490,7 +565,6 @@
   const dialogVisible = ref(false);
   const isNameLoading = ref(false);
 
-  const createName = () => {};
   watch(
     tableData,
     (val) => {
@@ -511,22 +585,19 @@
 
   const gotoOrderDetail = (item: any) => {
     if (!item.domain) {
-      router.push({
-        name: 'listDetails',
-        query: {
-          // id: item.order_id,
-          // uuid: item.uuid,
-          // amb_uuid: item.amb_uuid,
-          // domain: item.domain,
-          domain: item.domain,
-          rpc: item.rpc,
-          peer_id: item.peer_id,
-          foggie_id: item.foggie_id,
-          signature: item.signature,
-          sign_timestamp: item.sign_timestamp,
-          order_id: item.order_id,
-        },
-      });
+      // router.push({
+      //   name: 'listDetails',
+      //   query: {
+      //     domain: item.domain,
+      //     rpc: item.rpc,
+      //     peer_id: item.peer_id,
+      //     foggie_id: item.foggie_id,
+      //     signature: item.signature,
+      //     sign_timestamp: item.sign_timestamp,
+      //     order_id: item.order_id,
+      //   },
+      // });
+      dialogVisible.value = true;
     } else {
       router.push({
         name: 'FileList',
@@ -1067,7 +1138,7 @@
   };
 
   const changeTab = (name) => {
-    let category = '';
+    let category = 0;
     if (name === 'Photos') {
       category = 1;
     } else if (name === 'Documents') {
@@ -1076,9 +1147,7 @@
       category = 2;
     } else if (name === 'Audio') {
       category = 3;
-    } else {
-      category = 0;
-    }
+    } 
     router.push({
       name: 'FileList',
       query: {
@@ -1090,14 +1159,90 @@
         sign_timestamp: cloudQuery.value.sign_timestamp,
         order_id: cloudQuery.value.order_id,
         category,
-        bucketName,
+        bucketName : bucketName.value,
       },
     });
+  };
+
+  const createName = async () => {
+    if (!showCreateName.value) {
+      showCreateName.value = true;
+    } else if (newBucketName.value) {
+      let reg = /^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9]))*(?:\.[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9]))*)*$/;
+      if (newBucketName.value.length < 8 || newBucketName.value.length > 10) {
+        showToast.text('Please enter a name with a length of 8-10 digits');
+        return;
+      }
+      if (!reg.test(newBucketName.value)) {
+        showToast.text(
+          'Custom names can only contain lowercase letters, numbers, periods, and dashes (-), and must start and end with lowercase letters or numbers',
+        );
+        return;
+      }
+      // check name
+      isNameLoading.value = true;
+      const result = await dm_order_name_check({ domain: newBucketName.value });
+      if (result?.data) {
+        showToast.loading('Loading', {
+          cover: true,
+          coverColor: 'rgba(0,0,0,0.45)',
+          customClass: 'app_loading',
+          icon: loadingImg,
+          loadingRotate: false,
+          duration: 0,
+        });
+        createName1();
+      } else {
+        showToast.text('The name already exists, please change it');
+        console.log('name is exist');
+        isNameLoading.value = false;
+        return;
+      }
+
+      // dialogVisible.value = false;
+    }
+  };
+
+  const createName1 = () => {
+    // if (isNameLoading.value) {
+    //   return;
+    // }
+    // isNameLoading.value = true;
+
+    const d = {
+      orderId: cloudQuery.value.order_id,
+      domain: newBucketName.value,
+    };
+    dm_order_name_set(d).then(async (res: any) => {
+      isNameLoading.value = false;
+      showToast.hide();
+      if (res?.code == 200) {
+        showToast.success('Create successfully');
+        dialogVisible.value = false;
+        emits('setDomainSuccess');
+      } else {
+        showToast.fail('Create failed');
+      }
+    }).catch(() => {
+      showToast.hide();
+      isNameLoading.value = false;
+    });
+  };
+
+  const setDefaultName = () => {
+    console.log('setDefaultName=====');
+    let orderName = cloudQuery.value.order_id;
+    let length = 10 - (orderName ? orderName.toString().length : 0);
+    const _dmcName = 'dmcxaccount';
+    let str = `${_dmcName.substring(0, length)}${orderName}`;
+    newBucketName.value = str;
+    console.log(newBucketName.value, '------ newBucketName.value');
   };
 
   onMounted(async () => {
     if (!cloudQuery.value.domain) {
       dialogVisible.value = true;
+      setDefaultName();
     } else {
       console.log('refresh========1');
       await getOrderInfo1(cloudQuery.value);

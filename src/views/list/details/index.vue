@@ -19,7 +19,7 @@
         <div class="main_detail_box">
           <div class="profit_box">
             <div class="title">Miner Reward</div>
-            <div class="value">+ {{ income }} DMC</div>
+            <div class="value">+ {{ income }} DMCX</div>
           </div>
           <div class="progress_box">
             <div class="text">Used</div>
@@ -251,7 +251,7 @@
           <template #header>
             <span class="icon" style="margin-right: 5px">
               <IconBucket color="#000"></IconBucket>
-              <!-- <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%;height: 100%;"> -->
+              <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%" />
             </span>
             Create a Bucket
           </template>
@@ -259,9 +259,9 @@
           <p class="bucket_tip" style="text-align: left; word-break: break-word"
             >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
             (-), and must start and end with lowercase letters or numbers.Sensitive information is recommended to be encrypted and uploaded.
-            <!-- <span @click="dialogShow = true" style="text-align: right; width: 100%; display: inline-block; text-decoration: underline"
+            <span @click="dialogShow = true" style="text-align: right; width: 100%; display: inline-block; text-decoration: underline"
               >what is Bucket?</span
-            > -->
+            >
           </p>
 
           <p
@@ -277,10 +277,10 @@
           >
             <span>Bucket Name</span> <span>Required</span>
           </p>
-          <!-- <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input> -->
+          <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
           <template #footer>
-            <!-- <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button> -->
-            <nut-button type="primary" @click="createName1" :loading="isNameLoading">Confirm</nut-button>
+            <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button>
+            <nut-button type="primary" @click="createName" :loading="isNameLoading">Confirm</nut-button>
           </template>
         </nut-dialog>
       </Teleport>
@@ -375,7 +375,16 @@
   import useOrderInfo from './useOrderInfo.js';
   import useShare from './useShare.js';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
-  import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload, get_order_sign, dm_order_name_set } from '@/api/index';
+  import {
+    check_name,
+    order_name_set,
+    get_merkle,
+    calc_merkle,
+    valid_upload,
+    get_order_sign,
+    dm_order_name_set,
+    dm_order_name_check,
+  } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
@@ -900,13 +909,14 @@
   };
 
   const createName1 = () => {
-    if (isNameLoading.value) {
-      return;
-    }
-    isNameLoading.value = true;
+    // if (isNameLoading.value) {
+    //   return;
+    // }
+    // isNameLoading.value = true;
 
     const d = {
       orderId: route.query.order_id,
+      domain: newBucketName.value,
     };
     dm_order_name_set(d).then(async (res) => {
       isNameLoading.value = false;
@@ -914,20 +924,6 @@
         showToast.success('Create successfully');
         dialogVisible.value = false;
         router.push({ name: 'Home' });
-
-        // const obj = {
-        //   rpc: route.query.rpc,
-        //   peer_id: route.query.peer_id,
-        //   foggie_id: route.query.foggie_id,
-        //   signature: route.query.signature,
-        //   sign_timestamp: route.query.sign_timestamp,
-        //   order_id: route.query.order_id,
-        //   domain: route.query.domain,
-        // };
-        // console.log('obj----------', obj)
-        // await getOrderInfo1(obj);
-        // getFileList();
-        // getSummary();
       } else {
         showToast.fail('Create failed');
       }
@@ -952,24 +948,25 @@
       }
       // check name
       isNameLoading.value = true;
-      const result = await check_name(newBucketName.value);
-      if (result?.data?.domain) {
+      const result = await dm_order_name_check(newBucketName.value);
+      if (result?.data) {
+        showToast.loading('Loading', {
+          cover: true,
+          coverColor: 'rgba(0,0,0,0.45)',
+          customClass: 'app_loading',
+          icon: loadingImg,
+          loadingRotate: false,
+          duration: 0,
+        });
+        createName1();
+      } else {
+        showToast.text('The name already exists, please change it');
         console.log('name is exist');
         isNameLoading.value = false;
         return;
       }
 
-      showToast.loading('Loading', {
-        cover: true,
-        coverColor: 'rgba(0,0,0,0.45)',
-        customClass: 'app_loading',
-        icon: loadingImg,
-        loadingRotate: false,
-        duration: 0,
-      });
-
-      setOrderName();
-      dialogVisible.value = false;
+      // dialogVisible.value = false;
     }
 
     function setOrderName() {
@@ -1387,11 +1384,13 @@
   };
 
   const setDefaultName = () => {
-    let orderName = route.query.id;
-    let length = 10 - orderName.toString().length;
-    const _dmcName = dmcName.value ? dmcName.value : 'dmcaccount';
+    console.log('setDefaultName=====');
+    let orderName = route.query.order_id;
+    let length = 10 - (orderName ? orderName.toString().length : 0);
+    const _dmcName = 'dmcxaccount';
     let str = `${_dmcName.substring(0, length)}${orderName}`;
     newBucketName.value = str;
+    console.log(newBucketName.value, '------ newBucketName.value');
   };
   const gotoSummary = (order_id, state) => {
     console.log(order_id, state, 'order_id, state');
@@ -1691,6 +1690,7 @@
   onMounted(async () => {
     if (!route.query.domain) {
       dialogVisible.value = true;
+      setDefaultName();
       return;
     }
 
@@ -1713,7 +1713,7 @@
       getSummary();
       // initWebSocket();
     } else {
-      dialogVisible.value = true;
+      // dialogVisible.value = true;
       // setDefaultName();
     }
     // syncChallenge();

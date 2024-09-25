@@ -129,7 +129,7 @@
   import IconDelete from '~icons/material-symbols/delete';
   import AESHelper from './AESHelper';
   import { Base64 } from 'js-base64';
-  import { get_unique_order, get_order_sign } from '@/api/index';
+  import { get_unique_order, get_order_sign, dm_order_get_token } from '@/api/index';
   import { showToast, showDialog } from '@nutui/nutui';
   import { s3Url, poolUrl } from '@/setting.js';
 
@@ -304,7 +304,14 @@
     // console.log('signData==:', signData);
     // token.value = signData?.result?.data?.sign;
     // const date = signData?.result?.data?.timestamp;
-    const date = route.query.sign_timestamp;
+    
+    let date = route.query.sign_timestamp;
+
+    const signData = await dm_order_get_token({ orderId: route.query.order_id });
+    if (signData?.data?.signature) {
+      token.value = signData?.data?.signature;
+      date = signData?.data?.timestamp
+    }
 
     let server = new pb.default.ServiceClient(ip.value, null, null);
     let header = new grpc.default.ProxHeader();
