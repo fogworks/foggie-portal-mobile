@@ -128,6 +128,7 @@
           <div class="unpay_list_name">Order-{{ item.order_id }} </div>
           <div class="unpay_list_price">{{ item.dmcx_price }} DMCX </div>
           <div class="unpay_list_price">{{ transferUTCTime(item.created_at) }} </div>
+          <div class="unpay_list_time">{{ item.expireTime || '' }} </div>
 
           <div class="unpay_list_pay" @click="addStake(item)">Add Stake</div>
         </div>
@@ -316,7 +317,8 @@
       if (res.code == 200) {
         showToast.success('You have successfully made the purchase and can check it in your order');
         isShowSpaceInfo.value = false;
-        router.push('/home');
+        currentPage.value = 'calc';
+        //  router.push('/home');
       }
     });
   };
@@ -356,6 +358,7 @@
       getDmOrder(d).then((res) => {
         if (res.code === 200) {
           unpayList.value = res.data.list;
+          initListTimer();
         }
       });
     }
@@ -396,6 +399,47 @@
     } else {
       router.back();
     }
+  };
+  // 计算距离操作的过期时间
+  function countDown(start) {
+    let startTime = new Date(start); // 处理开始时间
+    // 计算最后时间
+    let end = new Date(startTime).getTime() + 30 * 60 * 1000;
+    // 当前时间
+    let time_now = new Date().getTime();
+    // 最后时间-当前时间
+    let msec = end - time_now;
+    if (msec > 0) {
+      const min = parseInt((msec / 1000 / 60) % 60);
+      let sec = parseInt((msec / 1000) % 60);
+      // 补零操作
+      // min = min > 9 ? min : '0' + min
+      sec = sec > 9 ? sec : '0' + sec;
+      return `00:${min}:${sec}`;
+    } else {
+      return '倒计时结束';
+    }
+  }
+  const initListTimer = () => {
+    if (unpayList.value.length > 0) {
+      for (const i in unpayList.value) {
+        beginTimer(i);
+      }
+    }
+  };
+  // 开始计时
+  const beginTimer = (i) => {
+    const that = this;
+    const item = unpayList.value[i];
+    console.log(`beginTimer`, i, item);
+    item.timer = setInterval(() => {
+      if (countDown(item.created_at) === '倒计时结束') {
+        item.expireTime = '';
+        clearInterval(item.timer);
+      } else {
+        item.expireTime = countDown(item.created_at);
+      }
+    }, 1000);
   };
 
   watch(
@@ -1264,9 +1308,11 @@
       }
     }
     .unpay_list_name {
-      color: #7de40c;
       font-weight: bold;
       font-size: 24px;
+    }
+    .unpay_list_time {
+      color: #7de40c;
     }
     .unpay_list_empty {
       display: flex;
