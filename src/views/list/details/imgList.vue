@@ -394,6 +394,7 @@
       domain: route.query.domain,
     };
     await getOrderInfo1(obj);
+    console.log(5555)
     // await getOrderInfo();
     await getTimeLine();
     isReady.value = true;

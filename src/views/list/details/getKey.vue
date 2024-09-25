@@ -214,13 +214,21 @@
         const accessKeyBytes = generateRandomBytes(20);
         const ak = cleanString(encodeBase64(accessKeyBytes), 20);
 
-        let param = {
-          order_uuid: route?.query?.uuid,
-        };
-        const signData = await get_order_sign(param);
-        console.log('signData==:', signData);
-        token.value = signData?.result?.data?.sign;
-        const date = signData?.result?.data?.timestamp;
+        // let param = {
+        //   order_uuid: route?.query?.uuid,
+        // };
+        // const signData = await get_order_sign(param);
+        // console.log('signData==:', signData);
+        // token.value = signData?.result?.data?.sign;
+        // const date = signData?.result?.data?.timestamp;
+        let date = route.query.sign_timestamp;
+
+        const signData = await dm_order_get_token({ orderId: route.query.order_id });
+        if (signData?.data?.signature) {
+          token.value = signData?.data?.signature;
+          date = signData?.data?.timestamp
+        }
+
         let metadata = {
           'X-Custom-Date': date,
         };

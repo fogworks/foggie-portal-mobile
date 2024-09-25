@@ -412,7 +412,7 @@
   import { HmacSHA1, enc } from 'crypto-js';
   import uploader from './uploader.vue';
   import { poolUrl } from '@/setting.js';
-  import { get_order_sign } from '@/api/index';
+  import { get_order_sign, dm_order_get_token } from '@/api/index';
   import { browserUrl } from '@/setting';
 
   import getFileType from '@/utils/getFileType.ts';
@@ -1397,6 +1397,7 @@
         domain: route.query.domain,
       };
       await getOrderInfo1(obj);
+
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
@@ -1695,7 +1696,7 @@
       }
       if (val == 1) {
       } else {
-        if (!orderInfo?.value?.id) {
+        if (!orderInfo?.value?.domain) {
           const obj = {
             rpc: route.query.rpc,
             peer_id: route.query.peer_id,
@@ -1737,7 +1738,7 @@
       domain: route.query.domain,
     };
     await getOrderInfo1(obj);
-    console.log(category1, 'category1category1');
+
 
     switchType(category1);
 
@@ -1758,16 +1759,26 @@
       domain: route.query.domain,
     };
     await getOrderInfo1(obj);
+
     doSearch('', prefix.value, true);
   };
 
   const initWebSocket = async () => {
-    let param = {
-      order_uuid: route?.query?.uuid,
-    };
-    const signData = await get_order_sign(param);
-    socketDate.value = signData?.result?.data?.timestamp;
-    socketToken.value = signData?.result?.data?.sign;
+    // let param = {
+    //   order_uuid: route?.query?.uuid,
+    // };
+    // const signData = await get_order_sign(param);
+    // socketDate.value = signData?.result?.data?.timestamp;
+    // socketToken.value = signData?.result?.data?.sign;
+
+console.log('initWebSocket-----------');
+    const signData = await dm_order_get_token({ orderId: route.query.order_id });
+    if (signData?.data?.signature) {
+      socketToken.value = signData?.data?.signature;
+      socketDate.value = signData?.data?.timestamp
+    }
+
+
     const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
     console.log('initWebSocket-----------', url);
     fileSocket.value = new WebSocket(url);
