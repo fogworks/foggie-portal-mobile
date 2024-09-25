@@ -209,6 +209,7 @@
   import { toRefs, reactive, onMounted } from 'vue';
   import IconCopy from '~icons/home/copy.svg';
   import { useRouter } from 'vue-router';
+  import moment from 'moment';
   import { getfilesize, transferUTCTime } from '@/utils/util';
   const router = useRouter();
   import { Web3 } from 'web3';
@@ -345,7 +346,10 @@
     // }
     window.ethereum && window.ethereum.enable();
     const web3 = new Web3(window.ethereum);
-    const message = `${Number(shopForm.value.week)}\n${Number(shopForm.value.quantity)}\n${calc_price.value.total}`;
+    let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
+    let _date = date + 'Z';
+    const message = `${Number(shopForm.value.week)}\n${Number(shopForm.value.quantity)}\n${calc_price.value.total}\n${_date}`;
+    // const message = `${Number(shopForm.value.week)}&${Number(shopForm.value.quantity)}&${calc_price.value.total}&${_date}`;
     let signature = await web3.eth.personal.sign(message, '0xf97bb5db0c5aee67051faea1669110eed171cc10', '');
     const d = {
       // orderId: 8,
@@ -358,6 +362,7 @@
       epoch: Number(shopForm.value.week),
       total: calc_price.value.total,
       signature: signature,
+      timestamp: _date,
     };
     let res = await dm_order_stake(d);
     if (res.code == 200) {
