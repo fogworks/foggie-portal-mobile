@@ -38,7 +38,7 @@
               v-for="(item, index) in maxTableData"
               @click="changeMenu(item)"
               :key="index"
-              :class="[item.device_type == 'maxio' && currentBucketData.id === item.id ? 'active_img' : '', 'menu_img']"
+              :class="[currentBucketData.id === item.id ? 'active_img' : '', 'menu_img']"
             >
               <img src="@/assets/maxio/cloud1.svg" alt="" class="left_max_pngs" />
               <div class="title_text">{{ 'Order' + item.order_id }}</div>

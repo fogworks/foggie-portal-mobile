@@ -1397,7 +1397,6 @@
         domain: route.query.domain,
       };
       await getOrderInfo1(obj);
-
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
@@ -1571,7 +1570,6 @@
       //   getFileList('', prefix.value, false);
       // }
     } else {
-
       showToast.loading('Loading', {
         // cover: true,
         // customClass: 'app_loading',
@@ -1589,78 +1587,78 @@
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
       let ip = `https://${bucketName.value}.${poolUrl}:7007`;
-        server = new grpcService.default.ServiceClient(ip, null, null);
+      server = new grpcService.default.ServiceClient(ip, null, null);
 
-        let ProxFindRequest = new Prox.default.ProxFindRequest();
-        ProxFindRequest.setHeader(header.value);
-        ProxFindRequest.setCid('');
-        ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
-        ProxFindRequest.setFileid('');
-        let list_prefix: string;
-        if (prefixArg?.length) {
-          list_prefix = prefixArg.join('/');
-          if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
-            list_prefix = list_prefix + '/';
-          }
+      let ProxFindRequest = new Prox.default.ProxFindRequest();
+      ProxFindRequest.setHeader(header.value);
+      ProxFindRequest.setCid('');
+      ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
+      ProxFindRequest.setFileid('');
+      let list_prefix: string;
+      if (prefixArg?.length) {
+        list_prefix = prefixArg.join('/');
+        if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
+          list_prefix = list_prefix + '/';
         }
-        ProxFindRequest.setPrefix(list_prefix);
+      }
+      ProxFindRequest.setPrefix(list_prefix);
 
-        server.findObjects(ProxFindRequest, metadata.value, (err: any, res: { getContentsList: () => any[] }) => {
-          infinityValue.value = false;
-          if (res) {
-            const transferData = res
-              .getContentsList()
-              .map(
-                (el: {
-                  getKey: () => any;
-                  getEtag: () => any;
-                  getLastmodified: () => any;
-                  getSize: () => any;
-                  getContenttype: () => any;
-                  getCid: () => any;
-                  getFileid: () => any;
-                  getIspin: () => any;
-                  getIspincyfs: () => any;
-                  getPinexp: () => any;
-                  getCyfsexp: () => any;
-                  getOod: () => any;
-                  getIspersistent: () => any;
-                  getCategory: () => any;
-                  getTags: () => any;
-                  getNftinfosList: () => any;
-                  getImages: () => any;
-                  getThumb: () => any;
-                }) => {
-                  return {
-                    key: el.getKey(),
-                    etag: el.getEtag(),
-                    lastModified: el.getLastmodified(),
-                    size: el.getSize(),
-                    contentType: el.getContenttype(),
-                    cid: el.getCid(),
-                    fileId: el.getFileid(),
-                    isPin: el.getIspin(),
-                    isPinCyfs: el.getIspincyfs(),
-                    pinExp: el.getPinexp(),
-                    CyfsExp: el.getCyfsexp(),
-                    OOD: el.getOod(),
-                    isPersistent: el.getIspersistent(),
-                    category: el.getCategory(),
-                    tags: el.getTags(),
-                    nftInfoList: el.getNftinfosList(),
-                    thumb: el.getThumb(),
-                    // imageInfo,
-                    // isShowDetail,
-                  };
-                },
-              );
-            isError.value = false;
+      server.findObjects(ProxFindRequest, metadata.value, (err: any, res: { getContentsList: () => any[] }) => {
+        infinityValue.value = false;
+        if (res) {
+          const transferData = res
+            .getContentsList()
+            .map(
+              (el: {
+                getKey: () => any;
+                getEtag: () => any;
+                getLastmodified: () => any;
+                getSize: () => any;
+                getContenttype: () => any;
+                getCid: () => any;
+                getFileid: () => any;
+                getIspin: () => any;
+                getIspincyfs: () => any;
+                getPinexp: () => any;
+                getCyfsexp: () => any;
+                getOod: () => any;
+                getIspersistent: () => any;
+                getCategory: () => any;
+                getTags: () => any;
+                getNftinfosList: () => any;
+                getImages: () => any;
+                getThumb: () => any;
+              }) => {
+                return {
+                  key: el.getKey(),
+                  etag: el.getEtag(),
+                  lastModified: el.getLastmodified(),
+                  size: el.getSize(),
+                  contentType: el.getContenttype(),
+                  cid: el.getCid(),
+                  fileId: el.getFileid(),
+                  isPin: el.getIspin(),
+                  isPinCyfs: el.getIspincyfs(),
+                  pinExp: el.getPinexp(),
+                  CyfsExp: el.getCyfsexp(),
+                  OOD: el.getOod(),
+                  isPersistent: el.getIspersistent(),
+                  category: el.getCategory(),
+                  tags: el.getTags(),
+                  nftInfoList: el.getNftinfosList(),
+                  thumb: el.getThumb(),
+                  // imageInfo,
+                  // isShowDetail,
+                };
+              },
+            );
+          isError.value = false;
 
-            initRemoteData({ content: transferData }, true, category.value);
-          } else {
-            isError.value = true;
-          }
-        });
+          initRemoteData({ content: transferData }, true, category.value);
+        } else {
+          isError.value = true;
+        }
+      });
     }
   }
 
@@ -1739,10 +1737,10 @@
     };
     await getOrderInfo1(obj);
 
-
     switchType(category1);
-
-    initWebSocket();
+    setTimeout(() => {
+      initWebSocket();
+    }, 1000);
   };
   // onUnmounted(() => {
   //   closeSocket();
@@ -1764,23 +1762,13 @@
   };
 
   const initWebSocket = async () => {
-    // let param = {
-    //   order_uuid: route?.query?.uuid,
-    // };
-    // const signData = await get_order_sign(param);
-    // socketDate.value = signData?.result?.data?.timestamp;
-    // socketToken.value = signData?.result?.data?.sign;
-
-console.log('initWebSocket-----------');
     const signData = await dm_order_get_token({ orderId: route.query.order_id });
     if (signData?.data?.signature) {
       socketToken.value = signData?.data?.signature;
-      socketDate.value = signData?.data?.timestamp
+      socketDate.value = signData?.data?.timestamp;
     }
 
-
     const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
-    console.log('initWebSocket-----------', url);
     fileSocket.value = new WebSocket(url);
     fileSocket.value.onopen = () => {
       const authMessage = {
