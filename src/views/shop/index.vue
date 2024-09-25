@@ -6,7 +6,7 @@
         <div class="balance_options"> Shop</div>
       </div>
     </div>
-    <div class="top_list_line" @click="toAddPay"> <img src="@/assets/list.svg" /><span>Pending payment order</span> </div>
+    <div class="top_list_line" @click="toAddPay"> <img src="@/assets/list.svg" /><span>Pending Stake order</span> </div>
     <!-- !isShowSpaceInfo && !isShowList && !isShowUnpayItem -->
     <div class="vip_order_choose" v-if="currentPage === 'calc'">
       <div class="vip_title">Select space and time</div>
@@ -89,7 +89,7 @@
 
       <div class="bottom_btn">
         <nut-button type="warning" plain :loading="loading" @click="currentPage = 'calc'"> Cancel </nut-button>
-        <nut-button type="primary" @click="confirmBuy" style="margin-top: 10px">Stake</nut-button>
+        <nut-button type="primary" @click="confirmBuy" style="margin-top: 10px">Confirm Stake</nut-button>
       </div>
       <div style="padding: 4px 0px; font-size: 11px; font-style: italic; font-weight: bold; color: #bef508" class="bottom_tips_line">
         <img src="@/assets/tips1.svg" class="warn_svg" />
