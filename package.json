@@ -62,6 +62,7 @@
     "pinia-plugin-persistedstate": "^3.1.0",
     "protobufjs": "^7.2.5",
     "protoc-gen-grpc-web": "^1.4.2",
+    "qrcode": "^1.5.4",
     "qs": "^6.11.2",
     "quarkd": "^1.0.70",
     "universal-cookie": "^4.0.4",

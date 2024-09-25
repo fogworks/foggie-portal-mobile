@@ -66,6 +66,7 @@
     <!-- isShowSpaceInfo && !isShowList -->
     <div class="space-info" v-if="currentPage === 'stake'">
       <div class="vip_title">Your Order Summary</div>
+      <!-- <hr /> -->
       <p>
         <span class="p_label">Weeks: </span><span>{{ shopForm.week }} WEEK</span></p
       >
@@ -86,11 +87,23 @@
           <IconCopy color="#bef508"></IconCopy
         ></span>
       </p>
+      <!-- <nut-checkbox v-model="isShowQRCode" class="my_choose_code">I want to scan the code for payment</nut-checkbox> -->
+      <!-- v-show="!isShowQRCode" -->
+      <div class="my_canvas_box">
+        <canvas ref="qrCanvas"></canvas>
+        <div style="padding: 4px 0px; font-size: 10px; font-style: italic; font-weight: bold; color: #bef508" class="bottom_tips_line">
+          You can transfer by scanning the code on OKX Wallet.
+        </div></div
+      >
 
       <div class="bottom_btn">
         <nut-button type="warning" plain :loading="loading" @click="currentPage = 'calc'"> Cancel </nut-button>
-        <nut-button type="primary" @click="confirmBuy" style="margin-top: 10px">Confirm Stake</nut-button>
+        <!-- <nut-button type="warning" @click="confirmBuy('scan')" class="scan_btn" style="font-size: 12px; font-weight: bold"
+          >Scan Transaction
+        </nut-button> -->
+        <nut-button type="primary" @click="confirmBuy">confirm Stake</nut-button>
       </div>
+      <hr />
       <div style="padding: 4px 0px; font-size: 11px; font-style: italic; font-weight: bold; color: #bef508" class="bottom_tips_line">
         <img src="@/assets/tips1.svg" class="warn_svg" />
         1. You need to make the transfer within 10 minutes before and after submitting the pledge.
@@ -204,6 +217,9 @@
   const isShowUnpayItem = ref(false);
   const currentStakeItem = ref({});
   const currentPage = ref('calc');
+  import QRCode from 'qrcode';
+  const qrCanvas = ref(null);
+  const isShowQRCode = ref(false);
 
   import { dm_calc_price, get_available_capacity, dm_order_stake, getDmOrder, dm_order_add_transaction } from '@/api';
   import { showToast } from '@nutui/nutui';
@@ -247,17 +263,6 @@
   const address = computed(() => userStore.getUserInfo?.address || userStore.getAddress);
 
   async function submit() {
-    // window.ethereum && window.ethereum.enable();
-    // const web3 = new Web3(window.ethereum);
-    // const message = 'Signature for 0924';
-    // web3.eth.personal.sign(message, '0xf97bb5db0c5aee67051faea1669110eed171cc10', '').then((signature) => {
-    //   const messageHash = web3.utils.sha3(message);
-    //   const publicKey = web3.eth.accounts.recover(messageHash, signature);
-    //   console.log(signature, publicKey, 'ssssss');
-    // });
-    // return;
-    // showToast.success('isOKApp---' + isOKApp);
-
     const d = {
       //   wallet: address.value,
       space: shopForm.value.quantity,
@@ -269,6 +274,11 @@
         isShowSpaceInfo.value = true;
         currentPage.value = 'stake';
         showTop.value = false;
+        nextTick(() => {
+          QRCode.toCanvas(qrCanvas.value, calc_price.value.to, (error) => {
+            if (error) console.error(error);
+          });
+        });
       }
     });
   }
@@ -326,11 +336,17 @@
     //   showToast.fail('Please enter the transaction hash');
     //   return;
     // }
-    const tx = await transferFn();
-    if (!(tx?.transactionHash)) {
-      showToast.fail('Transaction failed');
-      return;
-    }
+    // if (!isShowQRCode.value) {
+    //   const tx = await transferFn();
+    //   if (!tx?.transactionHash) {
+    //     showToast.fail('Transaction failed');
+    //     return;
+    //   }
+    // }
+    window.ethereum && window.ethereum.enable();
+    const web3 = new Web3(window.ethereum);
+    const message = `${Number(shopForm.value.week)}\n${Number(shopForm.value.quantity)}\n${calc_price.value.total}`;
+    let signature = await web3.eth.personal.sign(message, '0xf97bb5db0c5aee67051faea1669110eed171cc10', '');
     const d = {
       // orderId: 8,
       //   orderId: calc_price.value.orderId,
@@ -341,15 +357,28 @@
       space: Number(shopForm.value.quantity),
       epoch: Number(shopForm.value.week),
       total: calc_price.value.total,
+      signature: signature,
     };
-    dm_order_stake(d).then((res) => {
-      if (res.code == 200) {
-        showToast.success('You have successfully made the purchase and can check it in your order');
-        isShowSpaceInfo.value = false;
-        currentPage.value = 'calc';
-        //  router.push('/home');
-      }
-    });
+    let res = await dm_order_stake(d);
+    if (res.code == 200) {
+      showToast.success('You have successfully made the purchase and can check it in your order');
+      isShowSpaceInfo.value = false;
+      currentPage.value = 'calc';
+    }
+    const tx = await transferFn();
+    if (!tx?.transactionHash) {
+      showToast.fail('Transaction failed');
+      return;
+    }
+    // web3.eth.personal.sign(message, '0xf97bb5db0c5aee67051faea1669110eed171cc10', '').then((signature) => {
+    //   dm_order_stake(d).then((res) => {
+    //     if (res.code == 200) {
+    //       showToast.success('You have successfully made the purchase and can check it in your order');
+    //       isShowSpaceInfo.value = false;
+    //       currentPage.value = 'calc';
+    //     }
+    //   });
+    // });
   };
 
   const maxSpace = ref(0);
@@ -382,7 +411,7 @@
         wallet: address.value,
         pageNo: 1,
         pageSize: 100,
-        status: 2,
+        status: 2, //'订单状态 1 初始 2 买单中 3 生效 4 购买失败 5 订单超时 6 废弃 7 订单取消 8 扩容中',
       };
       getDmOrder(d).then((res) => {
         if (res.code === 200) {
@@ -654,6 +683,16 @@
         opacity: 0.28 !important;
       }
     }
+  }
+  .my_choose_code {
+    margin-bottom: 10px;
+  }
+  .nut-checkbox__label {
+    color: #fff !important;
+    font-weight: bold;
+  }
+  .nut-checkbox__icon {
+    color: #9fd72f;
   }
 </style>
 <style lang="scss" scoped>
@@ -1060,6 +1099,15 @@
           }
         }
       }
+      .scan_btn {
+        background: linear-gradient(
+          135deg,
+          rgb(255, 158, 13) 0%,
+          rgb(255, 167, 13) 45%,
+          rgb(255, 182, 13) 83%,
+          rgb(255, 190, 13) 100%
+        ) !important;
+      }
     }
   }
 
@@ -1272,7 +1320,7 @@
       justify-content: space-around;
       align-items: center;
       position: relative;
-      margin-top: 40px;
+      margin-top: 20px;
       margin-bottom: 10px;
       :deep {
         .nut-button {
@@ -1291,6 +1339,15 @@
             color: #2b1d06;
           }
         }
+      }
+      .scan_btn {
+        background: linear-gradient(
+          135deg,
+          rgb(255, 158, 13) 0%,
+          rgb(255, 167, 13) 45%,
+          rgb(255, 182, 13) 83%,
+          rgb(255, 190, 13) 100%
+        ) !important;
       }
     }
   }
@@ -1351,6 +1408,17 @@
       .shopBack {
         background: linear-gradient(329deg, #b6e557 0%, #99d017 25%, rgb(131 131 16) 83%, #181b24 100%);
       }
+    }
+  }
+  .my_canvas_box {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    canvas {
+      width: 200px !important;
+      height: 200px !important;
     }
   }
 </style>
