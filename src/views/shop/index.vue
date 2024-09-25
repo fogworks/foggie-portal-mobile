@@ -6,7 +6,9 @@
         <div class="balance_options"> Shop</div>
       </div>
     </div>
-    <div class="vip_order_choose" v-if="!isShowSpaceInfo">
+    <div class="top_list_line" @click="toAddPay"> <img src="@/assets/list.svg" /><span>Pending payment order</span> </div>
+    <!-- !isShowSpaceInfo && !isShowList && !isShowUnpayItem -->
+    <div class="vip_order_choose" v-if="currentPage === 'calc'">
       <div class="vip_title">Select space and time</div>
       <div class="img_list">
         <nut-form class="query_form" :model-value="shopForm">
@@ -34,9 +36,26 @@
               placeholder="Space"
             />
           </nut-form-item>
-          <div style="padding: 10px 20px; font-size: 11px; font-style: italic; font-weight: bold">
-            The maximum data security guarantee for the chain is only 52 weeks
+          <div style="padding: 10px 20px 6px 20px; font-size: 11px; font-style: italic; font-weight: bold" class="bottom_tips_line">
+            <img src="@/assets/tips1.svg" class="warn_svg" />
+            Estimated required stake DMCX:<span
+              style="margin-left: 10px; margin-right: 5px; display: inline-block; font-weight: bold; text-decoration: underline"
+              >{{ Number(0.1 * shopForm.week * shopForm.quantity).toFixed(4) }}</span
+            >DMCX
           </div>
+
+          <div
+            style="padding: 4px 20px; font-size: 11px; font-style: italic; font-weight: bold; margin-bottom: 10px"
+            class="bottom_tips_line"
+          >
+            <img src="@/assets/tips1.svg" class="warn_svg" />
+            You can stake DMCX for free to obtain the corresponding space, and after the expiration, you can redeem your DMCX.
+          </div>
+          <!-- <div style="padding: 4px 20px; font-size: 11px; font-style: italic; font-weight: bold" class="bottom_tips_line">
+            <img src="@/assets/tips1.svg" class="warn_svg" />
+            The maximum data security guarantee for the chain is only 52 weeks
+          </div> -->
+
           <div class="bottom_btn">
             <!-- <nut-button type="warning" plain :loading="loading" @click="showTop = false"> Cancel </nut-button> -->
             <nut-button type="warning" @click="submit" :disabled="buyDisabled" :loading="loading"> Confirm </nut-button>
@@ -44,7 +63,8 @@
         </nut-form>
       </div>
     </div>
-    <div class="space-info" v-if="isShowSpaceInfo">
+    <!-- isShowSpaceInfo && !isShowList -->
+    <div class="space-info" v-if="currentPage === 'stake'">
       <div class="vip_title">Your Order Summary</div>
       <p>
         <span class="p_label">Weeks: </span><span>{{ shopForm.week }} WEEK</span></p
@@ -53,7 +73,7 @@
         <span class="p_label">Space: </span><span>{{ shopForm.quantity }} GB</span></p
       >
       <p @click="copySecret(calc_price.total)">
-        <span class="p_label">Price:</span><span>{{ calc_price.total }} DMCX<IconCopy color="#bef508"></IconCopy></span>
+        <span class="p_label">Need Stake:</span><span>{{ calc_price.total }} DMCX<IconCopy color="#bef508"></IconCopy></span>
       </p>
       <p @click="copySecret(address)">
         <span class="p_label">Payment account: </span
@@ -67,10 +87,104 @@
         ></span>
       </p>
 
-      <nut-input style="color: #666" v-model="txid" placeholder="Please enter the transaction hash" />
       <div class="bottom_btn">
-        <nut-button type="warning" plain :loading="loading" @click="isShowSpaceInfo = false"> Cancel </nut-button>
-        <nut-button type="primary" @click="confirmBuy" style="margin-top: 10px">Buy</nut-button>
+        <nut-button type="warning" plain :loading="loading" @click="currentPage = 'calc'"> Cancel </nut-button>
+        <nut-button type="primary" @click="confirmBuy" style="margin-top: 10px">Stake</nut-button>
+      </div>
+      <div style="padding: 4px 0px; font-size: 11px; font-style: italic; font-weight: bold; color: #bef508" class="bottom_tips_line">
+        <img src="@/assets/tips1.svg" class="warn_svg" />
+        1. You need to make the transfer within 10 minutes before and after submitting the pledge.
+      </div>
+      <div style="padding: 4px 0px; font-size: 11px; font-style: italic; font-weight: bold; color: #bef508" class="bottom_tips_line">
+        <img src="@/assets/tips1.svg" class="warn_svg" />
+        2. If the transfer is not made within the first 10 minutes, you can manually supplement the transaction ID within 30 minutes.
+      </div>
+      <div style="padding: 4px 0px; font-size: 11px; font-style: italic; font-weight: bold; color: #bef508" class="bottom_tips_line">
+        <img src="@/assets/tips1.svg" class="warn_svg" />
+        3. If it is not replenished within 30 minutes, the order will be discarded.
+      </div>
+    </div>
+
+    <!-- unpay_list_wrap isShowList-->
+    <div class="space-info unpay_list_wrap" v-if="currentPage === 'unPayList'">
+      <div class="vip_title">Pending Stake order</div>
+      <div style="padding: 4px 0px; font-size: 11px; font-style: italic; font-weight: bold; color: #bef508" class="bottom_tips_line">
+        <img src="@/assets/tips1.svg" class="warn_svg" />
+        1. You need to make the transfer within 10 minutes before and after submitting the pledge.
+      </div>
+      <div style="padding: 4px 0px; font-size: 11px; font-style: italic; font-weight: bold; color: #bef508" class="bottom_tips_line">
+        <img src="@/assets/tips1.svg" class="warn_svg" />
+        2. If the transfer is not made within the first 10 minutes, you can manually supplement the transaction ID within 30 minutes.
+      </div>
+      <div style="padding: 4px 0px; font-size: 11px; font-style: italic; font-weight: bold; color: #bef508" class="bottom_tips_line">
+        <img src="@/assets/tips1.svg" class="warn_svg" />
+        3. If it is not replenished within 30 minutes, the order will be discarded.
+      </div>
+      <div class="unpay_list">
+        <div class="unpay_list_item" v-for="(item, index) in unpayList" :key="index">
+          <div class="unpay_list_icon">
+            <img src="@/assets/list.svg" />
+          </div>
+          <div class="unpay_list_name">Order-{{ item.order_id }} </div>
+          <div class="unpay_list_price">{{ item.dmcx_price }} DMCX </div>
+          <div class="unpay_list_price">{{ transferUTCTime(item.created_at) }} </div>
+
+          <div class="unpay_list_pay" @click="addStake(item)">Add Stake</div>
+        </div>
+        <div v-if="!unpayList.length" class="unpay_list_empty">
+          <nut-empty description="There are no orders that require stake " image="error"></nut-empty>
+          <nut-button type="primary" class="shopBack" @click="shopBack">Back</nut-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- isShowUnpayItem isShowUnpayItem && !isShowList-->
+    <div class="space-info unpay_item_wrap" v-if="currentPage === 'unPayItem'">
+      <div class="vip_title"> Order add Stake</div>
+      <p>
+        <span class="p_label">Weeks: </span><span>{{ currentStakeItem.epoch }} WEEK</span></p
+      >
+      <p>
+        <span class="p_label">Space: </span><span>{{ getfilesize(currentStakeItem.space) }} </span></p
+      >
+      <p @click="copySecret(currentStakeItem.dmcx_price)">
+        <span class="p_label">Need Stake::</span><span>{{ currentStakeItem.dmcx_price }} DMCX<IconCopy color="#bef508"></IconCopy></span>
+      </p>
+      <p @click="copySecret(currentStakeItem.wallet)">
+        <span class="p_label">Payment account: </span
+        ><span
+          >{{
+            currentStakeItem.wallet
+              ? `${currentStakeItem.wallet.substr(0, 6)}...${currentStakeItem.wallet.substr(-6)}`
+              : currentStakeItem.wallet
+          }}
+          <IconCopy color="#bef508"></IconCopy
+        ></span>
+      </p>
+      <p @click="copySecret(currentStakeItem.to_wallet)">
+        <span class="p_label">Receiving account:</span
+        ><span
+          >{{
+            currentStakeItem.to_wallet
+              ? `${currentStakeItem.to_wallet.substr(0, 6)}...${currentStakeItem.to_wallet.substr(-6)}`
+              : currentStakeItem.to_wallet
+          }}
+          <IconCopy color="#bef508"></IconCopy
+        ></span>
+      </p>
+
+      <nut-input style="color: #666" v-model="txid" placeholder="Please enter the transaction hash" />
+      <div style="padding: 4px 0px; font-size: 11px; font-style: italic; font-weight: bold; color: #bef508" class="bottom_tips_line">
+        <img src="@/assets/tips1.svg" class="warn_svg" />
+        1. You can separate multiple transactions ID with commas, such as "0xa 2b88,0xa..... 7659,0xa.....6567"
+      </div>
+      <div style="padding: 4px 0px; font-size: 11px; font-style: italic; font-weight: bold; color: #bef508" class="bottom_tips_line">
+        <img src="@/assets/tips1.svg" class="warn_svg" />
+        2. Supports up to 3 transactions ID, please ensure that 3 transfers meet the stake amount
+      </div>
+      <div class="bottom_btn">
+        <nut-button type="warning" plain :loading="loading" @click="currentPage = 'unPayList'"> Cancel </nut-button>
+        <nut-button type="primary" @click="confirmAddStake" style="margin-top: 10px">Add Stake</nut-button>
       </div>
     </div>
   </div>
@@ -81,9 +195,16 @@
   import { toRefs, reactive, onMounted } from 'vue';
   import IconCopy from '~icons/home/copy.svg';
   import { useRouter } from 'vue-router';
+  import { getfilesize, transferUTCTime } from '@/utils/util';
   const router = useRouter();
+  import { Web3 } from 'web3';
+  const unpayList = ref([]);
+  const isShowList = ref(false);
+  const isShowUnpayItem = ref(false);
+  const currentStakeItem = ref({});
+  const currentPage = ref('calc');
 
-  import { dm_calc_price, get_available_capacity, dm_order_buy } from '@/api';
+  import { dm_calc_price, get_available_capacity, dm_order_stake, getDmOrder, dm_order_add_transaction } from '@/api';
   import { showToast } from '@nutui/nutui';
 
   const isShowSpaceInfo = ref(false);
@@ -125,8 +246,19 @@
   const address = computed(() => userStore.getUserInfo?.address || userStore.getAddress);
 
   async function submit() {
+    // window.ethereum && window.ethereum.enable();
+    // const web3 = new Web3(window.ethereum);
+    // const message = 'Signature for 0924';
+    // web3.eth.personal.sign(message, '0xf97bb5db0c5aee67051faea1669110eed171cc10', '').then((signature) => {
+    //   const messageHash = web3.utils.sha3(message);
+    //   const publicKey = web3.eth.accounts.recover(messageHash, signature);
+    //   console.log(signature, publicKey, 'ssssss');
+    // });
+    // return;
+    // showToast.success('isOKApp---' + isOKApp);
+
     const d = {
-      wallet: address.value,
+      //   wallet: address.value,
       space: shopForm.value.quantity,
       epoch: shopForm.value.week,
     };
@@ -134,6 +266,7 @@
       if (res.code == 200) {
         calc_price.value = res.data;
         isShowSpaceInfo.value = true;
+        currentPage.value = 'stake';
         showTop.value = false;
       }
     });
@@ -141,7 +274,6 @@
 
   import tokenABI from './GWTToken.json';
   const tokenAddress = '0x848e56Ad13B728a668Af89459851EfD8a89C9F58';
-  import Web3 from 'web3';
 
   const submit1 = async () => {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -165,16 +297,22 @@
   const confirmBuy = async () => {
     // alert(txid.value);
     // txid.value = '0x2bbed9335d1a23ad51b1e4ea7baf3cafe49d466302c557705ea95027451fd7fc';
-    if (!txid.value) {
-      showToast.fail('Please enter the transaction hash');
-      return;
-    }
+    // if (!txid.value) {
+    //   showToast.fail('Please enter the transaction hash');
+    //   return;
+    // }
     const d = {
       // orderId: 8,
-      orderId: calc_price.value.orderId,
-      transactionId: txid.value,
+      //   orderId: calc_price.value.orderId,
+      //   transactionId: txid.value,
+      wallet: address.value,
+      toWallet: calc_price.value.to,
+      method: 1,
+      space: Number(shopForm.value.quantity),
+      epoch: Number(shopForm.value.week),
+      total: calc_price.value.total,
     };
-    dm_order_buy(d).then((res) => {
+    dm_order_stake(d).then((res) => {
       if (res.code == 200) {
         showToast.success('You have successfully made the purchase and can check it in your order');
         isShowSpaceInfo.value = false;
@@ -199,11 +337,62 @@
   const toBuy = () => {
     showTop.value = true;
     isShowSpaceInfo.value = false;
+    currentPage.value = 'stake';
+  };
+  const toAddPay = () => {
+    isShowList.value = true;
+    isShowSpaceInfo.value = false;
+    currentPage.value = 'unPayList';
+    initUnpayData();
+  };
+  const initUnpayData = () => {
+    if (address.value) {
+      const d = {
+        wallet: address.value,
+        pageNo: 1,
+        pageSize: 100,
+        status: 2,
+      };
+      getDmOrder(d).then((res) => {
+        if (res.code === 200) {
+          unpayList.value = res.data.list;
+        }
+      });
+    }
+  };
+  const addStake = (item) => {
+    currentPage.value = 'unPayItem';
+    isShowList.value = false;
+    isShowSpaceInfo.value = false;
+    isShowUnpayItem.value = true;
+    currentStakeItem.value = item;
+  };
+  const confirmAddStake = () => {
+    if (!txid.value) {
+      showToast.fail('Please enter the transaction hash');
+      return;
+    }
+    const d = {
+      orderId: currentStakeItem.value.order_id,
+      transactionId: txid.value,
+    };
+    dm_order_add_transaction(d).then((res) => {
+      if (res.code == 200) {
+        showToast.success('You have successfully made the stake and can check it in your order');
+        router.push('/home');
+      }
+    });
   };
   const shopBack = () => {
-    console.log('shopBack', isShowSpaceInfo.value);
-    if (isShowSpaceInfo.value) {
+    if (currentPage.value === 'stake') {
       isShowSpaceInfo.value = false;
+      currentPage.value = 'calc';
+    } else if (currentPage.value === 'unPayList') {
+      isShowSpaceInfo.value = false;
+      isShowList.value = false;
+      currentPage.value = 'calc';
+    } else if (currentPage.value === 'unPayItem') {
+      currentPage.value = 'unPayList';
     } else {
       router.back();
     }
@@ -220,6 +409,7 @@
   );
 
   onMounted(async () => {
+    // initUnpayData();
     get_available_capacity().then((res) => {
       if (res.code == 200) {
         maxSpace.value = res.data;
@@ -231,6 +421,34 @@
 </script>
 
 <style lang="scss">
+  .top_list_line {
+    display: flex;
+    align-items: end;
+    justify-content: end;
+    color: #fff;
+    margin-right: 10px;
+    cursor: pointer;
+    span {
+      font-size: 24px;
+      font-weight: bold;
+      color: #9dfc37;
+      text-decoration: underline;
+    }
+    img {
+      width: 34px !important;
+      height: 34px !important;
+      margin-right: 10px;
+    }
+  }
+  .bottom_tips_line {
+    display: flex;
+    .warn_svg {
+      width: 26px !important;
+      height: 26px !important;
+      margin-right: 8px;
+    }
+  }
+
   .confirm_pop {
     padding-bottom: 20px;
     background-color: #d5d5d5 !important;
@@ -344,6 +562,7 @@
 
     .bottom_btn {
       padding: 20px 40px;
+
       .nut-button {
         height: 100px;
         // background-color: #2d2e41 !important;
@@ -981,6 +1200,7 @@
       align-items: center;
       position: relative;
       margin-top: 40px;
+      margin-bottom: 10px;
       :deep {
         .nut-button {
           width: 40%;
@@ -998,6 +1218,63 @@
             color: #2b1d06;
           }
         }
+      }
+    }
+  }
+  .unpay_list_wrap {
+    .unpay_list {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 40px;
+      width: 100%;
+      margin-top: 30px;
+      .unpay_list_item {
+        margin: 34px 0 30px;
+        width: 33%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .unpay_list_icon {
+        border: 1px solid #9dfc37;
+        border-radius: 50%;
+        width: 90px;
+        height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        img {
+          width: 60px;
+          height: 60px;
+        }
+      }
+
+      .unpay_list_pay {
+        padding: 6px 30px;
+        border-radius: 12px;
+        margin-top: 10px;
+        background: linear-gradient(329deg, #b6e557 0%, #99d017 25%, rgb(131 131 16) 83%, #181b24 100%);
+      }
+    }
+    .unpay_list_name {
+      color: #7de40c;
+      font-weight: bold;
+      font-size: 24px;
+    }
+    .unpay_list_empty {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      .shopBack {
+        background: linear-gradient(329deg, #b6e557 0%, #99d017 25%, rgb(131 131 16) 83%, #181b24 100%);
       }
     }
   }

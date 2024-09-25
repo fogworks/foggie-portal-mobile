@@ -456,7 +456,8 @@ export function getDmOrder(data: any) {
 
 
 export function dm_calc_price(data: any) {
-    let url = `/dm/order/calc_price`;
+    // let url = `/dm/order/calc_price`;
+    let url = `/dm/order/estimate_price`;
     return request({
         url: url,
         method: "post",
@@ -482,6 +483,25 @@ export function dm_order_buy(data: any) {
         data,
     });
 }
+export function dm_order_stake(data: any) {
+    let url = `/dm/order/stake`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+
+export function dm_order_add_transaction(data: any) {
+    let url = `/dm/order/add_transaction`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
+
+
 
 export function dm_order_name_set(data: any) {
     let url = `/dm/order/name_set`;
