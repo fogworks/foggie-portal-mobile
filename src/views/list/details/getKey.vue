@@ -654,9 +654,15 @@
     justify-content: start;
     padding-left: 20px;
     .add_key_top {
+      border: none;
+      background: linear-gradient(329deg, #9fd72f 0%, #99d017 25%, rgb(42, 42, 41) 83%, #181b24 100%);
       svg {
         vertical-align: sub;
       }
+    }
+    :active {
+      border: none !important;
+      background: linear-gradient(329deg, #99d017 0%, #9fd72f 25%, rgb(42, 42, 41) 83%, #181b24 100%) !important;
     }
     span {
       display: inline-block;

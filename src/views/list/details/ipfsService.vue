@@ -5,7 +5,7 @@
     </div>
     <div class="generateKey">
       <div class="top_tips2">
-        <p>IPFS Pinning Service API Endpoint</p>
+        <p style="color: #fff">IPFS Pinning Service API Endpoint</p>
         <nut-searchbar disabled :placeholder="`https://${bucketName}...:6008/pinning`">
           <template #leftin> <Link></Link> </template>
           <template #rightout>
@@ -18,7 +18,7 @@
         <nut-button type="primary" class="add_key_top" @click="add"> <IconAdd></IconAdd> Create an JWT token</nut-button>
       </div>
       <div class="top_tips2" v-if="JWTToken">
-        <p>JWT Token <span class="valid"> (Valid for 7 days)</span></p>
+        <p style="color: #fff">JWT Token <span class="valid"> (Valid for 7 days)</span></p>
         <nut-searchbar disabled :placeholder="JWTToken">
           <template #leftin> <Link></Link> </template>
           <template #rightout>
@@ -346,9 +346,15 @@
     justify-content: start;
     padding-left: 20px;
     .add_key_top {
+      border: none;
+      background: linear-gradient(329deg, #9fd72f 0%, #99d017 25%, rgb(42, 42, 41) 83%, #181b24 100%);
       svg {
         vertical-align: sub;
       }
+    }
+    :active {
+      border: none !important;
+      background: linear-gradient(329deg, #99d017 0%, #9fd72f 25%, rgb(42, 42, 41) 83%, #181b24 100%) !important;
     }
     span {
       display: inline-block;
