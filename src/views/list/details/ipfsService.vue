@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%">
     <div class="top_box">
-      <TopBack>IPFS Pinning Service</TopBack>
+      <TopBack type="3" @goToBack="goToBack">IPFS Pinning Service</TopBack>
     </div>
     <div class="generateKey">
       <div class="top_tips2">
@@ -120,6 +120,14 @@
         console.log(res);
         JWTToken.value = res.array[0];
       }
+    });
+  };
+  const goToBack = () => {
+    router.push({
+      name: 'Home',
+      query: {
+        order_id: route.query.order_id,
+      },
     });
   };
   onMounted(() => {});

@@ -324,7 +324,13 @@
         if (res.code === 200) {
           maxTableData.value = res.data.list;
           currentBucketData.value = maxTableData.value[0] ? maxTableData.value[0] : {};
-          console.log(currentBucketData.value, 'currentBucketData.value');
+          if (route.query.order_id) {
+            const data = maxTableData.value.find((item) => Number(item.order_id) === Number(route.query.order_id));
+            if (data?.order_id) {
+              currentBucketData.value = data;
+            }
+          }
+          console.log(currentBucketData.value, 'currentBucketData.value', maxTableData.value);
           cloudQuery.value = {
             id: currentBucketData.value.order_id,
           };
@@ -365,8 +371,13 @@
       getDmOrder(d).then((res) => {
         if (res.code === 200) {
           maxTableData.value = res.data.list;
-
           currentBucketData.value = maxTableData.value[0] ? maxTableData.value[0] : {};
+          if (route.query.order_id) {
+            const data = maxTableData.value.find((item) => Number(item.order_id) === Number(route.query.order_id));
+            if (data?.order_id) {
+              currentBucketData.value = data;
+            }
+          }
           cloudQuery.value = {
             id: currentBucketData.value.order_id,
           };

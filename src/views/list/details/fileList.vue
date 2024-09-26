@@ -73,7 +73,7 @@
           <template v-if="!prefix.length">
             <div class="boxtop">
               <div style="display: flex; align-items: center; flex: 0 0 auto">
-                <div class="top_back" @click="router.go(-1)"> </div>
+                <div class="top_back" @click="goBack"> </div>
                 <span class="top_title">
                   {{ fileTypeText[category] }}
                 </span>
@@ -2033,6 +2033,17 @@
     console.log(params);
     fileItemDetailPopupIsShow.value = true;
   }
+
+  const goBack = () => {
+    // router.go(-1);
+    console.log('goBack', route.query.order_id);
+    router.push({
+      name: 'Home',
+      query: {
+        order_id: route.query.order_id,
+      },
+    });
+  };
 </script>
 <style lang="scss">
   .fileItemPopup.nut-popup {

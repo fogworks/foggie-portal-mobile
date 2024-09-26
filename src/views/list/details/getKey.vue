@@ -1,12 +1,12 @@
 <template>
   <div>
     <div class="top_box">
-      <TopBack>Generate Access keys</TopBack>
+      <TopBack type="3" @goToBack="goToBack">Generate Access keys</TopBack>
     </div>
     <div class="generateKey">
       <div class="top_tips2">
         <p>S3 API EndPoint</p>
-        <nut-searchbar disabled :placeholder="`https://${bucketName}.${s3Url}:9900`">
+        <nut-searchbar disabled :placeholder="`https://${mp_domain}.${s3Url}:9900`">
           <template #leftin> <Link></Link> </template>
           <template #rightout>
             <div @click="copyS3"> <IconCopy style="vertical-align: middle"></IconCopy> Copy</div>
@@ -145,10 +145,12 @@
   const foggie_id = ref<any>('');
   const token = ref<any>('');
   const bucketName = ref<any>('');
+  const mp_domain = ref<any>('');
   bucketName.value = route.query.domain;
+  mp_domain.value = route.query.mp_domain;
   const bucketUrl = ref<any>('');
   const loading = ref(false);
-  bucketUrl.value = `${bucketName.value}.${s3Url}:9900`;
+  bucketUrl.value = `${mp_domain.value}.${s3Url}:9900`;
   ip.value = `https://${bucketName.value}.${poolUrl}:7007`;
   // peer_id.value = '12D3KooWRB2biisvjS8F11MM9ritJZrtEdNfD6FaT5Fvi1JAG7sp';
   // foggie_id.value = 'baeqagmrygu';
@@ -416,6 +418,15 @@
       onOk: () => {
         console.log('ok');
         onOk(index);
+      },
+    });
+  };
+
+  const goToBack = () => {
+    router.push({
+      name: 'Home',
+      query: {
+        order_id: route.query.order_id,
       },
     });
   };

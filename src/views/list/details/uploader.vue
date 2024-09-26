@@ -80,9 +80,10 @@
     orderInfo?: any;
     isMobileOrder?: boolean;
     getSummary?: any;
+    usedSize?: any;
   }
   const props = defineProps<Props>();
-  const { getSummary, bucketName, prefix, accessKeyId, secretAccessKey, orderInfo } = toRefs(props);
+  const { getSummary, bucketName, prefix, accessKeyId, secretAccessKey, orderInfo, usedSize } = toRefs(props);
 
   const uploadList = ref<any[]>([]);
 
@@ -122,7 +123,7 @@
   // };
   const beforeupload = async (file: any) => {
     return new Promise(async (resolve, reject) => {
-      console.log('beforeupload-----', props);
+      console.log('beforeupload-----', props, file);
       const { bucketName, accessKeyId, secretAccessKey, orderInfo, prefix } = props;
       if (!bucketName || !accessKeyId || !secretAccessKey) {
         showToast.fail('The data is abnormal, please refresh the page and try again.');
@@ -130,6 +131,8 @@
       }
 
       let fileArr: any = [];
+
+      let total = 0;
 
       for (let i = 0; i < file.length; i++) {
         let fileCopy = file[i];
@@ -144,7 +147,19 @@
           fileCopy = new File([blob], newFileName, { type: fileCopy.type });
         }
         uploadList.value.push(fileCopy);
+        if (fileCopy.size && fileCopy.size > 0) {
+          total += fileCopy.size;
+        }
         fileArr.push(fileCopy);
+      }
+
+      console.log('usedSize------', usedSize.value , total, orderInfo.space);
+      if (
+        orderInfo.space &&
+        (Number(usedSize.value) + total > Number(orderInfo.space) * 1024 * 1024 * 1024)
+      ) {
+        showToast.warn('The space is full, please delete some files and try again.');
+        return reject();
       }
       // console.log(orderInfo.value.orderId, 'orderinfo');
       // console.log(order_id.value, 'orderinfo');
@@ -319,6 +334,10 @@
         console.log('Response:', response);
       } catch (error) {
         console.error('Error:', error);
+        delay(() => {
+          uploadProgressIsShow.value = false;
+        }, 1000);
+        break;
       }
     }
     xhrArray.value = [];

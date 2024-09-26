@@ -44,6 +44,8 @@ service.interceptors.response.use(
     }
     if (code !== 200) {
       if (ignoreUrl.indexOf(response.config.url) > -1) {
+      } else if (code == 600) {
+
       } else if (code != 420) {
         showToast.fail(res.error || res.msg || res.message || response.config.url + 'Network error. Please try again.');
       }

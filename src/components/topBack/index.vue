@@ -1,7 +1,8 @@
 <template>
   <div class="top_back2" @click.capture="">
     <div :class="['img_box', type == 2 ? 'img_box2' : '']">
-      <img v-if="type == 1" @click="router.go(-1)" src="@/assets/arrow-left.svg" alt="" />
+      <img v-if="type == 3" @click="goBack" src="@/assets/arrow-left.svg" alt="" />
+      <img v-else-if="type == 1" @click="router.go(-1)" src="@/assets/arrow-left.svg" alt="" />
       <img v-else @click="router.go(-1)" src="@/assets/arrow-left2.svg" alt="" />
     </div>
     <slot></slot>
@@ -12,6 +13,7 @@
 </template>
 
 <script setup name="TopBack">
+  import { defineProps, toRefs, defineEmits } from 'vue';
   import { useRouter } from 'vue-router';
   const props = defineProps({
     type: {
@@ -21,6 +23,13 @@
   });
   const { type } = toRefs(props);
   const router = useRouter();
+
+  const emits = defineEmits([
+    'goToBack',
+  ]);
+  const goBack = () => {
+    emits('goToBack');
+  };
 </script>
 
 <style lang="scss" scoped>

@@ -212,6 +212,7 @@
         :accessKeyId="accessKeyId"
         :secretAccessKey="secretAccessKey"
         :orderInfo="cloudQuery"
+        :usedSize="usedSize"
         @uploadComplete="uploadComplete"
       ></uploader>
     </div>
@@ -318,6 +319,7 @@
   import { MoreX, HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+
   import { showDialog, showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { HmacSHA1, enc } from 'crypto-js';
@@ -325,12 +327,12 @@
   import useOrderInfo from '@/views/list/details/useOrderInfo.js';
   import useShare from '@/views/list/details/useShare.js';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
-  import { valid_upload, get_order_sign, dm_order_name_set, dm_order_name_check } from '@/api/index';
+  import { valid_upload, get_order_sign, dm_order_name_set, dm_order_name_check, dm_order_get_token } from '@/api/index';
 
   import '@nutui/nutui/dist/packages/toast/style';
   import useDelete from '@/views/list/details/useDelete.js';
   import moment from 'moment';
-  import { poolUrl } from '@/setting.js';
+  import { poolUrl, maxUrl } from '@/setting.js';
   import uploader from '@/views/list/details/uploader.vue';
   const props = defineProps({
     cloudQuery: {
@@ -516,6 +518,7 @@
         signature: cloudQuery.value.signature,
         sign_timestamp: cloudQuery.value.sign_timestamp,
         order_id: cloudQuery.value.order_id,
+        mp_domain: cloudQuery.value.mp_domain,
       },
     });
   };
@@ -987,6 +990,7 @@
     await getOrderInfo1(cloudQuery.value);
     getFileList();
     getSummary();
+    getFileStatistics();
   };
 
   const refreshFun = async () => {
@@ -1241,6 +1245,64 @@
     console.log(newBucketName.value, '------ newBucketName.value');
   };
 
+  let allCount = ref(0);
+  let allSize = ref('');
+
+  const getFileStatistics = async () => {
+    const signData = await dm_order_get_token({ orderId: cloudQuery.value.order_id });
+    let _token = '';
+    let date = '';
+    if (signData?.data?.signature) {
+      _token = signData?.data?.signature;
+      date = signData?.data?.timestamp;
+    }
+    let metadata = {
+      'X-Custom-Date': date,
+    };
+    let ip = `https://${cloudQuery.value.domain}.${poolUrl}:7007`;
+    // let ip = `${maxUrl}`;
+    // let ip = 'https://dmcxac1681.us.u2i.net:7007';
+    // let server = new grpcService1.default.APIClient(ip, null, null);
+    let server = new grpcService.default.ServiceClient(ip, null, null);
+    let header = new Prox.default.ProxHeader();
+    let request = new Prox.default.ProxRequestStatistics();
+    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+    header.setPeerid(cloudQuery.value.peer_id);
+    header.setId(cloudQuery.value.foggie_id);
+    header.setToken(_token);
+    header.setApptype(appType);
+    request.setHeader(header);
+    // request.setHeader(header.value);
+    let total = 0;
+    let size = 0;
+    server.statistics(request, metadata, (err: any, res: { array: any }) => {
+      if (err) {
+        console.log('err-statistics------:', err);
+      } else {
+        fileListArr.value = fileListArr.value.map((item: any) => {
+          return {
+            ...item,
+            number: 0,
+            capacity: 0,
+            total: 0,
+          };
+        });
+        allCount.value = res.getCategorysum().getCount();
+        allSize.value = getfilesize(res.getCategorysum().getTotal());
+        res.getCategoriesList().map((item: any) => {
+          let index = item.getCategory();
+          if (index > 0 && index < 5) {
+            fileListArr.value[index - 1].number = item.getCount();
+            fileListArr.value[index - 1].capacity = getfilesize(item.getTotal());
+            fileListArr.value[index - 1].total = item.getTotal();
+            total = total + Number(fileListArr.value[index - 1].number);
+            size = size + item.getTotal();
+          }
+        });
+      }
+    });
+  };
+
   onMounted(async () => {
     if (!cloudQuery.value.domain) {
       dialogVisible.value = true;
@@ -1250,6 +1312,7 @@
       await getOrderInfo1(cloudQuery.value);
       getFileList();
       getSummary();
+      getFileStatistics();
     }
   });
 
