@@ -572,3 +572,85 @@
   align-items: center;
   justify-content: center;
 }
+.maxio_order_history {
+}
+.history_top_box {
+  padding: 30px 20px;
+  color: #fff;
+  height: 800px;
+  overflow-y: scroll;
+  background: #000;
+  width: 100%;
+  box-sizing: border-box;
+  .history_top_title {
+    font-size: 40px;
+    text-align: center;
+    font-weight: bold;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #daa351;
+  }
+  .history_top_list {
+    height: calc(100% - 120px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 20px 20px;
+    .history_top_item {
+      padding: 20px 10px;
+      width: 100%;
+      border-bottom: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 24px;
+      .history_list_icon {
+        width: 140px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #daa351;
+        font-weight: bold;
+        white-space: nowrap;
+        img {
+          height: 50px;
+          width: 50px;
+          margin-bottom: 10px;
+        }
+      }
+      .history_content {
+        color: #fff;
+        width: calc(100% - 240px);
+        .history_content_name {
+          margin-bottom: 8px;
+        }
+        span {
+          color: #9c9898;
+          display: inline-block;
+          width: 110px;
+        }
+      }
+      .history_content_right {
+        white-space: nowrap;
+        padding: 10px 3px;
+        border: 1px solid #daa351;
+        background-color: #daa351;
+        color: #fff;
+        border-radius: 10px;
+        width: 140px;
+        text-align: center;
+        margin-top: 10px;
+        font-size: 20px;
+      }
+    }
+  }
+  .unpay_list_empty {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    .shopBack {
+      background: linear-gradient(329deg, #b6e557 0%, #99d017 25%, rgb(131 131 16) 83%, #181b24 100%);
+    }
+  }
+}

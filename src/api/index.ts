@@ -443,7 +443,14 @@ export function campaignUnbind(data) {
         data,
     });
 }
-
+export function historyOrder(data) {
+    let url = `/dm/order/history/get`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
 
 export function getDmOrder(data: any) {
     let url = `/dm/order/get`;

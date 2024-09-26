@@ -369,7 +369,7 @@
     };
     let res = await dm_order_stake(d);
     if (res.code == 200) {
-      showToast.success('You have successfully made the purchase and can check it in your order');
+      showToast.success('You have successfully created the order. Please complete the payment and wait for the order to be completed');
       isShowSpaceInfo.value = false;
       //   currentPage.value = 'calc';
       const tx = await transferFn();

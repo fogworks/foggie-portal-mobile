@@ -17,10 +17,13 @@
             </div>
           </div>
         </div>
+        <div class="maxio_order_history maxio_img" @click="showHistory = !showHistory">
+          <img src="@/assets/historyOrder.svg" alt="" />
+        </div>
         <!-- <div class="maxio_img running_img" @click="showOfflineBox" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']">
           <img src="@/assets/maxio/running.svg" class="running_img" />
         </div> -->
-        <div class="maxio_img running_img" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']"> </div>
+        <!-- <div class="maxio_img running_img" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']"> </div> -->
       </div>
       <div class="show_max_more" @click="showMoreList" v-if="!isShowMoreList && maxTableData.length > 20">
         <img src="@/assets/maxio/more.svg" />
@@ -95,6 +98,36 @@
       :isOfflineArr="isOfflineArr"
       :MaxTokenMap="MaxTokenMap"
     ></offlineList>
+    <Teleport to="body">
+      <nut-popup position="top" :style="{ minHeight: '280px' }" round v-model:visible="showHistory">
+        <div class="history_top_box">
+          <div class="history_top_title">Order History </div>
+          <div class="history_top_list">
+            <div class="history_top_item" v-for="(item, index) in historyList" :key="index">
+              <div class="history_list_icon">
+                <img src="@/assets/listH.svg" />
+                <div class="history_content_name">{{ item.domain ? item.domain : 'Order -' + item.order_id }}</div>
+                <div class="history_content_name">
+                  <div class="history_content_right">
+                    {{ statusMap[item.status] }}
+                  </div>
+                </div>
+              </div>
+              <div class="history_content">
+                <div class="history_content_name"> <span>Stake: </span>{{ item.dmcx_price }} DMCX </div>
+                <div class="history_content_name"> <span>Time: </span>{{ item.epoch }} week </div>
+                <div class="history_content_name"> <span>Space: </span>{{ item.space }} GB </div>
+                <div class="history_content_name history_content_time"><span>Created: </span>{{ transferUTCTime(item.created_at) }} </div>
+              </div>
+            </div>
+            <div v-if="!historyList.length" class="unpay_list_empty">
+              <nut-empty description="There are no history orders" image="error"></nut-empty>
+              <nut-button type="primary" class="shopBack" @click="showHistory = false">Back</nut-button>
+            </div>
+          </div>
+        </div>
+      </nut-popup>
+    </Teleport>
   </div>
 </template>
 
@@ -111,9 +144,23 @@
   import iconImg from './iconImg.vue';
   import useOrderList from './maxFileOpt/useAllOrderList';
   import { useUserStore } from '@/store/modules/user';
-  import { getDmOrder } from '@/api';
+  import { getDmOrder, historyOrder } from '@/api';
+
+  const statusMap = ref([
+    'unKnow',
+    'initialization',
+    'Paymening',
+    'Active',
+    'Stake Failed',
+    'Timeout',
+    'Abandoned',
+    'Cancelled',
+    'Expanding',
+  ]);
 
   const userStore = useUserStore();
+  const showHistory = ref(false);
+  const historyList = ref([]);
   let currentBucketData = ref({});
   const isShowMaxio = ref(false);
   const isShowBucket = ref(false);
@@ -141,6 +188,7 @@
   const runningDataCy = ref([]);
   const historyDataCy = ref([]);
   const isShowMoreList = ref(false);
+  import { getfilesize, transferUTCTime } from '@/utils/util';
   const leftBucketList = computed(() => {
     return allOrderList.value;
   });
@@ -282,6 +330,9 @@
           };
         }
       });
+      historyOrder(d).then((res) => {
+        historyList.value = res.data.list;
+      });
     }
   };
 
@@ -321,6 +372,9 @@
           };
           console.log(currentBucketData.value, 'currentBucketData.value');
         }
+      });
+      historyOrder(d).then((res) => {
+        historyList.value = res.data.list;
       });
     } else {
     }
