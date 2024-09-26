@@ -24,9 +24,9 @@
             <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
           </nut-form-item>
           <nut-form-item :label="maxSpaceText">
+            <!-- @focus="buyDisabled = true"
+            @blur="buyDisabled = false" -->
             <nut-input-number
-              @focus="buyDisabled = true"
-              @blur="buyDisabled = false"
               :max="maxSpace"
               :min="1"
               decimal-places="0"
@@ -143,7 +143,10 @@
           <div class="unpay_list_price">{{ transferUTCTime(item.created_at) }} </div>
           <div class="unpay_list_time">{{ item.expireTime || '' }} </div>
 
-          <div class="unpay_list_pay" @click="addStake(item)">Add Stake</div>
+          <div class="pay_btn_list">
+            <div class="unpay_list_pay" @click="addStake(item)">Add Stake</div>
+            <div class="unpay_list_pay cancel_pay" @click="cancelOrder(item)">Cancel</div>
+          </div>
         </div>
         <div v-if="!unpayList.length" class="unpay_list_empty">
           <nut-empty description="There are no orders that require stake " image="error"></nut-empty>
@@ -222,7 +225,7 @@
   const qrCanvas = ref(null);
   const isShowQRCode = ref(false);
 
-  import { dm_calc_price, get_available_capacity, dm_order_stake, getDmOrder, dm_order_add_transaction } from '@/api';
+  import { dm_calc_price, get_available_capacity, dm_order_stake, getDmOrder, dm_order_add_transaction, cancelDmOrder } from '@/api';
   import { showToast } from '@nutui/nutui';
 
   const isShowSpaceInfo = ref(false);
@@ -265,7 +268,7 @@
 
   async function submit() {
     const d = {
-      //   wallet: address.value,
+      wallet: address.value,
       space: shopForm.value.quantity,
       epoch: shopForm.value.week,
     };
@@ -434,6 +437,18 @@
     isShowSpaceInfo.value = false;
     isShowUnpayItem.value = true;
     currentStakeItem.value = item;
+  };
+  const cancelOrder = (item) => {
+    const data = {
+      orderId: item.order_id,
+    };
+    cancelDmOrder(data).then((res) => {
+      if (res.code == 200) {
+        showToast.success('The order has been successfully cancelled');
+        currentPage.value = 'calc';
+        console.log(res);
+      }
+    });
   };
   const confirmAddStake = () => {
     if (!txid.value) {
@@ -1372,7 +1387,7 @@
       margin-top: 30px;
       .unpay_list_item {
         margin: 34px 0 30px;
-        width: 33%;
+        // width: 33%;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -1392,12 +1407,18 @@
           height: 60px;
         }
       }
-
+      .pay_btn_list {
+        display: flex;
+      }
       .unpay_list_pay {
         padding: 6px 30px;
         border-radius: 12px;
         margin-top: 10px;
         background: linear-gradient(329deg, #b6e557 0%, #99d017 25%, rgb(131 131 16) 83%, #181b24 100%);
+        margin-right: 16px;
+      }
+      .cancel_pay {
+        background: linear-gradient(329deg, #f18c07 0%, #ef6828 25%, rgb(218 63 22) 83%, #e56125 100%);
       }
     }
     .unpay_list_name {

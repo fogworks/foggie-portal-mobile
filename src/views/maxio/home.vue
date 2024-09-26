@@ -71,11 +71,15 @@
         </div>
 
         <div class="maxio_home_rightContent maxio_sd_rightContent bbb" :class="[showLeft ? 'maxWidth' : '']">
-          <sd :currentBucketData="currentBucketData">
+          <sd :currentBucketData="currentBucketData" @refresh="refresh">
             <div v-if="!cloudQuery.id" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
               <img src="@/assets/maxio/empty.png" alt="" />
             </div>
-            <CloudComponent :cloudQuery="currentBucketData" v-if="currentBucketData.id" @setDomainSuccess="setDomainSuccess"></CloudComponent>
+            <CloudComponent
+              :cloudQuery="currentBucketData"
+              v-if="currentBucketData.id"
+              @setDomainSuccess="setDomainSuccess"
+            ></CloudComponent>
           </sd>
         </div>
       </div>
@@ -283,6 +287,9 @@
 
   const setDomainSuccess = (data) => {
     console.log('setDomainSuccess', data);
+    initData();
+  };
+  const refresh = () => {
     initData();
   };
   onMounted(() => {

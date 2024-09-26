@@ -9,18 +9,43 @@
               <!-- <nut-noticebar :text="text" background="transparent" color="#fff" :left-icon="false" /> -->
             </span>
           </div>
+          <div class="order_top_icon" @click="showOrderOption = true">
+            <img src="@/assets/set.svg" />
+          </div>
           <div class="card-body">
             <slot></slot>
           </div>
         </div>
       </div>
     </div>
+    <Teleport to="body">
+      <nut-popup position="top" :style="{ height: '180px' }" round v-model:visible="showOrderOption">
+        <div class="order_top_box">
+          <div class="order_top_title">Order Setting </div>
+          <div class="order_top_list">
+            <div class="order_top_item" @click="doOpt('cancel')">
+              <img src="@/assets/cancelOrder.svg" />
+              <span>Cancel Order</span>
+            </div>
+            <div class="order_top_item" @click="doOpt('renew')">
+              <img src="@/assets/addOrder.svg" />
+              <span>Renew Order</span>
+            </div>
+          </div>
+        </div>
+      </nut-popup>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
   import { ref, toRefs, computed, onMounted } from 'vue';
+  import { showDialog, showNotify, showToast } from '@nutui/nutui';
+  import { cancelDmOrder } from '@/api';
+  import { createVNode, inject } from 'vue';
+  const emits = defineEmits(['refresh']);
   const currentItem = ref({});
+  const showOrderOption = ref(false);
   const props = defineProps({
     currentBucketData: {
       type: Object,
@@ -43,7 +68,34 @@
     },
   );
   onMounted(() => {});
-
+  const doOpt = (type) => {
+    if (type === 'renew') {
+      let text = 'We Are Comming Soon......';
+      showNotify.text(text, { color: '#000', background: '#9dfc37', position: 'bottom' });
+    } else if (type === 'cancel') {
+      showDialog({
+        title: 'Cancel Order',
+        content: createVNode('span', { style: {} }, 'Are you sure you want to cancel the order?'),
+        cancelText: 'Cancel',
+        okText: 'Yes',
+        onCancel: () => {
+          // console.log('取消');
+        },
+        onOk: () => {
+          const data = {
+            orderId: currentItem.value.order_id,
+          };
+          cancelDmOrder(data).then((res) => {
+            if (res.code == 200) {
+              showToast.success('The order has been successfully cancelled');
+              showOrderOption.value = false;
+              emits('refresh');
+            }
+          });
+        },
+      });
+    }
+  };
   const textSubStr = (text) => {
     if (text) {
       let arr = text.split('-');
@@ -55,6 +107,53 @@
 </script>
 
 <style lang="scss">
+  .order_top_icon {
+    display: flex;
+    align-items: end;
+    justify-content: end;
+    position: absolute;
+    right: 0;
+    top: 20px;
+    img {
+      width: 36px;
+      height: 36px;
+    }
+  }
+  .order_top_box {
+    padding: 30px 20px;
+    color: #fff;
+    height: 100%;
+    .order_top_title {
+      font-size: 40px;
+      text-align: center;
+      font-weight: bold;
+      padding-bottom: 30px;
+      border-bottom: 1px solid green;
+    }
+    .order_top_list {
+      height: calc(100% - 120px);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-around;
+
+      .order_top_item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+        margin-right: 20px;
+        cursor: pointer;
+        color: #1afa29;
+        img {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 14px;
+        }
+      }
+    }
+  }
   .nut-noticebar__page {
     height: 50px;
     line-height: 50px;

@@ -259,7 +259,7 @@
       :close-on-click-overlay="false"
       :show-cancel="false"
       :show-confirm="false"
-      custom-class="CustomName BucketName"
+      custom-class="CustomName BucketName maxio_custom"
       overlayClass="CustomOverlay"
     >
       <template #header>
@@ -1147,7 +1147,7 @@
       category = 2;
     } else if (name === 'Audio') {
       category = 3;
-    } 
+    }
     router.push({
       name: 'FileList',
       query: {
@@ -1159,7 +1159,7 @@
         sign_timestamp: cloudQuery.value.sign_timestamp,
         order_id: cloudQuery.value.order_id,
         category,
-        bucketName : bucketName.value,
+        bucketName: bucketName.value,
       },
     });
   };
@@ -1213,20 +1213,22 @@
       orderId: cloudQuery.value.order_id,
       domain: newBucketName.value,
     };
-    dm_order_name_set(d).then(async (res: any) => {
-      isNameLoading.value = false;
-      showToast.hide();
-      if (res?.code == 200) {
-        showToast.success('Create successfully');
-        dialogVisible.value = false;
-        emits('setDomainSuccess');
-      } else {
-        showToast.fail('Create failed');
-      }
-    }).catch(() => {
-      showToast.hide();
-      isNameLoading.value = false;
-    });
+    dm_order_name_set(d)
+      .then(async (res: any) => {
+        isNameLoading.value = false;
+        showToast.hide();
+        if (res?.code == 200) {
+          showToast.success('Create successfully');
+          dialogVisible.value = false;
+          emits('setDomainSuccess');
+        } else {
+          showToast.fail('Create failed');
+        }
+      })
+      .catch(() => {
+        showToast.hide();
+        isNameLoading.value = false;
+      });
   };
 
   const setDefaultName = () => {
@@ -2618,6 +2620,25 @@
       align-items: center;
       font-weight: 600;
       background-color: #211d1d;
+    }
+  }
+</style>
+<style lang="scss">
+  .nut-popup {
+    border: 1px solid #0ff20f !important;
+  }
+  .maxio_custom {
+    border: 1px solid #0ff20f !important;
+    color: #fff;
+    span,
+    .bucket_tip {
+      color: #fff;
+    }
+    .nut-dialog__header {
+      color: #0ff20f !important;
+    }
+    .nut-button:last-child {
+      background-image: linear-gradient(329deg, #b6e557 0%, #99d017 25%, rgb(131 131 16) 83%, #181b24 100%) !important;
     }
   }
 </style>

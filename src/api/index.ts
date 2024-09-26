@@ -453,6 +453,14 @@ export function getDmOrder(data: any) {
         data,
     });
 }
+export function cancelDmOrder(data: any) {
+    let url = `dm/order/cancel`;
+    return request({
+        url: url,
+        method: "post",
+        data,
+    });
+}
 
 
 export function dm_calc_price(data: any) {
