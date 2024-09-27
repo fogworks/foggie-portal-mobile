@@ -115,7 +115,7 @@
               </div>
               <div class="history_content">
                 <div class="history_content_name"> <span>Stake: </span>{{ item.dmcx_price }} DMCX </div>
-                <div class="history_content_name"> <span>Time: </span>{{ item.epoch }} week </div>
+                <!-- <div class="history_content_name"> <span>Time: </span>{{ item.epoch }} week </div> -->
                 <div class="history_content_name"> <span>Space: </span>{{ item.space }} GB </div>
                 <div class="history_content_name history_content_time"><span>Created: </span>{{ transferUTCTime(item.created_at) }} </div>
               </div>

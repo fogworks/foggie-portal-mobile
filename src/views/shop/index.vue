@@ -13,7 +13,7 @@
       <div class="img_list">
         <nut-form class="query_form" :model-value="shopForm">
           <!-- <div class="custom_order">Custom</div> -->
-          <nut-form-item label="Service Period">
+          <!-- <nut-form-item label="Service Period">
             <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
               <nut-radio shape="button" :label="52">52 weeks</nut-radio>
               <nut-radio shape="button" :label="38">38 weeks</nut-radio>
@@ -22,7 +22,7 @@
           </nut-form-item>
           <nut-form-item label="Custom Cycle">
             <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
-          </nut-form-item>
+          </nut-form-item> -->
           <nut-form-item :label="maxSpaceText">
             <!-- @focus="buyDisabled = true"
             @blur="buyDisabled = false" -->
@@ -40,7 +40,7 @@
             <img src="@/assets/tips1.svg" class="warn_svg" />
             Estimated required stake DMCX:<span
               style="margin-left: 10px; margin-right: 5px; display: inline-block; font-weight: bold; text-decoration: underline"
-              >{{ Number(0.1 * shopForm.week * shopForm.quantity).toFixed(4) }}</span
+              >{{ Number(1 * 1 * shopForm.quantity).toFixed(4) }}</span
             >DMCX
           </div>
 
@@ -67,9 +67,9 @@
     <div class="space-info" v-if="currentPage === 'stake'">
       <div class="vip_title">Your Order Summary</div>
       <!-- <hr /> -->
-      <p>
+      <!-- <p>
         <span class="p_label">Weeks: </span><span>{{ shopForm.week }} WEEK</span></p
-      >
+      > -->
       <p>
         <span class="p_label">Space: </span><span>{{ shopForm.quantity }} GB</span></p
       >
@@ -158,9 +158,9 @@
     <!-- isShowUnpayItem isShowUnpayItem && !isShowList-->
     <div class="space-info unpay_item_wrap" v-if="currentPage === 'unPayItem'">
       <div class="vip_title"> Order add Stake</div>
-      <p>
+      <!-- <p>
         <span class="p_label">Weeks: </span><span>{{ currentStakeItem.epoch }} WEEK</span></p
-      >
+      > -->
       <p>
         <span class="p_label">Space: </span><span>{{ getfilesize(currentStakeItem.space) }} </span></p
       >
@@ -245,7 +245,7 @@
   const state = reactive({
     shopForm: {
       quantity: 1 as number,
-      week: 24,
+      week: 1,
       floating_ratio: 5,
     },
     loading: false,
@@ -270,7 +270,7 @@
     const d = {
       wallet: address.value,
       space: shopForm.value.quantity,
-      epoch: shopForm.value.week,
+      //   epoch: shopForm.value.week,
     };
     dm_calc_price(d).then((res) => {
       if (res.code == 200) {
@@ -351,6 +351,7 @@
     const web3 = new Web3(window.ethereum);
     let date = moment.utc(new Date().getTime()).format('YYYYMMDDTHHmmss');
     let _date = date + 'Z';
+    shopForm.value.week = 1;
     const message = `${Number(shopForm.value.week)}\n${Number(shopForm.value.quantity)}\n${calc_price.value.total}\n${_date}`;
     // const message = `${Number(shopForm.value.week)}&${Number(shopForm.value.quantity)}&${calc_price.value.total}&${_date}`;
     let signature = await web3.eth.personal.sign(message, address.value, '');
@@ -526,7 +527,8 @@
     showTop,
     (val) => {
       state.shopForm.quantity = 100;
-      state.shopForm.week = 24;
+      //   state.shopForm.week = 24;
+      state.shopForm.week = 1;
       state.shopForm.floating_ratio = 5;
     },
     { deep: true },
