@@ -13,7 +13,8 @@
           <div class="maxio_title">
             <img src="@/assets/maxio/cloud1.svg" alt="" />
             <div class="title_text">
-              <div class="max_name"> Order{{ currentBucketData.order_id }}</div>
+              <div class="max_name" v-if="currentBucketData.domain"> {{ currentBucketData.domain }}</div>
+              <div class="max_name" v-else> Order{{ currentBucketData.order_id }}</div>
             </div>
           </div>
         </div>
@@ -44,7 +45,8 @@
               :class="[currentBucketData.id === item.id ? 'active_img' : '', 'menu_img']"
             >
               <img src="@/assets/maxio/cloud1.svg" alt="" class="left_max_pngs" />
-              <div class="title_text">{{ 'Order' + item.order_id }}</div>
+              <div class="title_text" v-if="item.domain">{{ item.domain }}</div>
+              <div class="title_text" v-else>{{ 'Order' + item.order_id }}</div>   
             </div>
           </div>
 

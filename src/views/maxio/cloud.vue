@@ -1174,12 +1174,16 @@
     } else if (newBucketName.value) {
       let reg = /^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9]))*(?:\.[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9]))*)*$/;
       if (newBucketName.value.length < 8 || newBucketName.value.length > 10) {
-        showToast.text('Please enter a name with a length of 8-10 digits');
+        showToast.text('Please enter a name with a length of 8-10 digits', {
+          customClass: 'creat-name-error',
+        });
         return;
       }
       if (!reg.test(newBucketName.value)) {
         showToast.text(
-          'Custom names can only contain lowercase letters, numbers, periods, and dashes (-), and must start and end with lowercase letters or numbers',
+          'Custom names can only contain lowercase letters, numbers, periods, and dashes (-), and must start and end with lowercase letters or numbers', {
+            customClass: 'creat-name-error',
+          }
         );
         return;
       }
@@ -1197,7 +1201,9 @@
         });
         createName1();
       } else {
-        showToast.text('The name already exists, please change it');
+        showToast.text('The name already exists, please change it', {
+          customClass: 'creat-name-error',
+        });
         console.log('name is exist');
         isNameLoading.value = false;
         return;
@@ -1249,60 +1255,60 @@
   let allSize = ref('');
 
   const getFileStatistics = async () => {
-    const signData = await dm_order_get_token({ orderId: cloudQuery.value.order_id });
-    let _token = '';
-    let date = '';
-    if (signData?.data?.signature) {
-      _token = signData?.data?.signature;
-      date = signData?.data?.timestamp;
-    }
-    let metadata = {
-      'X-Custom-Date': date,
-    };
-
-    let ip = `https://${cloudQuery.value.domain}.${poolUrl}:7007`;
-    console.log('ip:-------', ip, cloudQuery.value);
-    // let ip = `${maxUrl}`;
-    // let ip = 'https://dmcxac1681.us.u2i.net:7007';
-    // let server = new grpcService1.default.APIClient(ip, null, null);
-    let server = new grpcService.default.ServiceClient(ip, null, null);
-    let header = new Prox.default.ProxHeader();
-    let request = new Prox.default.ProxRequestStatistics();
-    const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
-    header.setPeerid(cloudQuery.value.peer_id);
-    header.setId(cloudQuery.value.foggie_id);
-    header.setToken(_token);
-    header.setApptype(appType);
-    request.setHeader(header);
-    // request.setHeader(header.value);
-    let total = 0;
-    let size = 0;
-    server.statistics(request, metadata, (err: any, res: { array: any }) => {
-      if (err) {
-        console.log('err-statistics------:', err);
-      } else {
-        fileListArr.value = fileListArr.value.map((item: any) => {
-          return {
-            ...item,
-            number: 0,
-            capacity: 0,
-            total: 0,
-          };
-        });
-        allCount.value = res.getCategorysum().getCount();
-        allSize.value = getfilesize(res.getCategorysum().getTotal());
-        res.getCategoriesList().map((item: any) => {
-          let index = item.getCategory();
-          if (index > 0 && index < 5) {
-            fileListArr.value[index - 1].number = item.getCount();
-            fileListArr.value[index - 1].capacity = getfilesize(item.getTotal());
-            fileListArr.value[index - 1].total = item.getTotal();
-            total = total + Number(fileListArr.value[index - 1].number);
-            size = size + item.getTotal();
-          }
-        });
+    if (cloudQuery.value.domain) {
+      const signData = await dm_order_get_token({ orderId: cloudQuery.value.order_id });
+      let _token = '';
+      let date = '';
+      if (signData?.data?.signature) {
+        _token = signData?.data?.signature;
+        date = signData?.data?.timestamp;
       }
-    });
+      let metadata = {
+        'X-Custom-Date': date,
+      };
+      let ip = `https://${cloudQuery.value.domain}.${poolUrl}:7007`;
+      // let ip = `${maxUrl}`;
+      // let ip = 'https://dmcxac1681.us.u2i.net:7007';
+      // let server = new grpcService1.default.APIClient(ip, null, null);
+      let server = new grpcService.default.ServiceClient(ip, null, null);
+      let header = new Prox.default.ProxHeader();
+      let request = new Prox.default.ProxRequestStatistics();
+      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+      header.setPeerid(cloudQuery.value.peer_id);
+      header.setId(cloudQuery.value.foggie_id);
+      header.setToken(_token);
+      header.setApptype(appType);
+      request.setHeader(header);
+      // request.setHeader(header.value);
+      let total = 0;
+      let size = 0;
+      server.statistics(request, metadata, (err: any, res: { array: any }) => {
+        if (err) {
+          console.log('err-statistics------:', err);
+        } else {
+          fileListArr.value = fileListArr.value.map((item: any) => {
+            return {
+              ...item,
+              number: 0,
+              capacity: 0,
+              total: 0,
+            };
+          });
+          allCount.value = res.getCategorysum().getCount();
+          allSize.value = getfilesize(res.getCategorysum().getTotal());
+          res.getCategoriesList().map((item: any) => {
+            let index = item.getCategory();
+            if (index > 0 && index < 5) {
+              fileListArr.value[index - 1].number = item.getCount();
+              fileListArr.value[index - 1].capacity = getfilesize(item.getTotal());
+              fileListArr.value[index - 1].total = item.getTotal();
+              total = total + Number(fileListArr.value[index - 1].number);
+              size = size + item.getTotal();
+            }
+          });
+        }
+      });
+    }
   };
 
   onMounted(async () => {
@@ -2706,5 +2712,8 @@
     .nut-button:last-child {
       background-image: linear-gradient(329deg, #b6e557 0%, #99d017 25%, rgb(131 131 16) 83%, #181b24 100%) !important;
     }
+  }
+  .creat-name-error {
+    z-index: 20001 !important;
   }
 </style>
