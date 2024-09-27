@@ -283,6 +283,24 @@ export const routes = [
                             notBar: true,
                         },
                     },
+                    {
+                        path: '/deploy',
+                        name: 'Deploy',
+                        component: () => import('@/views/deploy/index.vue'),
+                        meta: {
+                          title: 'tabbar.deploy',
+                          keepAlive: true,
+                        },
+                      },
+                      {
+                        path: '/mint',
+                        name: 'Mint',
+                        component: () => import('@/views/mint/index.vue'),
+                        meta: {
+                          title: 'tabbar.mint',
+                          keepAlive: true,
+                        },
+                      },
                 ],
             },
             {

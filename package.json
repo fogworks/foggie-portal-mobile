@@ -1,6 +1,6 @@
 {
   "name": "vue-h5-template",
-  "version": "1.0.3",
+  "version": "0.0.2",
   "scripts": {
     "dev": "vite --mode development",
     "dev:scan": "set VITE_IS_HTTPS=true && vite --https --host 0.0.0.0",
@@ -32,10 +32,10 @@
     "@vue-office/excel": "^1.4.5",
     "@vueuse/core": "10.2.1",
     "@vueuse/integrations": "10.2.1",
-    "@web3-onboard/core": "^2.21.2",
-    "@web3-onboard/injected-wallets": "^2.10.10",
-    "@web3-onboard/metamask": "^2.0.2",
-    "@web3-onboard/vue": "^2.7.12",
+    "@web3-onboard/core": "~2.21.2",
+    "@web3-onboard/injected-wallets": "~2.10.10",
+    "@web3-onboard/metamask": "~2.0.2",
+    "@web3-onboard/vue": "~2.7.12",
     "WebODF": "^0.5.10",
     "aws-sdk": "^2.1485.0",
     "axios": "1.4.0",
@@ -45,6 +45,7 @@
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.9",
     "echarts": "^5.4.3",
+    "element-plus": "^2.8.3",
     "ethers": "^6.8.1",
     "fake-progress": "^1.0.4",
     "google-protobuf": "^3.21.2",
@@ -74,7 +75,7 @@
     "vue-router": "^4.2.3",
     "vue3-pdf-app": "^1.0.3",
     "w3name": "^1.0.8",
-    "web3": "^4.10.0"
+    "web3": "~1.9.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",

@@ -527,7 +527,6 @@
     showTop,
     (val) => {
       state.shopForm.quantity = 100;
-      //   state.shopForm.week = 24;
       state.shopForm.week = 1;
       state.shopForm.floating_ratio = 5;
     },

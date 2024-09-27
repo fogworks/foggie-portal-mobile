@@ -1334,6 +1334,7 @@
     cloudQuery,
     async (val) => {
       if (val.domain) {
+        console.log('refresh========2', val);
         refresh();
       }
     },

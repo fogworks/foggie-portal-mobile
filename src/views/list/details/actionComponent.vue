@@ -67,6 +67,10 @@
             <IconDownload color="#222224"></IconDownload>
             Download
           </div>
+          <div @click="handlerClick('nft')">
+            <IconNFT color="#222224"></IconNFT>
+            NFT
+          </div>
         </div>
         <div class="ipfs" v-if="chooseItem.isPin || chooseItem.cid">
           <p v-if="chooseItem.isPin && chooseItem.cid">
@@ -431,6 +435,7 @@
   import IconRename from '~icons/home/rename.svg';
   import IconMove from '~icons/home/move.svg';
   import IconDownload from '~icons/home/download.svg';
+  import IconNFT from '~icons/home/nft1.svg';
   import IconMore from '~icons/home/more.svg';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
   import IconHttp from '~icons/home/http.svg';
@@ -772,7 +777,17 @@
       stream.on('error', (error) => {
         console.log('error----------upload', error);
       });
-    } else {
+    } else if (type == 'nft') {
+      const metaImage = `https://${bucketName.value}.${poolUrl}:6008/ipfs/${checkData[0].cid}`;
+      const name = checkData[0]?.name;
+      router.push({
+        path: '/deploy',
+        query: {
+          metaImage,
+          name,
+        },
+      });
+    } else{
       emits('handlerClick', type);
     }
   };

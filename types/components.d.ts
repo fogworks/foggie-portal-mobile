@@ -21,6 +21,7 @@ declare module 'vue' {
     NutCheckbox: typeof import('@nutui/nutui')['Checkbox']
     NutCheckboxGroup: typeof import('@nutui/nutui')['CheckboxGroup']
     NutCol: typeof import('@nutui/nutui')['Col']
+    NutDatePicker: typeof import('@nutui/nutui')['DatePicker']
     NutDialog: typeof import('@nutui/nutui')['Dialog']
     NutDrag: typeof import('@nutui/nutui')['Drag']
     NutEmpty: typeof import('@nutui/nutui')['Empty']

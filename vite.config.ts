@@ -59,13 +59,13 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     // rewrite: (path) => path.replace(/^\/api/, ""),
                 },
                 '^/assets': {
-                    target: 'http://m.vofocorp.com',
+                    target: 'https://devlop.fogworks.io',
                     changeOrigin: true,
                     secure: false,
                     // rewrite: (path) => path.replace(/^\/api/, ""),
                 },
                 '^/api': {
-                    target: 'http://m.vofocorp.com',
+                    target: 'https://devlop.fogworks.io',
                     changeOrigin: true,
                     secure: false,
                     // rewrite: (path) => path.replace(/^\/api/, ""),
@@ -118,34 +118,6 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     secure: false,
                     // rewrite: (path) => path.replace(/^\/api/, ""),
                 },
-                // '^/fog': {
-                //   target: 'http://218.2.96.99:6008',
-                //   // target: 'http://192.168.1.119:6008',
-                //   changeOrigin: true,
-                //   secure: false,
-                //   // rewrite: (path) => path.replace(/^\/api/, ""),
-                // },
-                // '^/bcmgr/bill/search_bill': {
-                //   target: 'http://154.31.34.194:9098',
-                //   // target: 'http://192.168.1.119:6008',
-                //   changeOrigin: true,
-                //   secure: false,
-                //   // rewrite: (path) => path.replace(/^\/api/, ""),
-                // },
-                // '^/foggiebucket': {
-                //   target: 'http://218.2.96.99:6008',
-                //   // target: 'http://192.168.1.119:6008',
-                //   changeOrigin: true,
-                //   secure: false,
-                //   // rewrite: (path) => path.replace(/^\/api/, ""),
-                // },
-                // '^/o': {
-                //   target: 'http://218.2.96.99:6008',
-                //   // target: 'http://192.168.1.119:6008',
-                //   changeOrigin: true,
-                //   secure: false,
-                //   // rewrite: (path) => path.replace(/^\/api/, ""),
-                // },
                 '^/order/calc_merkle': {
                     target: 'http://45.207.245.24:28080',
                     // target: 'http://192.168.1.119:6008',
@@ -196,12 +168,6 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     secure: false,
                     // rewrite: (path) => path.replace(/^\/api/, ""),
                 },
-                // '^/o': {
-                //   target: 'https://h5chen-397.devus.u2i.net:6008',
-                //   // target: 'http://192.168.1.119:6008',
-                //   changeOrigin: true,
-                //   secure: false,
-                // },
                 '^/link/get': {
                     target: 'https://45.207.245.24:17071',
                     // target: 'http://192.168.1.119:6008',
