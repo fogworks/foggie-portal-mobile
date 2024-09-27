@@ -41,6 +41,12 @@ export const minSize = 5;
 // export const vpsUrl = 'https://pool.fogworks.io';
 // export const maxUrl = 'https://cloud.fogworks.io';
 // export const mscUrl = 'http://45.207.245.24:6066';
+// export const logicAddress = '0x7491A1b0EeD2Af4a80aF8E344E4FaD47DBe3cF79';
+// export const mintChainId = 137;
+
+
+
+
 
 
 export const shareUrl = 'https://share.dev.u2i.net';
@@ -53,3 +59,5 @@ export const browserUrl = 'https://polygonscan.com';
 export const vpsUrl = 'https://pool.fogworks.io';
 export const maxUrl = 'https://cloud.fogworks.io';
 export const mscUrl = 'http://45.207.245.24:6066';
+export const logicAddress = '0x7491A1b0EeD2Af4a80aF8E344E4FaD47DBe3cF79';
+export const mintChainId = 137;
