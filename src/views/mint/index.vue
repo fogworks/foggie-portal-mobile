@@ -49,7 +49,7 @@
     import * as Prox from '@/pb/prox_pb.js';
     import * as grpcService from '@/pb/prox_grpc_web_pb.js';
     import { poolUrl } from '@/setting.js';
-    import { get_unique_order, get_order_sign } from '@/api/index';
+    import { get_unique_order, get_order_sign, dm_get_by_domain, dm_order_get_token } from '@/api/index';
   
     const { v4: uuidv4 } = require('uuid');
   
@@ -120,13 +120,21 @@
         console.log('mint success--------count', _r[1]?.events?.Transfer?.returnValues?.tokenId);
         const tokenId = _r[1]?.events?.Transfer?.returnValues?.tokenId;
         const transactionHash = _r[1]?.transactionHash;
+        console.log('tokenId--------', {
+            mint_uuid,
+            state: 'finish',
+            contract: contractAddress.value,
+            account,
+            token_id: tokenId.toString(),
+            tx_id: transactionHash,
+          });
         if (tokenId && transactionHash) {
           await update_mint({
             mint_uuid,
             state: 'finish',
             contract: contractAddress.value,
             account,
-            token_id: tokenId,
+            token_id: tokenId.toString(),
             tx_id: transactionHash,
           });
           if (info.value.maxSupply > 0) {
@@ -143,7 +151,7 @@
           ProxUpdateNFTRequest.setHeader(header);
           ProxNFTInfo.setCid(info.value.cid);
           ProxNFTInfo.setContractid(contractAddress.value);
-          ProxNFTInfo.setTokenid(tokenId);
+          ProxNFTInfo.setTokenid(tokenId.toString());
           ProxUpdateNFTRequest.addNftinfos(ProxNFTInfo);
   
           console.log('ProxUpdateNFTRequest----------', ProxUpdateNFTRequest, ProxNFTInfo);
@@ -188,9 +196,10 @@
         }
   
         const xr = await ContractCall.loadContract(contractAddress.value);
+        console.log('xr--------', xr);
         if (xr) {
           const _contractinfo = await ContractCall.getContractBaseInfo();
-          console.log('_contractinfo--------', _contractinfo);
+          console.log('_contractinfo--------', _contractinfo, contractAddress.value);
           info.value.cost = _contractinfo.cost;
           info.value.metaImage = _contractinfo.metaImageURI;
           info.value.name = _contractinfo.name;
@@ -209,6 +218,8 @@
           info.value.startTime = transferUTCTime(Number(_contractinfo.publicStartTime) * 1000);
           info.value.endTime =
             Number(_contractinfo.publicEndTime) === 0 ? 'Forever' : transferUTCTime(Number(_contractinfo.publicEndTime) * 1000);
+
+            console.log('_contractinfo.metaImageURI--------', _contractinfo.metaImageURI);
   
           info.value.bucket = _contractinfo.metaImageURI.split('://')[1]?.split('.')[0];
           info.value.cid = _contractinfo.metaImageURI.split('/ipfs/')[1];
@@ -247,25 +258,22 @@
     let metadata = ref({});
   
     const getOrderInfo = async () => {
-      let res = await get_unique_order({ domain: info.value.bucket });
-      if (res?.result?.data?.uuid) {
-        const order_uuid = res?.result?.data?.uuid;
-        let param = {
-          order_uuid,
-        };
-        const signData = await get_order_sign(param);
+      let res = await dm_get_by_domain({ domain: info.value.bucket });
+      if (res?.data) {
+        const order_id = res?.data?.order_id;
+        const signData = await dm_order_get_token({ orderId: order_id });
   
         // orderInfo.value.rpc = '218.2.96.99:6007';
         console.log('orderInfo.value==11:', res);
-        header.setPeerid(res?.result?.data.peer_id);
-        header.setId(res?.result?.data.foggie_id);
+        header.setPeerid(res?.data.peer_id);
+        header.setId(res?.data.foggie_id);
   
         const userAgent = navigator.userAgent || navigator.vendor || window.opera;
         const appType = userAgent.indexOf('MetaMask') > -1 ? 'dapp-metamask' : userAgent.indexOf('Mobile') > -1 ? 'dapp-mobile' : 'dapp-pc';
         header.setApptype(appType);
   
-        let cur_token = signData?.result?.data?.sign;
-        const date = signData?.result?.data?.timestamp;
+        let cur_token = signData?.data?.signature;
+        const date = signData?.data?.timestamp;
         metadata.value = {
           'X-Custom-Date': date,
         };

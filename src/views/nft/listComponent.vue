@@ -6,7 +6,7 @@
       </div>
     </div>
     <p v-if="isShowMore" @click="emits('gotoMore')" class="show_more"> Show More </p>
-    <nut-infinite-loading
+    <!-- <nut-infinite-loading
       v-if="activeTab == 1"
       class="list_box"
       load-more-txt="No more content"
@@ -30,8 +30,47 @@
           </p>
         </div>
       </div>
-    </nut-infinite-loading>
+    </nut-infinite-loading> -->
     <nut-infinite-loading
+      v-if="activeTab == 1"
+      class="list_box"
+      load-more-txt="No more content"
+      v-model="nftInfinityValue"
+      :has-more="hasMoreNFT"
+      @load-more="nftLoadMoreFun"
+    >
+      <div class="img_list_box" v-if="activeTab == 1">
+        <div
+          :class="[
+            'img_item',
+            checkedNft.value.contract &&
+            checkedNft.value.uuid === item.uuid &&
+            checkedNft.value.contract === item.contract &&
+            checkedNft.value.token_id === item.token_id
+              ? 'isChecked'
+              : '',
+          ]"
+          v-for="(item, index) in imgList"
+          @click="nftItemClick(item)"
+          :key="index"
+        >
+          <div class="img_box">
+            <nut-image :src="item.meta_image" width="100%" height="100%" fit="contain" position="center" show-error show-loading></nut-image>
+            <!-- <img :src="item.meta_image" alt="" /> -->
+          </div>
+          <p class="item_name">
+            {{ item.name }}
+          </p>
+          <p class="price_time">
+            <span>{{ item.token_id }}</span>
+          </p>
+          <p class="price_time">
+            <span class="contract-link" @click="toContract(item, 'nft')">{{ contractLink(item.contract) }}</span>
+          </p>
+        </div>
+      </div>
+    </nut-infinite-loading>
+    <!-- <nut-infinite-loading
       v-if="activeTab == 2"
       class="list_box"
       load-more-txt="No more content"
@@ -55,17 +94,70 @@
           </p>
         </div>
       </div>
+    </nut-infinite-loading> -->
+
+    <nut-infinite-loading
+      v-if="activeTab == 2"
+      class="list_box"
+      load-more-txt="No more content"
+      v-model="contractInfinityValue"
+      :has-more="hasMoreContract"
+      @load-more="contractLoadMoreFun"
+    >
+      <div class="img_list_box" v-if="activeTab == 2">
+        <div
+          :class="['img_item', checkContract.value.contract && checkContract.value.contract === item.contract ? 'isChecked' : '']"
+          v-for="(item, index) in contractList"
+          @click="contractItemClick(item)"
+          :key="index"
+        >
+          <div class="img_box">
+            <nut-image :src="item.meta_image" width="100%" height="100%" fit="contain" position="center" show-error show-loading></nut-image>
+            <!-- <img :src="item.meta_image" alt="" /> -->
+          </div>
+          <p class="item_name">
+            {{ item.name }}
+          </p>
+          <p class="price_time">
+            <span>{{ transferUTCTime(item.createdAt) }}</span>
+          </p>
+          <p class="price_time">
+            <span class="contract-link" @click="toContract(item, 'contract')">{{ contractLink(item.contract) }}</span>
+          </p>
+        </div>
+      </div>
     </nut-infinite-loading>
-    <div class="bottom_btn" v-if="showBtn && hasProvider">
+
+    <div v-if="showBtn && hasProvider && activeTab == 1" class="bottom_btn">
+      <!-- <nut-button v-if="!checkedNft.value.name" block type="primary" @click="router.push({ name: 'BucketList', query: { mintType: 1 } })"
+        >Mint New</nut-button
+      > -->
+      <nut-button v-if="!checkedNft.value.name" block type="primary" @click="router.push({ name: 'Home' })"
+        >Mint New</nut-button
+      >
+      <nut-button v-else-if="checkedNft.value.name" block type="primary" @click="mintAgaing">Mint Again</nut-button>
+    </div>
+    <div v-if="showBtn && hasProvider && activeTab == 2" class="bottom_btn">
+      <!-- <nut-button v-if="!checkContract.value.name" block type="primary" @click="router.push({ name: 'BucketList', query: { mintType: 1 } })"
+        >Mint New</nut-button
+      > -->
+      <nut-button v-if="!checkContract.value.name" block type="primary" @click="router.push({ name: 'Home' })"
+        >Mint New</nut-button
+      >
+      <nut-button v-else-if="checkContract.value.name && activeTab == 2" block type="primary" @click="toMint">Mint</nut-button>
+    </div>
+
+    <!-- <div class="bottom_btn" v-if="showBtn && hasProvider">
+      {{ checkedItem.value }}
       <nut-button v-if="!checkedItem.value.name" block type="primary" @click="goToDapp">Mint New</nut-button>
       <nut-button v-else-if="checkedItem.value.name && activeTab == 2" block type="primary">Mint</nut-button>
       <nut-button v-else-if="checkedItem.value.name" block type="primary">Mint Again</nut-button>
-    </div>
-    <div class="bottom_btn" v-else-if="showBtn && isMobileDevice && !hasProvider">
+    </div> -->
+    <!-- <div class="bottom_btn" v-else-if="showBtn && isMobileDevice && !hasProvider">
       <a :href="`https://metamask.app.link/dapp/${dappUrl}`">
         <nut-button block type="primary">Mint New</nut-button>
       </a>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -78,6 +170,8 @@
   import { useUserStore } from '@/store/modules/user';
   import { search_mint, search_deploy } from '@/api/index.ts';
   import detectEthereumProvider from '@metamask/detect-provider';
+  import * as ContractCall from '@/api/contract_func';
+
 
   const useStore = useUserStore();
   const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
@@ -129,6 +223,69 @@
   const { showBtn, tabList, activeTab, hasMore, imgList, contractList, chooseType, nftTotal, contractTotal } = toRefs(props);
   const nftInfinityValue = ref(false);
   const contractInfinityValue = ref(false);
+
+  const checkContract = reactive({
+    value: {
+      name: '',
+      account: '',
+      contract: '',
+    },
+  });
+
+  const checkedNft = reactive({
+    value: {
+      name: '',
+      contract: '',
+      token_id: '',
+      account: '',
+      uuid: '',
+    },
+  });
+  
+  const contractItemClick = (item) => {
+    console.log('checkContract---item', item, checkContract.value?.name);
+    if (checkContract.value?.contract && checkContract.value?.contract == item.contract) {
+      checkContract.value = {
+        name: '',
+        contract: '',
+        account: '',
+      };
+      return false;
+    }
+    if (chooseType.value == 1) {
+      checkContract.value = item;
+      // emits('itemClick', item);
+    }
+  };
+
+  const mintAgaing = async () => {
+    const account = await ContractCall.getAccount();
+    router.push({ path: '/mint', query: { contract: checkedNft.value.contract, account } });
+  };
+
+  const toMint = async () => {
+    const account = await ContractCall.getAccount();
+    router.push({ path: '/mint', query: { contract: checkContract.value.contract, account } });
+  };
+
+  const nftItemClick = (item) => {
+    console.log('item', item, checkedNft.value?.name);
+    if (checkedNft.value?.contract == item.contract && checkedNft.value?.token_id == item.token_id) {
+      checkedNft.value = {
+        name: '',
+        contract: '',
+        token_id: '',
+        account: '',
+        uuid: '',
+      };
+      return false;
+    }
+    if (chooseType.value == 1) {
+      checkedNft.value = item;
+      // emits('itemClick', item);
+    }
+  };
+
 
   const checkedItem = reactive({
     value: {},
@@ -267,6 +424,7 @@
       &.isChecked {
         // background: #007bff;
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        background: #999;
       }
       .img_box {
         width: 300px;
@@ -288,6 +446,7 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        color: #fff;
       }
       .price_time {
         display: flex;
@@ -295,6 +454,7 @@
         align-items: center;
         font-size: 0.9rem;
         font-weight: 600;
+        color: #fff
       }
     }
   }
@@ -339,6 +499,7 @@
         &.isChecked {
           // background: #007bff;
           box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+          background: #999;
         }
         .img_box {
           width: 200px;
@@ -348,6 +509,7 @@
           overflow: hidden;
         }
         .item_name {
+          color: #fff;
           margin: 10px 0;
         }
       }

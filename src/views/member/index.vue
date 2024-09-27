@@ -135,13 +135,13 @@
             <img src="@/assets/maxio/cs.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">About</div>
           </setting>
+          <setting @click="gotoDetail('/nft')">
+            <img src="@/assets/maxio/nft1.svg" style="width: 45px; height: 45px; display: inline-block" />
+            <div class="title">NFT</div>
+          </setting>
           <setting @click="gotoDetail('/assetsInfo')" class="wave-disable">
             <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">Assets</div>
-          </setting>
-          <setting @click="gotoDetail('/nft')" class="wave-disable">
-            <img src="@/assets/maxio/nft1.svg" style="width: 45px; height: 45px; display: inline-block" />
-            <div class="title">NFT</div>
           </setting>
         </div>
 
