@@ -1,6 +1,5 @@
 <template>
     <div class="nft-page" v-if="isMobileDevice">
-      <!-- <LoginHeader></LoginHeader> -->
       <TopBack class="top_title" type="2"><span class="title">Deploy</span> </TopBack>
       <nut-form>
         <nut-image
@@ -187,7 +186,6 @@
     // import '@nutui/nutui/dist/nutui.css';
     import { useRoute, useRouter } from 'vue-router';
     import TopBack from '@/components/topBack/index.vue';
-    import LoginHeader from '@/components/loginHeader/index.vue';
     import { nft_deploy, update_deploy } from '@/api';
     import { showToast, showDialog } from '@nutui/nutui';
     import { mintChainId } from '@/setting';
@@ -356,14 +354,14 @@
         cid: contractData.value.cid,
       };
   
-      // nft_deploy(data1)
-      //   .then((res) => {
-      //     console.log('nft_deploy-------', res);
-      //   })
-      //   .catch((err) => {
-      //     console.log('nft_deploy-------err', err);
-      //     isDeploy.value = false;
-      //   });
+      nft_deploy(data1)
+        .then((res) => {
+          console.log('nft_deploy-------', res);
+        })
+        .catch((err) => {
+          console.log('nft_deploy-------err', err);
+          isDeploy.value = false;
+        });
   
       console.log('contractData----', data1);
   

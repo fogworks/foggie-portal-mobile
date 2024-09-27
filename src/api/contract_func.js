@@ -252,9 +252,11 @@ export const deployProxyContract = async (
   // console.log("_gasLimit",_gasLimit)
   const gasEstimate = await proxyContact.estimateGas({ from: from_address[0] });
   console.log('gasEstimate-------', gasEstimate, from_address);
-  const gasLimit = Math.ceil(gasEstimate * 1.1);
+  // const gasLimit = Math.ceil(gasEstimate * 1.1);
   // const gasLimit = Math.ceil(gasEstimate * 0.1);
   // console.log('gasLimit-------', gasLimit);
+  const gasEstimateNumber = Number(gasEstimate);
+    const gasLimit = Math.ceil(gasEstimateNumber * 1.1);
 
   const r = await proxyContact
     .send({ from: from_address[0], gas: gasLimit }, function (e, contract) {

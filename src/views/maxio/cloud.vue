@@ -1259,7 +1259,9 @@
     let metadata = {
       'X-Custom-Date': date,
     };
+
     let ip = `https://${cloudQuery.value.domain}.${poolUrl}:7007`;
+    console.log('ip:-------', ip, cloudQuery.value);
     // let ip = `${maxUrl}`;
     // let ip = 'https://dmcxac1681.us.u2i.net:7007';
     // let server = new grpcService1.default.APIClient(ip, null, null);
@@ -1326,6 +1328,7 @@
     cloudQuery,
     async (val) => {
       if (val.domain) {
+        console.log('refresh========2', val);
         refresh();
       }
     },

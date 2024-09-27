@@ -304,7 +304,7 @@
     }
   }
   const gotoDetail = (path): void => {
-    if (path === '/assetsInfo' || path === '/nft') {
+    if (path === '/assetsInfo') {
       cusBgNotify();
       return;
     } else {
