@@ -9,7 +9,7 @@
               <!-- <nut-noticebar :text="text" background="transparent" color="#fff" :left-icon="false" /> -->
             </span>
           </div>
-          <div class="order_top_icon" @click="showOrderOption = true">
+          <div class="order_top_icon" @click="showOrderOption = true" v-if="currentItem.device_type !== 'maxio'">
             <img src="@/assets/set.svg" />
           </div>
           <div class="card-body">
