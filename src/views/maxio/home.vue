@@ -122,7 +122,7 @@
       </div>
       <div v-else class="empty_box_wrap">
         <nut-empty description="You currently have no available orders." image="error"></nut-empty>
-        <nut-button type="primary" class="buy-order" @click="toBuyOrder">Buy Order</nut-button>
+        <nut-button type="primary" class="buy-order" @click="toBuyOrder">Start for Free</nut-button>
       </div>
     </div>
     <offlineList
@@ -252,7 +252,7 @@
   const closeBuy = () => {
     topType.value = 'link';
     topShow.value = false;
-    topText.value = topShow.value ? 'Buy Order......' : '';
+    topText.value = topShow.value ? 'Start for Free......' : '';
   };
   const buyOrder = () => {
     topShow.value = !topShow.value;
@@ -261,7 +261,7 @@
     } else {
       topType.value = 'link';
     }
-    topText.value = topShow.value ? 'Buy Order......' : '';
+    topText.value = topShow.value ? 'Start for Free......' : '';
   };
   const showOfflineBox = () => {
     isShowOffline.value = !isShowOffline.value;

@@ -14,47 +14,59 @@
         <nut-form class="query_form" :model-value="shopForm">
           <!-- <div class="custom_order">Custom</div> -->
           <!-- <nut-form-item label="Service Period">
-            <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
-              <nut-radio shape="button" :label="52">52 weeks</nut-radio>
-              <nut-radio shape="button" :label="38">38 weeks</nut-radio>
-              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-            </nut-radio-group>
-          </nut-form-item>
-          <nut-form-item label="Custom Cycle">
-            <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
-          </nut-form-item> -->
+              <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
+                <nut-radio shape="button" :label="52">52 weeks</nut-radio>
+                <nut-radio shape="button" :label="38">38 weeks</nut-radio>
+                <nut-radio shape="button" :label="24">24 weeks</nut-radio>
+              </nut-radio-group>
+            </nut-form-item>
+            <nut-form-item label="Custom Cycle">
+              <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
+            </nut-form-item> -->
+          <span style="font-size: 14px; font-weight: bold; padding-left: 16px">Space(GB) Max: 1024 GB</span>
           <nut-form-item :label="maxSpaceText">
             <!-- @focus="buyDisabled = true"
-            @blur="buyDisabled = false" -->
-            <nut-input-number
-              :max="maxSpace"
-              :min="1"
-              decimal-places="0"
-              v-model="shopForm.quantity"
-              step="1"
-              class="nut-input-text"
-              placeholder="Space"
-            />
+              @blur="buyDisabled = false"  -->
+            <!-- <nut-input-number
+                :min="1"
+                :max="maxSpace"
+                decimal-places="0"
+                v-model="shopForm.quantity"
+                step="1"
+                class="nut-input-text"
+                placeholder="Space"
+              /> -->
+            <nut-range hidden-range v-model="shopForm.quantity" :max="maxSpace" :min="1" />
           </nut-form-item>
-          <div style="padding: 10px 20px 6px 20px; font-size: 11px; font-style: italic; font-weight: bold" class="bottom_tips_line">
+          <div
+            style="padding: 10px 20px 6px 20px; font-size: 12px; font-style: italic; font-weight: bold; white-space: nowrap"
+            class="bottom_tips_line"
+          >
             <img src="@/assets/tips1.svg" class="warn_svg" />
             Estimated required stake DMCX:<span
-              style="margin-left: 10px; margin-right: 5px; display: inline-block; font-weight: bold; text-decoration: underline"
+              style="
+                margin-left: 10px;
+                margin-right: 5px;
+                display: inline-block;
+                font-weight: bolder;
+                text-decoration: underline;
+                color: #f3ec0f;
+              "
               >{{ Number(1 * 1 * shopForm.quantity).toFixed(4) }}</span
             >DMCX
           </div>
 
           <div
-            style="padding: 4px 20px; font-size: 11px; font-style: italic; font-weight: bold; margin-bottom: 10px"
+            style="padding: 4px 20px; font-size: 12px; font-style: italic; font-weight: bold; margin-bottom: 10px"
             class="bottom_tips_line"
           >
             <img src="@/assets/tips1.svg" class="warn_svg" />
             You can stake DMCX for free to obtain the corresponding space, and after the expiration, you can redeem your DMCX.
           </div>
           <!-- <div style="padding: 4px 20px; font-size: 11px; font-style: italic; font-weight: bold" class="bottom_tips_line">
-            <img src="@/assets/tips1.svg" class="warn_svg" />
-            The maximum data security guarantee for the chain is only 52 weeks
-          </div> -->
+              <img src="@/assets/tips1.svg" class="warn_svg" />
+              The maximum data security guarantee for the chain is only 52 weeks
+            </div> -->
 
           <div class="bottom_btn">
             <!-- <nut-button type="warning" plain :loading="loading" @click="showTop = false"> Cancel </nut-button> -->
@@ -68,16 +80,16 @@
       <div class="vip_title">Your Order Summary</div>
       <!-- <hr /> -->
       <!-- <p>
-        <span class="p_label">Weeks: </span><span>{{ shopForm.week }} WEEK</span></p
-      > -->
+          <span class="p_label">Weeks: </span><span>{{ shopForm.week }} WEEK</span></p
+        > -->
       <p>
-        <span class="p_label">Space: </span><span>{{ shopForm.quantity }} GB</span></p
-      >
+        <span class="p_label">Space: </span><span>{{ shopForm.quantity }} GB</span>
+      </p>
       <p @click="copySecret(calc_price.total)">
         <span class="p_label">Need Stake:</span><span>{{ calc_price.total }} DMCX<IconCopy color="#bef508"></IconCopy></span>
       </p>
       <p @click="copySecret(address)">
-        <span class="p_label">Payment account: </span
+        <span class="p_label">Current account: </span
         ><span>{{ address ? `${address.substr(0, 6)}...${address.substr(-6)}` : address }} <IconCopy color="#bef508"></IconCopy></span>
       </p>
       <p @click="copySecret(calc_price.to)">
@@ -99,8 +111,8 @@
       <div class="bottom_btn">
         <nut-button type="warning" plain :loading="loading" @click="currentPage = 'calc'"> Cancel </nut-button>
         <!-- <nut-button type="warning" @click="confirmBuy('scan')" class="scan_btn" style="font-size: 12px; font-weight: bold"
-          >Scan Transaction
-        </nut-button> -->
+            >Scan Transaction
+          </nut-button> -->
         <nut-button type="primary" @click="confirmBuy">confirm Stake</nut-button>
       </div>
       <hr />
@@ -159,11 +171,11 @@
     <div class="space-info unpay_item_wrap" v-if="currentPage === 'unPayItem'">
       <div class="vip_title"> Order add Stake</div>
       <!-- <p>
-        <span class="p_label">Weeks: </span><span>{{ currentStakeItem.epoch }} WEEK</span></p
-      > -->
+          <span class="p_label">Weeks: </span><span>{{ currentStakeItem.epoch }} WEEK</span></p
+        > -->
       <p>
-        <span class="p_label">Space: </span><span>{{ getfilesize(currentStakeItem.space) }} </span></p
-      >
+        <span class="p_label">Space: </span><span>{{ getfilesize(currentStakeItem.space) }} </span>
+      </p>
       <p @click="copySecret(currentStakeItem.dmcx_price)">
         <span class="p_label">Need Stake::</span><span>{{ currentStakeItem.dmcx_price }} DMCX<IconCopy color="#bef508"></IconCopy></span>
       </p>
@@ -354,12 +366,13 @@
     shopForm.value.week = 1;
     const message = `${Number(shopForm.value.week)}\n${Number(shopForm.value.quantity)}\n${calc_price.value.total}\n${_date}`;
     // const message = `${Number(shopForm.value.week)}&${Number(shopForm.value.quantity)}&${calc_price.value.total}&${_date}`;
-    let signature = await web3.eth.personal.sign(message, address.value, '');
+    const from_address = await web3.eth.getAccounts();
+    console.log(from_address, 'from_address');
+    let signature = await web3.eth.personal.sign(message, from_address[0], '');
     const d = {
       // orderId: 8,
       //   orderId: calc_price.value.orderId,
       //   transactionId: txid.value,
-      wallet: address.value,
       toWallet: calc_price.value.to,
       method: 1,
       space: Number(shopForm.value.quantity),
@@ -367,6 +380,8 @@
       total: calc_price.value.total,
       signature: signature,
       timestamp: _date,
+      signWallet: from_address[0],
+      wallet: address.value,
     };
     let res = await dm_order_stake(d);
     if (res.code == 200) {
@@ -393,7 +408,7 @@
   };
 
   const maxSpace = ref(0);
-  const maxSpaceText = ref(' Space(GB) Max: 1 GB');
+  const maxSpaceText = ref('Available Space(GB) Max: 1024 GB');
 
   const copySecret = (key: string) => {
     var input = document.createElement('textarea');
@@ -538,8 +553,12 @@
     get_available_capacity().then((res) => {
       if (res.code == 200) {
         maxSpace.value = res.data;
-        maxSpaceText.value = `Space(GB) Max: ${maxSpace.value} GB`;
-        shopForm.value.quantity = res.data;
+        maxSpace.value = Math.floor(Number(maxSpace.value));
+        if (Number(maxSpace.value) > 1024) {
+          maxSpace.value = 1024;
+        }
+        maxSpaceText.value = `Available Space(GB) Max: ${maxSpace.value} GB`;
+        shopForm.value.quantity = maxSpace.value;
       }
     });
   });
@@ -1082,6 +1101,10 @@
         padding: 0 20px;
         box-sizing: border-box;
       }
+      .nut-cell__value,
+      .nut-range {
+        width: 95% !important;
+      }
     }
 
     .order-tip {
@@ -1266,7 +1289,8 @@
     margin: 20px;
     border-radius: 10px;
     background: #fff;
-    padding: 20px;
+    padding: 20px 20px 20px 10px;
+    box-sizing: border-box;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     margin-top: 70px;
     color: #fff;
