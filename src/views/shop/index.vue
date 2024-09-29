@@ -23,12 +23,13 @@
           <nut-form-item label="Custom Cycle">
             <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
           </nut-form-item> -->
+          <span style="font-size: 14px; font-weight: bold; padding-left: 16px">Space(GB) Max: 1024 GB</span>
           <nut-form-item :label="maxSpaceText">
             <!-- @focus="buyDisabled = true"
-            @blur="buyDisabled = false" -->
+            @blur="buyDisabled = false"  -->
             <nut-input-number
-              :max="maxSpace"
               :min="1"
+              :max="maxSpace"
               decimal-places="0"
               v-model="shopForm.quantity"
               step="1"
@@ -71,8 +72,8 @@
         <span class="p_label">Weeks: </span><span>{{ shopForm.week }} WEEK</span></p
       > -->
       <p>
-        <span class="p_label">Space: </span><span>{{ shopForm.quantity }} GB</span></p
-      >
+        <span class="p_label">Space: </span><span>{{ shopForm.quantity }} GB</span>
+      </p>
       <p @click="copySecret(calc_price.total)">
         <span class="p_label">Need Stake:</span><span>{{ calc_price.total }} DMCX<IconCopy color="#bef508"></IconCopy></span>
       </p>
@@ -162,8 +163,8 @@
         <span class="p_label">Weeks: </span><span>{{ currentStakeItem.epoch }} WEEK</span></p
       > -->
       <p>
-        <span class="p_label">Space: </span><span>{{ getfilesize(currentStakeItem.space) }} </span></p
-      >
+        <span class="p_label">Space: </span><span>{{ getfilesize(currentStakeItem.space) }} </span>
+      </p>
       <p @click="copySecret(currentStakeItem.dmcx_price)">
         <span class="p_label">Need Stake::</span><span>{{ currentStakeItem.dmcx_price }} DMCX<IconCopy color="#bef508"></IconCopy></span>
       </p>
@@ -393,7 +394,7 @@
   };
 
   const maxSpace = ref(0);
-  const maxSpaceText = ref(' Space(GB) Max: 1 GB');
+  const maxSpaceText = ref('Available Space(GB) Max: 1 TB');
 
   const copySecret = (key: string) => {
     var input = document.createElement('textarea');
@@ -538,7 +539,10 @@
     get_available_capacity().then((res) => {
       if (res.code == 200) {
         maxSpace.value = res.data;
-        maxSpaceText.value = `Space(GB) Max: ${maxSpace.value} GB`;
+        if (Number(maxSpace.value) > 1024) {
+          maxSpace.value = 1024;
+        }
+        maxSpaceText.value = `Available Space(GB) Max: ${maxSpace.value} GB`;
         shopForm.value.quantity = res.data;
       }
     });
