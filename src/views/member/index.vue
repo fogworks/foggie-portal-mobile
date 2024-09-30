@@ -139,9 +139,10 @@
             <img src="@/assets/maxio/nft1.svg" style="width: 45px; height: 45px; display: inline-block" />
             <div class="title">NFT</div>
           </setting>
-          <setting @click="gotoDetail('/assetsInfo')" class="wave-disable">
-            <img src="@/assets/maxio/reward.svg" style="width: 45px; height: 45px; display: inline-block" />
-            <div class="title">Assets</div>
+          <!-- class="wave-disable" assetsInfo-->
+          <setting @click="gotoDetail('/personalInfo')">
+            <img src="@/assets/user.svg" style="width: 45px; height: 45px; display: inline-block" />
+            <div class="title">UserInfo</div>
           </setting>
         </div>
 
@@ -225,7 +226,6 @@
   const maxWallet = computed(() => userStore.getMaxWallet);
   const address = computed(() => userStore.getUserInfo?.address || userStore.getAddress);
 
-
   const visible = ref<boolean>(false);
 
   const bindAmbCode = inject('bindAmbCode');
@@ -304,12 +304,13 @@
     }
   }
   const gotoDetail = (path): void => {
-    if (path === '/assetsInfo') {
-      cusBgNotify();
-      return;
-    } else {
-      router.push(path);
-    }
+    router.push(path);
+    // if (path === '/assetsInfo' || path === '/nft') {
+    //   cusBgNotify();
+    //   return;
+    // } else {
+    //   router.push(path);
+    // }
   };
 
   const goToPrivacy = () => {

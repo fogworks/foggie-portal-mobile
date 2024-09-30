@@ -59,13 +59,13 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     // rewrite: (path) => path.replace(/^\/api/, ""),
                 },
                 '^/assets': {
-                    target: 'https://devlop.fogworks.io',
+                    target: 'https://m1.fogworks.io',
                     changeOrigin: true,
                     secure: false,
                     // rewrite: (path) => path.replace(/^\/api/, ""),
                 },
                 '^/api': {
-                    target: 'https://devlop.fogworks.io',
+                    target: 'https://m1.fogworks.io',
                     changeOrigin: true,
                     secure: false,
                     // rewrite: (path) => path.replace(/^\/api/, ""),
@@ -77,7 +77,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     // rewrite: (path) => path.replace(/^\/api/, ""),
                 },
                 '^/api_accounts': {
-                    target: 'https://devlop.fogworks.io',
+                    target: 'https://m1.fogworks.io',
                     changeOrigin: true,
                     secure: false,
                     // rewrite: (path) => path.replace(/^\/api/, ""),
@@ -107,7 +107,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     // rewrite: (path) => path.replace(/^\/api/, ""),
                 },
                 '^/ambmgr': {
-                    target: 'https://devlop.fogworks.io',
+                    target: 'https://m1.fogworks.io',//https://devlop.fogworks.io
                     changeOrigin: true,
                     secure: false,
                     // rewrite: (path) => path.replace(/^\/api/, ""),
@@ -200,7 +200,7 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     secure: false,
                 },
 
-                
+
             },
         },
         plugins: [
