@@ -225,7 +225,6 @@
   const maxWallet = computed(() => userStore.getMaxWallet);
   const address = computed(() => userStore.getUserInfo?.address || userStore.getAddress);
 
-
   const visible = ref<boolean>(false);
 
   const bindAmbCode = inject('bindAmbCode');
@@ -304,7 +303,7 @@
     }
   }
   const gotoDetail = (path): void => {
-    if (path === '/assetsInfo') {
+    if (path === '/assetsInfo' || path === '/nft') {
       cusBgNotify();
       return;
     } else {
