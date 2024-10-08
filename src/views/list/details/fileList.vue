@@ -1255,6 +1255,7 @@
                     imageInfo.gps = imageObj.gps; //经纬度
                     imageInfo.resolution = imageObj.resolution; //像素
                   }
+                  console.log('nftInfoList-----', el.getNftinfosList());
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
