@@ -638,7 +638,7 @@
     }
   
     .nft-page {
-      padding: 15px;
+      padding: 15px 15px 100px 15px;
       border-bottom: 1px solid #e5e5e5;
     }
   

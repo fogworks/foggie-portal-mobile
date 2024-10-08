@@ -8,7 +8,7 @@
       <nut-cell v-else title="Email" desc="Unbound" @click="bindEmail"></nut-cell>
     </nut-cell-group>
 
-    <!-- <nut-cell-group title="Binding Information" class="info_title">
+    <nut-cell-group title="Binding Information" class="info_title">
       <nut-cell v-if="!userInfo.dmc" title="Withdrawal account" desc="Unbound" @click="openBindDMCDiaolg"></nut-cell>
       <nut-cell v-else title="Withdrawal account" :desc="maxBind ? maxWallet : userInfo.dmc"></nut-cell>
       <nut-cell
@@ -19,7 +19,7 @@
         @click="bindAmbCode"
       ></nut-cell>
       <nut-cell v-else class="not_amb" title="AGENT Invitation Code" :desc="userInfo.amb_promo_code"></nut-cell>
-    </nut-cell-group> -->
+    </nut-cell-group>
     <nut-cell-group title="Linked MetaMask Wallet" class="info_title wallet_info">
       <!-- <nut-cell :desc="item.address"></nut-cell> -->
 
@@ -34,14 +34,14 @@
       </nut-cell>
       <div class="add_link_wallet" @click="showAllWalletList"> <MetaMask></MetaMask> Add </div>
     </nut-cell-group>
-    <nut-dialog teleport="#app" title="Link Wallet" v-model:visible="showAccountList" class="add_account_dialog">
+    <nut-dialog teleport="#app" title="Link Wallet" v-model:visible="showAccountList">
       <nut-radio-group v-model="choosedWallet" class="account_list">
         <nut-radio v-for="item in accountsList" :disabled="hasLinked(item) || item.bind || item.register" :label="item">{{
           item
         }}</nut-radio>
       </nut-radio-group>
       <template #footer>
-        <div style="display: flex; justify-content: space-between">
+        <div style="display: flex; justify-content: space-evenly">
           <nut-button
             @click="
               choosedWallet = '';
@@ -49,7 +49,7 @@
             "
             >Cancel</nut-button
           >
-          <nut-button type="primary" :disabled="!choosedWallet" @click="confirmLink" class="linkWallet_btn">Link</nut-button>
+          <nut-button type="primary" :disabled="!choosedWallet" @click="confirmLink">Link</nut-button>
         </div>
       </template>
     </nut-dialog>
@@ -112,23 +112,8 @@
       });
   };
 </script>
-<style lang="scss">
-  .nut-popup .nut-dialog:not(.CustomName) {
-    box-shadow: inset 0 0 0 0.5px hsl(125.95deg 95.66% 48.78%) !important;
-    border: 1px solid hsl(125.95deg 95.66% 48.78%) !important;
-  }
-  .nut-popup .nut-dialog:not(.CustomName) .nut-button--primary {
-    background-image: linear-gradient(76deg, #a1e60e 0%, #11d214 100%) !important;
-    border: 1px solid #aeff00 !important;
-    margin-left: 20px !important;
-  }
-  .nut-radio__icon--disable {
-    color: #110c0c !important;
-  }
-</style>
+
 <style lang="scss" scoped>
-  .add_account_dialog {
-  }
   .account_list {
     :deep {
       .nut-radio__label {

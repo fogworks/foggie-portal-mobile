@@ -56,7 +56,6 @@ export default function useAllOrderList() {
     const pn = ref(1);
     const ps = ref(10);
     const allOrderList = computed(() => {
-        // console.log(maxTableData.value, 'allOrderList----', listData.value);
         return [...maxTableData.value, ...listData.value];
     });
     const resetData = () => {
@@ -73,10 +72,6 @@ export default function useAllOrderList() {
         type,
         getUsedSpace = false,
     ) => {
-        // console.log(cloudCodeIsBind.value, 'cloudCodeIsBindcloudCodeIsBindcloudCodeIsBind', order_state);
-        if (!cloudCodeIsBind.value) {
-            return false;
-        }
         await search_max({
             pn: 1,
             ps: 100,
@@ -84,54 +79,41 @@ export default function useAllOrderList() {
             let data = res.data;
             let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
             maxTableData.value = maxList;
-            // for (let i = 0; i < 20; i++) {
-            //     // maxTableData.value = maxTableData.value.concat(maxList);
-            //     let _ip = `1.1.1.${i}`;
-            //     maxTableData.value.push({ 'device_id': 'device_iddevice_id' + i, 'dedicatedip': _ip, 'device_type': 'maxio', 'id': _ip });
-            // }
         });
 
-        await search_cloud({ ps: 100, pn: 1, order_state, start_time, end_time, buy_result, ...postData })
-            .then((res) => {
-                total.value = res?.result?.total;
-                const cloudList =
-                    res?.result?.data.filter((el) => {
-                        const target = cloudSpaceList.value.find((item) => item.order_id == el.order_id);
-                        if (!target) {
-                            el.notThisClient = true;
-                        }
-                        return true;
-                    }) || [];
+        // await search_cloud({ ps: 100, pn: 1, order_state, start_time, end_time, buy_result, ...postData })
+        //     .then((res) => {
+        //         total.value = res?.result?.total;
+        //         const cloudList =
+        //             res?.result?.data.filter((el) => {
+        //                 const target = cloudSpaceList.value.find((item) => item.order_id == el.order_id);
+        //                 if (!target) {
+        //                     el.notThisClient = true;
+        //                 }
+        //                 return true;
+        //             }) || [];
 
-                // pn.value++;
-                // listData.value = [...listData.value, ...cloudList];
+        //         cloudList.sort((a, b) => a.state - b.state);
+        //         listData.value = [...cloudList];
 
-                cloudList.sort((a, b) => a.state - b.state);
-                listData.value = [...cloudList];
-                // for (let i = 0; i < 40; i++) {
-                //     listData.value = listData.value.concat(cloudList);
-                //     // listData.value.push({ 'device_id': 'device_iddevice_id' })
-                // }
-
-                historyData.value = listData.value.filter((s) => {
-                    return [4, 5].includes(s.state)
-                }) || [];
-                runningData.value = listData.value.filter((s) => {
-                    return [0, 1, 2, 3, 6].includes(s.state)
-                }) || [];
-                infinityValue.value = false;
-                // console.log(cloudList, listData.value, '  listData.value', runningData.value);
-                isError.value = false;
-                if (getUsedSpace) {
-                    getAllUsedSpace();
-                }
-            })
-            .catch(() => {
-                if (pn.value == 1) isError.value = true;
-            })
-            .finally(() => {
-                showToast.hide();
-            });
+        //         historyData.value = listData.value.filter((s) => {
+        //             return [4, 5].includes(s.state)
+        //         }) || [];
+        //         runningData.value = listData.value.filter((s) => {
+        //             return [0, 1, 2, 3, 6].includes(s.state)
+        //         }) || [];
+        //         infinityValue.value = false;
+        //         isError.value = false;
+        //         if (getUsedSpace) {
+        //             getAllUsedSpace();
+        //         }
+        //     })
+        //     .catch(() => {
+        //         if (pn.value == 1) isError.value = true;
+        //     })
+        //     .finally(() => {
+        //         showToast.hide();
+        //     });
     };
     const getAllUsedSpace = () => {
         let foggieIdObject = {};

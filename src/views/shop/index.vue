@@ -64,9 +64,9 @@
             You can stake DMCX for free to obtain the corresponding space, and after the expiration, you can redeem your DMCX.
           </div>
           <!-- <div style="padding: 4px 20px; font-size: 11px; font-style: italic; font-weight: bold" class="bottom_tips_line">
-            <img src="@/assets/tips1.svg" class="warn_svg" />
-            The maximum data security guarantee for the chain is only 52 weeks
-          </div> -->
+              <img src="@/assets/tips1.svg" class="warn_svg" />
+              The maximum data security guarantee for the chain is only 52 weeks
+            </div> -->
 
           <div class="bottom_btn">
             <!-- <nut-button type="warning" plain :loading="loading" @click="showTop = false"> Cancel </nut-button> -->
@@ -80,8 +80,8 @@
       <div class="vip_title">Your Order Summary</div>
       <!-- <hr /> -->
       <!-- <p>
-        <span class="p_label">Weeks: </span><span>{{ shopForm.week }} WEEK</span></p
-      > -->
+          <span class="p_label">Weeks: </span><span>{{ shopForm.week }} WEEK</span></p
+        > -->
       <p>
         <span class="p_label">Space: </span><span>{{ shopForm.quantity }} GB</span>
       </p>
@@ -111,8 +111,8 @@
       <div class="bottom_btn">
         <nut-button type="warning" plain :loading="loading" @click="currentPage = 'calc'"> Cancel </nut-button>
         <!-- <nut-button type="warning" @click="confirmBuy('scan')" class="scan_btn" style="font-size: 12px; font-weight: bold"
-          >Scan Transaction
-        </nut-button> -->
+            >Scan Transaction
+          </nut-button> -->
         <nut-button type="primary" @click="confirmBuy">confirm Stake</nut-button>
       </div>
       <hr />
@@ -171,8 +171,8 @@
     <div class="space-info unpay_item_wrap" v-if="currentPage === 'unPayItem'">
       <div class="vip_title"> Order add Stake</div>
       <!-- <p>
-        <span class="p_label">Weeks: </span><span>{{ currentStakeItem.epoch }} WEEK</span></p
-      > -->
+          <span class="p_label">Weeks: </span><span>{{ currentStakeItem.epoch }} WEEK</span></p
+        > -->
       <p>
         <span class="p_label">Space: </span><span>{{ getfilesize(currentStakeItem.space) }} </span>
       </p>

@@ -539,6 +539,15 @@ export function dm_order_get_token(data: any) {
   });
 }
 
+export const dm_get_by_domain = (data: any) => {
+  let url = `/dm/order/get_by_domain`;
+  return request({
+    url: url,
+    method: 'POST',
+    data,
+  });
+};
+
 export const nft_deploy = (data: any) => {
   let url = `/nft_scanner/nft/deploy`;
   return request({
@@ -574,3 +583,6 @@ export const update_mint = (data: any) => {
     data,
   });
 };
+
+
+

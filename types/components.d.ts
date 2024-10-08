@@ -44,6 +44,7 @@ declare module 'vue' {
     NutPullRefresh: typeof import('@nutui/nutui')['PullRefresh']
     NutRadio: typeof import('@nutui/nutui')['Radio']
     NutRadioGroup: typeof import('@nutui/nutui')['RadioGroup']
+    NutRange: typeof import('@nutui/nutui')['Range']
     NutRow: typeof import('@nutui/nutui')['Row']
     NutSearchbar: typeof import('@nutui/nutui')['Searchbar']
     NutShortPassword: typeof import('@nutui/nutui')['ShortPassword']

@@ -10,36 +10,47 @@
 
         <div class="maxio_title_box">
           <img src="@/assets/maxio/beta.svg" class="betaPng" />
-          <div class="maxio_title">
+          <div class="maxio_title" v-if="showOrder">
             <img src="@/assets/maxio/cloud1.svg" alt="" />
             <div class="title_text">
               <div class="max_name" v-if="currentBucketData.domain"> {{ currentBucketData.domain }}</div>
               <div class="max_name" v-else> Order{{ currentBucketData.order_id }}</div>
             </div>
           </div>
+          <div class="maxio_title" v-if="!showOrder">
+            <img src="@/assets/maxio/maxio1.png" alt="" />
+            <div class="title_text">
+              <div class="max_name"> {{ currentBucketData.dedicatedip || 'MAX IO-' + currentBucketData.id }}</div>
+            </div>
+          </div>
         </div>
-        <div class="maxio_order_history maxio_img" @click="showHistory = !showHistory">
+        <div class="maxio_order_history maxio_img" @click="showHistory = !showHistory" v-if="showOrder">
           <img src="@/assets/historyOrder.svg" alt="" />
         </div>
-        <!-- <div class="maxio_img running_img" @click="showOfflineBox" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']">
+        <div
+          class="maxio_img running_img"
+          v-if="!showOrder"
+          @click="showOfflineBox"
+          :class="[!showOrder ? 'hideOfflineIcon' : 'showOfflineIcon']"
+        >
           <img src="@/assets/maxio/running.svg" class="running_img" />
-        </div> -->
-        <!-- <div class="maxio_img running_img" :class="[showBucket ? 'hideOfflineIcon' : 'showOfflineIcon']"> </div> -->
+        </div>
       </div>
-      <div class="show_max_more" @click="showMoreList" v-if="!isShowMoreList && maxTableData.length > 20">
+      <div class="show_max_more" @click="showMoreList" v-if="!isShowMoreList && orderTableData.length > 20">
         <img src="@/assets/maxio/more.svg" />
       </div>
-      <div class="show_max_more rotate_more" @click="hideMoreList" v-if="isShowMoreList && maxTableData.length > 20">
+      <div class="show_max_more rotate_more" @click="hideMoreList" v-if="isShowMoreList && orderTableData.length > 20">
         <img src="@/assets/maxio/more.svg" />
       </div>
-      <div class="maxio_home_content" v-if="currentBucketData.order_id">
+      <div class="maxio_home_content" v-if="currentBucketData.order_id || currentBucketData.dedicatedip">
         <div class="maxio_home_leftMenu" :class="[showLeft ? (isShowMoreList ? 'isShowMoreList' : '') : 'minWidth']" ref="listRef">
-          <div class="menu_img" @click="changeList('maxio')">
+          <!--order09 -->
+          <div class="menu_img" @click="changeList('order')">
             <img src="@/assets/maxio/cloud1.svg" alt="" class="left_max_png" />
           </div>
-          <div class="isShowMaxio" :class="[isShowMaxio ? 'showMax' : 'hideMax']">
+          <div class="isShowMaxio" :class="[isShowOrder ? 'showMax' : 'hideMax']">
             <div
-              v-for="(item, index) in maxTableData"
+              v-for="(item, index) in orderTableData"
               @click="changeMenu(item)"
               :key="index"
               :class="[currentBucketData.id === item.id ? 'active_img' : '', 'menu_img']"
@@ -47,6 +58,22 @@
               <img src="@/assets/maxio/cloud1.svg" alt="" class="left_max_pngs" />
               <div class="title_text" v-if="item.domain">{{ item.domain }}</div>
               <div class="title_text" v-else>{{ 'Order' + item.order_id }}</div>
+            </div>
+          </div>
+
+          <!--maxio10 -->
+          <div class="menu_img" @click="changeList('maxio')">
+            <img src="@/assets/maxio/maxio1.png" alt="" class="left_max_png" />
+          </div>
+          <div class="isShowMaxio" :class="[isShowMaxio ? 'showMax' : 'hideMax']">
+            <div
+              v-for="(item, index) in maxTableData"
+              @click="changeMenu(item)"
+              :key="index"
+              :class="[item.device_type == 'maxio' && currentBucketData.id === item.id ? 'active_img' : '', 'menu_img']"
+            >
+              <img src="@/assets/maxio/maxio1.png" alt="" class="left_max_pngs" />
+              <div class="title_text" v-if="item.device_type === 'maxio'">{{ item.dedicatedip || 'MAX IO' + item.index + 1 }}</div>
             </div>
           </div>
 
@@ -75,7 +102,7 @@
           </div>
         </div>
 
-        <div class="maxio_home_rightContent maxio_sd_rightContent bbb" :class="[showLeft ? 'maxWidth' : '']">
+        <div class="maxio_home_rightContent maxio_sd_rightContent bbb" v-if="showOrder" :class="[showLeft ? 'maxWidth' : '']">
           <sd :currentBucketData="currentBucketData" @refresh="refresh">
             <div v-if="!cloudQuery.id" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
               <img src="@/assets/maxio/empty.png" alt="" />
@@ -85,6 +112,11 @@
               v-if="currentBucketData.id"
               @setDomainSuccess="setDomainSuccess"
             ></CloudComponent>
+          </sd>
+        </div>
+        <div class="maxio_home_rightContent maxio_sd_rightContent" v-if="!showOrder" :class="[showLeft ? 'maxWidth' : '']">
+          <sd :currentBucketData="currentBucketData">
+            <max-index :showLeft="showLeft"></max-index>
           </sd>
         </div>
       </div>
@@ -144,9 +176,8 @@
   //   import offline from './component/offline.vue';
   import offlineList from './component/offlineList.vue';
   import iconImg from './iconImg.vue';
-  import useOrderList from './maxFileOpt/useAllOrderList';
   import { useUserStore } from '@/store/modules/user';
-  import { getDmOrder, historyOrder } from '@/api';
+  import { getDmOrder, historyOrder, search_max } from '@/api';
 
   const statusMap = ref([
     'unKnow',
@@ -164,20 +195,22 @@
   const showHistory = ref(false);
   const historyList = ref([]);
   let currentBucketData = ref({});
+  const isShowOrder = ref(false);
   const isShowMaxio = ref(false);
   const isShowBucket = ref(false);
   const isShowHistory = ref(false);
   const isShowOffline = ref(false);
   const state = reactive({
-    showBucket: false,
+    showOrder: false,
     cloudQuery: {},
   });
+  const orderTableData = ref([]);
+  const maxTableData = ref([]);
   const topType = ref('link');
   const topTypeText = ref('link');
   const topText = ref('');
   const topShow = ref(false);
-  const { cloudQuery, showBucket } = toRefs(state);
-  const { allOrderList, hasMore, infinityValue, total, maxTableData, historyData, runningData } = useOrderList();
+  const { cloudQuery, showOrder } = toRefs(state);
   const router = useRouter();
   const route = useRoute();
   const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
@@ -192,55 +225,25 @@
   const isShowMoreList = ref(false);
   import { getfilesize, transferUTCTime } from '@/utils/util';
   const leftBucketList = computed(() => {
-    return allOrderList.value;
+    return orderTableData.value.concat(maxTableData.value);
   });
   const changeList = (type) => {
-    if (type === 'maxio') {
+    if (type === 'order') {
+      isShowOrder.value = !isShowOrder.value;
+    } else if (type === 'maxio') {
       isShowMaxio.value = !isShowMaxio.value;
-    } else if (type === 'bucket') {
-      isShowBucket.value = !isShowBucket.value;
     } else if (type === 'history') {
       isShowHistory.value = !isShowHistory.value;
-    }
-    if (isShowMaxio.value) {
-      maxTableDataCy.value = [...maxTableData.value];
-    } else {
-      maxTableDataCy.value = [];
-    }
-    if (isShowBucket.value) {
-      runningDataCy.value = [...runningData.value];
-    } else {
-      runningDataCy.value = [];
-    }
-    if (isShowHistory.value) {
-      historyDataCy.value = [...historyData.value];
-    } else {
-      historyDataCy.value = [];
     }
   };
   const doShowLeft = () => {
     showLeft.value = !showLeft.value;
   };
-
   const showMoreList = () => {
     isShowMoreList.value = true;
   };
   const hideMoreList = () => {
     isShowMoreList.value = false;
-  };
-  const changeMenu = (item, _type) => {
-    console.log('changeMenuchangeMenu', item, _type);
-    window.localStorage.homeChooseBucket = JSON.stringify(item);
-    isShowMoreList.value = false;
-    userStore.setCurrentLeftTab(item);
-    currentBucketData.value = item;
-    cloudQuery.value = {
-      id: item.order_id,
-      uuid: item.uuid,
-      amb_uuid: item.amb_uuid,
-      domain: item.domain,
-    };
-    showBucket.value = true;
   };
   const gotoBucketDetail = (item) => {
     router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });
@@ -272,30 +275,6 @@
     // }
     // topText.value = topShow.value ? '离线任务创建中......' : '';
   };
-  const setBucket = async (item) => {
-    // console.log('setBucket--0---------', item);
-    window.localStorage.setItem('homeChooseBucket', JSON.stringify(item));
-    userStore.setCurrentLeftTab(item);
-    if (item.device_type === 3) {
-      currentBucketData.value = item;
-      cloudQuery.value = {
-        id: item.order_id,
-        uuid: item.uuid,
-        amb_uuid: item.amb_uuid,
-        domain: item.domain,
-      };
-      showBucket.value = true;
-      if ([4, 5].includes(item.state)) {
-        changeList('history');
-      } else {
-        changeList('bucket');
-      }
-    } else {
-      showBucket.value = false;
-      currentBucketData.value = item;
-      changeList('maxio');
-    }
-  };
   const initOfflineList = () => {
     isOfflineList.value = true;
     isOfflineArr.value = [
@@ -324,18 +303,20 @@
       };
       getDmOrder(d).then((res) => {
         if (res.code === 200) {
-          maxTableData.value = res.data.list;
-          currentBucketData.value = maxTableData.value[0] ? maxTableData.value[0] : {};
-          if (route.query.order_id) {
-            const data = maxTableData.value.find((item) => Number(item.order_id) === Number(route.query.order_id));
-            if (data?.order_id) {
-              currentBucketData.value = data;
+          orderTableData.value = res.data.list;
+          if (currentBucketData.value === null || currentBucketData.value === {}) {
+            currentBucketData.value = orderTableData.value[0] ? orderTableData.value[0] : {};
+            if (route.query.order_id) {
+              const data = orderTableData.value.find((item) => Number(item.order_id) === Number(route.query.order_id));
+              if (data?.order_id) {
+                currentBucketData.value = data;
+              }
             }
+            console.log(currentBucketData.value, 'currentBucketData.value', orderTableData.value);
+            cloudQuery.value = {
+              id: currentBucketData.value.order_id,
+            };
           }
-          console.log(currentBucketData.value, 'currentBucketData.value', maxTableData.value);
-          cloudQuery.value = {
-            id: currentBucketData.value.order_id,
-          };
         }
       });
       historyOrder(d).then((res) => {
@@ -351,8 +332,80 @@
   const refresh = () => {
     initData();
   };
+  const changeMenu = (item, _type) => {
+    window.localStorage.homeChooseBucket = JSON.stringify(item);
+    isShowMoreList.value = false;
+    userStore.setCurrentLeftTab(item);
+    currentBucketData.value = item;
+    if (item.device_type !== 'maxio') {
+      cloudQuery.value = {
+        id: item.order_id,
+        uuid: item.uuid,
+        amb_uuid: item.amb_uuid,
+        domain: item.domain,
+      };
+      showOrder.value = true;
+      isShowOrder.value = true;
+      isShowMaxio.value = false;
+    } else {
+      showOrder.value = false;
+      isShowMaxio.value = true;
+      isShowOrder.value = false;
+    }
+  };
+  const initMaxData = () => {
+    search_max({
+      pn: 1,
+      ps: 100,
+    }).then(async (res) => {
+      let data = res.data;
+      let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
+      maxTableData.value = maxList;
+      console.log(maxTableData.value, currentBucketData.value, currentBucketData.value !== null, maxTableData.value[0]);
+      if (currentBucketData.value !== null || currentBucketData.value === {}) {
+        currentBucketData.value = maxTableData.value[0] ? maxTableData.value[0] : {};
+        // cloudQuery.value = {};
+      }
+      console.log(currentBucketData.value, 'initMaxData---currentBucketData.value', orderTableData.value);
+    });
+  };
+  const initSetBucket = () => {
+    if (window.localStorage.homeChooseBucket) {
+      setBucket(JSON.parse(window.localStorage.homeChooseBucket));
+    } else if (leftBucketList.value.length) {
+      let bucketList = leftBucketList.value;
+      if (bucketList.length) {
+        setBucket(bucketList[0]);
+      } else {
+        // showToast.text('Please select a bucket and set the bucket name.');
+      }
+    } else {
+      //   showToast.text('empty data');
+    }
+  };
+  const setBucket = async (item) => {
+    window.localStorage.setItem('homeChooseBucket', JSON.stringify(item));
+    userStore.setCurrentLeftTab(item);
+    if (item.device_type !== 'maxio') {
+      currentBucketData.value = item;
+      cloudQuery.value = {
+        id: item.order_id,
+        uuid: item.uuid,
+        amb_uuid: item.amb_uuid,
+        domain: item.domain,
+      };
+      showOrder.value = true;
+    } else {
+      showOrder.value = false;
+      currentBucketData.value = item;
+      changeList('maxio');
+    }
+  };
   onMounted(() => {
     initData();
+    initMaxData();
+    initOfflineList();
+    initSetBucket();
   });
   watch(leftBucketList, (val) => {
     if (val.length > 0) {
@@ -372,10 +425,10 @@
       };
       getDmOrder(d).then((res) => {
         if (res.code === 200) {
-          maxTableData.value = res.data.list;
-          currentBucketData.value = maxTableData.value[0] ? maxTableData.value[0] : {};
+          orderTableData.value = res.data.list;
+          currentBucketData.value = orderTableData.value[0] ? orderTableData.value[0] : {};
           if (route.query.order_id) {
-            const data = maxTableData.value.find((item) => Number(item.order_id) === Number(route.query.order_id));
+            const data = orderTableData.value.find((item) => Number(item.order_id) === Number(route.query.order_id));
             if (data?.order_id) {
               currentBucketData.value = data;
             }

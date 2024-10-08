@@ -92,7 +92,7 @@
           <img src="@/assets/wechat.png" class="img-google" />
         </div> -->
       </van-tab>
-      <van-tab name="3" v-if="!isHasWallet">
+      <van-tab name="3">
         <template #title>
           <div class="tab_header">
             <div :class="[activeType == 3 ? 'isChecked' : '']" @click="activeType = '3'">
