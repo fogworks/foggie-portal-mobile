@@ -14,28 +14,28 @@
         <nut-form class="query_form" :model-value="shopForm">
           <!-- <div class="custom_order">Custom</div> -->
           <!-- <nut-form-item label="Service Period">
-              <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
-                <nut-radio shape="button" :label="52">52 weeks</nut-radio>
-                <nut-radio shape="button" :label="38">38 weeks</nut-radio>
-                <nut-radio shape="button" :label="24">24 weeks</nut-radio>
-              </nut-radio-group>
-            </nut-form-item>
-            <nut-form-item label="Custom Cycle">
-              <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
-            </nut-form-item> -->
+            <nut-radio-group class="week_radio" v-model="shopForm.week" direction="horizontal">
+              <nut-radio shape="button" :label="52">52 weeks</nut-radio>
+              <nut-radio shape="button" :label="38">38 weeks</nut-radio>
+              <nut-radio shape="button" :label="24">24 weeks</nut-radio>
+            </nut-radio-group>
+          </nut-form-item>
+          <nut-form-item label="Custom Cycle">
+            <nut-range hidden-range v-model="shopForm.week" :max="52" :min="24" />
+          </nut-form-item> -->
           <span style="font-size: 14px; font-weight: bold; padding-left: 16px">Space(GB) Max: 1024 GB</span>
           <nut-form-item :label="maxSpaceText">
             <!-- @focus="buyDisabled = true"
-              @blur="buyDisabled = false"  -->
+            @blur="buyDisabled = false"  -->
             <!-- <nut-input-number
-                :min="1"
-                :max="maxSpace"
-                decimal-places="0"
-                v-model="shopForm.quantity"
-                step="1"
-                class="nut-input-text"
-                placeholder="Space"
-              /> -->
+              :min="1"
+              :max="maxSpace"
+              decimal-places="0"
+              v-model="shopForm.quantity"
+              step="1"
+              class="nut-input-text"
+              placeholder="Space"
+            /> -->
             <nut-range hidden-range v-model="shopForm.quantity" :max="maxSpace" :min="1" />
           </nut-form-item>
           <div
