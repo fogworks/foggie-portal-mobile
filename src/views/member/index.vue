@@ -304,13 +304,12 @@
     }
   }
   const gotoDetail = (path): void => {
-    router.push(path);
-    // if (path === '/assetsInfo' || path === '/nft') {
-    //   cusBgNotify();
-    //   return;
-    // } else {
-    //   router.push(path);
-    // }
+    if (path === '/assetsInfo' || path === '/nft') {
+      cusBgNotify();
+      return;
+    } else {
+      router.push(path);
+    }
   };
 
   const goToPrivacy = () => {

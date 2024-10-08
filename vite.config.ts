@@ -261,6 +261,9 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
         build: {
             rollupOptions: {
                 plugins: [nodePolyfills({ crypto: true, http: true })],
+                external: [
+                    "element-plus"
+                ]
             },
             commonjsOptions: {
                 transformMixedEsModules: true,
