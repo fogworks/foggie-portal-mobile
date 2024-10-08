@@ -43,6 +43,7 @@
         <img src="@/assets/maxio/more.svg" />
       </div>
       <div class="maxio_home_content" v-if="currentBucketData.order_id || currentBucketData.dedicatedip">
+        <!-- maxio_home_leftMenu -->
         <div class="maxio_home_leftMenu" :class="[showLeft ? (isShowMoreList ? 'isShowMoreList' : '') : 'minWidth']" ref="listRef">
           <!--order09 -->
           <div class="menu_img" @click="changeList('order')">
@@ -294,34 +295,36 @@
   const toBuyOrder = () => {
     router.push('/shop');
   };
-  const initData = () => {
+  const initData = async () => {
     if (address.value) {
       const d = {
         wallet: address.value,
         pageNo: 1,
         pageSize: 100,
       };
-      getDmOrder(d).then((res) => {
-        if (res.code === 200) {
-          orderTableData.value = res.data.list;
-          if (currentBucketData.value === null || currentBucketData.value === {}) {
-            currentBucketData.value = orderTableData.value[0] ? orderTableData.value[0] : {};
-            if (route.query.order_id) {
-              const data = orderTableData.value.find((item) => Number(item.order_id) === Number(route.query.order_id));
-              if (data?.order_id) {
-                currentBucketData.value = data;
-              }
-            }
-            console.log(currentBucketData.value, 'currentBucketData.value', orderTableData.value);
-            cloudQuery.value = {
-              id: currentBucketData.value.order_id,
-            };
+      let res = await getDmOrder(d);
+      if (res.code === 200) {
+        orderTableData.value = res.data.list;
+        currentBucketData.value = orderTableData.value[0] ? orderTableData.value[0] : {};
+        if (route.query.order_id) {
+          const data = orderTableData.value.find((item) => Number(item.order_id) === Number(route.query.order_id));
+          if (data?.order_id) {
+            currentBucketData.value = data;
           }
         }
-      });
+        console.log(currentBucketData.value, 'currentBucketData.value', orderTableData.value);
+        cloudQuery.value = {
+          id: currentBucketData.value.order_id,
+        };
+      }
+      initMaxData();
       historyOrder(d).then((res) => {
         historyList.value = res.data.list;
       });
+      initSetBucket();
+      initOfflineList();
+    } else {
+      initMaxData();
     }
   };
 
@@ -362,11 +365,10 @@
       let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
       maxTableData.value = maxList;
       console.log(maxTableData.value, currentBucketData.value, currentBucketData.value !== null, maxTableData.value[0]);
-      if (currentBucketData.value !== null || currentBucketData.value === {}) {
+      if (!orderTableData.value.length) {
         currentBucketData.value = maxTableData.value[0] ? maxTableData.value[0] : {};
-        // cloudQuery.value = {};
+        console.log(currentBucketData.value, 'initMaxData---currentBucketData.value', orderTableData.value);
       }
-      console.log(currentBucketData.value, 'initMaxData---currentBucketData.value', orderTableData.value);
     });
   };
   const initSetBucket = () => {
@@ -403,9 +405,6 @@
   };
   onMounted(() => {
     initData();
-    initMaxData();
-    initOfflineList();
-    initSetBucket();
   });
   watch(leftBucketList, (val) => {
     if (val.length > 0) {
@@ -416,8 +415,9 @@
     }
   });
   watch(address, (val) => {
-    console.log(val, 'addressaddressaddress');
     if (val.length > 0) {
+      initData();
+      return;
       const d = {
         wallet: val,
         pageNo: 1,
@@ -436,7 +436,7 @@
           cloudQuery.value = {
             id: currentBucketData.value.order_id,
           };
-          console.log(currentBucketData.value, 'currentBucketData.value');
+          console.log(currentBucketData.value, 'watch----currentBucketData.value', orderTableData.value);
         }
       });
       historyOrder(d).then((res) => {

@@ -64,7 +64,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { useRouter } from 'vue-router';
   import useLinkAccounts from '@/views/login/useLinkAccount.ts';
-  import { showToast } from '@nutui/nutui';
+  import { showToast, showNotify } from '@nutui/nutui';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { wallet_bind_uuid } from '@/api/index.ts';
   const router = useRouter();
@@ -129,10 +129,20 @@
 <style lang="scss" scoped>
   .add_account_dialog {
   }
+  .wallet_info {
+    .nut-popup .nut-dialog:not(.CustomName) .nut-dialog__header {
+      color: #0ae30a !important;
+    }
+  }
   .account_list {
     :deep {
       .nut-radio__label {
         text-align: left;
+        color: #0ae30a;
+        font-weight: bold;
+      }
+      .nut-radio__icon {
+        color: #0ae30a;
       }
     }
   }
