@@ -195,7 +195,8 @@ export default function ({ command, mode }: ConfigEnv): UserConfig {
                     secure: false,
                 },
                 '^/dm': {
-                    target: 'http://45.207.245.24:12255',
+                    // target: 'http://45.207.245.24:12255',
+                    target: 'https://t.fogworks.io',
                     changeOrigin: true,
                     secure: false,
                 },

@@ -20,7 +20,9 @@
           <div class="maxio_title" v-if="!showOrder">
             <img src="@/assets/maxio/maxio1.png" alt="" />
             <div class="title_text">
-              <div class="max_name"> {{ currentBucketData.dedicatedip || 'MAX IO-' + currentBucketData.id }}</div>
+              <div class="max_name">
+                {{ currentBucketData.dedicatedip || currentBucketData.id ? 'MAX IO-' + currentBucketData.id : 'No Device' }}</div
+              >
             </div>
           </div>
         </div>
@@ -45,7 +47,7 @@
       <div class="maxio_home_content" v-if="currentBucketData.order_id || currentBucketData.dedicatedip">
         <!-- maxio_home_leftMenu -->
         <div class="maxio_home_leftMenu" :class="[showLeft ? (isShowMoreList ? 'isShowMoreList' : '') : 'minWidth']" ref="listRef">
-          <!--order09 -->
+          <!--left--order09 -->
           <div class="menu_img" @click="changeList('order')">
             <img src="@/assets/maxio/cloud1.svg" alt="" class="left_max_png" />
           </div>
@@ -62,7 +64,7 @@
             </div>
           </div>
 
-          <!--maxio10 -->
+          <!--left--maxio10 -->
           <div class="menu_img" @click="changeList('maxio')">
             <img src="@/assets/maxio/maxio1.png" alt="" class="left_max_png" />
           </div>
@@ -103,6 +105,7 @@
           </div>
         </div>
 
+        <!--right--- maxio_sd_rightContent -->
         <div class="maxio_home_rightContent maxio_sd_rightContent bbb" v-if="showOrder" :class="[showLeft ? 'maxWidth' : '']">
           <sd :currentBucketData="currentBucketData" @refresh="refresh">
             <div v-if="!cloudQuery.id" class="bucketNoFile" @click="gotoBucketDetail(currentBucketData)">
@@ -121,9 +124,16 @@
           </sd>
         </div>
       </div>
-      <div v-else class="empty_box_wrap">
+      <div v-else-if="maxTableData.length === 0 && orderTableData.length === 0" class="empty_box_wrap">
+        <nut-empty description="You currently have no available orders and MAX IO." image="error"></nut-empty>
+        <nut-button type="primary" class="buy-order" @click="toBuyOrder">Start for Free </nut-button>
+      </div>
+      <div v-else-if="orderTableData.length === 0 && showOrder" class="empty_box_wrap">
         <nut-empty description="You currently have no available orders." image="error"></nut-empty>
         <nut-button type="primary" class="buy-order" @click="toBuyOrder">Start for Free</nut-button>
+      </div>
+      <div v-else-if="maxTableData.length === 0 && !showOrder" class="empty_box_wrap">
+        <nut-empty description="You currently have no available MAX IO." image="error"></nut-empty>
       </div>
     </div>
     <offlineList
@@ -226,6 +236,9 @@
   const isShowMoreList = ref(false);
   import { getfilesize, transferUTCTime } from '@/utils/util';
   const leftBucketList = computed(() => {
+    if (orderTableData.value.length === 0 && maxTableData.value.length === 0) {
+      window.localStorage.removeItem('homeChooseBucket');
+    }
     return orderTableData.value.concat(maxTableData.value);
   });
   const changeList = (type) => {
@@ -321,13 +334,24 @@
       historyOrder(d).then((res) => {
         historyList.value = res.data.list;
       });
-      initSetBucket();
-      initOfflineList();
     } else {
       initMaxData();
     }
   };
-
+  const initMaxData = async () => {
+    let res = await search_max({
+      pn: 1,
+      ps: 100,
+    });
+    let data = res.data;
+    let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
+    maxTableData.value = maxList;
+    if (!orderTableData.value.length && maxTableData.value.length) {
+      currentBucketData.value = maxTableData.value[0] ? maxTableData.value[0] : {};
+    }
+    initSetBucket();
+    initOfflineList();
+  };
   const setDomainSuccess = (data) => {
     console.log('setDomainSuccess', data);
     initData();
@@ -356,21 +380,7 @@
       isShowOrder.value = false;
     }
   };
-  const initMaxData = () => {
-    search_max({
-      pn: 1,
-      ps: 100,
-    }).then(async (res) => {
-      let data = res.data;
-      let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
-      maxTableData.value = maxList;
-      console.log(maxTableData.value, currentBucketData.value, currentBucketData.value !== null, maxTableData.value[0]);
-      if (!orderTableData.value.length) {
-        currentBucketData.value = maxTableData.value[0] ? maxTableData.value[0] : {};
-        console.log(currentBucketData.value, 'initMaxData---currentBucketData.value', orderTableData.value);
-      }
-    });
-  };
+
   const initSetBucket = () => {
     if (window.localStorage.homeChooseBucket) {
       setBucket(JSON.parse(window.localStorage.homeChooseBucket));
@@ -397,6 +407,7 @@
         domain: item.domain,
       };
       showOrder.value = true;
+      changeList('order');
     } else {
       showOrder.value = false;
       currentBucketData.value = item;
@@ -417,32 +428,6 @@
   watch(address, (val) => {
     if (val.length > 0) {
       initData();
-      return;
-      const d = {
-        wallet: val,
-        pageNo: 1,
-        pageSize: 100,
-      };
-      getDmOrder(d).then((res) => {
-        if (res.code === 200) {
-          orderTableData.value = res.data.list;
-          currentBucketData.value = orderTableData.value[0] ? orderTableData.value[0] : {};
-          if (route.query.order_id) {
-            const data = orderTableData.value.find((item) => Number(item.order_id) === Number(route.query.order_id));
-            if (data?.order_id) {
-              currentBucketData.value = data;
-            }
-          }
-          cloudQuery.value = {
-            id: currentBucketData.value.order_id,
-          };
-          console.log(currentBucketData.value, 'watch----currentBucketData.value', orderTableData.value);
-        }
-      });
-      historyOrder(d).then((res) => {
-        historyList.value = res.data.list;
-      });
-    } else {
     }
   });
 </script>
