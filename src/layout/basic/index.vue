@@ -7,9 +7,9 @@
         </MyTransition>
       </RouterView>
     </div>
-    <nut-tabbar unactive-color="#fff" active-color="#ffd700" bottom v-model="activeTab" @tab-switch="tabSwitch">
+    <!-- <nut-tabbar unactive-color="#fff" active-color="#ffd700" bottom v-model="activeTab" @tab-switch="tabSwitch">
       <nut-tabbar-item v-for="item in tabItem" :key="item.key" :tab-title="$t(`tabbar.${item.key}`)" :icon="item.icon" />
-    </nut-tabbar>
+    </nut-tabbar> -->
   
     <!-- 绑定dmc账户 -->
     <nut-dialog v-model:visible="bindDmcIsShow" title=" " :close-on-click-overlay="false" :show-cancel="false"

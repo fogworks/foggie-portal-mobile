@@ -98,7 +98,7 @@
     -webkit-overflow-scrolling: touch;
     height: calc(var(--vh, 1vh) * 100);
     overflow: auto;
-    background: #0d0f0f;
+    background: #000;
     // height: 100%;
   }
 

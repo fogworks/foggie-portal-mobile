@@ -13,7 +13,7 @@ export const routes = [
                 path: 'home',
                 name: 'Home',
                 // component: () => import('@/views/home/index_copy.vue'),
-                component: () => import('@/views/maxio/home.vue'),
+                component: () => import('@/views/tg/home/index.vue'),
             },
             {
                 path: 'assetsInfo',

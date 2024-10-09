@@ -21,6 +21,10 @@ router.beforeEach((to, from, next) => {
       duration: 0,
     });
   }
+  if (to.name === 'Home') {
+    console.log('Home');
+    next();
+  }
 
   const userStore = useUserStore();
   const orderStore = useOrderStore();
