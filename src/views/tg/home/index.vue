@@ -139,7 +139,7 @@
       height: 100px;
       border: 1px solid #36363B;
       background: #151517;
-      border-radius: 10px;
+      border-radius: 20px;
       .item-icon {
         position: absolute;
         top: 30px;

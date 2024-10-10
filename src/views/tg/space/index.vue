@@ -2,7 +2,6 @@
   <div class="space-page">
     <div class="space-page-head">
       <span>返回</span>
-      <nut-input></nut-input>
     </div>
     <div class="space-page-content">
       <h2>选择空间</h2>
@@ -12,14 +11,14 @@
           <tg1 />
         </div>
         <div class="item-name">DMCX : Drive</div>
-        <div class="item-val">50%</div>
+        <div class="item-val itema-val-blue">50%</div>
       </div>
       <div class="item">
         <div class="item-icon">
           <tg1 />
         </div>
         <div class="item-name">DMCX : Drive</div>
-        <div class="item-val">20%</div>
+        <div class="item-val itema-val-blue">20%</div>
       </div>
       <div class="item">
         <div class="item-icon">
@@ -79,6 +78,11 @@
       position: relative;
       margin: 15px auto;
       width: 90%;
+      h2 {
+        margin: 10px 0 20px;
+        color: #fff;
+        font-size: 28px;
+      }
       .item {
         position: relative;
         margin-bottom: 20px;
@@ -87,7 +91,7 @@
         height: 100px;
         border: 1px solid #36363b;
         background: #151517;
-        border-radius: 10px;
+        border-radius: 20px;
         .item-icon {
           position: absolute;
           top: 30px;
@@ -119,11 +123,8 @@
           // font-size: 14px;
           background: #36363b;
         }
-        .item-val-no {
-          width: 150px;
-          text-align: right;
-          border: none;
-          background: none;
+        .itema-val-blue {
+          background: #0095eb;
         }
       }
     }
@@ -134,8 +135,8 @@
       width: 100%;
       height: 100px;
       border: 1px solid #36363b;
-      background: #151517;
-      border-radius: 10px;
+       background: linear-gradient(90deg, #0095EB 0%, #81D1FF 50.5%, #0095EB 100%);
+      border-radius: 20px;
       .item-icon {
         position: absolute;
         top: 30px;
@@ -143,7 +144,7 @@
         svg {
           width: 40px;
           height: 40px;
-          color: #000;
+          color: #0095EB;
         }
       }
       .item-name {
@@ -165,13 +166,8 @@
         text-align: center;
         border-radius: 30px;
         // font-size: 14px;
-        background: #36363b;
-      }
-      .item-val-no {
-        width: 150px;
-        text-align: right;
-        border: none;
-        background: none;
+        background: #fff;
+        color: #0095EB;
       }
     }
   }
