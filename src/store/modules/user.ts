@@ -23,6 +23,7 @@ interface StoreUser {
     maxBind: boolean,
     maxWallet: string,
     address: string;
+    curLanguage: string
 }
 
 export const useUserStore = defineStore({
@@ -46,8 +47,12 @@ export const useUserStore = defineStore({
         myAkList: {},
         maxBind: false,
         maxWallet: '',
+        curLanguage: '',
     }),
     getters: {
+        getCurLanguage(): any {
+            return this.curLanguage || 'en';
+        },
         getUserInfo(): any {
             return this.info || {};
         },
@@ -90,6 +95,9 @@ export const useUserStore = defineStore({
         },
     },
     actions: {
+        setCurLanguage(string) {
+            this.curLanguage = string;
+        },
         setCloudCodeIsBind(bool: boolean) {
             this.cloudCodeIsBind = bool;
         },

@@ -16,6 +16,11 @@ export const routes = [
                 component: () => import('@/views/tg/home/index.vue'),
             },
             {
+                path: 'lan',
+                name: 'lan',
+                component: () => import('@/views/tg/lan/index.vue'),
+            },
+            {
                 path: 'space',
                 name: 'Space',
                 component: () => import('@/views/tg/space/index.vue'),

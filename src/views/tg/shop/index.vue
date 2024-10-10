@@ -276,7 +276,7 @@
 
   const doAdd = () => {
     console.log('shopForm.value.quantity', shopForm.value.quantity);
-    shopForm.value.quantity = shopForm.value.quantity + 1;
+    shopForm.value.quantity = Number(shopForm.value.quantity) + 1;
   };
   const transferFn = async () => {
     let tx = {
@@ -820,6 +820,7 @@
         background: linear-gradient(135deg, #1d2027 0%, #f1bc23 45%, rgb(31 28 23) 83%, #eaeef9 100%);
         background: linear-gradient(135deg, #18191b 0%, #eeb40a 45%, rgb(113 99 76) 83%, #eaeef9 100%);
         background: linear-gradient(329deg, #9fd72f 0%, #99d017 25%, rgb(42 42 41) 83%, #181b24 100%);
+        background: linear-gradient(329deg, #0c87df 0%, #20bbe5 25%, rgb(12, 134, 240) 83%, #181b24 100%);
         font-size: 40px;
         border: 0px;
         color: #ffffff;
@@ -1065,7 +1066,7 @@
   }
 
   .query_form {
-    color: #9dfc37;
+    color: #79c8f5;
     .custom_order {
       text-align: center;
       font-size: 36px;
@@ -1086,12 +1087,12 @@
         background-color: #ffffff !important;
       }
       .nut-radio__button--active {
-        background: #9dfc37 !important;
+        background: #85caf2 !important;
         color: #000;
-        border: #9dfc37;
+        border: #79c8f5;
       }
       .nut-range-button {
-        background: #9dfc37;
+        background: #79c8f5;
       }
       .nut-input-number__icon {
         color: #fff !important;
@@ -1105,7 +1106,7 @@
           width: 100%;
           margin-bottom: 20px;
           font-weight: 800;
-          color: #9dfc37;
+          color: #79c8f5;
         }
       }
 
@@ -1123,7 +1124,7 @@
       .nut-range-button .number {
         font-weight: 800;
         transform: translate3d(0, 100%, 0);
-        color: #9dfc37;
+        color: #79c8f5;
       }
       .nut-input-number {
         user-select: none;
@@ -1168,6 +1169,7 @@
           width: 40%;
           background: linear-gradient(135deg, #c8d4ec 0%, #e9b212 25%, rgb(35 23 3) 83%, #eaeef9 100%);
           background: linear-gradient(329deg, #9fd72f 0%, #99d017 25%, rgb(42 42 41) 83%, #181b24 100%);
+          background: linear-gradient(329deg, #0c87df 0%, #20bbe5 25%, rgb(12, 134, 240) 83%, #181b24 100%);
           border: none;
           color: #fff;
           font-weight: bolder;
@@ -1323,7 +1325,7 @@
       font-weight: bold;
       margin-bottom: 20px;
       text-align: center;
-      background: -webkit-linear-gradient(240deg, #c4b625 20.27%, #9dfc37 92.67%);
+      background: -webkit-linear-gradient(240deg, #c4b625 20.27%, #85caf292.67%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -1365,7 +1367,7 @@
       font-weight: bold;
       margin-bottom: 20px;
       text-align: center;
-      //   background: -webkit-linear-gradient(240deg, #c4b625 20.27%, #9dfc37 92.67%);
+      //   background: -webkit-linear-gradient(240deg, #c4b625 20.27%, #85caf292.67%);
       //   -webkit-background-clip: text;
       //   -webkit-text-fill-color: transparent;
       color: #fff;
@@ -1380,7 +1382,7 @@
       justify-content: space-between;
       color: #a1ee08;
       font-weight: 800;
-      color: #9dfc37;
+      color: #79c8f5;
       font-size: 28px;
       .p_label {
         font-weight: bold;
@@ -1398,6 +1400,7 @@
         .nut-button {
           width: 40%;
           background: linear-gradient(329deg, #9fd72f 0%, #99d017 25%, rgb(42 42 41) 83%, #181b24 100%);
+          background: linear-gradient(329deg, #0c87df 0%, #20bbe5 25%, rgb(12, 134, 240) 83%, #181b24 100%);
           border: none;
           font-weight: bolder;
 
@@ -1444,7 +1447,7 @@
         justify-content: center;
       }
       .unpay_list_icon {
-        border: 1px solid #9dfc37;
+        border: 1px solid #79c8f5;
         border-radius: 50%;
         width: 90px;
         height: 90px;

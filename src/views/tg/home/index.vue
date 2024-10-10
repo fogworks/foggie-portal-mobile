@@ -36,8 +36,8 @@
         <div class="item-icon">
           <tg3 />
         </div>
-        <div class="item-name">买单</div>
-        <div class="item-val">X1</div>
+        <div class="item-name">{{ $t('home.buy') }}</div>
+        <div class="item-val">Buy</div>
       </div>
       <!-- <div class="item">
         <div class="item-icon">
@@ -60,12 +60,12 @@
         <div class="item-name">转盘</div>
         <div class="item-val">参与</div>
       </div> -->
-      <div class="item">
+      <div class="item" @click="gotoLan">
         <div class="item-icon">
           <tg7 />
         </div>
         <div class="item-name">语言</div>
-        <div class="item-val">中文</div>
+        <div class="item-val">{{ currentLan === 'zh' ? $t('language.zh') : $t('language.en') }}</div>
       </div>
       <div class="item" @click="logout">
         <div class="item-icon">
@@ -78,12 +78,16 @@
 </template>
 
 <script setup>
-  import { ref, createVNode } from 'vue';
+  import { ref, createVNode, watch } from 'vue';
   import { useRouter } from 'vue-router';
   const router = useRouter();
   import { useUserStore } from '@/store/modules/user';
   import { showDialog } from '@nutui/nutui';
   const userStore = useUserStore();
+  import { useI18n } from 'vue-i18n';
+  const { locale, t } = useI18n();
+  const currentLan = computed(() => userStore.getCurLanguage);
+  console.log('currentLan0000', currentLan.value);
   import tg1 from '~icons/home/tg1.svg';
   import tg2 from '~icons/home/tg2.svg';
   import tg3 from '~icons/home/tg3.svg';
@@ -96,6 +100,9 @@
 
   const gotoShop = () => {
     router.push('/tgShop');
+  };
+  const gotoLan = () => {
+    router.push('/lan');
   };
   const logout = () => {
     showDialog({
@@ -113,6 +120,10 @@
       },
     });
   };
+
+  watch(currentLan, async (newVal) => {
+    console.log('currentLan', newVal);
+  });
 </script>
 <style lang="scss" scoped>
   .home-page {
