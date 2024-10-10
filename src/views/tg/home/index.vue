@@ -18,7 +18,7 @@
         <div class="item-name"></div>
         <div class="item-val item-val-no">排名：0</div>
       </div>
-      <div class="item" @click="gotoShop">
+      <div class="item">
         <div class="item-icon">
           <tg1 />
         </div>
@@ -32,14 +32,14 @@
         <div class="item-name">钱包</div>
         <div class="item-val">添加</div>
       </div>
-      <div class="item">
+      <div class="item" @click="gotoShop">
         <div class="item-icon">
           <tg3 />
         </div>
-        <div class="item-name">提升</div>
+        <div class="item-name">买单</div>
         <div class="item-val">X1</div>
       </div>
-      <div class="item">
+      <!-- <div class="item">
         <div class="item-icon">
           <tg4 />
         </div>
@@ -59,7 +59,7 @@
         </div>
         <div class="item-name">转盘</div>
         <div class="item-val">参与</div>
-      </div>
+      </div> -->
       <div class="item">
         <div class="item-icon">
           <tg7 />
@@ -67,14 +67,23 @@
         <div class="item-name">语言</div>
         <div class="item-val">中文</div>
       </div>
+      <div class="item" @click="logout">
+        <div class="item-icon">
+          <tg4 />
+        </div>
+        <div class="item-name">退出登录</div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-  import { ref } from 'vue';
+  import { ref, createVNode } from 'vue';
   import { useRouter } from 'vue-router';
   const router = useRouter();
+  import { useUserStore } from '@/store/modules/user';
+  import { showDialog } from '@nutui/nutui';
+  const userStore = useUserStore();
   import tg1 from '~icons/home/tg1.svg';
   import tg2 from '~icons/home/tg2.svg';
   import tg3 from '~icons/home/tg3.svg';
@@ -87,6 +96,22 @@
 
   const gotoShop = () => {
     router.push('/tgShop');
+  };
+  const logout = () => {
+    showDialog({
+      title: 'Logout',
+      content: createVNode('span', { style: {} }, 'Are you sure you want to logout?'),
+      cancelText: 'Cancel',
+      okText: 'Yes',
+      onCancel: () => {},
+      onOk: () => {
+        window.localStorage.removeItem('homeChooseBucket');
+        userStore.logout();
+        userStore.setCloudCodeIsBind(false);
+        userStore.setcurStepIndex(1);
+        router.push('/login');
+      },
+    });
   };
 </script>
 <style lang="scss" scoped>
