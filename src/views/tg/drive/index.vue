@@ -12,32 +12,44 @@
       </div>
       <div class="items">
         <div class="item">
-          <div class="item1"></div>
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive1.png" />
+          </div>
           <div class="item2">0</div>
           <div class="item3">全部</div>
         </div>
         <div class="item">
-          <div class="item1"></div>
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive2.png" />
+          </div>
           <div class="item2">0</div>
           <div class="item3">收藏</div>
         </div>
         <div class="item">
-          <div class="item1"></div>
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive3.png" />
+          </div>
           <div class="item2">0</div>
           <div class="item3">文件</div>
         </div>
         <div class="item">
-          <div class="item1"></div>
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive4.png" />
+          </div>
           <div class="item2">0</div>
           <div class="item3">视频</div>
         </div>
         <div class="item">
-          <div class="item1"></div>
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive5.png" />
+          </div>
           <div class="item2">0</div>
           <div class="item3">音频</div>
         </div>
         <div class="item">
-          <div class="item1"></div>
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive6.png" />
+          </div>
           <div class="item2">0</div>
           <div class="item3">图片</div>
         </div>
@@ -123,19 +135,39 @@
         flex-wrap: wrap;
         justify-content: space-between;
         .item {
-            width: 48%;
-            height: 30vw;
-            background: linear-gradient(180deg, #0095EB 0%, #000000 100%);
-            border-radius: 30px;
-            .item1 {
-
+          position: relative;
+          width: 48%;
+          height: 30vw;
+          background: linear-gradient(180deg, #0095eb 0%, #000000 100%);
+          border-radius: 30px;
+          color: #fff;
+          .item1 {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 14vw;
+            height: 14vw;
+            border: 2px solid;
+            border-radius: 50%;
+            border-image: linear-gradient(270deg, #ffffff 0%, rgba(153, 153, 153, 0) 88.68%);
+            img {
+              position: absolute;
+              top: 15%;
+              left: 15%;
+              width: 70%;
+              height: 70%;
             }
-            .item2 {
-                position: absolute;
-                bottom: 40px;
-                left: 10px;
-                color: #fff;
-            }
+          }
+          .item2 {
+            position: absolute;
+            bottom: 5vw;
+            left: 5vw;
+          }
+          .item3 {
+            position: absolute;
+            bottom: 5vw;
+            right: 5vw;
+          }
         }
       }
     }
