@@ -89,91 +89,18 @@
     router.push('/tgShop');
   };
 </script>
-
 <style lang="scss" scoped>
   .home-page {
     position: relative;
-    margin: 15px auto;
-    width: 90%;
-    height: 60vw;
-    img {
-      position: absolute;
-      z-index: 1;
-    }
-    .img1 {
-      top: 10px;
-      left: 10px;
-      width: 10%;
-    }
-    .img2 {
-      top: 10%;
-      left: 25%;
-      width: 50%;
-    }
-    .nut-swiper {
-      position: absolute;
-      width: 100%;
-    }
-  }
-  .home-page-content {
-    position: relative;
-    margin: 15px auto;
-    width: 90%;
-    .item {
-      position: relative;
-      margin-bottom: 20px;
-      color: #fff;
-      width: 100%;
-      height: 100px;
-      border: 1px solid #36363B;
-      background: #151517;
-      border-radius: 20px;
-      .item-icon {
-        position: absolute;
-        top: 30px;
-        left: 20px;
-        svg {
-          width: 40px;
-          height: 40px;
-          color: #000;
-        }
-      }
-      .item-name {
-        position: absolute;
-        top: 30px;
-        left: 15%;
-        height: 50px;
-        line-height: 50px;
-        font-weight: 700;
-      }
-      .item-val {
-        position: absolute;
-        top: 30px;
-        right: 30px;
-        font-weight: 700;
-        width: 120px;
-        height: 50px;
-        line-height: 50px;
-        text-align: center;
-        border-radius: 30px;
-        // font-size: 14px;
-        background: #36363B;
-      }
-      .item-val-no {
-        width: 150px;
-        text-align: right;
-        border: none;
-        background: none;
     height: 100%;
     .home-page-head {
       position: relative;
       margin: 15px auto;
       width: 90%;
-      padding-bottom: 45%; /* 2:1 的宽高比 */
-      background: url(@/assets/tg/tg1.gif) no-repeat;
-      background-size: cover;
+      height: 60vw;
       img {
         position: absolute;
+        z-index: 1;
       }
       .img1 {
         top: 10px;
@@ -181,9 +108,13 @@
         width: 10%;
       }
       .img2 {
-        bottom: 10%;
+        top: 10%;
         left: 25%;
         width: 50%;
+      }
+      .nut-swiper {
+        position: absolute;
+        width: 100%;
       }
     }
     .home-page-content {
@@ -192,16 +123,17 @@
       width: 90%;
       .item {
         position: relative;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         color: #fff;
         width: 100%;
-        height: 50px;
+        height: 100px;
         border: 1px solid #36363b;
         background: #151517;
+        border-radius: 20px;
         .item-icon {
           position: absolute;
-          top: 0;
-          left: 0;
+          top: 30px;
+          left: 20px;
           svg {
             width: 40px;
             height: 40px;
@@ -210,7 +142,7 @@
         }
         .item-name {
           position: absolute;
-          top: 0;
+          top: 30px;
           left: 15%;
           height: 50px;
           line-height: 50px;
@@ -218,18 +150,20 @@
         }
         .item-val {
           position: absolute;
-          top: 12px;
-          right: 0;
+          top: 30px;
+          right: 30px;
           font-weight: 700;
-          width: 57px;
-          height: 26px;
-          line-height: 26px;
+          width: 120px;
+          height: 50px;
+          line-height: 50px;
           text-align: center;
           border-radius: 30px;
-          font-size: 14px;
+          // font-size: 14px;
           background: #36363b;
         }
         .item-val-no {
+          width: 150px;
+          text-align: right;
           border: none;
           background: none;
         }
