@@ -26,6 +26,13 @@ export const routes = [
                 component: () => import('@/views/tg/drive/index.vue'),
             },
             {
+                path: 'tgShop',
+                name: 'tgShop',
+                // component: () => import('@/views/home/index_copy.vue'),
+                component: () => import('@/views/tg/shop/index.vue'),
+
+            },
+            {
                 path: 'assetsInfo',
                 name: 'AssetsInfo',
                 component: () => import('@/views/home/assetsInfo.vue'),
@@ -298,19 +305,19 @@ export const routes = [
                         name: 'Deploy',
                         component: () => import('@/views/deploy/index.vue'),
                         meta: {
-                          title: 'tabbar.deploy',
-                          keepAlive: true,
+                            title: 'tabbar.deploy',
+                            keepAlive: true,
                         },
-                      },
-                      {
+                    },
+                    {
                         path: '/mint',
                         name: 'Mint',
                         component: () => import('@/views/mint/index.vue'),
                         meta: {
-                          title: 'tabbar.mint',
-                          keepAlive: true,
+                            title: 'tabbar.mint',
+                            keepAlive: true,
                         },
-                      },
+                    },
                 ],
             },
             {
