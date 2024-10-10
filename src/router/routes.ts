@@ -16,6 +16,11 @@ export const routes = [
                 component: () => import('@/views/tg/home/index.vue'),
             },
             {
+                path: 'space',
+                name: 'Space',
+                component: () => import('@/views/tg/space/index.vue'),
+            },
+            {
                 path: 'assetsInfo',
                 name: 'AssetsInfo',
                 component: () => import('@/views/home/assetsInfo.vue'),

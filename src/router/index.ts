@@ -38,22 +38,16 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     userStore.setCloudCodeIsBind(false);    
-    if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget' || to.name == 'Middleware') {
+    if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget' || to.name == 'Middleware' || to.name == 'Space') {
       next();
     } else {
 
       if (localStorage.getItem('ByBootstrapping')) {
-        next({
-          name: 'Login', query: {
-            publicKey: to.query?.publicKey
-          }
-        });
+        next({ name: 'Home' });
+
       } else {
-        next({
-          name: 'Login', query: {
-            publicKey: to.query?.publicKey
-          }
-        });
+        next({ name: 'Home' });
+
       }
     }
   }
