@@ -1,0 +1,255 @@
+<template>
+  <div class="drive-page">
+    <!-- top_back_line -->
+    <div class="top_back_line">
+      <div class="inside_blue">
+        <div class="back_icons" @click="router.go(-1)">
+          <img src="@/assets/tg/shop_back.svg" />
+          返回
+        </div>
+        <div class="balance_options"> MAXIO</div>
+      </div>
+    </div>
+    <div class="drive-page-content">
+      <h2>MAXIO: </h2>
+      <div class="drive-line">
+        <div class="drive-line1">0积分</div>
+        <div class="drive-line2">0%的1GB</div>
+        <div class="drive-line3"></div>
+      </div>
+      <div class="items">
+        <div class="item">
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive1.png" />
+          </div>
+          <div class="item2">0</div>
+          <div class="item3">全部</div>
+        </div>
+        <div class="item">
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive2.png" />
+          </div>
+          <div class="item2">0</div>
+          <div class="item3">收藏</div>
+        </div>
+        <div class="item">
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive3.png" />
+          </div>
+          <div class="item2">0</div>
+          <div class="item3">文件</div>
+        </div>
+        <div class="item">
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive4.png" />
+          </div>
+          <div class="item2">0</div>
+          <div class="item3">视频</div>
+        </div>
+        <div class="item">
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive5.png" />
+          </div>
+          <div class="item2">0</div>
+          <div class="item3">音频</div>
+        </div>
+        <div class="item">
+          <div class="item1">
+            <img src="@/assets/tg/tg-drive6.png" />
+          </div>
+          <div class="item2">0</div>
+          <div class="item3">图片</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+  import { ref, onMounted } from 'vue';
+  import { useUserStore } from '@/store/modules/user';
+  import { useI18n } from 'vue-i18n';
+  import { search_max, searchOrder } from '@/api';
+  const { locale, t } = useI18n();
+  const userStore = useUserStore();
+  const router = useRouter();
+  const route = useRoute();
+  const currentId = ref('');
+  const address = computed(() => userStore.getAddress);
+  import tg1 from '~icons/home/tg1.svg';
+  import tg8 from '~icons/home/tg8.svg';
+  const list = ref(['@/assets/tg/tg1.gif', '@/assets/tg/tg2.png']);
+  onMounted(() => {
+    if (route?.query?.id) {
+      currentId.value = route.query?.id;
+      initSearchOrder();
+    }
+  });
+  const initSearchOrder = () => {
+    let data = {
+      orderId: currentId.value,
+    };
+    searchOrder(data).then((res) => {});
+  };
+</script>
+
+<style lang="scss" scoped>
+  .top_back_line {
+    position: relative;
+    height: 120px;
+
+    .inside_blue {
+      z-index: 999;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100px;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      color: #0ca2f8;
+      .back_icons {
+        margin-left: 20px;
+        font-weight: bold;
+      }
+      .balance_options {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: calc(100% - 200px);
+        color: #fff;
+        font-weight: bolder;
+        font-size: 34px;
+      }
+
+      .title {
+        color: #fff;
+        font-size: 1.5rem;
+        text-align: center;
+        margin-top: 40px;
+        width: 100%;
+      }
+
+      .total_balance {
+        color: #b9d4ff;
+        font-size: 1.5rem;
+        text-align: center;
+        color: #fbcf87;
+      }
+
+      .total_balance_value {
+        font-weight: 250;
+        color: #fff;
+        font-size: 1.75rem;
+        text-align: center;
+        margin-top: 0px;
+      }
+    }
+  }
+  .drive-page {
+    position: relative;
+    height: 100%;
+    .drive-page-head {
+      position: relative;
+      margin: 15px auto;
+      width: 90%;
+      height: 10vw;
+      img {
+        position: absolute;
+        z-index: 1;
+      }
+      .img1 {
+        top: 10px;
+        left: 10px;
+        width: 10%;
+      }
+      .img2 {
+        top: 10%;
+        left: 25%;
+        width: 50%;
+      }
+      .nut-swiper {
+        position: absolute;
+        width: 100%;
+      }
+    }
+    .drive-page-content {
+      position: relative;
+      margin: 15px auto;
+      width: 90%;
+      h2 {
+        margin: 10px 0 20px;
+        color: #fff;
+        font-size: 28px;
+      }
+      .drive-line {
+        position: relative;
+        width: 100%;
+        height: 100px;
+        color: #fff;
+        .drive-line1 {
+          position: absolute;
+          top: 0px;
+          left: 0px;
+          font-weight: 700;
+        }
+        .drive-line2 {
+          position: absolute;
+          top: 0px;
+          right: 0;
+          font-weight: 700;
+        }
+        .drive-line3 {
+          position: absolute;
+          top: 50px;
+          left: 0;
+          width: 100%;
+          height: 10px;
+          border-radius: 10px;
+          background-color: #36363b;
+        }
+      }
+      .items {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        .item {
+          position: relative;
+          width: 48%;
+          height: 30vw;
+          background: linear-gradient(180deg, #0095eb 0%, #000000 100%);
+          border-radius: 30px;
+          color: #fff;
+          .item1 {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 14vw;
+            height: 14vw;
+            border: 2px solid;
+            border-radius: 50%;
+            border-image: linear-gradient(270deg, #ffffff 0%, rgba(153, 153, 153, 0) 88.68%);
+            img {
+              position: absolute;
+              top: 15%;
+              left: 15%;
+              width: 70%;
+              height: 70%;
+            }
+          }
+          .item2 {
+            position: absolute;
+            bottom: 5vw;
+            left: 5vw;
+          }
+          .item3 {
+            position: absolute;
+            bottom: 5vw;
+            right: 5vw;
+          }
+        }
+      }
+    }
+  }
+</style>

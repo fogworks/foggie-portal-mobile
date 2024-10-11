@@ -215,6 +215,7 @@
         // background-image: linear-gradient(135deg, #5b6954 0%, #9cb77d 100%);
         margin-left: 10px !important;
         background-image: linear-gradient(295deg, #aeff00 0%, #432f2b 100%) !important;
+        background: linear-gradient(329deg, #0c87df 0%, #20bbe5 25%, rgb(12, 134, 240) 83%, #181b24 100%) !important;
       }
 
       .nut-dialog__footer-cancel {

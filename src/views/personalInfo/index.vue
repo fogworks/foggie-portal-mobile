@@ -4,25 +4,11 @@
       <TopBack>User Info</TopBack>
     </div>
     <nut-cell-group title="My Account" class="info_title">
-      <nut-cell v-if="userInfo.email" title="Email" :desc="userInfo.email"></nut-cell>
+      <nut-cell v-if="userInfo.email" title="Email" :desc="userInfo.email" @click="bindEmail"></nut-cell>
       <nut-cell v-else title="Email" desc="Unbound" @click="bindEmail"></nut-cell>
     </nut-cell-group>
 
-    <!-- <nut-cell-group title="Binding Information" class="info_title">
-      <nut-cell v-if="!userInfo.dmc" title="Withdrawal account" desc="Unbound" @click="openBindDMCDiaolg"></nut-cell>
-      <nut-cell v-else title="Withdrawal account" :desc="maxBind ? maxWallet : userInfo.dmc"></nut-cell>
-      <nut-cell
-        class="not_amb"
-        v-if="!userInfo.amb_promo_code || !cloudCodeIsBind"
-        title="AGENT Invitation Code"
-        desc="Unbound"
-        @click="bindAmbCode"
-      ></nut-cell>
-      <nut-cell v-else class="not_amb" title="AGENT Invitation Code" :desc="userInfo.amb_promo_code"></nut-cell>
-    </nut-cell-group> -->
     <nut-cell-group title="Linked MetaMask Wallet" class="info_title wallet_info">
-      <!-- <nut-cell :desc="item.address"></nut-cell> -->
-
       <nut-cell v-for="(item, index) in walletInfo">
         <template #title> <span v-show="index == 0">ERC20 Address</span> </template>
         <template #desc>
@@ -32,7 +18,11 @@
           <eyeIon v-if="!item.eyeState" @click="item.eyeState = true" style="font-size: 12px; margin-left: 8px" />
         </template>
       </nut-cell>
-      <div class="add_link_wallet" @click="showAllWalletList"> <MetaMask></MetaMask> Add </div>
+
+      <div class="add_link_wallet" @click="showAllWalletList">
+        <img src="@/assets/tg/okx.svg" style="width: 30px; height: 30px" />
+        OKX Wallet
+      </div>
     </nut-cell-group>
     <nut-dialog teleport="#app" title="Link Wallet" v-model:visible="showAccountList" class="add_account_dialog">
       <nut-radio-group v-model="choosedWallet" class="account_list">
@@ -55,7 +45,7 @@
     </nut-dialog>
   </div>
 </template>
-
+<!-- //   <MetaMask></MetaMask> -->
 <script setup>
   import eyeOffIon from '~icons/ion/eye-off';
   import eyeIon from '~icons/ion/eye';
@@ -81,7 +71,7 @@
   const bindAmbCode = inject('bindAmbCode');
   const openBindDMCDiaolg = inject('openBindDMCDiaolg');
   const bindEmail = () => {
-    router.push('/linkAccount');
+    router.push('/addressBind');
   };
   const hasLinked = (address) => {
     return walletInfo.value.find((el) => el.address === address);
@@ -116,10 +106,13 @@
   .nut-popup .nut-dialog:not(.CustomName) {
     box-shadow: inset 0 0 0 0.5px hsl(125.95deg 95.66% 48.78%) !important;
     border: 1px solid hsl(125.95deg 95.66% 48.78%) !important;
+    border: 1px solid #008ae7 !important;
   }
   .nut-popup .nut-dialog:not(.CustomName) .nut-button--primary {
     background-image: linear-gradient(76deg, #a1e60e 0%, #11d214 100%) !important;
+    background-image: linear-gradient(76deg, #3db1f2 0%, #0d8bf1 100%) !important;
     border: 1px solid #aeff00 !important;
+    border: 1px solid #2c99e3 !important;
     margin-left: 20px !important;
   }
   .nut-radio__icon--disable {
@@ -139,10 +132,12 @@
       .nut-radio__label {
         text-align: left;
         color: #0ae30a;
+        color: #2c99e3;
         font-weight: bold;
       }
       .nut-radio__icon {
         color: #0ae30a;
+        color: #2c99e3;
       }
     }
   }
@@ -196,13 +191,22 @@
   }
 
   .add_link_wallet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 20px 0;
     text-align: center;
     color: #fff;
+    font-weight: bold;
     // background-color: $main-blue;
     /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
     cursor: pointer;
-
+    img {
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
     svg {
       width: 1.5rem;
       height: 1.5rem;

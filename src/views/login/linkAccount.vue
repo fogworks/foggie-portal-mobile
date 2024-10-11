@@ -1,10 +1,6 @@
 <template>
   <div class="login register">
-    <!-- <img src="@/assets/logo-top-left-dark.png" alt="" /> -->
-
     <h1>Link Account</h1>
-    <!-- <img src="@/assets/logo-dog-black.svg" alt="" /> -->
-
     <nut-form ref="ruleForm" :model-value="loginForm" :rules="formRules">
       <nut-form-item required prop="email">
         <input v-model.trim="loginForm.email" name="email" class="nut-input-text" placeholder="Email" type="text" />
@@ -55,12 +51,6 @@
         <nut-button class="get_code" v-if="numCount > 0" disabled>{{ numCount }}s</nut-button>
         <nut-button class="get_code" v-else type="info" @click="getVerifyPw">Get Code</nut-button>
       </nut-form-item>
-      <!-- <nut-form-item required prop="promo_code">
-        <input v-model="loginForm.promo_code" class="nut-input-text" placeholder="Enter your invitation code(optional)" type="text" />
-      </nut-form-item> -->
-      <!-- <nut-form-item required prop="amb_promo_code">
-        <input v-model.trim="loginForm.amb_promo_code" class="nut-input-text" placeholder="Invitation Code(optional)" type="text" />
-      </nut-form-item> -->
     </nut-form>
     <div>
       <nut-button block type="info" @click="submit" :loading="loading"> Link Account </nut-button>
@@ -314,11 +304,175 @@
 </script>
 
 <style lang="scss">
-  @import url('./login.scss');
+  //   @import url('./login.scss');
 </style>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .Register_btn {
     justify-content: flex-end;
+  }
+  .login {
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    justify-content: center;
+    height: 100%;
+    height: 100vh;
+    padding: 80px 50px;
+    box-sizing: border-box;
+    //   background: #dfe0ef;
+    background: #5855a7f0;
+    //   background: url('@/assets/maxio/bg3.jpg');
+    background-color: #000;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+
+    .top_div {
+      text-align: center;
+    }
+    img {
+      width: 10rem;
+      margin: 0 auto;
+    }
+    h1 {
+      margin-bottom: 50px;
+      // letter-spacing: 10px;
+      text-align: center;
+      color: $primary-color;
+      color: #fff;
+    }
+    .isOk {
+      width: 0.5rem;
+      height: 0.5rem;
+      border: 1px solid #bbf1c8;
+      border: 1px solid #ffb93b;
+      border: 1px solid #be8ee6;
+      border-radius: 50%;
+      background: #bbf1c8;
+      background: #ffb93b;
+      background: #be8ee6;
+      line-height: 1rem;
+      text-align: center;
+
+      i {
+        color: #05c634;
+        color: #fff;
+        font-size: 16px;
+        vertical-align: super;
+      }
+    }
+
+    .isNo {
+      width: 0.5rem;
+      height: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 50%;
+      line-height: 1rem;
+
+      i {
+        color: transparent;
+        font-size: 18px;
+        vertical-align: middle;
+      }
+    }
+
+    .passwordTip {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin: 5px 0;
+      color: #000;
+      color: #fccf7e;
+      color: #fff;
+
+      div:first-child {
+        margin-right: 15px;
+      }
+    }
+
+    .nut-form-item {
+      margin-bottom: 40px;
+      border-radius: 20px;
+      // background: #f6f6f67d;
+      &::after,
+      &::before {
+        content: unset;
+      }
+
+      input {
+        background: transparent;
+      }
+
+      .get_code {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        height: 2rem;
+        border-radius: 99px;
+        background-image: linear-gradient(178deg, #ffe233 0%, #ffb62e 100%);
+        background-image: linear-gradient(72deg, #8682f2 0%, #be8ee6 100%);
+        background-image: linear-gradient(306deg, #cc6228 0%, #432f2b 100%);
+        background-image: linear-gradient(295deg, #aeff00 0%, #432f2b 100%);
+        background: linear-gradient(329deg, #0c87df 0%, #20bbe5 25%, rgb(12, 134, 240) 83%, #181b24 100%) !important;
+      }
+    }
+    .nut-cell-group__wrap {
+      box-shadow: none !important;
+      background-color: transparent;
+      overflow: visible;
+    }
+    .nut-button--block {
+      margin-bottom: 10px;
+      height: 3rem;
+      font-size: 40px;
+      font-weight: 600;
+      // background-color: #ffc42f;
+      // background-image: linear-gradient(178deg, #ffe233 0%, #ffb62e 100%);
+      background-image: linear-gradient(72deg, #8682f2 0%, #be8ee6 100%);
+      background-image: linear-gradient(306deg, #cc6228 0%, #432f2b 100%);
+      background-image: linear-gradient(295deg, #aeff00 0%, #432f2b 100%);
+      background: linear-gradient(329deg, #0c87df 0%, #20bbe5 25%, rgb(12, 134, 240) 83%, #181b24 100%) !important;
+      // background-image: linear-gradient(90deg, #0cc0df 0%, #ffde59 100%);
+    }
+    .Register_btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 10px;
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #000;
+      color: #9898d4;
+      font-weight: 500;
+      cursor: pointer;
+      color: #fff;
+      // text-decoration: underline;
+    }
+    .code_src {
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      width: 120px;
+      height: 70px;
+      padding: 4px;
+
+      cursor: pointer;
+      &.is-disabled {
+        background: #878787;
+      }
+    }
+    .nut-input-text {
+      // color: #fff;
+      outline: none;
+    }
+  }
+  .register {
+    .nut-form-item {
+      margin-bottom: 40px;
+    }
+    .Register_btn {
+      justify-content: center !important;
+    }
   }
 </style>

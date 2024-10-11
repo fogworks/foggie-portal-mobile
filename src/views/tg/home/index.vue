@@ -13,24 +13,33 @@
       </nut-swiper>
     </div>
     <div class="home-page-content">
-      <div class="item">
+      <!-- <div class="item">
         <div class="item-icon"> 0 </div>
         <div class="item-name"></div>
         <div class="item-val item-val-no">排名：0</div>
-      </div>
-      <div class="item">
+      </div> -->
+      <div class="item" @click="gotoDrive('order')">
         <div class="item-icon">
           <tg1 />
         </div>
         <div class="item-name">DMCX : Drive</div>
-        <div class="item-val">0%</div>
+        <div class="item-val">GO</div>
+        <!-- <div class="item-val">{{ orderTableData.length }}</div> -->
       </div>
-      <div class="item">
+      <div class="item" @click="gotoDrive('maxio')">
+        <div class="item-icon">
+          <tg1 />
+        </div>
+        <div class="item-name">MAXIO : Drive</div>
+        <div class="item-val">GO</div>
+        <!-- <div class="item-val">{{ maxTableData.length }}</div> -->
+      </div>
+      <div class="item" @click="gotoBind">
         <div class="item-icon">
           <tg2 />
         </div>
         <div class="item-name">钱包</div>
-        <div class="item-val">添加</div>
+        <div class="item-val">{{ addressStr ? addressStr : 'Bind' }}</div>
       </div>
       <div class="item" @click="gotoShop">
         <div class="item-icon">
@@ -78,7 +87,7 @@
 </template>
 
 <script setup>
-  import { ref, createVNode, watch } from 'vue';
+  import { ref, createVNode, watch, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
   const router = useRouter();
   import { useUserStore } from '@/store/modules/user';
@@ -87,7 +96,14 @@
   import { useI18n } from 'vue-i18n';
   const { locale, t } = useI18n();
   const currentLan = computed(() => userStore.getCurLanguage);
-  console.log('currentLan0000', currentLan.value);
+  const address = computed(() => userStore.getAddress);
+  //   import { getDmOrder, search_max } from '@/api';
+  //   const orderTableData = ref([]);
+  //   const maxTableData = ref([]);
+  const addressStr = ref('');
+  addressStr.value = address.value
+    ? address.value.substring(0, 4) + '...' + address.value.substring(address.value.length - 3, address.value.length)
+    : '';
   import tg1 from '~icons/home/tg1.svg';
   import tg2 from '~icons/home/tg2.svg';
   import tg3 from '~icons/home/tg3.svg';
@@ -95,7 +111,6 @@
   import tg5 from '~icons/home/tg5.svg';
   import tg6 from '~icons/home/tg6.svg';
   import tg7 from '~icons/home/tg7.svg';
-
   const list = ref(['@/assets/tg/tg1.gif', '@/assets/tg/tg2.png']);
 
   const gotoShop = () => {
@@ -103,6 +118,12 @@
   };
   const gotoLan = () => {
     router.push('/lan');
+  };
+  const gotoDrive = (type) => {
+    router.push({ path: '/space', query: { page: type } });
+  };
+  const gotoBind = () => {
+    router.push('/personalInfo');
   };
   const logout = () => {
     showDialog({
@@ -120,9 +141,41 @@
       },
     });
   };
-
+  const initData = async () => {
+    if (address.value) {
+      const d = {
+        wallet: address.value,
+        pageNo: 1,
+        pageSize: 100,
+      };
+      let res = await getDmOrder(d);
+      if (res.code === 200) {
+        orderTableData.value = res.data.list;
+      }
+    }
+  };
+  const initMaxData = async () => {
+    let res = await search_max({
+      pn: 1,
+      ps: 100,
+    });
+    let data = res.data;
+    let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
+    maxTableData.value = maxList;
+  };
+  onMounted(() => {
+    // initData();
+    // initMaxData();
+  });
   watch(currentLan, async (newVal) => {
     console.log('currentLan', newVal);
+  });
+  watch(address, (val) => {
+    console.log('address', val);
+    if (val.length > 0) {
+      addressStr.value = val.substring(0, 4) + '...' + val.substring(val.length - 3, val.length);
+      //   initData();
+    }
   });
 </script>
 <style lang="scss" scoped>
@@ -188,7 +241,7 @@
           position: absolute;
           top: 30px;
           right: 30px;
-          font-weight: 700;
+          font-weight: bold;
           width: 120px;
           height: 50px;
           line-height: 50px;
@@ -196,6 +249,8 @@
           border-radius: 30px;
           // font-size: 14px;
           background: #36363b;
+          font-size: 22px;
+          color: #75c9f9;
         }
         .item-val-no {
           width: 150px;

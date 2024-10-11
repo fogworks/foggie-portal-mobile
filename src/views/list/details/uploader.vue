@@ -21,8 +21,7 @@
       multiple
     >
       <nut-button type="info" class="upload_btn" size="small">
-        <IconPlus></IconPlus>
-
+        <IconPlus color="#fff"></IconPlus>
       </nut-button>
     </nut-uploader>
     <nut-button
@@ -153,11 +152,8 @@
         fileArr.push(fileCopy);
       }
 
-      console.log('usedSize------', usedSize.value , total, orderInfo.space);
-      if (
-        orderInfo.space &&
-        (Number(usedSize.value) + total > Number(orderInfo.space) * 1024 * 1024 * 1024)
-      ) {
+      console.log('usedSize------', usedSize.value, total, orderInfo.space);
+      if (orderInfo.space && Number(usedSize.value) + total > Number(orderInfo.space) * 1024 * 1024 * 1024) {
         showToast.warn('The space is full, please delete some files and try again.');
         return reject();
       }
@@ -249,7 +245,6 @@
 
       uploadStatus.value = 'success';
 
-
       // let used_space = await getSummary.value();
       // if (!amb_uuid.value) {
       //   let res = await get_unique_order({ order_uuid: route?.query?.uuid });
@@ -296,7 +291,7 @@
   const onFailure = ({ responseText, option, fileItem }: any) => {
     // debugger;
     if (isUploadComplete.value) {
-      console.log('faile------',responseText, option, fileItem);
+      console.log('faile------', responseText, option, fileItem);
 
       showToast.fail('Upload failed, please try again later');
       delay(() => {
@@ -329,7 +324,6 @@
         isUploadComplete.value = true;
       }
       try {
-        
         let response = await sendRequest(xhrArray.value[i].xhr, xhrArray.value[i].options);
         console.log('Response:', response);
       } catch (error) {
@@ -398,7 +392,6 @@
       xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
 
       xhr.onload = function () {
-
         if (this.status >= 200 && this.status < 300) {
           resolve(xhr.response);
         } else {
@@ -427,7 +420,6 @@
   onMounted(() => {
     // console.log(11111111111111111);
     // console.log(orderInfo.value, 'orderInfo.value.orderId');
-
     // memo.value = route.query.uuid || orderInfo.value.value.uuid;
     // order_id.value = route.query.id || orderInfo.value.value.orderId;
     // amb_uuid.value = route.query.amb_uuid || orderInfo.value.value.amb_uuid;

@@ -709,6 +709,8 @@
         background: #cc6228;
         background: #aeff00;
         background-image: linear-gradient(295deg, #aeff00 0%, #432f2b 100%);
+        background: linear-gradient(329deg, #0c87df 0%, #20bbe5 25%, rgb(12, 134, 240) 83%, #181b24 100%) !important;
+
         // background-image: linear-gradient(90deg, #0cc0df 0%, #ffde59 100%);
 
         svg {

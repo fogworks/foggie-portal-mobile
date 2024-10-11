@@ -21,6 +21,12 @@ export const routes = [
                 component: () => import('@/views/tg/lan/index.vue'),
             },
             {
+                path: 'addressBind',
+                name: 'addressBind',
+                // component: () => import('@/views/tg/address/index.vue'),
+                component: () => import('@/views/login/linkAccount.vue'),
+            },
+            {
                 path: 'space',
                 name: 'Space',
                 component: () => import('@/views/tg/space/index.vue'),
@@ -29,6 +35,11 @@ export const routes = [
                 path: 'drive',
                 name: 'Drive',
                 component: () => import('@/views/tg/drive/index.vue'),
+            },
+            {
+                path: 'maxio',
+                name: 'maxio',
+                component: () => import('@/views/tg/maxHome/index.vue'),
             },
             {
                 path: 'tgShop',
@@ -446,9 +457,9 @@ export const routes = [
         path: '/linkAccount',
         name: 'LinkAccount',
         component: () => import('@/views/login/linkAccount.vue'),
-        meta: {
-            notKeepAlive: true,
-        },
+        // meta: {
+        //     notKeepAlive: true,
+        // },
     },
     {
         path: '/forget',

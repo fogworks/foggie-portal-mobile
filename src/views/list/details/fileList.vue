@@ -15,6 +15,7 @@
               <TriangleUp
                 @click="showTypeCheckPop = !showTypeCheckPop"
                 :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
+                color="#4bd5fd"
               ></TriangleUp>
             </template>
             <template v-else>
@@ -78,6 +79,7 @@
                   {{ fileTypeText[category] }}
                 </span>
                 <TriangleUp
+                  color="#4bd5fd"
                   @click="showTypeCheckPop = !showTypeCheckPop"
                   :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
                 ></TriangleUp>
@@ -103,10 +105,12 @@
             style="width: 2rem; height: 2rem; vertical-align: middle"
             v-if="cardMode && category != 1"
             @click="cardMode = !cardMode"
+            color="#4bd5fd"
           ></IconListType>
           <IconCardType
             style="margin: 0 0.2rem; width: 1.5rem; height: 2rem; vertical-align: middle"
             v-else-if="!cardMode && category != 1"
+            color="#4bd5fd"
             @click="cardMode = !cardMode"
           ></IconCardType>
         </div>
@@ -118,6 +122,7 @@
             renameShow = true;
           "
           v-show="category == 0 && isMobileOrder && isAvailableOrder"
+          color="#4bd5fd"
           class="new_folder"
         ></IconNewFolder>
         <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
@@ -198,20 +203,20 @@
             </div>
             <div class="name_box">
               <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
-              <p v-if="!cardMode">{{ item.date || '' }}</p>
+              <p>{{ item.date || '' }}</p>
             </div>
             <div @click.stop v-if="(item.isPin || (item.nftInfoList && item.nftInfoList.length > 0)) && !cardMode" class="ipfs_info">
               <!-- <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
               <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2> -->
               <IconNft v-if="item.nftInfoList && item.nftInfoList.length > 0"></IconNft>
-              <IconIPFS v-if="item.isPin" color="#496AF2"></IconIPFS>
+              <IconIPFS v-if="item.isPin" color="#0095EB"></IconIPFS>
             </div>
             <!-- <div @click.stop="showAction(item)" class="right_div">
             <IconMore v-show="!isCheckMode" class="right_more"></IconMore>
           </div> -->
             <div :class="['mask', 'right_radio', isCheckMode ? 'isChecking' : '']" @click.stop>
               <nut-checkbox v-if="isCheckMode" :label="item.name"></nut-checkbox>
-              <MoreX v-else-if="!cardMode && !isCheckMode" @click="clickFIleItem(item)" width="40px" height="25px" />
+              <MoreX v-else-if="!cardMode && !isCheckMode" @click="clickFIleItem(item)" width="40px" height="25px" color="#0095EB" />
             </div>
           </div>
         </nut-checkbox-group>
@@ -2534,115 +2539,20 @@
       }
     }
   }
-  .card_list {
-    :deep {
-      .nut-infinite__container {
-        width: 100%;
-      }
-      .nut-checkbox-group {
-        display: grid;
-        grid-gap: 5px;
-        grid-template-columns: repeat(3, 1fr);
-        justify-items: center;
-        width: 100%;
-      }
-    }
-    .list_item {
-      position: relative;
-      box-sizing: border-box;
-      flex-direction: column;
-      padding: 0.5rem;
-      width: 240px;
-      border: none;
-      border-radius: 10px;
-      .mask {
-        display: none;
-        position: absolute;
-        top: 0;
-        z-index: 1;
-        width: 100%;
-        height: 100%;
 
-        .itemChecked {
-          display: block;
-        }
-        &.isChecking {
-          display: block;
-          height: 100%;
-          cursor: pointer;
-          :deep {
-            .nut-checkbox {
-              width: 100%;
-              height: 100%;
-              display: block;
-            }
-            .nut-icon {
-              padding: 10px;
-            }
-          }
-        }
-
-        :deep {
-          .nut-checkbox {
-            position: absolute;
-            left: 0;
-          }
-          .nut-checkbox__input {
-            position: absolute;
-            right: 5px;
-            top: 10px;
-          }
-          .nut-checkbox__label {
-            display: none;
-          }
-        }
-      }
-      .left_icon_box {
-        width: 150px;
-        height: 150px;
-        img,
-        svg {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .play_icon {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 2rem;
-          height: 2rem;
-        }
-      }
-      .name_box {
-        width: 100%;
-        margin: 0;
-        text-align: center;
-        p {
-          font-size: 0.8rem !important;
-          color: #000 !important;
-        }
-      }
-      .right_radio {
-        // position: absolute;
-        // right: 10px;
-        // top: 10px;
-        // width: unset;
-        // height: unset;
-      }
-    }
-  }
   .list_item {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     padding: 20px 20px 20px 40px;
-    border-top: 1px solid #efefef;
+    margin: 20px 20px;
+    // border-top: 1px solid #efefef;
     user-select: none;
+    border-radius: 20px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    background: rgba(28, 28, 30, 1);
     :deep {
       .nut-image {
         width: 100%;
@@ -2681,7 +2591,7 @@
     }
     .left_icon_box {
       position: relative;
-      width: 80px;
+      width: 140px;
       height: 80px;
       img,
       svg {
@@ -2760,6 +2670,115 @@
       width: 50px;
       height: 50px;
       color: #ccc;
+    }
+  }
+  .card_list {
+    :deep {
+      .nut-infinite__container {
+        width: 100%;
+      }
+      .nut-checkbox-group {
+        display: grid;
+        grid-gap: 20px;
+        grid-template-columns: repeat(2, 1fr);
+        justify-items: center;
+        width: 100%;
+      }
+    }
+    .list_item {
+      position: relative;
+      box-sizing: border-box;
+      flex-direction: column;
+      border: none;
+      border-radius: 10px;
+      padding: 0px !important;
+      //   margin: 20px;
+      width: 100%;
+      height: 300px;
+      //   margin: 0 !important;
+      //   background: rgba(28, 28, 30, 1);
+      .mask {
+        display: none;
+        position: absolute;
+        top: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+
+        .itemChecked {
+          display: block;
+        }
+        &.isChecking {
+          display: block;
+          height: 100%;
+          cursor: pointer;
+          :deep {
+            .nut-checkbox {
+              width: 100%;
+              height: 100%;
+              display: block;
+            }
+            .nut-icon {
+              padding: 10px;
+            }
+          }
+        }
+
+        :deep {
+          .nut-checkbox {
+            position: absolute;
+            left: 0;
+          }
+          .nut-checkbox__input {
+            position: absolute;
+            right: 5px;
+            top: 10px;
+          }
+          .nut-checkbox__label {
+            display: none;
+          }
+        }
+      }
+      .left_icon_box {
+        width: 100%;
+        height: 200px;
+        img,
+        svg {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+          overflow: hidden;
+        }
+        .nut-image {
+          height: 200px;
+          overflow: hidden;
+          object-fit: cover;
+        }
+        .play_icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+      .name_box {
+        height: 100px;
+        width: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        p {
+          font-size: 0.8rem !important;
+          color: #fff !important;
+        }
+        p:last-child {
+          color: #a7a7a7 !important;
+        }
+      }
     }
   }
   .bottom_action {
@@ -2999,7 +3018,7 @@
     }
     .list_item {
       padding: 5px 20px 5px 40px;
-      border-top: 1px solid #efefef;
+      //   border-top: 1px solid #efefef;
 
       &:active,
       &:hover {

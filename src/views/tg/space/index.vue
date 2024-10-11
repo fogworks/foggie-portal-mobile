@@ -1,52 +1,167 @@
 <template>
   <div class="space-page">
-    <div class="space-page-head">
-      <span>返回</span>
+    <!-- top_back_line -->
+    <div class="top_back_line">
+      <div class="inside_blue">
+        <div class="back_icons" @click="router.go(-1)">
+          <img src="@/assets/tg/shop_back.svg" />
+          返回
+        </div>
+        <div class="balance_options"> Choose Drive</div>
+      </div>
     </div>
     <div class="space-page-content">
-      <h2>选择空间</h2>
+      <h2 v-if="currentPage === 'maxio' && maxTableData.length">选择空间</h2>
+      <h2 v-if="currentPage === 'order' && orderTableData.length">选择空间</h2>
 
-      <div class="item">
+      <div class="item" @click="gotoDevice(item)" v-for="(item, index) in orderTableData" :key="index" v-if="currentPage === 'order'">
         <div class="item-icon">
           <tg1 />
         </div>
-        <div class="item-name">DMCX : Drive</div>
-        <div class="item-val itema-val-blue">50%</div>
+        <div class="item-name">DMCX : {{ item.domain ? item.domain : 'Order-' + item.order_id }}</div>
+        <div class="item-val itema-val-blue">{{ item.space }}GB</div>
       </div>
-      <div class="item">
+      <div class="item-buy" @click="gotoShop" v-if="currentPage === 'order'">
         <div class="item-icon">
-          <tg1 />
-        </div>
-        <div class="item-name">DMCX : Drive</div>
-        <div class="item-val itema-val-blue">20%</div>
-      </div>
-      <div class="item">
-        <div class="item-icon">
-          <tg1 />
-        </div>
-        <div class="item-name">DMCX : Drive</div>
-        <div class="item-val">0%</div>
-      </div>
-      <div class="item-buy">
-        <div class="item-icon">
-          <tg8 />
+          <tg3 />
         </div>
         <div class="item-name">购买空间</div>
         <div class="item-val">BUY</div>
+      </div>
+      <div v-if="currentPage === 'maxio' && maxTableData.length === 0">
+        <nut-empty
+          style="padding: 10px 0 50px 0; border: 1px dashed #fff; border-radius: 10px"
+          description="You currently have no available orders and MAX IO."
+          image="error"
+        >
+        </nut-empty>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import tg1 from '~icons/home/tg1.svg';
-  import tg8 from '~icons/home/tg8.svg';
-
+  import tg3 from '~icons/home/tg3.svg';
+  import { useRouter } from 'vue-router';
+  import { useUserStore } from '@/store/modules/user';
+  import { useI18n } from 'vue-i18n';
+  import { getDmOrder, search_max } from '@/api';
   const list = ref(['@/assets/tg/tg1.gif', '@/assets/tg/tg2.png']);
+  const { locale, t } = useI18n();
+  const userStore = useUserStore();
+  const router = useRouter();
+  const route = useRoute();
+  const address = computed(() => userStore.getAddress);
+  const currentPage = ref('');
+  const orderTableData = ref([]);
+  const maxTableData = ref([]);
+  const gotoDevice = (item) => {
+    if (currentPage.value === 'order') {
+      router.push({ path: '/drive', query: { id: item.order_id } });
+    } else {
+      router.push({ path: '/maxio', query: { id: item.id } });
+    }
+  };
+  const gotoShop = () => {
+    router.push('/tgShop');
+  };
+  const initData = async () => {
+    console.log(address.value, 'address.value');
+    if (address.value) {
+      const d = {
+        wallet: address.value,
+        pageNo: 1,
+        pageSize: 100,
+      };
+      let res = await getDmOrder(d);
+      if (res.code === 200) {
+        orderTableData.value = res.data.list;
+      }
+    }
+  };
+  const initMaxData = async () => {
+    let res = await search_max({
+      pn: 1,
+      ps: 100,
+    });
+    let data = res.data;
+    let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
+    maxTableData.value = maxList;
+  };
+  onMounted(() => {
+    if (route?.query?.page) {
+      currentPage.value = route.query?.page;
+    }
+    if (currentPage.value === 'order') {
+      initData();
+    } else {
+      initMaxData();
+    }
+  });
+  watch(address, (val) => {
+    console.log('address', val);
+    if (val.length > 0) {
+      initData();
+    }
+  });
 </script>
 
 <style lang="scss" scoped>
+  .top_back_line {
+    position: relative;
+    height: 120px;
+
+    .inside_blue {
+      z-index: 999;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100px;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      color: #0ca2f8;
+      .back_icons {
+        margin-left: 20px;
+        font-weight: bold;
+      }
+      .balance_options {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: calc(100% - 200px);
+        color: #fff;
+        font-weight: bolder;
+        font-size: 34px;
+      }
+
+      .title {
+        color: #fff;
+        font-size: 1.5rem;
+        text-align: center;
+        margin-top: 40px;
+        width: 100%;
+      }
+
+      .total_balance {
+        color: #b9d4ff;
+        font-size: 1.5rem;
+        text-align: center;
+        color: #fbcf87;
+      }
+
+      .total_balance_value {
+        font-weight: 250;
+        color: #fff;
+        font-size: 1.75rem;
+        text-align: center;
+        margin-top: 0px;
+      }
+    }
+  }
   .space-page {
     position: relative;
     height: 100%;
@@ -135,7 +250,7 @@
       width: 100%;
       height: 100px;
       border: 1px solid #36363b;
-       background: linear-gradient(90deg, #0095EB 0%, #81D1FF 50.5%, #0095EB 100%);
+      background: linear-gradient(90deg, #0095eb 0%, #81d1ff 50.5%, #0095eb 100%);
       border-radius: 20px;
       .item-icon {
         position: absolute;
@@ -144,7 +259,7 @@
         svg {
           width: 40px;
           height: 40px;
-          color: #0095EB;
+          color: #0095eb;
         }
       }
       .item-name {
@@ -167,7 +282,7 @@
         border-radius: 30px;
         // font-size: 14px;
         background: #fff;
-        color: #0095EB;
+        color: #0095eb;
       }
     }
   }
