@@ -13,7 +13,7 @@
     <div class="space-page-content">
       <h2 v-if="currentPage === 'maxio' && maxTableData.length">选择空间</h2>
       <h2 v-if="currentPage === 'order' && orderTableData.length">选择空间</h2>
-
+      <!-- order -->
       <div class="item" @click="gotoDevice(item)" v-for="(item, index) in orderTableData" :key="index" v-if="currentPage === 'order'">
         <div class="item-icon">
           <tg1 />
@@ -21,12 +21,23 @@
         <div class="item-name">DMCX : {{ item.domain ? item.domain : 'Order-' + item.order_id }}</div>
         <div class="item-val itema-val-blue">{{ item.space }}GB</div>
       </div>
-      <div class="item-buy" @click="gotoShop" v-if="currentPage === 'order'">
+      <!-- maxio -->
+      <div class="item" @click="gotoDevice(item)" v-for="(item, index) in maxTableData" :key="index" v-if="currentPage === 'maxio'">
         <div class="item-icon">
-          <tg3 />
+          <tg1 />
         </div>
-        <div class="item-name">购买空间</div>
-        <div class="item-val">BUY</div>
+        <div class="item-name">MAX IO: {{ item.id }}</div>
+        <div class="item-val itema-val-blue max-item-val">{{ item.dedicatedip }}</div>
+      </div>
+
+      <!-- nut-empty -->
+      <div v-if="currentPage === 'order' && orderTableData.length === 0">
+        <nut-empty
+          style="padding: 10px 0 50px 0; border: 1px dashed #fff; border-radius: 10px"
+          description="You currently have no available orders and MAX IO."
+          image="error"
+        >
+        </nut-empty>
       </div>
       <div v-if="currentPage === 'maxio' && maxTableData.length === 0">
         <nut-empty
@@ -35,6 +46,14 @@
           image="error"
         >
         </nut-empty>
+      </div>
+      <!-- 购买空间 -->
+      <div class="item-buy" @click="gotoShop" v-if="currentPage === 'order'">
+        <div class="item-icon">
+          <tg3 />
+        </div>
+        <div class="item-name">购买空间</div>
+        <div class="item-val">BUY</div>
       </div>
     </div>
   </div>
@@ -61,6 +80,8 @@
     if (currentPage.value === 'order') {
       router.push({ path: '/drive', query: { id: item.order_id } });
     } else {
+      userStore.setCurrentLeftTab(item);
+      window.localStorage.setItem('currentMaxIo', JSON.stringify(item));
       router.push({ path: '/maxio', query: { id: item.id } });
     }
   };
@@ -220,16 +241,17 @@
         .item-name {
           position: absolute;
           top: 30px;
-          left: 15%;
+          left: 12%;
           height: 50px;
           line-height: 50px;
           font-weight: 700;
+          font-size: 28px;
         }
         .item-val {
           position: absolute;
           top: 30px;
           right: 30px;
-          font-weight: 700;
+          font-weight: bolder;
           width: 120px;
           height: 50px;
           line-height: 50px;
@@ -237,6 +259,10 @@
           border-radius: 30px;
           // font-size: 14px;
           background: #36363b;
+          font-size: 22px;
+        }
+        .max-item-val {
+          width: 200px !important;
         }
         .itema-val-blue {
           background: #0095eb;
@@ -245,6 +271,7 @@
     }
     .item-buy {
       position: relative;
+      margin-top: 20px;
       margin-bottom: 20px;
       color: #fff;
       width: 100%;

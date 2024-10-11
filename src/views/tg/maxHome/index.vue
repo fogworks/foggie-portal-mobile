@@ -11,10 +11,10 @@
       </div>
     </div>
     <div class="drive-page-content">
-      <h2>MAXIO: </h2>
+      <h2>MAXIO:{{ currentTabItem.dedicatedip }} </h2>
       <div class="drive-line">
         <div class="drive-line1">0积分</div>
-        <div class="drive-line2">0%的1GB</div>
+        <div class="drive-line2">{{ getfilesize(spaceTotal, 'B') }}</div>
         <div class="drive-line3"></div>
       </div>
       <div class="items">
@@ -32,33 +32,15 @@
           <div class="item2">0</div>
           <div class="item3">收藏</div>
         </div>
-        <div class="item">
+        <div class="item" v-for="(item, index) in fileListArr" :key="index" @click="changeTab(item.type)">
           <div class="item1">
-            <img src="@/assets/tg/tg-drive3.png" />
+            <img src="@/assets/tg/tg-drive6.png" v-if="item.type === 'Photos'" />
+            <img src="@/assets/tg/tg-drive4.png" v-if="item.type === 'Videos'" />
+            <img src="@/assets/tg/tg-drive5.png" v-if="item.type === 'Audio'" />
+            <img src="@/assets/tg/tg-drive3.png" v-if="item.type === 'Documents'" />
           </div>
-          <div class="item2">0</div>
-          <div class="item3">文件</div>
-        </div>
-        <div class="item">
-          <div class="item1">
-            <img src="@/assets/tg/tg-drive4.png" />
-          </div>
-          <div class="item2">0</div>
-          <div class="item3">视频</div>
-        </div>
-        <div class="item">
-          <div class="item1">
-            <img src="@/assets/tg/tg-drive5.png" />
-          </div>
-          <div class="item2">0</div>
-          <div class="item3">音频</div>
-        </div>
-        <div class="item">
-          <div class="item1">
-            <img src="@/assets/tg/tg-drive6.png" />
-          </div>
-          <div class="item2">0</div>
-          <div class="item3">图片</div>
+          <div class="item2">{{ item.number }}</div>
+          <div class="item3">{{ item.name }}</div>
         </div>
       </div>
     </div>
@@ -69,7 +51,7 @@
   import { ref, onMounted } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { useI18n } from 'vue-i18n';
-  import { search_max, searchOrder } from '@/api';
+  import { search_max } from '@/api';
   const { locale, t } = useI18n();
   const userStore = useUserStore();
   const router = useRouter();
@@ -79,17 +61,96 @@
   import tg1 from '~icons/home/tg1.svg';
   import tg8 from '~icons/home/tg8.svg';
   const list = ref(['@/assets/tg/tg1.gif', '@/assets/tg/tg2.png']);
-  onMounted(() => {
+  import { getfilesize } from '@/utils/util';
+  //maxindex code
+  const cloudQuery = ref({});
+  import getList from '@/views/maxio/maxFileOpt/getList.ts';
+  const CurrentLeftTab = computed(() => userStore.getCurrentLeftTab);
+  const currentTabItem = ref({});
+  const {
+    getMyList,
+    myPoolList,
+    myIotList,
+    MinerReward,
+    IOTReward,
+    rewardList,
+    spaceData,
+    fileListArr,
+    header,
+    initToken,
+    CurrentToken,
+    spaceTotal,
+  } = getList();
+
+  onMounted(async () => {
     if (route?.query?.id) {
       currentId.value = route.query?.id;
-      initSearchOrder();
+      if (CurrentLeftTab.value.device_id) {
+        currentTabItem.value = CurrentLeftTab.value;
+        cloudQuery.value = {
+          id: currentTabItem.value.id,
+        };
+        await initToken(CurrentLeftTab.value);
+        await getMyList(CurrentLeftTab.value);
+      } else {
+        currentTabItem.value = JSON.parse(window.localStorage.getItem('currentMaxIo'));
+        cloudQuery.value = {
+          id: currentTabItem.value.id,
+        };
+        await initToken(currentTabItem.value);
+        await getMyList(currentTabItem.value);
+      }
     }
   });
-  const initSearchOrder = () => {
-    let data = {
-      orderId: currentId.value,
-    };
-    searchOrder(data).then((res) => {});
+  //   watch(
+  //     CurrentLeftTab,
+  //     async (val) => {
+  //       if (val) {
+  //         console.log('watchwatch', val);
+  //         if (val.device_id) {
+  //           currentTabItem.value = val;
+  //           await initToken(val);
+  //           await getMyList(val);
+  //           cloudQuery.value = {
+  //             id: currentTabItem.value.id,
+  //           };
+  //         }
+  //       }
+  //     },
+  //     {
+  //       deep: true,
+  //       immediate: true,
+  //     },
+  //   );
+  const changeTab = (type, name) => {
+    if (type === 'index') {
+      router.push({ path: '/home' });
+    } else if (type === 'pool') {
+      router.push({ path: '/maxPool' });
+    } else if (type === 'iot') {
+      router.push({ path: '/maxIOT' });
+    } else if (type === 'file') {
+      //   router.push({ path: '/maxFile${query ? `?type=${query}` : ''}`' });
+      let category = '';
+      if (name === 'Photos') {
+        category = 1;
+      } else if (name === 'Documents') {
+        category = 4;
+      } else if (name === 'Videos') {
+        category = 2;
+      } else if (name === 'Audio') {
+        category = 3;
+      } else {
+        category = 0;
+      }
+      router.push(`/maxFile?category=${category}`);
+    } else if (type === 'reward') {
+      router.push({ path: '/maxReward' });
+    } else if (type === 'set') {
+      router.push({ path: '/maxSet' });
+    } else if (type === 'home') {
+      router.push({ path: '/maxio' });
+    }
   };
 </script>
 

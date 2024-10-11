@@ -21,6 +21,7 @@ export default function getList(deviceData) {
     const IOTReward = ref('');
     const rewardList = ref([] as any);
     const spaceData = ref([]);
+    const spaceTotal = ref(0);
     const filReward = ref(0 as any);
     const fileListArr = ref([
         {
@@ -296,6 +297,7 @@ export default function getList(deviceData) {
         header.setApptype(appType);
         request.setHeader(header);
         spaceData.value = [];
+        spaceTotal.value = 0;
         // console.log(request, '----request---', header);
         server.f2PGetSpaceInfo(request, metadata, (err: any, res: { array: any }) => {
             if (err) {
@@ -310,9 +312,13 @@ export default function getList(deviceData) {
                         name: key.charAt(0).toUpperCase() + key.slice(1)
                         , value: mySpaceInfo.value[key]
                     }
-                    if (key !== 'total') {
-                        spaceData.value.push(_item);
+                    // if (key !== 'total') {
+                    //     spaceData.value.push(_item);
+                    // }
+                    if (key === 'total') {
+                        spaceTotal.value = _item.value;
                     }
+                    spaceData.value.push(_item);
                 }
                 // console.log(spaceData.value, 'spaceDataspaceData');
                 window.localStorage.setItem("spaceData", JSON.stringify(spaceData.value));
@@ -437,5 +443,6 @@ export default function getList(deviceData) {
         header,
         CurrentToken,
         initToken,
+        spaceTotal
     }
 }
