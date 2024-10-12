@@ -420,7 +420,7 @@
   import IconImage from '~icons/home/image.svg';
   import IconFile from '~icons/home/file.svg';
   import IconVideo from '~icons/home/video.svg';
-  import IconFolder from '~icons/home/folder.svg';
+  import IconFolder from '~icons/home/folder1.svg';
   import IconShare from '~icons/home/share.svg';
   import IconRename from '~icons/home/rename.svg';
   import IconMove from '~icons/home/move.svg';

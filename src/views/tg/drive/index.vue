@@ -17,7 +17,13 @@
         <div class="drive-line2">
           {{ Number(((usedSize || 0) / (cloudQuery.space * 1024 * 1024 * 1024 || 1)) * 100).toFixed(2) }}%的1GB</div
         >
-        <div class="drive-line3"></div>
+        <nut-progress
+          :percentage="usePercent"
+          text-inside
+          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+          status="active"
+          style="font-weight: bold"
+        />
       </div>
       <div class="items">
         <div class="item" @click="gotoOrderDetail(cloudQuery)">
@@ -210,7 +216,11 @@
       total: 0,
     },
   ]);
-
+  const usePercent = computed(() => {
+    if (cloudQuery.value.space) {
+      return Number(((usedSize.value || 0) / (cloudQuery.value.space * 1024 * 1024 * 1024 || 1)) * 100).toFixed(2);
+    }
+  });
   onMounted(() => {
     if (route?.query?.id) {
       currentId.value = route.query?.id;
@@ -505,15 +515,18 @@
         width: 100%;
         height: 100px;
         color: #fff;
+        display: flex;
+        align-items: center;
+        font-size: 24px;
         .drive-line1 {
           position: absolute;
-          top: 0px;
+          top: -2px;
           left: 0px;
           font-weight: 700;
         }
         .drive-line2 {
           position: absolute;
-          top: 0px;
+          top: -2px;
           right: 0;
           font-weight: 700;
         }

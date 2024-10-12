@@ -23,6 +23,7 @@ export default function getList(deviceData) {
     const spaceData = ref([]);
     const spaceTotal = ref(0);
     const filReward = ref(0 as any);
+    const fileListSat = ref({});
     const fileListArr = ref([
         {
             type: "Photos",
@@ -81,7 +82,7 @@ export default function getList(deviceData) {
     ];
     const initToken = async (deviceData) => {
         let token = '';
-        // console.log(MaxTokenMap.value, 'getlist-initTokeninitToken--MaxTokenMap.value');
+        console.log('initToken', MaxTokenMap.value, 'getlist-initTokeninitToken--MaxTokenMap.value');
         CurrentToken.value = '';
         if (deviceData.deploy_svc_gateway_state !== 'finish') {
             return;
@@ -150,6 +151,10 @@ export default function getList(deviceData) {
             //     total: 0,
             // },
         ];
+        fileListSat.value = {
+            total: 0,
+            size: 0
+        }
         if (!deviceData.device_id) {
             return;
         }
@@ -423,6 +428,7 @@ export default function getList(deviceData) {
                     total,
                     size
                 }
+                fileListSat.value = _sat;
                 window.localStorage.setItem("fileListArr", JSON.stringify(fileListArr.value));
                 window.localStorage.setItem("fileListSat", JSON.stringify(_sat));
                 // console.log(fileListArr.value, 'fileListArr');
@@ -443,6 +449,7 @@ export default function getList(deviceData) {
         header,
         CurrentToken,
         initToken,
-        spaceTotal
+        spaceTotal,
+        fileListSat
     }
 }

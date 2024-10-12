@@ -1,7 +1,29 @@
 <template>
-  <div class="fileList_content max_fileList_content">
-    <!-- file_Top -->
-    <!-- <nut-sticky class="file_Top" top="0"> -->
+  <div class="fileList_content max_fileList_content tg_fileList_content">
+    <!-- top_back_line -->
+    <div class="top_back_line">
+      <div class="inside_blue">
+        <div class="back_icons" @click="router.go(-1)">
+          <img src="@/assets/tg/shop_back.svg" />
+          返回
+        </div>
+        <div class="balance_options"> MAXIO</div>
+      </div>
+    </div>
+    <div class="drive-page-content">
+      <h2>MAXIO:{{ deviceData.dedicatedip }} </h2>
+      <div class="drive-line">
+        <div class="drive-line1">{{ getfilesize(fileListSat.size, 'B') }}</div>
+        <div class="drive-line2">{{ usePercent }}%的{{ getfilesize(spaceTotal, 'B') }}</div>
+        <nut-progress
+          :percentage="usePercent"
+          text-inside
+          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+          status="active"
+          style="font-weight: bold"
+        />
+      </div>
+    </div>
     <!-- search_bar -->
     <div class="search_bar">
       <IconNewFolder
@@ -10,6 +32,7 @@
           renameShow = true;
         "
         class="new_folder"
+        color="#4bd5fd"
       ></IconNewFolder>
       <img src="@/assets/maxio/search.svg" class="search_img" @click="showSearch" v-if="!isShowSearch" />
       <nut-searchbar
@@ -20,7 +43,7 @@
         class="top_search_bar"
       >
         <template #rightin>
-          <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" />
+          <Search2 @click="doSearch('', prefix, true)" color="#4bd5fd" />
           <img src="@/assets/maxio/searchBack.svg" class="search_img_icon" @click="isShowSearch = false" />
         </template>
       </nut-searchbar>
@@ -29,31 +52,16 @@
           style="margin: 0 10px; width: 24px; height: 24px; vertical-align: middle"
           v-if="cardMode"
           @click="cardMode = !cardMode"
+          color="#4bd5fd"
         ></IconListType>
         <IconCardType
           style="margin: 0 10px; width: 24px; height: 24px; vertical-align: middle"
           v-else-if="!cardMode"
           @click="cardMode = !cardMode"
+          color="#4bd5fd"
         ></IconCardType>
       </div>
     </div>
-
-    <!-- Edit -->
-    <!-- <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
-      <div style="display: flex">
-        <nut-checkbox v-model="isCheckMode" label="Multiple">Edit</nut-checkbox>
-        <IconListType
-          style="width: 2rem; height: 2rem; vertical-align: middle"
-          v-if="cardMode && category != 1"
-          @click="cardMode = !cardMode"
-        ></IconListType>
-        <IconCardType
-          style="margin: 0 0.2rem; width: 1.5rem; height: 2rem; vertical-align: middle"
-          v-else-if="!cardMode && category != 1"
-          @click="cardMode = !cardMode"
-        ></IconCardType>
-      </div>
-    </div> -->
     <!-- </nut-sticky> -->
     <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
     <!-- v-else-if="category != 1" -->
@@ -68,10 +76,9 @@
           v-if="prefix.length > 0"
         >
         </div>
-        <!-- {{ prefix.at(-1) || '' }} -->
         <span class="top_title"> {{ prefix.join('/') }} </span>
       </div>
-      <div class="list_card_top_line" v-if="prefix.length < 1">
+      <!-- <div class="list_card_top_line" v-if="prefix.length < 1">
         <div class="list_card_top">
           <div class="list_card_top_item" @click="changeTab('all')" :class="[category === 0 || category === '0' ? 'active' : '']">
             All
@@ -85,45 +92,13 @@
           >
             {{ item.name }}
           </div>
-
-          <!-- <div class="file_items_groups">
-            <div class="file_items" @click="changeTab('all')">
-              <div class="svg_box">
-                <IconOther></IconOther>
-              </div>
-              <div class="file_detail">
-                <div class="file_name">All</div>
-                <div class="file_size">
-                  <span class="file_space">{{ getfilesize(size) }}</span>
-                  <span class="file_number"> ({{ total }} Files)</span>
-                </div>
-              </div>
-            </div>
-            <div class="file_items" v-for="(item, index) in fileListArr" :key="index" @click="changeTab(item.type)">
-
-              <div class="svg_box">
-                <IconImage v-if="item.type === 'Photos'"></IconImage>
-                <IconDocument v-if="item.type === 'Documents'"></IconDocument>
-                <IconVideo v-if="item.type === 'Videos'"></IconVideo>
-                <IconAudio2 v-if="item.type === 'Audio'"></IconAudio2>
-                <IconOther v-if="item.type === 'Other'"></IconOther>
-              </div>
-              <div class="file_detail">
-                <div class="file_name">{{ item.name }}</div>
-                <div class="file_size">
-                  <span class="file_space">{{ getfilesize(item.total) }}</span>
-                  <span class="file_number"> ({{ item.number }} Files)</span>
-                </div>
-              </div>
-            </div>
-          </div> -->
         </div>
-      </div>
+      </div> -->
 
       <nut-infinite-loading
         v-if="tableData.length"
         load-more-txt="No more content"
-        :class="['file_list', cardMode ? 'card_list' : '']"
+        :class="['file_list', cardMode ? 'card_list' : 'list_list']"
         v-model="hasMore"
         :has-more="hasMore"
         @load-more="loadMore"
@@ -145,7 +120,6 @@
                   src="@/assets/cloud_pin.png"
                   alt=""
                 />
-                <!-- <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" /> -->
                 <img v-if="item.isDir" src="@/assets/svg/home/folder1.svg" alt="" />
                 <nut-image
                   v-else-if="item.category != 0 && item.imgUrl"
@@ -176,21 +150,20 @@
                     <Loading width="16" height="16"></Loading>
                   </template>
                 </nut-image>
-                <!-- <IconImage1 v-else-if="item.category == 1"></IconImage1> -->
                 <img v-else :src="getFileType(item.name)" alt="" />
                 <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
               </template>
             </div>
             <div class="name_box">
               <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
-              <p v-if="!cardMode">{{ item.date || '' }}</p>
+              <p>{{ item.date || '' }}</p>
             </div>
             <div @click.stop v-if="item.isPin && !cardMode" class="ipfs_info">
               <IconIPFS v-if="item.isPin" color="#88f848"></IconIPFS>
             </div>
             <div :class="['mask', 'right_radio', isCheckMode ? 'isChecking' : '']" @click.stop>
               <nut-checkbox v-if="isCheckMode" :label="item.name"></nut-checkbox>
-              <MoreX v-else-if="!cardMode && !isCheckMode" @click="clickFIleItem(item)" width="40px" height="25px" />
+              <MoreX v-else-if="!cardMode && !isCheckMode" @click="clickFIleItem(item)" width="40px" height="25px" color="#4bd5fd" />
             </div>
           </div>
         </nut-checkbox-group>
@@ -199,18 +172,6 @@
         <div style="margin-top: 10px"> </div>
       </nut-empty>
     </template>
-    <!-- <ImgList
-      ref="imgListRef"
-      :orderId="route.query.id"
-      :mintType="mintType"
-      v-model:imgArray="imgArray"
-      v-model:isCheckMode="isCheckMode"
-      v-model:checkedData="imgCheckedData"
-      @cancelSelect="cancelSelect"
-      @selectAll="selectAll"
-      @rowClick="rowClick"
-      v-else
-    ></ImgList> -->
 
     <!-- checkbox action -->
     <Teleport to="body">
@@ -222,7 +183,6 @@
         safe-area-inset-bottom
         placeholder
       >
-        <!-- <template v-if="isAvailableOrder"> -->
         <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
           <template #icon>
             <IconShare :color="selectArr.length == 1 ? '#fff' : '#cccccc6e'"></IconShare>
@@ -300,73 +260,36 @@
       v-if="deviceData && deviceData.device_id"
       :prefix="prefix"
     ></uploader>
-    <Teleport to="body">
-      <nut-dialog
-        v-model:visible="showSocketDialog"
-        title="File Update"
-        :close-on-click-overlay="false"
-        :show-cancel="false"
-        :show-confirm="false"
-        custom-class="CustomName BucketName"
-        overlayClass="CustomOverlay"
-      >
-        <template #header>
-          <span class="icon" style="margin-right: 5px">
-            <IconBucket color="#000"></IconBucket>
-          </span>
-          File update Tips
-        </template>
-
-        <p class="bucket_tip" style="text-align: left; word-break: break-word"
-          >We found that you updated the files in the current directory elsewhere. Do you want to update them simultaneously?.
-        </p>
-        <template #footer>
-          <nut-button type="primary" @click="closeSocketDialog">Confirm</nut-button>
-        </template>
-      </nut-dialog>
-    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-  //   import * as Prox from '@/pb/net_pb.js';
-  //   import * as grpcService from '@/pb/net_grpc_web_pb.js';
-
   import * as Prox from '@/pb/net_pb.js';
   import * as grpcService from '@/pb/net_grpc_web_pb.js';
 
-  import ActionComponent from './actionComponent.vue';
-  //   import ImgList from './imgList.vue';
-  import useDelete from './useDelete.js';
-  import useShare from './useShare.js';
-  import uploader from './uploader.vue';
+  import ActionComponent from '@/views/maxio/maxFileOpt/actionComponent.vue';
+  import useDelete from '@/views/maxio/maxFileOpt/useDelete.js';
+  import useShare from '@/views/maxio/maxFileOpt/useShare.js';
+  import uploader from '@/views/maxio/maxFileOpt/uploader.vue';
 
   import IconListType from '~icons/home/listType.svg';
   import IconCardType from '~icons/home/cardType.svg';
-  import IconBucket from '~icons/home/bucket.svg';
   import IconPlay from '~icons/home/play.svg';
-  import IconNewFolder from '~icons/home/new_folder1.svg';
+  import IconNewFolder from '~icons/home/new_folder2.svg';
   import IconDelete from '~icons/home/delete.svg';
   import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
   import ErrorPage from '@/views/errorPage/index.vue';
-  import IconNft from '~icons/home/nft.svg';
   import IconShare from '~icons/home/share.svg';
   import IconRename from '~icons/home/rename.svg';
   import IconMove from '~icons/home/move.svg';
   import IconDownload from '~icons/home/download.svg';
-  import IconAudio2 from '~icons/home/maudio.svg';
-  import IconImage from '~icons/home/mimage.svg';
-  import IconDocument from '~icons/home/mdoc.svg';
-  import IconVideo from '~icons/home/mvideo.svg';
-  import IconOther from '~icons/home/mother.svg';
-  import { reactive, toRefs, watch, onMounted, onBeforeUnmount } from 'vue';
+  import { reactive, toRefs, watch, onMounted } from 'vue';
   import { useRoute } from 'vue-router';
   const router = useRouter();
   import { Search2, TriangleUp, Loading, MoreX, Tips } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
   import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import { useUserStore } from '@/store/modules/user';
-  import IconImage1 from '~icons/home/mimage.svg';
 
   const userStore = useUserStore();
   const MaxTokenMap = computed(() => userStore.getMaxTokenMap);
@@ -379,8 +302,14 @@
   import { poolUrl, maxUrl } from '@/setting.js';
   import { get_order_sign, get_vood_token } from '@/api/index';
   import getFileType from '@/utils/getFileType.ts';
-  import maxFileInfo from './maxFileInfo.js';
-
+  import maxFileInfo from '@/views/maxio/maxFileOpt/maxFileInfo.js';
+  import getList from '@/views/maxio/maxFileOpt/getList.ts';
+  const { spaceTotal, fileListSat, getMyList, initToken } = getList();
+  const usePercent = computed(() => {
+    if (spaceTotal.value) {
+      return Number(Number(fileListSat.value.size) / Number(spaceTotal.value)).toFixed(2) * 100;
+    }
+  });
   let server = null;
   const route = useRoute();
   const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
@@ -1313,35 +1242,11 @@
     { deep: true },
   );
 
-  //   watch(
-  //     category,
-  //     async (val, old) => {
-  //       console.log('categorycategorycategory', val, val, old);
-  //       cancelSelect();
-  //       //   if (old == 1) {
-  //       //     imgListRef?.value?.resetChecked();
-  //       //     imgCheckedData.value = [];
-  //       //   }
-  //       //   if (val == 1) {
-  //       //   } else {
-  //       //     doSearch('', prefix.value, true);
-  //       //   }
-  //       doSearch('', prefix.value, true);
-  //     },
-  //     { deep: true },
-  //   );
   onMounted(async () => {
-    // console.log('maxfileAllList---get_vood_token');
-    initToken();
+    initSkToken();
   });
-  const initToken = async () => {
+  const initSkToken = async () => {
     let token = '';
-    // console.log(
-    //   MaxTokenMap.value,
-    //   deviceData.value.device_id,
-    //   MaxTokenMap.value[deviceData.value.device_id],
-    //   'maxfilelist----initTokeninitToken--MaxTokenMap.value',
-    // );
     if (MaxTokenMap.value && MaxTokenMap.value[deviceData.value.device_id]) {
       token = MaxTokenMap.value[deviceData.value.device_id];
       token = token.split(' ')[1];
@@ -1350,7 +1255,7 @@
       doSearch('', prefix.value, true);
       await initSk(deviceData.value, deviceToken.value);
     } else {
-      console.log('no---token----maxfilelist--initTokeninitToken---initToken');
+      //   console.log('no---token----maxfilelist--initSkTokeninitSkToken---initSkToken');
       token = await get_vood_token({ vood_id: deviceData.value.device_id });
       if (token) {
         userStore.setMaxTokenMap({
@@ -1363,6 +1268,8 @@
       doSearch('', prefix.value, true);
       await initSk(deviceData.value, deviceToken.value);
     }
+    await initToken(deviceData.value);
+    await getMyList(deviceData.value);
   };
 
   const initPage = async () => {
@@ -1380,7 +1287,7 @@
 </script>
 
 <style lang="scss">
-  @import url('./style/list.scss');
+  @import url('@/views/maxio/maxFileOpt/style/list.scss');
 </style>
 <style scoped lang="scss">
   .bottom_action {
@@ -1395,19 +1302,6 @@
     .nut-tabbar-item_icon-box_nav-word {
       color: #fff;
     }
-    // &.canAction {
-    //   .nut-tabbar {
-    //     background: #1a459d !important;
-    //   }
-    //   .nut-tabbar-item_icon-box_nav-word,
-    //   .nut-tabbar-item,
-    //   .nut-tabbar-item__icon--unactive {
-    //     color: #fff !important;
-    //   }
-    //   .nut-tabbar-item_icon-box_nav-word {
-    //     color: #fff;
-    //   }
-    // }
     .is-disable {
       color: #cccccc6e;
     }
@@ -1415,6 +1309,103 @@
       color: #eebb15;
       .nut-tabbar-item_icon-box_nav-word {
         color: #eebb15;
+      }
+    }
+  }
+  .top_back_line {
+    position: relative;
+    height: 120px;
+
+    .inside_blue {
+      z-index: 999;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100px;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      color: #0ca2f8;
+      .back_icons {
+        margin-left: 20px;
+        font-weight: bold;
+      }
+      .balance_options {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: calc(100% - 200px);
+        color: #fff;
+        font-weight: bolder;
+        font-size: 34px;
+      }
+
+      .title {
+        color: #fff;
+        font-size: 1.5rem;
+        text-align: center;
+        margin-top: 40px;
+        width: 100%;
+      }
+
+      .total_balance {
+        color: #b9d4ff;
+        font-size: 1.5rem;
+        text-align: center;
+        color: #fbcf87;
+      }
+
+      .total_balance_value {
+        font-weight: 250;
+        color: #fff;
+        font-size: 1.75rem;
+        text-align: center;
+        margin-top: 0px;
+      }
+    }
+  }
+  .tg_fileList_content {
+    width: 90% !important;
+    margin: 0 auto;
+  }
+  .drive-page-content {
+    position: relative;
+    margin: 15px auto;
+    width: 90%;
+    h2 {
+      margin: 10px 0 20px;
+      color: #fff;
+      font-size: 28px;
+    }
+    .drive-line {
+      position: relative;
+      width: 100%;
+      height: 60px;
+      color: #fff;
+      display: flex;
+      align-items: end;
+      font-size: 24px;
+      .drive-line1 {
+        position: absolute;
+        top: -2px;
+        left: 0px;
+        font-weight: 700;
+      }
+      .drive-line2 {
+        position: absolute;
+        top: -2px;
+        right: 0;
+        font-weight: 700;
+      }
+      .drive-line3 {
+        position: absolute;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        height: 10px;
+        border-radius: 10px;
+        background-color: #36363b;
       }
     }
   }

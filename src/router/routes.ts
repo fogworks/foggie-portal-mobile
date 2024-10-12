@@ -42,6 +42,11 @@ export const routes = [
                 component: () => import('@/views/tg/maxHome/index.vue'),
             },
             {
+                path: 'maxioFile',
+                name: 'maxioFile',
+                component: () => import('@/views/tg/maxHome/maxFile.vue'),
+            },
+            {
                 path: 'tgShop',
                 name: 'tgShop',
                 // component: () => import('@/views/home/index_copy.vue'),

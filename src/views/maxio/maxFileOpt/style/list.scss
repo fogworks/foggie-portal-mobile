@@ -505,105 +505,15 @@
       --nut-searchbar-input-background: #f5f8fd;
     }
   }
-  .card_list {
-    .nut-infinite__container {
-      width: 100%;
-    }
-    .nut-checkbox-group {
-      display: grid;
-      grid-gap: 5px;
-      grid-template-columns: repeat(3, 1fr);
-      justify-items: center;
-      width: 100%;
-    }
-    .list_item {
-      position: relative;
-      box-sizing: border-box;
-      flex-direction: column;
-      padding: 0.5rem;
-      width: 140px;
-      border: none;
-      border-radius: 10px;
-      .mask {
-        display: none;
-        position: absolute;
-        top: 0;
-        z-index: 1;
-        width: 100%;
-        height: 100%;
 
-        .itemChecked {
-          display: block;
-        }
-        &.isChecking {
-          display: block;
-          height: 100%;
-          cursor: pointer;
-          .nut-checkbox {
-            width: 100%;
-            height: 100%;
-            display: block;
-          }
-          .nut-icon {
-            padding: 10px;
-          }
-        }
-
-        .nut-checkbox {
-          position: absolute;
-          left: 0;
-        }
-        .nut-checkbox__input {
-          position: absolute;
-          right: 5px;
-          top: 10px;
-        }
-        .nut-checkbox__label {
-          display: none;
-        }
-      }
-      .left_icon_box {
-        width: 150px;
-        height: 150px;
-        img,
-        svg {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .play_icon {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 2rem;
-          height: 2rem;
-        }
-      }
-      .name_box {
-        width: 100%;
-        margin: 0;
-        text-align: center;
-        p {
-          font-size: 0.8rem !important;
-          color: #fff !important;
-        }
-      }
-      .right_radio {
-        // position: absolute;
-        // right: 10px;
-        // top: 10px;
-        // width: unset;
-        // height: unset;
-      }
-    }
-  }
   .list_item {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     padding: 20px 20px 20px 40px;
-    border-top: 1px solid #efefef;
+    // border-top: 1px solid #efefef;
+    background: #1c1c1e;
+    margin-bottom: 20px;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -662,26 +572,7 @@
         height: 1.2rem;
       }
     }
-    .name_box {
-      width: calc(100% - 500px);
-      flex: 1;
-      margin-left: 30px;
-      margin-right: 30px;
-      p:first-child {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        text-align: left;
-        font-size: 26px;
-      }
-      p:last-child {
-        margin-top: 5px;
-        color: #a7a7a7;
-        font-size: 20px;
-        text-align: left;
-        color: #fff !important;
-      }
-    }
+
     .ipfs_info {
       display: flex;
       align-items: center;
@@ -725,6 +616,128 @@
       width: 50px;
       height: 50px;
       color: #ccc;
+    }
+  }
+  .list_list {
+    .name_box {
+      width: calc(100% - 500px);
+      flex: 1;
+      margin-left: 30px;
+      margin-right: 30px;
+      p:first-child {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: left;
+        font-size: 26px;
+      }
+      p:last-child {
+        color: #a7a7a7 !important;
+        font-size: 18px;
+        text-align: left;
+      }
+    }
+  }
+  .card_list {
+    .nut-infinite__container {
+      width: 100%;
+    }
+    .nut-checkbox-group {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .list_item {
+      width: calc(50% - 20px);
+      margin-right: 20px;
+      position: relative;
+      box-sizing: border-box;
+      flex-direction: column;
+      padding: 0rem;
+      border: none;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .mask {
+        display: none;
+        position: absolute;
+        top: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+
+        .itemChecked {
+          display: block;
+        }
+        &.isChecking {
+          display: block;
+          height: 100%;
+          cursor: pointer;
+          .nut-checkbox {
+            width: 100%;
+            height: 100%;
+            display: block;
+          }
+          .nut-icon {
+            padding: 10px;
+          }
+        }
+
+        .nut-checkbox {
+          position: absolute;
+          left: 0;
+        }
+        .nut-checkbox__input {
+          position: absolute;
+          right: 5px;
+          top: 10px;
+        }
+        .nut-checkbox__label {
+          display: none;
+        }
+      }
+      .left_icon_box {
+        width: 100%;
+        height: 180px;
+        img,
+        svg {
+          width: 100%;
+          height: 100%;
+          //   object-fit: cover;
+        }
+        .play_icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+
+      .name_box {
+        width: 100%;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        p:first-child {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          text-align: center;
+          font-size: 26px;
+          margin-top: 10px;
+          width: 90%;
+        }
+        p:last-child {
+          color: #a7a7a7 !important;
+          font-size: 18px;
+          text-align: center;
+        }
+      }
     }
   }
 
@@ -905,10 +918,9 @@
         margin-left: 30px;
 
         p:last-child {
-          margin-top: 5px;
           color: #a7a7a7;
           font-size: 18px;
-          color: #fff !important;
+          color: #a7a7a7 !important;
         }
       }
       .right_div {
@@ -1045,7 +1057,6 @@
           p {
             text-align: right;
             margin: 0;
-            font-size: 30px;
             color: #fff !important;
           }
         }

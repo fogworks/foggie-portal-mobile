@@ -13,16 +13,23 @@
     <div class="drive-page-content">
       <h2>MAXIO:{{ currentTabItem.dedicatedip }} </h2>
       <div class="drive-line">
-        <div class="drive-line1">0积分</div>
-        <div class="drive-line2">{{ getfilesize(spaceTotal, 'B') }}</div>
-        <div class="drive-line3"></div>
+        <div class="drive-line1">{{ getfilesize(fileListSat.size, 'B') }}</div>
+        <div class="drive-line2">{{ usePercent }}%的{{ getfilesize(spaceTotal, 'B') }}</div>
+        <!-- <div class="drive-line3"></div> -->
+        <nut-progress
+          :percentage="usePercent"
+          text-inside
+          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
+          status="active"
+          style="font-weight: bold"
+        />
       </div>
       <div class="items">
-        <div class="item">
+        <div class="item" @click="changeTab('all')">
           <div class="item1">
             <img src="@/assets/tg/tg-drive1.png" />
           </div>
-          <div class="item2">0</div>
+          <div class="item2">{{ fileListSat.total }}</div>
           <div class="item3">全部</div>
         </div>
         <div class="item">
@@ -44,6 +51,13 @@
         </div>
       </div>
     </div>
+    <uploader
+      :isMobileOrder="true"
+      :orderInfo="currentTabItem"
+      @getFileList="getFileList"
+      @uploadComplete="uploadComplete"
+      :prefix="prefix"
+    ></uploader>
   </div>
 </template>
 
@@ -52,6 +66,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { useI18n } from 'vue-i18n';
   import { search_max } from '@/api';
+  import { useRouter, useRoute } from 'vue-router';
   const { locale, t } = useI18n();
   const userStore = useUserStore();
   const router = useRouter();
@@ -62,6 +77,7 @@
   const list = ref(['@/assets/tg/tg1.gif', '@/assets/tg/tg2.png']);
   import { getfilesize } from '@/utils/util';
   //maxindex code
+  import uploader from '@/views/maxio/maxFileOpt/uploader.vue';
   const cloudQuery = ref({});
   import getList from '@/views/maxio/maxFileOpt/getList.ts';
   const CurrentLeftTab = computed(() => userStore.getCurrentLeftTab);
@@ -79,8 +95,13 @@
     initToken,
     CurrentToken,
     spaceTotal,
+    fileListSat,
   } = getList();
-
+  const usePercent = computed(() => {
+    if (spaceTotal.value) {
+      return Number(Number(fileListSat.value.size) / Number(spaceTotal.value)).toFixed(2) * 100;
+    }
+  });
   onMounted(async () => {
     if (route?.query?.id) {
       currentId.value = route.query?.id;
@@ -89,10 +110,12 @@
         cloudQuery.value = {
           id: currentTabItem.value.id,
         };
+        window.localStorage.setItem('homeChooseBucket', JSON.stringify(currentTabItem.value));
         await initToken(CurrentLeftTab.value);
         await getMyList(CurrentLeftTab.value);
       } else {
         currentTabItem.value = JSON.parse(window.localStorage.getItem('currentMaxIo'));
+        window.localStorage.setItem('homeChooseBucket', JSON.stringify(currentTabItem.value));
         cloudQuery.value = {
           id: currentTabItem.value.id,
         };
@@ -101,55 +124,25 @@
       }
     }
   });
-  //   watch(
-  //     CurrentLeftTab,
-  //     async (val) => {
-  //       if (val) {
-  //         console.log('watchwatch', val);
-  //         if (val.device_id) {
-  //           currentTabItem.value = val;
-  //           await initToken(val);
-  //           await getMyList(val);
-  //           cloudQuery.value = {
-  //             id: currentTabItem.value.id,
-  //           };
-  //         }
-  //       }
-  //     },
-  //     {
-  //       deep: true,
-  //       immediate: true,
-  //     },
-  //   );
-  const changeTab = (type, name) => {
-    if (type === 'index') {
-      router.push({ path: '/home' });
-    } else if (type === 'pool') {
-      router.push({ path: '/maxPool' });
-    } else if (type === 'iot') {
-      router.push({ path: '/maxIOT' });
-    } else if (type === 'file') {
-      //   router.push({ path: '/maxFile${query ? `?type=${query}` : ''}`' });
-      let category = '';
-      if (name === 'Photos') {
-        category = 1;
-      } else if (name === 'Documents') {
-        category = 4;
-      } else if (name === 'Videos') {
-        category = 2;
-      } else if (name === 'Audio') {
-        category = 3;
-      } else {
-        category = 0;
-      }
-      router.push(`/maxFile?category=${category}`);
-    } else if (type === 'reward') {
-      router.push({ path: '/maxReward' });
-    } else if (type === 'set') {
-      router.push({ path: '/maxSet' });
-    } else if (type === 'home') {
-      router.push({ path: '/maxio' });
+  const changeTab = (name) => {
+    let category = '';
+    if (name === 'Photos') {
+      category = 1;
+    } else if (name === 'Documents') {
+      category = 4;
+    } else if (name === 'Videos') {
+      category = 2;
+    } else if (name === 'Audio') {
+      category = 3;
+    } else {
+      category = 0;
     }
+    router.push(`/maxioFile?category=${category}`);
+  };
+  const getFileList = () => {};
+  const uploadComplete = async () => {
+    console.log('uploadComplete');
+    getMyList(currentTabItem.value);
   };
 </script>
 
@@ -248,15 +241,18 @@
         width: 100%;
         height: 100px;
         color: #fff;
+        display: flex;
+        align-items: center;
+        font-size: 24px;
         .drive-line1 {
           position: absolute;
-          top: 0px;
+          top: -2px;
           left: 0px;
           font-weight: 700;
         }
         .drive-line2 {
           position: absolute;
-          top: 0px;
+          top: -2px;
           right: 0;
           font-weight: 700;
         }
