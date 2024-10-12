@@ -146,6 +146,39 @@
   import tg7 from '~icons/home/tg7.svg';
   const list = ref(['@/assets/tg/tg1.gif', '@/assets/tg/tg2.png']);
 
+  const tg = ref(null);
+  const telegramUserId = ref(null);
+
+  const initializeTelegram = () => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      tg.value = window.Telegram.WebApp;
+      console.log('Telegram WebApp is available', tg.value);
+      if (tg.value.initData) {
+        setTgId(tg.value.initData);
+      } else {
+        console.error('Telegram User ID not available');
+      }
+    } else {
+      console.error('Telegram WebApp is not available');
+    }
+  };
+
+  const setTgId = (item) => {
+    userStore.setTgToken(`AuthToken initData.${item}`);
+    alert('Telegram initData: ' + item);
+    alert(item.substr(5));
+    alert(decodeURIComponent(item.substr(5)));
+    if (item.indexOf('user=') == 0) {
+      let s1 = item.substr(5);
+      let s2 = decodeURIComponent(s1);
+      let s3 = JSON.parse(s2.split('&')[0]);
+      if (s3.id) {
+        telegramUserId.value = s3.id;
+        userStore.setTgInitData(s3);
+        alert('Telegram User ID: ' + s3.id);
+      }
+    }
+  };
   const gotoShop = () => {
     router.push('/tgShop');
   };
@@ -241,6 +274,7 @@
   onMounted(() => {
     // initData();
     // initMaxData();
+    initializeTelegram();
   });
   watch(currentLan, async (newVal) => {
     console.log('currentLan', newVal);

@@ -23,7 +23,9 @@ interface StoreUser {
     maxBind: boolean,
     maxWallet: string,
     address: string;
-    curLanguage: string
+    curLanguage: string;
+    tgInitData: any;
+    tgToken: any;
 }
 
 export const useUserStore = defineStore({
@@ -48,6 +50,8 @@ export const useUserStore = defineStore({
         maxBind: false,
         maxWallet: '',
         curLanguage: '',
+        tgInitData: {},
+        tgToken: '',
     }),
     getters: {
         getCurLanguage(): any {
@@ -93,6 +97,12 @@ export const useUserStore = defineStore({
         getAddress(): any {
             return this.address;
         },
+        getTgInitData(): any {
+            return this.tgInitData;
+        },
+        getTgToken(): any {
+            return this.tgToken;
+        },
     },
     actions: {
         setCurLanguage(string) {
@@ -127,6 +137,12 @@ export const useUserStore = defineStore({
         },
         setMaxWallet(wallet: string) {
             this.maxWallet = wallet;
+        },
+        setTgInitData(data: any) {
+            this.tgInitData = data;
+        },
+        setTgToken(token: any) {
+            this.tgToken = token;
         },
         logout() {
             this.token = '';

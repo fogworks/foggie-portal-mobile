@@ -67,6 +67,12 @@
   import { useUserStore } from '@/store/modules/user';
   import { useI18n } from 'vue-i18n';
   import { getDmOrder, search_max } from '@/api';
+  //   import * as Prox from '@/pb/prox_pb.js';
+  //   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+
+  import * as Prox from '@/pb/service_pb.js';
+  import * as grpcService from '@/pb/service_grpc_web_pb.js';
+
   const list = ref(['@/assets/tg/tg1.gif', '@/assets/tg/tg2.png']);
   const { locale, t } = useI18n();
   const userStore = useUserStore();
@@ -92,6 +98,10 @@
       router.push({ path: '/maxio', query: { id: item.id } });
     }
   };
+
+  const tgToken = computed(() => userStore.getTgToken);
+  const tgId = computed(() => userStore.getTgInitData?.id);
+
   const gotoShop = () => {
     router.push('/tgShop');
   };
@@ -118,7 +128,31 @@
     let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
     maxTableData.value = maxList;
   };
+
+  const initTgData = () => {
+    let server = new grpcService.default.ServiceClient(`https://drive.u2i.net`, null, null);
+    let request = new Prox.default.EffectRequest();
+    alert(`tgToken:${tgToken.value}===tgId:${tgId.value}`);
+    // request.setId(tgId.value);
+    request.setId(7527654236);
+    request.setForcerefresh(1);
+    // userStore.setTgToken(`AuthToken initData.${s3.id}`);
+    // let metadata = { Authorization: tgToken.value };
+    let metadata = { Authorization: 'AuthToken initData.7527654236' };
+    console.log('request', request);
+    server.getUserEffect(request, metadata, async (err, res) => {
+      if (err) {
+        console.log('err-----1', err);
+        alert('err-----'+ err.message.toString());
+      } else if (res) {
+        console.log('res-----1', res);
+        alert('res----'+ res.toString());
+      }
+    });
+  };
+
   onMounted(() => {
+    // initTgData()
     if (route?.query?.page) {
       currentPage.value = route.query?.page;
     }
@@ -132,6 +166,12 @@
     console.log('address', val);
     if (val.length > 0) {
       initData();
+    }
+  });
+
+  watch(tgToken, (val) => {
+    if (val) {
+      initTgData();
     }
   });
 </script>
