@@ -48,27 +48,6 @@
         <div class="item-name">{{ $t('home.buy') }}</div>
         <div class="item-val">Buy</div>
       </div>
-      <!-- <div class="item">
-        <div class="item-icon">
-          <tg4 />
-        </div>
-        <div class="item-name">转换器</div>
-        <div class="item-val">前往</div>
-      </div>
-      <div class="item">
-        <div class="item-icon">
-          <tg5 />
-        </div>
-        <div class="item-name">挖矿</div>
-        <div class="item-val">参与</div>
-      </div>
-      <div class="item">
-        <div class="item-icon">
-          <tg6 />
-        </div>
-        <div class="item-name">转盘</div>
-        <div class="item-val">参与</div>
-      </div> -->
       <div class="item" @click="gotoLan">
         <div class="item-icon">
           <tg7 />
@@ -83,6 +62,45 @@
         <div class="item-name">退出登录</div>
       </div>
     </div>
+    <nut-dialog title="Link Wallet" v-model:visible="bindWalletDialogShow" class="add_account_dialog" :close-on-click-overlay="false">
+      <div class="okx_wallet_bindLine" @click="doBindWallet">
+        <img src="@/assets/tg/okx.svg" style="width: 30px; height: 30px" />
+        <span class="okx_link_text"> OKX Wallet</span>
+        <span class="okx_link_btn">链接</span></div
+      >
+
+      <template #footer>
+        <div style="display: flex; justify-content: space-between">
+          <nut-button
+            @click="
+              choosedWallet = '';
+              bindWalletDialogShow = false;
+            "
+            >Cancel</nut-button
+          >
+        </div>
+      </template>
+    </nut-dialog>
+
+    <nut-dialog title="Link Wallet" v-model:visible="showAccountList" class="add_account_dialog">
+      <nut-radio-group v-model="choosedWallet" class="account_list">
+        <nut-radio v-for="item in accountsList" :disabled="hasLinked(item) || item.bind || item.register" :label="item">{{
+          item
+        }}</nut-radio>
+      </nut-radio-group>
+      <template #footer>
+        <div style="display: flex; justify-content: space-between">
+          <nut-button
+            @click="
+              choosedWallet = '';
+              showAccountList = false;
+            "
+            >Cancel</nut-button
+          >
+          <nut-button type="primary" :disabled="!choosedWallet" @click="confirmLink" class="linkWallet_btn">Link</nut-button>
+        </div>
+      </template>
+    </nut-dialog>
   </div>
 </template>
 
@@ -91,15 +109,30 @@
   import { useRouter } from 'vue-router';
   const router = useRouter();
   import { useUserStore } from '@/store/modules/user';
-  import { showDialog } from '@nutui/nutui';
+  import { showDialog, showToast } from '@nutui/nutui';
   const userStore = useUserStore();
+  const useStore = useUserStore();
   import { useI18n } from 'vue-i18n';
   const { locale, t } = useI18n();
   const currentLan = computed(() => userStore.getCurLanguage);
-  const address = computed(() => userStore.getAddress);
-  //   import { getDmOrder, search_max } from '@/api';
+  const bindWalletDialogShow = ref(false);
+  const showAccountList = ref(false);
+  const choosedWallet = ref('');
+  const metaOpen = inject('metaOpen');
+  const accountsList = ref([]);
+  const walletInfo = computed(() => useStore.getUserInfo?.wallet_info);
+  const address = computed(
+    () =>
+      userStore.getAddress ||
+      (userStore.getUserInfo &&
+        userStore.getUserInfo.wallet_info &&
+        userStore.getUserInfo.wallet_info[0] &&
+        userStore.getUserInfo.wallet_info[0].address),
+  );
+  import { getDmOrder, search_max, wallet_bind_uuid } from '@/api';
   //   const orderTableData = ref([]);
   //   const maxTableData = ref([]);
+  console.log(address.value, 'address.value');
   const addressStr = ref('');
   addressStr.value = address.value
     ? address.value.substring(0, 4) + '...' + address.value.substring(address.value.length - 3, address.value.length)
@@ -133,10 +166,7 @@
       okText: 'Yes',
       onCancel: () => {},
       onOk: () => {
-        window.localStorage.removeItem('homeChooseBucket');
         userStore.logout();
-        userStore.setCloudCodeIsBind(false);
-        userStore.setcurStepIndex(1);
         router.push('/login');
       },
     });
@@ -163,6 +193,51 @@
     let maxList = data.filter((el) => el.device_type === 'maxio' && el.deploy_svc_gateway_state === 'finish' && el.is_active);
     maxTableData.value = maxList;
   };
+  const doBindWallet = async () => {
+    showAccountList.value = true;
+    if (window.ethereum) {
+      // await connectWallet();
+      await window.ethereum.request({
+        method: 'eth_requestAccounts',
+        params: [],
+      });
+      accountsList.value = await window.ethereum.request({
+        method: 'eth_accounts',
+        params: [],
+      });
+      showAccountList.value = true;
+      //   console.log(accountsList.value, 'accountsList');
+    } else {
+      metaOpen();
+    }
+  };
+  const hasLinked = (address) => {
+    return walletInfo.value.find((el) => el.address === address);
+  };
+  const confirmLink = () => {
+    showToast.loading('Loading', {
+      cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+      id: 'bind_wallet',
+    });
+    wallet_bind_uuid({ address: choosedWallet.value, wallet_type: 'metamask', uuid: userInfo.value.uuid })
+      .then(async (res) => {
+        if (res.code == 200) {
+          showToast.success('Linkage Success');
+          await initFoggieDate();
+          choosedWallet.value = '';
+          showAccountList.value = false;
+        }
+      })
+      .catch(() => {
+        choosedWallet.value = '';
+      })
+      .finally(() => {
+        showToast.hide('bind_wallet');
+      });
+  };
   onMounted(() => {
     // initData();
     // initMaxData();
@@ -171,10 +246,12 @@
     console.log('currentLan', newVal);
   });
   watch(address, (val) => {
-    console.log('address', val);
-    if (val.length > 0) {
+    console.log('watch-address', val);
+    if (val && val.length > 0) {
       addressStr.value = val.substring(0, 4) + '...' + val.substring(val.length - 3, val.length);
       //   initData();
+    } else if (val === false) {
+      bindWalletDialogShow.value = true;
     }
   });
 </script>
@@ -242,7 +319,7 @@
           top: 30px;
           right: 30px;
           font-weight: bold;
-          width: 120px;
+          width: 140px;
           height: 50px;
           line-height: 50px;
           text-align: center;
@@ -260,5 +337,41 @@
         }
       }
     }
+  }
+  .okx_wallet_bindLine {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+    .okx_link_text {
+      display: inline-block;
+      width: calc(100% - 200px);
+      text-align: left;
+    }
+    .okx_link_btn {
+      padding: 10px 20px;
+      background: #36363b;
+      border-radius: 20px;
+    }
+  }
+  .account_list {
+    :deep {
+      .nut-radio__label {
+        text-align: left;
+        color: #0ae30a;
+        color: #2c99e3;
+        font-weight: bold;
+      }
+      .nut-radio__icon {
+        color: #0ae30a;
+        color: #2c99e3;
+      }
+    }
+  }
+  .nut-popup .nut-dialog:not(.CustomName) .nut-dialog__footer .nut-button {
+    margin-right: 30px;
+  }
+  .nut-popup .nut-dialog:not(.CustomName) .nut-dialog__footer .nut-button--primary {
+    background: #2c99e3;
   }
 </style>

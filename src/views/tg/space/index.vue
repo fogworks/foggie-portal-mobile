@@ -72,7 +72,14 @@
   const userStore = useUserStore();
   const router = useRouter();
   const route = useRoute();
-  const address = computed(() => userStore.getAddress);
+  const address = computed(
+    () =>
+      userStore.getAddress ||
+      (userStore.getUserInfo &&
+        userStore.getUserInfo.wallet_info &&
+        userStore.getUserInfo.wallet_info[0] &&
+        userStore.getUserInfo.wallet_info[0].address),
+  );
   const currentPage = ref('');
   const orderTableData = ref([]);
   const maxTableData = ref([]);

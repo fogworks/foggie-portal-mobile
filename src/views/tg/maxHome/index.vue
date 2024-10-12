@@ -57,7 +57,6 @@
   const router = useRouter();
   const route = useRoute();
   const currentId = ref('');
-  const address = computed(() => userStore.getAddress);
   import tg1 from '~icons/home/tg1.svg';
   import tg8 from '~icons/home/tg8.svg';
   const list = ref(['@/assets/tg/tg1.gif', '@/assets/tg/tg2.png']);

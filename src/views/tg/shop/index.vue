@@ -16,7 +16,10 @@
       <div class="circle_box">
         <div class="circle_box_top">
           <span>{{ shopForm.quantity }} GB</span>
-          <span class="add" @click="doAdd">+</span>
+          <div>
+            <span class="add" @click="doSub" style="margin-right: 20px">-</span>
+            <span class="add" @click="doAdd">+</span>
+          </div>
         </div>
         <div class="circle_icons">
           <img src="@/assets/tg/shop_circle.svg" />
@@ -247,9 +250,28 @@
   });
   const { buyDisabled, showTop, shopForm, loading } = toRefs(state);
 
-  const address = computed(() => userStore.getUserInfo?.address || userStore.getAddress);
-
+  //   const address = computed(() => userStore.getUserInfo?.address || userStore.getAddress);
+  const address = computed(
+    () =>
+      userStore.getAddress ||
+      (userStore.getUserInfo &&
+        userStore.getUserInfo.wallet_info &&
+        userStore.getUserInfo.wallet_info[0] &&
+        userStore.getUserInfo.wallet_info[0].address),
+  );
   async function submit() {
+    if (Number(shopForm.value.quantity) > maxSpace.value) {
+      showToast.fail(`Available Space(GB) Max: ${maxSpace.value} GB`);
+      return;
+    }
+    if (Number(shopForm.value.quantity) < 1) {
+      showToast.fail(`Available Space(GB) Min: 1 GB`);
+      return;
+    }
+    if (!address.value) {
+      showToast.fail(`您还没有绑定钱包，请先绑定钱包再进行质押操作`);
+      return;
+    }
     const d = {
       wallet: address.value,
       space: shopForm.value.quantity,
@@ -273,10 +295,23 @@
   import tokenABI from './GWTToken.json';
   const tokenAddress = '0x848e56Ad13B728a668Af89459851EfD8a89C9F58';
   const X_LAYER_CHAIN_ID = '0xc4';
-
+  const changeInput = () => {
+    console.log('changeInput');
+  };
   const doAdd = () => {
     console.log('shopForm.value.quantity', shopForm.value.quantity);
+    if (Number(shopForm.value.quantity) > maxSpace.value || Number(shopForm.value.quantity) === maxSpace.value) {
+      showToast.fail(`Available Space(GB) Max: ${maxSpace.value} GB`);
+      return;
+    }
     shopForm.value.quantity = Number(shopForm.value.quantity) + 1;
+  };
+  const doSub = () => {
+    if (Number(shopForm.value.quantity) < 1 || Number(shopForm.value.quantity) === 1) {
+      showToast.fail(`Available Space(GB) Min: 1 GB`);
+      return;
+    }
+    shopForm.value.quantity = Number(shopForm.value.quantity) - 1;
   };
   const transferFn = async () => {
     let tx = {

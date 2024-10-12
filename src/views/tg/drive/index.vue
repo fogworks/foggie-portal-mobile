@@ -147,7 +147,6 @@
   const route = useRoute();
   const currentId = ref('');
   const currentDrive = ref({});
-  const address = computed(() => userStore.getAddress);
 
   //CLOUD CODE
   import loadingImg from '@/components/loadingImg/index.vue';
