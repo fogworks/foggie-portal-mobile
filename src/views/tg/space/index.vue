@@ -136,7 +136,6 @@
     // request.setId(tgId.value);
     request.setId(7527654236);
     request.setForcerefresh(1);
-    // userStore.setTgToken(`AuthToken initData.${s3.id}`);
     // let metadata = { Authorization: tgToken.value };
     let metadata = { Authorization: 'AuthToken initData.7527654236' };
     console.log('request', request);
