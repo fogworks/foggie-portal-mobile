@@ -244,7 +244,7 @@
           <template #link>
             <span v-if="isMobileDevice" style="display: flex; align-items: center"
               >{{ desc }}
-              <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit>
+              <IconEdit style="margin-left: 5px; color: #38d6f0" @click="periodShow = true"></IconEdit>
             </span>
             <van-dropdown-menu direction="up" v-else>
               <van-dropdown-item v-model="periodValue" :options="options" />

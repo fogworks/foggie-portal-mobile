@@ -1,6 +1,6 @@
 export default {
   home: {
-    buy: 'Buy',
+    buy: 'Expansion',
   },
   language: {
     en: 'English',

@@ -76,6 +76,11 @@
 </script>
 
 <style lang="scss">
+  .nut-animate,
+  .nut-animate__container {
+    width: 100%;
+    height: 100%;
+  }
   .cloud_pin {
     position: absolute;
     left: 50% !important;
@@ -188,7 +193,7 @@
     z-index: 20000 !important;
     background: #000 !important;
     color: #fff !important;
-    border: 1px solid #373737 !important;
+    border: 1px solid #38d6f0 !important;
     .nut-dialog:not(.CustomName) {
       //   background-color: #2d2e41 !important;
       box-shadow: inset 0 0 0 0.5px hsl(0deg 0% 100% / 30%);

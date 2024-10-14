@@ -1,9 +1,20 @@
 <template>
+  <!-- <nut-animate type="slide-right" :show="show2"> -->
   <div class="home-page">
-    <div class="home-page-head">
+    <div class="home-page-head" data-animation="balance-animation-2">
+      <div class="loader-container" v-if="showAnimation">
+        <img src="@/assets/tg/loader.svg" alt="" />
+      </div>
       <img class="img1" src="@/assets/tg/tg-dmcx1.png" alt="" />
-      <img class="img2" src="@/assets/tg/tg-dmcx2.png" alt="" />
-      <nut-swiper :init-page="2" :auto-play="3000" pagination-visible pagination-color="#426543" pagination-unselected-color="#808080">
+      <img class="img2" src="@/assets/tg/tg-dmcx2.png" alt="" v-if="!showAnimation" />
+      <nut-swiper
+        :init-page="2"
+        :auto-play="3000"
+        pagination-visible
+        pagination-color="#426543"
+        pagination-unselected-color="#808080"
+        v-if="!showAnimation"
+      >
         <nut-swiper-item style="height: 50vw">
           <img src="@/assets/tg/tg1.gif" alt="" style="height: 100%; width: 100%" draggable="false" />
         </nut-swiper-item>
@@ -12,7 +23,7 @@
         </nut-swiper-item>
       </nut-swiper>
     </div>
-    <div class="home-page-content">
+    <div class="home-page-content" data-animation="balance-animation-1">
       <!-- <div class="item">
         <div class="item-icon"> 0 </div>
         <div class="item-name"></div>
@@ -46,7 +57,7 @@
           <tg3 />
         </div>
         <div class="item-name">{{ $t('home.buy') }}</div>
-        <div class="item-val">Buy</div>
+        <div class="item-val">提升</div>
       </div>
       <div class="item" @click="gotoLan">
         <div class="item-icon">
@@ -102,6 +113,7 @@
       </template>
     </nut-dialog>
   </div>
+  <!-- </nut-animate> -->
 </template>
 
 <script setup>
@@ -113,6 +125,9 @@
   const userStore = useUserStore();
   const useStore = useUserStore();
   import { useI18n } from 'vue-i18n';
+  const show2 = ref(false);
+  const showAnimation = ref(true);
+  import { runInitAnimation, animateButton } from './animations';
   const { locale, t } = useI18n();
   const currentLan = computed(() => userStore.getCurLanguage);
   const bindWalletDialogShow = ref(false);
@@ -179,17 +194,26 @@
       }
     }
   };
-  const gotoShop = () => {
-    router.push('/tgShop');
+  const gotoShop = (e) => {
+    animateButton(e.currentTarget);
+    setTimeout(() => {
+      router.push('/tgShop');
+    }, 100);
   };
-  const gotoLan = () => {
-    router.push('/lan');
+  const gotoLan = (e) => {
+    animateButton(e.currentTarget);
+    setTimeout(() => {
+      router.push('/lan');
+    }, 100);
   };
   const gotoDrive = (type) => {
     router.push({ path: '/space', query: { page: type } });
   };
-  const gotoBind = () => {
-    router.push('/personalInfo');
+  const gotoBind = (e) => {
+    animateButton(e.currentTarget);
+    setTimeout(() => {
+      router.push('/personalInfo');
+    }, 100);
   };
   const logout = () => {
     showDialog({
@@ -272,6 +296,15 @@
       });
   };
   onMounted(() => {
+    show2.value = true;
+    showAnimation.value = true;
+    runInitAnimation();
+    nextTick(() => {
+      show2.value = false;
+      setTimeout(() => {
+        showAnimation.value = false;
+      }, 2000);
+    });
     // initData();
     // initMaxData();
     initializeTelegram();
@@ -315,6 +348,27 @@
       .nut-swiper {
         position: absolute;
         width: 100%;
+      }
+    }
+    .loader-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      img {
+        width: 200px !important;
+        height: 200px !important;
+        animation: RotateAnim 1s linear infinite forwards;
+      }
+
+      @keyframes RotateAnim {
+        0% {
+          transform: rotate(0);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
     }
     .home-page-content {
@@ -362,6 +416,15 @@
           background: #36363b;
           font-size: 22px;
           color: #75c9f9;
+          //   &:after {
+          //     background: url('@/assets/tg/clickAm.svg');
+          //     content: '';
+          //     position: absolute;
+          //     top: -20px;
+          //     left: 20px;
+          //     width: 100px;
+          //     height: 100px;
+          //   }
         }
         .item-val-no {
           width: 150px;

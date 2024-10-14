@@ -10,6 +10,7 @@
         <div class="balance_options"> Choose Drive</div>
       </div>
     </div>
+
     <div class="space-page-content">
       <h2 v-if="currentPage === 'maxio' && maxTableData.length">选择空间</h2>
       <h2 v-if="currentPage === 'order' && orderTableData.length">选择空间</h2>
@@ -142,10 +143,10 @@
     server.getUserEffect(request, metadata, async (err, res) => {
       if (err) {
         console.log('err-----1', err);
-        alert('err-----'+ err.message.toString());
+        alert('err-----' + err.message.toString());
       } else if (res) {
         console.log('res-----1', res);
-        alert('res----'+ res.toString());
+        alert('res----' + res.toString());
       }
     });
   };

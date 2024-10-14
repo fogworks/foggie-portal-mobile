@@ -1,39 +1,35 @@
 <template>
   <div class="upload_out_box">
-    <nut-uploader
-      v-if="isMobileOrder && !isAndroid"
-      :url="uploadUri"
-      :timeout="1000 * 60 * 60"
-      :before-upload="beforeupload"
-      :disabled="isDisabled"
-      :data="formData"
-      :headers="formData"
-      :before-xhr-upload="beforeXhrUpload"
-      :xhr-state="successStatus"
-      :maximum="1000"
-      @success="uploadSuccess"
-      @progress="onProgress"
-      @start="onStart"
-      @failure="onFailure"
-      @change="onChange"
-      ref="uploadRef"
-      class="upload_class"
-      multiple
-    >
-      <nut-button type="info" class="upload_btn" size="small">
-        <IconPlus color="#fff"></IconPlus>
+    <nut-animate type="twinkle" loop v-if="isMobileOrder && !isAndroid" class="upload_btn_twinkle">
+      <nut-uploader
+        :url="uploadUri"
+        :timeout="1000 * 60 * 60"
+        :before-upload="beforeupload"
+        :disabled="isDisabled"
+        :data="formData"
+        :headers="formData"
+        :before-xhr-upload="beforeXhrUpload"
+        :xhr-state="successStatus"
+        :maximum="1000"
+        @success="uploadSuccess"
+        @progress="onProgress"
+        @start="onStart"
+        @failure="onFailure"
+        @change="onChange"
+        ref="uploadRef"
+        class="upload_class"
+        multiple
+      >
+        <nut-button type="info" class="upload_btn" size="small">
+          <IconPlus color="#fff"></IconPlus>
+        </nut-button>
+      </nut-uploader>
+    </nut-animate>
+    <nut-animate type="twinkle" loop v-else-if="isMobileOrder && isAndroid" class="upload_btn_twinkle">
+      <nut-button style="z-index: 999" @click="startUpload" type="info" class="upload_btn" size="small">
+        <img src="@/assets/newIcon/upload.png" alt="" srcset="" />
       </nut-button>
-    </nut-uploader>
-    <nut-button
-      style="z-index: 999"
-      v-else-if="isMobileOrder && isAndroid"
-      @click="startUpload"
-      type="info"
-      class="upload_btn"
-      size="small"
-    >
-      <img src="@/assets/newIcon/upload.png" alt="" srcset="" />
-    </nut-button>
+    </nut-animate>
   </div>
   <Transition name="fade-transform" mode="out-in">
     <div v-if="uploadProgressIsShow">
@@ -431,10 +427,15 @@
 </script>
 
 <style lang="scss" scoped>
+  .upload_btn_twinkle {
+    position: fixed;
+    top: 89%;
+    right: -34px;
+  }
   .upload_btn {
     position: fixed;
-    bottom: 150px;
-    right: 50px;
+    bottom: 50px;
+    right: 40%;
     font-size: 80px;
     border-radius: 50%;
     padding: 10px;

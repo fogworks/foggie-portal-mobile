@@ -1,6 +1,6 @@
 export default {
   home: {
-    buy: '买单',
+    buy: '提升',
   },
   language: {
     en: '英文',

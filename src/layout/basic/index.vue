@@ -1,5 +1,6 @@
 <template>
     <!-- <div class="main-page" :class="{ tabbar: tabbarVisible, border: showBorder }"> -->
+        <nut-animate type="slide-right" :show="show2">
         <div class="main-page" :class="{ tabbar: tabbarVisible}">
       <RouterView v-slot="{Component,route}">
         <MyTransition>
@@ -88,6 +89,7 @@
           </template>
         </nut-dialog>
       </Teleport>
+    </nut-animate> 
     <!-- <UploadSet v-if="curStepIndex == 4&&showUpload" v-model:needRefresh="needRefresh"></UploadSet> -->
   </template>
   
@@ -117,7 +119,7 @@
 
   import DMCWalletLogin from '@/views/login/DMCWalletLoginHook.ts';
   const { isHasDmcwallet, dmcWalletLogin } = DMCWalletLogin();
-
+  const show2 = ref(false);
 
   watch(amb_promo_code, (newVal) => {
       if (newVal) {
@@ -177,6 +179,10 @@
       activeTab.value = tabItem.findIndex((item) => item.key === router.currentRoute.value.path.replace('/', ''));
       tabbarVisible.value = judgeRoute;
       showBorder.value = judgeRoute;
+      show2.value = true;
+        nextTick(() => {
+            show2.value = false;
+        });
     },
     { deep: true, immediate: true },
   );
@@ -582,11 +588,16 @@
   onMounted(async () => {
     if (userStore.getToken) {
      await initFoggieDate()
+     console.log('2232');
       // bindAmbCode()
       // initWebSocket();
   
       // bindUser();
     }
+    show2.value = true;
+    nextTick(() => {
+      show2.value = false;
+    });
   });
   </script>
   <style lang="scss">

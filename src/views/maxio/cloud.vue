@@ -1181,9 +1181,10 @@
       }
       if (!reg.test(newBucketName.value)) {
         showToast.text(
-          'Custom names can only contain lowercase letters, numbers, periods, and dashes (-), and must start and end with lowercase letters or numbers', {
+          'Custom names can only contain lowercase letters, numbers, periods, and dashes (-), and must start and end with lowercase letters or numbers',
+          {
             customClass: 'creat-name-error',
-          }
+          },
         );
         return;
       }
@@ -2697,20 +2698,21 @@
 </style>
 <style lang="scss">
   .nut-popup {
-    border: 1px solid #0ff20f !important;
+    border: 2px solid #38d6f0 !important;
   }
   .maxio_custom {
-    border: 1px solid #0ff20f !important;
+    border: 2px solid #38d6f0 !important;
     color: #fff;
     span,
     .bucket_tip {
       color: #fff;
     }
     .nut-dialog__header {
-      color: #0ff20f !important;
+      color: #38d6f0 !important;
     }
     .nut-button:last-child {
       background-image: linear-gradient(329deg, #b6e557 0%, #99d017 25%, rgb(131 131 16) 83%, #181b24 100%) !important;
+      background-image: #33a9ee !important;
     }
   }
   .creat-name-error {

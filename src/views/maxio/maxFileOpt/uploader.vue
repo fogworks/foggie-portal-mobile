@@ -20,9 +20,11 @@
       class="upload_class"
       multiple
     >
-      <nut-button type="info" class="upload_btn maxio_upload_btn" size="small">
-        <IconPlus></IconPlus>
-      </nut-button>
+      <nut-animate type="twinkle" loop class="max_upload_btn_twinkle">
+        <nut-button type="info" class="upload_btn maxio_upload_btn" size="small">
+          <IconPlus></IconPlus>
+        </nut-button>
+      </nut-animate>
     </nut-uploader>
   </div>
   <Transition name="fade-transform" mode="out-in">
@@ -223,10 +225,17 @@
 </script>
 
 <style lang="scss" scoped>
+  .max_upload_btn_twinkle {
+    position: fixed;
+    top: 90%;
+    right: -24px;
+  }
   .upload_btn {
     position: fixed;
-    bottom: 120px;
-    right: 50px;
+    // bottom: 120px;
+    // right: 50px;
+    bottom: 50px;
+    right: 40%;
     font-size: 80px;
     border-radius: 50%;
     padding: 10px;

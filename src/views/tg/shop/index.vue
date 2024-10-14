@@ -13,7 +13,7 @@
 
     <div class="top_list_line" @click="toAddPay"> <img src="@/assets/tg/shop_list.svg" /><span>Pending Stake order</span> </div>
     <div v-if="currentPage === 'calc'">
-      <div class="circle_box">
+      <div class="circle_box" data-animation="balance-animation-2">
         <div class="circle_box_top">
           <span>{{ shopForm.quantity }} GB</span>
           <div>
@@ -22,11 +22,14 @@
           </div>
         </div>
         <div class="circle_icons">
-          <img src="@/assets/tg/shop_circle.svg" />
+          <div class="circle_icons_box">
+            <img src="@/assets/tg/storage-circle.png" />
+          </div>
+          <!-- <img src="@/assets/tg/shop_circle.svg" /> -->
         </div>
       </div>
 
-      <div class="circle_box circle_box_change">
+      <div class="circle_box circle_box_change" data-animation="balance-animation-1">
         <div class="change_left">
           <nut-form class="query_form" :model-value="shopForm">
             <nut-form-item label="">
@@ -42,22 +45,55 @@
         </div>
       </div>
 
-      <div class="tg_bottom_btn">
+      <div class="tg_bottom_btn" data-animation="balance-animation-1">
         <nut-button type="warning" @click="submit" :disabled="buyDisabled" :loading="loading"> Confirm </nut-button>
       </div>
-      <div style="padding: 4px 20px; font-size: 18px; font-weight: bold; margin-bottom: 1px" class="bottom_tips_lineTitle">
+      <div
+        style="padding: 4px 20px; font-size: 18px; font-weight: bold; margin-bottom: 1px"
+        class="bottom_tips_lineTitle"
+        data-animation="balance-animation-1"
+      >
         如何挖掘DMCX空间?</div
       >
-      <div style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px" class="bottom_tips_lineTetx"> 1.上传文件 </div>
-      <div style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px" class="bottom_tips_lineTetx">
+      <div
+        style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px"
+        class="bottom_tips_lineTetx"
+        data-animation="balance-animation-1"
+      >
+        1.上传文件
+      </div>
+      <div
+        style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px"
+        class="bottom_tips_lineTetx"
+        data-animation="balance-animation-1"
+      >
         只需将文件上传到DMCX。
       </div>
-      <div style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px" class="bottom_tips_lineTetx"> 2.点击游戏 </div>
-      <div style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px" class="bottom_tips_lineTetx"
+      <div
+        style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px"
+        class="bottom_tips_lineTetx"
+        data-animation="balance-animation-1"
+      >
+        2.点击游戏
+      </div>
+      <div
+        style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px"
+        class="bottom_tips_lineTetx"
+        data-animation="balance-animation-1"
         >每次点击您都能赚取积分。
       </div>
-      <div style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px" class="bottom_tips_lineTetx"> 3.终身存储 </div>
-      <div style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px" class="bottom_tips_lineTetx">
+      <div
+        style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px"
+        class="bottom_tips_lineTetx"
+        data-animation="balance-animation-1"
+      >
+        3.终身存储
+      </div>
+      <div
+        style="padding: 4px 20px; font-size: 12px; font-weight: bold; margin-bottom: 1px"
+        class="bottom_tips_lineTetx"
+        data-animation="balance-animation-1"
+      >
         最多挖掘50GB的终身存储
       </div>
     </div>
@@ -210,6 +246,7 @@
   import QRCode from 'qrcode';
   const qrCanvas = ref(null);
   const isShowQRCode = ref(false);
+  import { runInitAnimation } from './animations';
 
   import { dm_calc_price, get_available_capacity, dm_order_stake, getDmOrder, dm_order_add_transaction, cancelDmOrder } from '@/api';
   import { showToast } from '@nutui/nutui';
@@ -571,6 +608,9 @@
         shopForm.value.quantity = maxSpace.value;
       }
     });
+    nextTick(() => {
+      runInitAnimation();
+    });
   });
 </script>
 <style lang="scss" scoped>
@@ -635,9 +675,38 @@
     padding: 20px;
     position: relative;
     width: calc(100% - 80px);
+    overflow: hidden;
 
     .circle_icons {
       height: 340px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      //   animation: rotate 3s linear infinite;
+      .circle_icons_box {
+        position: absolute;
+        top: 120px;
+        left: 50%;
+        width: 700px;
+        height: 700px;
+        transform: translateX(-50%);
+        animation: CircleRotation 35s linear infinite;
+        overflow: hidden;
+        img {
+          width: 700px;
+          height: 700px;
+          object-fit: contain;
+        }
+      }
+    }
+    @keyframes CircleRotation {
+      0% {
+        transform: translateX(-50%) rotate(0deg);
+      }
+      100% {
+        transform: translateX(-50%) rotate(360deg);
+      }
     }
     .circle_box_top {
       position: absolute;
