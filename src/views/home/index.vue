@@ -1,241 +1,608 @@
 <template>
-  <!-- <nut-noticebar v-if="!userInfo.dmc" class="my_noticebar">
-    <template #left-icon>
-      <Notice width="20px" left="20px"></Notice>
-    </template>
-    <span>You have not yet bound a DMC account </span>
-    <router-link to="/bindDmc?type=dmc"> Go to Binding.</router-link>
-  </nut-noticebar>
-  <div class="dmc_account" v-else> -->
-  <div class="dmc_account">
-    <div class="img-box">
-      <img src="@/assets/user.png" alt="" />
-    </div>
-    Hello,
-    {{ userInfo.email && userInfo.email.split('@')[0] }}
-  </div>
-  <div inset class="income-card">
-    <img src="@/assets/balance_right.svg" />
-    <div class="card_row_1 card_header">
-      <div class="total_income">
-        <div class="balance_text">
-          <span>{{ cloudBalanceNum?.integerPart }}</span>
-          <span style="font-size: 13px">.{{ cloudBalanceNum?.decimalPart }}</span>
-          <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
-        </div>
-        <div class="usd_text" v-if="dmc2usdRate && cloudBalance && cloudBalance != '--'">
-          ≈ {{ formatNumber(dmc2usdRate * cloudBalance)?.integerPart
-          }}<span style="font-size: 13px">.{{ formatNumber(dmc2usdRate * cloudBalance)?.decimalPart }}</span> USD
-        </div>
-      </div>
-    </div>
-    <div class="card_row_1 pst-row">
+  <div>
+    <div class="dmc_account">
       <div>
-        <p>Space(GB)</p>
-        <p class="column_value">{{ cloudPst }}</p>
+        <IconSwitch @click="getList" v-show="curStepIndex == 4"></IconSwitch>
       </div>
-      <div @click="gotoPage('transactionRecords', '1')">
-        <p>Withdrawn</p>
-        <p class="column_value">{{ cloudWithdraw }}</p>
-      </div>
-      <div @click="gotoPage('analysis')">
-        <p>Today's new funds</p>
-        <p class="column_value today_income"
-          >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
-          <TriangleUp color="#fbd116" width="20px"></TriangleUp>
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="withdraw-btn" direction="horizontal" align="center">
-    <div class="action_item" @click="toRecharge">
-      <!-- <img src="@/assets/recharge.svg" alt="" /> -->
-      <img src="@/assets/Recharge.png" alt="" />
-
-      Recharge
-    </div>
-    <div class="action_item" @click="showWithdraw">
-      <!-- <img src="@/assets/withdraw.svg" alt="" /> -->
-      <img src="@/assets/Withdraw.png" alt="" />
-
-      Withdraw
-    </div>
-  </div>
-  <div class="middle_btn_box">
-    <div>
-      <div class="flex-content" @click="toBuyOrder">
-        <div class="svg-box">
-          <!-- <Shop></Shop> -->
-          <img src="@/assets/buy.svg" alt="" />
+      <div class="dmc_account_box">
+        <div>
+          Hello,
+          <router-link to="/maxio">
+            {{ (userInfo.email && userInfo.email.split('@')[0]) || handleID(userInfo.address) }}
+          </router-link>
         </div>
-        <span>Buy</span>
-      </div>
-    </div>
-    <div>
-      <!-- <div class="flex-content" @click="router.push('/analysisCate?type=1')"> -->
-      <div class="flex-content" @click="gotoPage('Order')">
-        <div class="svg-box">
-          <img src="@/assets/orders.svg" alt="" />
+        <div class="img-box">
+          <nut-popover
+            theme="dark"
+            :arrow-offset="60"
+            :offset="[-60, 12]"
+            v-model:visible="accountShow"
+            :list="menuItems"
+            location="bottom-start"
+            @choose="choose"
+          >
+            <template #reference>
+              <nut-image show-error :src="userAvatar ? userAvatar : require('@/assets/user.png')" />
+            </template>
+          </nut-popover>
         </div>
-        <span>Orders</span>
       </div>
     </div>
-    <div>
-      <!-- <div class="flex-content" @click="router.push('/analysis')"> -->
-      <div class="flex-content" @click="gotoPage('analysisChart')">
-        <div class="svg-box">
-          <img src="@/assets/analysis.svg" alt="" />
+
+    <van-swipe @change="topSwipeChange" :loop="false" class="top_swipe" :width="swipeWidth" ref="swipeRef">
+      <van-swipe-item @click="swipeRef.swipeTo(0)">
+        <div inset class="income-card">
+          <img src="@/assets/balance_right.svg" @click="gotoPage('analysisChart')" />
+          <div class="card_row_1 card_header">
+            <div class="total_income">
+              <div class="balance_text">
+                <span>{{ cloudBalanceNum?.integerPart }}</span>
+                <span style="font-size: 13px">.{{ cloudBalanceNum?.decimalPart }}</span>
+                <img src="@/assets/DMC(1).png" alt="" style="margin-left: 5px" />
+              </div>
+              <div class="usd_text" v-if="dmc2usdRate && cloudBalance && cloudBalance != '--'">
+                ≈ {{ formatNumber(dmc2usdRate * cloudBalance)?.integerPart
+                }}<span style="font-size: 13px">.{{ formatNumber(dmc2usdRate * cloudBalance)?.decimalPart }}</span> USD
+              </div>
+            </div>
+          </div>
+          <div class="card_row_1 pst-row">
+            <div>
+              <p>Space</p>
+              <p class="column_value">{{ getfilesize2(cloudPst == '--' ? 0 : cloudPst) }}</p>
+            </div>
+
+            <div @click="gotoPage('analysis')">
+              <p>Today's new funds</p>
+              <p class="column_value today_income"
+                >+ {{ cloudTodayIncomeNum?.integerPart }}<span style="font-size: 13px">.{{ cloudTodayIncomeNum?.decimalPart }}</span> DMC
+                <TriangleUp color="#fbd116" width="20px"></TriangleUp>
+              </p>
+            </div>
+          </div>
         </div>
-        <span>Charts</span>
-      </div>
-    </div>
-    <div>
-      <div class="flex-content" @click="gotoPage('transactionRecords')">
-        <!-- <div class="flex-content" @click="router.push('/transactionRecords')"> -->
-        <div class="svg-box">
-          <!-- <img src="@/assets/IconTransaction.svg" alt="" /> -->
-          <IconTransaction></IconTransaction>
+      </van-swipe-item>
+      <van-swipe-item @click="swipeRef.swipeTo(1)">
+        <div inset class="income-card income-card2">
+          <img src="@/assets/balance_right.svg" />
+          <div class="card_row_1 card_header">
+            <div class="total_income">
+              <div class="balance_text">
+                <IconNFT></IconNFT>
+              </div>
+            </div>
+          </div>
+          <div class="card_row_1 pst-row">
+            <div>
+              <p>Total</p>
+              <p class="column_value">{{ nftTotal }}</p>
+            </div>
+            <div>
+              <p>Contracts</p>
+              <p class="column_value">{{ contractTotal }}</p>
+            </div>
+
+            <div @click="gotoPage('PersonalInfo')">
+              <p>Wallets</p>
+              <p class="column_value">
+                {{ walletInfo?.length || 0 }}
+              </p>
+            </div>
+          </div>
         </div>
-        <span>Transaction <br /> </span>
-        <!-- records -->
+      </van-swipe-item>
+    </van-swipe>
+
+    <div v-if="!leftBucketList.length" style="margin-top: 2rem; text-align: center">
+      <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Bucket</nut-button> -->
+      <div style="display: flex; justify-content: center; align-items: center">
+        <div class="plus_bucket" @click="choose({ name: 'Bucket' })">
+          <IconPlus></IconPlus>
+        </div>
+        <img src="@/assets/home_bucket.png" alt="" />
       </div>
+
+      <p>Welcome to foggie mobile, you don't have a bucket yet, please select one. Click on the + to make your selection!</p>
     </div>
-  </div>
-
-  <div class="DouArrowDown" v-if="!targetIsVisible && !ishaveProfit" @click="scrollIntoViewTo">
-    <DouArrowUp width="100" height="50" class="nut-icon-am-jump nut-icon-am-infinite" />
-  </div>
-  <!-- <nut-empty v-else description="No data" image="error"></nut-empty> -->
-  <div v-if="!ishaveProfit" class="my_swipe">
-    <nut-swiper :init-page="1" :pagination-visible="true" pagination-color="#426543" auto-play="3000">
-      <nut-swiper-item>
-        <img src="@/assets/banner1.svg" alt="" />
-      </nut-swiper-item>
-      <nut-swiper-item>
-        <img src="@/assets/banner2.svg" alt="" />
-      </nut-swiper-item>
-      <nut-swiper-item>
-        <img src="@/assets/banner3.png" alt="" />
-      </nut-swiper-item>
-      <nut-swiper-item>
-        <img src="@/assets/banner4.svg" alt="" />
-      </nut-swiper-item>
-    </nut-swiper>
-  </div>
-
-  <div class="tab_top_title" v-if="ishaveProfit">Last 7 days <span style="font-size: 12px">(DMC)</span></div>
-  <div class="my_steps" ref="my_steps" id="my_steps" v-if="!ishaveProfit">
-    <nut-steps direction="vertical" :current="curStepIndex">
-      <nut-step
-        title="Bind invitation code"
-        @click="gotoBindAmb"
-        content="Please confirm that you have filled out the invitation code before placing your order"
-        >1</nut-step
-      >
-      <nut-step
-        title="Waiting for approval"
-        :content="ambRefuse ? 'Your application has been rejected by the Ambassador please reapply' : 'Your application has been approved.'"
-        >2</nut-step
-      >
-      <!-- <nut-step title="Binding DMC" content="Please bind the DMC before making a purchase order." @click="gotoBindDMC">3</nut-step> -->
-      <nut-step title="Purchase Order" content="We provide you with the most profitable order for your purchase" @click="toBuyOrder"
-        >3</nut-step
-      >
-      <nut-step
-        @click="gotoOrderList"
-        title="Ops, you haven't made a profit yet"
-        content="Please upload the file in the order. Once you upload the file to 50M, we will calculate the revenue for you."
-        >4</nut-step
-      >
-    </nut-steps>
-  </div>
-
-  <nut-infinite-loading
-    style="min-height: 280px; height: 0px; padding-bottom: 10px"
-    v-if="cloudCodeIsBind && earningsList.length"
-    load-more-txt="No more content"
-    :has-more="hasMore"
-    v-model="infinityValue"
-    @load-more="loadMore"
-  >
-    <div class="list_item" v-for="(item, index) in earningsList" @click="gotoOrderPage(item)">
-      <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-        <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-        <img src="@/assets/DMC_Token1.png" alt="" />
-      </div>
-      <div>
-        <span>Order:{{ item.order_id }}</span>
-        <span
-          :class="[
-            item.inner_user_trade_type == 'payout' ? 'expense' : '',
-            item.inner_user_trade_type == 'income' ? 'earnings' : '',
-            'trade_type',
-          ]"
+    <div v-if="order_uuid && leftBucketList.length" style="margin-top: 0.8rem">
+      <!-- <div class="bucket_tips">
+        The current display is the content of {{ bucketName }},click on the upper right corner of the page <IconMore></IconMore> to switch
+        the bucket
+      </div> -->
+      <div style="display: grid; grid-gap: 10px; justify-content: space-between; grid-template-columns: 1fr 1fr">
+        <ImgBox
+          :isAvailableOrder="isAvailableOrder"
+          :header="header"
+          :metadata="metadata"
+          :deviceType="deviceType"
+          :orderInfo="orderInfo"
+          :bucketName="bucketName"
+          :accessKeyId="accessKeyId"
+          :secretAccessKey="secretAccessKey"
+          class=""
+          ref="imgListRef"
+          :order_uuid="order_uuid"
+          @refresh="refresh"
+          :handleImg="handleImg"
         >
-          <span v-if="item.inner_user_trade_type == 'payout'">-</span><span v-else-if="item.inner_user_trade_type == 'income'">+</span>
-          {{ formatNumber(item.quantity)?.integerPart }}<span style="font-size: 13px">.{{ formatNumber(item.quantity)?.decimalPart }}</span>
-        </span>
+          <Uploader
+            :getSummary="getSummary"
+            v-if="isAvailableOrder && accessKeyId && orderInfo.value.uuid"
+            class="img_upload"
+            :isMobileOrder="isMobileOrder"
+            :bucketName="bucketName"
+            :accessKeyId="accessKeyId"
+            :secretAccessKey="secretAccessKey"
+            :orderInfo="orderInfo"
+            @uploadComplete="uploadComplete"
+            @refresh="refresh"
+          ></Uploader>
+        </ImgBox>
+
+        <div class="type_check_box right_check_box">
+          <div
+            class="type_item"
+            @click="
+              router.push({
+                name: 'FileList',
+                query: {
+                  id: currentBucketData.order_id,
+                  uuid: currentBucketData.uuid,
+                  amb_uuid: currentBucketData.amb_uuid,
+                  domain: currentBucketData.domain,
+                  category: 1,
+                  bucketName,
+                },
+              })
+            "
+          >
+            <div class="svg_box">
+              <IconImage></IconImage>
+            </div>
+            <p>Images</p>
+          </div>
+          <div
+            class="type_item"
+            @click="
+              router.push({
+                name: 'FileList',
+                query: {
+                  id: currentBucketData.order_id,
+                  uuid: currentBucketData.uuid,
+                  amb_uuid: currentBucketData.amb_uuid,
+                  domain: currentBucketData.domain,
+                  category: 3,
+                  bucketName,
+                },
+              })
+            "
+          >
+            <div class="svg_box">
+              <IconAudio2></IconAudio2>
+            </div>
+            <p>Audio</p>
+          </div>
+          <div
+            class="type_item"
+            @click="
+              router.push({
+                name: 'FileList',
+                query: {
+                  id: currentBucketData.order_id,
+                  uuid: currentBucketData.uuid,
+                  amb_uuid: currentBucketData.amb_uuid,
+                  domain: currentBucketData.domain,
+                  category: 4,
+                  bucketName,
+                },
+              })
+            "
+          >
+            <div class="svg_box">
+              <IconDocument></IconDocument>
+            </div>
+            <p>Documents</p>
+          </div>
+          <div
+            class="type_item"
+            @click="
+              router.push({
+                name: 'FileList',
+                query: {
+                  id: currentBucketData.order_id,
+                  uuid: currentBucketData.uuid,
+                  amb_uuid: currentBucketData.amb_uuid,
+                  domain: currentBucketData.domain,
+                  category: 2,
+                  bucketName,
+                },
+              })
+            "
+          >
+            <div class="svg_box">
+              <IconVideo></IconVideo>
+            </div>
+            <p>Video</p>
+          </div>
+        </div>
       </div>
-      <div>
-        <span class="time">{{ item.trx_id }}</span>
-        <!-- <span class="time">{{ transferUTCTime(item.created_at) }}</span> -->
-        <span style="text-align: right">{{ mapTypes[item.trade_type] }}</span>
-        <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
+
+      <div class="recent_folder_box" v-if="tableData.length">
+        <div class="recent_folder_title">
+          <span>Recent Files</span>
+          <span class="more" @click="gotoOrderDetail(currentBucketData)">See All</span>
+        </div>
+        <!-- <div class="recent_folder">
+          <div class="folder_item" v-for="item in floderData">
+            <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+            <span>{{ item.name }}</span>
+          </div>
+        </div> -->
+        <div class="file_list file_list_img" v-if="imgData.length">
+          <div
+            @click="handleRow(item)"
+            class="list_item"
+            style="border: none"
+            v-show="index < 10"
+            v-for="(item, index) in imgData"
+            :key="index"
+          >
+            <nut-image
+              v-if="item.imgUrl || item.originalSize <= 102400"
+              show-loading
+              show-error
+              round
+              radius="5px"
+              :src="item.imgUrl || item.imgUrlLarge"
+              fit="cover"
+              position="center"
+            >
+              <template #loading>
+                <Loading width="16" height="16"></Loading>
+              </template>
+            </nut-image>
+            <IconImage v-else></IconImage>
+          </div>
+        </div>
+        <div class="file_list" v-if="otherData.length">
+          <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
+            <div :class="['left_icon_box']">
+              <img v-if="item.isDir && item.name == 'pinning'" class="cloud_pin" src="@/assets/cloud_pin.png" alt="" />
+              <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+              <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+              <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
+              <nut-image
+                v-else-if="item.category != 0 && item.category != 4 && item.imgUrl"
+                show-loading
+                show-error
+                round
+                radius="5px"
+                :src="item.imgUrl"
+                fit="cover"
+                position="center"
+                style="width: 100%; height: 100%"
+              >
+                <template #loading>
+                  <Loading width="16" height="16"></Loading>
+                </template>
+              </nut-image>
+              <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+              <img v-else src="@/assets/svg/home/file.svg" alt="" />
+              <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
+            </div>
+            <div class="name_box">
+              <p>{{ item.name }}</p>
+              <p>{{ item.date || '' }}</p>
+            </div>
+            <div class="right_radio" @click.stop>
+              <MoreX @click="clickFIleItem(item)" width="40px" height="25px" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </nut-infinite-loading>
+    <!-- <div v-else-if="!order_uuid && listData.length">
+      <p>Please set the bucket name first</p>
+    </div> -->
+    <div class="recent_folder_box" v-if="nftImgList.length" style="padding: 1rem 0">
+      <div class="recent_folder_title" style="margin-left: 1rem">
+        <span>NFT Recent</span>
+        <span></span>
+      </div>
+      <ListComponent :showBtn="false" has-more :tabList="[]" :imgList="nftImgList"></ListComponent>
+    </div>
+    <div class="tab_top_title" v-if="ishaveProfit && earningsList.length"
+      >Reward and Expenditure <span style="font-size: 12px; display: inline-block">(for the last weeks)</span></div
+    >
+    <nut-infinite-loading
+      style="margin-top: 1rem; min-height: 280px; height: 600px; padding-bottom: 10px; overflow: auto"
+      v-if="cloudCodeIsBind && earningsList.length"
+      load-more-txt="No more content"
+      :has-more="hasMore2"
+      v-model="infinityValue2"
+      @load-more="loadMore2"
+    >
+      <div
+        class="list_item"
+        v-for="(item, index) in earningsList"
+        @click="gotoOrderPage(item)"
+        :class="[isOpen(item.order_info.state) ? '' : 'history_item']"
+      >
+        <div class="order_status_flag open" v-if="isOpen(item.order_info.state) && !item.order_info.domain">To be activated</div>
+        <div class="order_status_flag open" v-else-if="isOpen(item.order_info.state)">Open Bucket</div>
+        <div class="order_status_flag history" v-if="!isOpen(item.order_info.state)">History Bucket</div>
+        <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
+          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+          <!-- <img src="@/assets/DMC_Token1.png" alt="" /> -->
+          <img v-if="item.order_info.electronic_type == 0" src="@/assets/mobile.svg" alt="" />
+          <img v-else src="@/assets/desktop.svg" alt="" />
+        </div>
+        <div style="width: 100%; justify-content: flex-end !important; margin-top: -2px">
+          <span>{{ transferUTCTime(item.created_at) }}</span>
+        </div>
+        <div>
+          <span style="font-weight: bold" v-if="item.order_info.domain">{{ item.order_info.domain }}</span>
+          <span style="font-weight: bold" v-else>Bucket({{ item.order_id }})</span>
+          <span
+            :class="[
+              item.inner_user_trade_type == 'payout' ? 'expense' : '',
+              item.inner_user_trade_type == 'income' ? 'earnings' : '',
+              'trade_type',
+            ]"
+          >
+            <span v-if="item.inner_user_trade_type == 'payout'">-</span><span v-else-if="item.inner_user_trade_type == 'income'">+</span>
+            {{ formatNumber(item.quantity)?.integerPart
+            }}<span style="font-size: 13px">.{{ formatNumber(item.quantity)?.decimalPart }}</span>
+          </span>
+        </div>
+        <div>
+          <span class="time">{{ item.trx_id }}</span>
+          <!-- <span class="time">{{ transferUTCTime(item.created_at) }}</span> -->
+          <span style="text-align: right" class="my_status">{{ mapTypes[item.trade_type] }}</span>
+          <!-- <span>{{ item.trade_type == 'user_delivery_income' ? '' : item.state }} </span> -->
+        </div>
+      </div>
+    </nut-infinite-loading>
+    <!-- <nut-backtop el-id="app" :distance="200"></nut-backtop> -->
+    <van-back-top target="#app" offset="200" right="0" bottom="15vh" />
 
-  <nut-empty v-else-if="earningsList.length == 0 && ishaveProfit" description="There are currently no returns this week"></nut-empty>
+    <!-- account show -->
+    <!-- <nut-action-sheet v-model:visible="accountShow" :menu-items="menuItems" @choose="choose" /> -->
+    <Teleport to="body">
+      <nut-popup position="left" :style="{ width: '6rem', height: '100%' }" v-model:visible="showRight">
+        <!-- <span class="draw_title"> Select a bucket to display on the home page </span> -->
+        <nut-infinite-loading
+          :load-more-txt="'Is Bottom'"
+          class="file_list file_list_bucket"
+          ref="listRef"
+          v-model="infinityValue"
+          :has-more="hasMore"
+          @load-more="loadMoreFun"
+        >
+          <div
+            :class="[bucketName && bucketName == item.domain ? 'is_checked' : '', 'list_item']"
+            v-for="item in leftBucketList"
+            @click="setBucket(item)"
+          >
+            <div class="order_img">
+              <!-- <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" /> -->
+              <img v-if="item.electronic_type == 1" src="@/assets/desktop1.svg" alt="" />
+            </div>
+            <IconHistory class="history" v-if="[4, 5].includes(item.state)"></IconHistory>
+            <div :class="['left_icon_box', [4, 5].includes(item.state) ? 'isHistory' : '', item.checked ? 'is_checked' : '']">
+              <img src="@/assets/home_bucket.png" alt="" />
+            </div>
+            <div class="name_box">
+              <span>{{ item.domain || 'Order' + item.order_id }}</span>
+            </div>
+          </div>
+        </nut-infinite-loading>
+        <div style="margin-top: 1rem; text-align: center">
+          <div class="plus_bucket" style="margin: 0 auto" @click="choose({ name: 'Bucket' })">
+            <IconPlus></IconPlus>
+          </div>
+        </div>
+      </nut-popup>
+    </Teleport>
+
+    <ActionComponent
+      v-model:fileItemPopupIsShow="fileItemPopupIsShow"
+      v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
+      v-model:renameShow="renameShow"
+      v-model:moveShow="moveShow"
+      v-model:detailShow="detailShow"
+      v-model:imgStartIndex="imgStartIndex"
+      v-model:wordVisible="wordVisible"
+      :category="0"
+      :header="header"
+      :prefix="[]"
+      :isAvailableOrder="isAvailableOrder"
+      :chooseItem="detailRow.value"
+      :images="images"
+      :imgUrl="imgUrl"
+      :isMobileOrder="isMobileOrder"
+      :isNewFolder="false"
+      :selectArr="selectArr"
+      :bucketName="bucketName"
+      :metadata="metadata"
+      :orderInfo="orderInfo"
+      :isCheckMode="false"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      @refresh="refresh"
+      @handlerClick="handlerClick"
+      @swipeChange="swipeChange"
+      @clickFIleItemDetail="clickFIleItemDetail"
+      @clickFIleItem="clickFIleItem"
+    ></ActionComponent>
+  </div>
 </template>
 
 <script lang="ts" setup name="HomePage">
+  import ImgBox from '@/views/photo/imageBox.vue';
+  // import UploadSet from '@/views/nft/uploadSet.vue';
+  import ErrorPage from '@/views/errorPage/index.vue';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconTransaction from '~icons/home/transaction.svg';
-  import { Notice, TriangleUp, DouArrowUp, RectUp } from '@nutui/icons-vue';
-  import { toRefs, computed, reactive, ref, watch, watchEffect } from 'vue';
+  import IconPlus from '~icons/home/plus.svg';
+  import IconPlay from '~icons/home/play.svg';
+  import IconPlus2 from '~icons/home/add.svg';
+  import IconAssets from '~icons/home/assets.svg';
+  import IconHistory from '~icons/home/history.svg';
+  import IconNFT from '~icons/home/nft2.svg';
+  import IconMore from '~icons/home/more.svg';
+  import IconSwitch from '~icons/home/switch2.svg';
+  import IconAudio2 from '~icons/home/audio2.svg';
+  import IconImage from '~icons/home/image.svg';
+  import IconDocument from '~icons/home/document.svg';
+  import IconVideo from '~icons/home/video.svg';
+  import { Notice, TriangleUp, DouArrowUp, MoreX, RectUp, Setting, Loading, Shop, Scan2 } from '@nutui/icons-vue';
+  import { toRefs, computed, reactive, ref, watch, watchEffect, createVNode } from 'vue';
   import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
-
   import { showToast, showDialog } from '@nutui/nutui';
   //   import { search_cloud } from '@/api';
   import { search_cloud } from '@/api';
   import useUserAssets from './useUserAssets.ts';
-
-  import { transferUTCTimeDay } from '@/utils/util';
-  import { transferUTCTime, formatNumber } from '@/utils/util';
+  import { transferUTCTimeDay, getfilesize2, transferGMTTime, transferUTCTime, formatNumber } from '@/utils/util';
   import '@nutui/nutui/dist/packages/toast/style';
   import { useIntersectionObserver } from '@vueuse/core';
+  import { search_order_profit, search_user_asset_detail, check_bind_otp, setIsVerifiedAPI, getIsVerifiedAPI } from '@/api/amb';
+  import useOrderList from './useOrderList.ts';
+  import loadingImg from '@/components/loadingImg/index.vue';
+  import Uploader from '@/views/list/details/uploader.vue';
+  import useOrderInfo from '@/views/list/details/useOrderInfo.js';
+  import useShare from '@/views/list/details/useShare.js';
+  import useDelete from '@/views/list/details/useDelete.js';
+  import ActionComponent from '@/views/list/details/actionComponent.vue';
+  import ListComponent from '@/views/nft/listComponent.vue';
 
+  import * as Prox from '@/pb/prox_pb.js';
+  import * as grpcService from '@/pb/prox_grpc_web_pb.js';
+  import { poolUrl } from '@/setting.js';
+  import moment from 'moment';
+  import { HmacSHA1, enc } from 'crypto-js';
+  import { search_mint, search_deploy, get_order_sign } from '@/api/index.ts';
+  const tableLoading = ref(false);
+  const needRefresh = inject('needRefresh');
+  // const { loadMore as loadBucket, listData  } = useOrderList();
+  const { resetData, loadMore, listData, hasMore, infinityValue, total } = useOrderList();
+  const {
+    isAvailableOrder,
+    getSummary,
+    isError,
+    bucketName,
+    header,
+    metadata,
+    deviceType,
+    orderInfo,
+    accessKeyId,
+    secretAccessKey,
+    getOrderInfo,
+  } = useOrderInfo();
+  const { createNFT, doShare, getHttpShare, cloudPin } = useShare(orderInfo, header, deviceType, metadata);
+  const selectArr = computed(() => {
+    return [detailRow.value];
+  });
+  const images = computed(() => {
+    let arr = [];
+    imgData.value.filter((el) => {
+      if (arr.length < 20) {
+        arr.push(el.imgUrlLarge);
+      }
+    });
+    return arr;
+  });
+  const { deleteItem } = useDelete(
+    tableLoading,
+    () => {
+      refresh();
+    },
+    orderInfo,
+    header,
+    metadata,
+  );
+  const isOpen = (state) => {
+    if (state === 4 || state === 5) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  const isMobileOrder = computed(() => {
+    if (orderInfo.value.electronic_type == '0') {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  let server, currentBucketData;
+  const swipeWidth = ref(300);
+  const swipeRef = ref('');
+  const moveShow = ref(false);
+  const accountShow = ref(false);
+  const showRight = ref(false);
+  const detailShow = ref(false);
+  const wordVisible = ref(false);
+  const curSelectSrc = ref('');
+  const curSelectType = ref('');
+  const listRef = ref('');
+  const imgUrl = ref('');
+  const imgStartIndex = ref(0);
+  const contractTotal = ref(0);
+  const menuItems = [
+    {
+      name: 'Assets',
+      icon: IconAssets,
+    },
+    {
+      name: 'Bucket',
+      icon: IconPlus2,
+    },
+    {
+      name: 'Scan',
+      icon: Scan2,
+    },
+  ];
   const userInfo = computed(() => userStore.getUserInfo);
+  const userAvatar = computed(() => userStore.getUserInfo?.image_path);
   const cloudCodeIsBind = computed(() => userStore.getCloudCodeIsBind);
+  const walletInfo = computed(() => userStore.getUserInfo?.wallet_info);
 
   const router = useRouter();
 
   const mapTypes = {
-    user_delivery_income: 'UserDeliveryIncome',
-    buy_order: 'Purchased Order',
-    challenge: 'Order Challenge',
-    arbitration: 'Order Arbitration',
-    OrderReceiptAddReserve: 'Increase order deposit', // 增加订单预存金
-    OrderReceiptSubReserve: 'Reduce order deposit', // 减少订单预存金
-    OrderReceiptDeposit: 'Order deposit', // 押金
-    OrderReceiptClaim: 'Order deliver', // 交付
-    OrderReceiptReward: 'Order incentive', // 激励
-    OrderReceiptRenew: 'Order Update', // 订单更新
+    user_delivery_income: 'UserDeliveryReward',
+    buy_order: 'Purchased Bucket',
+    challenge: 'Bucket Challenge',
+    arbitration: 'Bucket Arbitration',
+    OrderReceiptAddReserve: 'Increase Bucket deposit', // 增加订单预存金
+    OrderReceiptSubReserve: 'Reduce Bucket deposit', // 减少订单预存金
+    OrderReceiptDeposit: 'Bucket deposit', // 押金
+    OrderReceiptClaim: 'Bucket deliver', // 交付
+    OrderReceiptReward: 'Bucket incentive', // 激励
+    OrderReceiptRenew: 'Bucket Update', // 订单更新
     OrderReceiptChallengeReq: 'Initiate a Challenge', // 发起挑战
     OrderReceiptChallengeAns: 'Responding to challenges', // 响应挑战
     OrderReceiptChallengeArb: 'arbitrate', // 仲裁
     OrderReceiptPayChallengeRet: 'Overtime compensation return', // 超时赔付返还
-    OrderReceiptLockRet: 'Order lock return', // 订单锁定返还
-    user_cancel_order: 'Order Cancellation Refund', // 订单取消
-    user_OrderReceiptDeposit: 'Order expires. Deposit refunded', // 订单到期退还押金
-    OrderRefund: 'Order refund', // 订单退款
+    OrderReceiptLockRet: 'Bucket lock return', // 订单锁定返还
+    user_cancel_order: 'Bucket Cancellation Refund', // 订单取消
+    user_OrderReceiptDeposit: 'Bucket expires. Deposit refunded', // 订单到期退还押金
+    OrderRefund: 'Bucket refund', // 订单退款
     OrderReceiptEnd: 12,
   };
-
+  const imgListRef = ref('');
+  const nftImgList = ref([]);
+  const nftTotal = ref(0);
+  const noBucketData = ref([]);
+  const tableData = ref([]);
+  const otherData = ref([]);
+  const imgData = ref([]);
   const userStore = useUserStore();
+  const topSwipeIndex = ref(0);
   const earningsList = ref([] as any);
-  import { search_order_profit, search_user_asset_detail } from '@/api/amb';
   const { getUserAssets, getExchangeRate, dmc2usdRate, cloudTodayIncome, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } =
     useUserAssets();
 
@@ -243,93 +610,91 @@
   const curStepIndex = computed(() => userStore.getCurStepIndex); // 1 绑定大使邀请码
   const bindAmbCode = inject('bindAmbCode');
   const openBindDMCDiaolg = inject('openBindDMCDiaolg');
+  const fileItemPopupIsShow = ref(false);
+  const fileItemDetailPopupIsShow = ref(false);
+  const renameShow = ref(false);
+  function swipeChange(index) {
+    imgStartIndex.value = index;
+    detailRow.value = imgData.value[index];
+    if (detailRow.value.originalSize > 1024 * 1024 * 20) {
+      showToast.text('The file is too large, please download and view');
+    }
+  }
+  function topSwipeChange(index) {
+    topSwipeIndex.value = index;
+  }
+  function clickFIleItem(params) {
+    detailRow.value = params;
+    fileItemPopupIsShow.value = true;
+    if (detailRow.value.originalSize > 1024 * 1024 * 20 && detailRow.value.category == 1) {
+      showToast.text('The file is too large, please download and view');
+    }
+  }
 
-  const infinityValue = ref(false);
-  const hasMore = computed(() => {
-    if (total.value > earningsList.value.length) {
+  function clickFIleItemDetail(params) {
+    console.log(params);
+    fileItemDetailPopupIsShow.value = true;
+  }
+  watch(
+    tableData,
+    (val) => {
+      imgData.value = [];
+      otherData.value = [];
+      if (val.length) {
+        val.forEach((el) => {
+          if (el.category == 1) {
+            imgData.value.push(el);
+          } else {
+            otherData.value.push(el);
+            // if (floderData.value.length < 4) floderData.value.push(el);
+          }
+        });
+      }
+    },
+    { deep: true },
+  );
+  const infinityValue2 = ref(false);
+  const hasMore2 = computed(() => {
+    if (total2.value > earningsList.value.length) {
       return true;
     } else {
       return false;
     }
   });
+  const leftBucketList = computed(() => {
+    return noBucketData.value.concat(listData.value);
+  });
+  const isError2 = ref(false);
   const pageSize = ref(10);
   const pageNum = ref(1);
-  const total = ref(0);
-
+  const total2 = ref(0);
+  const order_uuid = ref('');
   const pn = ref(1);
   const ps = ref(10);
+  const fileSocket = ref('');
+  const socketDate = ref('');
+  const socketToken = ref('');
+  const currentFolder = ref('');
+  const showSocketDialog = ref(false);
+  const loadMoreFun = async () => {
+    try {
+      const postData = {
+        sort_type: 'expire',
+        ascending: false,
+        is_domain: 1,
+        electronic_type: '0',
+        domain: '',
+      };
+      await loadMore([0, 1, 2, 3, 4, 6], '', '', '', postData);
+      console.log('开始请求');
 
-  async function getOrder() {
-    const order_state = null;
-    const start_time = '';
-    const end_time = '';
-    const buy_result = 'success';
-    await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result }).then((res) => {
-      let total = res?.result?.total;
-      if (total > 0) {
-        userStore.setcurStepIndex(4);
-      } else {
-        userStore.setcurStepIndex(3);
-      }
-    });
-  }
-
-  watch(
-    curStepIndex,
-    (val) => {
-      if (val === 4) {
-        searchOrderProfit();
-        searchAllOrderProfit();
-      }
-    },
-    { deep: true, immediate: true },
-  );
-  const cloudBalanceNum = computed(() => {
-    return formatNumber(cloudBalance.value);
-  });
-  const cloudTodayIncomeNum = computed(() => {
-    return formatNumber(cloudTodayIncome.value);
-  });
-
-  function handleID(id) {
-    if (id) {
-      return id.substring(0, 8) + '...' + id.substring(id.length - 8, id.length);
-    }
-  }
-
-  function loadMore() {
-    pageNum.value = pageNum.value + 1;
-    searchOrderProfit();
-  }
-
-  function searchOrderProfit() {
-    const end = new Date();
-    const start = new Date();
-    start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-    const postData = {
-      start_time: transferUTCTimeDay(start),
-      end_time: transferUTCTimeDay(end),
-      ps: pageSize.value,
-      pn: pageNum.value,
-    };
-    infinityValue.value = true;
-    search_user_asset_detail(postData)
-      .then((res) => {
-        infinityValue.value = false;
-
-        if (res && res.result && res.result.data.length) {
-          for (const item of res.result.data || []) {
-            item.trx_id = handleID(item.trx_id);
-          }
-          earningsList.value.push(...res.result.data);
-          total.value = res.result.total;
+      nextTick(() => {
+        if (hasMore.value && listData.value.length <= 20) {
+          loadMoreFun();
         }
-      })
-      .catch(() => {
-        infinityValue.value = false;
       });
-  }
-
+    } catch {}
+  };
   const ishaveProfit = ref(false); //是否订单已经产生过收益 如果有收益不展示引导页
   function searchAllOrderProfit() {
     const postData = { start_time: '', end_time: '' };
@@ -346,19 +711,148 @@
       .finally(() => {});
   }
 
-  const showWithdraw = () => {
-    if (!userInfo.value.dmc) {
-      openBindDMCDiaolg();
-
+  const getList = async () => {
+    showRight.value = true;
+    if (!leftBucketList.value.length) {
+      nextTick(async () => {
+        resetData();
+        getNoBucketOrder();
+        await loadMoreFun();
+      });
+    }
+  };
+  const choose = (item) => {
+    if (item.name == 'Scan') {
+      router.push({ path: '/scanQRCodes' });
+      accountShow.value = false;
       return false;
-    } else if (!cloudCodeIsBind.value) {
+    }
+    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
       bindAmbCode();
+      return false;
+    }
+    if (item.name == 'Assets') {
+      router.push({
+        name: 'AssetsInfo',
+      });
+    } else if (item.name == 'Bucket') {
+      router.push({
+        name: 'Shop',
+      });
+    }
+    accountShow.value = false;
+  };
+  async function getOrder() {
+    const order_state = null;
+    const start_time = '';
+    const end_time = '';
+    const buy_result = 'success';
+
+    await search_cloud({ ps: ps.value, pn: pn.value, order_state, start_time, end_time, buy_result }).then((res) => {
+      let total = res?.result?.total;
+      if (total > 0) {
+        userStore.setcurStepIndex(4);
+      } else {
+        userStore.setcurStepIndex(3);
+      }
+    });
+  }
+  async function getNoBucketOrder() {
+    const order_state = [0];
+    const start_time = '';
+    const end_time = '';
+    const buy_result = 'success';
+    const postData = {
+      sort_type: 'expire',
+      ascending: false,
+      is_domain: 2,
+      electronic_type: '0',
+      domain: '',
+    };
+    await search_cloud({ ps: 30, pn: 1, order_state, start_time, end_time, buy_result, ...postData }).then((res) => {
+      noBucketData.value = res.result.data;
+    });
+  }
+
+  const cloudBalanceNum = computed(() => {
+    return formatNumber(cloudBalance.value);
+  });
+  const cloudTodayIncomeNum = computed(() => {
+    return formatNumber(cloudTodayIncome.value);
+  });
+
+  function handleID(id) {
+    if (id) {
+      return id.substring(0, 8) + '...' + id.substring(id.length - 8, id.length);
+    }
+  }
+  const detailRow = reactive({ value: {} });
+
+  const handleRow = (row) => {
+    detailRow.value = row;
+    const type = row.name.substring(row.name.lastIndexOf('.') + 1);
+    console.log(row.imgUrlLarge);
+    console.log(type);
+
+    if (type == 'pdf') {
+      wordVisible.value = true;
+
+      // curSelectSrc.value = row.imgUrlLarge;
+      // curSelectType.value = 'pdf';
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'pdf' } });
+    } else if (type == 'txt') {
+      detailRow.value.detailType = 'txt';
+      detailShow.value = true;
+      // fetch(row.imgUrlLarge)
+      //   .then((response) => response.text())
+      //   .then((text) => {
+      //     document.getElementById('txtContainer').textContent = text;
+      //   });
+    } else if (['xls', 'xlsx'].includes(type)) {
+      wordVisible.value = true;
+
+      // curSelectSrc.value = row.imgUrlLarge;
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'excel' } });
+    } else if (['doc', 'docx'].includes(type)) {
+      wordVisible.value = true;
+
+      // detailRow.value.detailType = 'word';
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
+      // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+      console.log(row.imgUrlLarge);
+    } else if (['ppt', 'pptx'].includes(type)) {
+      // curSelectSrc.value = row.imgUrlLarge;
+      // curSelectType.value = 'ppt';
+      // // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      // window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+      // // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
+
+      console.log(row.imgUrlLarge);
+    } else if (row.imgUrlLarge) {
+      imgUrl.value = row.imgUrlLarge;
+      imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
+      detailShow.value = true;
     } else {
-      router.push({ name: 'Withdraw' });
+      let prefix = detailRow.value.fullName.split('/').slice(0, -1);
+      console.log(detailRow.value.fullName, prefix);
+
+      router.push({
+        name: 'FileList',
+        query: {
+          id: currentBucketData.order_id,
+          uuid: currentBucketData.uuid,
+          amb_uuid: currentBucketData.amb_uuid,
+          domain: currentBucketData.domain,
+          category: 0,
+          prefix: prefix.join('/'),
+          bucketName: bucketName.value,
+        },
+      });
     }
   };
 
-  const gotoPage = (type, query = '') => {
+  const gotoPage = async (type, query = '') => {
     if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
       bindAmbCode();
       return false;
@@ -366,89 +860,76 @@
       if (type === 'analysisCate') {
         router.push('/analysisCate?type=1');
       } else if (type === 'analysis') {
+        if (topSwipeIndex.value != 0) return false;
         router.push('/analysis');
       } else if (type === 'transactionRecords') {
         router.push(`/transactionRecords${query ? `?type=${query}` : ''}`);
       } else if (type === 'shop') {
         router.push({ name: 'Shop' });
       } else if (type === 'analysisChart') {
+        if (topSwipeIndex.value != 0) return false;
         router.push('/analysisChart');
       } else if (type === 'Order') {
         router.push('/list');
+      } else if (type == 'Bucket') {
+        const postData = {
+          sort_type: 'created_at',
+          ascending: false,
+          is_domain: 1,
+          electronic_type: '0',
+        };
+        // await loadBucket([0, 1, 2, 3, 6], '', '', '', postData);
+        search_cloud({
+          ps: 2,
+          pn: 1,
+          order_state: [0, 1, 2, 3, 6],
+          start_time: '',
+          end_time: '',
+          buy_result: 'success',
+          ...postData,
+        }).then((res) => {
+          let total = res?.result?.total;
+          if (total == 1) {
+            let item = res?.result.data[0];
+            router.push({
+              name: 'listDetails',
+              query: {
+                id: item.order_id,
+                uuid: item.uuid,
+                amb_uuid: item.amb_uuid,
+                income: item.income,
+                mintType: '0',
+              },
+            });
+            return false;
+          } else {
+            router.push({
+              name: 'BucketList',
+            });
+          }
+        });
+      } else if (type == 'NFT') {
+        router.push('/nft');
+      } else if (type == 'Assets') {
+        router.push('/assetsInfo');
+      } else if (type == 'PersonalInfo') {
+        if (topSwipeIndex.value != 1) return false;
+        router.push('/personalInfo');
       }
     }
   };
-  const toBuyOrder = () => {
-    gotoPage('shop');
-  };
-  const toRecharge = () => {
-    if (!userInfo.value.amb_promo_code || !cloudCodeIsBind.value) {
-      bindAmbCode();
-      return false;
-    } else {
-      router.push({ name: 'Recharge' });
-    }
-  };
-
-  function gotoBindAmb() {
-    if (curStepIndex.value !== 1) {
-      showToast.text('You have already bound an invitation code');
-      return;
-    }
-    bindAmbCode();
-  }
-
-  function gotoOrderList() {
-    if (curStepIndex.value !== 4) {
-      showToast.text('You do not have any available order records yet');
-      return;
-    }
-    router.push('/list');
-  }
-
-  onBeforeMount(() => {
-    if (cloudCodeIsBind.value) {
-      getOrder();
-    }
-  });
-
-  watch(
-    cloudCodeIsBind,
-    async (newVal) => {
-      if (newVal) {
-        userStore.setambRefuse(false);
-        getOrder();
-        getUserAssets();
-        getExchangeRate();
-      }
-    },
-    { deep: true, immediate: true },
-  );
-
-  const targetIsVisible = ref(false);
-  const my_steps = ref(null);
-  function loadMySwipeDom() {
-    const { stop } = useIntersectionObserver(my_steps, ([{ isIntersecting }]) => {
-      targetIsVisible.value = isIntersecting;
-    });
-  }
-
-  function scrollIntoViewTo() {
-    let my_steps = document.getElementById('my_steps');
-    if (my_steps) {
-      my_steps?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
 
   function gotoOrderPage(row) {
     console.log(row);
     if (row.order_info.state == 5 || row.order_info.state == 4) {
+      window.sessionStorage.removeItem('myHistoryOrder');
+      window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(row));
       router.push({
-        name: 'orderSummary',
+        name: 'listDetails',
         query: {
           id: row.order_id,
-          status: row.order_info.state,
-          type: 'history',
+          uuid: row.order_info && row.order_info.uuid,
+          amb_uuid: row.amb_uuid,
         },
       });
     } else {
@@ -462,23 +943,1418 @@
       });
     }
   }
-
-  onMounted(async () => {
-    loadMySwipeDom();
-    if (cloudCodeIsBind.value) {
-      getUserAssets();
-      getExchangeRate();
+  const gotoOrderDetail = (item) => {
+    router.push({
+      name: 'FileList',
+      query: {
+        id: item.order_id,
+        uuid: item.uuid,
+        amb_uuid: item.amb_uuid,
+        domain: item.domain,
+      },
+    });
+  };
+  const uploadComplete = () => {
+    // imgListRef?.value?.refresh();
+    // getFileList();
+  };
+  const setBucket = async (item) => {
+    if (!item.domain) {
+      router.push({
+        name: 'listDetails',
+        query: {
+          id: item.order_id,
+          uuid: item.uuid,
+          amb_uuid: item.amb_uuid,
+          domain: item.domain,
+        },
+      });
+      return false;
     }
-  });
+    // bucketName.value = item.domain
+    currentBucketData = item;
+    window.localStorage.homeChooseBucket = JSON.stringify(item);
+    // order_uuid.value = item.uuid;
+    showRight.value = false;
+    if (order_uuid.value) {
+      initWebSocket();
+      await getOrderInfo(true, order_uuid.value);
+      getFileList();
+      // if (imgListRef?.value) {
+      //   imgListRef?.value?.refresh();
+      // }
+    }
+  };
+  watch(
+    secretAccessKey,
+    (val) => {
+      console.log(val, 'secretAccessKey');
+    },
+    { deep: true, immediate: true },
+  );
+  const refresh = async () => {
+    detailShow.value = false;
+    if (order_uuid.value) {
+      imgListRef?.value?.refresh();
+      await getOrderInfo(true, order_uuid.value);
+      getFileList();
+    }
+  };
+  watch(
+    needRefresh,
+    (val) => {
+      if (val) {
+        // refresh();
+      }
+    },
+    { deep: true },
+  );
+  const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
+    let imgHttpLink = '';
+    let imgHttpLarge = '';
+    type = type.toLowerCase();
+    let isSystemImg = false;
+    let cid = item.cid;
+    let key = item.key;
+
+    let ip = orderInfo.value.rpc.split(':')[0];
+    let port = orderInfo.value.rpc.split(':')[1];
+    let Id = orderInfo.value.foggie_id;
+    let peerId = orderInfo.value.peer_id;
+    if (
+      type === 'png' ||
+      type === 'bmp' ||
+      type === 'gif' ||
+      type === 'jpeg' ||
+      type === 'jpg' ||
+      type === 'svg' ||
+      type === 'ico' ||
+      type === 'webp'
+    ) {
+      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+      imgHttpLink = getHttpShare(
+        accessKeyId.value,
+        secretAccessKey.value,
+        bucketName.value,
+        item.key,
+        type === 'ico' || type === 'svg' ? false : true,
+      );
+      // console.log('--------imgHttpLarge', imgHttpLarge);
+    } else if (type === 'mp3') {
+      type = 'audio';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
+      type = 'video';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
+    } else {
+      isSystemImg = true;
+    }
+    if (isDir) {
+      isSystemImg = true;
+    }
+    return { imgHttpLink, isSystemImg, imgHttpLarge };
+  };
+  function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
+    console.log(11111);
+
+    showToast.loading('Loading', {
+      cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+      id: 'file_list',
+    });
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+    console.log('ip:', ip);
+    console.log('metadata.value:', metadata.value);
+    console.log('metadata.value:', JSON.stringify(metadata.value));
+    console.log('header.value:', header.value);
+
+    server = new grpcService.default.ServiceClient(ip, null, null);
+    let listObject = new Prox.default.ProxListObjectsRequest();
+    listObject.setPrefix('');
+    listObject.setDelimiter('');
+    listObject.setEncodingType('');
+    listObject.setMaxKeys(20);
+    listObject.setStartAfter('');
+    listObject.setContinuationToken(scroll || '');
+    listObject.setVersionIdMarker('');
+    listObject.setKeyMarker('');
+    listObject.setOrderby('lastmodifiedtime desc');
+    listObject.setTags('');
+    listObject.setCategory(0);
+    listObject.setDate('');
+    let requestReq = new Prox.default.ProxListObjectsReq();
+    requestReq.setHeader(header.value);
+    requestReq.setRequest(listObject);
+    console.log('requestReq.value:', requestReq);
+
+    server.listObjects(
+      requestReq,
+      metadata.value,
+      (
+        err: any,
+        res: {
+          getCommonprefixesList: () => any;
+          getContentList: () => any[];
+          getContinuationtoken: () => any;
+          getIstruncated: () => any;
+          getMaxkeys: () => any;
+          getNextmarker: () => any;
+          getPrefix: () => any;
+          getPrefixpinsList: () => any;
+        },
+      ) => {
+        if (res) {
+          const transferData = {
+            commonPrefixes: res.getCommonprefixesList(),
+            content: res
+              .getContentList()
+              .map(
+                (el: {
+                  getKey: () => any;
+                  getEtag: () => any;
+                  getLastmodified: () => any;
+                  getSize: () => any;
+                  getContenttype: () => any;
+                  getCid: () => any;
+                  getFileid: () => any;
+                  getIspin: () => any;
+                  getIspincyfs: () => any;
+                  getPinexp: () => any;
+                  getCyfsexp: () => any;
+                  getOod: () => any;
+                  getIspersistent: () => any;
+                  getCategory: () => any;
+                  getTags: () => any;
+                  getImages: () => any;
+                  getNftinfosList: () => any;
+                  getThumb: () => any;
+                }) => {
+                  const imageObj = el.getImages().toObject();
+                  const imageInfo = {};
+                  let isShowDetail = false;
+                  if (imageObj.camerainfo?.make) {
+                    isShowDetail = true;
+                    imageInfo.aperture = imageObj.addition.aperture; //光圈
+                    imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+                    imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
+                    imageInfo.exptime = imageObj.addition.exptime; //曝光时间
+                    imageInfo.orientation = imageObj.addition.orientation; //方向
+                    imageInfo.focallength = imageObj.addition.focallength; //焦距
+                    imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
+                    imageInfo.software = imageObj.addition.software; // 使用软件
+                    imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
+                    imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
+                    imageInfo.gps = imageObj.gps; //经纬度
+                    imageInfo.resolution = imageObj.resolution; //像素
+                  }
+                  return {
+                    key: el.getKey(),
+                    etag: el.getEtag(),
+                    lastModified: el.getLastmodified(),
+                    size: el.getSize(),
+                    contentType: el.getContenttype(),
+                    cid: el.getCid(),
+                    fileId: el.getFileid(),
+                    isPin: el.getIspin(),
+                    isPinCyfs: el.getIspincyfs(),
+                    pinExp: el.getPinexp(),
+                    CyfsExp: el.getCyfsexp(),
+                    OOD: el.getOod(),
+                    isPersistent: el.getIspersistent(),
+                    category: el.getCategory(),
+                    tags: el.getTags(),
+                    imageInfo: imageInfo,
+                    isShowDetail,
+                    nftInfoList: el.getNftinfosList(),
+                    thumb: el.getThumb(),
+                  };
+                },
+              ),
+            continuationToken: res.getContinuationtoken(),
+            isTruncated: res.getIstruncated(),
+            maxKeys: res.getMaxkeys(),
+            nextMarker: res.getNextmarker(),
+            prefix: res.getPrefix(),
+            prefixpins: res.getPrefixpinsList(),
+          };
+          isError.value = false;
+          initRemoteData(transferData, reset, 0);
+          showToast.hide('file_list');
+        } else if (err) {
+          isError.value = true;
+          showToast.hide('file_list');
+          console.log('err----list', err);
+          console.log('err----list', JSON.stringify(err));
+        }
+      },
+    );
+  }
+  const initRemoteData = async (
+    data: {
+      commonPrefixes?: any;
+      content: any;
+      continuationToken?: any;
+      isTruncated?: any;
+      maxKeys?: any;
+      nextMarker?: any;
+      prefix?: any;
+      prefixpins?: any;
+      err?: any;
+    },
+    reset = false,
+    category: number,
+  ) => {
+    if (!data) {
+      return;
+    }
+    if (data.err) {
+      showToast.fail('Failed to  retrieve data. Please try again later');
+    }
+    if (!accessKeyId.value) {
+      await getOrderInfo(true, order_uuid.value);
+    }
+    tableData.value = [];
+    for (let i = 0; i < data.commonPrefixes?.length; i++) {
+      let name = data.commonPrefixes[i];
+      if (data.prefix) {
+        // name = name.split(data.prefix)[1];
+        name = name.split('/')[name.split('/').length - 2] + '/';
+      }
+
+      let cur_cid = '';
+      for (let i = 0; i < data.prefixpins?.length; i++) {
+        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
+          cur_cid = data.prefixpins[i].cid;
+        }
+      }
+
+      let item = {
+        isDir: true,
+        checked: false,
+        name,
+        category: 0,
+        fileType: 1,
+
+        fullName: data.commonPrefixes[i],
+        key: data.commonPrefixes[i],
+        idList: [
+          {
+            name: 'IPFS',
+            code: cur_cid,
+          },
+          {
+            name: 'CYFS',
+            code: '',
+          },
+        ],
+        date: '-',
+        size: '',
+        status: '-',
+        type: 'application/x-directory',
+        file_id: '',
+        pubkey: '',
+        cid: cur_cid,
+        imgUrl: '',
+        imgUrlLarge: '',
+        share: {},
+        isSystemImg: false,
+        canShare: false,
+      };
+
+      tableData.value.push(item);
+    }
+
+    for (let j = 0; j < data?.content?.length; j++) {
+      let date = transferUTCTime(data.content[j].lastModified);
+      let isDir = data.content[j].contentType == 'application/x-directory' ? true : false;
+      const type = data.content[j].key.substring(data.content[j].key.lastIndexOf('.') + 1);
+      let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
+      let cid = data.content[j].cid;
+      let file_id = data.content[j].fileId;
+
+      let name = data.content[j].key;
+      if (data.prefix) {
+        name = name.split(data.prefix)[1];
+      }
+      if (name.indexOf('/') > 0 && name[name.length - 1] != '/') {
+        name = name.split('/')[name.split('/').length - 1];
+      } else if (name.indexOf('/') > 0) {
+        name = name.split('/')[name.split('/').length - 2];
+      }
+      let isPersistent = data.content[j].isPersistent;
+      console.log(data.content[j], 'data.content[j]');
+
+      let item = {
+        imageInfo: data.content[j].imageInfo,
+        isShowDetail: data.content[j].isShowDetail,
+        isDir: isDir,
+        checked: false,
+        name,
+        category: data.content[j].category,
+        fileType: 2,
+        fullName: data.content[j].key,
+        key: data.content[j].key,
+        idList: [
+          {
+            name: 'IPFS',
+            code: data.content[j].isPin ? cid : '',
+          },
+          {
+            name: 'CYFS',
+            code: data.content[j].isPinCyfs ? file_id : '',
+          },
+        ],
+        date,
+        // size: getfilesize(data.content[j].size),
+        originalSize: data.content[j].size,
+        status: cid || file_id ? 'Published' : '-',
+        type: data.content[j].contentType,
+        file_id: file_id,
+        pubkey: cid,
+        cid,
+        imgUrl: data.content[j].thumb && data.content[j].thumb != 'b' ? url : '',
+        imgUrlLarge: url_large,
+        share: {},
+        isSystemImg,
+        canShare: cid ? true : false,
+        isPersistent,
+        isPin: data.content[j].isPin,
+        isPinCyfs: data.content[j].isPinCyfs,
+        thumb: data.content[j].thumb,
+      };
+      // if (item.isDir || category == 1) {
+      tableData.value.push(item);
+      // }
+    }
+  };
+  const $cordovaPlugins = inject('$cordovaPlugins');
+
+  const getSignHeaders = (objectKey) => {
+    // const objectKey = encodeURIComponent(checkData[0].fullName);
+    const date = new Date().toUTCString();
+
+    const httpMethod = 'GET';
+    const contentType = '';
+    const contentMd5 = '';
+    const canonicalizedAmzHeaders = '';
+    // const canonicalizedResource = `/o/${bucketName}/${objectKey}`;
+    const canonicalizedResource = `/${bucketName.value}/o/${objectKey}`;
+
+    const signature = `${httpMethod}\n${contentMd5}\n${contentType}\n\nx-amz-date:${date}\n${canonicalizedAmzHeaders}${canonicalizedResource}`;
+
+    let hmac = HmacSHA1(signature, secretAccessKey.value);
+    const signatureBase64 = enc.Base64.stringify(hmac);
+
+    const headers = {
+      'x-amz-date': date,
+      Authorization: `AWS ${accessKeyId.value}:${signatureBase64}`,
+    };
+    return headers;
+  };
+  const handlerClick = async (type: string) => {
+    const checkData = JSON.parse(JSON.stringify(detailRow.value));
+    console.log(checkData, 'checkData');
+
+    if (type === 'download') {
+      const objectKey = encodeURIComponent(checkData.fullName);
+      const headers = getSignHeaders(objectKey);
+      console.log('headers:', headers);
+      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
+      if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+        $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
+      } else {
+        showToast.text('The download is in progress, please wait patiently');
+        fetch(url, { method: 'GET', headers })
+          .then((response) => {
+            if (response.ok) {
+              // 创建一个 Blob 对象，并将响应数据写入其中
+              console.log('Success', response);
+              return response.blob();
+            } else {
+              showToast.fail('Download failed, please try again');
+              // 处理错误响应
+              console.error('Error:', response.status, response.statusText);
+            }
+          })
+          .then((blob) => {
+            console.log(blob, 'blob');
+            console.log('Blob type:', blob.type);
+
+            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+            const a = document.createElement('a');
+            console.log("document.createElement('a')");
+
+            a.href = URL.createObjectURL(blob);
+            console.log(a.href);
+
+            a.download = checkData.fullName;
+            console.log(a.download);
+
+            // 将 <a> 元素添加到文档中，并模拟点击
+            document.body.appendChild(a);
+            console.log('添加');
+            a.click();
+            console.log('点击');
+
+            document.body.removeChild(a);
+          })
+          .catch((error) => {
+            showToast.fail('Download failed, please try again');
+            // 处理网络错误
+            console.error('Network Error:', error);
+          });
+      }
+    } else if (type === 'share') {
+      await doShare(checkData);
+    } else if (type === 'move') {
+      moveShow.value = true;
+    } else if (type == 'rename') {
+      renameShow.value = true;
+    } else if (type === 'delete') {
+      const onOk = async () => {
+        deleteItem([checkData]);
+        fileItemPopupIsShow.value = false;
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to delete?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+        onOk,
+      });
+    } else if (type == 'nft') {
+      createNFT(checkData, accessKeyId.value, secretAccessKey.value, bucketName.value);
+    } else if (type === 'pin') {
+      const onOk = async () => {
+        await cloudPin(checkData, 'ipfs');
+        // detailRow.value.isPin = true;
+        detailShow.value = false;
+        getFileList();
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS PIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        onOk,
+      });
+    } else if (type === 'un pin') {
+      const onOk = async () => {
+        const d = await cloudPin(checkData, 'ipfs', 'unpin');
+        if (d) {
+          imgData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          otherData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          detailRow.value.isPin = false;
+        }
+        // doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS UNPIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+
+        onOk,
+      });
+    }
+  };
+  const initNFT = async () => {
+    let arr = [];
+    if (!walletInfo || !walletInfo.value || walletInfo.value.length === 0) {
+      return;
+    }
+    for (let i = 0; i < walletInfo.value.length; i++) {
+      arr.push(walletInfo.value[i].address);
+    }
+    const d = {
+      account: arr,
+    };
+    const r = await search_mint(d, 2, 1);
+    if (r?.result?.data) {
+      nftImgList.value = r.result.data;
+      nftTotal.value = r.result.total;
+    }
+    const r2 = await search_deploy(d, 2, 1);
+    if (r2?.result?.data) {
+      contractTotal.value = r2.result.total;
+    }
+    // const dd = {
+    //   account: arr,
+    //   sync_storage: 2,
+    // };
+    // const sync_data = await search_mint(dd, 100, 1);
+    // if (sync_data?.result?.data) {
+    //   const nft_info = [];
+    //   sync_data?.result.data.map(async (item) => {
+    //     const meta_image = item.meta_image;
+    //     const bucket = meta_image.split('://')[1]?.split('.')[0];
+    //     const cid = meta_image.split('/ipfs/')[1];
+    //     const contractAddress = item.contract;
+    //     const tokenId = item.token_id;
+    //     if (contractAddress && tokenId) {
+    //       let ip = `https://${bucket}.${poolUrl}:7007`;
+    //       let server = new grpcService.default.ServiceClient(ip, null, null);
+    //       let ProxUpdateNFTRequest = new Prox.default.ProxUpdateNFTRequest();
+    //       let ProxNFTInfo = new Prox.default.ProxNFTInfo();
+    //       const { header, metadata } = await getOrderInfo(bucket);
+    //       ProxUpdateNFTRequest.setHeader(header);
+    //       ProxNFTInfo.setCid(cid);
+    //       ProxNFTInfo.setContractid(contractAddress);
+    //       ProxNFTInfo.setTokenid(tokenId);
+    //       ProxUpdateNFTRequest.addNftinfos(ProxNFTInfo);
+
+    //       console.log('ProxUpdateNFTRequest----------', ProxUpdateNFTRequest, ProxNFTInfo);
+
+    //       const update_data = await server.updateNFT(ProxUpdateNFTRequest, metadata.value, (err, data) => {
+    //         if (err) {
+    //           console.log('err----------', err);
+    //         } else {
+    //           console.log('data----------', data);
+    //         }
+    //       });
+    //       if (update_data) {
+    //         console.log('update_data----------', update_data);
+    //         nft_info.push({
+    //           contract: contractAddress,
+    //           token_id: tokenId,
+    //         });
+    //       }
+    //     }
+    //   });
+    //   if (nft_info.length > 0) {
+    //     const _d = {
+    //       nft_info,
+    //     };
+    //     await update_nft_sync(_d);
+    //   }
+    // }
+  };
+  function loadMore2() {
+    if (cloudCodeIsBind.value) {
+      isError2.value = false;
+      pageNum.value = pageNum.value + 1;
+      searchOrderProfit();
+    }
+  }
+  function searchOrderProfit() {
+    const end = new Date();
+    const start = new Date();
+    start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+    const postData = {
+      start_time: transferUTCTimeDay(start),
+      end_time: transferUTCTimeDay(end),
+      ps: pageSize.value,
+      pn: pageNum.value,
+    };
+    infinityValue2.value = true;
+    search_user_asset_detail(postData)
+      .then((res) => {
+        infinityValue2.value = false;
+        if (res && res.result && res.result.data.length) {
+          for (const item of res.result.data || []) {
+            item.trx_id = handleID(item.trx_id);
+          }
+          console.log('pnnnnnnnnnnn', pageNum.value);
+
+          earningsList.value = earningsList.value.concat(res.result.data);
+          // const newSetCloudList = [...earningsList.value, ...res.result.data];
+          // let arr = [];
+          // const filterList = newSetCloudList.filter((item) => !arr.includes(item.trx_id) && arr.push(item.trx_id));
+          // earningsList.value = filterList;
+          // console.log(earningsList.value );
+
+          total2.value = res.result.total;
+        }
+        if (res.code != 200) {
+          pageNum.value = pageNum.value - 1;
+          isError2.value = true;
+        }
+      })
+      .catch(() => {
+        isError2.value = true;
+        pageNum.value = pageNum.value - 1;
+        infinityValue2.value = false;
+      });
+  }
+  const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
+    console.log('doSocketFn', msg, tableData.value);
+    const action = msg.action;
+    const fileInfo = msg.fileInfo;
+    const keys = fileInfo.keys;
+    const bucket = fileInfo.bucket;
+    const cid = fileInfo.cid;
+    if (!action || !keys || keys.length === 0) {
+      refresh();
+      return;
+    }
+
+    if (action === 'FILE_ADD') {
+      let index = keys[0].lastIndexOf('/');
+      let name = keys[0].substring(index + 1);
+      const date = transferGMTTime(fileInfo.lastModified * 1000);
+      const _cid = cid && cid[0] ? cid[0] : '';
+      const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
+      if (!target) {
+        const type = keys[0].substring(keys[0].lastIndexOf('.') + 1).toLowerCase();
+        const data = {
+          cid: _cid,
+          key: keys[0],
+        };
+        const imgData = await handleImg(data, type, false);
+        let category = 0;
+        if (
+          type === 'png' ||
+          type === 'bmp' ||
+          type === 'gif' ||
+          type === 'jpeg' ||
+          type === 'jpg' ||
+          type === 'svg' ||
+          type === 'heif' ||
+          type === 'webp' ||
+          type === 'ico'
+        ) {
+          category = 1;
+        } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
+          category = 2;
+        } else if (type === 'mp3') {
+          category = 3;
+        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+          category = 4;
+        }
+        const url = imgData.imgHttpLink;
+        const isSystemImg = imgData.isSystemImg;
+        const url_large = imgData.imgHttpLarge;
+
+        console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
+
+        let imageInfo = {
+          aperture: '',
+          datetime: '', //拍摄时间
+          exposuretime: '', //ev曝光量
+          exptime: '', //曝光时间
+          orientation: '', //方向
+          focallength: '', //焦距
+          Flash: false, //是否使用闪光灯
+          software: '', // 使用软件
+          iso: '', //iso
+          camerainfo: '', //手机厂商及其机型
+          gps: '', //经纬度
+          resolution: '', //像素
+        };
+        let isShowDetail = false;
+
+        if (fileInfo.image_infos && Object.keys(fileInfo.image_infos).length > 0) {
+          let key = Object.keys(fileInfo.image_infos)[0];
+          let imageObj = fileInfo.image_infos[key];
+          if (imageObj && imageObj.addition) {
+            isShowDetail = true;
+            imageInfo.aperture = imageObj.addition.aperture;
+            imageInfo.datetime = moment(imageObj.addition.date_time, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+            imageInfo.exposuretime = imageObj.addition?.exposure_time; //ev曝光量
+            imageInfo.exptime = imageObj.addition?.exp_time; //曝光时间
+            imageInfo.orientation = imageObj.addition?.orientation; //方向
+            imageInfo.focallength = imageObj.addition?.focal_length; //焦距
+            imageInfo.Flash = imageObj.addition?.flash || false; //是否使用闪光灯
+            imageInfo.software = imageObj.addition?.software; // 使用软件
+            imageInfo.iso = imageObj.addition?.iso.charCodeAt(0);
+            imageInfo.camerainfo = imageObj?.camera_info; //手机厂商及其机型
+            imageInfo.gps = imageObj?.gps; //经纬度
+            imageInfo.resolution = imageObj?.resolution; //像素
+          }
+          console.log('FILE_ADD-----------tableData', imageInfo);
+        }
+
+        let item = {
+          isDir: false,
+          checked: false,
+          name,
+          category,
+          fileType: 2,
+          fullName: keys[0],
+          key: keys[0],
+          idList: [
+            {
+              name: 'IPFS',
+              code: '',
+            },
+            {
+              name: 'CYFS',
+              code: '',
+            },
+          ],
+          date,
+          pubkey: _cid,
+          cid: _cid,
+          imgUrl: url,
+          imgUrlLarge: url_large,
+          share: {},
+          isSystemImg,
+          canShare: _cid ? true : false,
+          isPin: false,
+          isPinCyfs: false,
+          type,
+          isShowDetail,
+          imageInfo,
+        };
+        tableData.value.unshift(item);
+        imgListRef?.value?.tableDataAdd(item);
+      }
+    } else if (action === 'FILE_PIN') {
+      const curName = fileInfo.keys[0];
+      const curDir = window.sessionStorage.getItem('currentFolder');
+      tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
+        if (el.cid === cid[0]) {
+          el.isPin = true;
+        } else if (
+          curName.charAt(curName.length - 1) === '/' &&
+          decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
+        ) {
+          el.isPin = true;
+          if (!el.cid && cid[0]) {
+            el.cid = cid[0];
+          }
+        }
+      });
+    } else if (action === 'FILE_CHANGE') {
+    } else if (action === 'FILE_DELETE') {
+      console.log('FILE_DELETE', keys);
+      // tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+      // imgArray.value = imgArray.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+    } else if (action === 'FILE_PINNING') {
+    }
+  };
+  const initWebSocket = async () => {
+    if (!order_uuid.value) {
+      return false;
+    }
+    let param = {
+      order_uuid: order_uuid.value,
+    };
+    const signData = await get_order_sign(param);
+    socketDate.value = signData?.result?.data?.timestamp;
+    socketToken.value = signData?.result?.data?.sign;
+    console.log('initWebSocket-----------');
+    const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
+    fileSocket.value = new WebSocket(url);
+    fileSocket.value.onopen = () => {
+      const authMessage = {
+        action: 'AUTH',
+        userID: orderInfo.value.foggie_id,
+        token: socketToken.value,
+        date: socketDate.value,
+      };
+      fileSocket.value.send(JSON.stringify(authMessage));
+    };
+
+    fileSocket.value.onmessage = (event: { data: string }) => {
+      const message = JSON.parse(event.data);
+      const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
+      console.log('Received message from server:', message, currentFolderStr);
+      const uploadFileName = window.sessionStorage.getItem('uploadFileName');
+      let fileInfo = message.fileInfo;
+      let dirArr = fileInfo.keys;
+      const updateBy = fileInfo.updateBy;
+      let dirFile = '';
+      let dirFileName = '';
+      if (dirArr && dirArr.length > 0) {
+        let index = dirArr[0].lastIndexOf('/');
+        if (index > -1) {
+          dirFile = dirArr[0].substring(0, index + 1);
+          dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
+        } else {
+          dirFile = '';
+          dirFileName = dirArr[0];
+        }
+      }
+
+      console.log(
+        '888888',
+        dirArr,
+        dirFile,
+        currentFolderStr,
+        dirFile === decodeURIComponent(currentFolderStr),
+        dirFileName !== uploadFileName,
+      );
+      if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
+        if (detailShow.value) {
+          setTimeout(() => {
+            initWebSocket();
+          }, 3000);
+        } else {
+          doSocketFn(message);
+        }
+      }
+    };
+
+    fileSocket.value.onclose = (event: any) => {
+      console.log('WebSocket connection closed:', event, fileSocket.value);
+      if (fileSocket.value) {
+        console.log('WebSocket connection again:');
+        initWebSocket();
+      }
+    };
+    fileSocket.value.onerror = (event: any) => {
+      console.error('WebSocket connection error:', event);
+    };
+  };
+  watch(
+    cloudCodeIsBind,
+    async (newVal) => {
+      nextTick(() => {
+        const swipe = document.getElementsByClassName('top_swipe')[0];
+        swipeWidth.value = swipe.clientWidth * 0.8;
+        if (swipeRef.value) {
+          swipeRef.value.resize();
+        }
+        window.addEventListener('resize', (event) => {
+          swipeWidth.value = swipe.clientWidth * 0.8;
+          if (swipeRef.value) {
+            swipeRef.value.resize();
+          }
+        });
+      });
+      // if (newVal) {
+      //   userStore.setambRefuse(false);
+      //   getOrder();
+      //   getUserAssets();
+      //   getExchangeRate();
+      //   initNFT();
+      //   getNoBucketOrder();
+      //   await loadMoreFun();
+      //   console.log(listData.value.length, 'listData.length');
+      //   if (window.localStorage.homeChooseBucket) {
+      //     setBucket(JSON.parse(window.localStorage.homeChooseBucket));
+      //   } else if (leftBucketList.value.length) {
+      //     let bucketList = leftBucketList.value.filter((el) => el.domain);
+      //     if (bucketList.length) {
+      //       setBucket(bucketList[0]);
+      //     } else {
+      //       showRight.value = true;
+      //       showToast.text('Please select a bucket and set the bucket name.');
+      //     }
+      //   }
+      // }
+    },
+    { deep: true, immediate: true },
+  );
+  watch(
+    curStepIndex,
+    (val) => {
+      if (val === 4) {
+        searchOrderProfit();
+        searchAllOrderProfit();
+      }
+    },
+    { deep: true, immediate: true },
+  );
+
+  // watch(
+  //   curStepIndex,
+  //   (val) => {
+  //     if (val === 4) {
+  //     }
+  //   },
+  //   { deep: true, immediate: true },
+  // );
+  provide('handleImg', handleImg);
+  provide('getSummary', getSummary);
 </script>
 
 <style lang="scss" scoped>
+  .plus_bucket {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin: 0 0.2rem;
+    border-radius: 50%;
+    border: 1px dashed $main_blue;
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: $main_blue;
+    }
+    & + img {
+      width: 3rem;
+      height: 3rem;
+      margin: 0 0.2rem;
+      border-radius: 50%;
+    }
+    & + p {
+      margin-top: 0.5rem;
+      margin: 0.5rem;
+      text-align: left;
+    }
+  }
+  :deep {
+    .out_img_box {
+      .upload_out_box {
+        height: 100%;
+      }
+      .nut-uploader__input {
+        position: absolute !important;
+        width: 100% !important;
+        height: 100% !important;
+        left: 0 !important;
+        top: unset !important;
+        right: unset !important;
+        bottom: unset !important;
+      }
+      .upload_btn {
+        position: relative;
+        left: unset;
+        top: unset;
+        right: unset;
+        bottom: unset;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        border-radius: 1rem;
+        background: unset;
+        border: 1px dashed #ccc;
+        color: #666;
+        cursor: pointer;
+      }
+      .nut-uploader__preview {
+        display: none;
+      }
+      .nut-uploader {
+        width: 100%;
+        height: 100%;
+      }
+      .nut-uploader__slot {
+        width: 100%;
+      }
+      .upload_progress {
+        left: 0;
+      }
+    }
+  }
+
+  .draw_title {
+    display: block;
+    padding: 0.5rem;
+    text-align: center;
+    color: $main_blue;
+    font-weight: 600;
+  }
+  .file_list_bucket {
+    height: calc(100% - 5rem);
+    // padding: 0 0.5rem;
+    border-bottom: 1px solid #ccc;
+    border-radius: 0 !important;
+    .list_item {
+      position: relative;
+      margin: 0 !important;
+      padding: 0.5rem !important;
+      .order_img {
+        position: absolute;
+        left: 0.3rem;
+        top: 0.3rem;
+        img {
+          width: 1rem;
+          height: auto;
+        }
+      }
+      .history {
+        position: absolute;
+        right: 0.3rem;
+        top: 0.3rem;
+        width: 1rem;
+        height: auto;
+        opacity: 0.4;
+      }
+    }
+    :deep {
+      .nut-infinite__container {
+        display: grid !important;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 0.4rem;
+      }
+      .nut-infinite__bottom {
+        display: block !important;
+      }
+    }
+    .left_icon_box {
+      img {
+        width: 75% !important;
+        margin: 0 auto;
+        border-radius: 50%;
+      }
+    }
+  }
+  .top_swipe {
+    :deep {
+      .van-swipe-item {
+      }
+    }
+  }
   ::v-deep {
     .nut-step-main {
       padding-bottom: 30px !important;
     }
   }
+  .bucket_tips {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    svg {
+      width: 45px;
+      height: 45px;
+      vertical-align: middle;
+    }
+  }
+  .type_check_box {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px;
+    background: #fff;
+    border-radius: 20px;
+    width: 100%;
+    height: 380px;
+    box-sizing: border-box;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 
+    .type_item {
+      width: 50%;
+      text-align: center;
+      height: 150px;
+      cursor: pointer;
+      font-weight: bold;
+      &.miner_tool {
+        height: 100px;
+        .svg_box {
+          margin: 0 auto;
+          img {
+            width: unset;
+            height: 60%;
+          }
+        }
+        p {
+          font-size: 0.8rem;
+        }
+      }
+
+      .svg_box {
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+        margin: 10px auto;
+        text-align: center;
+        border-radius: 20px;
+
+        svg {
+          width: 100%;
+          height: 100%;
+          vertical-align: middle;
+        }
+      }
+
+      &:nth-child(3),
+      &:nth-child(4) {
+        .svg_box {
+          svg {
+            width: 60px;
+            height: 60px;
+          }
+        }
+      }
+
+      .order-icon-recycle {
+        //   background-color: #ff8b00;
+        // background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
+        //   background-image: linear-gradient(120deg, #8ae9d7 0%, #483bb5 100%);
+        border-radius: 50%;
+
+        svg {
+          width: 80% !important;
+          height: 80% !important;
+          vertical-align: middle;
+        }
+      }
+
+      .order-icon-node-tree {
+        //   background-color: #34964f;
+        //   background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
+        border-radius: 50%;
+
+        svg {
+          width: 100%;
+          height: 100%;
+          vertical-align: middle;
+        }
+      }
+
+      .order-icon-send-to-back {
+        background-color: #fcd116;
+        background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
+        border-radius: 50%;
+
+        svg {
+          width: 60%;
+          height: 60%;
+          vertical-align: middle;
+        }
+      }
+
+      .order-icon-input-cursor-move {
+        background-color: #5f57ff;
+        background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
+        border-radius: 50%;
+
+        svg {
+          width: 60%;
+          height: 60%;
+          vertical-align: middle;
+        }
+      }
+
+      p {
+        color: #051e56;
+        white-space: nowrap;
+      }
+
+      // &:nth-child(1) {
+      //   .svg_box {
+      //     svg {
+      //       color: #aa5eff;
+      //     }
+      //   }
+      // }
+      // &:nth-child(2) {
+      //   .svg_box {
+      //     background: #e0f3ff;
+      //   }
+      // }
+      // &:nth-child(3) {
+      //   .svg_box {
+      //     background: #ffebef;
+      //   }
+      // }
+      // &:nth-child(4) {
+      //   .svg_box {
+      //     background: #e2e4ff;
+      //   }
+      // }
+    }
+  }
+  .recent_folder_box {
+    background: #fff;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 1rem;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    :deep {
+      .img_list_box {
+        height: unset;
+        padding-bottom: 0;
+        .img_item {
+          height: unset;
+          .img_box {
+            height: 150px;
+          }
+        }
+      }
+      .nut-infinite__bottom {
+        display: none;
+      }
+    }
+    .recent_folder_title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      .more {
+        font-size: 0.8rem;
+        font-weight: normal;
+        color: $main_blue;
+      }
+    }
+
+    .recent_folder {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      .folder_item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        img {
+          width: 80%;
+        }
+      }
+    }
+    .file_list {
+      // display: grid;
+      // grid-template-columns: repeat(4, 1fr);
+      // grid-gap: 0.5rem;
+      background: #fff;
+      border-radius: 16px;
+      .list_item {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 5px 0;
+        border-top: 1px solid #eee;
+        .left_icon_box {
+          position: relative;
+          .play_icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.2rem;
+            height: 1.2rem;
+          }
+        }
+
+        .type_icon {
+          width: 80px;
+          height: 80px;
+        }
+
+        .left_icon_box {
+          width: 80px;
+          height: 80px;
+
+          img {
+            width: 80px;
+            height: 80px;
+          }
+        }
+
+        .name_box {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          width: calc(100% - 200px);
+          margin-left: 30px;
+
+          p:first-child {
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          p:last-child {
+            margin-top: 5px;
+            color: #a7a7a7;
+            font-size: 20px;
+          }
+        }
+      }
+    }
+    .file_list_img {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 0.2rem;
+      justify-items: center;
+      margin-top: 20px;
+      padding: 0.5rem 0;
+      background: #fff;
+      border-radius: 16px;
+      background: #212121;
+      border: 0.4vw solid #373737;
+      .list_item {
+        width: 120px;
+        height: 120px;
+        justify-content: center;
+        padding: 0 !important;
+        // padding: 20px 0;
+        :deep {
+          .nut-image {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 0.3rem;
+        }
+      }
+    }
+  }
+
+  .file_list {
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    // padding: 0.5rem;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 1rem;
+    overflow: auto;
+
+    :deep {
+      .nut-infinite__container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        // display: flex;
+        // justify-content: space-between;
+        // flex-wrap: wrap;
+      }
+
+      .nut-infinite__bottom {
+        display: none;
+        height: 2rem;
+        line-height: 2rem;
+      }
+    }
+
+    .list_item {
+      padding: 0;
+      height: unset;
+      margin: 0.2rem 0;
+      flex-direction: column;
+      justify-content: center;
+      box-sizing: border-box;
+      border: none;
+      box-shadow: none;
+      &.is_checked {
+        background: hsl(209, 95%, 90.1%);
+
+        color: $main_blue;
+      }
+      img {
+        width: 100%;
+        height: auto;
+      }
+
+      .name_box {
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        width: unset;
+      }
+    }
+  }
   .DouArrowDown {
     // transform: rotate(180deg);
     display: flex;
@@ -532,37 +2408,89 @@
 
   .dmc_account {
     // background: #5758a0;
-    margin: 0 -4vw;
-    display: flex;
-    justify-content: flex-start;
+    // margin: 0 -4vw;
+    display: grid;
+    grid-template-columns: 80px auto;
+    gap: 0px;
     align-items: center;
-    // margin-top: 5px;
-    font-size: 40px;
-    color: #5758a0;
     height: 100px;
-    // color: #fff;
-    font-weight: bold;
     padding: 10px 0 0 10px;
+    svg {
+      width: 60px;
+      height: 60px;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+      border-radius: 10px;
+    }
 
-    // box-shadow: $main-shadow;
-    .img-box {
+    .dmc_account_box {
+      font-weight: bold;
+
       display: flex;
-      justify-content: center;
+      // justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
 
-      width: 58px;
-      height: 58px;
-      padding: 15px;
-      margin-right: 10px;
-      //   background: #5758a0;
-      box-sizing: border-box;
-      border-radius: 10px;
+      font-size: 40px;
+      color: #5758a0;
+      a {
+        text-decoration: underline;
+      }
+    }
+
+    .Notice {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      background-color: #ececec;
       border-radius: 50%;
 
       img {
-        width: 45px;
-        margin: 0 auto;
+        height: 70%;
+        width: 70%;
+      }
+    }
+
+    .img-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      //   background: #5758a0;
+      box-sizing: border-box;
+
+      svg,
+      img {
+        width: 60px;
+        height: 60px;
+        margin-left: 0.5rem;
         vertical-align: middle;
+        border-radius: 10px;
+      }
+      :deep {
+        .nut-image {
+          width: 60px;
+          height: 60px;
+          margin-left: 0.5rem;
+          border-radius: 10px;
+        }
+        .nut-popover-menu-item {
+          display: flex;
+          align-items: center;
+          padding: 0.5rem 0.5rem 0.5rem 1rem;
+          svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            line-height: 1.5rem;
+            margin-right: 0.5rem;
+          }
+          .nut-popover-menu-item-name {
+            white-space: noWrap;
+            font-size: 1rem;
+          }
+        }
       }
     }
 
@@ -582,6 +2510,7 @@
     overflow-x: auto;
     white-space: nowrap;
     width: 100%;
+    background: #fff;
 
     // background: #fff;
     > div {
@@ -594,19 +2523,24 @@
 
       &:nth-child(2) {
         .svg-box {
-          background: #34964f;
+          // background: #34964f;
+          // background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+          background-image: linear-gradient(to top, #e0e1e2 0%, #e7f0fd 100%);
         }
       }
 
       &:nth-child(3) {
         .svg-box {
-          background: #fcd116;
+          // background: #fcd116;
+          background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
       }
 
       &:nth-child(4) {
         .svg-box {
-          background: #5f57ff;
+          // background: #5f57ff;
+          // background-image: linear-gradient(to top, #5ee7df 0%, #b490ca 100%);
+          background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
         }
       }
     }
@@ -631,16 +2565,24 @@
         border-radius: 50px;
         width: 100px;
         height: 100px;
-        margin-bottom: 15px;
-        background: #ff8b00;
+        margin-bottom: 10px;
+        // background: #ff8b00;
+        // background: linear-gradient(to bottom, #d5dee7 0%, #e8ebf2 50%, #e2e7ed 100%),
+        //   linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 50%, rgba(255, 255, 255, 0.02) 61%, rgba(0, 0, 0, 0.02) 73%),
+        //   linear-gradient(33deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%);
+        // background-blend-mode: normal, color-burn;
+
         // box-shadow: 0px 1px 2px 2px #ccc;
-        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        // box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        // background: #ff656d;
+        // background-image: linear-gradient(to top, #3551ad 0%, #fff 100%) !important;
 
         svg,
         img {
-          width: 55px;
-          height: 55px;
+          width: 90px;
+          height: 90px;
           color: #fff;
+          border-radius: 50%;
         }
       }
     }
@@ -648,24 +2590,53 @@
 
   .income-card {
     position: relative;
-    padding: 40px;
+    padding: 40px 0 40px 40px;
     height: 410px;
     box-sizing: border-box;
     margin: 0;
     // margin-top: 20px;
-    margin-left: -4vw;
-    margin-right: -4vw;
     //   box-shadow: 0px 0px 4px 1px #ccc;
     // background-color: var(--van-blue);
     background: $primary-color;
     color: #fff;
-    border-radius: 0;
-
+    border-radius: 30px;
+    background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    &:first-child {
+      margin-right: 10px;
+    }
+    &:last-child {
+      margin-left: 10px;
+    }
     > img {
-      top: 30px;
+      top: 110px;
       position: absolute;
-      right: 40px;
-      width: 100px;
+      right: 20px;
+      width: 60px;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      -webkit-transform-origin: 50%;
+      -webkit-animation: sizeChange 10s infinite;
+      -webkit-animation-timing-function: linear;
+      -webkit-perspective: 1000;
+      -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+      -webkit-filter: saturate(1.45) hue-rotate(2deg);
+    }
+    @keyframes sizeChange {
+      0% {
+        -webkit-transform: rotateY(0deg);
+      }
+      25% {
+        -webkit-transform: rotateY(-90deg);
+      }
+      50% {
+        -webkit-transform: rotateY(-180deg);
+      }
+      75% {
+        -webkit-transform: rotateY(-270deg);
+      }
+      100% {
+        -webkit-transform: rotateY(-360deg);
+      }
     }
 
     > div {
@@ -701,6 +2672,10 @@
               height: 50px;
               width: 100px;
               vertical-align: sub;
+            }
+            svg {
+              width: 120px;
+              height: auto;
             }
           }
 
@@ -789,38 +2764,31 @@
       }
     }
   }
+  .income-card2 {
+    background-image: linear-gradient(260deg, #4474f1 0%, #2934bc 74%);
+  }
 
-  .withdraw-btn {
-    display: flex;
-    justify-content: space-around;
-    transform: translateY(-80px);
-    width: 90%;
-    margin: 0 auto;
-    padding: 20px 0;
-    border-radius: 16px;
-    border: 1px dashed #ffffff;
-    background: #fff;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-
-    .action_item {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #333333;
-      font-size: 30px;
-
-      img {
-        display: block;
-        width: 160px;
-        margin-bottom: 10px;
-      }
+  @keyframes rotBGimg {
+    from {
+      transform: rotate(0deg);
     }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .withdraw-btn::after {
+    content: '';
+    position: absolute;
+    background: #fff;
+    inset: 3px;
+    border-radius: 15px;
   }
 
   .tab_top_title {
     margin-top: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     // font-style: italic;
     font-size: 35px;
     font-weight: 600;
@@ -845,15 +2813,40 @@
     justify-content: center;
     padding: 12px 30px;
     padding-left: 100px;
-    min-height: 80px;
+    min-height: 100px;
     color: #171414;
     font-size: 24px;
     background: #fff;
 
     border-bottom: 1px solid #eee;
-    margin: 10px 0;
+    margin: 10px 0 20px 0;
     border-radius: 12px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
+
+    .order_status_flag {
+      width: 180px;
+      height: 40px;
+      border-radius: 0 20px 20px 0;
+
+      position: absolute;
+      top: -12px;
+      left: 0px;
+      background: #ccc;
+      color: #fff;
+      text-align: center;
+      justify-content: center;
+      font-weight: bold;
+
+      &.open {
+        background: #009771;
+        background: #f88b02;
+      }
+
+      &.history {
+        background: #999;
+        border: 1px dashed #fff;
+      }
+    }
 
     .item_img_box {
       position: absolute;
@@ -868,24 +2861,24 @@
       img {
         width: 36px;
         margin: 0 auto;
-        transform-style: preserve-3d;
-        -webkit-transform-origin: 50%;
-        -webkit-animation: spin 5s infinite;
-        -webkit-animation-timing-function: linear;
-        -webkit-perspective: 1000;
-        -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
-        -webkit-filter: saturate(1.45) hue-rotate(2deg);
+        // transform-style: preserve-3d;
+        // -webkit-transform-origin: 50%;
+        // -webkit-animation: spin 5s infinite;
+        // -webkit-animation-timing-function: linear;
+        // -webkit-perspective: 1000;
+        // -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+        // -webkit-filter: saturate(1.45) hue-rotate(2deg);
       }
 
-      @keyframes spin {
-        from {
-          -webkit-transform: rotateY(0deg);
-        }
+      // @keyframes spin {
+      //   from {
+      //     -webkit-transform: rotateY(0deg);
+      //   }
 
-        to {
-          -webkit-transform: rotateY(360deg);
-        }
-      }
+      //   to {
+      //     -webkit-transform: rotateY(360deg);
+      //   }
+      // }
 
       .cions {
         margin-right: 15px;
@@ -932,8 +2925,143 @@
       font-weight: 600;
     }
 
+    .my_status {
+      text-align: right;
+      width: 240px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
     &:last-child {
       border-bottom: none;
+    }
+  }
+
+  .history_item {
+    background: #ccc;
+  }
+
+  .googleVerificationBox {
+    padding: 60px 40px;
+    padding-bottom: 160px;
+
+    .title {
+      font-size: 36px;
+      font-weight: 600;
+      text-align: center;
+      color: #334557;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: auto 200px;
+      background-color: #d8d8d8;
+      border-radius: 20px 20px 0 0;
+      border: 2px solid #e1e3e1;
+      border-bottom: 0px;
+      box-sizing: border-box;
+      overflow: hidden;
+      margin-top: 60px;
+      padding: 20px;
+
+      // align-items: center;
+      // justify-items: center;
+      .content_title {
+        font-family: 'Google Sans', Roboto, Arial, sans-serif;
+
+        font-size: 36px;
+        line-height: 40px;
+        letter-spacing: 0;
+        font-weight: 400;
+        hyphens: auto;
+        word-break: break-word;
+        word-wrap: break-word;
+        color: #1f1f1f;
+      }
+
+      .content_tips {
+        margin-top: 20px;
+        font-size: 24px;
+        letter-spacing: 0;
+        font-weight: 400;
+        hyphens: auto;
+        word-break: break-word;
+        word-wrap: break-word;
+        color: #1f1f1f;
+      }
+
+      & > img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+      }
+    }
+
+    .switchButton {
+      border: 2px solid #e1e3e1;
+      padding: 20px;
+      border-radius: 0 0 20px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 24px;
+    }
+
+    .google-tips {
+      margin-top: 20px;
+      margin-top: 16px;
+      margin-bottom: 20px;
+      font-size: 26px;
+      color: #000;
+    }
+
+    .auth_input {
+      display: flex;
+      align-items: center;
+      margin-top: 30px;
+      color: #000;
+      font-size: 26px;
+
+      span {
+        display: inline-block;
+        width: 100%;
+      }
+
+      .copy-icon {
+        cursor: pointer;
+        color: $main_blue;
+      }
+
+      .warning-icon {
+        color: #ff9200;
+      }
+    }
+
+    .auth_qrcode {
+      text-align: center;
+
+      img {
+        width: 400px;
+        height: 400px;
+      }
+    }
+
+    .title_item {
+      text-align: center;
+      font-size: 24px;
+
+      .keyWordBox {
+        background-color: #edf2f7;
+        border-radius: 30px;
+        border: 2px solid darkgray;
+        width: 90%;
+        height: 100px;
+        margin: 0px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     }
   }
 </style>
@@ -943,7 +3071,7 @@
     margin-top: 25px;
 
     .nut-checkbox__label {
-      color: rgb(158, 158, 158) !important;
+      // color: rgb(158, 158, 158) !important;
       font-size: 28px;
     }
   }

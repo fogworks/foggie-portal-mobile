@@ -1,26 +1,106 @@
 <template>
-  <div>
-    <img src="@/assets/DMC_token.png" alt="" />
-  </div>
+  <div class="loader11"></div>
 </template>
 <style scoped>
-  img {
-    width: 100px;
-    height: 100px;
-    transform-style: preserve-3d;
-    -webkit-transform-origin: 50%;
-    -webkit-animation: spin 2s infinite;
-    -webkit-animation-timing-function: linear;
-    -webkit-perspective: 1000;
-    -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.2));
-    -webkit-filter: saturate(1.45) hue-rotate(2deg);
+  .loader11 {
+    width: 150px;
+    height: 150px;
+    border: 8px solid rgb(0, 0, 0, 0.11);
+    border-radius: 50%;
+    border-top-color: rgb(235, 169, 47);
+    border-left-color: rgb(43, 145, 87);
+    border-right-color: rgb(20, 102, 226);
+    border-bottom-color: rgb(224, 71, 71);
+    animation: loader1776 2s linear infinite;
   }
-  @keyframes spin {
-    from {
-      -webkit-transform: rotateY(0deg);
-    }
+
+  @keyframes loader1776 {
     to {
-      -webkit-transform: rotateY(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  .loader {
+    position: relative;
+  }
+
+  .box-1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 150px;
+    width: 150px;
+    background-color: #ffffff;
+    background-image: linear-gradient(135deg, #ffffff 0%, #6284ff 34%, #ff0000 100%);
+    border-radius: 50%;
+    animation: rotate 3s linear infinite;
+    box-shadow:
+      rgba(17, 17, 26, 0.1) 0px 1px 0px,
+      rgba(17, 17, 26, 0.1) 0px 8px 24px,
+      rgba(17, 17, 26, 0.1) 0px 16px 48px;
+  }
+
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .box-1::before {
+    content: '';
+    position: absolute;
+    inset: 15px;
+    background: #f5f5f5;
+    border-radius: 50%;
+    box-shadow:
+      rgb(204, 219, 232) 3px 3px 6px 0px inset,
+      rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+  }
+
+  .loader span {
+    text-align: center;
+    position: absolute;
+    top: 65px;
+    left: 25px;
+    color: black;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    letter-spacing: 2px;
+    font-weight: 800;
+    font-size: 1rem;
+    animation: text-animate412 3s linear infinite;
+  }
+
+  @keyframes text-animate412 {
+    10% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+  @media screen and (min-width: 500px) {
+    .box-1 {
+      width: 150px;
+      height: 150px;
+      box-shadow:
+        rgba(17, 17, 26, 0.1) 0px 1px 0px,
+        rgba(17, 17, 26, 0.1) 0px 8px 24px,
+        rgba(17, 17, 26, 0.1) 0px 16px 48px;
+    }
+    .box-1::before {
+      content: '';
+      position: absolute;
+      inset: 15px;
+      background: #f5f5f5;
+      border-radius: 50%;
+      box-shadow:
+        rgb(204, 219, 232) 3px 3px 6px 0px inset,
+        rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
     }
   }
 </style>

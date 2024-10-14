@@ -1,33 +1,16 @@
 import { createI18n } from 'vue-i18n';
 
-import { Locale } from '@nutui/nutui';
-import enUS from '@nutui/nutui/dist/packages/locale/lang/en-US';
+import ZH from './lang/zh-cn';
+import EN from './lang/en-us';
 
-Locale.use('en-US', enUS);
+const i18n = createI18n({
+    legacy: false, // 如果使用vue3.0 组合式API开发 必须设置为false
+    globalInjection: true,  // 全局生效
+    locale: localStorage.getItem('language_key') || 'en',
+    messages: {
+        'zh': ZH,
+        'en': EN
+    },
 
-export function loadLang() {
-  const modules: Record<string, any> = import.meta.glob('./lang/*.ts', { eager: true });
-  const langs: Record<string, any> = {};
-
-  for (const path in modules) {
-    const name = path.replace(/(\.\/lang\/|\.ts)/g, '');
-    langs[name] = modules[path].lang;
-  }
-  return langs;
-}
-
-export const i18n = createI18n({
-  // globalInjection: true,
-  legacy: false,
-  // locale: 'zh-cn',
-  locale: localStorage.getItem('lang') || 'en-us',
-  fallbackLocale: 'en-us',
-  messages: loadLang(),
 });
-
-export function setLang(locale?: string) {
-  if (locale) {
-    localStorage.setItem('lang', locale);
-  }
-  i18n.global.locale.value = locale || localStorage.getItem('lang') || '';
-}
+export default i18n;

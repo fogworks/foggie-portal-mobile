@@ -1,413 +1,334 @@
 <template>
-  <div class="top_box">
-    <TopBack class="detail_top">
-      <div v-if="bucketName">
-        <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
-        {{ bucketName }}
-        <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
-      </div>
-      <div v-else> Order:{{ order_id }} </div>
-      <span class="benefit_analysis" v-if="orderInfo.value.state == '0'" @click="closedOrder">
-        <img src="@/assets/orderclosed.svg" class="bucket_detail_smal" />
-      </span>
-      <span class="benefit_analysis" v-else @click="gotoSummary(order_id, orderInfo.value.state)">
-        <img src="@/assets/analysis.svg" class="bucket_detail_smal" />
-      </span>
-    </TopBack>
-    <nut-row class="order-detail">
-      <nut-col :span="24" class="order-des">
-        <span class="span1">ID: {{ orderInfo.value?.foggie_id }}</span>
-
-        <span class="span2">Expiration: {{ transferUTCTime(orderInfo.value.expire) }}</span>
-      </nut-col>
-      <nut-col :span="24" class="order-circle">
-        <nut-circle-progress :progress="((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100" radius="60" color="#5460FE">
-          Used: {{ Math.round((usedSize / orderInfo.value.total_space) * 10000) / 100 }} %
-        </nut-circle-progress>
-      </nut-col>
-      <nut-col :span="24" class="order-count">
-        <nut-cell>
-          <IconMdiF color="#9F9BEF" />
-          File:{{ filesCount }}
-        </nut-cell>
-        <nut-cell>
-          <IconSpace color="#7F7AE9" />
-          Space: {{ getfilesize(orderInfo.value.total_space, 'B') }}
-        </nut-cell>
-        <nut-cell>
-          <IconRiPie color="#7F7AE9" />
-          Used: {{ getfilesize(usedSize, 'B') }}
-        </nut-cell>
-      </nut-col>
-    </nut-row>
-  </div>
-  <div class="detail_box">
-    <div class="type_check_box type_check_box1">
-      <div class="type_check">
-        <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 1 } })">
-          <div class="svg_box svg_box2 order-icon-node-tree">
-            <IconRiNodeTree color="#fff" />
+  <div>
+    <div :class="['top_box', isAvailableOrder ? '' : 'isHistory']">
+      <TopBack class="detail_top">
+        <div v-if="bucketName" style="text-decoration: underline; cursor: pointer" @click="dialogShow = true">
+          <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
+          {{ bucketName }}
+          <img src="@/assets/bucketIcon.svg" class="bucket_detail_smal" />
+        </div>
+        <div v-else> Bucket({{ order_id }}) </div>
+        <span class="benefit_analysis" v-if="orderInfo.value.state == '0' && mintType == 0" @click="closedOrder">
+          <img src="@/assets/cancel.svg" class="bucket_detail_smal cancel_svg" />
+        </span>
+        <span class="benefit_analysis" v-else @click="gotoSummary(order_id, orderInfo.value.state)">
+          <img src="@/assets/analysis.svg" class="bucket_detail_smal" />
+        </span>
+      </TopBack>
+      <nut-row class="order-detail">
+        <div class="main_detail_box">
+          <div class="profit_box">
+            <div class="title">Miner Reward</div>
+            <div class="value">+ {{ income }} DMCX</div>
           </div>
-          <p>Merkle</p>
-        </div>
-        <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 2 } })">
-          <div class="svg_box svg_box2 order-icon-send-to-back">
-            <IconRiSendToBack color="#fff" />
+          <div class="progress_box">
+            <div class="text">Used</div>
+            <div class="user_circle"> {{ Number(((usedSize || 0) / (orderInfo.value.total_space || 1)) * 100).toFixed(2) }}% </div>
           </div>
-          <p>Challenge</p>
         </div>
-        <div class="type_item" @click="router.push({ name: 'RecordsList', query: { ...route.query, category: 3 } })">
-          <div class="svg_box svg_box2 order-icon-input-cursor-move">
-            <IconRiInputCursorMove color="#fff" />
-          </div>
-          <p>Arbitrate</p>
-        </div>
-      </div>
 
-      <div :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' ? 'router_disabled' : '']" @click="getKey">
-        <div class="svg_box svg_box2 order-icon-recycle">
-          <keySolid color="#fff" />
-        </div>
-        <p>S3 Access</p>
-      </div>
+        <!-- <nut-menu-item v-model="state.value1" :options="state.options1" /> -->
+        <nut-col :span="24" class="order-content_wrap" :class="[showText ? 'showHight' : 'hideHight']">
+          <TriangleDown v-if="!showText" @click="showText = true" class="my_svg_icon show_avg" color="#fff"></TriangleDown>
+          <TriangleUp v-if="showText" @click="showText = false" class="my_svg_icon" color="#fff"></TriangleUp>
+          <nut-col :span="12" class="order-count left_count" v-if="showText">
+            <nut-cell>
+              <IconMdiF color="#9F9BEF" />
+              File:&nbsp;<span>{{ filesCount }}</span>
+            </nut-cell>
+            <nut-cell>
+              <IconSpace color="#7F7AE9" />
+              Space:&nbsp;<span>{{ getfilesize(orderInfo.value.total_space, 'B') }}</span>
+            </nut-cell>
+            <nut-cell>
+              <IconRiPie color="#7F7AE9" />
+              Used:&nbsp;<span>{{ getfilesize(usedSize, 'B') }}</span>
+            </nut-cell>
+            <nut-cell>
+              <Order />
+              ID:&nbsp;{{ orderInfo.value?.foggie_id }}
+            </nut-cell>
+            <nut-cell>
+              <Clock />
+              Expiration:&nbsp;{{ transferUTCTime(orderInfo.value.expire) }}
+            </nut-cell>
+            <nut-cell>
+              <Refresh />
+              Status:&nbsp;{{ statusTypes[orderInfo.value.state] }}
+            </nut-cell>
+          </nut-col>
+        </nut-col>
+      </nut-row>
     </div>
-    <div class="type_check_box" style="margin-top: 5px; border-radius: 10px; background-color: #fff">
-      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1 } })">
-        <div class="svg_box">
-          <IconImage></IconImage>
-        </div>
-        <p>Images</p>
-      </div>
-      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3 } })">
-        <div class="svg_box">
-          <IconAudio2></IconAudio2>
-        </div>
-        <p>Audio</p>
-      </div>
-      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4 } })">
-        <div class="svg_box">
-          <IconDocument></IconDocument>
-        </div>
-        <p>Documents</p>
-      </div>
-      <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 2 } })">
-        <div class="svg_box">
-          <IconVideo></IconVideo>
-        </div>
-        <p>Video</p>
-      </div>
-    </div>
-    <div class="today_file">
-      <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
-      <span class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></span>
-    </div>
-
-    <!-- <Transition name="fade-transform" mode="out-in">
-      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
-        <nut-progress
-          class="upload_progress"
-          :percentage="uploadProgress"
-          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
-          status="icon"
-        >
-          <template #icon-name>
-            <template v-if="uploadStatus == 'uploading'">
-              <div style="display: flex; justify-content: space-between; width: 100%">
-                <div style="margin-left: 25px"> {{ curUploadFileSize }}</div>
-                <div>
-                  <span>{{ uploadProgress }} %</span>
-                  <em style="margin-left: 10px">{{ formatedAverageSpeed }}</em>
-                  <i style="margin-left: 15px">{{ formatedTimeRemaining }}</i>
+    <div class="detail_box">
+      <div class="detail_box_toolbox">
+        <div class="type_check_box type_check_box1" v-if="!mintType || mintType == 0">
+          <van-swipe :loop="true">
+            <van-swipe-item>
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getKey"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <img src="@/assets/maxio/bucket.svg" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
                 </div>
+                <p>S3 Service</p>
               </div>
-            </template>
-            <template v-if="uploadStatus == 'success'">
-              <span>Uploaded successfully</span>
-              <Success style="margin-left: 10px" color="#4CC71E" class="nut-icon-am-bounce nut-icon-am-infinite"></Success>
-            </template>
-            <template v-if="uploadStatus == 'error'">
-              <span>Upload Failed</span>
-              <MaskClose style="margin-left: 10px" color="#FA2C19"></MaskClose>
-            </template>
-          </template>
-        </nut-progress>
-      </div>
-    </Transition> -->
-
-    <nut-infinite-loading load-more-txt="No more content" v-if="tableData.length" :has-more="false" class="file_list">
-      <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
-        <div :class="['left_icon_box']">
-          <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
-          <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-          <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" />
-          <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-          <img v-else-if="item.imgUrl" :src="item.imgUrl" alt="" />
-          <img v-else src="@/assets/svg/home/file.svg" alt="" />
+              <div
+                :class="['type_item', 's3key', orderInfo.value.electronic_type == '1' || !isAvailableOrder ? 'router_disabled' : '']"
+                @click="getIPFSService"
+              >
+                <div class="svg_box svg_box2 order-icon-recycle">
+                  <img src="@/assets/maxio/ipfs.svg" alt="" srcset="" style="width: 100%; height: 100%; vertical-align: middle" />
+                </div>
+                <p>IPFS Pinning</p>
+              </div>
+            </van-swipe-item>
+            <van-swipe-item>
+              <div
+                class="type_item s3key"
+                @click="
+                  router.push({ name: 'RecordsListGuid', query: { ...route.query, amb_uuid: orderInfo.value.amb_uuid, category: 1 } })
+                "
+              >
+                <div class="svg_box svg_box2 order-icon-node-tree">
+                  <img src="@/assets/newIcon/merkle.png" alt="" srcset="" style="width: 80%; height: 80%; vertical-align: middle" />
+                </div>
+                <p>Miner Tool</p>
+              </div>
+            </van-swipe-item>
+          </van-swipe>
         </div>
-        <div class="name_box">
-          <p>{{ item.name }}</p>
-          <p>{{ item.date || '' }}</p>
-        </div>
-      </div>
-    </nut-infinite-loading>
-    <nut-empty v-else description="No data,Go ahead and upload it." image="error"> </nut-empty>
-    <Teleport to="body">
-      <nut-overlay overlay-class="detail_over" v-if="detailShow" v-model:visible="detailShow" :close-on-click-overlay="false">
-        <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-        <HLSVideo v-if="detailRow.value.type && detailRow.value.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
-        <pre v-else-if="detailRow.value.detailType == 'txt'" id="txtContainer"></pre>
-        <!-- <div v-else-if="detailRow.value.detailType == 'word'" id="odfContainer"></div> -->
-
-        <div v-else-if="imgUrl" class="middle_img">
-          <nut-image :src="imgUrl" fit="contain" position="center">
-            <template #loading>
-              <Loading width="16px" height="16px" name="loading" />
-            </template>
-          </nut-image>
-        </div>
-        <div class="bottom_action">
-          <div>
-            <IconShare @click="handlerClick('share')"></IconShare>
-            <p>Share</p>
+        <div class="type_check_box right_check_box">
+          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 1, bucketName } })">
+            <div class="svg_box">
+              <IconImage></IconImage>
+            </div>
+            <p>Images</p>
           </div>
-          <div>
-            <IconDownload @click="handlerClick('download')"></IconDownload>
-            <p>Download</p>
+          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 3, bucketName } })">
+            <div class="svg_box">
+              <IconAudio2></IconAudio2>
+            </div>
+            <p>Audio</p>
+          </div>
+          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 4, bucketName } })">
+            <div class="svg_box">
+              <IconDocument></IconDocument>
+            </div>
+            <p>Documents</p>
+          </div>
+          <div class="type_item" @click="router.push({ name: 'FileList', query: { ...route.query, category: 2, bucketName } })">
+            <div class="svg_box">
+              <IconVideo></IconVideo>
+            </div>
+            <p>Video</p>
           </div>
         </div>
-      </nut-overlay>
-    </Teleport>
+      </div>
 
-    <!-- share -->
-    <Teleport to="body">
-      <nut-popup
-        v-if="showShareDialog"
-        @closed="
-          isReady = false;
-          shareType = '';
-        "
-        position="bottom"
-        closeable
-        round
-        :style="{ height: '300px' }"
-        v-model:visible="showShareDialog"
-      >
-        <div v-if="isReady" class="rename_box move_box">
-          <nut-cell style="margin-top: 50px" title="Access Period:">
-            <template #link>
-              <span style="display: flex"
-                >{{ desc }} <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
-              ></span>
-            </template>
-          </nut-cell>
-          <template v-if="shareType">
-            <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
-            <nut-textarea rows="3" v-model="imgDesc" />
-          </template>
-          <nut-popup position="bottom" v-model:visible="periodShow">
-            <nut-picker
-              v-model="periodValue"
-              :columns="options"
-              title="Select expiration time"
-              @confirm="confirmPeriod"
-              @cancel="periodShow = false"
+      <div class="today_file">
+        <span class="title" @click="uploadProgressIsShow = !uploadProgressIsShow">Recent Files</span>
+        <!-- <span class="see_all" @click="syncPhotos">Sync Photos {{ syncImgList.length }}</span> -->
+      </div>
+      <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
+      <!-- <nut-infinite-loading load-more-txt="No more content" v-else-if="tableData.length" :has-more="false" class="file_list">
+        <div @click="handleRow(item)" :class="['list_item']" v-show="index < 4" v-for="(item, index) in tableData" :key="index">
+          <div :class="['left_icon_box']">
+          
+            <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+          
+            <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+
+            <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" />
+            <img v-else src="@/assets/svg/home/file.svg" alt="" />
+          </div>
+          <div class="name_box">
+            <p>{{ item.name }}</p>
+            <p>{{ item.date || '' }}</p>
+          </div>
+        </div>
+      </nut-infinite-loading> -->
+      <template v-else-if="tableData.length">
+        <div class="file_list file_list_img" v-if="imgData.length">
+          <div @click="handleRow(item)" class="list_item" v-show="index < 10" v-for="(item, index) in imgData" :key="index">
+            <nut-image
+              v-if="item.imgUrl || item.originalSize <= 102400"
+              show-loading
+              show-error
+              round
+              radius="5px"
+              :src="item.imgUrl || item.imgUrlLarge"
+              fit="cover"
+              position="center"
             >
-            </nut-picker>
-          </nut-popup>
-          <nut-button
-            type="info"
-            block
-            @click="() => confirmHttpShare(shareType, detailRow.value, accessKeyId, secretAccessKey, bucketName)"
-            >Confirm</nut-button
+              <template #loading>
+                <Loading width="16" height="16"></Loading>
+              </template>
+            </nut-image>
+            <IconImage v-else></IconImage>
+          </div>
+        </div>
+        <div class="file_list" v-if="otherData.length">
+          <div @click="handleRow(item)" class="list_item" v-show="index < 4" v-for="(item, index) in otherData" :key="index">
+            <div :class="['left_icon_box']">
+              <img v-if="item.isDir && item.name == 'pinning'" class="cloud_pin" src="@/assets/cloud_pin.png" alt="" />
+              <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+              <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+              <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/icon_pdf.svg" alt="" /> -->
+              <nut-image
+                v-else-if="item.category != 0 && item.category != 4 && item.imgUrl"
+                show-loading
+                show-error
+                round
+                radius="5px"
+                :src="item.imgUrl"
+                fit="cover"
+                position="center"
+                style="width: 100%; height: 100%"
+              >
+                <template #loading>
+                  <Loading width="16" height="16"></Loading>
+                </template>
+              </nut-image>
+              <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+              <img v-else :src="getFileType(item.name)" alt="" />
+              <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
+            </div>
+            <div class="name_box">
+              <p>{{ item.name }}</p>
+              <p>{{ item.date || '' }}</p>
+            </div>
+            <div class="right_radio" @click.stop>
+              <MoreX @click="clickFIleItem(item)" width="40px" height="25px" />
+            </div>
+          </div>
+        </div>
+      </template>
+      <nut-empty v-else style="padding: 10px 0 50px 0" description="No data,Go ahead and upload it." image="error"> </nut-empty>
+      <p class="see_all" @click="router.push({ name: 'FileList', query: { ...route.query, category: 0, bucketName } })">See All ></p>
+      <ActionComponent
+        v-model:fileItemPopupIsShow="fileItemPopupIsShow"
+        v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
+        v-model:renameShow="renameShow"
+        v-model:moveShow="moveShow"
+        v-model:detailShow="detailShow"
+        v-model:imgStartIndex="imgStartIndex"
+        v-model:wordVisible="wordVisible"
+        :category="0"
+        :header="header"
+        :prefix="[]"
+        :isAvailableOrder="isAvailableOrder"
+        :chooseItem="detailRow.value"
+        :images="images"
+        :imgUrl="imgUrl"
+        :isMobileOrder="isMobileOrder"
+        :isNewFolder="false"
+        :selectArr="selectArr"
+        :bucketName="bucketName"
+        :metadata="metadata"
+        :orderInfo="orderInfo"
+        :isCheckMode="false"
+        :accessKeyId="accessKeyId"
+        :secretAccessKey="secretAccessKey"
+        @refresh="refresh"
+        @handlerClick="handlerClick"
+        @swipeChange="swipeChange"
+        @clickFIleItemDetail="clickFIleItemDetail"
+        @clickFIleItem="clickFIleItem"
+      ></ActionComponent>
+
+      <Teleport to="body">
+        <nut-dialog
+          v-model:visible="dialogVisible"
+          title="Bucket Name"
+          :close-on-click-overlay="false"
+          :show-cancel="false"
+          :show-confirm="false"
+          custom-class="CustomName BucketName"
+          overlayClass="CustomOverlay"
+        >
+          <template #header>
+            <span class="icon" style="margin-right: 5px">
+              <IconBucket color="#000"></IconBucket>
+              <img src="@/assets/newIcon/Bucketname.png" alt="" srcset="" style="width: 100%; height: 100%" />
+            </span>
+            Create a Bucket
+          </template>
+
+          <p class="bucket_tip" style="text-align: left; word-break: break-word"
+            >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
+            (-), and must start and end with lowercase letters or numbers.Sensitive information is recommended to be encrypted and uploaded.
+            <span @click="dialogShow = true" style="text-align: right; width: 100%; display: inline-block; text-decoration: underline"
+              >what is Bucket?</span
+            >
+          </p>
+
+          <p
+            style="
+              margin-top: 10px;
+              margin-bottom: 5px;
+              font-weight: 600;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              color: #000;
+            "
+          >
+            <span>Bucket Name</span> <span>Required</span>
+          </p>
+          <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
+          <template #footer>
+            <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button>
+            <nut-button type="primary" @click="createName" :loading="isNameLoading">Confirm</nut-button>
+          </template>
+        </nut-dialog>
+      </Teleport>
+    </div>
+    <uploader
+      v-if="isMobileOrder && isAvailableOrder"
+      :getSummary="getSummary"
+      :isMobileOrder="isMobileOrder"
+      :bucketName="bucketName"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      :orderInfo="orderInfo"
+      @uploadComplete="uploadComplete"
+    ></uploader>
+    <BasicModal :show="dialogShow" @update:show="dialogShow = false">
+      <div class="my_dialog_content_box">
+        <img src="@/assets/bucketIcon.svg" class="bucketImg1" />
+        <img src="@/assets/bucketInfo.svg" class="bucketImg" />
+        <div class="my_dialog_title">what is S3 Bucket?</div>
+        <div class="my_dialog_content" style="margin-top: 16px">
+          <div class="my_dialog_content_pText" style="text-indent: 20px; line-height: 18px">
+            S3 (Simple Storage Service) is a cloud storage service provided by Amazon Web Services (AWS). An S3 bucket is a container for
+            objects stored in S3. It's similar to a folder in a file system, and it can store an unlimited number of objects, including
+            data, images, videos, and documents.
+          </div>
+          <div class="my_dialog_content_pText" style="text-indent: 20px; line-height: 18px"
+            >They provide features for data protection, encryption, and access control. Overall, S3 buckets are a versatile and scalable
+            storage solution for a wide range of applications.</div
           >
         </div>
-        <div class="share_info_box" v-else>
-          <div v-if="shareRefContent.ipfsStr && +detailRow.value.originalSize <= orderInfo.value.total_space * 0.01">
-            <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
-            IPFS Link
-            <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
-          </div>
-          <div v-if="shareRefContent.httpStr">
-            <IconHttp
-              @click="
-                shareType = '';
-                isReady = true;
-              "
-            ></IconHttp>
-            HTTP Link
-            <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-          </div>
-          <div v-if="shareRefContent.httpStr">
-            <IconTwitter
-              @click="
-                shareType = 'twitter';
-                isReady = true;
-              "
-            ></IconTwitter>
-            Twitter
-            <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-          </div>
-          <div v-if="shareRefContent.httpStr">
-            <IconFacebook
-              @click="
-                shareType = 'faceBook';
-                isReady = true;
-              "
-            ></IconFacebook>
-            Facebook
-            <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-          </div>
-          <div v-if="shareRefContent.httpStr">
-            <IconSlack
-              @click="
-                shareType = 'slack';
-                isReady = true;
-              "
-            ></IconSlack>
-            Slack
-          </div>
-          <div v-if="shareRefContent.httpStr">
-            <IconPinterest
-              @click="
-                shareType = 'pinterest';
-                isReady = true;
-              "
-            ></IconPinterest>
-            Pinterest
-          </div>
+        <div class="my_dialog_title" v-if="orderInfo.value.electronic_type == '0' && isAvailableOrder">
+          <nut-button type="primary" @click="getKey">S3 Endpoint</nut-button>
         </div>
-      </nut-popup>
-    </Teleport>
-
-    <!-- <nut-uploader
-      v-if="isMobileOrder"
-      :url="uploadUri"
-      :timeout="1000 * 60 * 60"
-      :before-upload="beforeupload"
-      :disabled="isDisabled"
-      :data="formData"
-      :headers="formData"
-      :before-xhr-upload="beforeXhrUpload"
-      :xhr-state="successStatus"
-      @success="uploadSuccess"
-      @progress="onProgress"
-      @start="onStart"
-      @failure="onFailure"
-      @change="onChange"
-      ref="uploadRef"
-      class="upload_class"
-    >
-      <nut-button type="success" class="upload_btn" size="small">+</nut-button>
-    </nut-uploader> -->
-    <!-- dialogVisible -->
-    <Teleport to="body">
-      <nut-dialog
-        v-model:visible="dialogVisible"
-        title="Bucket Name"
-        :close-on-click-overlay="false"
-        :show-cancel="false"
-        :show-confirm="false"
-        custom-class="CustomName"
-        overlayClass="CustomOverlay"
-      >
-        <template #header>
-          <span class="icon" style="margin-right: 5px">
-            <IconBucket color="#000"></IconBucket>
-          </span>
-          Create a Bucket
-        </template>
-        <p class="bucket_tip" style="text-align: left; word-break: break-word"
-          >Buckets are used to store and organize your files.Custom names can only contain lowercase letters, numbers, periods, and dashes
-          (-), and must start and end with lowercase letters or numbers</p
-        >
-        <p
-          style="
-            margin-top: 10px;
-            margin-bottom: 5px;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #fdfdfd;
-          "
-        >
-          <span>Bucket Name</span> <span>Required</span>
-        </p>
-        <nut-input v-model="newBucketName" placeholder="Please enter Custom Name" max-length="10" min-length="8"></nut-input>
-        <template #footer>
-          <nut-button type="primary" style="font-size: 12px" @click="router.go(-1)">Operate Later</nut-button>
-          <nut-button type="primary"  @click="createName" :loading="isNameLoading">Confirm</nut-button>
-        </template>
-      </nut-dialog>
-    </Teleport>
+      </div>
+    </BasicModal>
   </div>
-  <!-- <Transition name="fade-transform" mode="out-in">
-      <div v-if="uploadProgressIsShow" style="margin-top: 30px">
-        <nut-progress
-          class="upload_progress"
-          :percentage="uploadProgress"
-          stroke-color="linear-gradient(270deg, rgba(18,126,255,1) 0%,rgba(32,147,255,1) 32.815625%,rgba(13,242,204,1) 100%)"
-          status="icon"
-          :show-text="false"
-        >
-          <template #icon-name>
-            <template v-if="uploadStatus == 'uploading'">
-              <div  style="display: flex; justify-content: space-between;width: 100%;">
-                <div style="margin-left: 25px;"> {{ curUploadFileSize }}</div>
-                <div>
-                  <span>{{ uploadProgress }} %</span>
-                  <em style="margin-left: 10px">{{ formatedAverageSpeed }}</em>
-                  <i style="margin-left: 15px">{{ formatedTimeRemaining }}</i>
-                </div>
-              </div>
-            </template>
-            <template v-if="uploadStatus == 'success'">
-              <span>Uploaded successfully</span>
-              <Success style="margin-left: 10px" color="#4CC71E" class="nut-icon-am-bounce nut-icon-am-infinite"></Success>
-            </template>
-            <template v-if="uploadStatus == 'error'">
-              <span>Upload Failed</span>
-              <MaskClose style="margin-left: 10px" color="#FA2C19"></MaskClose>
-            </template>
-          </template>
-        </nut-progress>
-      </div>
-    </Transition> -->
-
-  <uploader
-    v-if="isMobileOrder"
-    :bucketName="bucketName"
-    :accessKeyId="accessKeyId"
-    :secretAccessKey="secretAccessKey"
-    :orderInfo="orderInfo"
-    @uploadComplete="uploadComplete"
-  ></uploader>
-
-  <Teleport to="body">
-    <nut-action-sheet v-model:visible="sheetVisible" title="Links">
-      <div class="custom-action_sheet">
-        <div @click="choose('google')">
-          <img src="@/assets/googlelogo_preview.png" style="width: 80px; height: 25px" />
-        </div>
-        <div @click="choose('Microsoft')">
-          <img src="@/assets/removebg-preview.png" style="width: 80px; height: 25px" />
-        </div>
-
-        <div @click="choose('other')">
-          <img src="@/assets/otherplugins.png" style="width: 30px; height: 30px" />
-          <div style="font-size: 18px; margin-left: 5px">Other</div>
-        </div>
-
-        <div @click="sheetVisible = false"> Cancel </div>
-      </div>
-    </nut-action-sheet>
-  </Teleport>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, watch, createVNode } from 'vue';
+  import ActionComponent from './actionComponent.vue';
+  import { Loading, MoreX } from '@nutui/icons-vue';
+  import BasicModal from '@/components/Modal/src/BasicModal.vue';
+  import { ref, onMounted, watch, createVNode, provide } from 'vue';
+  import getFileType from '@/utils/getFileType.ts';
   // import recycleFill from '~icons/home/recycle-fill';
   // import IconAudio from '~icons/home/audio.svg';
+  import MyAudio from './myAudio.vue';
+  import IconCopy from '~icons/home/copy.svg';
   import IconEdit from '~icons/iconamoon/edit-fill.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
@@ -419,11 +340,12 @@
   import IconHttp from '~icons/home/http.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';
   import { delay, throttle } from 'lodash';
-  import IconAudio2 from '~icons/home/audio2.svg';
-  import IconMore from '~icons/home/more.svg';
-  import IconImage from '~icons/home/image.svg';
-  import IconDocument from '~icons/home/document.svg';
-  import IconVideo from '~icons/home/video.svg';
+  //   import IconAudio2 from '~icons/home/audio2.svg';
+  //   import IconMore from '~icons/home/more.svg';
+  //   import IconImage from '~icons/home/image.svg';
+  //   import IconDocument from '~icons/home/document.svg';
+  //   import IconVideo from '~icons/home/video.svg';
+  import IconPlay from '~icons/home/play.svg';
   //   import IconMdiF from '~icons/mdi/file-cloud';
   //   import IconRiPie from '~icons/ri/pie-chart-fill';
   import IconMdiF from '~icons/home/png.svg';
@@ -433,34 +355,79 @@
   import IconRiSendToBack from '~icons/ri/send-to-back';
   import IconRiInputCursorMove from '~icons/ri/input-cursor-move';
   import keySolid from '~icons/teenyicons/key-solid';
+
+  import IconAudio2 from '~icons/home/maudio.svg';
+  import IconImage from '~icons/home/mimage.svg';
+  import IconDocument from '~icons/home/mdoc.svg';
+  import IconVideo from '~icons/home/mvideo.svg';
+  import IconOther from '~icons/home/mother.svg';
+
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   // import AESHelper from './AESHelper';
   // import { Image } from '@nutui/icons-vue';
-  import { HeartFill, Success, MaskClose } from '@nutui/icons-vue';
-  import { showDialog } from '@nutui/nutui';
+  import { HeartFill, Success, MaskClose, Clock, Order, Refresh, TriangleUp, TriangleDown } from '@nutui/icons-vue';
+  import { showDialog, showToast } from '@nutui/nutui';
   import '@nutui/nutui/dist/packages/dialog/style';
   import { HmacSHA1, enc } from 'crypto-js';
   import { Buffer } from 'buffer';
   import { useRoute, useRouter } from 'vue-router';
   import useOrderInfo from './useOrderInfo.js';
   import useShare from './useShare.js';
-  import { showToast } from '@nutui/nutui';
-  import { transferUTCTime, getfilesize } from '@/utils/util';
-  import { check_name, order_name_set, get_merkle, calc_merkle, valid_upload } from '@/api/index';
+  import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
+  import {
+    check_name,
+    order_name_set,
+    get_merkle,
+    calc_merkle,
+    valid_upload,
+    get_order_sign,
+    dm_order_name_set,
+    dm_order_name_check,
+  } from '@/api/index';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
   import { useUserStore } from '@/store/modules/user';
-  import { getSecondTime } from '@/utils/util';
-  import { update_order_size, closedOrderApi } from '@/api/amb';
-
-  import { status } from 'grpc';
-  import HLSVideo from './hlsVideo.vue';
+  import { getSecondTime, getType } from '@/utils/util';
+  import { update_order_size, closedOrderApi, sync_challenge } from '@/api/amb';
+  import ErrorPage from '@/views/errorPage/index.vue';
+  import useDelete from './useDelete.js';
+  import moment from 'moment';
+  // import { status } from 'grpc';
   import uploader from './uploader.vue';
-
-  const { accessKeyId, secretAccessKey, bucketName, header, metadata, deviceType, orderInfo, getOrderInfo } = useOrderInfo();
+  import { poolUrl } from '@/setting.js';
+  const dialogShow = ref(false);
+  const showText = ref(false);
+  const page = ref(0);
+  const statusTypes = {
+    0: 'Consensus not reached',
+    1: 'Consensus reached',
+    2: 'Insufficient advance deposit to cancel the next cycle',
+    3: 'Sufficient funds in advance',
+    4: 'Bucket over',
+    5: 'Canceled',
+    6: 'Cancellation of the next cycle',
+  };
+  const {
+    filesCount,
+    getSummary,
+    usedSize,
+    accessKeyId,
+    secretAccessKey,
+    bucketName,
+    header,
+    metadata,
+    deviceType,
+    orderInfo,
+    getOrderInfo,
+    getOrderInfo1,
+    isAvailableOrder,
+    isError,
+  } = useOrderInfo();
   provide('getOrderInfo', getOrderInfo);
   const {
+    httpCopyLink,
+    copyLink,
     shareType,
     isReady,
     confirmShare,
@@ -477,15 +444,19 @@
     copyContent,
     confirmHttpShare,
     getHttpShare,
-  } = useShare(orderInfo, header, deviceType);
+    cloudPin,
+    copyIPFS,
+    copyNft,
+  } = useShare(orderInfo, header, deviceType, metadata);
+
   let server;
   const route = useRoute();
   const router = useRouter();
-
+  const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const successStatus = ref<number>(204);
   const isNameLoading = ref(false);
-  const sheetVisible = ref(false);
-
+  // const sheetVisible = ref(false);
+  const imgPreRef = ref('');
   const userStore = useUserStore();
   const uuid = computed(() => userStore.getUserInfo.uuid);
   const dmcName = computed(() => userStore.getUserInfo.dmc);
@@ -498,7 +469,7 @@
   });
 
   const dialogVisible = ref<boolean>(false);
-
+  const moveShow = ref<boolean>(false);
   // let details = reactive<any>({ data: {} });
 
   // import { get_order_node } from '@/api/amb';
@@ -511,135 +482,103 @@
   const showCreateName = ref<boolean>(true);
   const newBucketName = ref<string>('');
   const tableData = ref<array>([]);
+  const imgData = ref([]);
+  const otherData = ref([]);
   const tableLoading = ref<boolean>(false);
   const isDisabled = ref<boolean>(false);
   const btnLoading = ref<boolean>(false);
   const formData = ref<any>({});
-  const filesCount = ref<any>(0);
-  const usedSize = ref<any>(0);
 
   const memo = ref<any>('');
   const order_id = ref<any>('');
   const amb_uuid = ref<any>('');
   const minerIp = ref<string>('');
+  const income = ref(0);
+  const fileItemPopupIsShow = ref(false);
+  const fileItemDetailPopupIsShow = ref(false);
+  const renameShow = ref(false);
+  const detailShow = ref(false);
+  const imgStartIndex = ref(false);
+  const wordVisible = ref(false);
 
+  const fileSocket = ref('');
+  const socketDate = ref('');
+  const socketToken = ref('');
+  const currentFolder = ref('');
+  const showSocketDialog = ref(false);
+
+  const images = computed(() => {
+    let arr = [];
+    imgData.value.filter((el) => {
+      if (arr.length < 20) {
+        arr.push(el.imgUrlLarge);
+      }
+    });
+    return arr;
+  });
+  const selectArr = computed(() => {
+    return [detailRow.value];
+  });
+  const { deleteItem } = useDelete(
+    tableLoading,
+    () => {
+      refresh();
+    },
+    orderInfo,
+    header,
+    metadata,
+  );
+  function swipeChange(index) {
+    imgStartIndex.value = index;
+    detailRow.value = imgData.value[index];
+    if (detailRow.value.originalSize > 1024 * 1024 * 20) {
+      showToast.text('The file is too large, please download and view');
+    }
+  }
+  function clickFIleItem(params) {
+    detailRow.value = params;
+    fileItemPopupIsShow.value = true;
+    if (detailRow.value.originalSize > 1024 * 1024 * 200 && detailRow.value.category == 1) {
+      showToast.text('The file is too large, please download and view');
+    }
+  }
+
+  function clickFIleItemDetail(params) {
+    console.log(params);
+    fileItemDetailPopupIsShow.value = true;
+  }
   // memo.value = '963cbdb1-5600-11ee-9223-f04da274e59a_Order_buy';
   // order_id.value = '1281';
   memo.value = route.query.uuid;
   order_id.value = route.query.id;
   amb_uuid.value = route.query.amb_uuid;
-  // search_bill(memo.value, order_id.value).then((res) => {
-  //   console.log('search_bill', res);
-  //   minerIp.value = res?.data?.mp_ipaddr;
-  // });
+  income.value = route.query.income;
+  const isMobileDevice = computed(() => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    // 此正则表达式涵盖了大多数使用的手机和平板设备
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+  });
+
   let merkleTimeOut;
-  const getMerkleState = (timeout = true) => {
-    const d = {
-      orderId: order_id.value,
-    };
-    valid_upload(d).then((res) => {
-      if (res.data?.data) {
-        // TODO
-        isDisabled.value = true;
-        if (timeout) {
-          merkleTimeOut = setTimeout(() => {
-            getMerkleState(timeout);
-          }, 30000);
-        }
-      } else {
-        if (isDisabled.value) {
-          // showToast.success('Merkle creation is complete and you can proceed to upload the file');
-        }
-        isDisabled.value = false;
+  watch(
+    tableData,
+    (val) => {
+      if (val.length) {
+        imgData.value = [];
+        otherData.value = [];
+        val.forEach((el) => {
+          if (el.category == 1) {
+            imgData.value.push(el);
+          } else {
+            otherData.value.push(el);
+          }
+        });
       }
-    });
-  };
-  const beforeupload = (file: any) => {
-    return new Promise(async (resolve, reject) => {
-      let nowTime = new Date().getTime();
-      let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
-      let time = ((+endTime - +nowTime) / 1000).toFixed(0);
-      if (time > 4 * 60) {
-        time = time - 60 * 60;
-      }
-      if (time > 0) {
-        let content = 'Upload files after ' + getSecondTime(+time);
-        showToast.fail(content);
-        reject(false);
-      }
-      const fileCopy = file[0]; // 保存file变量的副本
-      const d = {
-        orderId: order_id.value,
-      };
-      let merkleRes = await valid_upload(d);
-      if (merkleRes?.data) {
-        isDisabled.value = false;
-      } else {
-        // showToast.fail('Merkle creation is in progress, please wait until it is complete before uploading.');
-        isDisabled.value = true;
-        getMerkleState(true);
-        reject();
-      }
+    },
+    { deep: true },
+  );
 
-      uploadUri.value = `https://${bucketName.value}.devus.u2i.net:6008/o/`;
-
-      const policy = {
-        expiration: new Date(Date.now() + 3600 * 1000), // 过期时间（1小时后）
-        conditions: [
-          { bucket: bucketName.value },
-          { acl: 'public-read' }, // 设置 ACL（可根据需求更改）
-          ['starts-with', fileCopy, prefix.value], // Key 以 "uploads/" 开头
-          ['starts-with', '$Content-Type', ''], // Content-Type 为空
-        ],
-      };
-      const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
-
-      let hmac = HmacSHA1(policyBase64, secretAccessKey.value);
-      const signature = enc.Base64.stringify(hmac);
-
-      formData.value = {};
-      formData.value.Key = encodeURIComponent(prefix.value + fileCopy.name);
-      formData.value.Policy = policyBase64;
-      formData.value.Signature = signature;
-      formData.value.Awsaccesskeyid = accessKeyId.value;
-
-      formData.value.category = getType(fileCopy.name);
-      resolve([fileCopy]);
-    });
-  };
-
-  const getType = (fileName: string) => {
-    if (fileName.endsWith('.jpeg') || fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.svg')) {
-      return 1;
-    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mp4')) {
-      return 2;
-    } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
-      return 4;
-    } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar') || fileName.endsWith('.gz') || fileName.endsWith('.tar')) {
-      return 5;
-    } else if (fileName.endsWith('.cmd')) {
-      return 5;
-    } else if (fileName.endsWith('.css')) {
-      return 5;
-    } else if (fileName.endsWith('.mp3')) {
-      return 3;
-    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      return 4;
-    } else if (fileName.endsWith('.pdf')) {
-      return 4;
-    } else if (fileName.endsWith('.ppt')) {
-      return 4;
-    } else if (fileName.endsWith('.text') || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
-      return 4;
-    } else if (fileName.endsWith('.html')) {
-      return 5;
-    } else if (fileName.endsWith('/')) {
-      return 5;
-    } else {
-      return 5;
-    }
-  };
-  const detailShow = ref(false);
   const imgUrl = ref('');
   const detailRow = reactive({ value: {} });
 
@@ -650,10 +589,13 @@
     detailRow.value = row;
     const type = row.name.substring(row.name.lastIndexOf('.') + 1);
     console.log(row.imgUrlLarge);
+    console.log(type);
+
     if (type == 'pdf') {
-      curSelectSrc.value = row.imgUrlLarge;
-      curSelectType.value = 'pdf';
-      sheetVisible.value = true;
+      // curSelectSrc.value = row.imgUrlLarge;
+      // curSelectType.value = 'pdf';
+      wordVisible.value = true;
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'pdf' } });
     } else if (type == 'txt') {
       detailRow.value.detailType = 'txt';
       detailShow.value = true;
@@ -662,35 +604,40 @@
         .then((text) => {
           document.getElementById('txtContainer').textContent = text;
         });
-    } else if (['xls', 'xlsx'].includes(type)) {
-      curSelectSrc.value = row.imgUrlLarge;
-      curSelectType.value = 'excel';
-      sheetVisible.value = true;
+    } else if (['xls', 'xlsx', 'csv'].includes(type)) {
+      wordVisible.value = true;
+
+      // curSelectSrc.value = row.imgUrlLarge;
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'excel' } });
     } else if (['doc', 'docx'].includes(type)) {
-      curSelectSrc.value = row.imgUrlLarge;
-      curSelectType.value = 'docx';
-      sheetVisible.value = true;
-    } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
-      detailRow.value.detailType = 'word';
-      router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
+      wordVisible.value = true;
+
+      // detailRow.value.detailType = 'word';
+      // router.push({ path: '/filePreview', query: { fileSrc: row.imgUrlLarge, fileType: 'docx' } });
       // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
       // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
       console.log(row.imgUrlLarge);
+    } else if (['ppt', 'pptx'].includes(type)) {
+      // curSelectSrc.value = row.imgUrlLarge;
+      // curSelectType.value = 'ppt';
+      // // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+      // window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+      // // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
+      // console.log(row.imgUrlLarge);
     } else if (row.imgUrlLarge) {
       imgUrl.value = row.imgUrlLarge;
+      imgStartIndex.value = imgData.value.findIndex((el) => el.name == row.name);
       detailShow.value = true;
+      nextTick(() => {
+        if (imgPreRef.value) {
+          imgPreRef.value.swipeTo(imgStartIndex.value);
+        }
+      });
     } else {
-      let prefix;
-      if (row.isDir) {
-        prefix = detailRow.value.fullName.split('/').slice(0, -2);
-      } else {
-        prefix = detailRow.value.fullName.split('/').slice(0, -1);
-      }
-      console.log(detailRow.value.fullName, prefix);
-
+      let prefix = detailRow.value.fullName.split('/').slice(0, -1);
       router.push({
         name: 'FileList',
-        query: { ...route.query, category: 0, prefix: prefix.join('/') },
+        query: { ...route.query, category: 0, prefix: prefix.join('/'), bucketName: bucketName.value },
       });
     }
   };
@@ -712,7 +659,7 @@
         break;
     }
   }
-
+  const $cordovaPlugins = inject('$cordovaPlugins');
   const handlerClick = async (type: string) => {
     const checkData = JSON.parse(JSON.stringify(detailRow.value));
     console.log(checkData, 'checkData');
@@ -720,38 +667,141 @@
     if (type === 'download') {
       const objectKey = encodeURIComponent(checkData.fullName);
       const headers = getSignHeaders(objectKey);
-      const url = `https://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
-      fetch(url, { method: 'GET', headers })
-        .then((response) => {
-          if (response.ok) {
-            // 创建一个 Blob 对象，并将响应数据写入其中
-            console.log('Success', response);
-            return response.blob();
-          } else {
-            // 处理错误响应
-            console.error('Error:', response.status, response.statusText);
-          }
-        })
-        .then((blob) => {
-          console.log(blob, 'blob');
+      console.log('headers:', headers);
+      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
+      if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+        $cordovaPlugins.downloadFileHH(url, checkData.fullName, headers);
+      } else {
+        showToast.text('The download is in progress, please wait patiently');
+        fetch(url, { method: 'GET', headers })
+          .then((response) => {
+            if (response.ok) {
+              // 创建一个 Blob 对象，并将响应数据写入其中
+              console.log('Success', response);
+              return response.blob();
+            } else {
+              showToast.fail('Download failed, please try again');
+              // 处理错误响应
+              console.error('Error:', response.status, response.statusText);
+            }
+          })
+          .then((blob) => {
+            console.log(blob, 'blob');
+            console.log('Blob type:', blob.type);
 
-          // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = checkData.fullName;
+            // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+            const a = document.createElement('a');
+            console.log("document.createElement('a')");
 
-          // 将 <a> 元素添加到文档中，并模拟点击
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        })
-        .catch((error) => {
-          // 处理网络错误
-          console.error('Network Error:', error);
-        });
+            a.href = URL.createObjectURL(blob);
+            console.log(a.href);
+
+            a.download = checkData.fullName;
+            console.log(a.download);
+
+            // 将 <a> 元素添加到文档中，并模拟点击
+            document.body.appendChild(a);
+            console.log('添加');
+            a.click();
+            console.log('点击');
+
+            document.body.removeChild(a);
+          })
+          .catch((error) => {
+            showToast.fail('Download failed, please try again');
+            // 处理网络错误
+            console.error('Network Error:', error);
+          });
+      }
     } else if (type === 'share') {
       await doShare(checkData);
+    } else if (type === 'move') {
+      moveShow.value = true;
+    } else if (type == 'rename') {
+      renameShow.value = true;
+    } else if (type === 'delete') {
+      const onOk = async () => {
+        deleteItem([checkData]);
+        fileItemPopupIsShow.value = false;
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to delete?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+        onOk,
+      });
+    } else if (type == 'nft') {
+      createNFT(checkData, accessKeyId.value, secretAccessKey.value, bucketName.value);
+    } else if (type === 'pin') {
+      const onOk = async () => {
+        await cloudPin(checkData, 'ipfs');
+        // detailRow.value.isPin = true;
+        detailShow.value = false;
+        getFileList();
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS PIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        onOk,
+      });
+    } else if (type === 'un pin') {
+      const onOk = async () => {
+        const d = await cloudPin(checkData, 'ipfs', 'unpin');
+        if (d) {
+          imgData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          otherData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData.cid) {
+              el.isPin = false;
+            }
+          });
+          detailRow.value.isPin = false;
+        }
+        // doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS UNPIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+
+        onOk,
+      });
     }
+  };
+  const syncImgList = ref([]);
+  const syncIndex = ref(0);
+  const syncPhotos = () => {
+    let nowTime = Date.now();
+    let endTime = new Date(orderInfo.value.created_at).getTime() + 1000 * 60 * 3;
+    let time = Math.round((endTime - nowTime) / 1000);
+    if (time > 6 * 60) {
+      time -= 60 * 60;
+    }
+    if (time > 0) {
+      const content = `Upload files after ${getSecondTime(time)}`;
+      showToast.fail(content);
+      return false;
+    }
+    const uploadUrl = `https://${bucketName.value}.${poolUrl}:6008/o/`;
+    const options = {
+      serviceUrl: uploadUrl,
+      syncImgList,
+      syncIndex,
+      bucketName: bucketName.value,
+      accessKeyId: accessKeyId.value,
+      secretAccessKey: secretAccessKey.value,
+      prefixStr: '',
+    };
+    $cordovaPlugins.syncPhotos(options);
   };
   const getSignHeaders = (objectKey) => {
     // const objectKey = encodeURIComponent(checkData[0].fullName);
@@ -832,103 +882,13 @@
     { leading: true, trailing: true },
   );
 
-  const uploadSuccess = async ({ responseText, option, fileItem }: any) => {
-    console.log('uploadSuccess', responseText, option, fileItem);
-    console.log(option, 'option');
-    uploadStatus.value = 'success';
-
-    delay(() => {
-      uploadProgressIsShow.value = false;
-    }, 2000);
-    getFileList();
-    const updateUsedSpace = () => {
-      return update_order_size({
-        used_space: +option.sourceFile.size,
-        order_id: +order_id.value,
-        device_type: 'mobile',
-      })
-        .then((res) => {
-          if (res.code == 200) {
-            // getOrderInfo(false);
-            uploadRef.value.clearUploadQueue();
-          } else {
-            setTimeout(() => {
-              updateUsedSpace();
-            }, 3000);
-          }
-        })
-        .catch(() => {
-          setTimeout(() => {
-            updateUsedSpace();
-          }, 3000);
-        });
-    };
-    await updateUsedSpace();
-    if (orderInfo.value.mobile_upload == undefined) {
-      await getOrderInfo(false);
-    }
-
-    // let uploadLine = 1024 * 1024 * 50;
-    let uploadLine = 1024 * 1024 * 1;
-
-    let used_space = usedSize || 0;
-    if (uploadLine >= used_space) {
-      // let needSpace = getfilesize(uploadLine - used_space);
-      // showToast.text(`At least ${needSpace} of files need to be uploaded to submit Merkle`);
-      return false;
-    }
-    const d = {
-      orderId: order_id.value,
-      uuid: amb_uuid.value,
-      // uuid: 'fb08ae12-c5fb-4b24-88d9-746339b72fd0',
-      orderUuid: memo.value,
-      rpc: orderInfo.value.rpc,
-    };
-    calc_merkle(d).then((res) => {
-      console.log('calc_merkle-----', res);
-    });
-    // uploadRef.value.clearUploadQueue();
-  };
-
   const uploadComplete = () => {
     console.log('uploadComplete');
-    getFileList();
+    // getFileList();
   };
 
-  const onProgress = ({ event, options, percentage }: any) => {
-    console.log('onProgress', event, options, percentage);
-    uploadProgress.value = percentage;
-    downloadProgress(event.loaded, event.total);
-  };
-
-  const onStart = ({ options }: any) => {
-    uploadProgress.value = 0;
-    uploadProgressIsShow.value = true;
-    uploadStatus.value = 'uploading';
-    console.log('onStart', options);
-  };
-
-  const onFailure = ({ responseText, option, fileItem }: any) => {
-    console.log('onFailure', '-----', responseText, '-----', option, '-----', fileItem);
-    delay(() => {
-      uploadProgressIsShow.value = false;
-    }, 3000);
-    uploadStatus.value = 'error';
-    uploadRef.value.clearUploadQueue();
-  };
-
-  const onChange = ({ fileList, event }: any) => {
-    console.log('--------------2');
-    console.log('onChange', fileList, event);
-  };
-
-  const beforeXhrUpload = (xhr: XMLHttpRequest, options: any) => {
-    xhr.setRequestHeader('x-amz-meta-content-length', options.sourceFile.size.toString());
-    xhr.setRequestHeader('x-amz-meta-content-type', options.sourceFile.type);
-    xhr.send(options.formData);
-  };
   const getKey = () => {
-    if (orderInfo.value.electronic_type == '1') {
+    if (orderInfo.value.electronic_type == '1' || !isAvailableOrder.value) {
       return false;
     } else {
       router.push({
@@ -937,8 +897,41 @@
       });
     }
   };
+  const getIPFSService = () => {
+    if (orderInfo.value.electronic_type == '1' || !isAvailableOrder.value) {
+      return false;
+    } else {
+      router.push({
+        name: 'IPFSService',
+        query: { uuid: orderInfo.value.uuid, bucketName: bucketName.value, domain: orderInfo.value.mp_domain },
+      });
+    }
+  };
+
+  const createName1 = () => {
+    // if (isNameLoading.value) {
+    //   return;
+    // }
+    // isNameLoading.value = true;
+
+    const d = {
+      orderId: route.query.order_id,
+      domain: newBucketName.value,
+    };
+    dm_order_name_set(d).then(async (res) => {
+      isNameLoading.value = false;
+      if (res.code == 200) {
+        showToast.success('Create successfully');
+        dialogVisible.value = false;
+        router.push({ name: 'Home' });
+      } else {
+        showToast.fail('Create failed');
+      }
+    });
+  };
 
   const createName = async () => {
+    let retrNumber = 0; // 重试次数
     if (!showCreateName.value) {
       showCreateName.value = true;
     } else if (newBucketName.value) {
@@ -955,38 +948,102 @@
       }
       // check name
       isNameLoading.value = true;
-      const result = await check_name(newBucketName.value);
-      if (result?.data?.domain) {
+      const result = await dm_order_name_check(newBucketName.value);
+      if (result?.data) {
+        showToast.loading('Loading', {
+          cover: true,
+          coverColor: 'rgba(0,0,0,0.45)',
+          customClass: 'app_loading',
+          icon: loadingImg,
+          loadingRotate: false,
+          duration: 0,
+        });
+        createName1();
+      } else {
+        showToast.text('The name already exists, please change it');
         console.log('name is exist');
         isNameLoading.value = false;
         return;
       }
+
+      // dialogVisible.value = false;
+    }
+
+    function setOrderName() {
+      retrNumber++;
       let order_data = {
         is_domain: true,
         name: newBucketName.value,
         order_uuid: orderInfo.value.uuid,
       };
-      //   const order_result = await order_name_set(order_data);
-      order_name_set(order_data).then(
-        (order_result) => {
-          isNameLoading.value = false;
+      order_name_set(order_data)
+        .then((order_result) => {
           if (order_result.code == 200) {
             if (!order_result?.data?.result) {
               bucketName.value = newBucketName.value;
-              getOrderInfo();
+              const obj = {
+                rpc: route.query.rpc,
+                peer_id: route.query.peer_id,
+                foggie_id: route.query.foggie_id,
+                signature: route.query.signature,
+                sign_timestamp: route.query.sign_timestamp,
+                order_id: route.query.order_id,
+                domain: route.query.domain,
+              };
+              getOrderInfo1(obj);
               getSummary();
-              dialogVisible.value = false;
-              return;
+              // initWebSocket();
+              isNameLoading.value = false;
+              showToast.hide();
             }
+          } else {
+            delay(() => {
+              serOrderNameError();
+            }, 3000);
           }
-        },
-        (err) => {
-          showToast.text(err.message);
-          isNameLoading.value = false;
-        },
-      );
+        })
+        .catch((err) => {
+          delay(() => {
+            serOrderNameError(err);
+          }, 3000);
+        });
+    }
+
+    function serOrderNameError(errMessage = '') {
+      if (retrNumber >= 5) {
+        showToast.hide();
+        isNameLoading.value = false;
+        dialogVisible.value = false;
+        showDialog({
+          overlayStyle: { background: 'rgba(0,0,0,0)' },
+          title: 'Error',
+          content: `${errMessage}`,
+          cancelText: 'Change',
+          okText: 'Retry',
+          onCancel: () => {
+            dialogVisible.value = true;
+          },
+          onOk: () => {
+            retrNumber = 0;
+            showToast.loading('Loading', {
+              cover: true,
+              coverColor: 'rgba(0,0,0,0.45)',
+              customClass: 'app_loading',
+              icon: loadingImg,
+              loadingRotate: false,
+              duration: 0,
+            });
+            setOrderName();
+          },
+        });
+      } else {
+        delay(() => {
+          setOrderName();
+        }, 3000);
+      }
     }
   };
+
   const handleImg = (item: { cid: any; key: any }, type: string, isDir: boolean) => {
     let imgHttpLink = '';
     let imgHttpLarge = '';
@@ -999,17 +1056,36 @@
     let port = orderInfo.value.rpc.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
-    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
-      type = 'img';
+    if (
+      type === 'png' ||
+      type === 'bmp' ||
+      type === 'gif' ||
+      type === 'jpeg' ||
+      type === 'jpg' ||
+      type === 'svg' ||
+      type === 'ico' ||
+      type === 'webp'
+    ) {
       console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLink = getHttpShare(
+        accessKeyId.value,
+        secretAccessKey.value,
+        bucketName.value,
+        item.key,
+        type === 'ico' || type === 'svg' ? false : true,
+      );
       // console.log('--------imgHttpLarge', imgHttpLarge);
-    } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
+    } else if (type === 'mp3') {
+      type = 'audio';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
       isSystemImg = true;
@@ -1020,13 +1096,26 @@
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
   function getFileList(scroll: string = '', prefix: any[] = [], reset = true) {
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    console.log(11111);
+
+    showToast.loading('Loading', {
+      cover: true,
+      customClass: 'app_loading',
+      icon: loadingImg,
+      loadingRotate: false,
+      id: 'file_list',
+    });
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+    console.log('ip:', ip);
+    console.log('metadata.value:', metadata.value);
+    console.log('metadata.value:', JSON.stringify(metadata.value));
+
     server = new grpcService.default.ServiceClient(ip, null, null);
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix('');
     listObject.setDelimiter('');
     listObject.setEncodingType('');
-    listObject.setMaxKeys(30);
+    listObject.setMaxKeys(20);
     listObject.setStartAfter('');
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
@@ -1036,7 +1125,7 @@
     listObject.setCategory(0);
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
@@ -1076,7 +1165,28 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
+                  getImages: () => any;
+                  getNftinfosList: () => any;
+                  getThumb: () => any;
                 }) => {
+                  const imageObj = el.getImages().toObject();
+                  const imageInfo = {};
+                  let isShowDetail = false;
+                  if (imageObj.camerainfo?.make) {
+                    isShowDetail = true;
+                    imageInfo.aperture = imageObj.addition.aperture; //光圈
+                    imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+                    imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
+                    imageInfo.exptime = imageObj.addition.exptime; //曝光时间
+                    imageInfo.orientation = imageObj.addition.orientation; //方向
+                    imageInfo.focallength = imageObj.addition.focallength; //焦距
+                    imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
+                    imageInfo.software = imageObj.addition.software; // 使用软件
+                    imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
+                    imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
+                    imageInfo.gps = imageObj.gps; //经纬度
+                    imageInfo.resolution = imageObj.resolution; //像素
+                  }
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1093,6 +1203,10 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
+                    imageInfo: imageInfo,
+                    isShowDetail,
+                    nftInfoList: el.getNftinfosList(),
+                    thumb: el.getThumb(),
                   };
                 },
               ),
@@ -1103,15 +1217,19 @@
             prefix: res.getPrefix(),
             prefixpins: res.getPrefixpinsList(),
           };
-
+          isError.value = false;
           initRemoteData(transferData, reset, 0);
+          showToast.hide('file_list');
         } else if (err) {
+          isError.value = true;
+          showToast.hide('file_list');
           console.log('err----list', err);
+          console.log('err----list', JSON.stringify(err));
         }
       },
     );
   }
-  const initRemoteData = (
+  const initRemoteData = async (
     data: {
       commonPrefixes?: any;
       content: any;
@@ -1128,7 +1246,6 @@
   ) => {
     if (!data) {
       tableLoading.value = false;
-      showToast.hide(1);
       return;
     }
     if (data.err) {
@@ -1138,8 +1255,20 @@
     if (reset) {
       tableData.value = [];
     }
+    if (!accessKeyId.value) {
+      const obj = {
+        rpc: route.query.rpc,
+        peer_id: route.query.peer_id,
+        foggie_id: route.query.foggie_id,
+        signature: route.query.signature,
+        sign_timestamp: route.query.sign_timestamp,
+        order_id: route.query.order_id,
+        domain: route.query.domain,
+      };
+      await getOrderInfo1(obj);
+    }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
-      let name = decodeURIComponent(data.commonPrefixes[i]);
+      let name = data.commonPrefixes[i];
       if (data.prefix) {
         // name = name.split(data.prefix)[1];
         name = name.split('/')[name.split('/').length - 2] + '/';
@@ -1156,10 +1285,10 @@
         isDir: true,
         checked: false,
         name,
-        category: 1,
+        category: 0,
         fileType: 1,
 
-        fullName: decodeURIComponent(data.commonPrefixes[i]),
+        fullName: data.commonPrefixes[i],
         key: data.commonPrefixes[i],
         idList: [
           {
@@ -1196,7 +1325,7 @@
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
-      let name = decodeURIComponent(data.content[j].key);
+      let name = data.content[j].key;
       if (data.prefix) {
         name = name.split(data.prefix)[1];
       }
@@ -1206,15 +1335,17 @@
         name = name.split('/')[name.split('/').length - 2];
       }
       let isPersistent = data.content[j].isPersistent;
+      console.log(data.content[j], 'data.content[j]');
 
       let item = {
+        imageInfo: data.content[j].imageInfo,
+        isShowDetail: data.content[j].isShowDetail,
         isDir: isDir,
         checked: false,
         name,
         category: data.content[j].category,
-        category: data.content[j].category,
-        fileType: data.content[j].contentType,
-        fullName: decodeURIComponent(data.content[j].key),
+        fileType: 2,
+        fullName: data.content[j].key,
         key: data.content[j].key,
         idList: [
           {
@@ -1234,7 +1365,7 @@
         file_id: file_id,
         pubkey: cid,
         cid,
-        imgUrl: url,
+        imgUrl: data.content[j].thumb && data.content[j].thumb != 'b' ? url : '',
         imgUrlLarge: url_large,
         share: {},
         isSystemImg,
@@ -1246,102 +1377,92 @@
 
       tableData.value.push(item);
     }
-    console.log(data, 'data');
-    console.log(tableData.value, '11111111111111');
+
+    console.log(tableData.value, 'tableData.value');
+
     tableLoading.value = false;
-    showToast.hide(1);
   };
 
-  const getKeys = () => {
-    return new Prmise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
-      let request = new Prox.default.ProxGetCredRequest();
-      request.setHeader(header);
-      server.listCreds(request, {}, (err: any, res: { array: any }) => {
-        if (err) {
-          console.log('err------:', err);
-          reject(false);
-        } else if (res.array.length > 0) {
-          accessKeyId.value = res.array[0][0][0];
-          secretAccessKey.value = res.array[0][0][1];
-          reject(true);
-        }
-      });
-    });
-  };
   const setDefaultName = () => {
-    let orderName = route.query.id;
-    let length = 10 - orderName.toString().length;
-    const _dmcName = dmcName.value ? dmcName.value : 'dmcaccount';
+    console.log('setDefaultName=====');
+    let orderName = route.query.order_id;
+    let length = 10 - (orderName ? orderName.toString().length : 0);
+    const _dmcName = 'dmcxaccount';
     let str = `${_dmcName.substring(0, length)}${orderName}`;
     newBucketName.value = str;
+    console.log(newBucketName.value, '------ newBucketName.value');
   };
   const gotoSummary = (order_id, state) => {
     console.log(order_id, state, 'order_id, state');
-    router.push({ name: 'orderSummary', query: { id: order_id, status: state } });
+    router.push({
+      name: 'orderSummary',
+      query: {
+        id: order_id,
+        status: state,
+        createdTime: transferUTCTime(orderInfo.value.order_created_at),
+        endTime: orderInfo.value.expire ? transferUTCTime(orderInfo.value.expire) : '- -',
+        uuid: orderInfo.value.uuid,
+        amb_uuid: orderInfo.value.amb_uuid,
+        domain: orderInfo.value.domain,
+        type: isAvailableOrder.value ? '' : 'history',
+      },
+    });
+    window.sessionStorage.removeItem('myHistoryOrder');
+    window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(orderInfo.value));
   };
-  onMounted(async () => {
-    await getOrderInfo();
 
-    // if (orderInfo.value.electronic_type == '0') {
-    if (bucketName.value) {
-      getFileList();
-      getSummary();
-    } else {
-      dialogVisible.value = true;
-      setDefaultName();
-    }
-    // } else {
-    //   getFileList();
-    //   getSummary();
-    // }
-  });
-  const getSummary = () => {
-    return new Promise((resolve, reject) => {
-      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.devus.u2i.net:7007`, null, null);
-      let request = new Prox.default.ProxRequestSummaryIds();
-      request.setHeader(header);
-
-      request.setIdsList([orderInfo.value.foggie_id]);
-
-      console.log(`https://${bucketName.value}.devus.u2i.net:7007`, 'bucketNamebucketNamebucketNamebucketName');
-      console.log(request, 'requestrequestrequestrequest');
-
-      server.summaryInfo(request, metadata.value, (err: any, res: { array: any }) => {
-        if (err) {
-          console.log('errsummry------:', err);
-          // reject(false);
-          resolve(false);
-        } else {
-          const contentList = res.getContentsList().map((el) => {
-            return {
-              count: el.getCount(),
-              id: el.getId(),
-              total: el.getTotal(),
-            };
-          });
-          console.log(contentList, 'contentListcontentListcontentListcontentList');
-
-          filesCount.value = contentList?.[0]?.count || 0;
-          usedSize.value = contentList?.[0]?.total || 0;
-          resolve(usedSize.value);
-        }
-      });
+  const syncChallenge = () => {
+    let data = {
+      orderId: orderInfo.value.orderId,
+    };
+    sync_challenge(data).then((res) => {
+      console.log('------sync challenge', res);
     });
   };
+  const refresh = async () => {
+    detailShow.value = false;
+    const obj = {
+      rpc: route.query.rpc,
+      peer_id: route.query.peer_id,
+      foggie_id: route.query.foggie_id,
+      signature: route.query.signature,
+      sign_timestamp: route.query.sign_timestamp,
+      order_id: route.query.order_id,
+      domain: route.query.domain,
+    };
+    await getOrderInfo1(obj);
+    getFileList();
+    getSummary();
+  };
+
   function closedOrder() {
     showDialog({
-      title: 'Cancel order',
-      content: createVNode('span', { style: {} }, 'Are you sure you want to cancel this order?'),
+      title: 'Cancel Bucket',
+      content: createVNode('span', { style: {} }, 'Are you sure you want to cancel this Bucket?'),
       cancelText: 'Cancel',
       okText: 'Yes',
+      popClass: 'dialog_class',
+
       onCancel: () => {
         // console.log('取消');
       },
       onOk: () => {
         closedOrderApi({ uuid: orderInfo.value.amb_uuid, orderId: orderInfo.value.orderId }).then((res) => {
           if (res.code == 200) {
-            router.replace({ name: 'orderSummary', query: { id: orderInfo.value.orderId, type: 'history', status: 5 } });
+            router.replace({
+              name: 'orderSummary',
+              query: {
+                id: orderInfo.value.orderId,
+                type: 'history',
+                status: 5,
+                createdTime: orderInfo.value.created_at,
+                endTime: '- -',
+                uuid: orderInfo.value.uuid,
+                amb_uuid: orderInfo.value.amb_uuid,
+                domain: orderInfo.value.domain,
+                electronic_type: orderInfo.value.electronic_type,
+              },
+            });
           } else {
             showToast.fail('Cancel failed please try again');
           }
@@ -1349,31 +1470,258 @@
       },
     });
   }
-  provide('getSummary', getSummary);
-  onDeactivated(() => {
-    if (merkleTimeOut) clearTimeout(merkleTimeOut);
+  // const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
+  //   console.log('doSocketFn', msg, tableData.value);
+  //   const action = msg.action;
+  //   const fileInfo = msg.fileInfo;
+  //   const keys = fileInfo.keys;
+  //   const bucket = fileInfo.bucket;
+  //   const cid = fileInfo.cid;
+  //   if (!action || !keys || keys.length === 0) {
+  //     refresh();
+  //     return;
+  //   }
+
+  //   if (action === 'FILE_ADD') {
+  //     let index = keys[0].lastIndexOf('/');
+  //     let name = keys[0].substring(index + 1);
+  //     const date = transferGMTTime(fileInfo.lastModified * 1000);
+  //     const _cid = cid && cid[0] ? cid[0] : '';
+  //     const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
+  //     if (!target) {
+  //       const type = keys[0].substring(keys[0].lastIndexOf('.') + 1).toLowerCase();
+  //       const data = {
+  //         cid: _cid,
+  //         key: keys[0],
+  //       };
+  //       const imgData = await handleImg(data, type, false);
+  //       let category = 0;
+  //       if (
+  //         type === 'png' ||
+  //         type === 'bmp' ||
+  //         type === 'gif' ||
+  //         type === 'jpeg' ||
+  //         type === 'jpg' ||
+  //         type === 'svg' ||
+  //         type === 'heif' ||
+  //         type === 'webp' ||
+  //         type === 'ico'
+  //       ) {
+  //         category = 1;
+  //       } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
+  //         category = 2;
+  //       } else if (type === 'mp3') {
+  //         category = 3;
+  //       } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
+  //         category = 4;
+  //       }
+  //       const url = imgData.imgHttpLink;
+  //       const isSystemImg = imgData.isSystemImg;
+  //       const url_large = imgData.imgHttpLarge;
+
+  //       console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
+
+  //       let imageInfo = {
+  //         aperture: '',
+  //         datetime: '', //拍摄时间
+  //         exposuretime: '', //ev曝光量
+  //         exptime: '', //曝光时间
+  //         orientation: '', //方向
+  //         focallength: '', //焦距
+  //         Flash: false, //是否使用闪光灯
+  //         software: '', // 使用软件
+  //         iso: '', //iso
+  //         camerainfo: '', //手机厂商及其机型
+  //         gps: '', //经纬度
+  //         resolution: '', //像素
+  //       };
+  //       let isShowDetail = false;
+
+  //       if (fileInfo.image_infos && Object.keys(fileInfo.image_infos).length > 0) {
+  //         let key = Object.keys(fileInfo.image_infos)[0];
+  //         let imageObj = fileInfo.image_infos[key];
+  //         if (imageObj && imageObj.addition) {
+  //           isShowDetail = true;
+  //           imageInfo.aperture = imageObj.addition.aperture;
+  //           imageInfo.datetime = moment(imageObj.addition.date_time, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+  //           imageInfo.exposuretime = imageObj.addition?.exposure_time; //ev曝光量
+  //           imageInfo.exptime = imageObj.addition?.exp_time; //曝光时间
+  //           imageInfo.orientation = imageObj.addition?.orientation; //方向
+  //           imageInfo.focallength = imageObj.addition?.focal_length; //焦距
+  //           imageInfo.Flash = imageObj.addition?.flash || false; //是否使用闪光灯
+  //           imageInfo.software = imageObj.addition?.software; // 使用软件
+  //           imageInfo.iso = imageObj.addition?.iso.charCodeAt(0);
+  //           imageInfo.camerainfo = imageObj?.camera_info; //手机厂商及其机型
+  //           imageInfo.gps = imageObj?.gps; //经纬度
+  //           imageInfo.resolution = imageObj?.resolution; //像素
+  //         }
+  //         console.log('FILE_ADD-----------tableData', imageInfo);
+  //       }
+
+  //       let item = {
+  //         isDir: false,
+  //         checked: false,
+  //         name,
+  //         category,
+  //         fileType: 2,
+  //         fullName: keys[0],
+  //         key: keys[0],
+  //         idList: [
+  //           {
+  //             name: 'IPFS',
+  //             code: '',
+  //           },
+  //           {
+  //             name: 'CYFS',
+  //             code: '',
+  //           },
+  //         ],
+  //         date,
+  //         pubkey: _cid,
+  //         cid: _cid,
+  //         imgUrl: url,
+  //         imgUrlLarge: url_large,
+  //         share: {},
+  //         isSystemImg,
+  //         canShare: _cid ? true : false,
+  //         isPin: false,
+  //         isPinCyfs: false,
+  //         type,
+  //         isShowDetail,
+  //         imageInfo,
+  //       };
+  //       tableData.value.unshift(item);
+  //     }
+  //   } else if (action === 'FILE_PIN') {
+  //     const curName = fileInfo.keys[0];
+  //     const curDir = window.sessionStorage.getItem('currentFolder');
+  //     tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
+  //       if (el.cid === cid[0]) {
+  //         el.isPin = true;
+  //       } else if (
+  //         curName.charAt(curName.length - 1) === '/' &&
+  //         decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
+  //       ) {
+  //         el.isPin = true;
+  //         if (!el.cid && cid[0]) {
+  //           el.cid = cid[0];
+  //         }
+  //       }
+  //     });
+  //   } else if (action === 'FILE_CHANGE') {
+  //   } else if (action === 'FILE_DELETE') {
+  //     console.log('FILE_DELETE', keys);
+  //     // tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+  //     // imgArray.value = imgArray.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+  //   } else if (action === 'FILE_PINNING') {
+  //   }
+  // };
+  // const initWebSocket = async () => {
+  //   let param = {
+  //     order_uuid: route?.query?.uuid,
+  //   };
+  //   const signData = await get_order_sign(param);
+  //   socketDate.value = signData?.result?.data?.timestamp;
+  //   socketToken.value = signData?.result?.data?.sign;
+  //   console.log('initWebSocket-----------');
+  //   const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
+  //   fileSocket.value = new WebSocket(url);
+  //   fileSocket.value.onopen = () => {
+  //     const authMessage = {
+  //       action: 'AUTH',
+  //       userID: orderInfo.value.foggie_id,
+  //       token: socketToken.value,
+  //       date: socketDate.value,
+  //     };
+  //     fileSocket.value.send(JSON.stringify(authMessage));
+  //   };
+
+  //   fileSocket.value.onmessage = (event: { data: string }) => {
+  //     const message = JSON.parse(event.data);
+  //     const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
+  //     console.log('Received message from server:', message, currentFolderStr);
+  //     const uploadFileName = window.sessionStorage.getItem('uploadFileName');
+  //     let fileInfo = message.fileInfo;
+  //     let dirArr = fileInfo.keys;
+  //     const updateBy = fileInfo.updateBy;
+  //     let dirFile = '';
+  //     let dirFileName = '';
+  //     if (dirArr && dirArr.length > 0) {
+  //       let index = dirArr[0].lastIndexOf('/');
+  //       if (index > -1) {
+  //         dirFile = dirArr[0].substring(0, index + 1);
+  //         dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
+  //       } else {
+  //         dirFile = '';
+  //         dirFileName = dirArr[0];
+  //       }
+  //     }
+
+  //     console.log(
+  //       '888888',
+  //       dirArr,
+  //       dirFile,
+  //       currentFolderStr,
+  //       dirFile === decodeURIComponent(currentFolderStr),
+  //       dirFileName !== uploadFileName,
+  //     );
+  //     if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
+  //       if (detailShow.value) {
+  //         setTimeout(() => {
+  //           initWebSocket();
+  //         }, 3000);
+  //       } else {
+  //         doSocketFn(message);
+  //       }
+  //     }
+  //   };
+
+  //   fileSocket.value.onclose = (event: any) => {
+  //     console.log('WebSocket connection closed:', event, fileSocket.value);
+  //     if (fileSocket.value) {
+  //       console.log('WebSocket connection again:');
+  //       initWebSocket();
+  //     }
+  //   };
+  //   fileSocket.value.onerror = (event: any) => {
+  //     console.error('WebSocket connection error:', event);
+  //   };
+  // };
+  onMounted(async () => {
+    if (!route.query.domain) {
+      dialogVisible.value = true;
+      setDefaultName();
+      return;
+    }
+
+    console.log('bucketName.value=====111', bucketName.value);
+
+    const obj = {
+      rpc: route.query.rpc,
+      peer_id: route.query.peer_id,
+      foggie_id: route.query.foggie_id,
+      signature: route.query.signature,
+      sign_timestamp: route.query.sign_timestamp,
+      order_id: route.query.order_id,
+      domain: route.query.domain,
+    };
+    await getOrderInfo1(obj);
+
+    console.log('bucketName.value=====', bucketName.value);
+    if (bucketName.value) {
+      getFileList();
+      getSummary();
+      // initWebSocket();
+    } else {
+      // dialogVisible.value = true;
+      // setDefaultName();
+    }
+    // syncChallenge();
   });
   onUnmounted(() => {
     if (merkleTimeOut) clearTimeout(merkleTimeOut);
   });
-  watch(
-    () => route.query,
-    async () => {
-      dialogVisible.value = false;
-      await getOrderInfo();
-      // if (orderInfo.value.electronic_type == '0') {
-      if (bucketName.value) {
-        getFileList();
-      } else {
-        dialogVisible.value = true;
-        setDefaultName();
-      }
-      // } else {
-      //   getFileList();
-      // }
-    },
-    { deep: true },
-  );
+  provide('getSummary', getSummary);
   provide('isMobileOrder', isMobileOrder);
 </script>
 
@@ -1435,6 +1783,10 @@
     width: 36px;
     height: 36px;
   }
+  .cancel_svg {
+    height: 30px !important;
+    width: 30px !important;
+  }
 
   .bucket_name_tip {
     word-break: break-word;
@@ -1448,20 +1800,59 @@
     padding: 30px 10px;
     background: #000;
     box-sizing: border-box;
-
-    .middle_img {
+    .detail_top {
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(180deg, #00000059, transparent);
+      z-index: 99;
     }
-
+    .middle_img {
+      max-height: 100%;
+      :deep {
+        .van-swipe {
+          width: 100%;
+          height: 100%;
+          .van-swipe__track {
+            align-items: center;
+            width: 100% !important;
+            img {
+              // width: 100%;
+              width: unset;
+              max-width: 100%;
+              margin: 0 auto;
+            }
+          }
+          .van-image-preview__swipe-item {
+            background: #000;
+          }
+        }
+      }
+      .nut-image {
+        width: 100%;
+        height: 100%;
+      }
+    }
     .bottom_action {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
       display: flex;
       justify-content: space-evenly;
-      height: 200px;
-
+      height: 140px;
+      background: linear-gradient(0deg, #00000059, transparent);
       div {
         text-align: center;
         color: #fff;
       }
-
       svg {
         color: #fff;
         width: 80px;
@@ -1478,29 +1869,48 @@
   .order-detail {
     margin-top: 30px;
   }
+  .main_detail_box {
+    display: flex;
+    height: auto;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+    padding: 36px 0;
+    .profit_box {
+      color: #fff;
+      width: 70%;
+      .title {
+        color: #fff;
+        font-weight: bold;
+      }
+      .value {
+        font-size: 50px;
+        font-weight: bold;
+      }
+    }
+    .progress_box {
+      color: #fff;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: #4d5092;
+      background: #9597c212;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow:
+        rgb(204, 219, 232) 0.4vw 0.4vw 0.8vw 0px inset,
+        rgba(255, 255, 255, 0.5) -0.4vw -0.4vw 0.8vw 1px inset;
+      position: relative;
+      flex-direction: column;
+      .text {
+        font-size: 18px;
+        font-weight: normal;
+      }
 
-  .upload_btn {
-    position: fixed;
-    bottom: 150px;
-    right: 50px;
-    font-size: 80px;
-    border-radius: 50%;
-    padding: 10px;
-    width: 80px;
-    height: 80px;
-    cursor: pointer;
-  }
-
-  .upload_class {
-    :deep {
-      .nut-uploader__input {
-        position: fixed !important;
-        top: unset !important;
-        left: unset !important;
-        bottom: 150px !important;
-        right: 50px !important;
-        width: 80px !important;
-        height: 80px !important;
+      .user_circle {
       }
     }
   }
@@ -1508,25 +1918,73 @@
   .top_box {
     // margin: 0 30px;
     padding: 30px 10px;
-    border-radius: 20px;
-    background: $primary-color;
-
+    border-radius: 20px !important;
+    // background: $primary-color;
+    // background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
+    padding-bottom: 50px;
+    .order-content_wrap {
+      display: flex;
+      margin-top: 10px;
+      position: relative;
+      transition: all 0.5s linear;
+      height: 0;
+      border-top: 1px dashed #ccc;
+      opacity: 1;
+      max-height: 500px;
+    }
+    .showHight {
+      //   height: 360px;
+      max-height: 500px;
+    }
+    .hideHight {
+      height: 0;
+      border: none;
+      max-height: 0;
+    }
+    .my_svg_icon {
+      position: absolute;
+      top: -16px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+    }
+    .show_avg {
+      top: -36px;
+    }
     .order-des {
       //   margin-bottom: 20px;
+      display: flex;
+      align-items: start;
       color: #fff;
+      height: 60px;
+      justify-content: start;
+      flex-direction: column;
       //   border-bottom: 1px dashed #fff;
 
       .span1 {
         float: left;
-        font-size: 24px;
         font-weight: bold;
+        display: flex;
+        align-items: center;
+        padding: 13px 0;
+        font-weight: bold;
+        font-size: 24px;
+        svg {
+          margin-right: 8px;
+        }
       }
 
       .span2 {
-        // margin-right: 5vw;
         float: right;
         font-size: 20px;
         font-weight: bold;
+        display: flex;
+        align-items: center;
+        padding: 13px 0;
+        font-weight: bold;
+        svg {
+          margin-right: 8px;
+        }
       }
     }
 
@@ -1552,6 +2010,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      justify-content: space-between;
+      //   width: 100%;
+      justify-content: end;
+      flex-direction: column;
+      align-items: end;
+      //   justify-content: start;
+      //   align-items: start;
+      //   background: #4a17a0 !important;
+      //   padding: 20px 0;
 
       .nut-cell {
         width: auto;
@@ -1561,13 +2028,20 @@
         padding-left: 8vw;
         // border-bottom: 1px solid #fff;
         border-radius: 0;
-        background: $primary-color;
+        background: transparent !important;
         box-shadow: none;
         color: #fff;
         font-size: 24px;
         line-height: 4vw;
         font-weight: bold;
-        margin: 10px 0;
+        margin: 0px 0;
+        padding: 13px 10px 13px 52px;
+        display: flex;
+        flex-direction: row;
+        span {
+          // color: #ff7b1d;
+          color: #9cb77d;
+        }
       }
 
       svg {
@@ -1577,24 +2051,87 @@
         height: 4vw;
       }
     }
+    .left_count {
+      justify-content: start;
+      align-items: start;
+      //   border-right: 2px solid #fff;
+      width: auto;
+      padding-right: 10px !important;
+      //   transition: all 0.3s;
+    }
+  }
+  .isHistory {
+    background: #2b2929;
   }
 
   .detail_box {
     box-sizing: border-box;
     height: 100%;
     padding: 20px;
+    margin-top: -60px;
+    padding-bottom: 5rem;
+    // background: #fff;
+    border-radius: 40px 40px 0 0;
+    z-index: 99;
+    position: relative;
 
     .type_check_box {
+      position: relative;
       display: flex;
       justify-content: flex-start;
       align-items: center;
       flex-wrap: wrap;
       padding: 10px;
-
+      background: #fff;
+      background: rgba(181, 186, 202, 0.38);
+      border-radius: 20px;
+      width: 40%;
+      :deep {
+        .nut-swiper {
+          width: 100% !important;
+          .nut-swiper-inner {
+            // width: 200% !important;
+          }
+          .nut-swiper-item {
+            width: 100% !important;
+          }
+        }
+        .nut-swiper-pagination {
+          position: absolute;
+          left: 1rem;
+          top: 1rem;
+        }
+        .van-swipe {
+          width: 100%;
+        }
+        .van-swipe__indicators {
+          position: absolute;
+          bottom: unset;
+          left: 1rem;
+          top: 1rem;
+        }
+      }
       .type_item {
-        width: 25%;
+        width: 50%;
         text-align: center;
         height: 150px;
+        cursor: pointer;
+        font-weight: bold;
+        background: transparent !important;
+        &.miner_tool {
+          height: 100px;
+          .svg_box {
+            margin: 0 auto;
+            img {
+              width: unset;
+              height: 60%;
+            }
+          }
+          p {
+            font-size: 0.8rem;
+            color: #fff !important;
+          }
+        }
 
         .svg_box {
           width: 80px;
@@ -1622,29 +2159,33 @@
         }
 
         .order-icon-recycle {
-          background-color: #ff8b00;
+          //   background-color: #ff8b00;
+          // background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
+          //   background-image: linear-gradient(120deg, #8ae9d7 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
-            width: 60% !important;
-            height: 60% !important;
+            width: 80% !important;
+            height: 80% !important;
             vertical-align: middle;
           }
         }
 
         .order-icon-node-tree {
-          background-color: #34964f;
+          //   background-color: #34964f;
+          //   background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
-            width: 60%;
-            height: 60%;
+            width: 100%;
+            height: 100%;
             vertical-align: middle;
           }
         }
 
         .order-icon-send-to-back {
           background-color: #fcd116;
+          background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
@@ -1656,6 +2197,7 @@
 
         .order-icon-input-cursor-move {
           background-color: #5f57ff;
+          background-image: linear-gradient(120deg, #a1c4fd 0%, #483bb5 100%);
           border-radius: 50%;
 
           svg {
@@ -1667,6 +2209,8 @@
 
         p {
           color: #051e56;
+          color: #fff;
+          white-space: nowrap;
         }
 
         // &:nth-child(1) {
@@ -1693,10 +2237,19 @@
         // }
       }
     }
+    .right_check_box {
+      width: 60%;
+      //   background: #e9e9f8;
+      margin-left: 40px;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      //   background: #fff;
+    }
 
     .type_check_box1 {
-      display: grid;
-      grid-template-columns: 3fr 1fr;
+      flex-direction: column;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      //   display: grid;
+      //   grid-template-columns: 3fr 1fr;
 
       .type_check {
         display: flex;
@@ -1718,7 +2271,7 @@
         width: 100%;
         background: #fff;
         border-radius: 10px;
-        margin-left: 10px;
+        // margin-left: 10px;
         &.router_disabled {
           .order-icon-recycle {
             background-color: #ccc;
@@ -1737,6 +2290,7 @@
       margin: 30px 0;
       font-size: 32px;
       font-weight: bold;
+      color: #fff;
 
       .title {
         font-weight: bold;
@@ -1744,52 +2298,84 @@
 
       .see_all {
         color: #5460fe;
+        color: #fff;
         font-size: 30px;
+        cursor: pointer;
         // text-decoration: underline;
       }
     }
 
     .file_list {
+      // display: grid;
+      // grid-template-columns: repeat(4, 1fr);
+      // grid-gap: 0.5rem;
       margin-top: 20px;
       background: #fff;
       border-radius: 16px;
+      .list_item {
+        .left_icon_box {
+          position: relative;
+          img {
+            vertical-align: middle;
+          }
+          .play_icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.2rem;
+            height: 1.2rem;
+          }
+        }
+      }
+    }
+    .file_list_img {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 0.2rem;
+      justify-items: center;
+      margin-top: 20px;
+      padding: 0.5rem;
+      background: #fff;
+      background: rgba(181, 186, 202, 0.38);
+      border-radius: 16px;
+      .list_item {
+        width: 120px;
+        height: 120px;
+        justify-content: center;
+        padding: 0 !important;
+        // padding: 20px 0;
+        :deep {
+          .nut-image {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 0.3rem;
+        }
+      }
     }
 
     .list_item {
       display: flex;
+      // flex-direction: column;
       justify-content: flex-start;
       align-items: center;
       padding: 20px;
-      border-top: 1px solid #eee;
-
-      &:active {
-        background: #cde3f5;
-      }
-
-      .left_checkMode {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+      // border-top: 1px solid #eee;
+      img {
         width: 80px;
         height: 80px;
-        background: #f1f1f1;
-        border-radius: 50%;
-
-        img {
-          width: 50px !important;
-          height: 50px !important;
-        }
-
-        &.is_checked {
-          width: 60px;
-          height: 60px;
-          margin: 10px;
-          background: #2e70ff;
-        }
-
-        .ok_icon {
-          color: #fff;
-        }
+      }
+      p {
+        word-break: break-all;
+      }
+      &:active {
+        background: #cde3f5;
       }
 
       .type_icon {
@@ -1797,18 +2383,8 @@
         height: 80px;
       }
 
-      .left_icon_box {
-        width: 80px;
-        height: 80px;
-
-        img {
-          width: 80px;
-          height: 80px;
-        }
-      }
-
       .name_box {
-        width: calc(100% - 180px);
+        width: calc(100% - 200px);
         margin-left: 30px;
 
         p:first-child {
@@ -1829,6 +2405,15 @@
         height: 50px;
         color: #ccc;
       }
+    }
+    .see_all {
+      margin-top: 1rem;
+      color: #5460fe;
+      color: #fff;
+      font-size: 30px;
+      text-align: center;
+      cursor: pointer;
+      //   text-decoration: underline;
     }
 
     .top_grid {
@@ -1862,6 +2447,7 @@
 
       .order-icon-recycle {
         background-color: #ff8b00;
+        background-image: linear-gradient(120deg, rgb(255, 158, 13) 0%, #f3d811 100%);
       }
 
       .order-icon-node-tree {
@@ -1876,6 +2462,10 @@
         background-color: #5f57ff;
       }
     }
+  }
+  .detail_box_toolbox {
+    // display: flex;
+    display: none;
   }
 
   .creat-name {
@@ -1921,43 +2511,6 @@
     }
   }
 
-  .move_box {
-    .top_back {
-      margin-bottom: 10px;
-
-      p {
-        margin: 0 5px;
-        color: #000;
-      }
-    }
-
-    .file_list {
-      height: 950px;
-      overflow-y: auto;
-
-      .list_item {
-        width: 100%;
-      }
-
-      .left_icon_box {
-        width: 80px;
-        height: 80px;
-
-        svg {
-          width: 100px;
-          height: 100px;
-        }
-      }
-
-      .name_box {
-        p {
-          text-align: right;
-          margin: 0;
-        }
-      }
-    }
-  }
-
   .share_info_box {
     display: flex;
     justify-content: flex-start;
@@ -1977,6 +2530,480 @@
         margin: 0 auto;
         width: 80px;
         height: 80px;
+      }
+    }
+  }
+
+  @media screen and (min-width: 500px) {
+    #txtContainer {
+      color: #fff;
+      width: 100%;
+      padding: 0 20px;
+      max-height: calc(100% - 300px);
+    }
+    .benefit_analysis {
+      // font-size: 16px;
+      right: 10px;
+      width: 60px;
+      height: 60px;
+
+      box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+      box-shadow:
+        rgb(204, 219, 232) 3px 3px 6px 0px inset,
+        rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+
+      img {
+        width: 42px;
+        height: 42px;
+      }
+    }
+    .bucket_detail_smal {
+      width: 36px;
+      height: 36px;
+    }
+    .cancel_svg {
+      height: 30px !important;
+      width: 30px !important;
+    }
+    .bucket_name_tip {
+      font-size: 30px;
+    }
+    .detail_over {
+      padding: 30px 10px;
+      .middle_img {
+        max-height: calc(100vh - 500px);
+      }
+      .bottom_action {
+        height: 200px;
+        margin-top: 20px;
+
+        svg {
+          width: 80px;
+          height: 80px;
+        }
+      }
+    }
+    .detail_back {
+      width: 60px;
+      height: 60px;
+    }
+    .order-detail {
+      margin-top: 30px;
+    }
+    .main_detail_box {
+      height: auto;
+      width: 100%;
+      padding: 5px 0;
+      .profit_box {
+        width: 70%;
+        .title {
+        }
+        .value {
+          font-size: 28px;
+        }
+      }
+      .progress_box {
+        width: 90px;
+        height: 90px;
+        font-size: 18px;
+        box-shadow:
+          rgb(204, 219, 232) 0.4vw 0.4vw 0.8vw 0px inset,
+          rgba(255, 255, 255, 0.5) -0.4vw -0.4vw 0.8vw 1px inset;
+        .text {
+          font-size: 18px;
+        }
+      }
+    }
+    .top_box {
+      // margin: 0 30px;
+      padding: 20px 10px;
+      border-radius: 0px !important;
+      padding-bottom: 50px;
+      .order-content_wrap {
+        margin-top: 10px;
+        height: 0;
+        border-top: 1px dashed #ccc;
+        opacity: 1;
+        max-height: 500px;
+      }
+      .showHight {
+        height: unset;
+        max-height: 140px;
+      }
+      .hideHight {
+        height: 0;
+        max-height: 0;
+      }
+      .my_svg_icon {
+        position: absolute;
+        top: -16px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+      }
+      .show_avg {
+        top: -36px;
+      }
+      .order-des {
+        height: 60px;
+
+        .span1 {
+          float: left;
+          padding: 13px 0;
+          font-size: 24px;
+          svg {
+            margin-right: 8px;
+          }
+        }
+
+        .span2 {
+          float: right;
+          font-size: 20px;
+          padding: 13px 0;
+          svg {
+            margin-right: 8px;
+          }
+        }
+      }
+
+      .order-circle {
+        //   padding: 2vw;
+        margin-top: 10px;
+
+        .nut-circle-progress {
+          margin-left: 3vw;
+          border: 30px solid #7f7ae9;
+          border-radius: 50%;
+          font-size: 12px;
+          box-shadow:
+            rgba(0, 0, 0, 0.3) 0px 19px 38px,
+            rgba(0, 0, 0, 0.22) 0px 15px 12px;
+        }
+      }
+
+      .order-count {
+        .nut-cell {
+          width: auto;
+          // height: vw;
+          // margin-left: 10%;
+          // border-bottom: 1px solid #fff;
+          border-radius: 0;
+          font-size: 24px;
+          line-height: 32px;
+          margin: 0px 0;
+          padding: 13px 10px 13px 52px;
+        }
+
+        svg {
+          position: absolute;
+          left: 15px;
+          width: 30px;
+          height: 30px;
+        }
+      }
+      .left_count {
+        padding-right: 10px !important;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+    }
+    .detail_box {
+      height: 100%;
+      padding: 20px;
+      margin-top: -40px;
+      border-radius: 40px 40px 0 0;
+      padding-bottom: 5rem;
+
+      .type_check_box {
+        float: left;
+        display: flex;
+        margin-top: 0 !important;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        padding: 10px 5px;
+        border-radius: 0 !important;
+        // border-right: 1px solid #e2e2e2;
+        .type_item {
+          width: 80px;
+          height: 100px;
+
+          .svg_box {
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            margin: 10px auto;
+            border-radius: 20px;
+
+            svg {
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          &:nth-child(3),
+          &:nth-child(4) {
+            .svg_box {
+              svg {
+                width: 60px;
+                height: 60px;
+              }
+            }
+          }
+        }
+      }
+
+      .type_check_box1 {
+        border: none;
+        .type_check {
+          flex-direction: column;
+          margin-right: 0;
+          border-radius: 10px;
+
+          .type_item {
+            width: 80px;
+          }
+        }
+
+        .s3key {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+          width: 80px;
+          border-radius: 10px;
+          margin-left: 0;
+        }
+      }
+
+      .today_file {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+        padding: 0 10px;
+        font-size: 24px;
+
+        .see_all {
+          font-size: 24px;
+          // text-decoration: underline;
+        }
+      }
+
+      .file_list {
+        width: unset;
+        // margin-left: 190px;
+        margin-top: 20px;
+        border-radius: 16px;
+      }
+
+      .list_item {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 20px;
+        border-top: 1px solid #eee;
+
+        .type_icon {
+          width: 80px;
+          height: 80px;
+        }
+
+        .left_icon_box {
+          position: relative;
+          width: 80px;
+          height: 80px;
+
+          img {
+            width: 80px;
+            height: 80px;
+          }
+          .play_icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.2rem;
+            height: 1.2rem;
+          }
+        }
+
+        .name_box {
+          width: calc(100% - 200px);
+          margin-left: 30px;
+
+          p:first-child {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          p:last-child {
+            margin-top: 5px;
+            color: #a7a7a7;
+            font-size: 20px;
+          }
+        }
+
+        .right_more {
+          width: 50px;
+          height: 50px;
+          color: #ccc;
+        }
+      }
+
+      .top_grid {
+        :deep {
+          .nut-grid-item__content {
+            height: unset;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 40px;
+
+            img {
+              width: 100px;
+            }
+          }
+        }
+      }
+
+      .order-icons {
+        .nut-col {
+          width: 13vw;
+          height: 13vw;
+          margin: 5vw;
+          border-radius: 50%;
+
+          svg {
+            width: 7vw;
+            height: 7vw;
+            margin: 3vw;
+          }
+        }
+      }
+    }
+
+    :deep {
+      .nut-popup {
+        .nut-icon {
+          min-height: 20px;
+        }
+      }
+    }
+    .rename_box {
+      margin-top: 40px;
+      padding: 0 40px;
+      :deep {
+        .nut-cell {
+          padding-left: 0;
+          padding-right: 0;
+          box-shadow: none;
+        }
+        .nut-textarea {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+      p {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      svg {
+        display: block;
+        margin: 0 auto;
+      }
+      :deep {
+        .nut-searchbar {
+          margin: 0 auto;
+          padding: 20px 0;
+          --nut-searchbar-width: 600px;
+          --nut-searchbar-input-height: 70px;
+        }
+        .nut-button {
+          width: 300px;
+          margin: 0 auto;
+          margin-top: 40px;
+          --nut-button-default-height: 70px;
+          --nut-button-default-font-size: 1.5rem;
+        }
+        .nut-searchbar__search-input .nut-searchbar__input-bar {
+          font-size: 1.5rem;
+        }
+        .nut-icon {
+          --nut-icon-width: 30px;
+          --nut-icon-height: 30px;
+          --nut-icon-line-height: 30px;
+        }
+      }
+    }
+
+    .share_info_box {
+      margin-top: 30px;
+      margin: 30px 120px 0;
+      justify-content: space-around;
+      div {
+        min-width: 150px;
+        margin-top: 20px;
+
+        img,
+        svg {
+          width: 80px;
+          height: 80px;
+        }
+      }
+    }
+    .custom-content {
+      p {
+        padding: 10px 20px;
+        color: #909090;
+        border-bottom: 1px solid #eee;
+        svg {
+          width: 60px;
+          height: 60px;
+          margin-right: 20px;
+          vertical-align: middle;
+        }
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        li {
+          padding: 10px 20px;
+          svg {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            vertical-align: middle;
+          }
+          &:active,
+          &:hover {
+            background: #cde3f5;
+          }
+        }
+      }
+      .cancel_btn {
+        padding: 10px;
+        font-size: 24px;
+      }
+    }
+    .timeSelect {
+      z-index: 9999;
+    }
+    :deep {
+      .van-dropdown-menu__bar {
+        background-color: transparent;
+        box-shadow: none;
+      }
+      .van-dropdown-menu__title:after {
+        transform: rotate(-45deg) scale(0.8);
+      }
+      .van-dropdown-menu__title--down:after {
+        transform: rotate(135deg) scale(0.8);
+      }
+      .van-dropdown-item__option {
+        padding: 20px;
       }
     }
   }
@@ -2030,6 +3057,14 @@
         font-size: 35px;
       }
     }
+  }
+  .BucketName {
+    background: url('@/assets/newIcon/Bucketname.png');
+    // background-size: 100% 100%;
+    background-size: 30%;
+    background-repeat: no-repeat;
+
+    background-position: calc(100% + 0.5rem) top;
   }
 </style>
 <style lang="scss">
@@ -2093,7 +3128,9 @@
   .custom-action_sheet {
     display: flex;
     flex-direction: column;
-
+    .nut-action-sheet__title {
+      background-color: #211d1d !important;
+    }
     & > div:not(:last-child) {
       padding: 10px 20px;
       width: 100%;
@@ -2111,6 +3148,7 @@
       justify-content: center;
       align-items: center;
       font-weight: 600;
+      background-color: #211d1d;
     }
   }
 </style>

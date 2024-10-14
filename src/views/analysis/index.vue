@@ -1,24 +1,39 @@
 <template>
   <div class="analysis_content">
     <div class="top_box">
-      <TopBack> Assets Analysis </TopBack>
+      <TopBack>
+        Miner Reward
+        <template #right>
+          <div class="right" @click.stop="openTipsPopup"> <Ask color="#64B592" /></div>
+        </template>
+      </TopBack>
       <nut-grid class="top_grid" :column-num="3">
         <nut-grid-item text="Balance"
           ><div>
             <IconCions class="top_icon"></IconCions>
-            <p class="banlance_text">{{ cloudBalanceNum?.integerPart }}<span style="font-size: 10px;">.{{ cloudBalanceNum?.decimalPart }}</span></p>
+            <p class="banlance_text"
+              >{{ cloudBalanceNum?.integerPart }}<span style="font-size: 10px">.{{ cloudBalanceNum?.decimalPart }}</span></p
+            >
           </div>
         </nut-grid-item>
-        <nut-grid-item class="top_icon" text="Earnings" @click="router.push('/analysisCate?type=1')"
-          ><div>
+        <nut-grid-item class="top_icon" text="Reward" @click="router.push('/analysisCate?type=1')">
+          <div>
             <IconIncome class="top_icon"></IconIncome>
-            <p>{{ cloudIncomeNum?.integerPart }}<span style="font-size: 10px;">.{{ cloudIncomeNum?.decimalPart }}</span><Search2></Search2></p> </div
-        ></nut-grid-item>
+            <p style="display: flex; align-items: center"
+              >{{ cloudIncomeNum?.integerPart }}<span style="font-size: 10px">.{{ cloudIncomeNum?.decimalPart }}</span
+              ><Location></Location
+            ></p>
+          </div>
+        </nut-grid-item>
         <nut-grid-item class="top_icon" text="Expense" @click="router.push('/analysisCate?type=3')"
           ><div>
             <IconOutCome class="top_icon"></IconOutCome>
-            <p>{{ cloudExpenseNum?.integerPart }}<span style="font-size: 10px;">.{{ cloudExpenseNum?.decimalPart }}</span><Search2></Search2></p> </div
-        ></nut-grid-item>
+            <p style="display: flex; align-items: center"
+              >{{ cloudExpenseNum?.integerPart }}<span style="font-size: 10px">.{{ cloudExpenseNum?.decimalPart }}</span
+              ><Location></Location
+            ></p>
+          </div>
+        </nut-grid-item>
         <!-- <nut-grid-item class="top_icon" text="Withdrawal" @click="router.push('/analysisCate?type=0')"
           ><div>
             <IconWithdraw class="top_icon"></IconWithdraw>
@@ -52,10 +67,11 @@
           <span>Order:{{ item.order_id }}</span>
 
           <span :class="['earnings']">
-            <span v-if="item.profit > 0">+ {{ formatNumber(item.profit)?.integerPart  }}<span style="font-size: 13px;">.{{formatNumber(item.profit)?.decimalPart}}</span></span>
-            <span v-else style="font-size: 13px;">No revenue at present</span>
-            
-            
+            <span v-if="item.profit > 0"
+              >+ {{ formatNumber(item.profit)?.integerPart
+              }}<span style="font-size: 13px">.{{ formatNumber(item.profit)?.decimalPart }}</span></span
+            >
+            <span v-else style="font-size: 13px">No reward at present</span>
           </span>
         </div>
         <!-- <div
@@ -63,7 +79,30 @@
         </div> -->
       </div>
     </nut-infinite-loading>
-    <nut-empty v-else description="No data" image="error"></nut-empty>
+    <nut-empty v-else description="No reward information" image="error"></nut-empty>
+
+    <nut-popup position="bottom" closeable round pop-class="TipsPopup" :style="{ minHeight: '60%' }" v-model:visible="TipsPopup">
+      <h3 class="buyOrderTitle"> Q&A</h3>
+      <div class="qaContent">
+        <h4>Balance</h4>
+        <ul>
+          <li>the amount remaining in the system at the current time.</li>
+        </ul>
+        <h4>Reward</h4>
+        <ul>
+          <li>Order Reward </li>
+          <li>User Recharge</li>
+          <li>Cancellation Refund</li>
+          <li>Where orders are awarded a certain amount of DMC per cycle after the merkle is reached</li>
+        </ul>
+        <h4>Expense</h4>
+        <ul>
+          <li>User expenses include purchase orders and withdrawals</li>
+        </ul>
+      </div>
+
+      <div class="ribbon">Miner pro</div>
+    </nut-popup>
   </div>
 </template>
 
@@ -78,16 +117,16 @@
   import { reactive, toRefs, onMounted, watch } from 'vue';
   import { barOption } from '@/components/echarts/util';
   import { useRoute, useRouter } from 'vue-router';
-  import { Search2 } from '@nutui/icons-vue';
+  import { Location, Ask } from '@nutui/icons-vue';
   import useOrderList from '../home/useOrderList.ts';
   import useUserAssets from '../home/useUserAssets.ts';
-  import { transferUTCTime,formatNumber } from '@/utils/util';
+  import { transferUTCTime, formatNumber } from '@/utils/util';
   import { search_user_asset, search_order_profit } from '@/api/amb';
   import { showToast } from '@nutui/nutui';
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
-    queryType: 'Earnings',
+    queryType: 'Reward',
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
@@ -102,13 +141,10 @@
 
   const { listData, cloudBalance, cloudIncome, cloudExpense, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
 
-  const cloudBalanceNum = computed(()=> formatNumber(cloudBalance.value) )
-  const cloudIncomeNum = computed(()=> formatNumber(cloudIncome.value) )
-  const cloudExpenseNum = computed(()=> formatNumber(cloudExpense.value) )
+  const cloudBalanceNum = computed(() => formatNumber(cloudBalance.value));
+  const cloudIncomeNum = computed(() => formatNumber(cloudIncome.value));
+  const cloudExpenseNum = computed(() => formatNumber(cloudExpense.value));
 
-
-
-  
   const searchUserAsset = () => {
     const [start, end] = shortcuts[timeType.value]();
     console.log(!start && !end, 'startstartstart');
@@ -125,7 +161,6 @@
       }
     });
   };
-
 
   const searchOrderProfit = () => {
     showToast.loading('Loading', {
@@ -182,6 +217,14 @@
     },
     { deep: true },
   );
+
+  /* balance Earnings Expense  tips popup */
+
+  const TipsPopup = ref(false);
+  function openTipsPopup() {
+    TipsPopup.value = true;
+  }
+
   onMounted(() => {
     // loadMore();
     searchOrderProfit();
@@ -204,6 +247,14 @@
     .top_icon {
       width: 80px;
       height: 80px;
+      position: relative;
+      .tips {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        display: grid;
+        place-items: center;
+      }
     }
     :deep {
       // .nut-grid-item {
@@ -372,6 +423,50 @@
       }
       &:last-child {
         border-bottom: none;
+      }
+    }
+  }
+  .right {
+    position: absolute;
+    right: 10px;
+  }
+</style>
+<style lang="scss">
+  .TipsPopup {
+    h4 {
+      font-style: italic;
+    }
+    .ribbon {
+      width: 300px;
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 4px 0;
+      border: 1px solid #000;
+      background: #40b3a2;
+      color: #fff;
+      position: absolute;
+      transform: rotate(-45deg);
+      left: -80px;
+      top: 40px;
+    }
+
+    .buyOrderTitle {
+      height: 100px;
+      line-height: 100px;
+      text-align: center;
+      font-size: 46px;
+      color: #030303;
+      font-weight: normal;
+    }
+    .qaContent {
+      padding: 30px 40px;
+      ul:not(:last-child) {
+        border-bottom: 2px dashed #616161;
+        padding-bottom: 30px;
+      }
+      li {
+        font-size: 28px;
+        margin-top: 10px;
       }
     }
   }

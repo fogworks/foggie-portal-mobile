@@ -33,6 +33,7 @@ goog.exportSymbol('proto.proto.GetPeerIDReply', null, global);
 goog.exportSymbol('proto.proto.GetPeerIdInfoReq', null, global);
 goog.exportSymbol('proto.proto.GetProxRequest', null, global);
 goog.exportSymbol('proto.proto.GetProxResponse', null, global);
+goog.exportSymbol('proto.proto.ProxCategory', null, global);
 goog.exportSymbol('proto.proto.ProxChatReq', null, global);
 goog.exportSymbol('proto.proto.ProxChatRequest', null, global);
 goog.exportSymbol('proto.proto.ProxChatResponse', null, global);
@@ -48,15 +49,48 @@ goog.exportSymbol('proto.proto.ProxCredsList', null, global);
 goog.exportSymbol('proto.proto.ProxDeleteObjectReq', null, global);
 goog.exportSymbol('proto.proto.ProxDeleteObjectRequest', null, global);
 goog.exportSymbol('proto.proto.ProxDeleteResp', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetApp', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetAppData', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetAppResp', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetAppResult', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetIOT', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetIOTAmountResp', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetIOTResp', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetMiner', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetMinerData', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetMinerResp', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetMinerResult', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetSpace', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetSpaceResp', null, global);
+goog.exportSymbol('proto.proto.ProxF2PGetSpaceResult', null, global);
+goog.exportSymbol('proto.proto.ProxFetchPinningRequest', null, global);
+goog.exportSymbol('proto.proto.ProxFetchPinningResponse', null, global);
+goog.exportSymbol('proto.proto.ProxFetchRequest', null, global);
+goog.exportSymbol('proto.proto.ProxFetchResponse', null, global);
 goog.exportSymbol('proto.proto.ProxFileInfo', null, global);
 goog.exportSymbol('proto.proto.ProxFindRequest', null, global);
+goog.exportSymbol('proto.proto.ProxGExtractCode', null, global);
+goog.exportSymbol('proto.proto.ProxGExtractCodeResp', null, global);
+goog.exportSymbol('proto.proto.ProxGeneratePinCredRequest', null, global);
+goog.exportSymbol('proto.proto.ProxGeneratePinCredResp', null, global);
+goog.exportSymbol('proto.proto.ProxGetBlockRequest', null, global);
+goog.exportSymbol('proto.proto.ProxGetBlockResponse', null, global);
+goog.exportSymbol('proto.proto.ProxGetCarMetaRequest', null, global);
+goog.exportSymbol('proto.proto.ProxGetCarMetaResponse', null, global);
 goog.exportSymbol('proto.proto.ProxGetCredRequest', null, global);
 goog.exportSymbol('proto.proto.ProxGetInfo', null, global);
 goog.exportSymbol('proto.proto.ProxGetRequest', null, global);
 goog.exportSymbol('proto.proto.ProxGetRequests', null, global);
 goog.exportSymbol('proto.proto.ProxGetResponse', null, global);
 goog.exportSymbol('proto.proto.ProxGetResponse.OptionCase', null, global);
+goog.exportSymbol('proto.proto.ProxGpsInfo', null, global);
 goog.exportSymbol('proto.proto.ProxHeader', null, global);
+goog.exportSymbol('proto.proto.ProxIOTData', null, global);
+goog.exportSymbol('proto.proto.ProxIOTInfo', null, global);
+goog.exportSymbol('proto.proto.ProxImageAddition', null, global);
+goog.exportSymbol('proto.proto.ProxImageCameraInfo', null, global);
+goog.exportSymbol('proto.proto.ProxImageCameraResolution', null, global);
+goog.exportSymbol('proto.proto.ProxImageInfo', null, global);
 goog.exportSymbol('proto.proto.ProxKNReq', null, global);
 goog.exportSymbol('proto.proto.ProxKNRequest', null, global);
 goog.exportSymbol('proto.proto.ProxKNResponse', null, global);
@@ -72,9 +106,12 @@ goog.exportSymbol('proto.proto.ProxListPartsResponse', null, global);
 goog.exportSymbol('proto.proto.ProxListUploadReq', null, global);
 goog.exportSymbol('proto.proto.ProxListUploadRequest', null, global);
 goog.exportSymbol('proto.proto.ProxMultipartCreateResp', null, global);
+goog.exportSymbol('proto.proto.ProxNFTInfo', null, global);
 goog.exportSymbol('proto.proto.ProxObject', null, global);
 goog.exportSymbol('proto.proto.ProxObjectInfo', null, global);
 goog.exportSymbol('proto.proto.ProxObjects', null, global);
+goog.exportSymbol('proto.proto.ProxOrigins', null, global);
+goog.exportSymbol('proto.proto.ProxPInfo', null, global);
 goog.exportSymbol('proto.proto.ProxPart', null, global);
 goog.exportSymbol('proto.proto.ProxPinPay', null, global);
 goog.exportSymbol('proto.proto.ProxPinReq', null, global);
@@ -85,6 +122,11 @@ goog.exportSymbol('proto.proto.ProxPingMinerRequest', null, global);
 goog.exportSymbol('proto.proto.ProxPingMinerResponse', null, global);
 goog.exportSymbol('proto.proto.ProxPingRequest', null, global);
 goog.exportSymbol('proto.proto.ProxPingResponse', null, global);
+goog.exportSymbol('proto.proto.ProxPinning', null, global);
+goog.exportSymbol('proto.proto.ProxPinningInfo', null, global);
+goog.exportSymbol('proto.proto.ProxPinningListRequest', null, global);
+goog.exportSymbol('proto.proto.ProxPinningResp', null, global);
+goog.exportSymbol('proto.proto.ProxPrefix', null, global);
 goog.exportSymbol('proto.proto.ProxPrefixPin', null, global);
 goog.exportSymbol('proto.proto.ProxPresignedURL', null, global);
 goog.exportSymbol('proto.proto.ProxPresignedURLResp', null, global);
@@ -102,6 +144,7 @@ goog.exportSymbol('proto.proto.ProxPutObjectResult', null, global);
 goog.exportSymbol('proto.proto.ProxRangeRequest', null, global);
 goog.exportSymbol('proto.proto.ProxRenameObject', null, global);
 goog.exportSymbol('proto.proto.ProxRenameObjectResp', null, global);
+goog.exportSymbol('proto.proto.ProxRequestStatistics', null, global);
 goog.exportSymbol('proto.proto.ProxRequestSummaryIds', null, global);
 goog.exportSymbol('proto.proto.ProxSearchRequest', null, global);
 goog.exportSymbol('proto.proto.ProxSearchResponse', null, global);
@@ -112,6 +155,7 @@ goog.exportSymbol('proto.proto.ProxStagePin', null, global);
 goog.exportSymbol('proto.proto.ProxStageRequest', null, global);
 goog.exportSymbol('proto.proto.ProxStageRequest.OptionCase', null, global);
 goog.exportSymbol('proto.proto.ProxStageResponse', null, global);
+goog.exportSymbol('proto.proto.ProxStatisticsInfo', null, global);
 goog.exportSymbol('proto.proto.ProxSummaryInfo', null, global);
 goog.exportSymbol('proto.proto.ProxSummaryInfos', null, global);
 goog.exportSymbol('proto.proto.ProxTimeLine', null, global);
@@ -120,6 +164,8 @@ goog.exportSymbol('proto.proto.ProxTimeLineResp', null, global);
 goog.exportSymbol('proto.proto.ProxTouchResp', null, global);
 goog.exportSymbol('proto.proto.ProxUnPinReq', null, global);
 goog.exportSymbol('proto.proto.ProxUnpinRequest', null, global);
+goog.exportSymbol('proto.proto.ProxUpdateNFTRequest', null, global);
+goog.exportSymbol('proto.proto.ProxUpdateNFTResp', null, global);
 goog.exportSymbol('proto.proto.ProxUpload', null, global);
 goog.exportSymbol('proto.proto.StageProxResponse', null, global);
 /**
@@ -636,6 +682,90 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.proto.ProxOrigins = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxOrigins, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxOrigins.displayName = 'proto.proto.ProxOrigins';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxFetchRequest = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.ProxFetchRequest.repeatedFields_, null);
+};
+goog.inherits(proto.proto.ProxFetchRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxFetchRequest.displayName = 'proto.proto.ProxFetchRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxFetchPinningRequest = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxFetchPinningRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxFetchPinningRequest.displayName = 'proto.proto.ProxFetchPinningRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxFetchPinningResponse = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxFetchPinningResponse, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxFetchPinningResponse.displayName = 'proto.proto.ProxFetchPinningResponse';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.proto.ProxGetRequest = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -646,6 +776,69 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.proto.ProxGetRequest.displayName = 'proto.proto.ProxGetRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxGetBlockRequest = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxGetBlockRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxGetBlockRequest.displayName = 'proto.proto.ProxGetBlockRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxGetCarMetaRequest = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxGetCarMetaRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxGetCarMetaRequest.displayName = 'proto.proto.ProxGetCarMetaRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxGetCarMetaResponse = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxGetCarMetaResponse, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxGetCarMetaResponse.displayName = 'proto.proto.ProxGetCarMetaResponse';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -730,6 +923,48 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.proto.ProxObjectInfo.displayName = 'proto.proto.ProxObjectInfo';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxGetBlockResponse = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxGetBlockResponse, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxGetBlockResponse.displayName = 'proto.proto.ProxGetBlockResponse';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxFetchResponse = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxFetchResponse, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxFetchResponse.displayName = 'proto.proto.ProxFetchResponse';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1140,8 +1375,113 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.proto.ProxObject = function (opt_data) {
+proto.proto.ProxImageCameraInfo = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxImageCameraInfo, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxImageCameraInfo.displayName = 'proto.proto.ProxImageCameraInfo';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxImageCameraResolution = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxImageCameraResolution, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxImageCameraResolution.displayName = 'proto.proto.ProxImageCameraResolution';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxImageAddition = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxImageAddition, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxImageAddition.displayName = 'proto.proto.ProxImageAddition';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxGpsInfo = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxGpsInfo, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxGpsInfo.displayName = 'proto.proto.ProxGpsInfo';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxImageInfo = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxImageInfo, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxImageInfo.displayName = 'proto.proto.ProxImageInfo';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxObject = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.ProxObject.repeatedFields_, null);
 };
 goog.inherits(proto.proto.ProxObject, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -1162,7 +1502,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.proto.ProxPrefixPin = function (opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.ProxPrefixPin.repeatedFields_, null);
 };
 goog.inherits(proto.proto.ProxPrefixPin, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -1192,6 +1532,27 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.proto.ProxListObjectsResp.displayName = 'proto.proto.ProxListObjectsResp';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxPinning = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxPinning, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxPinning.displayName = 'proto.proto.ProxPinning';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1518,6 +1879,90 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.proto.ProxCategory = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxCategory, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxCategory.displayName = 'proto.proto.ProxCategory';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxPrefix = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxPrefix, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxPrefix.displayName = 'proto.proto.ProxPrefix';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxStatisticsInfo = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.ProxStatisticsInfo.repeatedFields_, null);
+};
+goog.inherits(proto.proto.ProxStatisticsInfo, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxStatisticsInfo.displayName = 'proto.proto.ProxStatisticsInfo';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxRequestStatistics = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxRequestStatistics, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxRequestStatistics.displayName = 'proto.proto.ProxRequestStatistics';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.proto.ProxSummaryInfo = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -1749,6 +2194,195 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.proto.ProxGExtractCode = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxGExtractCode, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxGExtractCode.displayName = 'proto.proto.ProxGExtractCode';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxGExtractCodeResp = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxGExtractCodeResp, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxGExtractCodeResp.displayName = 'proto.proto.ProxGExtractCodeResp';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxPInfo = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxPInfo, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxPInfo.displayName = 'proto.proto.ProxPInfo';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxPinningInfo = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.ProxPinningInfo.repeatedFields_, null);
+};
+goog.inherits(proto.proto.ProxPinningInfo, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxPinningInfo.displayName = 'proto.proto.ProxPinningInfo';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxPinningListRequest = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.ProxPinningListRequest.repeatedFields_, null);
+};
+goog.inherits(proto.proto.ProxPinningListRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxPinningListRequest.displayName = 'proto.proto.ProxPinningListRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxPinningResp = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.ProxPinningResp.repeatedFields_, null);
+};
+goog.inherits(proto.proto.ProxPinningResp, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxPinningResp.displayName = 'proto.proto.ProxPinningResp';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxNFTInfo = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxNFTInfo, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxNFTInfo.displayName = 'proto.proto.ProxNFTInfo';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxUpdateNFTRequest = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.ProxUpdateNFTRequest.repeatedFields_, null);
+};
+goog.inherits(proto.proto.ProxUpdateNFTRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxUpdateNFTRequest.displayName = 'proto.proto.ProxUpdateNFTRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxUpdateNFTResp = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxUpdateNFTResp, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxUpdateNFTResp.displayName = 'proto.proto.ProxUpdateNFTResp';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.proto.ProxCred = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -1822,6 +2456,48 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.proto.ProxGetCredRequest.displayName = 'proto.proto.ProxGetCredRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxGeneratePinCredRequest = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxGeneratePinCredRequest, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxGeneratePinCredRequest.displayName = 'proto.proto.ProxGeneratePinCredRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxGeneratePinCredResp = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxGeneratePinCredResp, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxGeneratePinCredResp.displayName = 'proto.proto.ProxGeneratePinCredResp';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1970,6 +2646,342 @@ if (goog.DEBUG && !COMPILED) {
    */
   proto.proto.ProxKNResponse.displayName = 'proto.proto.ProxKNResponse';
 }
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetSpace = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetSpace, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetSpace.displayName = 'proto.proto.ProxF2PGetSpace';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetMiner = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetMiner, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetMiner.displayName = 'proto.proto.ProxF2PGetMiner';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetApp = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetApp, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetApp.displayName = 'proto.proto.ProxF2PGetApp';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetAppData = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetAppData, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetAppData.displayName = 'proto.proto.ProxF2PGetAppData';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetSpaceResult = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetSpaceResult, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetSpaceResult.displayName = 'proto.proto.ProxF2PGetSpaceResult';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetSpaceResp = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetSpaceResp, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetSpaceResp.displayName = 'proto.proto.ProxF2PGetSpaceResp';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetIOT = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetIOT, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetIOT.displayName = 'proto.proto.ProxF2PGetIOT';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxIOTInfo = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxIOTInfo, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxIOTInfo.displayName = 'proto.proto.ProxIOTInfo';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxIOTData = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.ProxIOTData.repeatedFields_, null);
+};
+goog.inherits(proto.proto.ProxIOTData, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxIOTData.displayName = 'proto.proto.ProxIOTData';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetIOTResp = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.ProxF2PGetIOTResp.repeatedFields_, null);
+};
+goog.inherits(proto.proto.ProxF2PGetIOTResp, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetIOTResp.displayName = 'proto.proto.ProxF2PGetIOTResp';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetIOTAmountResp = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetIOTAmountResp, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetIOTAmountResp.displayName = 'proto.proto.ProxF2PGetIOTAmountResp';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetMinerData = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetMinerData, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetMinerData.displayName = 'proto.proto.ProxF2PGetMinerData';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetMinerResult = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.ProxF2PGetMinerResult.repeatedFields_, null);
+};
+goog.inherits(proto.proto.ProxF2PGetMinerResult, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetMinerResult.displayName = 'proto.proto.ProxF2PGetMinerResult';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetMinerResp = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetMinerResp, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetMinerResp.displayName = 'proto.proto.ProxF2PGetMinerResp';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetAppResult = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetAppResult, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetAppResult.displayName = 'proto.proto.ProxF2PGetAppResult';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.proto.ProxF2PGetAppResp = function (opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.proto.ProxF2PGetAppResp, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.proto.ProxF2PGetAppResp.displayName = 'proto.proto.ProxF2PGetAppResp';
+}
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
   /**
@@ -2003,6 +3015,7 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
         peerid: jspb.Message.getFieldWithDefault(msg, 1, ''),
         id: jspb.Message.getFieldWithDefault(msg, 2, ''),
         token: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        apptype: jspb.Message.getFieldWithDefault(msg, 4, ''),
       };
 
     if (includeInstance) {
@@ -2049,6 +3062,10 @@ proto.proto.ProxHeader.deserializeBinaryFromReader = function (msg, reader) {
         var value = /** @type {string} */ (reader.readString());
         msg.setToken(value);
         break;
+      case 4:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setApptype(value);
+        break;
       default:
         reader.skipField();
         break;
@@ -2087,6 +3104,10 @@ proto.proto.ProxHeader.serializeBinaryToWriter = function (message, writer) {
   f = message.getToken();
   if (f.length > 0) {
     writer.writeString(3, f);
+  }
+  f = message.getApptype();
+  if (f.length > 0) {
+    writer.writeString(4, f);
   }
 };
 
@@ -2136,6 +3157,22 @@ proto.proto.ProxHeader.prototype.getToken = function () {
  */
 proto.proto.ProxHeader.prototype.setToken = function (value) {
   return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional string appType = 4;
+ * @return {string}
+ */
+proto.proto.ProxHeader.prototype.getApptype = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxHeader} returns this
+ */
+proto.proto.ProxHeader.prototype.setApptype = function (value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -4167,6 +5204,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
         stageonly: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
         category: jspb.Message.getFieldWithDefault(msg, 6, 0),
         tags: jspb.Message.getFieldWithDefault(msg, 7, ''),
+        rhash: jspb.Message.getFieldWithDefault(msg, 8, ''),
+        acl: jspb.Message.getFieldWithDefault(msg, 9, ''),
       };
 
     if (includeInstance) {
@@ -4229,6 +5268,14 @@ proto.proto.ProxPutObjectRequest.deserializeBinaryFromReader = function (msg, re
         var value = /** @type {string} */ (reader.readString());
         msg.setTags(value);
         break;
+      case 8:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setRhash(value);
+        break;
+      case 9:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setAcl(value);
+        break;
       default:
         reader.skipField();
         break;
@@ -4283,6 +5330,14 @@ proto.proto.ProxPutObjectRequest.serializeBinaryToWriter = function (message, wr
   f = message.getTags();
   if (f.length > 0) {
     writer.writeString(7, f);
+  }
+  f = message.getRhash();
+  if (f.length > 0) {
+    writer.writeString(8, f);
+  }
+  f = message.getAcl();
+  if (f.length > 0) {
+    writer.writeString(9, f);
   }
 };
 
@@ -4396,6 +5451,38 @@ proto.proto.ProxPutObjectRequest.prototype.getTags = function () {
  */
 proto.proto.ProxPutObjectRequest.prototype.setTags = function (value) {
   return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+/**
+ * optional string rhash = 8;
+ * @return {string}
+ */
+proto.proto.ProxPutObjectRequest.prototype.getRhash = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPutObjectRequest} returns this
+ */
+proto.proto.ProxPutObjectRequest.prototype.setRhash = function (value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+/**
+ * optional string acl = 9;
+ * @return {string}
+ */
+proto.proto.ProxPutObjectRequest.prototype.getAcl = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPutObjectRequest} returns this
+ */
+proto.proto.ProxPutObjectRequest.prototype.setAcl = function (value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
 };
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -6007,6 +7094,778 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
    *     http://goto/soy-param-migration
    * @return {!Object}
    */
+  proto.proto.ProxOrigins.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxOrigins.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxOrigins} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxOrigins.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        multiaddr: jspb.Message.getFieldWithDefault(msg, 1, ''),
+        access: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        id: jspb.Message.getFieldWithDefault(msg, 4, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxOrigins}
+ */
+proto.proto.ProxOrigins.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxOrigins();
+  return proto.proto.ProxOrigins.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxOrigins} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxOrigins}
+ */
+proto.proto.ProxOrigins.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setMultiaddr(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setAccess(value);
+        break;
+      case 4:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setId(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxOrigins.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxOrigins.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxOrigins} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxOrigins.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getMultiaddr();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+  f = message.getAccess();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getId();
+  if (f.length > 0) {
+    writer.writeString(4, f);
+  }
+};
+
+/**
+ * optional string multiAddr = 1;
+ * @return {string}
+ */
+proto.proto.ProxOrigins.prototype.getMultiaddr = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxOrigins} returns this
+ */
+proto.proto.ProxOrigins.prototype.setMultiaddr = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+/**
+ * optional string access = 3;
+ * @return {string}
+ */
+proto.proto.ProxOrigins.prototype.getAccess = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxOrigins} returns this
+ */
+proto.proto.ProxOrigins.prototype.setAccess = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional string id = 4;
+ * @return {string}
+ */
+proto.proto.ProxOrigins.prototype.getId = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxOrigins} returns this
+ */
+proto.proto.ProxOrigins.prototype.setId = function (value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.ProxFetchRequest.repeatedFields_ = [5];
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxFetchRequest.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxFetchRequest.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxFetchRequest} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxFetchRequest.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+        url: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        name: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        meta: msg.getMeta_asB64(),
+        originsList: jspb.Message.toObjectList(msg.getOriginsList(), proto.proto.ProxOrigins.toObject, includeInstance),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxFetchRequest}
+ */
+proto.proto.ProxFetchRequest.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxFetchRequest();
+  return proto.proto.ProxFetchRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxFetchRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxFetchRequest}
+ */
+proto.proto.ProxFetchRequest.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setUrl(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setName(value);
+        break;
+      case 4:
+        var value = /** @type {!Uint8Array} */ (reader.readBytes());
+        msg.setMeta(value);
+        break;
+      case 5:
+        var value = new proto.proto.ProxOrigins();
+        reader.readMessage(value, proto.proto.ProxOrigins.deserializeBinaryFromReader);
+        msg.addOrigins(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxFetchRequest.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxFetchRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxFetchRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxFetchRequest.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+  f = message.getUrl();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getMeta_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(4, f);
+  }
+  f = message.getOriginsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(5, f, proto.proto.ProxOrigins.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxFetchRequest.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxFetchRequest} returns this
+ */
+proto.proto.ProxFetchRequest.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxFetchRequest} returns this
+ */
+proto.proto.ProxFetchRequest.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxFetchRequest.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+/**
+ * optional string url = 2;
+ * @return {string}
+ */
+proto.proto.ProxFetchRequest.prototype.getUrl = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxFetchRequest} returns this
+ */
+proto.proto.ProxFetchRequest.prototype.setUrl = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string name = 3;
+ * @return {string}
+ */
+proto.proto.ProxFetchRequest.prototype.getName = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxFetchRequest} returns this
+ */
+proto.proto.ProxFetchRequest.prototype.setName = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional bytes meta = 4;
+ * @return {!(string|Uint8Array)}
+ */
+proto.proto.ProxFetchRequest.prototype.getMeta = function () {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ''));
+};
+
+/**
+ * optional bytes meta = 4;
+ * This is a type-conversion wrapper around `getMeta()`
+ * @return {string}
+ */
+proto.proto.ProxFetchRequest.prototype.getMeta_asB64 = function () {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(this.getMeta()));
+};
+
+/**
+ * optional bytes meta = 4;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getMeta()`
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxFetchRequest.prototype.getMeta_asU8 = function () {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(this.getMeta()));
+};
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.proto.ProxFetchRequest} returns this
+ */
+proto.proto.ProxFetchRequest.prototype.setMeta = function (value) {
+  return jspb.Message.setProto3BytesField(this, 4, value);
+};
+
+/**
+ * repeated ProxOrigins origins = 5;
+ * @return {!Array<!proto.proto.ProxOrigins>}
+ */
+proto.proto.ProxFetchRequest.prototype.getOriginsList = function () {
+  return /** @type{!Array<!proto.proto.ProxOrigins>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxOrigins, 5));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxOrigins>} value
+ * @return {!proto.proto.ProxFetchRequest} returns this
+ */
+proto.proto.ProxFetchRequest.prototype.setOriginsList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 5, value);
+};
+
+/**
+ * @param {!proto.proto.ProxOrigins=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxOrigins}
+ */
+proto.proto.ProxFetchRequest.prototype.addOrigins = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.proto.ProxOrigins, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxFetchRequest} returns this
+ */
+proto.proto.ProxFetchRequest.prototype.clearOriginsList = function () {
+  return this.setOriginsList([]);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxFetchPinningRequest.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxFetchPinningRequest.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxFetchPinningRequest} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxFetchPinningRequest.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+        pinningid: jspb.Message.getFieldWithDefault(msg, 2, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxFetchPinningRequest}
+ */
+proto.proto.ProxFetchPinningRequest.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxFetchPinningRequest();
+  return proto.proto.ProxFetchPinningRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxFetchPinningRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxFetchPinningRequest}
+ */
+proto.proto.ProxFetchPinningRequest.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPinningid(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxFetchPinningRequest.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxFetchPinningRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxFetchPinningRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxFetchPinningRequest.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+  f = message.getPinningid();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxFetchPinningRequest.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxFetchPinningRequest} returns this
+ */
+proto.proto.ProxFetchPinningRequest.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxFetchPinningRequest} returns this
+ */
+proto.proto.ProxFetchPinningRequest.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxFetchPinningRequest.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+/**
+ * optional string pinningId = 2;
+ * @return {string}
+ */
+proto.proto.ProxFetchPinningRequest.prototype.getPinningid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxFetchPinningRequest} returns this
+ */
+proto.proto.ProxFetchPinningRequest.prototype.setPinningid = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxFetchPinningResponse.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxFetchPinningResponse.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxFetchPinningResponse} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxFetchPinningResponse.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        status: jspb.Message.getFieldWithDefault(msg, 1, ''),
+        requestid: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        created: jspb.Message.getFieldWithDefault(msg, 3, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxFetchPinningResponse}
+ */
+proto.proto.ProxFetchPinningResponse.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxFetchPinningResponse();
+  return proto.proto.ProxFetchPinningResponse.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxFetchPinningResponse} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxFetchPinningResponse}
+ */
+proto.proto.ProxFetchPinningResponse.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setStatus(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setRequestid(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setCreated(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxFetchPinningResponse.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxFetchPinningResponse.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxFetchPinningResponse} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxFetchPinningResponse.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+  f = message.getRequestid();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getCreated();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+};
+
+/**
+ * optional string status = 1;
+ * @return {string}
+ */
+proto.proto.ProxFetchPinningResponse.prototype.getStatus = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxFetchPinningResponse} returns this
+ */
+proto.proto.ProxFetchPinningResponse.prototype.setStatus = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+/**
+ * optional string requestId = 2;
+ * @return {string}
+ */
+proto.proto.ProxFetchPinningResponse.prototype.getRequestid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxFetchPinningResponse} returns this
+ */
+proto.proto.ProxFetchPinningResponse.prototype.setRequestid = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string created = 3;
+ * @return {string}
+ */
+proto.proto.ProxFetchPinningResponse.prototype.getCreated = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxFetchPinningResponse} returns this
+ */
+proto.proto.ProxFetchPinningResponse.prototype.setCreated = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
   proto.proto.ProxGetRequest.prototype.toObject = function (opt_includeInstance) {
     return proto.proto.ProxGetRequest.toObject(opt_includeInstance, this);
   };
@@ -6028,6 +7887,7 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
         key: jspb.Message.getFieldWithDefault(msg, 3, ''),
         range: (f = msg.getRange()) && proto.proto.ProxRangeRequest.toObject(includeInstance, f),
         thumb: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+        pwd: jspb.Message.getFieldWithDefault(msg, 6, ''),
       };
 
     if (includeInstance) {
@@ -6084,6 +7944,10 @@ proto.proto.ProxGetRequest.deserializeBinaryFromReader = function (msg, reader) 
         var value = /** @type {boolean} */ (reader.readBool());
         msg.setThumb(value);
         break;
+      case 6:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPwd(value);
+        break;
       default:
         reader.skipField();
         break;
@@ -6130,6 +7994,10 @@ proto.proto.ProxGetRequest.serializeBinaryToWriter = function (message, writer) 
   f = message.getThumb();
   if (f) {
     writer.writeBool(5, f);
+  }
+  f = message.getPwd();
+  if (f.length > 0) {
+    writer.writeString(6, f);
   }
 };
 
@@ -6243,6 +8111,577 @@ proto.proto.ProxGetRequest.prototype.getThumb = function () {
  */
 proto.proto.ProxGetRequest.prototype.setThumb = function (value) {
   return jspb.Message.setProto3BooleanField(this, 5, value);
+};
+
+/**
+ * optional string pwd = 6;
+ * @return {string}
+ */
+proto.proto.ProxGetRequest.prototype.getPwd = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGetRequest} returns this
+ */
+proto.proto.ProxGetRequest.prototype.setPwd = function (value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxGetBlockRequest.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxGetBlockRequest.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxGetBlockRequest} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxGetBlockRequest.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+        cid: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        pwd: jspb.Message.getFieldWithDefault(msg, 3, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxGetBlockRequest}
+ */
+proto.proto.ProxGetBlockRequest.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxGetBlockRequest();
+  return proto.proto.ProxGetBlockRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxGetBlockRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxGetBlockRequest}
+ */
+proto.proto.ProxGetBlockRequest.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setCid(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPwd(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxGetBlockRequest.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxGetBlockRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxGetBlockRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxGetBlockRequest.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+  f = message.getCid();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getPwd();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxGetBlockRequest.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxGetBlockRequest} returns this
+ */
+proto.proto.ProxGetBlockRequest.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxGetBlockRequest} returns this
+ */
+proto.proto.ProxGetBlockRequest.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxGetBlockRequest.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+/**
+ * optional string cid = 2;
+ * @return {string}
+ */
+proto.proto.ProxGetBlockRequest.prototype.getCid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGetBlockRequest} returns this
+ */
+proto.proto.ProxGetBlockRequest.prototype.setCid = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string pwd = 3;
+ * @return {string}
+ */
+proto.proto.ProxGetBlockRequest.prototype.getPwd = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGetBlockRequest} returns this
+ */
+proto.proto.ProxGetBlockRequest.prototype.setPwd = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxGetCarMetaRequest.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxGetCarMetaRequest.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxGetCarMetaRequest} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxGetCarMetaRequest.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+        name: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        cid: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        pwd: jspb.Message.getFieldWithDefault(msg, 4, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxGetCarMetaRequest}
+ */
+proto.proto.ProxGetCarMetaRequest.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxGetCarMetaRequest();
+  return proto.proto.ProxGetCarMetaRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxGetCarMetaRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxGetCarMetaRequest}
+ */
+proto.proto.ProxGetCarMetaRequest.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setName(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setCid(value);
+        break;
+      case 4:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPwd(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxGetCarMetaRequest.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxGetCarMetaRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxGetCarMetaRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxGetCarMetaRequest.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getCid();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getPwd();
+  if (f.length > 0) {
+    writer.writeString(4, f);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxGetCarMetaRequest.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxGetCarMetaRequest} returns this
+ */
+proto.proto.ProxGetCarMetaRequest.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxGetCarMetaRequest} returns this
+ */
+proto.proto.ProxGetCarMetaRequest.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxGetCarMetaRequest.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+/**
+ * optional string Name = 2;
+ * @return {string}
+ */
+proto.proto.ProxGetCarMetaRequest.prototype.getName = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGetCarMetaRequest} returns this
+ */
+proto.proto.ProxGetCarMetaRequest.prototype.setName = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string cid = 3;
+ * @return {string}
+ */
+proto.proto.ProxGetCarMetaRequest.prototype.getCid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGetCarMetaRequest} returns this
+ */
+proto.proto.ProxGetCarMetaRequest.prototype.setCid = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional string pwd = 4;
+ * @return {string}
+ */
+proto.proto.ProxGetCarMetaRequest.prototype.getPwd = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGetCarMetaRequest} returns this
+ */
+proto.proto.ProxGetCarMetaRequest.prototype.setPwd = function (value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxGetCarMetaResponse.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxGetCarMetaResponse.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxGetCarMetaResponse} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxGetCarMetaResponse.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        meta: msg.getMeta_asB64(),
+        status: jspb.Message.getFieldWithDefault(msg, 2, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxGetCarMetaResponse}
+ */
+proto.proto.ProxGetCarMetaResponse.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxGetCarMetaResponse();
+  return proto.proto.ProxGetCarMetaResponse.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxGetCarMetaResponse} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxGetCarMetaResponse}
+ */
+proto.proto.ProxGetCarMetaResponse.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {!Uint8Array} */ (reader.readBytes());
+        msg.setMeta(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setStatus(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxGetCarMetaResponse.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxGetCarMetaResponse.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxGetCarMetaResponse} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxGetCarMetaResponse.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getMeta_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(1, f);
+  }
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+};
+
+/**
+ * optional bytes meta = 1;
+ * @return {!(string|Uint8Array)}
+ */
+proto.proto.ProxGetCarMetaResponse.prototype.getMeta = function () {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * optional bytes meta = 1;
+ * This is a type-conversion wrapper around `getMeta()`
+ * @return {string}
+ */
+proto.proto.ProxGetCarMetaResponse.prototype.getMeta_asB64 = function () {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(this.getMeta()));
+};
+
+/**
+ * optional bytes meta = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getMeta()`
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxGetCarMetaResponse.prototype.getMeta_asU8 = function () {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(this.getMeta()));
+};
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.proto.ProxGetCarMetaResponse} returns this
+ */
+proto.proto.ProxGetCarMetaResponse.prototype.setMeta = function (value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+/**
+ * optional string status = 2;
+ * @return {string}
+ */
+proto.proto.ProxGetCarMetaResponse.prototype.getStatus = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGetCarMetaResponse} returns this
+ */
+proto.proto.ProxGetCarMetaResponse.prototype.setStatus = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -7013,6 +9452,285 @@ proto.proto.ProxObjectInfo.prototype.clearRange = function () {
  */
 proto.proto.ProxObjectInfo.prototype.hasRange = function () {
   return jspb.Message.getField(this, 2) != null;
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxGetBlockResponse.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxGetBlockResponse.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxGetBlockResponse} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxGetBlockResponse.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        chunk: msg.getChunk_asB64(),
+        status: jspb.Message.getFieldWithDefault(msg, 2, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxGetBlockResponse}
+ */
+proto.proto.ProxGetBlockResponse.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxGetBlockResponse();
+  return proto.proto.ProxGetBlockResponse.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxGetBlockResponse} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxGetBlockResponse}
+ */
+proto.proto.ProxGetBlockResponse.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {!Uint8Array} */ (reader.readBytes());
+        msg.setChunk(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setStatus(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxGetBlockResponse.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxGetBlockResponse.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxGetBlockResponse} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxGetBlockResponse.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getChunk_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(1, f);
+  }
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+};
+
+/**
+ * optional bytes chunk = 1;
+ * @return {!(string|Uint8Array)}
+ */
+proto.proto.ProxGetBlockResponse.prototype.getChunk = function () {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * optional bytes chunk = 1;
+ * This is a type-conversion wrapper around `getChunk()`
+ * @return {string}
+ */
+proto.proto.ProxGetBlockResponse.prototype.getChunk_asB64 = function () {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(this.getChunk()));
+};
+
+/**
+ * optional bytes chunk = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getChunk()`
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxGetBlockResponse.prototype.getChunk_asU8 = function () {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(this.getChunk()));
+};
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.proto.ProxGetBlockResponse} returns this
+ */
+proto.proto.ProxGetBlockResponse.prototype.setChunk = function (value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+/**
+ * optional string status = 2;
+ * @return {string}
+ */
+proto.proto.ProxGetBlockResponse.prototype.getStatus = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGetBlockResponse} returns this
+ */
+proto.proto.ProxGetBlockResponse.prototype.setStatus = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxFetchResponse.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxFetchResponse.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxFetchResponse} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxFetchResponse.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        status: jspb.Message.getFieldWithDefault(msg, 1, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxFetchResponse}
+ */
+proto.proto.ProxFetchResponse.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxFetchResponse();
+  return proto.proto.ProxFetchResponse.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxFetchResponse} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxFetchResponse}
+ */
+proto.proto.ProxFetchResponse.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setStatus(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxFetchResponse.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxFetchResponse.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxFetchResponse} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxFetchResponse.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+};
+
+/**
+ * optional string status = 1;
+ * @return {string}
+ */
+proto.proto.ProxFetchResponse.prototype.getStatus = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxFetchResponse} returns this
+ */
+proto.proto.ProxFetchResponse.prototype.setStatus = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 /**
@@ -11182,6 +13900,1018 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
    *     http://goto/soy-param-migration
    * @return {!Object}
    */
+  proto.proto.ProxImageCameraInfo.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxImageCameraInfo.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxImageCameraInfo} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxImageCameraInfo.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        make: jspb.Message.getFieldWithDefault(msg, 1, ''),
+        model: jspb.Message.getFieldWithDefault(msg, 2, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxImageCameraInfo}
+ */
+proto.proto.ProxImageCameraInfo.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxImageCameraInfo();
+  return proto.proto.ProxImageCameraInfo.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxImageCameraInfo} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxImageCameraInfo}
+ */
+proto.proto.ProxImageCameraInfo.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setMake(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setModel(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxImageCameraInfo.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxImageCameraInfo.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxImageCameraInfo} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxImageCameraInfo.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getMake();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+  f = message.getModel();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+};
+
+/**
+ * optional string make = 1;
+ * @return {string}
+ */
+proto.proto.ProxImageCameraInfo.prototype.getMake = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageCameraInfo} returns this
+ */
+proto.proto.ProxImageCameraInfo.prototype.setMake = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+/**
+ * optional string model = 2;
+ * @return {string}
+ */
+proto.proto.ProxImageCameraInfo.prototype.getModel = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageCameraInfo} returns this
+ */
+proto.proto.ProxImageCameraInfo.prototype.setModel = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxImageCameraResolution.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxImageCameraResolution.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxImageCameraResolution} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxImageCameraResolution.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        weight: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        height: jspb.Message.getFieldWithDefault(msg, 2, 0),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxImageCameraResolution}
+ */
+proto.proto.ProxImageCameraResolution.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxImageCameraResolution();
+  return proto.proto.ProxImageCameraResolution.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxImageCameraResolution} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxImageCameraResolution}
+ */
+proto.proto.ProxImageCameraResolution.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setWeight(value);
+        break;
+      case 2:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setHeight(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxImageCameraResolution.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxImageCameraResolution.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxImageCameraResolution} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxImageCameraResolution.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getWeight();
+  if (f !== 0) {
+    writer.writeInt32(1, f);
+  }
+  f = message.getHeight();
+  if (f !== 0) {
+    writer.writeInt32(2, f);
+  }
+};
+
+/**
+ * optional int32 weight = 1;
+ * @return {number}
+ */
+proto.proto.ProxImageCameraResolution.prototype.getWeight = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxImageCameraResolution} returns this
+ */
+proto.proto.ProxImageCameraResolution.prototype.setWeight = function (value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+/**
+ * optional int32 height = 2;
+ * @return {number}
+ */
+proto.proto.ProxImageCameraResolution.prototype.getHeight = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxImageCameraResolution} returns this
+ */
+proto.proto.ProxImageCameraResolution.prototype.setHeight = function (value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxImageAddition.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxImageAddition.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxImageAddition} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxImageAddition.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        datetime: jspb.Message.getFieldWithDefault(msg, 1, ''),
+        iso: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        exptime: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        aperture: jspb.Message.getFieldWithDefault(msg, 4, ''),
+        orientation: jspb.Message.getFieldWithDefault(msg, 5, ''),
+        flash: jspb.Message.getFieldWithDefault(msg, 6, ''),
+        software: jspb.Message.getFieldWithDefault(msg, 7, ''),
+        exposuretime: jspb.Message.getFieldWithDefault(msg, 8, ''),
+        focallength: jspb.Message.getFieldWithDefault(msg, 9, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxImageAddition}
+ */
+proto.proto.ProxImageAddition.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxImageAddition();
+  return proto.proto.ProxImageAddition.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxImageAddition} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxImageAddition}
+ */
+proto.proto.ProxImageAddition.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setDatetime(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setIso(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setExptime(value);
+        break;
+      case 4:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setAperture(value);
+        break;
+      case 5:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setOrientation(value);
+        break;
+      case 6:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setFlash(value);
+        break;
+      case 7:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setSoftware(value);
+        break;
+      case 8:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setExposuretime(value);
+        break;
+      case 9:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setFocallength(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxImageAddition.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxImageAddition.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxImageAddition} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxImageAddition.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getDatetime();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+  f = message.getIso();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getExptime();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getAperture();
+  if (f.length > 0) {
+    writer.writeString(4, f);
+  }
+  f = message.getOrientation();
+  if (f.length > 0) {
+    writer.writeString(5, f);
+  }
+  f = message.getFlash();
+  if (f.length > 0) {
+    writer.writeString(6, f);
+  }
+  f = message.getSoftware();
+  if (f.length > 0) {
+    writer.writeString(7, f);
+  }
+  f = message.getExposuretime();
+  if (f.length > 0) {
+    writer.writeString(8, f);
+  }
+  f = message.getFocallength();
+  if (f.length > 0) {
+    writer.writeString(9, f);
+  }
+};
+
+/**
+ * optional string dateTime = 1;
+ * @return {string}
+ */
+proto.proto.ProxImageAddition.prototype.getDatetime = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageAddition} returns this
+ */
+proto.proto.ProxImageAddition.prototype.setDatetime = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+/**
+ * optional string iso = 2;
+ * @return {string}
+ */
+proto.proto.ProxImageAddition.prototype.getIso = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageAddition} returns this
+ */
+proto.proto.ProxImageAddition.prototype.setIso = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string expTime = 3;
+ * @return {string}
+ */
+proto.proto.ProxImageAddition.prototype.getExptime = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageAddition} returns this
+ */
+proto.proto.ProxImageAddition.prototype.setExptime = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional string aperture = 4;
+ * @return {string}
+ */
+proto.proto.ProxImageAddition.prototype.getAperture = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageAddition} returns this
+ */
+proto.proto.ProxImageAddition.prototype.setAperture = function (value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+/**
+ * optional string orientation = 5;
+ * @return {string}
+ */
+proto.proto.ProxImageAddition.prototype.getOrientation = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageAddition} returns this
+ */
+proto.proto.ProxImageAddition.prototype.setOrientation = function (value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+/**
+ * optional string flash = 6;
+ * @return {string}
+ */
+proto.proto.ProxImageAddition.prototype.getFlash = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageAddition} returns this
+ */
+proto.proto.ProxImageAddition.prototype.setFlash = function (value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+/**
+ * optional string software = 7;
+ * @return {string}
+ */
+proto.proto.ProxImageAddition.prototype.getSoftware = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageAddition} returns this
+ */
+proto.proto.ProxImageAddition.prototype.setSoftware = function (value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+/**
+ * optional string exposureTime = 8;
+ * @return {string}
+ */
+proto.proto.ProxImageAddition.prototype.getExposuretime = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageAddition} returns this
+ */
+proto.proto.ProxImageAddition.prototype.setExposuretime = function (value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+/**
+ * optional string focalLength = 9;
+ * @return {string}
+ */
+proto.proto.ProxImageAddition.prototype.getFocallength = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxImageAddition} returns this
+ */
+proto.proto.ProxImageAddition.prototype.setFocallength = function (value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxGpsInfo.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxGpsInfo.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxGpsInfo} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxGpsInfo.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        lat: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+        pb_long: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxGpsInfo}
+ */
+proto.proto.ProxGpsInfo.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxGpsInfo();
+  return proto.proto.ProxGpsInfo.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxGpsInfo} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxGpsInfo}
+ */
+proto.proto.ProxGpsInfo.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readFloat());
+        msg.setLat(value);
+        break;
+      case 2:
+        var value = /** @type {number} */ (reader.readFloat());
+        msg.setLong(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxGpsInfo.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxGpsInfo.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxGpsInfo} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxGpsInfo.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getLat();
+  if (f !== 0.0) {
+    writer.writeFloat(1, f);
+  }
+  f = message.getLong();
+  if (f !== 0.0) {
+    writer.writeFloat(2, f);
+  }
+};
+
+/**
+ * optional float lat = 1;
+ * @return {number}
+ */
+proto.proto.ProxGpsInfo.prototype.getLat = function () {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxGpsInfo} returns this
+ */
+proto.proto.ProxGpsInfo.prototype.setLat = function (value) {
+  return jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+/**
+ * optional float long = 2;
+ * @return {number}
+ */
+proto.proto.ProxGpsInfo.prototype.getLong = function () {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxGpsInfo} returns this
+ */
+proto.proto.ProxGpsInfo.prototype.setLong = function (value) {
+  return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxImageInfo.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxImageInfo.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxImageInfo} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxImageInfo.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        camerainfo: (f = msg.getCamerainfo()) && proto.proto.ProxImageCameraInfo.toObject(includeInstance, f),
+        resolution: (f = msg.getResolution()) && proto.proto.ProxImageCameraResolution.toObject(includeInstance, f),
+        gps: (f = msg.getGps()) && proto.proto.ProxGpsInfo.toObject(includeInstance, f),
+        addition: (f = msg.getAddition()) && proto.proto.ProxImageAddition.toObject(includeInstance, f),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxImageInfo}
+ */
+proto.proto.ProxImageInfo.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxImageInfo();
+  return proto.proto.ProxImageInfo.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxImageInfo} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxImageInfo}
+ */
+proto.proto.ProxImageInfo.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxImageCameraInfo();
+        reader.readMessage(value, proto.proto.ProxImageCameraInfo.deserializeBinaryFromReader);
+        msg.setCamerainfo(value);
+        break;
+      case 2:
+        var value = new proto.proto.ProxImageCameraResolution();
+        reader.readMessage(value, proto.proto.ProxImageCameraResolution.deserializeBinaryFromReader);
+        msg.setResolution(value);
+        break;
+      case 3:
+        var value = new proto.proto.ProxGpsInfo();
+        reader.readMessage(value, proto.proto.ProxGpsInfo.deserializeBinaryFromReader);
+        msg.setGps(value);
+        break;
+      case 4:
+        var value = new proto.proto.ProxImageAddition();
+        reader.readMessage(value, proto.proto.ProxImageAddition.deserializeBinaryFromReader);
+        msg.setAddition(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxImageInfo.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxImageInfo.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxImageInfo} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxImageInfo.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getCamerainfo();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxImageCameraInfo.serializeBinaryToWriter);
+  }
+  f = message.getResolution();
+  if (f != null) {
+    writer.writeMessage(2, f, proto.proto.ProxImageCameraResolution.serializeBinaryToWriter);
+  }
+  f = message.getGps();
+  if (f != null) {
+    writer.writeMessage(3, f, proto.proto.ProxGpsInfo.serializeBinaryToWriter);
+  }
+  f = message.getAddition();
+  if (f != null) {
+    writer.writeMessage(4, f, proto.proto.ProxImageAddition.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional ProxImageCameraInfo cameraInfo = 1;
+ * @return {?proto.proto.ProxImageCameraInfo}
+ */
+proto.proto.ProxImageInfo.prototype.getCamerainfo = function () {
+  return /** @type{?proto.proto.ProxImageCameraInfo} */ (jspb.Message.getWrapperField(this, proto.proto.ProxImageCameraInfo, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxImageCameraInfo|undefined} value
+ * @return {!proto.proto.ProxImageInfo} returns this
+ */
+proto.proto.ProxImageInfo.prototype.setCamerainfo = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxImageInfo} returns this
+ */
+proto.proto.ProxImageInfo.prototype.clearCamerainfo = function () {
+  return this.setCamerainfo(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxImageInfo.prototype.hasCamerainfo = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+/**
+ * optional ProxImageCameraResolution resolution = 2;
+ * @return {?proto.proto.ProxImageCameraResolution}
+ */
+proto.proto.ProxImageInfo.prototype.getResolution = function () {
+  return /** @type{?proto.proto.ProxImageCameraResolution} */ (
+    jspb.Message.getWrapperField(this, proto.proto.ProxImageCameraResolution, 2)
+  );
+};
+
+/**
+ * @param {?proto.proto.ProxImageCameraResolution|undefined} value
+ * @return {!proto.proto.ProxImageInfo} returns this
+ */
+proto.proto.ProxImageInfo.prototype.setResolution = function (value) {
+  return jspb.Message.setWrapperField(this, 2, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxImageInfo} returns this
+ */
+proto.proto.ProxImageInfo.prototype.clearResolution = function () {
+  return this.setResolution(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxImageInfo.prototype.hasResolution = function () {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+/**
+ * optional ProxGpsInfo gps = 3;
+ * @return {?proto.proto.ProxGpsInfo}
+ */
+proto.proto.ProxImageInfo.prototype.getGps = function () {
+  return /** @type{?proto.proto.ProxGpsInfo} */ (jspb.Message.getWrapperField(this, proto.proto.ProxGpsInfo, 3));
+};
+
+/**
+ * @param {?proto.proto.ProxGpsInfo|undefined} value
+ * @return {!proto.proto.ProxImageInfo} returns this
+ */
+proto.proto.ProxImageInfo.prototype.setGps = function (value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxImageInfo} returns this
+ */
+proto.proto.ProxImageInfo.prototype.clearGps = function () {
+  return this.setGps(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxImageInfo.prototype.hasGps = function () {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+/**
+ * optional ProxImageAddition addition = 4;
+ * @return {?proto.proto.ProxImageAddition}
+ */
+proto.proto.ProxImageInfo.prototype.getAddition = function () {
+  return /** @type{?proto.proto.ProxImageAddition} */ (jspb.Message.getWrapperField(this, proto.proto.ProxImageAddition, 4));
+};
+
+/**
+ * @param {?proto.proto.ProxImageAddition|undefined} value
+ * @return {!proto.proto.ProxImageInfo} returns this
+ */
+proto.proto.ProxImageInfo.prototype.setAddition = function (value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxImageInfo} returns this
+ */
+proto.proto.ProxImageInfo.prototype.clearAddition = function () {
+  return this.setAddition(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxImageInfo.prototype.hasAddition = function () {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.ProxObject.repeatedFields_ = [16, 17];
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
   proto.proto.ProxObject.prototype.toObject = function (opt_includeInstance) {
     return proto.proto.ProxObject.toObject(opt_includeInstance, this);
   };
@@ -11213,6 +14943,10 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
         ispersistent: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
         category: jspb.Message.getFieldWithDefault(msg, 14, 0),
         tags: jspb.Message.getFieldWithDefault(msg, 15, ''),
+        nftinfosList: jspb.Message.toObjectList(msg.getNftinfosList(), proto.proto.ProxNFTInfo.toObject, includeInstance),
+        pinningList: jspb.Message.toObjectList(msg.getPinningList(), proto.proto.ProxPinning.toObject, includeInstance),
+        images: (f = msg.getImages()) && proto.proto.ProxImageInfo.toObject(includeInstance, f),
+        thumb: jspb.Message.getFieldWithDefault(msg, 19, ''),
       };
 
     if (includeInstance) {
@@ -11307,6 +15041,25 @@ proto.proto.ProxObject.deserializeBinaryFromReader = function (msg, reader) {
         var value = /** @type {string} */ (reader.readString());
         msg.setTags(value);
         break;
+      case 16:
+        var value = new proto.proto.ProxNFTInfo();
+        reader.readMessage(value, proto.proto.ProxNFTInfo.deserializeBinaryFromReader);
+        msg.addNftinfos(value);
+        break;
+      case 17:
+        var value = new proto.proto.ProxPinning();
+        reader.readMessage(value, proto.proto.ProxPinning.deserializeBinaryFromReader);
+        msg.addPinning(value);
+        break;
+      case 18:
+        var value = new proto.proto.ProxImageInfo();
+        reader.readMessage(value, proto.proto.ProxImageInfo.deserializeBinaryFromReader);
+        msg.setImages(value);
+        break;
+      case 19:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setThumb(value);
+        break;
       default:
         reader.skipField();
         break;
@@ -11393,6 +15146,22 @@ proto.proto.ProxObject.serializeBinaryToWriter = function (message, writer) {
   f = message.getTags();
   if (f.length > 0) {
     writer.writeString(15, f);
+  }
+  f = message.getNftinfosList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(16, f, proto.proto.ProxNFTInfo.serializeBinaryToWriter);
+  }
+  f = message.getPinningList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(17, f, proto.proto.ProxPinning.serializeBinaryToWriter);
+  }
+  f = message.getImages();
+  if (f != null) {
+    writer.writeMessage(18, f, proto.proto.ProxImageInfo.serializeBinaryToWriter);
+  }
+  f = message.getThumb();
+  if (f.length > 0) {
+    writer.writeString(19, f);
   }
 };
 
@@ -11636,6 +15405,127 @@ proto.proto.ProxObject.prototype.setTags = function (value) {
   return jspb.Message.setProto3StringField(this, 15, value);
 };
 
+/**
+ * repeated ProxNFTInfo nftInfos = 16;
+ * @return {!Array<!proto.proto.ProxNFTInfo>}
+ */
+proto.proto.ProxObject.prototype.getNftinfosList = function () {
+  return /** @type{!Array<!proto.proto.ProxNFTInfo>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxNFTInfo, 16));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxNFTInfo>} value
+ * @return {!proto.proto.ProxObject} returns this
+ */
+proto.proto.ProxObject.prototype.setNftinfosList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 16, value);
+};
+
+/**
+ * @param {!proto.proto.ProxNFTInfo=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxNFTInfo}
+ */
+proto.proto.ProxObject.prototype.addNftinfos = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 16, opt_value, proto.proto.ProxNFTInfo, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxObject} returns this
+ */
+proto.proto.ProxObject.prototype.clearNftinfosList = function () {
+  return this.setNftinfosList([]);
+};
+
+/**
+ * repeated ProxPinning pinning = 17;
+ * @return {!Array<!proto.proto.ProxPinning>}
+ */
+proto.proto.ProxObject.prototype.getPinningList = function () {
+  return /** @type{!Array<!proto.proto.ProxPinning>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxPinning, 17));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxPinning>} value
+ * @return {!proto.proto.ProxObject} returns this
+ */
+proto.proto.ProxObject.prototype.setPinningList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 17, value);
+};
+
+/**
+ * @param {!proto.proto.ProxPinning=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxPinning}
+ */
+proto.proto.ProxObject.prototype.addPinning = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 17, opt_value, proto.proto.ProxPinning, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxObject} returns this
+ */
+proto.proto.ProxObject.prototype.clearPinningList = function () {
+  return this.setPinningList([]);
+};
+
+/**
+ * optional ProxImageInfo images = 18;
+ * @return {?proto.proto.ProxImageInfo}
+ */
+proto.proto.ProxObject.prototype.getImages = function () {
+  return /** @type{?proto.proto.ProxImageInfo} */ (jspb.Message.getWrapperField(this, proto.proto.ProxImageInfo, 18));
+};
+
+/**
+ * @param {?proto.proto.ProxImageInfo|undefined} value
+ * @return {!proto.proto.ProxObject} returns this
+ */
+proto.proto.ProxObject.prototype.setImages = function (value) {
+  return jspb.Message.setWrapperField(this, 18, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxObject} returns this
+ */
+proto.proto.ProxObject.prototype.clearImages = function () {
+  return this.setImages(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxObject.prototype.hasImages = function () {
+  return jspb.Message.getField(this, 18) != null;
+};
+
+/**
+ * optional string thumb = 19;
+ * @return {string}
+ */
+proto.proto.ProxObject.prototype.getThumb = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 19, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxObject} returns this
+ */
+proto.proto.ProxObject.prototype.setThumb = function (value) {
+  return jspb.Message.setProto3StringField(this, 19, value);
+};
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.ProxPrefixPin.repeatedFields_ = [4, 5];
+
 if (jspb.Message.GENERATE_TO_OBJECT) {
   /**
    * Creates an object representation of this proto.
@@ -11667,6 +15557,9 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
       obj = {
         prefix: jspb.Message.getFieldWithDefault(msg, 1, ''),
         cid: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        ispin: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+        nftinfosList: jspb.Message.toObjectList(msg.getNftinfosList(), proto.proto.ProxNFTInfo.toObject, includeInstance),
+        pinningList: jspb.Message.toObjectList(msg.getPinningList(), proto.proto.ProxPinning.toObject, includeInstance),
       };
 
     if (includeInstance) {
@@ -11709,6 +15602,20 @@ proto.proto.ProxPrefixPin.deserializeBinaryFromReader = function (msg, reader) {
         var value = /** @type {string} */ (reader.readString());
         msg.setCid(value);
         break;
+      case 3:
+        var value = /** @type {boolean} */ (reader.readBool());
+        msg.setIspin(value);
+        break;
+      case 4:
+        var value = new proto.proto.ProxNFTInfo();
+        reader.readMessage(value, proto.proto.ProxNFTInfo.deserializeBinaryFromReader);
+        msg.addNftinfos(value);
+        break;
+      case 5:
+        var value = new proto.proto.ProxPinning();
+        reader.readMessage(value, proto.proto.ProxPinning.deserializeBinaryFromReader);
+        msg.addPinning(value);
+        break;
       default:
         reader.skipField();
         break;
@@ -11744,6 +15651,18 @@ proto.proto.ProxPrefixPin.serializeBinaryToWriter = function (message, writer) {
   if (f.length > 0) {
     writer.writeString(2, f);
   }
+  f = message.getIspin();
+  if (f) {
+    writer.writeBool(3, f);
+  }
+  f = message.getNftinfosList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(4, f, proto.proto.ProxNFTInfo.serializeBinaryToWriter);
+  }
+  f = message.getPinningList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(5, f, proto.proto.ProxPinning.serializeBinaryToWriter);
+  }
 };
 
 /**
@@ -11776,6 +15695,88 @@ proto.proto.ProxPrefixPin.prototype.getCid = function () {
  */
 proto.proto.ProxPrefixPin.prototype.setCid = function (value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional bool isPin = 3;
+ * @return {boolean}
+ */
+proto.proto.ProxPrefixPin.prototype.getIspin = function () {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
+};
+
+/**
+ * @param {boolean} value
+ * @return {!proto.proto.ProxPrefixPin} returns this
+ */
+proto.proto.ProxPrefixPin.prototype.setIspin = function (value) {
+  return jspb.Message.setProto3BooleanField(this, 3, value);
+};
+
+/**
+ * repeated ProxNFTInfo nftInfos = 4;
+ * @return {!Array<!proto.proto.ProxNFTInfo>}
+ */
+proto.proto.ProxPrefixPin.prototype.getNftinfosList = function () {
+  return /** @type{!Array<!proto.proto.ProxNFTInfo>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxNFTInfo, 4));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxNFTInfo>} value
+ * @return {!proto.proto.ProxPrefixPin} returns this
+ */
+proto.proto.ProxPrefixPin.prototype.setNftinfosList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 4, value);
+};
+
+/**
+ * @param {!proto.proto.ProxNFTInfo=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxNFTInfo}
+ */
+proto.proto.ProxPrefixPin.prototype.addNftinfos = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.proto.ProxNFTInfo, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxPrefixPin} returns this
+ */
+proto.proto.ProxPrefixPin.prototype.clearNftinfosList = function () {
+  return this.setNftinfosList([]);
+};
+
+/**
+ * repeated ProxPinning pinning = 5;
+ * @return {!Array<!proto.proto.ProxPinning>}
+ */
+proto.proto.ProxPrefixPin.prototype.getPinningList = function () {
+  return /** @type{!Array<!proto.proto.ProxPinning>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxPinning, 5));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxPinning>} value
+ * @return {!proto.proto.ProxPrefixPin} returns this
+ */
+proto.proto.ProxPrefixPin.prototype.setPinningList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 5, value);
+};
+
+/**
+ * @param {!proto.proto.ProxPinning=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxPinning}
+ */
+proto.proto.ProxPrefixPin.prototype.addPinning = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.proto.ProxPinning, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxPrefixPin} returns this
+ */
+proto.proto.ProxPrefixPin.prototype.clearPinningList = function () {
+  return this.setPinningList([]);
 };
 
 /**
@@ -12128,6 +16129,123 @@ proto.proto.ProxListObjectsResp.prototype.addPrefixpins = function (opt_value, o
  */
 proto.proto.ProxListObjectsResp.prototype.clearPrefixpinsList = function () {
   return this.setPrefixpinsList([]);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxPinning.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxPinning.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxPinning} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxPinning.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        requestid: jspb.Message.getFieldWithDefault(msg, 1, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxPinning}
+ */
+proto.proto.ProxPinning.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxPinning();
+  return proto.proto.ProxPinning.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxPinning} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxPinning}
+ */
+proto.proto.ProxPinning.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setRequestid(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxPinning.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxPinning.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxPinning} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxPinning.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getRequestid();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+};
+
+/**
+ * optional string requestID = 1;
+ * @return {string}
+ */
+proto.proto.ProxPinning.prototype.getRequestid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPinning} returns this
+ */
+proto.proto.ProxPinning.prototype.setRequestid = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -14617,6 +18735,793 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
    *     http://goto/soy-param-migration
    * @return {!Object}
    */
+  proto.proto.ProxCategory.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxCategory.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxCategory} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxCategory.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        category: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        total: jspb.Message.getFieldWithDefault(msg, 2, 0),
+        count: jspb.Message.getFieldWithDefault(msg, 3, 0),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxCategory}
+ */
+proto.proto.ProxCategory.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxCategory();
+  return proto.proto.ProxCategory.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxCategory} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxCategory}
+ */
+proto.proto.ProxCategory.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setCategory(value);
+        break;
+      case 2:
+        var value = /** @type {number} */ (reader.readInt64());
+        msg.setTotal(value);
+        break;
+      case 3:
+        var value = /** @type {number} */ (reader.readInt64());
+        msg.setCount(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxCategory.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxCategory.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxCategory} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxCategory.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getCategory();
+  if (f !== 0) {
+    writer.writeInt32(1, f);
+  }
+  f = message.getTotal();
+  if (f !== 0) {
+    writer.writeInt64(2, f);
+  }
+  f = message.getCount();
+  if (f !== 0) {
+    writer.writeInt64(3, f);
+  }
+};
+
+/**
+ * optional int32 category = 1;
+ * @return {number}
+ */
+proto.proto.ProxCategory.prototype.getCategory = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxCategory} returns this
+ */
+proto.proto.ProxCategory.prototype.setCategory = function (value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+/**
+ * optional int64 total = 2;
+ * @return {number}
+ */
+proto.proto.ProxCategory.prototype.getTotal = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxCategory} returns this
+ */
+proto.proto.ProxCategory.prototype.setTotal = function (value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+/**
+ * optional int64 count = 3;
+ * @return {number}
+ */
+proto.proto.ProxCategory.prototype.getCount = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxCategory} returns this
+ */
+proto.proto.ProxCategory.prototype.setCount = function (value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxPrefix.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxPrefix.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxPrefix} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxPrefix.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        prefix: jspb.Message.getFieldWithDefault(msg, 1, ''),
+        total: jspb.Message.getFieldWithDefault(msg, 2, 0),
+        count: jspb.Message.getFieldWithDefault(msg, 3, 0),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxPrefix}
+ */
+proto.proto.ProxPrefix.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxPrefix();
+  return proto.proto.ProxPrefix.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxPrefix} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxPrefix}
+ */
+proto.proto.ProxPrefix.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPrefix(value);
+        break;
+      case 2:
+        var value = /** @type {number} */ (reader.readInt64());
+        msg.setTotal(value);
+        break;
+      case 3:
+        var value = /** @type {number} */ (reader.readInt64());
+        msg.setCount(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxPrefix.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxPrefix.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxPrefix} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxPrefix.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getPrefix();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+  f = message.getTotal();
+  if (f !== 0) {
+    writer.writeInt64(2, f);
+  }
+  f = message.getCount();
+  if (f !== 0) {
+    writer.writeInt64(3, f);
+  }
+};
+
+/**
+ * optional string prefix = 1;
+ * @return {string}
+ */
+proto.proto.ProxPrefix.prototype.getPrefix = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPrefix} returns this
+ */
+proto.proto.ProxPrefix.prototype.setPrefix = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+/**
+ * optional int64 total = 2;
+ * @return {number}
+ */
+proto.proto.ProxPrefix.prototype.getTotal = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPrefix} returns this
+ */
+proto.proto.ProxPrefix.prototype.setTotal = function (value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+/**
+ * optional int64 count = 3;
+ * @return {number}
+ */
+proto.proto.ProxPrefix.prototype.getCount = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPrefix} returns this
+ */
+proto.proto.ProxPrefix.prototype.setCount = function (value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.ProxStatisticsInfo.repeatedFields_ = [1, 2];
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxStatisticsInfo.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxStatisticsInfo.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxStatisticsInfo} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxStatisticsInfo.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        categoriesList: jspb.Message.toObjectList(msg.getCategoriesList(), proto.proto.ProxCategory.toObject, includeInstance),
+        prefixesList: jspb.Message.toObjectList(msg.getPrefixesList(), proto.proto.ProxPrefix.toObject, includeInstance),
+        categorysum: (f = msg.getCategorysum()) && proto.proto.ProxCategory.toObject(includeInstance, f),
+        prefixsum: (f = msg.getPrefixsum()) && proto.proto.ProxPrefix.toObject(includeInstance, f),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxStatisticsInfo}
+ */
+proto.proto.ProxStatisticsInfo.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxStatisticsInfo();
+  return proto.proto.ProxStatisticsInfo.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxStatisticsInfo} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxStatisticsInfo}
+ */
+proto.proto.ProxStatisticsInfo.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxCategory();
+        reader.readMessage(value, proto.proto.ProxCategory.deserializeBinaryFromReader);
+        msg.addCategories(value);
+        break;
+      case 2:
+        var value = new proto.proto.ProxPrefix();
+        reader.readMessage(value, proto.proto.ProxPrefix.deserializeBinaryFromReader);
+        msg.addPrefixes(value);
+        break;
+      case 3:
+        var value = new proto.proto.ProxCategory();
+        reader.readMessage(value, proto.proto.ProxCategory.deserializeBinaryFromReader);
+        msg.setCategorysum(value);
+        break;
+      case 4:
+        var value = new proto.proto.ProxPrefix();
+        reader.readMessage(value, proto.proto.ProxPrefix.deserializeBinaryFromReader);
+        msg.setPrefixsum(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxStatisticsInfo.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxStatisticsInfo.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxStatisticsInfo} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxStatisticsInfo.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getCategoriesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(1, f, proto.proto.ProxCategory.serializeBinaryToWriter);
+  }
+  f = message.getPrefixesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(2, f, proto.proto.ProxPrefix.serializeBinaryToWriter);
+  }
+  f = message.getCategorysum();
+  if (f != null) {
+    writer.writeMessage(3, f, proto.proto.ProxCategory.serializeBinaryToWriter);
+  }
+  f = message.getPrefixsum();
+  if (f != null) {
+    writer.writeMessage(4, f, proto.proto.ProxPrefix.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * repeated ProxCategory categories = 1;
+ * @return {!Array<!proto.proto.ProxCategory>}
+ */
+proto.proto.ProxStatisticsInfo.prototype.getCategoriesList = function () {
+  return /** @type{!Array<!proto.proto.ProxCategory>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxCategory, 1));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxCategory>} value
+ * @return {!proto.proto.ProxStatisticsInfo} returns this
+ */
+proto.proto.ProxStatisticsInfo.prototype.setCategoriesList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 1, value);
+};
+
+/**
+ * @param {!proto.proto.ProxCategory=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxCategory}
+ */
+proto.proto.ProxStatisticsInfo.prototype.addCategories = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.proto.ProxCategory, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxStatisticsInfo} returns this
+ */
+proto.proto.ProxStatisticsInfo.prototype.clearCategoriesList = function () {
+  return this.setCategoriesList([]);
+};
+
+/**
+ * repeated ProxPrefix prefixes = 2;
+ * @return {!Array<!proto.proto.ProxPrefix>}
+ */
+proto.proto.ProxStatisticsInfo.prototype.getPrefixesList = function () {
+  return /** @type{!Array<!proto.proto.ProxPrefix>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxPrefix, 2));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxPrefix>} value
+ * @return {!proto.proto.ProxStatisticsInfo} returns this
+ */
+proto.proto.ProxStatisticsInfo.prototype.setPrefixesList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 2, value);
+};
+
+/**
+ * @param {!proto.proto.ProxPrefix=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxPrefix}
+ */
+proto.proto.ProxStatisticsInfo.prototype.addPrefixes = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.proto.ProxPrefix, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxStatisticsInfo} returns this
+ */
+proto.proto.ProxStatisticsInfo.prototype.clearPrefixesList = function () {
+  return this.setPrefixesList([]);
+};
+
+/**
+ * optional ProxCategory categorySum = 3;
+ * @return {?proto.proto.ProxCategory}
+ */
+proto.proto.ProxStatisticsInfo.prototype.getCategorysum = function () {
+  return /** @type{?proto.proto.ProxCategory} */ (jspb.Message.getWrapperField(this, proto.proto.ProxCategory, 3));
+};
+
+/**
+ * @param {?proto.proto.ProxCategory|undefined} value
+ * @return {!proto.proto.ProxStatisticsInfo} returns this
+ */
+proto.proto.ProxStatisticsInfo.prototype.setCategorysum = function (value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxStatisticsInfo} returns this
+ */
+proto.proto.ProxStatisticsInfo.prototype.clearCategorysum = function () {
+  return this.setCategorysum(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxStatisticsInfo.prototype.hasCategorysum = function () {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+/**
+ * optional ProxPrefix prefixSum = 4;
+ * @return {?proto.proto.ProxPrefix}
+ */
+proto.proto.ProxStatisticsInfo.prototype.getPrefixsum = function () {
+  return /** @type{?proto.proto.ProxPrefix} */ (jspb.Message.getWrapperField(this, proto.proto.ProxPrefix, 4));
+};
+
+/**
+ * @param {?proto.proto.ProxPrefix|undefined} value
+ * @return {!proto.proto.ProxStatisticsInfo} returns this
+ */
+proto.proto.ProxStatisticsInfo.prototype.setPrefixsum = function (value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxStatisticsInfo} returns this
+ */
+proto.proto.ProxStatisticsInfo.prototype.clearPrefixsum = function () {
+  return this.setPrefixsum(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxStatisticsInfo.prototype.hasPrefixsum = function () {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxRequestStatistics.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxRequestStatistics.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxRequestStatistics} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxRequestStatistics.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+        prefix: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        needprefix: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxRequestStatistics}
+ */
+proto.proto.ProxRequestStatistics.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxRequestStatistics();
+  return proto.proto.ProxRequestStatistics.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxRequestStatistics} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxRequestStatistics}
+ */
+proto.proto.ProxRequestStatistics.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPrefix(value);
+        break;
+      case 3:
+        var value = /** @type {boolean} */ (reader.readBool());
+        msg.setNeedprefix(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxRequestStatistics.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxRequestStatistics.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxRequestStatistics} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxRequestStatistics.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+  f = message.getPrefix();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getNeedprefix();
+  if (f) {
+    writer.writeBool(3, f);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxRequestStatistics.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxRequestStatistics} returns this
+ */
+proto.proto.ProxRequestStatistics.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxRequestStatistics} returns this
+ */
+proto.proto.ProxRequestStatistics.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxRequestStatistics.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+/**
+ * optional string prefix = 2;
+ * @return {string}
+ */
+proto.proto.ProxRequestStatistics.prototype.getPrefix = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxRequestStatistics} returns this
+ */
+proto.proto.ProxRequestStatistics.prototype.setPrefix = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional bool needPrefix = 3;
+ * @return {boolean}
+ */
+proto.proto.ProxRequestStatistics.prototype.getNeedprefix = function () {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
+};
+
+/**
+ * @param {boolean} value
+ * @return {!proto.proto.ProxRequestStatistics} returns this
+ */
+proto.proto.ProxRequestStatistics.prototype.setNeedprefix = function (value) {
+  return jspb.Message.setProto3BooleanField(this, 3, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
   proto.proto.ProxSummaryInfo.prototype.toObject = function (opt_includeInstance) {
     return proto.proto.ProxSummaryInfo.toObject(opt_includeInstance, this);
   };
@@ -16397,6 +21302,1959 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
    *     http://goto/soy-param-migration
    * @return {!Object}
    */
+  proto.proto.ProxGExtractCode.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxGExtractCode.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxGExtractCode} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxGExtractCode.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+        cid: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        key: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        exp: jspb.Message.getFieldWithDefault(msg, 4, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxGExtractCode}
+ */
+proto.proto.ProxGExtractCode.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxGExtractCode();
+  return proto.proto.ProxGExtractCode.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxGExtractCode} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxGExtractCode}
+ */
+proto.proto.ProxGExtractCode.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setCid(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setKey(value);
+        break;
+      case 4:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setExp(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxGExtractCode.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxGExtractCode.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxGExtractCode} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxGExtractCode.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+  f = message.getCid();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getKey();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getExp();
+  if (f.length > 0) {
+    writer.writeString(4, f);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxGExtractCode.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxGExtractCode} returns this
+ */
+proto.proto.ProxGExtractCode.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxGExtractCode} returns this
+ */
+proto.proto.ProxGExtractCode.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxGExtractCode.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+/**
+ * optional string cid = 2;
+ * @return {string}
+ */
+proto.proto.ProxGExtractCode.prototype.getCid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGExtractCode} returns this
+ */
+proto.proto.ProxGExtractCode.prototype.setCid = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string key = 3;
+ * @return {string}
+ */
+proto.proto.ProxGExtractCode.prototype.getKey = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGExtractCode} returns this
+ */
+proto.proto.ProxGExtractCode.prototype.setKey = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional string exp = 4;
+ * @return {string}
+ */
+proto.proto.ProxGExtractCode.prototype.getExp = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGExtractCode} returns this
+ */
+proto.proto.ProxGExtractCode.prototype.setExp = function (value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxGExtractCodeResp.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxGExtractCodeResp.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxGExtractCodeResp} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxGExtractCodeResp.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        extractcode: jspb.Message.getFieldWithDefault(msg, 1, ''),
+        cid: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        state: jspb.Message.getFieldWithDefault(msg, 2, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxGExtractCodeResp}
+ */
+proto.proto.ProxGExtractCodeResp.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxGExtractCodeResp();
+  return proto.proto.ProxGExtractCodeResp.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxGExtractCodeResp} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxGExtractCodeResp}
+ */
+proto.proto.ProxGExtractCodeResp.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setExtractcode(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setCid(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setState(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxGExtractCodeResp.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxGExtractCodeResp.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxGExtractCodeResp} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxGExtractCodeResp.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getExtractcode();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+  f = message.getCid();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getState();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+};
+
+/**
+ * optional string extractCode = 1;
+ * @return {string}
+ */
+proto.proto.ProxGExtractCodeResp.prototype.getExtractcode = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGExtractCodeResp} returns this
+ */
+proto.proto.ProxGExtractCodeResp.prototype.setExtractcode = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+/**
+ * optional string cid = 3;
+ * @return {string}
+ */
+proto.proto.ProxGExtractCodeResp.prototype.getCid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGExtractCodeResp} returns this
+ */
+proto.proto.ProxGExtractCodeResp.prototype.setCid = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional string state = 2;
+ * @return {string}
+ */
+proto.proto.ProxGExtractCodeResp.prototype.getState = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGExtractCodeResp} returns this
+ */
+proto.proto.ProxGExtractCodeResp.prototype.setState = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxPInfo.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxPInfo.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxPInfo} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxPInfo.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        cid: jspb.Message.getFieldWithDefault(msg, 1, ''),
+        status: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        averagespeed: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        size: jspb.Message.getFieldWithDefault(msg, 4, 0),
+        firstbyte: jspb.Message.getFieldWithDefault(msg, 5, 0),
+        duration: jspb.Message.getFieldWithDefault(msg, 6, 0),
+        provider: jspb.Message.getFieldWithDefault(msg, 7, ''),
+        idx: jspb.Message.getFieldWithDefault(msg, 8, 0),
+        completed: jspb.Message.getFieldWithDefault(msg, 9, 0),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxPInfo}
+ */
+proto.proto.ProxPInfo.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxPInfo();
+  return proto.proto.ProxPInfo.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxPInfo} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxPInfo}
+ */
+proto.proto.ProxPInfo.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setCid(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setStatus(value);
+        break;
+      case 3:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setAveragespeed(value);
+        break;
+      case 4:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setSize(value);
+        break;
+      case 5:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setFirstbyte(value);
+        break;
+      case 6:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setDuration(value);
+        break;
+      case 7:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setProvider(value);
+        break;
+      case 8:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setIdx(value);
+        break;
+      case 9:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setCompleted(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxPInfo.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxPInfo.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxPInfo} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxPInfo.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getCid();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getAveragespeed();
+  if (f !== 0) {
+    writer.writeUint64(3, f);
+  }
+  f = message.getSize();
+  if (f !== 0) {
+    writer.writeUint64(4, f);
+  }
+  f = message.getFirstbyte();
+  if (f !== 0) {
+    writer.writeUint64(5, f);
+  }
+  f = message.getDuration();
+  if (f !== 0) {
+    writer.writeUint64(6, f);
+  }
+  f = message.getProvider();
+  if (f.length > 0) {
+    writer.writeString(7, f);
+  }
+  f = message.getIdx();
+  if (f !== 0) {
+    writer.writeInt32(8, f);
+  }
+  f = message.getCompleted();
+  if (f !== 0) {
+    writer.writeUint64(9, f);
+  }
+};
+
+/**
+ * optional string cid = 1;
+ * @return {string}
+ */
+proto.proto.ProxPInfo.prototype.getCid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPInfo} returns this
+ */
+proto.proto.ProxPInfo.prototype.setCid = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+/**
+ * optional string status = 2;
+ * @return {string}
+ */
+proto.proto.ProxPInfo.prototype.getStatus = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPInfo} returns this
+ */
+proto.proto.ProxPInfo.prototype.setStatus = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional uint64 averageSpeed = 3;
+ * @return {number}
+ */
+proto.proto.ProxPInfo.prototype.getAveragespeed = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPInfo} returns this
+ */
+proto.proto.ProxPInfo.prototype.setAveragespeed = function (value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+/**
+ * optional uint64 size = 4;
+ * @return {number}
+ */
+proto.proto.ProxPInfo.prototype.getSize = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPInfo} returns this
+ */
+proto.proto.ProxPInfo.prototype.setSize = function (value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+/**
+ * optional uint64 firstByte = 5;
+ * @return {number}
+ */
+proto.proto.ProxPInfo.prototype.getFirstbyte = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPInfo} returns this
+ */
+proto.proto.ProxPInfo.prototype.setFirstbyte = function (value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
+};
+
+/**
+ * optional uint64 duration = 6;
+ * @return {number}
+ */
+proto.proto.ProxPInfo.prototype.getDuration = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPInfo} returns this
+ */
+proto.proto.ProxPInfo.prototype.setDuration = function (value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+/**
+ * optional string provider = 7;
+ * @return {string}
+ */
+proto.proto.ProxPInfo.prototype.getProvider = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPInfo} returns this
+ */
+proto.proto.ProxPInfo.prototype.setProvider = function (value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+/**
+ * optional int32 idx = 8;
+ * @return {number}
+ */
+proto.proto.ProxPInfo.prototype.getIdx = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPInfo} returns this
+ */
+proto.proto.ProxPInfo.prototype.setIdx = function (value) {
+  return jspb.Message.setProto3IntField(this, 8, value);
+};
+
+/**
+ * optional uint64 completed = 9;
+ * @return {number}
+ */
+proto.proto.ProxPInfo.prototype.getCompleted = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPInfo} returns this
+ */
+proto.proto.ProxPInfo.prototype.setCompleted = function (value) {
+  return jspb.Message.setProto3IntField(this, 9, value);
+};
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.ProxPinningInfo.repeatedFields_ = [4];
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxPinningInfo.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxPinningInfo.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxPinningInfo} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxPinningInfo.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        requestid: jspb.Message.getFieldWithDefault(msg, 1, ''),
+        status: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        created: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        pinsList: jspb.Message.toObjectList(msg.getPinsList(), proto.proto.ProxPInfo.toObject, includeInstance),
+        name: jspb.Message.getFieldWithDefault(msg, 5, ''),
+        fstype: jspb.Message.getFieldWithDefault(msg, 6, 0),
+        opertype: jspb.Message.getFieldWithDefault(msg, 7, 0),
+        averagespeed: jspb.Message.getFieldWithDefault(msg, 8, 0),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxPinningInfo}
+ */
+proto.proto.ProxPinningInfo.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxPinningInfo();
+  return proto.proto.ProxPinningInfo.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxPinningInfo} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxPinningInfo}
+ */
+proto.proto.ProxPinningInfo.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setRequestid(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setStatus(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setCreated(value);
+        break;
+      case 4:
+        var value = new proto.proto.ProxPInfo();
+        reader.readMessage(value, proto.proto.ProxPInfo.deserializeBinaryFromReader);
+        msg.addPins(value);
+        break;
+      case 5:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setName(value);
+        break;
+      case 6:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setFstype(value);
+        break;
+      case 7:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setOpertype(value);
+        break;
+      case 8:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setAveragespeed(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxPinningInfo.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxPinningInfo.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxPinningInfo} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxPinningInfo.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getRequestid();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getCreated();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getPinsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(4, f, proto.proto.ProxPInfo.serializeBinaryToWriter);
+  }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(5, f);
+  }
+  f = message.getFstype();
+  if (f !== 0) {
+    writer.writeInt32(6, f);
+  }
+  f = message.getOpertype();
+  if (f !== 0) {
+    writer.writeInt32(7, f);
+  }
+  f = message.getAveragespeed();
+  if (f !== 0) {
+    writer.writeUint64(8, f);
+  }
+};
+
+/**
+ * optional string requestID = 1;
+ * @return {string}
+ */
+proto.proto.ProxPinningInfo.prototype.getRequestid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPinningInfo} returns this
+ */
+proto.proto.ProxPinningInfo.prototype.setRequestid = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+/**
+ * optional string status = 2;
+ * @return {string}
+ */
+proto.proto.ProxPinningInfo.prototype.getStatus = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPinningInfo} returns this
+ */
+proto.proto.ProxPinningInfo.prototype.setStatus = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string Created = 3;
+ * @return {string}
+ */
+proto.proto.ProxPinningInfo.prototype.getCreated = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPinningInfo} returns this
+ */
+proto.proto.ProxPinningInfo.prototype.setCreated = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * repeated ProxPInfo pins = 4;
+ * @return {!Array<!proto.proto.ProxPInfo>}
+ */
+proto.proto.ProxPinningInfo.prototype.getPinsList = function () {
+  return /** @type{!Array<!proto.proto.ProxPInfo>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxPInfo, 4));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxPInfo>} value
+ * @return {!proto.proto.ProxPinningInfo} returns this
+ */
+proto.proto.ProxPinningInfo.prototype.setPinsList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 4, value);
+};
+
+/**
+ * @param {!proto.proto.ProxPInfo=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxPInfo}
+ */
+proto.proto.ProxPinningInfo.prototype.addPins = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.proto.ProxPInfo, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxPinningInfo} returns this
+ */
+proto.proto.ProxPinningInfo.prototype.clearPinsList = function () {
+  return this.setPinsList([]);
+};
+
+/**
+ * optional string name = 5;
+ * @return {string}
+ */
+proto.proto.ProxPinningInfo.prototype.getName = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPinningInfo} returns this
+ */
+proto.proto.ProxPinningInfo.prototype.setName = function (value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+/**
+ * optional int32 fsType = 6;
+ * @return {number}
+ */
+proto.proto.ProxPinningInfo.prototype.getFstype = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPinningInfo} returns this
+ */
+proto.proto.ProxPinningInfo.prototype.setFstype = function (value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+/**
+ * optional int32 operType = 7;
+ * @return {number}
+ */
+proto.proto.ProxPinningInfo.prototype.getOpertype = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPinningInfo} returns this
+ */
+proto.proto.ProxPinningInfo.prototype.setOpertype = function (value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
+};
+
+/**
+ * optional uint64 averageSpeed = 8;
+ * @return {number}
+ */
+proto.proto.ProxPinningInfo.prototype.getAveragespeed = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPinningInfo} returns this
+ */
+proto.proto.ProxPinningInfo.prototype.setAveragespeed = function (value) {
+  return jspb.Message.setProto3IntField(this, 8, value);
+};
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.ProxPinningListRequest.repeatedFields_ = [8];
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxPinningListRequest.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxPinningListRequest.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxPinningListRequest} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxPinningListRequest.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+        status: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        pintype: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        before: jspb.Message.getFieldWithDefault(msg, 4, ''),
+        after: jspb.Message.getFieldWithDefault(msg, 5, ''),
+        limit: jspb.Message.getFieldWithDefault(msg, 6, 0),
+        match: jspb.Message.getFieldWithDefault(msg, 7, ''),
+        cidsList: (f = jspb.Message.getRepeatedField(msg, 8)) == null ? undefined : f,
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxPinningListRequest}
+ */
+proto.proto.ProxPinningListRequest.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxPinningListRequest();
+  return proto.proto.ProxPinningListRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxPinningListRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxPinningListRequest}
+ */
+proto.proto.ProxPinningListRequest.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setStatus(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPintype(value);
+        break;
+      case 4:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setBefore(value);
+        break;
+      case 5:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setAfter(value);
+        break;
+      case 6:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setLimit(value);
+        break;
+      case 7:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setMatch(value);
+        break;
+      case 8:
+        var value = /** @type {string} */ (reader.readString());
+        msg.addCids(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxPinningListRequest.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxPinningListRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxPinningListRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxPinningListRequest.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getPintype();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getBefore();
+  if (f.length > 0) {
+    writer.writeString(4, f);
+  }
+  f = message.getAfter();
+  if (f.length > 0) {
+    writer.writeString(5, f);
+  }
+  f = message.getLimit();
+  if (f !== 0) {
+    writer.writeInt32(6, f);
+  }
+  f = message.getMatch();
+  if (f.length > 0) {
+    writer.writeString(7, f);
+  }
+  f = message.getCidsList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(8, f);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxPinningListRequest.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxPinningListRequest} returns this
+ */
+proto.proto.ProxPinningListRequest.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxPinningListRequest} returns this
+ */
+proto.proto.ProxPinningListRequest.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxPinningListRequest.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+/**
+ * optional string status = 2;
+ * @return {string}
+ */
+proto.proto.ProxPinningListRequest.prototype.getStatus = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPinningListRequest} returns this
+ */
+proto.proto.ProxPinningListRequest.prototype.setStatus = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string pinType = 3;
+ * @return {string}
+ */
+proto.proto.ProxPinningListRequest.prototype.getPintype = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPinningListRequest} returns this
+ */
+proto.proto.ProxPinningListRequest.prototype.setPintype = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional string before = 4;
+ * @return {string}
+ */
+proto.proto.ProxPinningListRequest.prototype.getBefore = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPinningListRequest} returns this
+ */
+proto.proto.ProxPinningListRequest.prototype.setBefore = function (value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+/**
+ * optional string after = 5;
+ * @return {string}
+ */
+proto.proto.ProxPinningListRequest.prototype.getAfter = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPinningListRequest} returns this
+ */
+proto.proto.ProxPinningListRequest.prototype.setAfter = function (value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+/**
+ * optional int32 limit = 6;
+ * @return {number}
+ */
+proto.proto.ProxPinningListRequest.prototype.getLimit = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxPinningListRequest} returns this
+ */
+proto.proto.ProxPinningListRequest.prototype.setLimit = function (value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+/**
+ * optional string match = 7;
+ * @return {string}
+ */
+proto.proto.ProxPinningListRequest.prototype.getMatch = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxPinningListRequest} returns this
+ */
+proto.proto.ProxPinningListRequest.prototype.setMatch = function (value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+/**
+ * repeated string cids = 8;
+ * @return {!Array<string>}
+ */
+proto.proto.ProxPinningListRequest.prototype.getCidsList = function () {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 8));
+};
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.proto.ProxPinningListRequest} returns this
+ */
+proto.proto.ProxPinningListRequest.prototype.setCidsList = function (value) {
+  return jspb.Message.setField(this, 8, value || []);
+};
+
+/**
+ * @param {string} value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxPinningListRequest} returns this
+ */
+proto.proto.ProxPinningListRequest.prototype.addCids = function (value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 8, value, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxPinningListRequest} returns this
+ */
+proto.proto.ProxPinningListRequest.prototype.clearCidsList = function () {
+  return this.setCidsList([]);
+};
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.ProxPinningResp.repeatedFields_ = [1];
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxPinningResp.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxPinningResp.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxPinningResp} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxPinningResp.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        pinningsList: jspb.Message.toObjectList(msg.getPinningsList(), proto.proto.ProxPinningInfo.toObject, includeInstance),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxPinningResp}
+ */
+proto.proto.ProxPinningResp.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxPinningResp();
+  return proto.proto.ProxPinningResp.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxPinningResp} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxPinningResp}
+ */
+proto.proto.ProxPinningResp.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxPinningInfo();
+        reader.readMessage(value, proto.proto.ProxPinningInfo.deserializeBinaryFromReader);
+        msg.addPinnings(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxPinningResp.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxPinningResp.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxPinningResp} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxPinningResp.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getPinningsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(1, f, proto.proto.ProxPinningInfo.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * repeated ProxPinningInfo pinnings = 1;
+ * @return {!Array<!proto.proto.ProxPinningInfo>}
+ */
+proto.proto.ProxPinningResp.prototype.getPinningsList = function () {
+  return /** @type{!Array<!proto.proto.ProxPinningInfo>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxPinningInfo, 1));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxPinningInfo>} value
+ * @return {!proto.proto.ProxPinningResp} returns this
+ */
+proto.proto.ProxPinningResp.prototype.setPinningsList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 1, value);
+};
+
+/**
+ * @param {!proto.proto.ProxPinningInfo=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxPinningInfo}
+ */
+proto.proto.ProxPinningResp.prototype.addPinnings = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.proto.ProxPinningInfo, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxPinningResp} returns this
+ */
+proto.proto.ProxPinningResp.prototype.clearPinningsList = function () {
+  return this.setPinningsList([]);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxNFTInfo.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxNFTInfo.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxNFTInfo} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxNFTInfo.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        cid: jspb.Message.getFieldWithDefault(msg, 1, ''),
+        contractid: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        tokenid: jspb.Message.getFieldWithDefault(msg, 3, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxNFTInfo}
+ */
+proto.proto.ProxNFTInfo.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxNFTInfo();
+  return proto.proto.ProxNFTInfo.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxNFTInfo} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxNFTInfo}
+ */
+proto.proto.ProxNFTInfo.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setCid(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setContractid(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setTokenid(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxNFTInfo.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxNFTInfo.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxNFTInfo} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxNFTInfo.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getCid();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+  f = message.getContractid();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getTokenid();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+};
+
+/**
+ * optional string cid = 1;
+ * @return {string}
+ */
+proto.proto.ProxNFTInfo.prototype.getCid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxNFTInfo} returns this
+ */
+proto.proto.ProxNFTInfo.prototype.setCid = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+/**
+ * optional string contractID = 2;
+ * @return {string}
+ */
+proto.proto.ProxNFTInfo.prototype.getContractid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxNFTInfo} returns this
+ */
+proto.proto.ProxNFTInfo.prototype.setContractid = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string tokenID = 3;
+ * @return {string}
+ */
+proto.proto.ProxNFTInfo.prototype.getTokenid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxNFTInfo} returns this
+ */
+proto.proto.ProxNFTInfo.prototype.setTokenid = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.ProxUpdateNFTRequest.repeatedFields_ = [2];
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxUpdateNFTRequest.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxUpdateNFTRequest.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxUpdateNFTRequest} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxUpdateNFTRequest.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+        nftinfosList: jspb.Message.toObjectList(msg.getNftinfosList(), proto.proto.ProxNFTInfo.toObject, includeInstance),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxUpdateNFTRequest}
+ */
+proto.proto.ProxUpdateNFTRequest.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxUpdateNFTRequest();
+  return proto.proto.ProxUpdateNFTRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxUpdateNFTRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxUpdateNFTRequest}
+ */
+proto.proto.ProxUpdateNFTRequest.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      case 2:
+        var value = new proto.proto.ProxNFTInfo();
+        reader.readMessage(value, proto.proto.ProxNFTInfo.deserializeBinaryFromReader);
+        msg.addNftinfos(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxUpdateNFTRequest.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxUpdateNFTRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxUpdateNFTRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxUpdateNFTRequest.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+  f = message.getNftinfosList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(2, f, proto.proto.ProxNFTInfo.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxUpdateNFTRequest.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxUpdateNFTRequest} returns this
+ */
+proto.proto.ProxUpdateNFTRequest.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxUpdateNFTRequest} returns this
+ */
+proto.proto.ProxUpdateNFTRequest.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxUpdateNFTRequest.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+/**
+ * repeated ProxNFTInfo nftInfos = 2;
+ * @return {!Array<!proto.proto.ProxNFTInfo>}
+ */
+proto.proto.ProxUpdateNFTRequest.prototype.getNftinfosList = function () {
+  return /** @type{!Array<!proto.proto.ProxNFTInfo>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxNFTInfo, 2));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxNFTInfo>} value
+ * @return {!proto.proto.ProxUpdateNFTRequest} returns this
+ */
+proto.proto.ProxUpdateNFTRequest.prototype.setNftinfosList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 2, value);
+};
+
+/**
+ * @param {!proto.proto.ProxNFTInfo=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxNFTInfo}
+ */
+proto.proto.ProxUpdateNFTRequest.prototype.addNftinfos = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.proto.ProxNFTInfo, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxUpdateNFTRequest} returns this
+ */
+proto.proto.ProxUpdateNFTRequest.prototype.clearNftinfosList = function () {
+  return this.setNftinfosList([]);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxUpdateNFTResp.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxUpdateNFTResp.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxUpdateNFTResp} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxUpdateNFTResp.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        status: jspb.Message.getFieldWithDefault(msg, 1, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxUpdateNFTResp}
+ */
+proto.proto.ProxUpdateNFTResp.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxUpdateNFTResp();
+  return proto.proto.ProxUpdateNFTResp.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxUpdateNFTResp} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxUpdateNFTResp}
+ */
+proto.proto.ProxUpdateNFTResp.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setStatus(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxUpdateNFTResp.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxUpdateNFTResp.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxUpdateNFTResp} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxUpdateNFTResp.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+};
+
+/**
+ * optional string status = 1;
+ * @return {string}
+ */
+proto.proto.ProxUpdateNFTResp.prototype.getStatus = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxUpdateNFTResp} returns this
+ */
+proto.proto.ProxUpdateNFTResp.prototype.setStatus = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
   proto.proto.ProxCred.prototype.toObject = function (opt_includeInstance) {
     return proto.proto.ProxCred.toObject(opt_includeInstance, this);
   };
@@ -16951,6 +23809,257 @@ proto.proto.ProxGetCredRequest.prototype.clearHeader = function () {
  */
 proto.proto.ProxGetCredRequest.prototype.hasHeader = function () {
   return jspb.Message.getField(this, 1) != null;
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxGeneratePinCredRequest.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxGeneratePinCredRequest.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxGeneratePinCredRequest} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxGeneratePinCredRequest.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxGeneratePinCredRequest}
+ */
+proto.proto.ProxGeneratePinCredRequest.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxGeneratePinCredRequest();
+  return proto.proto.ProxGeneratePinCredRequest.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxGeneratePinCredRequest} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxGeneratePinCredRequest}
+ */
+proto.proto.ProxGeneratePinCredRequest.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxGeneratePinCredRequest.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxGeneratePinCredRequest.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxGeneratePinCredRequest} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxGeneratePinCredRequest.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxGeneratePinCredRequest.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxGeneratePinCredRequest} returns this
+ */
+proto.proto.ProxGeneratePinCredRequest.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxGeneratePinCredRequest} returns this
+ */
+proto.proto.ProxGeneratePinCredRequest.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxGeneratePinCredRequest.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxGeneratePinCredResp.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxGeneratePinCredResp.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxGeneratePinCredResp} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxGeneratePinCredResp.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        cred: jspb.Message.getFieldWithDefault(msg, 1, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxGeneratePinCredResp}
+ */
+proto.proto.ProxGeneratePinCredResp.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxGeneratePinCredResp();
+  return proto.proto.ProxGeneratePinCredResp.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxGeneratePinCredResp} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxGeneratePinCredResp}
+ */
+proto.proto.ProxGeneratePinCredResp.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setCred(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxGeneratePinCredResp.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxGeneratePinCredResp.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxGeneratePinCredResp} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxGeneratePinCredResp.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getCred();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+};
+
+/**
+ * optional string cred = 1;
+ * @return {string}
+ */
+proto.proto.ProxGeneratePinCredResp.prototype.getCred = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxGeneratePinCredResp} returns this
+ */
+proto.proto.ProxGeneratePinCredResp.prototype.setCred = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 /**
@@ -18214,8 +25323,3492 @@ proto.proto.ProxKNResponse.prototype.setData = function (value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetSpace.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetSpace.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetSpace} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetSpace.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetSpace}
+ */
+proto.proto.ProxF2PGetSpace.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetSpace();
+  return proto.proto.ProxF2PGetSpace.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetSpace} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetSpace}
+ */
+proto.proto.ProxF2PGetSpace.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetSpace.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetSpace.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetSpace} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetSpace.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxF2PGetSpace.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxF2PGetSpace} returns this
+ */
+proto.proto.ProxF2PGetSpace.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxF2PGetSpace} returns this
+ */
+proto.proto.ProxF2PGetSpace.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxF2PGetSpace.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetMiner.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetMiner.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetMiner} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetMiner.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetMiner}
+ */
+proto.proto.ProxF2PGetMiner.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetMiner();
+  return proto.proto.ProxF2PGetMiner.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetMiner} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetMiner}
+ */
+proto.proto.ProxF2PGetMiner.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetMiner.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetMiner.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetMiner} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetMiner.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxF2PGetMiner.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxF2PGetMiner} returns this
+ */
+proto.proto.ProxF2PGetMiner.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxF2PGetMiner} returns this
+ */
+proto.proto.ProxF2PGetMiner.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxF2PGetMiner.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetApp.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetApp.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetApp} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetApp.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+        name: jspb.Message.getFieldWithDefault(msg, 2, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetApp}
+ */
+proto.proto.ProxF2PGetApp.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetApp();
+  return proto.proto.ProxF2PGetApp.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetApp} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetApp}
+ */
+proto.proto.ProxF2PGetApp.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setName(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetApp.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetApp.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetApp} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetApp.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxF2PGetApp.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxF2PGetApp} returns this
+ */
+proto.proto.ProxF2PGetApp.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxF2PGetApp} returns this
+ */
+proto.proto.ProxF2PGetApp.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxF2PGetApp.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+/**
+ * optional string name = 2;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetApp.prototype.getName = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetApp} returns this
+ */
+proto.proto.ProxF2PGetApp.prototype.setName = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetAppData.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetAppData.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetAppData} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetAppData.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        id: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        createdat: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        updatedat: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        name: jspb.Message.getFieldWithDefault(msg, 4, ''),
+        version: jspb.Message.getFieldWithDefault(msg, 5, ''),
+        state: jspb.Message.getFieldWithDefault(msg, 6, ''),
+        installType: jspb.Message.getFieldWithDefault(msg, 7, ''),
+        serviceState: jspb.Message.getFieldWithDefault(msg, 8, ''),
+        params: jspb.Message.getFieldWithDefault(msg, 9, ''),
+        time: jspb.Message.getFieldWithDefault(msg, 10, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetAppData}
+ */
+proto.proto.ProxF2PGetAppData.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetAppData();
+  return proto.proto.ProxF2PGetAppData.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetAppData} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetAppData}
+ */
+proto.proto.ProxF2PGetAppData.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readInt64());
+        msg.setId(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setCreatedat(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setUpdatedat(value);
+        break;
+      case 4:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setName(value);
+        break;
+      case 5:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setVersion(value);
+        break;
+      case 6:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setState(value);
+        break;
+      case 7:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setInstallType(value);
+        break;
+      case 8:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setServiceState(value);
+        break;
+      case 9:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setParams(value);
+        break;
+      case 10:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setTime(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetAppData.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetAppData.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetAppData} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetAppData.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getId();
+  if (f !== 0) {
+    writer.writeInt64(1, f);
+  }
+  f = message.getCreatedat();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getUpdatedat();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(4, f);
+  }
+  f = message.getVersion();
+  if (f.length > 0) {
+    writer.writeString(5, f);
+  }
+  f = message.getState();
+  if (f.length > 0) {
+    writer.writeString(6, f);
+  }
+  f = message.getInstallType();
+  if (f.length > 0) {
+    writer.writeString(7, f);
+  }
+  f = message.getServiceState();
+  if (f.length > 0) {
+    writer.writeString(8, f);
+  }
+  f = message.getParams();
+  if (f.length > 0) {
+    writer.writeString(9, f);
+  }
+  f = message.getTime();
+  if (f.length > 0) {
+    writer.writeString(10, f);
+  }
+};
+
+/**
+ * optional int64 id = 1;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetAppData.prototype.getId = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetAppData} returns this
+ */
+proto.proto.ProxF2PGetAppData.prototype.setId = function (value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+/**
+ * optional string createdAt = 2;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetAppData.prototype.getCreatedat = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetAppData} returns this
+ */
+proto.proto.ProxF2PGetAppData.prototype.setCreatedat = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string updatedAt = 3;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetAppData.prototype.getUpdatedat = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetAppData} returns this
+ */
+proto.proto.ProxF2PGetAppData.prototype.setUpdatedat = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional string name = 4;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetAppData.prototype.getName = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetAppData} returns this
+ */
+proto.proto.ProxF2PGetAppData.prototype.setName = function (value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+/**
+ * optional string version = 5;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetAppData.prototype.getVersion = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetAppData} returns this
+ */
+proto.proto.ProxF2PGetAppData.prototype.setVersion = function (value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+/**
+ * optional string state = 6;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetAppData.prototype.getState = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetAppData} returns this
+ */
+proto.proto.ProxF2PGetAppData.prototype.setState = function (value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+/**
+ * optional string install_type = 7;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetAppData.prototype.getInstallType = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetAppData} returns this
+ */
+proto.proto.ProxF2PGetAppData.prototype.setInstallType = function (value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+/**
+ * optional string service_state = 8;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetAppData.prototype.getServiceState = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetAppData} returns this
+ */
+proto.proto.ProxF2PGetAppData.prototype.setServiceState = function (value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+/**
+ * optional string params = 9;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetAppData.prototype.getParams = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetAppData} returns this
+ */
+proto.proto.ProxF2PGetAppData.prototype.setParams = function (value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+/**
+ * optional string time = 10;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetAppData.prototype.getTime = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetAppData} returns this
+ */
+proto.proto.ProxF2PGetAppData.prototype.setTime = function (value) {
+  return jspb.Message.setProto3StringField(this, 10, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetSpaceResult.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetSpaceResult.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetSpaceResult} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetSpaceResult.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        ipfs: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        localData: jspb.Message.getFieldWithDefault(msg, 2, 0),
+        iot: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        miningPool: jspb.Message.getFieldWithDefault(msg, 4, 0),
+        remaining: jspb.Message.getFieldWithDefault(msg, 5, 0),
+        total: jspb.Message.getFieldWithDefault(msg, 6, 0),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetSpaceResult}
+ */
+proto.proto.ProxF2PGetSpaceResult.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetSpaceResult();
+  return proto.proto.ProxF2PGetSpaceResult.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetSpaceResult} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetSpaceResult}
+ */
+proto.proto.ProxF2PGetSpaceResult.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setIpfs(value);
+        break;
+      case 2:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setLocalData(value);
+        break;
+      case 3:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setIot(value);
+        break;
+      case 4:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setMiningPool(value);
+        break;
+      case 5:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setRemaining(value);
+        break;
+      case 6:
+        var value = /** @type {number} */ (reader.readUint64());
+        msg.setTotal(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetSpaceResult.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetSpaceResult} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetSpaceResult.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getIpfs();
+  if (f !== 0) {
+    writer.writeUint64(1, f);
+  }
+  f = message.getLocalData();
+  if (f !== 0) {
+    writer.writeUint64(2, f);
+  }
+  f = message.getIot();
+  if (f !== 0) {
+    writer.writeUint64(3, f);
+  }
+  f = message.getMiningPool();
+  if (f !== 0) {
+    writer.writeUint64(4, f);
+  }
+  f = message.getRemaining();
+  if (f !== 0) {
+    writer.writeUint64(5, f);
+  }
+  f = message.getTotal();
+  if (f !== 0) {
+    writer.writeUint64(6, f);
+  }
+};
+
+/**
+ * optional uint64 ipfs = 1;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.getIpfs = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetSpaceResult} returns this
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.setIpfs = function (value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+/**
+ * optional uint64 local_data = 2;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.getLocalData = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetSpaceResult} returns this
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.setLocalData = function (value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+/**
+ * optional uint64 iot = 3;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.getIot = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetSpaceResult} returns this
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.setIot = function (value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+/**
+ * optional uint64 mining_pool = 4;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.getMiningPool = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetSpaceResult} returns this
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.setMiningPool = function (value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+/**
+ * optional uint64 remaining = 5;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.getRemaining = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetSpaceResult} returns this
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.setRemaining = function (value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
+};
+
+/**
+ * optional uint64 total = 6;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.getTotal = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetSpaceResult} returns this
+ */
+proto.proto.ProxF2PGetSpaceResult.prototype.setTotal = function (value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetSpaceResp.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetSpaceResp.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetSpaceResp} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetSpaceResp.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        code: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        message: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        result: (f = msg.getResult()) && proto.proto.ProxF2PGetSpaceResult.toObject(includeInstance, f),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetSpaceResp}
+ */
+proto.proto.ProxF2PGetSpaceResp.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetSpaceResp();
+  return proto.proto.ProxF2PGetSpaceResp.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetSpaceResp} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetSpaceResp}
+ */
+proto.proto.ProxF2PGetSpaceResp.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setCode(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setMessage(value);
+        break;
+      case 3:
+        var value = new proto.proto.ProxF2PGetSpaceResult();
+        reader.readMessage(value, proto.proto.ProxF2PGetSpaceResult.deserializeBinaryFromReader);
+        msg.setResult(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetSpaceResp.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetSpaceResp.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetSpaceResp} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetSpaceResp.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getCode();
+  if (f !== 0) {
+    writer.writeInt32(1, f);
+  }
+  f = message.getMessage();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getResult();
+  if (f != null) {
+    writer.writeMessage(3, f, proto.proto.ProxF2PGetSpaceResult.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional int32 code = 1;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetSpaceResp.prototype.getCode = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetSpaceResp} returns this
+ */
+proto.proto.ProxF2PGetSpaceResp.prototype.setCode = function (value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+/**
+ * optional string message = 2;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetSpaceResp.prototype.getMessage = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetSpaceResp} returns this
+ */
+proto.proto.ProxF2PGetSpaceResp.prototype.setMessage = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional ProxF2PGetSpaceResult result = 3;
+ * @return {?proto.proto.ProxF2PGetSpaceResult}
+ */
+proto.proto.ProxF2PGetSpaceResp.prototype.getResult = function () {
+  return /** @type{?proto.proto.ProxF2PGetSpaceResult} */ (jspb.Message.getWrapperField(this, proto.proto.ProxF2PGetSpaceResult, 3));
+};
+
+/**
+ * @param {?proto.proto.ProxF2PGetSpaceResult|undefined} value
+ * @return {!proto.proto.ProxF2PGetSpaceResp} returns this
+ */
+proto.proto.ProxF2PGetSpaceResp.prototype.setResult = function (value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxF2PGetSpaceResp} returns this
+ */
+proto.proto.ProxF2PGetSpaceResp.prototype.clearResult = function () {
+  return this.setResult(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxF2PGetSpaceResp.prototype.hasResult = function () {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetIOT.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetIOT.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetIOT} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetIOT.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        header: (f = msg.getHeader()) && proto.proto.ProxHeader.toObject(includeInstance, f),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetIOT}
+ */
+proto.proto.ProxF2PGetIOT.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetIOT();
+  return proto.proto.ProxF2PGetIOT.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetIOT} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetIOT}
+ */
+proto.proto.ProxF2PGetIOT.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxHeader();
+        reader.readMessage(value, proto.proto.ProxHeader.deserializeBinaryFromReader);
+        msg.setHeader(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetIOT.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetIOT.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetIOT} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetIOT.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getHeader();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxHeader.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional ProxHeader header = 1;
+ * @return {?proto.proto.ProxHeader}
+ */
+proto.proto.ProxF2PGetIOT.prototype.getHeader = function () {
+  return /** @type{?proto.proto.ProxHeader} */ (jspb.Message.getWrapperField(this, proto.proto.ProxHeader, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxHeader|undefined} value
+ * @return {!proto.proto.ProxF2PGetIOT} returns this
+ */
+proto.proto.ProxF2PGetIOT.prototype.setHeader = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxF2PGetIOT} returns this
+ */
+proto.proto.ProxF2PGetIOT.prototype.clearHeader = function () {
+  return this.setHeader(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxF2PGetIOT.prototype.hasHeader = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxIOTInfo.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxIOTInfo.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxIOTInfo} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxIOTInfo.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        deviceid: jspb.Message.getFieldWithDefault(msg, 1, ''),
+        status: jspb.Message.getFieldWithDefault(msg, 2, 0),
+        groupname: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        lastactivetime: jspb.Message.getFieldWithDefault(msg, 4, ''),
+        temperature: jspb.Message.getFieldWithDefault(msg, 5, ''),
+        humidity: jspb.Message.getFieldWithDefault(msg, 6, ''),
+        groupid: jspb.Message.getFieldWithDefault(msg, 7, 0),
+        devicename: jspb.Message.getFieldWithDefault(msg, 8, ''),
+        devicetype: jspb.Message.getFieldWithDefault(msg, 9, 0),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxIOTInfo}
+ */
+proto.proto.ProxIOTInfo.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxIOTInfo();
+  return proto.proto.ProxIOTInfo.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxIOTInfo} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxIOTInfo}
+ */
+proto.proto.ProxIOTInfo.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setDeviceid(value);
+        break;
+      case 2:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setStatus(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setGroupname(value);
+        break;
+      case 4:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setLastactivetime(value);
+        break;
+      case 5:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setTemperature(value);
+        break;
+      case 6:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setHumidity(value);
+        break;
+      case 7:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setGroupid(value);
+        break;
+      case 8:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setDevicename(value);
+        break;
+      case 9:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setDevicetype(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxIOTInfo.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxIOTInfo.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxIOTInfo} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxIOTInfo.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getDeviceid();
+  if (f.length > 0) {
+    writer.writeString(1, f);
+  }
+  f = message.getStatus();
+  if (f !== 0) {
+    writer.writeInt32(2, f);
+  }
+  f = message.getGroupname();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getLastactivetime();
+  if (f.length > 0) {
+    writer.writeString(4, f);
+  }
+  f = message.getTemperature();
+  if (f.length > 0) {
+    writer.writeString(5, f);
+  }
+  f = message.getHumidity();
+  if (f.length > 0) {
+    writer.writeString(6, f);
+  }
+  f = message.getGroupid();
+  if (f !== 0) {
+    writer.writeInt32(7, f);
+  }
+  f = message.getDevicename();
+  if (f.length > 0) {
+    writer.writeString(8, f);
+  }
+  f = message.getDevicetype();
+  if (f !== 0) {
+    writer.writeInt32(9, f);
+  }
+};
+
+/**
+ * optional string deviceId = 1;
+ * @return {string}
+ */
+proto.proto.ProxIOTInfo.prototype.getDeviceid = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxIOTInfo} returns this
+ */
+proto.proto.ProxIOTInfo.prototype.setDeviceid = function (value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+/**
+ * optional int32 status = 2;
+ * @return {number}
+ */
+proto.proto.ProxIOTInfo.prototype.getStatus = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxIOTInfo} returns this
+ */
+proto.proto.ProxIOTInfo.prototype.setStatus = function (value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+/**
+ * optional string groupName = 3;
+ * @return {string}
+ */
+proto.proto.ProxIOTInfo.prototype.getGroupname = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxIOTInfo} returns this
+ */
+proto.proto.ProxIOTInfo.prototype.setGroupname = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional string lastActiveTime = 4;
+ * @return {string}
+ */
+proto.proto.ProxIOTInfo.prototype.getLastactivetime = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxIOTInfo} returns this
+ */
+proto.proto.ProxIOTInfo.prototype.setLastactivetime = function (value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+/**
+ * optional string temperature = 5;
+ * @return {string}
+ */
+proto.proto.ProxIOTInfo.prototype.getTemperature = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxIOTInfo} returns this
+ */
+proto.proto.ProxIOTInfo.prototype.setTemperature = function (value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+/**
+ * optional string humidity = 6;
+ * @return {string}
+ */
+proto.proto.ProxIOTInfo.prototype.getHumidity = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxIOTInfo} returns this
+ */
+proto.proto.ProxIOTInfo.prototype.setHumidity = function (value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+/**
+ * optional int32 groupId = 7;
+ * @return {number}
+ */
+proto.proto.ProxIOTInfo.prototype.getGroupid = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxIOTInfo} returns this
+ */
+proto.proto.ProxIOTInfo.prototype.setGroupid = function (value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
+};
+
+/**
+ * optional string deviceName = 8;
+ * @return {string}
+ */
+proto.proto.ProxIOTInfo.prototype.getDevicename = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxIOTInfo} returns this
+ */
+proto.proto.ProxIOTInfo.prototype.setDevicename = function (value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+/**
+ * optional int32 deviceType = 9;
+ * @return {number}
+ */
+proto.proto.ProxIOTInfo.prototype.getDevicetype = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxIOTInfo} returns this
+ */
+proto.proto.ProxIOTInfo.prototype.setDevicetype = function (value) {
+  return jspb.Message.setProto3IntField(this, 9, value);
+};
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.ProxIOTData.repeatedFields_ = [4];
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxIOTData.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxIOTData.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxIOTData} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxIOTData.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        groupid: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        type: jspb.Message.getFieldWithDefault(msg, 2, 0),
+        groupname: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        listList: jspb.Message.toObjectList(msg.getListList(), proto.proto.ProxIOTInfo.toObject, includeInstance),
+        receiverstatus: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxIOTData}
+ */
+proto.proto.ProxIOTData.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxIOTData();
+  return proto.proto.ProxIOTData.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxIOTData} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxIOTData}
+ */
+proto.proto.ProxIOTData.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setGroupid(value);
+        break;
+      case 2:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setType(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setGroupname(value);
+        break;
+      case 4:
+        var value = new proto.proto.ProxIOTInfo();
+        reader.readMessage(value, proto.proto.ProxIOTInfo.deserializeBinaryFromReader);
+        msg.addList(value);
+        break;
+      case 5:
+        var value = /** @type {boolean} */ (reader.readBool());
+        msg.setReceiverstatus(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxIOTData.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxIOTData.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxIOTData} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxIOTData.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getGroupid();
+  if (f !== 0) {
+    writer.writeInt32(1, f);
+  }
+  f = message.getType();
+  if (f !== 0) {
+    writer.writeInt32(2, f);
+  }
+  f = message.getGroupname();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getListList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(4, f, proto.proto.ProxIOTInfo.serializeBinaryToWriter);
+  }
+  f = message.getReceiverstatus();
+  if (f) {
+    writer.writeBool(5, f);
+  }
+};
+
+/**
+ * optional int32 groupId = 1;
+ * @return {number}
+ */
+proto.proto.ProxIOTData.prototype.getGroupid = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxIOTData} returns this
+ */
+proto.proto.ProxIOTData.prototype.setGroupid = function (value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+/**
+ * optional int32 type = 2;
+ * @return {number}
+ */
+proto.proto.ProxIOTData.prototype.getType = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxIOTData} returns this
+ */
+proto.proto.ProxIOTData.prototype.setType = function (value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+/**
+ * optional string groupName = 3;
+ * @return {string}
+ */
+proto.proto.ProxIOTData.prototype.getGroupname = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxIOTData} returns this
+ */
+proto.proto.ProxIOTData.prototype.setGroupname = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * repeated ProxIOTInfo list = 4;
+ * @return {!Array<!proto.proto.ProxIOTInfo>}
+ */
+proto.proto.ProxIOTData.prototype.getListList = function () {
+  return /** @type{!Array<!proto.proto.ProxIOTInfo>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxIOTInfo, 4));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxIOTInfo>} value
+ * @return {!proto.proto.ProxIOTData} returns this
+ */
+proto.proto.ProxIOTData.prototype.setListList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 4, value);
+};
+
+/**
+ * @param {!proto.proto.ProxIOTInfo=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxIOTInfo}
+ */
+proto.proto.ProxIOTData.prototype.addList = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.proto.ProxIOTInfo, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxIOTData} returns this
+ */
+proto.proto.ProxIOTData.prototype.clearListList = function () {
+  return this.setListList([]);
+};
+
+/**
+ * optional bool receiverStatus = 5;
+ * @return {boolean}
+ */
+proto.proto.ProxIOTData.prototype.getReceiverstatus = function () {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+/**
+ * @param {boolean} value
+ * @return {!proto.proto.ProxIOTData} returns this
+ */
+proto.proto.ProxIOTData.prototype.setReceiverstatus = function (value) {
+  return jspb.Message.setProto3BooleanField(this, 5, value);
+};
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.ProxF2PGetIOTResp.repeatedFields_ = [3];
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetIOTResp.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetIOTResp.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetIOTResp} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetIOTResp.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        code: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        msg: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        dataList: jspb.Message.toObjectList(msg.getDataList(), proto.proto.ProxIOTData.toObject, includeInstance),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetIOTResp}
+ */
+proto.proto.ProxF2PGetIOTResp.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetIOTResp();
+  return proto.proto.ProxF2PGetIOTResp.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetIOTResp} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetIOTResp}
+ */
+proto.proto.ProxF2PGetIOTResp.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setCode(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setMsg(value);
+        break;
+      case 3:
+        var value = new proto.proto.ProxIOTData();
+        reader.readMessage(value, proto.proto.ProxIOTData.deserializeBinaryFromReader);
+        msg.addData(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetIOTResp.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetIOTResp.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetIOTResp} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetIOTResp.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getCode();
+  if (f !== 0) {
+    writer.writeInt32(1, f);
+  }
+  f = message.getMsg();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getDataList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(3, f, proto.proto.ProxIOTData.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional int32 code = 1;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetIOTResp.prototype.getCode = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetIOTResp} returns this
+ */
+proto.proto.ProxF2PGetIOTResp.prototype.setCode = function (value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+/**
+ * optional string msg = 2;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetIOTResp.prototype.getMsg = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetIOTResp} returns this
+ */
+proto.proto.ProxF2PGetIOTResp.prototype.setMsg = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * repeated ProxIOTData data = 3;
+ * @return {!Array<!proto.proto.ProxIOTData>}
+ */
+proto.proto.ProxF2PGetIOTResp.prototype.getDataList = function () {
+  return /** @type{!Array<!proto.proto.ProxIOTData>} */ (jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxIOTData, 3));
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxIOTData>} value
+ * @return {!proto.proto.ProxF2PGetIOTResp} returns this
+ */
+proto.proto.ProxF2PGetIOTResp.prototype.setDataList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 3, value);
+};
+
+/**
+ * @param {!proto.proto.ProxIOTData=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxIOTData}
+ */
+proto.proto.ProxF2PGetIOTResp.prototype.addData = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.proto.ProxIOTData, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxF2PGetIOTResp} returns this
+ */
+proto.proto.ProxF2PGetIOTResp.prototype.clearDataList = function () {
+  return this.setDataList([]);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetIOTAmountResp.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetIOTAmountResp.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetIOTAmountResp} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetIOTAmountResp.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        code: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        msg: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        data: jspb.Message.getFieldWithDefault(msg, 3, 0),
+        time: jspb.Message.getFieldWithDefault(msg, 4, 0),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetIOTAmountResp}
+ */
+proto.proto.ProxF2PGetIOTAmountResp.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetIOTAmountResp();
+  return proto.proto.ProxF2PGetIOTAmountResp.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetIOTAmountResp} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetIOTAmountResp}
+ */
+proto.proto.ProxF2PGetIOTAmountResp.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setCode(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setMsg(value);
+        break;
+      case 3:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setData(value);
+        break;
+      case 4:
+        var value = /** @type {number} */ (reader.readInt64());
+        msg.setTime(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetIOTAmountResp.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetIOTAmountResp.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetIOTAmountResp} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetIOTAmountResp.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getCode();
+  if (f !== 0) {
+    writer.writeInt32(1, f);
+  }
+  f = message.getMsg();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getData();
+  if (f !== 0) {
+    writer.writeInt32(3, f);
+  }
+  f = message.getTime();
+  if (f !== 0) {
+    writer.writeInt64(4, f);
+  }
+};
+
+/**
+ * optional int32 code = 1;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetIOTAmountResp.prototype.getCode = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetIOTAmountResp} returns this
+ */
+proto.proto.ProxF2PGetIOTAmountResp.prototype.setCode = function (value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+/**
+ * optional string msg = 2;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetIOTAmountResp.prototype.getMsg = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetIOTAmountResp} returns this
+ */
+proto.proto.ProxF2PGetIOTAmountResp.prototype.setMsg = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional int32 data = 3;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetIOTAmountResp.prototype.getData = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetIOTAmountResp} returns this
+ */
+proto.proto.ProxF2PGetIOTAmountResp.prototype.setData = function (value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+/**
+ * optional int64 time = 4;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetIOTAmountResp.prototype.getTime = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetIOTAmountResp} returns this
+ */
+proto.proto.ProxF2PGetIOTAmountResp.prototype.setTime = function (value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetMinerData.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetMinerData.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetMinerData} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetMinerData.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        id: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        bucket: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        createdat: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        deleteData: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+        dmcAccount: jspb.Message.getFieldWithDefault(msg, 5, ''),
+        expireOnWeek: jspb.Message.getFieldWithDefault(msg, 6, 0),
+        isDelete: jspb.Message.getFieldWithDefault(msg, 7, 0),
+        isPin: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
+        memo: jspb.Message.getFieldWithDefault(msg, 9, ''),
+        minerPoolAddr: jspb.Message.getFieldWithDefault(msg, 10, ''),
+        minerPoolName: jspb.Message.getFieldWithDefault(msg, 11, ''),
+        pinSize: jspb.Message.getFieldWithDefault(msg, 12, ''),
+        space: jspb.Message.getFieldWithDefault(msg, 13, ''),
+        stackAsset: jspb.Message.getFieldWithDefault(msg, 14, ''),
+        status: jspb.Message.getFieldWithDefault(msg, 15, ''),
+        updatedat: jspb.Message.getFieldWithDefault(msg, 16, ''),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetMinerData}
+ */
+proto.proto.ProxF2PGetMinerData.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetMinerData();
+  return proto.proto.ProxF2PGetMinerData.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetMinerData} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetMinerData}
+ */
+proto.proto.ProxF2PGetMinerData.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readInt64());
+        msg.setId(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setBucket(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setCreatedat(value);
+        break;
+      case 4:
+        var value = /** @type {boolean} */ (reader.readBool());
+        msg.setDeleteData(value);
+        break;
+      case 5:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setDmcAccount(value);
+        break;
+      case 6:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setExpireOnWeek(value);
+        break;
+      case 7:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setIsDelete(value);
+        break;
+      case 8:
+        var value = /** @type {boolean} */ (reader.readBool());
+        msg.setIsPin(value);
+        break;
+      case 9:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setMemo(value);
+        break;
+      case 10:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setMinerPoolAddr(value);
+        break;
+      case 11:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setMinerPoolName(value);
+        break;
+      case 12:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPinSize(value);
+        break;
+      case 13:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setSpace(value);
+        break;
+      case 14:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setStackAsset(value);
+        break;
+      case 15:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setStatus(value);
+        break;
+      case 16:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setUpdatedat(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetMinerData.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetMinerData} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetMinerData.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getId();
+  if (f !== 0) {
+    writer.writeInt64(1, f);
+  }
+  f = message.getBucket();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getCreatedat();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getDeleteData();
+  if (f) {
+    writer.writeBool(4, f);
+  }
+  f = message.getDmcAccount();
+  if (f.length > 0) {
+    writer.writeString(5, f);
+  }
+  f = message.getExpireOnWeek();
+  if (f !== 0) {
+    writer.writeInt32(6, f);
+  }
+  f = message.getIsDelete();
+  if (f !== 0) {
+    writer.writeInt32(7, f);
+  }
+  f = message.getIsPin();
+  if (f) {
+    writer.writeBool(8, f);
+  }
+  f = message.getMemo();
+  if (f.length > 0) {
+    writer.writeString(9, f);
+  }
+  f = message.getMinerPoolAddr();
+  if (f.length > 0) {
+    writer.writeString(10, f);
+  }
+  f = message.getMinerPoolName();
+  if (f.length > 0) {
+    writer.writeString(11, f);
+  }
+  f = message.getPinSize();
+  if (f.length > 0) {
+    writer.writeString(12, f);
+  }
+  f = message.getSpace();
+  if (f.length > 0) {
+    writer.writeString(13, f);
+  }
+  f = message.getStackAsset();
+  if (f.length > 0) {
+    writer.writeString(14, f);
+  }
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(15, f);
+  }
+  f = message.getUpdatedat();
+  if (f.length > 0) {
+    writer.writeString(16, f);
+  }
+};
+
+/**
+ * optional int64 id = 1;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getId = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setId = function (value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+/**
+ * optional string bucket = 2;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getBucket = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setBucket = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string createdAt = 3;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getCreatedat = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setCreatedat = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional bool delete_data = 4;
+ * @return {boolean}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getDeleteData = function () {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
+};
+
+/**
+ * @param {boolean} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setDeleteData = function (value) {
+  return jspb.Message.setProto3BooleanField(this, 4, value);
+};
+
+/**
+ * optional string dmc_account = 5;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getDmcAccount = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setDmcAccount = function (value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+/**
+ * optional int32 expire_on_week = 6;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getExpireOnWeek = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setExpireOnWeek = function (value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+/**
+ * optional int32 is_delete = 7;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getIsDelete = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setIsDelete = function (value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
+};
+
+/**
+ * optional bool is_pin = 8;
+ * @return {boolean}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getIsPin = function () {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 8, false));
+};
+
+/**
+ * @param {boolean} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setIsPin = function (value) {
+  return jspb.Message.setProto3BooleanField(this, 8, value);
+};
+
+/**
+ * optional string memo = 9;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getMemo = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setMemo = function (value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+/**
+ * optional string miner_pool_addr = 10;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getMinerPoolAddr = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setMinerPoolAddr = function (value) {
+  return jspb.Message.setProto3StringField(this, 10, value);
+};
+
+/**
+ * optional string miner_pool_name = 11;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getMinerPoolName = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setMinerPoolName = function (value) {
+  return jspb.Message.setProto3StringField(this, 11, value);
+};
+
+/**
+ * optional string pin_size = 12;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getPinSize = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setPinSize = function (value) {
+  return jspb.Message.setProto3StringField(this, 12, value);
+};
+
+/**
+ * optional string space = 13;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getSpace = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setSpace = function (value) {
+  return jspb.Message.setProto3StringField(this, 13, value);
+};
+
+/**
+ * optional string stack_asset = 14;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getStackAsset = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 14, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setStackAsset = function (value) {
+  return jspb.Message.setProto3StringField(this, 14, value);
+};
+
+/**
+ * optional string status = 15;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getStatus = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setStatus = function (value) {
+  return jspb.Message.setProto3StringField(this, 15, value);
+};
+
+/**
+ * optional string updatedAt = 16;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerData.prototype.getUpdatedat = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 16, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerData} returns this
+ */
+proto.proto.ProxF2PGetMinerData.prototype.setUpdatedat = function (value) {
+  return jspb.Message.setProto3StringField(this, 16, value);
+};
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.ProxF2PGetMinerResult.repeatedFields_ = [1];
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetMinerResult.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetMinerResult.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetMinerResult} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetMinerResult.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        dataList: jspb.Message.toObjectList(msg.getDataList(), proto.proto.ProxF2PGetMinerData.toObject, includeInstance),
+        pagenumber: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        pagesize: jspb.Message.getFieldWithDefault(msg, 3, ''),
+        total: jspb.Message.getFieldWithDefault(msg, 4, 0),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetMinerResult}
+ */
+proto.proto.ProxF2PGetMinerResult.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetMinerResult();
+  return proto.proto.ProxF2PGetMinerResult.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetMinerResult} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetMinerResult}
+ */
+proto.proto.ProxF2PGetMinerResult.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxF2PGetMinerData();
+        reader.readMessage(value, proto.proto.ProxF2PGetMinerData.deserializeBinaryFromReader);
+        msg.addData(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPagenumber(value);
+        break;
+      case 3:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setPagesize(value);
+        break;
+      case 4:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setTotal(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetMinerResult.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetMinerResult.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetMinerResult} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetMinerResult.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getDataList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(1, f, proto.proto.ProxF2PGetMinerData.serializeBinaryToWriter);
+  }
+  f = message.getPagenumber();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getPagesize();
+  if (f.length > 0) {
+    writer.writeString(3, f);
+  }
+  f = message.getTotal();
+  if (f !== 0) {
+    writer.writeInt32(4, f);
+  }
+};
+
+/**
+ * repeated ProxF2PGetMinerData data = 1;
+ * @return {!Array<!proto.proto.ProxF2PGetMinerData>}
+ */
+proto.proto.ProxF2PGetMinerResult.prototype.getDataList = function () {
+  return /** @type{!Array<!proto.proto.ProxF2PGetMinerData>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.proto.ProxF2PGetMinerData, 1)
+  );
+};
+
+/**
+ * @param {!Array<!proto.proto.ProxF2PGetMinerData>} value
+ * @return {!proto.proto.ProxF2PGetMinerResult} returns this
+ */
+proto.proto.ProxF2PGetMinerResult.prototype.setDataList = function (value) {
+  return jspb.Message.setRepeatedWrapperField(this, 1, value);
+};
+
+/**
+ * @param {!proto.proto.ProxF2PGetMinerData=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.ProxF2PGetMinerData}
+ */
+proto.proto.ProxF2PGetMinerResult.prototype.addData = function (opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.proto.ProxF2PGetMinerData, opt_index);
+};
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.ProxF2PGetMinerResult} returns this
+ */
+proto.proto.ProxF2PGetMinerResult.prototype.clearDataList = function () {
+  return this.setDataList([]);
+};
+
+/**
+ * optional string pageNumber = 2;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerResult.prototype.getPagenumber = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerResult} returns this
+ */
+proto.proto.ProxF2PGetMinerResult.prototype.setPagenumber = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional string pageSize = 3;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerResult.prototype.getPagesize = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerResult} returns this
+ */
+proto.proto.ProxF2PGetMinerResult.prototype.setPagesize = function (value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+/**
+ * optional int32 total = 4;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetMinerResult.prototype.getTotal = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetMinerResult} returns this
+ */
+proto.proto.ProxF2PGetMinerResult.prototype.setTotal = function (value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetMinerResp.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetMinerResp.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetMinerResp} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetMinerResp.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        code: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        message: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        result: (f = msg.getResult()) && proto.proto.ProxF2PGetMinerResult.toObject(includeInstance, f),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetMinerResp}
+ */
+proto.proto.ProxF2PGetMinerResp.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetMinerResp();
+  return proto.proto.ProxF2PGetMinerResp.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetMinerResp} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetMinerResp}
+ */
+proto.proto.ProxF2PGetMinerResp.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setCode(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setMessage(value);
+        break;
+      case 3:
+        var value = new proto.proto.ProxF2PGetMinerResult();
+        reader.readMessage(value, proto.proto.ProxF2PGetMinerResult.deserializeBinaryFromReader);
+        msg.setResult(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetMinerResp.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetMinerResp.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetMinerResp} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetMinerResp.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getCode();
+  if (f !== 0) {
+    writer.writeInt32(1, f);
+  }
+  f = message.getMessage();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getResult();
+  if (f != null) {
+    writer.writeMessage(3, f, proto.proto.ProxF2PGetMinerResult.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional int32 code = 1;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetMinerResp.prototype.getCode = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetMinerResp} returns this
+ */
+proto.proto.ProxF2PGetMinerResp.prototype.setCode = function (value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+/**
+ * optional string message = 2;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetMinerResp.prototype.getMessage = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetMinerResp} returns this
+ */
+proto.proto.ProxF2PGetMinerResp.prototype.setMessage = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional ProxF2PGetMinerResult result = 3;
+ * @return {?proto.proto.ProxF2PGetMinerResult}
+ */
+proto.proto.ProxF2PGetMinerResp.prototype.getResult = function () {
+  return /** @type{?proto.proto.ProxF2PGetMinerResult} */ (jspb.Message.getWrapperField(this, proto.proto.ProxF2PGetMinerResult, 3));
+};
+
+/**
+ * @param {?proto.proto.ProxF2PGetMinerResult|undefined} value
+ * @return {!proto.proto.ProxF2PGetMinerResp} returns this
+ */
+proto.proto.ProxF2PGetMinerResp.prototype.setResult = function (value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxF2PGetMinerResp} returns this
+ */
+proto.proto.ProxF2PGetMinerResp.prototype.clearResult = function () {
+  return this.setResult(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxF2PGetMinerResp.prototype.hasResult = function () {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetAppResult.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetAppResult.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetAppResult} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetAppResult.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        data: (f = msg.getData()) && proto.proto.ProxF2PGetAppData.toObject(includeInstance, f),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetAppResult}
+ */
+proto.proto.ProxF2PGetAppResult.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetAppResult();
+  return proto.proto.ProxF2PGetAppResult.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetAppResult} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetAppResult}
+ */
+proto.proto.ProxF2PGetAppResult.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = new proto.proto.ProxF2PGetAppData();
+        reader.readMessage(value, proto.proto.ProxF2PGetAppData.deserializeBinaryFromReader);
+        msg.setData(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetAppResult.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetAppResult.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetAppResult} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetAppResult.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getData();
+  if (f != null) {
+    writer.writeMessage(1, f, proto.proto.ProxF2PGetAppData.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional ProxF2PGetAppData data = 1;
+ * @return {?proto.proto.ProxF2PGetAppData}
+ */
+proto.proto.ProxF2PGetAppResult.prototype.getData = function () {
+  return /** @type{?proto.proto.ProxF2PGetAppData} */ (jspb.Message.getWrapperField(this, proto.proto.ProxF2PGetAppData, 1));
+};
+
+/**
+ * @param {?proto.proto.ProxF2PGetAppData|undefined} value
+ * @return {!proto.proto.ProxF2PGetAppResult} returns this
+ */
+proto.proto.ProxF2PGetAppResult.prototype.setData = function (value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxF2PGetAppResult} returns this
+ */
+proto.proto.ProxF2PGetAppResult.prototype.clearData = function () {
+  return this.setData(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxF2PGetAppResult.prototype.hasData = function () {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+  /**
+   * Creates an object representation of this proto.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * Optional fields that are not set will be set to undefined.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+   * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+   *     JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.proto.ProxF2PGetAppResp.prototype.toObject = function (opt_includeInstance) {
+    return proto.proto.ProxF2PGetAppResp.toObject(opt_includeInstance, this);
+  };
+
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+   *     the JSPB instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.proto.ProxF2PGetAppResp} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
+  proto.proto.ProxF2PGetAppResp.toObject = function (includeInstance, msg) {
+    var f,
+      obj = {
+        code: jspb.Message.getFieldWithDefault(msg, 1, 0),
+        message: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        result: (f = msg.getResult()) && proto.proto.ProxF2PGetAppResult.toObject(includeInstance, f),
+      };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+    return obj;
+  };
+}
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.proto.ProxF2PGetAppResp}
+ */
+proto.proto.ProxF2PGetAppResp.deserializeBinary = function (bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.proto.ProxF2PGetAppResp();
+  return proto.proto.ProxF2PGetAppResp.deserializeBinaryFromReader(msg, reader);
+};
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.proto.ProxF2PGetAppResp} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.proto.ProxF2PGetAppResp}
+ */
+proto.proto.ProxF2PGetAppResp.deserializeBinaryFromReader = function (msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+      case 1:
+        var value = /** @type {number} */ (reader.readInt32());
+        msg.setCode(value);
+        break;
+      case 2:
+        var value = /** @type {string} */ (reader.readString());
+        msg.setMessage(value);
+        break;
+      case 3:
+        var value = new proto.proto.ProxF2PGetAppResult();
+        reader.readMessage(value, proto.proto.ProxF2PGetAppResult.deserializeBinaryFromReader);
+        msg.setResult(value);
+        break;
+      default:
+        reader.skipField();
+        break;
+    }
+  }
+  return msg;
+};
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.proto.ProxF2PGetAppResp.prototype.serializeBinary = function () {
+  var writer = new jspb.BinaryWriter();
+  proto.proto.ProxF2PGetAppResp.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.proto.ProxF2PGetAppResp} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.proto.ProxF2PGetAppResp.serializeBinaryToWriter = function (message, writer) {
+  var f = undefined;
+  f = message.getCode();
+  if (f !== 0) {
+    writer.writeInt32(1, f);
+  }
+  f = message.getMessage();
+  if (f.length > 0) {
+    writer.writeString(2, f);
+  }
+  f = message.getResult();
+  if (f != null) {
+    writer.writeMessage(3, f, proto.proto.ProxF2PGetAppResult.serializeBinaryToWriter);
+  }
+};
+
+/**
+ * optional int32 code = 1;
+ * @return {number}
+ */
+proto.proto.ProxF2PGetAppResp.prototype.getCode = function () {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ProxF2PGetAppResp} returns this
+ */
+proto.proto.ProxF2PGetAppResp.prototype.setCode = function (value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+/**
+ * optional string message = 2;
+ * @return {string}
+ */
+proto.proto.ProxF2PGetAppResp.prototype.getMessage = function () {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ''));
+};
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.ProxF2PGetAppResp} returns this
+ */
+proto.proto.ProxF2PGetAppResp.prototype.setMessage = function (value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional ProxF2PGetAppResult result = 3;
+ * @return {?proto.proto.ProxF2PGetAppResult}
+ */
+proto.proto.ProxF2PGetAppResp.prototype.getResult = function () {
+  return /** @type{?proto.proto.ProxF2PGetAppResult} */ (jspb.Message.getWrapperField(this, proto.proto.ProxF2PGetAppResult, 3));
+};
+
+/**
+ * @param {?proto.proto.ProxF2PGetAppResult|undefined} value
+ * @return {!proto.proto.ProxF2PGetAppResp} returns this
+ */
+proto.proto.ProxF2PGetAppResp.prototype.setResult = function (value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.ProxF2PGetAppResp} returns this
+ */
+proto.proto.ProxF2PGetAppResp.prototype.clearResult = function () {
+  return this.setResult(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.ProxF2PGetAppResp.prototype.hasResult = function () {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+// goog.object.extend(exports, proto.proto);
 const exportedObject = {};
-
 goog.object.extend(exportedObject, proto.proto);
-
 module.exports = exportedObject;

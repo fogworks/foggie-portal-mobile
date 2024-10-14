@@ -17,6 +17,7 @@ message ProxHeader {
 	string peerId =1;
 	string Id = 2;
 	string token = 3;
+	string appType = 4;
 }
 
 message ProxStagePartRequest {
@@ -88,6 +89,8 @@ message ProxPutObjectRequest {
 	bool stageOnly = 5;
 	int32 category = 6;
 	string tags = 7;
+	string rhash = 8;
+	string acl = 9;
 }
 
 message ProxPutObjectReq {
@@ -133,19 +136,57 @@ message ProxRangeRequest {
 	int64 start = 1;
 	int64 length = 2;
 }
-//message ProxThumbnail {
-//	int64 width = 1;
-//	int64 height = 2;
-//}
 
+
+message ProxOrigins {
+	string multiAddr = 1;
+	string access = 3;
+	string id = 4;
+}
+
+message ProxFetchRequest {
+	ProxHeader header = 1;
+	string url = 2;
+	string name = 3;
+	bytes meta = 4;
+	repeated ProxOrigins origins  = 5;
+}
+
+message ProxFetchPinningRequest {
+	ProxHeader header = 1;
+	string pinningId = 2;
+}
+message ProxFetchPinningResponse {
+	string  status = 1;
+	string  requestId = 2;
+	string created = 3;
+
+}
 message ProxGetRequest {
 	ProxHeader header = 1;
 	string cid = 2;
 	string key = 3;
 	ProxRangeRequest range = 4;
 	bool thumb = 5;
+	string pwd = 6;
 }
 
+message ProxGetBlockRequest {
+	ProxHeader header = 1;
+	string cid = 2;
+	string pwd = 3;
+}
+
+message ProxGetCarMetaRequest {
+	ProxHeader header = 1;
+	string Name = 2;
+	string cid = 3;
+	string pwd = 4;
+}
+message ProxGetCarMetaResponse {
+	bytes meta= 1;
+	string status = 2;
+}
 message ProxGetInfo {
 	string cid = 1;
 	string key = 2;
@@ -167,6 +208,13 @@ message ProxObjectInfo {
 	ProxRangeRequest range = 2;
 }
 
+message ProxGetBlockResponse {
+	bytes chunk= 1;
+	string status = 2;
+}
+message ProxFetchResponse {
+	string status = 1;
+}
 message ProxGetResponse {
 	oneof Option{
 		ProxObjectInfo object = 1;
@@ -293,6 +341,40 @@ message ProxListObjectsReq{
 	ProxHeader header = 1;
 	ProxListObjectsRequest request =2 ;
 }
+message ProxImageCameraInfo {
+	string make = 1;
+	string model = 2;
+}
+message ProxImageCameraResolution {
+	int32 weight = 1;
+	int32 height = 2;
+}
+
+message ProxImageAddition {
+	string dateTime=1;
+	string iso = 2;
+	string expTime =3;
+	string aperture = 4;
+	string orientation = 5;
+	string flash = 6;
+	string software = 7;
+	string exposureTime = 8;
+	string focalLength = 9;
+}
+
+message ProxGpsInfo {
+	float lat = 1;
+	float long = 2;
+}
+
+message ProxImageInfo {
+	ProxImageCameraInfo  cameraInfo = 1;
+	ProxImageCameraResolution resolution = 2;
+	ProxGpsInfo gps = 3;
+	ProxImageAddition addition = 4;
+}
+
+
 message ProxObject{
 	string key= 1;
 	string etag = 2;
@@ -309,10 +391,17 @@ message ProxObject{
 	bool  isPersistent= 13;
 	int32 category = 14;
 	string tags = 15;
+	repeated ProxNFTInfo nftInfos = 16;
+	repeated ProxPinning pinning = 17;
+	ProxImageInfo images = 18;
+	string thumb = 19;
 }
 message ProxPrefixPin{
 	string prefix=1;
 	string cid = 2;
+	bool isPin = 3;
+	repeated ProxNFTInfo nftInfos = 4;
+	repeated ProxPinning pinning = 5;
 }
 message ProxListObjectsResp{
 	repeated string commonPrefixes =1;
@@ -323,8 +412,12 @@ message ProxListObjectsResp{
 	string continuationToken=6;
 	repeated ProxObject content = 7;
 	repeated ProxPrefixPin prefixpins = 8;
+
 }
 
+message ProxPinning {
+	string requestID  = 1;
+}
 message ProxPinRequest{
 		string cid = 1;
 		string stype = 2;
@@ -390,6 +483,28 @@ message ProxRequestSummaryIds {
 	ProxHeader header = 1;
 	repeated string ids = 2;
 }
+message ProxCategory {
+	int32 category = 1;
+	int64 total = 2;
+	int64 count = 3;
+}
+message ProxPrefix {
+	string prefix = 1;
+	int64 total = 2;
+	int64 count = 3;
+}
+message ProxStatisticsInfo{
+	repeated ProxCategory categories = 1;
+	repeated ProxPrefix prefixes = 2;
+	ProxCategory categorySum = 3;
+	ProxPrefix prefixSum = 4;
+}
+message ProxRequestStatistics {
+	ProxHeader header = 1;
+	string prefix = 2;
+	bool needPrefix = 3;
+}
+
 message ProxSummaryInfo {
 	string id = 1;
 	int64 total = 2;
@@ -439,6 +554,56 @@ message ProxFileInfo{
 message ProxTouchResp {
 	string status=1;
 }
+message ProxGExtractCode {
+	ProxHeader header = 1;
+	string cid = 2;
+	string key = 3;
+	string exp = 4;
+
+}
+message ProxGExtractCodeResp {
+	string extractCode = 1;
+	string cid = 3;
+	string state = 2;
+}
+message ProxPInfo {
+	string cid = 1;
+	string status = 2;
+	uint64 averageSpeed = 3;
+	uint64 size  =4;
+	uint64 firstByte = 5;
+	uint64 duration  = 6;
+	string provider = 7;
+	int32 idx = 8;
+	uint64 completed = 9;
+
+}
+message ProxPinningInfo {
+	string requestID = 1;
+	string status = 2;
+	string Created = 3;
+	repeated ProxPInfo pins = 4;
+	string name = 5;
+	int32 fsType =6;
+	int32 operType = 7;
+	uint64 averageSpeed = 8;
+}
+
+message ProxPinningListRequest {
+	ProxHeader header = 1;
+	string status = 2;
+	string pinType = 3;
+	string before = 4;
+	string after = 5;
+	int32 limit = 6;
+	string match = 7;
+	repeated string cids = 8;
+}
+message ProxPinningResp {
+	repeated ProxPinningInfo pinnings = 1;
+}
+
+
 service Service {
 	rpc Ping(ProxPingRequest)returns(ProxPingResponse){}
 	rpc PingMiner(ProxPingMinerRequest)returns(ProxPingMinerResponse){}
@@ -446,6 +611,7 @@ service Service {
 	rpc Stage(stream ProxStageRequest) returns (ProxStageResponse) {}
 //	rpc Get(GetProxRequest) returns (stream GetProxResponse) {}
 	rpc GetPeerIdInfo(GetPeerIdInfoReq) returns(GetPeerIDReply){}
+	rpc PutObjectStream(stream ProxPutObjectOpt)returns(stream ProxPutObjectResp){}
 	rpc PutObject(stream ProxPutObjectOpt)returns(ProxPutObjectResp){}
 	rpc NewMultipartObject(ProxPutObjectReq)returns(ProxMultipartCreateResp){}
 	rpc PutObjectPart(stream ProxPutObjectPartOpt)returns(ProxPutObjectPartResult){}
@@ -453,6 +619,8 @@ service Service {
 	rpc ListMultipart(ProxListUploadReq)returns(ProxListMultipartUploadResponse){}
 	rpc ListObjectParts(ProxListPartsReq)returns(ProxListPartsResponse){}
 	rpc ListObjects(ProxListObjectsReq)returns(ProxListObjectsResp){}
+	rpc GetBlock(ProxGetBlockRequest) returns (stream ProxGetResponse) {}
+	rpc GetCarMeta(ProxGetCarMetaRequest) returns (stream ProxGetResponse) {}
 	rpc GetObject(ProxGetRequest) returns (stream ProxGetResponse) {}
 	rpc GetObjects(ProxGetRequests) returns (stream ProxGetResponse) {}
 	rpc SearchObject(ProxSearchRequest) returns (stream ProxSearchResponse) {}
@@ -460,6 +628,7 @@ service Service {
 	rpc GetObjectInfo(ProxGetRequest) returns (ProxObject) {}
 	rpc DeleteObject(ProxDeleteObjectReq)returns(ProxDeleteResp){}
 	rpc SummaryInfo(ProxRequestSummaryIds)returns(ProxSummaryInfos){}
+	rpc Statistics(ProxRequestStatistics)returns(ProxStatisticsInfo){}
 	rpc RenameObjects(ProxRenameObject)returns(ProxRenameObjectResp){}
 	rpc GetTimeLine(ProxTimeLine)returns(ProxTimeLineResp){}
 	rpc GetPreSigned(ProxPresignedURL)returns(ProxPresignedURLResp){}
@@ -467,8 +636,36 @@ service Service {
 	rpc Chat(ProxChatReq) returns (ProxChatResponse) {}
 	rpc Knowledge(ProxKNReq) returns (ProxKNResponse) {}
 	rpc GenerateCred(ProxCredRequest)returns(ProxCredResp){}
+
 	rpc ListCreds(ProxGetCredRequest)returns(ProxCredsList){}
+	rpc GenPinningCred(ProxGeneratePinCredRequest)returns(ProxGeneratePinCredResp){}
 	rpc DeleteCred(ProxCredRequest)returns(ProxCredResp){}
+	rpc UpdateNFT(ProxUpdateNFTRequest)returns(ProxUpdateNFTResp){}
+	rpc GenerateExtractCode(ProxGExtractCode)returns(ProxGExtractCodeResp){}
+	rpc AsyncFetchObject(ProxFetchRequest) returns (ProxPinningInfo) {}
+	rpc CancelFetchObject(ProxFetchPinningRequest)returns(ProxFetchPinningResponse){}
+	rpc DeleteFetchObject(ProxFetchPinningRequest)returns(ProxFetchPinningResponse){}
+	rpc ResumeFetchObject(ProxFetchPinningRequest)returns(ProxFetchPinningResponse){}
+	rpc ListPinnings(ProxPinningListRequest)returns(ProxPinningResp){}
+	rpc FetchPinningEvent(ProxFetchPinningRequest)returns(ProxPinningInfo){}
+	rpc F2PGetSpaceInfo(ProxF2PGetSpace)returns(ProxF2PGetSpaceResp){}
+	rpc F2PGetIOTList(ProxF2PGetIOT)returns(ProxF2PGetIOTResp){}
+	rpc F2PGetIOTAmount(ProxF2PGetIOT)returns(ProxF2PGetIOTAmountResp){}
+	rpc F2PGetMinerInfo(ProxF2PGetMiner)returns(ProxF2PGetMinerResp){}
+	rpc F2PGetAppInfo(ProxF2PGetApp)returns(ProxF2PGetAppResp){}
+
+}
+message ProxNFTInfo {
+	string cid = 1;
+	string contractID = 2;
+	string tokenID = 3;
+}
+message ProxUpdateNFTRequest{
+	ProxHeader header = 1;
+repeated ProxNFTInfo nftInfos= 2;
+}
+message ProxUpdateNFTResp {
+	string status = 1;
 }
 message ProxCred{
 	string accessKey = 1;
@@ -483,6 +680,12 @@ message ProxCredResp {
 }
 message ProxGetCredRequest{
 	ProxHeader header = 1;
+}
+message ProxGeneratePinCredRequest{
+	ProxHeader header = 1;
+}
+message ProxGeneratePinCredResp {
+	string cred = 1;
 }
 message ProxCredsList{
 	repeated ProxCred creds = 1;
@@ -518,4 +721,111 @@ message ProxKNRequest {
 message ProxKNResponse {
 	string status = 1;
 	string data = 2;
+}
+
+message ProxF2PGetSpace {
+	ProxHeader header = 1;
+}
+message ProxF2PGetMiner {
+	ProxHeader header = 1;
+}
+message ProxF2PGetApp {
+	ProxHeader header = 1;
+	string name = 2;
+}
+message ProxF2PGetAppData {
+	int64 id = 1;
+	string createdAt = 2;
+	string updatedAt = 3;
+	string name = 4;
+	string version = 5;
+	string state = 6;
+	string install_type = 7;
+	string service_state = 8;
+	string params = 9;
+	string time =10;
+}
+message ProxF2PGetSpaceResult {
+	uint64 ipfs = 1;
+	uint64 local_data = 2;
+	uint64 iot = 3;
+	uint64 mining_pool = 4;
+	uint64 remaining = 5;
+	uint64 total = 6;
+}
+message ProxF2PGetSpaceResp {
+	int32 code = 1;
+	string message =2 ;
+	ProxF2PGetSpaceResult result = 3;
+}
+
+message ProxF2PGetIOT {
+	ProxHeader header = 1;
+}
+message ProxIOTInfo {
+	string deviceId = 1;
+	int32 status = 2;
+	string groupName = 3;
+	string lastActiveTime = 4;
+	string temperature = 5;
+	string humidity = 6;
+	int32 groupId = 7;
+	string deviceName = 8;
+	int32 deviceType = 9;
+}
+message ProxIOTData {
+	int32 groupId = 1;
+	int32 type = 2;
+	string groupName =3;
+	repeated ProxIOTInfo list = 4;
+	bool receiverStatus = 5;
+}
+message ProxF2PGetIOTResp {
+	int32 code = 1;
+	string msg =2 ;
+	repeated ProxIOTData data = 3;
+}
+message ProxF2PGetIOTAmountResp {
+	int32 code = 1;
+	string msg =2 ;
+	int32 data = 3;
+	int64 time = 4;
+}
+message ProxF2PGetMinerData {
+	int64 id = 1;
+	string bucket = 2;
+	string createdAt = 3;
+	bool delete_data = 4;
+	string dmc_account = 5;
+	int32 expire_on_week = 6;
+	int32 is_delete = 7;
+	bool is_pin = 8;
+	string memo = 9;
+	string miner_pool_addr =10;
+	string miner_pool_name = 11;
+	string pin_size = 12;
+	string space = 13;
+	string stack_asset = 14;
+	string status = 15;
+	string updatedAt = 16;
+}
+message ProxF2PGetMinerResult {
+	repeated ProxF2PGetMinerData data = 1;
+	string pageNumber = 2;
+	string pageSize = 3;
+	int32 total = 4;
+}
+message ProxF2PGetMinerResp {
+	int32 code = 1;
+	string message =2 ;
+	ProxF2PGetMinerResult result = 3;
+}
+
+message ProxF2PGetAppResult {
+	 ProxF2PGetAppData data = 1;
+}
+message ProxF2PGetAppResp {
+	int32 code = 1;
+	string message =2 ;
+	ProxF2PGetAppResult result = 3;
 }

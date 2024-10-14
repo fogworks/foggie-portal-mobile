@@ -15,6 +15,7 @@
               <TriangleUp
                 @click="showTypeCheckPop = !showTypeCheckPop"
                 :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
+                color="#4bd5fd"
               ></TriangleUp>
             </template>
             <template v-else>
@@ -61,7 +62,7 @@
             <div class="svg_box">
               <IconVideo></IconVideo>
             </div>
-            <p>Video</p>
+            <p>Videos</p>
           </div>
         </div>
       </nut-popup>
@@ -69,16 +70,21 @@
 
     <nut-sticky class="file_Top" top="0">
       <div :class="[showTypeCheckPop ? 'header_fixed' : '', 'list_header']">
-        <div style="display: flex">
+        <div style="display: flex; width: 100%">
           <template v-if="!prefix.length">
-            <div class="top_back" @click="router.go(-1)"> </div>
-            <span class="top_title">
-              {{ fileTypeText[category] }}
-            </span>
-            <TriangleUp
-              @click="showTypeCheckPop = !showTypeCheckPop"
-              :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
-            ></TriangleUp>
+            <div class="boxtop">
+              <div style="display: flex; align-items: center; flex: 0 0 auto">
+                <div class="top_back" @click="goBack"> </div>
+                <span class="top_title">
+                  {{ fileTypeText[category] }}
+                </span>
+                <TriangleUp
+                  color="#4bd5fd"
+                  @click="showTypeCheckPop = !showTypeCheckPop"
+                  :class="['triangle', showTypeCheckPop ? '' : 'triangleDown']"
+                ></TriangleUp>
+              </div>
+            </div>
           </template>
           <template v-else>
             <div
@@ -88,81 +94,132 @@
                 prefixChange();
               "
             >
-              <TopBack> </TopBack>
+              <!-- <TopBack> </TopBack> -->
             </div>
-            <span class="top_title">
+            <span class="top_title" style="flex: 1">
               {{ prefix.at(-1) || '' }}
             </span>
           </template>
+          <!-- <nut-checkbox style="flex: 0 0 60px" v-model="isCheckMode" label="Multiple">Edit</nut-checkbox> -->
+          <IconListType
+            style="width: 2rem; height: 2rem; vertical-align: middle"
+            v-if="cardMode && category != 1"
+            @click="cardMode = !cardMode"
+            color="#4bd5fd"
+          ></IconListType>
+          <IconCardType
+            style="margin: 0 0.2rem; width: 1.5rem; height: 2rem; vertical-align: middle"
+            v-else-if="!cardMode && category != 1"
+            color="#4bd5fd"
+            @click="cardMode = !cardMode"
+          ></IconCardType>
         </div>
       </div>
-      <div class="search_bar" v-if="!isCheckMode && category !== 1">
+      <div class="search_bar" v-if="category !== 1">
         <IconNewFolder
           @click="
             isNewFolder = true;
             renameShow = true;
           "
-          v-show="category == 0 && isMobileOrder"
+          v-show="category == 0 && isMobileOrder && isAvailableOrder"
+          color="#4bd5fd"
           class="new_folder"
         ></IconNewFolder>
         <nut-searchbar @clear="doSearch('', prefix, true)" placeholder="Search By Name" v-model="keyWord">
           <template #rightin> <Search2 @click="doSearch('', prefix, true)" color="#0a7dd2" /> </template>
         </nut-searchbar>
+        <div> </div>
       </div>
-      <div class="check_top" v-else-if="isCheckMode">
+      <!-- <div class="check_top" v-if="isCheckMode && category != 1 && selectArr.length">
         <span @click="selectAll">{{ selectArr.length == tableData.length ? 'UnSelect' : 'Select' }} All</span>
         <span class="checked_num">{{ selectArr.length }} items selected</span>
         <span @click="cancelSelect">Cancel</span>
-      </div>
+      </div> -->
     </nut-sticky>
-    <template v-if="category != 1">
+    <ErrorPage v-if="isError" @refresh="refresh"></ErrorPage>
+    <template v-else-if="category != 1">
       <nut-infinite-loading
         v-if="tableData.length"
         load-more-txt="No more content"
-        class="file_list"
+        :class="['file_list', cardMode ? 'card_list' : '']"
         v-model="infinityValue"
         :has-more="!!continuationToken"
         @load-more="loadMore"
       >
-        <nut-tour
-          class="nut-custom-tour nut-customword-tour nut-customstyle-tour"
-          v-model="isFirst"
-          :steps="longPress"
-          type="tile"
-          location="bottom-center"
-          :close-on-click-overlay="false"
-        >
-          <div class="tour-demo-custom-content">
-            <div>Long press on a list file to enable multi-select mode</div>
-            <nut-button class="tour_btn" @click="handleFirst" type="default">OK</nut-button>
+        <nut-checkbox-group v-model="checkedItem" ref="group" :max="30">
+          <div
+            :class="['list_item', checkedItem.indexOf(item.name) > -1 && isCheckMode ? 'row_is_checked' : '']"
+            :id="[index == 0 ? 'list_item_1' : '']"
+            v-for="(item, index) in tableData"
+            :key="index"
+            @click="rowClick(item)"
+          >
+            <div :class="['left_icon_box']">
+              <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
+              <template v-else>
+                <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
+                <img
+                  v-if="item.isDir && item.name.slice(0, item.name.length - 1) == 'pinning'"
+                  class="cloud_pin"
+                  src="@/assets/cloud_pin.png"
+                  alt=""
+                />
+                <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
+                <!-- <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" /> -->
+                <nut-image
+                  v-else-if="item.category != 0 && item.imgUrl"
+                  show-loading
+                  show-error
+                  round
+                  radius="5px"
+                  :src="item.imgUrl"
+                  fit="cover"
+                  position="center"
+                >
+                  <template #loading>
+                    <Loading width="16" height="16"></Loading>
+                  </template>
+                </nut-image>
+                <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
+                <!-- <img v-else-if="(item.category == 1 || item.category == 2) && item.imgUrl" :src="item.imgUrl" alt="" /> -->
+                <nut-image
+                  v-else-if="item.category == 1 && item.originalSize <= 102400"
+                  show-loading
+                  show-error
+                  round
+                  radius="5px"
+                  :src="item.imgUrlLarge"
+                  fit="cover"
+                  position="center"
+                >
+                  <template #loading>
+                    <Loading width="16" height="16"></Loading>
+                  </template>
+                </nut-image>
+                <IconImage1 v-else-if="item.category == 1"></IconImage1>
+                <img v-else :src="getFileType(item.name)" alt="" />
+                <IconPlay class="play_icon" v-if="item.category == 2"></IconPlay>
+              </template>
+            </div>
+            <div class="name_box">
+              <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
+              <p>{{ item.date || '' }}</p>
+            </div>
+            <div @click.stop v-if="(item.isPin || (item.nftInfoList && item.nftInfoList.length > 0)) && !cardMode" class="ipfs_info">
+              <!-- <img class="ipfs_img" @click.stop="copyIPFS('ipfs', item)" src="@/assets/ipfs.png" alt="" />
+              <IconHttp2 @click.stop="copyIPFS('http', item)"></IconHttp2> -->
+              <IconNft v-if="item.nftInfoList && item.nftInfoList.length > 0"></IconNft>
+              <IconIPFS v-if="item.isPin" color="#0095EB"></IconIPFS>
+            </div>
+            <!-- <div @click.stop="showAction(item)" class="right_div">
+            <IconMore v-show="!isCheckMode" class="right_more"></IconMore>
+          </div> -->
+            <div :class="['mask', 'right_radio', isCheckMode ? 'isChecking' : '']" @click.stop>
+              <nut-checkbox v-if="isCheckMode" :label="item.name"></nut-checkbox>
+              <MoreX v-else-if="!cardMode && !isCheckMode" @click="clickFIleItem(item)" width="40px" height="25px" color="#0095EB" />
+            </div>
           </div>
-        </nut-tour>
-        <div
-          :class="['list_item', item.checked ? 'row_is_checked' : '']"
-          :id="[index == 0 ? 'list_item_1' : '']"
-          v-for="(item, index) in tableData"
-          :key="index"
-          @touchstart="touchRow(item, $event)"
-          @touchmove="touchmoveRow(item, $event)"
-          @touchend="touchendRow(item, $event)"
-        >
-          <div :class="['left_icon_box', isCheckMode ? 'left_checkMode' : '', item.checked ? 'is_checked' : '']">
-            <img src="@/assets/svg/home/ok-white.svg" class="ok_icon" v-if="item.checked" alt="" />
-            <template v-else>
-              <!-- <img v-else src="@/assets/svg/home/switch.svg" class="type_icon" alt="" /> -->
-              <img v-if="item.isDir" src="@/assets/svg/home/folder.svg" alt="" />
-              <img v-else-if="item.category == 4" src="@/assets/svg/home/document.svg" alt="" />
-              <img v-else-if="item.category == 3" src="@/assets/svg/home/audio.svg" alt="" />
-              <img v-else-if="item.imgUrl" :src="item.imgUrl" alt="" />
-              <img v-else src="@/assets/svg/home/file.svg" alt="" />
-            </template>
-          </div>
-          <div class="name_box">
-            <p>{{ item.isDir ? item.name.slice(0, item.name.length - 1) : item.name }}</p>
-            <p>{{ item.date || '' }}</p>
-          </div>
-          <IconMore v-show="!isCheckMode" class="right_more" @click.stop="showAction(item)"></IconMore>
-        </div>
+        </nut-checkbox-group>
       </nut-infinite-loading>
       <nut-empty v-else description="No data" image="error">
         <div style="margin-top: 10px"> </div>
@@ -171,299 +228,183 @@
     <ImgList
       ref="imgListRef"
       :orderId="route.query.id"
+      :mintType="mintType"
+      v-model:imgArray="imgArray"
       v-model:isCheckMode="isCheckMode"
       v-model:checkedData="imgCheckedData"
       @cancelSelect="cancelSelect"
       @selectAll="selectAll"
-      @touchRow="touchRow"
-      @touchmoveRow="touchmoveRow"
-      @touchendRow="touchendRow"
+      @rowClick="rowClick"
       v-else
     ></ImgList>
 
     <!-- checkbox action -->
     <Teleport to="body">
       <nut-tabbar
-        v-if="isCheckMode"
+        v-if="isCheckMode && selectArr.length"
         @tab-switch="tabSwitch"
         :class="['bottom_action', selectArr.length ? 'canAction' : '']"
         bottom
         safe-area-inset-bottom
         placeholder
       >
-        <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
-          <template #icon>
-            <IconShare :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconShare>
-            <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
+        <template v-if="isAvailableOrder">
+          <nut-tabbar-item tab-title="Share" :class="[selectArr.length > 1 ? 'is-disable' : '']">
+            <template #icon>
+              <IconShare :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconShare>
+              <!-- <img :src="props.active ? icon.active : icon.unactive" alt="" /> -->
+            </template>
+          </nut-tabbar-item>
+          <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
+            <template #icon="props">
+              <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
+            </template>
+          </nut-tabbar-item>
+          <nut-tabbar-item
+            :tab-title="selectArr[0] && (!selectArr[0].isPin || !selectArr[0].cid) ? 'pin' : 'unpin'"
+            :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']"
+          >
+            <template #icon="props">
+              <IconIPFS :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconIPFS>
+            </template>
+          </nut-tabbar-item>
+          <nut-tabbar-item tab-title="Move" :class="[category == 1 || !isMobileOrder ? 'is-disable' : '']">
+            <template #icon="props">
+              <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
+            </template>
+          </nut-tabbar-item>
+        </template>
+
+        <nut-tabbar-item tab-title="Download" :class="[selectArr.length < 1 || !isMobileOrder ? 'is-disable' : '']">
+          <template #icon="props">
+            <IconDownload :color="selectArr.length >= 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconDownload>
           </template>
         </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Rename" :class="[selectArr.length > 1 || !isMobileOrder ? 'is-disable' : '']">
+        <nut-tabbar-item v-if="isAvailableOrder" tab-title="Delete" :class="[selectArr.length < 1 ? 'is-disable' : 'delete-item']">
           <template #icon="props">
-            <IconRename :color="selectArr.length == 1 || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconRename>
+            <IconDelete :color="selectArr.length ? 'red' : '#ffffff5c'"></IconDelete>
           </template>
         </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Move" :class="[category == 1 || !isMobileOrder ? 'is-disable' : '']">
-          <template #icon="props">
-            <IconMove :color="(selectArr.length && category != 1) || !isMobileOrder ? '#fff' : '#ffffff5c'"></IconMove>
-          </template>
-        </nut-tabbar-item>
-        <nut-tabbar-item tab-title="Download">
-          <template #icon="props">
-            <IconDownload :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDownload>
-          </template>
-        </nut-tabbar-item>
-        <!-- <nut-tabbar-item tab-title="Delete">
-          <template #icon="props">
-            <IconDelete :color="selectArr.length ? '#fff' : '#ffffff5c'"></IconDelete>
-          </template>
-        </nut-tabbar-item> -->
       </nut-tabbar>
     </Teleport>
-
-    <!-- single action -->
+    <ActionComponent
+      ref="actionRef"
+      v-model:fileItemPopupIsShow="fileItemPopupIsShow"
+      v-model:fileItemDetailPopupIsShow="fileItemDetailPopupIsShow"
+      v-model:renameShow="renameShow"
+      v-model:moveShow="moveShow"
+      v-model:detailShow="detailShow"
+      v-model:imgStartIndex="imgStartIndex"
+      v-model:wordVisible="wordVisible"
+      :category="category"
+      :header="header"
+      :prefix="prefix"
+      :isAvailableOrder="isAvailableOrder"
+      :chooseItem="chooseItem"
+      :images="images"
+      :imgUrl="imgUrl"
+      :isMobileOrder="isMobileOrder"
+      :isNewFolder="isNewFolder"
+      :selectArr="selectArr"
+      :bucketName="bucketName"
+      :metadata="metadata"
+      :orderInfo="orderInfo"
+      :isCheckMode="isCheckMode"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      @refresh="refresh"
+      @handlerClick="handlerClick"
+      @swipeChange="swipeChange"
+      @clickFIleItemDetail="clickFIleItemDetail"
+      @clickFIleItem="clickFIleItem"
+    ></ActionComponent>
+    <uploader
+      v-if="isAvailableOrder"
+      :getSummary="getSummary2"
+      :isMobileOrder="isMobileOrder"
+      :bucketName="bucketName"
+      :accessKeyId="accessKeyId"
+      :secretAccessKey="secretAccessKey"
+      :orderInfo="orderInfo"
+      :prefix="prefix"
+      @uploadComplete="uploadComplete"
+    ></uploader>
     <Teleport to="body">
-      <nut-action-sheet class="action_pop" v-if="showActionPop" v-model:visible="showActionPop">
-        <div class="custom-content">
-          <p> <IconFolder></IconFolder> {{ chooseItem.name }}</p>
-          <ul>
-            <li v-if="!chooseItem.isDir && showActionBtn" @click="handlerClick('share')"><IconShare></IconShare> Share</li>
-            <li v-if="!chooseItem.isDir && showActionBtn && chooseItem.category == 1 && isMobileOrder" @click="handlerClick('nft')"
-              ><IconNFT></IconNFT> Cast NFT</li
-            >
-            <li v-if="isMobileOrder" @click="handlerClick('rename')"><IconRename></IconRename> Rename</li>
-            <li v-if="isMobileOrder" @click="handlerClick('move')"><IconMove></IconMove> Move</li>
-            <li @click="handlerClick('download')"><IconDownload></IconDownload>Download</li>
-            <!-- <li @click="handlerClick('delete')"><IconDelete></IconDelete>Delete</li> -->
-          </ul>
-          <div class="cancel_btn" @click="showActionPop = false"> Cancel </div>
-        </div>
-      </nut-action-sheet>
-    </Teleport>
-
-    <!-- rename / newFolder -->
-    <nut-popup
-      teleport-disable
-      v-if="renameShow"
-      @closed="
-        isNewFolder = false;
-        newName = '';
-      "
-      position="bottom"
-      closeable
-      round
-      :style="{ height: '90%' }"
-      v-model:visible="renameShow"
-    >
-      <div class="rename_box">
-        <IconFolder></IconFolder>
-        <p v-if="!isNewFolder"> {{ chooseItem.name ? chooseItem.name.split('/')[0] : '' }}</p>
-        <nut-searchbar v-model="newName" :placeholder="isNewFolder ? 'Please Input Folder Name' : 'Please Input New Name'"></nut-searchbar>
-        <nut-button type="info" block @click="confirmRename">Confirm</nut-button>
-      </div>
-    </nut-popup>
-    <!-- move -->
-
-    <nut-popup teleport-disable v-if="moveShow" position="bottom" closeable round :style="{ height: '600px' }" v-model:visible="moveShow">
-      <div class="rename_box move_box">
-        <IconFolder></IconFolder>
-        <div
-          v-if="movePrefix.length"
-          class="top_back"
-          @click="
-            movePrefix.splice(-1);
-            doSearch('', movePrefix, true);
-          "
-        >
-          <p> {{ movePrefix.length ? movePrefix.slice(-1)[0] : '' }}</p>
-        </div>
-        <nut-infinite-loading
-          load-more-txt="No more content"
-          class="file_list"
-          v-model="infinityValue"
-          :has-more="!!continuationToken2"
-          @load-more="loadMore"
-        >
-          <div @click="toNextLevel(item)" :class="['list_item']" v-for="(item, index) in dirData" :key="index">
-            <div :class="['left_icon_box']">
-              <IconFolder></IconFolder>
-            </div>
-            <div class="name_box">
-              <p>{{ item.name.split('/')[0] }}</p>
-              <!-- <p>{{ item.date || '' }}</p> -->
-            </div>
-          </div>
-        </nut-infinite-loading>
-        <nut-button type="info" block @click="confirmMove">Move to current folder</nut-button>
-      </div>
-    </nut-popup>
-    <!-- share -->
-    <nut-popup
-      teleport-disable
-      v-if="showShareDialog"
-      @closed="
-        isReady = false;
-        shareType = '';
-      "
-      position="bottom"
-      closeable
-      round
-      :style="{ height: '300px' }"
-      v-model:visible="showShareDialog"
-    >
-      <div v-if="isReady" class="rename_box move_box">
-        <nut-cell style="margin-top: 50px" title="Access Period:">
-          <template #link>
-            <span style="display: flex"
-              >{{ desc }} <IconEdit style="margin-left: 5px; color: #abacff" @click="periodShow = true"></IconEdit
-            ></span>
-          </template>
-        </nut-cell>
-        <template v-if="shareType">
-          <p style="text-align: left; color: #666666; margin-bottom: 5px">Descriptions:</p>
-          <nut-textarea rows="3" v-model="imgDesc" />
+      <nut-dialog
+        v-model:visible="showSocketDialog"
+        title="File Update"
+        :close-on-click-overlay="false"
+        :show-cancel="false"
+        :show-confirm="false"
+        custom-class="CustomName BucketName"
+        overlayClass="CustomOverlay"
+      >
+        <template #header>
+          <span class="icon" style="margin-right: 5px">
+            <IconBucket color="#000"></IconBucket>
+            <!-- <img src="@/assets/bucketInfo.svg" alt="" srcset="" class="fileUpdateIcon" /> -->
+          </span>
+          File update Tips
         </template>
-        <nut-popup position="bottom" v-model:visible="periodShow">
-          <nut-picker
-            v-model="periodValue"
-            :columns="options"
-            title="Select expiration time"
-            @confirm="confirmPeriod"
-            @cancel="periodShow = false"
-          >
-          </nut-picker>
-        </nut-popup>
-        <nut-button type="info" block @click="() => confirmHttpShare(shareType, shareCheckData, accessKeyId, secretAccessKey, bucketName)"
-          >Confirm</nut-button
-        >
-      </div>
-      <div class="share_info_box" v-else>
-        <div v-if="shareRefContent.ipfsStr && isMobileOrder">
-          <img @click="confirmShare" src="@/assets/ipfs.png" alt="" />
-          IPFS Link
-          <!-- <IconCopy @click="copyLink(shareRefContent.ipfsStr)"></IconCopy> -->
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconHttp
-            @click="
-              shareType = '';
-              isReady = true;
-            "
-          ></IconHttp>
-          HTTP Link
-          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconTwitter
-            @click="
-              shareType = 'twitter';
-              isReady = true;
-            "
-          ></IconTwitter>
-          Twitter
-          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconFacebook
-            @click="
-              shareType = 'faceBook';
-              isReady = true;
-            "
-          ></IconFacebook>
-          Facebook
-          <!-- <IconCopy @click="copyLink(shareRefContent.httpStr)"></IconCopy> -->
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconSlack
-            @click="
-              shareType = 'slack';
-              isReady = true;
-            "
-          ></IconSlack>
-          Slack
-        </div>
-        <div v-if="shareRefContent.httpStr">
-          <IconPinterest
-            @click="
-              shareType = 'pinterest';
-              isReady = true;
-            "
-          ></IconPinterest>
-          Pinterest
-        </div>
-      </div>
-    </nut-popup>
-    <Teleport to="body">
-      <nut-overlay v-if="detailShow" overlay-class="detail_over" v-model:visible="detailShow" :close-on-click-overlay="false">
-        <IconArrowLeft @click="detailShow = false" class="detail_back" color="#fff"></IconArrowLeft>
-        <HLSVideo v-if="chooseItem.type.split('/')[1] == 'mp4'" :imgUrl="imgUrl"></HLSVideo>
-        <pre v-else-if="chooseItem.detailType == 'txt'" id="txtContainer"></pre>
-        <div v-else-if="imgUrl" class="middle_img">
-          <!-- v-if="chooseItem.type.split('/')[0] == 'video'" -->
-          <nut-image :src="imgUrl" fit="contain" position="center" show-loading>
-            <template #loading>
-              <Loading width="16px" height="16px" name="loading" />
-            </template>
-          </nut-image>
-        </div>
-        <div class="bottom_action">
-          <div>
-            <IconShare @click="handlerClick('share')"></IconShare>
-            <p>Share</p>
-          </div>
-          <div>
-            <IconDownload @click="handlerClick('download')"></IconDownload>
-            <p>Download</p>
-          </div>
-        </div>
-      </nut-overlay>
+
+        <p class="bucket_tip" style="text-align: left; word-break: break-word"
+          >We found that you updated the files in the current directory elsewhere. Do you want to update them simultaneously?.
+        </p>
+        <template #footer>
+          <!-- <nut-button type="primary" style="font-size: 12px" @click="closeSocketDialog">Operate Later</nut-button> -->
+          <nut-button type="primary" @click="closeSocketDialog">Confirm</nut-button>
+        </template>
+      </nut-dialog>
     </Teleport>
   </div>
-  <uploader
-    v-if="isMobileOrder"
-    :bucketName="bucketName"
-    :accessKeyId="accessKeyId"
-    :secretAccessKey="secretAccessKey"
-    :orderInfo="orderInfo"
-    :prefix="prefix"
-    @uploadComplete="uploadComplete"
-  ></uploader>
 </template>
 
 <script setup lang="ts">
-  import IconNFT from '~icons/material-symbols/cast';
+  import ActionComponent from './actionComponent.vue';
+  import IconListType from '~icons/home/listType.svg';
+  import IconCardType from '~icons/home/cardType.svg';
+  import IconCopy from '~icons/home/copy.svg';
+  import IconBucket from '~icons/home/bucket.svg';
+  import IconPlay from '~icons/home/play.svg';
+  import IconHttp2 from '~icons/home/http2.svg';
+  // import IconIPFS from '~icons/home/ipfs.svg';
+  import IconIPFS from '~icons/ant-design/pushpin-outlined.svg';
+  import ErrorPage from '@/views/errorPage/index.vue';
+  import FlashLight from '~icons/ri/flashlight-fill';
+  import IconEdit from '~icons/iconamoon/edit-fill.svg';
+  import IconNft from '~icons/home/nft.svg';
   import IconPinterest from '~icons/logos/pinterest.svg';
   import IconSlack from '~icons/home/slack.svg';
+  import IconDelete from '~icons/home/delete.svg';
   import IconTwitter from '~icons/home/twitter.svg';
-  import IconFile from '~icons/bxs/file.svg';
   import IconFacebook from '~icons/devicon/facebook.svg';
-  import IconNewFolder from '~icons/home/new_folder.svg';
+  //   import IconNewFolder from '~icons/home/new_folder.svg';
+  import IconNewFolder from '~icons/home/new_folder1.svg';
   import IconAllCate from '~icons/home/all-cate.svg';
   import IconAudio2 from '~icons/home/audio2.svg';
   import IconImage from '~icons/home/image.svg';
+  import IconImage1 from '~icons/home/mimage.svg';
   import IconDocument from '~icons/home/document.svg';
+  import IconFile from '~icons/home/file.svg';
   import IconVideo from '~icons/home/video.svg';
-  import IconOk from '~icons/home/ok.svg';
   import IconFolder from '~icons/home/folder.svg';
   import IconShare from '~icons/home/share.svg';
   import IconRename from '~icons/home/rename.svg';
   import IconMove from '~icons/home/move.svg';
   import IconDownload from '~icons/home/download.svg';
-  import IconDelete from '~icons/home/delete.svg';
-  import IconSwitch from '~icons/home/switch.svg';
   import IconMore from '~icons/home/more.svg';
   import IconArrowLeft from '~icons/home/arrow-left.svg';
-  import IconCopy from '~icons/home/copy.svg';
   import IconHttp from '~icons/home/http.svg';
-  import { reactive, toRefs, watch, onMounted } from 'vue';
+  import { reactive, toRefs, watch, onMounted, onUnmounted, onBeforeUnmount } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
-  import { Search2, TriangleUp, Loading } from '@nutui/icons-vue';
+  import { Search2, TriangleUp, Loading, MoreX, Tips } from '@nutui/icons-vue';
   import { showDialog, showToast } from '@nutui/nutui';
-  import { transferUTCTime, getfilesize } from '@/utils/util';
+  import { transferUTCTime, getfilesize, transferGMTTime } from '@/utils/util';
   import ImgList from './imgList.vue';
-  import { rename_objects } from '@/api';
   import useDelete from './useDelete.js';
   import useShare from './useShare.js';
   import HLSVideo from './hlsVideo.vue';
+  import MyAudio from './myAudio.vue';
   // import { ProxListObjectsRequest, ProxListObjectsReq, ProxHeader } from '@/pb/prox_pb.js';
   // import Prox from '@/pb/prox_pb.ts';
   import * as Prox from '@/pb/prox_pb.js';
@@ -472,11 +413,14 @@
   import '@nutui/nutui/dist/packages/dialog/style';
   import '@nutui/nutui/dist/packages/toast/style';
   import loadingImg from '@/components/loadingImg/index.vue';
-
+  import moment from 'moment';
   import { HmacSHA1, enc } from 'crypto-js';
   import uploader from './uploader.vue';
+  import { poolUrl } from '@/setting.js';
+  import { get_order_sign, dm_order_get_token } from '@/api/index';
+  import { browserUrl } from '@/setting';
 
-  // import { download_url } from '@/api/index';
+  import getFileType from '@/utils/getFileType.ts';
 
   // const accessKeyId = ref<string>('');
   // const secretAccessKey = ref<string>('');
@@ -485,14 +429,27 @@
   let server = null;
   const route = useRoute();
   const router = useRouter();
+  const mintType = ref(route.query.mintType || '0'); //0 not mint,1 nft mint,2 inscript
   const state = reactive({
+    cardMode: false,
+    actionRef: '',
+    imgPreRef: '',
+    swipe: '',
+    imgArray: [],
+    imgStartIndex: 0,
     category: 0,
     keyWord: '',
     infinityValue: false,
     hasMore: false,
     showActionPop: false,
     tableData: [],
-    chooseItem: { name: '' },
+    chooseItem: {
+      imageInfo: {
+        camerainfo: {},
+        gps: {},
+        resolution: {},
+      },
+    },
     isCheckMode: false,
     renameShow: false,
     newName: '',
@@ -508,6 +465,7 @@
     continuationToken2: '',
     dirData: [],
     isNewFolder: false,
+    checkedItem: [],
     longPress: [
       {
         content: 'Long press on a list file to enable multi-select mode',
@@ -515,18 +473,36 @@
       },
     ],
     isFirst: false,
+    wordVisible: false,
   });
   const imgListRef = ref('');
   const isMobileOrder = computed(() => {
     if (orderInfo.value.electronic_type == '0') {
       return true;
     } else {
-      return false;
+      return true;
     }
+  });
+  const isMobileDevice = computed(() => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    // 此正则表达式涵盖了大多数使用的手机和平板设备
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
   });
   provide('isMobileOrder', isMobileOrder);
 
+  const fileSocket = ref('');
+  const socketDate = ref('');
+  const socketToken = ref('');
+  const currentFolder = ref('');
+  const showSocketDialog = ref(false);
+
   const {
+    actionRef,
+    imgPreRef,
+    swipe,
+    imgArray,
+    imgStartIndex,
     tableLoading,
     showTypeCheckPop,
     newName,
@@ -551,9 +527,31 @@
     isNewFolder,
     longPress,
     isFirst,
+    checkedItem,
+    wordVisible,
+    cardMode,
   } = toRefs(state);
-  const { bucketName, header, metadata, deviceType, orderInfo, accessKeyId, secretAccessKey, getOrderInfo } = useOrderInfo();
+
   const {
+    // isAvailableOrder,
+    isError,
+    getSummary2,
+    bucketName,
+    header,
+    metadata,
+    deviceType,
+    orderInfo,
+    accessKeyId,
+    secretAccessKey,
+    getOrderInfo,
+    getOrderInfo2,
+  } = useOrderInfo();
+  const isAvailableOrder = ref(true);
+
+  provide('getSummary', getSummary2);
+  const {
+    httpCopyLink,
+    copyLink,
     shareType,
     isReady,
     confirmShare,
@@ -571,9 +569,29 @@
     copyContent,
     confirmHttpShare,
     getHttpShare,
-  } = useShare(orderInfo, header, deviceType);
+    cloudPin,
+    copyIPFS,
+    copyNft,
+  } = useShare(orderInfo, header, deviceType, metadata);
   const shareCheckData = computed(() => {
-    return isCheckMode.value ? selectArr.value[0] : chooseItem.value;
+    let checkData = [];
+    if (detailShow.value) {
+      checkData = [chooseItem.value];
+    } else {
+      if (isCheckMode.value) {
+        checkData = selectArr.value;
+      } else {
+        checkData = [chooseItem.value];
+      }
+    }
+    return checkData;
+  });
+  const images = computed(() => {
+    let arr = [];
+    imgArray.value.filter((el) => {
+      arr.push(el.src);
+    });
+    return arr;
   });
   const showActionBtn = computed(() => {
     if (orderInfo.value.device_type == 'space' || orderInfo.value.device_type === 3) {
@@ -592,17 +610,29 @@
   const { deleteItem } = useDelete(
     tableLoading,
     () => {
-      doSearch('', prefix.value, true);
+      checkedItem.value = [];
+      // doSearch('', prefix, true);
     },
     orderInfo,
     header,
+    metadata,
   );
 
   const selectArr = computed(() => {
     if (category.value == 1) {
       return imgCheckedData.value;
     } else {
-      return tableData.value.filter((el) => el.checked);
+      if (detailShow.value) {
+        return [chooseItem.value];
+      } else {
+        if (isCheckMode.value) {
+          return tableData.value.filter((el) => {
+            return checkedItem.value.indexOf(el.name) > -1;
+          });
+        } else {
+          return [chooseItem.value];
+        }
+      }
     }
   });
 
@@ -613,80 +643,73 @@
       doSearch(continuationToken.value, prefix.value, false);
     }
   };
-  const touchRow = (row: any, event: any) => {
-    timeOutEvent = setTimeout(function () {
-      timeOutEvent = 0;
-      if (isMobileOrder.value) {
-        isCheckMode.value = true;
-      }
-    }, 1000);
-  };
-
-  const touchmoveRow = (row: any, event: any) => {
-    clearTimeout(timeOutEvent);
-    timeOutEvent = 0;
-  };
 
   const imgUrl = ref('');
-  const touchendRow = (row: { checked: boolean; isDir: any; name: string; imgUrl: string }, event: { target: { nodeName: string } }) => {
-    clearTimeout(timeOutEvent);
-    if (event?.target?.nodeName == 'svg' || event?.target?.nodeName == 'path') {
-      showAction(row);
-      return false;
-    }
-    if (timeOutEvent != 0) {
-      if (isCheckMode.value) {
-        // select
-        row.checked = !row.checked;
-      } else {
-        if (row.isDir) {
-          keyWord.value = '';
-          let long_name = prefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
-          prefix.value = long_name.split('/').slice(0, -1);
-          prefixChange();
-        } else {
-          chooseItem.value = row;
-          console.log(chooseItem.value, 'chooseItem.value');
-          const type = row.name.substring(row.name.lastIndexOf('.') + 1);
 
-          if (type == 'pdf') {
-            // window.open(row.imgUrlLarge);
-            console.log(row.imgUrlLarge);
-
-            router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
-          } else if (type == 'txt') {
-            chooseItem.value.detailType = 'txt';
-            detailShow.value = true;
-            fetch(row.imgUrlLarge)
-              .then((response) => response.text())
-              .then((text) => {
-                document.getElementById('txtContainer').textContent = text;
-              });
-          } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
-            chooseItem.value.detailType = 'word';
-            window.open('https://docs.google.com/viewer?url=' + encodeURIComponent(row.imgUrlLarge));
-            imgUrl.value = row.imgUrlLarge;
-            // detailShow.value = true;
-          } else if (row.imgUrlLarge) {
-            imgUrl.value = row.imgUrlLarge;
-            detailShow.value = true;
-          }
-        }
-      }
-    }
-    return false;
-  };
   const cancelSelect = () => {
-    isCheckMode.value = false;
-    tableData.value.forEach((el) => {
-      el.checked = false;
-    });
+    // isCheckMode.value = false;
+
+    checkedItem.value = [];
   };
   const selectAll = () => {
     const isAll = selectArr.value.length == tableData.value.length;
     tableData.value.forEach((el) => {
       el.checked = !isAll;
     });
+  };
+  const rowClick = (row) => {
+    if (row.isDir) {
+      checkedItem.value = [];
+      keyWord.value = '';
+      let long_name = prefix.value.length ? prefix.value?.join('/') + '/' + row.name : row.name;
+      prefix.value = long_name.split('/').slice(0, -1);
+      prefixChange();
+    } else {
+      chooseItem.value = row;
+      //   console.log(chooseItem.value, 'chooseItem.value');
+      const type = row.name.substring(row.name.lastIndexOf('.') + 1);
+
+      if (type == 'pdf') {
+        // window.open(row.imgUrlLarge);
+        console.log(row.imgUrlLarge);
+        wordVisible.value = true;
+        // router.push({ name: 'filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'pdf' } });
+      } else if (type == 'txt') {
+        chooseItem.value.detailType = 'txt';
+        detailShow.value = true;
+      } else if (['xls', 'xlsx', 'csv'].includes(type)) {
+        wordVisible.value = true;
+        // router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'excel' } });
+      } else if (['doc', 'docx'].includes(type)) {
+        wordVisible.value = true;
+        // router.push({ path: '/filePreview', query: { fileSrc: decodeURIComponent(row.imgUrlLarge), fileType: 'docx' } });
+        // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+        // window.open("https://view.xdocin.com/view?src=" + encodeURIComponent(row.imgUrlLarge) );
+        console.log(row.imgUrlLarge);
+      } else if (['ppt', 'pptx'].includes(type)) {
+        // curSelectSrc.value = row.imgUrlLarge;
+        // curSelectType.value = 'ppt';
+        // // window.open('https://docs.google.com/viewer?url=' +  encodeURIComponent(row.imgUrlLarge));
+        // window.open('https://view.xdocin.com/view?src=' + encodeURIComponent(row.imgUrlLarge));
+        // // window.open("https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(row.imgUrlLarge) );
+        // console.log(row.imgUrlLarge);
+      } else if (row.imgUrlLarge) {
+        imgUrl.value = row.imgUrlLarge;
+
+        // let index = imgArray.value.findIndex((el) => el.name == row.name);
+        imgStartIndex.value = imgArray.value.findIndex((el) => el.name == row.name);
+        detailShow.value = true;
+        nextTick(() => {
+          console.log(imgStartIndex.value, 'imgStartIndex.value');
+
+          if (imgPreRef.value) {
+            imgPreRef.value.swipeTo(imgStartIndex.value);
+            console.log(imgPreRef.value.startPosition, 'startPosition.value');
+            console.log(imgPreRef.value, 'imgPreRef.value');
+          }
+        });
+      }
+    }
   };
   const showAction = (item: { name: string }) => {
     if (timeOutEvent !== 0) {
@@ -702,8 +725,17 @@
   };
   //move
   const confirmMove = () => {
-    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
-    const targetObject = (val) => {
+    let checkData = [];
+    if (detailShow.value) {
+      checkData = [chooseItem.value];
+    } else {
+      if (isCheckMode.value) {
+        checkData = selectArr.value;
+      } else {
+        checkData = [chooseItem.value];
+      }
+    }
+    const targetObject = (val: { name: string }) => {
       if (movePrefix.value.length) {
         return movePrefix.value.join('/') + '/' + val.name;
       } else {
@@ -712,7 +744,10 @@
     };
     let index = 0;
     const length = checkData.length - 1;
-    const rename = function (resolve, reject) {
+    const rename = function (
+      resolve: { (value: unknown): void; (arg0: boolean): void },
+      reject: { (reason?: any): void; (arg0: boolean): void },
+    ) {
       if (targetObject(checkData[index]).length > 1024) {
         showToast.warn('The file path cannot exceed a maximum of 1024 characters, operation failed');
         if (index === length) {
@@ -725,20 +760,22 @@
       }
       // let ip = orderInfo.value.rpc.split(':')[0];
       // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-      let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+      let ip = `https://${bucketName.value}.${poolUrl}:7007`;
       server = new grpcService.default.ServiceClient(ip, null, null);
       let ProxRenameObject = new Prox.default.ProxRenameObject();
-      ProxRenameObject.setHeader(header);
-      ProxRenameObject.setSourceobject(checkData[index].fullName);
-      ProxRenameObject.setTargetobject(targetObject(checkData[index]));
+      ProxRenameObject.setHeader(header.value);
+      ProxRenameObject.setSourceobject(encodeURIComponent(checkData[index].fullName));
+      ProxRenameObject.setTargetobject(encodeURIComponent(targetObject(checkData[index])));
       ProxRenameObject.setFiletype(checkData[index].fileType);
+      console.log(ProxRenameObject, 'ProxRenameObject');
 
-      server.renameObjects(ProxRenameObject, {}, (err, data) => {
+      server.renameObjects(ProxRenameObject, {}, (err: { message: any }, data: any) => {
         if (data) {
           if (index === length) {
             showToast.success('Move successful');
             moveShow.value = false;
             movePrefix.value = [];
+            cancelSelect();
             doSearch('', prefix.value, true);
             resolve(true);
           } else {
@@ -759,6 +796,21 @@
     });
     // moveShow.value = false;
   };
+  const getOriginName = (name: string) => {
+    let arr = name.split('.');
+    if (arr.length > 1) {
+      arr.pop();
+    }
+    return arr.join('.');
+  };
+  const getEndName = (name: string) => {
+    let arr = name.split('.');
+    if (arr.length > 1) {
+      return '.' + arr[arr.length - 1];
+    } else {
+      return '';
+    }
+  };
   //rename
   const confirmRename = () => {
     if (!newName.value) {
@@ -771,16 +823,27 @@
 
       return false;
     }
-    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
+    // const checkData = !detailShow.value ? selectArr.value : [chooseItem.value];
+    let checkData = [];
+    if (detailShow.value) {
+      checkData = [chooseItem.value];
+    } else {
+      if (isCheckMode.value) {
+        checkData = selectArr.value;
+      } else {
+        checkData = [chooseItem.value];
+      }
+    }
 
     const targetObject = () => {
       if (isNewFolder.value) {
         if (prefix.value.length) {
-          return prefix.value.join('/') + '/' + newName.value + '/';
+          return encodeURIComponent(prefix.value.join('/') + '/' + newName.value) + '/';
         } else {
-          return newName.value + '/';
+          return encodeURIComponent(newName.value) + '/';
         }
       } else {
+        const endName = getEndName(checkData[0].name);
         const arr = checkData?.[0]?.fullName.split('/');
         if (checkData[0]?.type == 'application/x-directory') {
           if (newName.value[newName.value.length - 1] == '/') {
@@ -790,7 +853,7 @@
             arr.splice(arr.length - 2, 1, newName.value);
           }
         } else {
-          arr.splice(arr.length - 1, 1, newName.value);
+          arr.splice(arr.length - 1, 1, newName.value + endName);
         }
         return arr.join('/');
       }
@@ -801,16 +864,18 @@
     }
     // let ip = orderInfo.value.rpc.split(':')[0];
     // server = new grpcService.default.ServiceClient(`http://${ip}:7007`);
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     if (isNewFolder.value) {
       let ProxFileInfo = new Prox.default.ProxFileInfo();
-      ProxFileInfo.setHeader(header);
+      ProxFileInfo.setHeader(header.value);
       ProxFileInfo.setKey(targetObject());
       ProxFileInfo.setContenttype('application/x-directory');
       ProxFileInfo.setSize(0);
-      server.touchFile(ProxFileInfo, {}, (err, data) => {
+      console.log(ProxFileInfo, 'ProxFileInfo');
+
+      server.touchFile(ProxFileInfo, metadata.value, (err: { message: any }, data: any) => {
         if (data) {
           showToast.success('Create successful');
           renameShow.value = false;
@@ -823,16 +888,19 @@
       });
     } else {
       let ProxRenameObject = new Prox.default.ProxRenameObject();
-      ProxRenameObject.setHeader(header);
-      ProxRenameObject.setSourceobject(checkData[0].fullName);
+      ProxRenameObject.setHeader(header.value);
+      ProxRenameObject.setSourceobject(encodeURIComponent(checkData[0].fullName));
       ProxRenameObject.setTargetobject(targetObject());
       ProxRenameObject.setFiletype(checkData[0].fileType);
+      console.log(ProxRenameObject, 'ProxRenameObject');
 
-      server.renameObjects(ProxRenameObject, {}, (err, data) => {
+      server.renameObjects(ProxRenameObject, metadata.value, (err: { message: any }, data: any) => {
         if (data) {
           showToast.success('Rename successful');
           renameShow.value = false;
           newName.value = '';
+          cancelSelect();
+
           doSearch('', prefix.value, true);
         } else {
           console.log(err, 'err');
@@ -849,15 +917,28 @@
     movePrefix.value = long_name.split('/').slice(0, -1);
     getFileList('', movePrefix.value, true);
   };
+  const $cordovaPlugins = inject('$cordovaPlugins');
 
   const handlerClick = async (type: string) => {
     showActionPop.value = false;
-    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
+    fileItemPopupIsShow.value = false;
+    let checkData = [];
+    if (detailShow.value) {
+      checkData = [chooseItem.value];
+    } else {
+      if (isCheckMode.value) {
+        checkData = selectArr.value;
+      } else {
+        checkData = [chooseItem.value];
+      }
+    }
+    // const checkData = !detailShow.value || isCheckMode ? selectArr.value : [chooseItem.value];
+    console.log(checkData);
     if (type === 'move') {
       // if (category.value == 1) return false;
       movePrefix.value = [];
       moveShow.value = true;
-      doSearch('', movePrefix.value, true);
+      // doSearch('', movePrefix.value, true);
     } else if (type === 'download') {
       //   downLoad();
 
@@ -866,43 +947,128 @@
 
       const headers = getSignHeaders(objectKey);
 
-      const url = `https://${bucketName.value}.devus.u2i.net:6008/o/${objectKey}`;
+      const url = `https://${bucketName.value}.${poolUrl}:6008/o/${objectKey}`;
+      if (import.meta.env.VITE_BUILD_TYPE == 'ANDROID') {
+        if (checkData.length > 1) return false;
 
-      fetch(url, { method: 'GET', headers })
-        .then((response) => {
-          if (response.ok) {
-            // 创建一个 Blob 对象，并将响应数据写入其中
-            return response.blob();
-          } else {
-            // 处理错误响应
-            console.error('Error:', response.status, response.statusText);
+        $cordovaPlugins.downloadFileHH(url, checkData[0].fullName, headers);
+      } else {
+        showToast.text('The download is in progress, please wait patiently');
+        // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+        let ip = `https://${bucketName.value}.${route.query.pool_name}:7007`;
+        server = new grpcService.default.ServiceClient(ip, null, null);
+        let range = new Prox.default.ProxRangeRequest();
+        let request = null;
+        let stream;
+        let downloadName;
+        if (checkData.length == 1 && !checkData[0].isDir) {
+          request = new Prox.default.ProxGetRequest();
+          request.setHeader(header.value);
+          request.setRange(range);
+          request.setCid(checkData[0].cid);
+          request.setKey(encodeURIComponent(checkData[0].key));
+          request.setThumb(false);
+          console.log(request, 'request');
+          downloadName = checkData[0].name;
+          stream = server.getObject(request, metadata.value);
+        } else {
+          downloadName = 'download.zip';
+          let infoList = [];
+
+          for (const item of checkData) {
+            let objs = new Prox.default.ProxGetInfo();
+            objs.setCid(item.cid);
+            objs.setKey(item.key);
+            infoList.push(objs);
           }
-        })
-        .then((blob) => {
-          // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = checkData[0].fullName;
+          request = new Prox.default.ProxGetRequests();
+          request.setHeader(header.value);
+          request.setRange(range);
+          request.setObjsList(infoList);
+          let prefixes = [];
+          let data = [];
 
-          // 将 <a> 元素添加到文档中，并模拟点击
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        })
-        .catch((error) => {
-          // 处理网络错误
-          console.error('Network Error:', error);
+          checkData.forEach((el) => {
+            if (el.cid && !el.isDir) {
+              data.push({
+                cid: el.cid,
+                key: encodeURIComponent(el.fullName),
+              });
+            } else {
+              // prefixes.push(encodeURIComponent(el.fullName));
+              prefixes.push(el.fullName.replace('/', ''));
+            }
+          });
+          request.setPrefixesList(JSON.parse(JSON.stringify(prefixes)));
+          stream = server.getObjects(request, metadata.value);
+        }
+        let chunks = [];
+        stream.on('data', (response) => {
+          console.log(response, 'response');
+
+          chunks.push(response.getChunk_asU8()); // 收集数据块
         });
+
+        stream.on('status', (status) => {
+          console.log('Stream status:', status);
+        });
+
+        stream.on('end', (end) => {
+          let blob = new Blob(chunks, { type: 'application/octet-stream' }); // 创建 Blob 对象
+          let url = URL.createObjectURL(blob); // 为 Blob 创建 URL
+
+          // 创建隐藏的下载链接并触发点击
+          let a = document.createElement('a');
+          a.href = url;
+          a.download = downloadName; // 指定下载文件的名称
+          document.body.appendChild(a); // 将链接添加到文档中
+          a.click(); // 模拟点击进行下载
+          // 清理
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url); // 释放 Blob 对象的 URL
+          console.log('Stream end!', end);
+        });
+
+        stream.on('error', (error) => {
+          console.log('error----------upload', error);
+        });
+      }
+      // fetch(url, { method: 'GET', headers })
+      //   .then((response) => {
+      //     if (response.ok) {
+      //       // 创建一个 Blob 对象，并将响应数据写入其中
+      //       return response.blob();
+      //     } else {
+      //       // 处理错误响应
+      //       console.error('Error:', response.status, response.statusText);
+      //     }
+      //   })
+      //   .then((blob) => {
+      //     // 创建一个 <a> 元素，并设置其 href 属性为 Blob URL
+      //     const a = document.createElement('a');
+      //     a.href = URL.createObjectURL(blob);
+      //     a.download = checkData[0].fullName;
+
+      //     // 将 <a> 元素添加到文档中，并模拟点击
+      //     document.body.appendChild(a);
+      //     a.click();
+      //     document.body.removeChild(a);
+      //   })
+      //   .catch((error) => {
+      //     // 处理网络错误
+      //     console.error('Network Error:', error);
+      //   });
     } else if (type === 'delete') {
       const onOk = async () => {
         deleteItem(checkData);
+        fileItemPopupIsShow.value = false;
       };
       showDialog({
         title: 'Warning',
         content: 'Are you sure you want to delete?',
         cancelText: 'Cancel',
         okText: 'Confirm',
-        popClass: 'dialog_class',
+        popClass: 'dialog_class_delete',
         onOk,
       });
     } else if (type === 'rename') {
@@ -912,7 +1078,8 @@
     } else if (type === 'newFolder') {
     } else if (type === 'share') {
       if (checkData.length > 1) return false;
-      await doShare(checkData[0]);
+      actionRef.value.handlerClick('share');
+      // await doShare(checkData[0]);
       // cancelSelect();
       // proxy.$notify({
       //   customClass: "notify-success",
@@ -921,18 +1088,48 @@
       // });
     } else if (type == 'nft') {
       if (checkData.length > 1) return false;
-      await createNFT(checkData[0], accessKeyId.value, secretAccessKey.value, bucketName.value);
-    } else if (type === 'ipfs') {
-    } else if (type === 'unipfs') {
-      // ipfsPin(checkedData.value[0], "ipfs", "unpin");
+      createNFT(checkData[0], accessKeyId.value, secretAccessKey.value, bucketName.value);
+    } else if (type === 'pin') {
+      const onOk = async () => {
+        await cloudPin(checkData[0], 'ipfs');
+        // doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS PIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        onOk,
+      });
+    } else if (type === 'un pin') {
+      const onOk = async () => {
+        const d = await cloudPin(checkData[0], 'ipfs', 'unpin');
+        if (d) {
+          tableData.value.map((el: { cid: any }) => {
+            if (el.cid && el.cid == checkData[0].cid) {
+              el.isPin = false;
+            }
+          });
+        }
+        // doSearch('', prefix.value, true);
+      };
+      showDialog({
+        title: 'Warning',
+        content: 'Are you sure you want to execute IPFS UNPIN?',
+        cancelText: 'Cancel',
+        okText: 'Confirm',
+        popClass: 'dialog_class_delete',
+
+        onOk,
+      });
     }
   };
   const fileTypeText = {
     0: 'All File List',
-    1: 'Image',
-    2: 'Video',
+    1: 'Images',
+    2: 'Videos',
     3: 'Audio',
-    4: 'Document',
+    4: 'Documents',
   };
   const switchType = (type: number) => {
     category.value = type;
@@ -940,36 +1137,45 @@
     showTypeCheckPop.value = false;
   };
 
-  const uploadComplete = () => {
+  const uploadComplete = (file: any) => {
     console.log('uploadComplete');
-    getFileList('', prefix.value, true);
+    // getFileList('', prefix.value, true);
   };
 
   function getFileList(scroll: string, prefix: any[], reset = false) {
+    console.log(prefix, prefix.value, 'aaaaaa---dd-d-dlist');
     showToast.loading('Loading', {
+      //   cover: true,
+      //   customClass: 'app_loading',
+      //   icon: loadingImg,
+      //   loadingRotate: false,
+      //   id: 'file_list',
+      //   coverColor: 'rgba(0,0,0,0.45)',
+      id: 'file_list',
       cover: true,
+      coverColor: 'rgba(0,0,0,0.45)',
       customClass: 'app_loading',
       icon: loadingImg,
       loadingRotate: false,
-      id: 'file_list',
     });
     let list_prefix = '';
     if (prefix?.length) {
       list_prefix = prefix.join('/');
       if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
-        list_prefix = list_prefix + '/';
+        list_prefix = encodeURIComponent(list_prefix) + '/';
       }
     }
     // let ip = orderInfo.value.rpc.split(':')[0];
     // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+    let ip = `https://${bucketName.value}.${route.query.pool_name}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix(list_prefix);
-    let delimiter;
-    let categoryParam;
+    let delimiter: string;
+    let categoryParam: string | number;
     if (moveShow.value) {
       delimiter = '/';
       categoryParam = '0';
@@ -990,8 +1196,9 @@
     listObject.setCategory(categoryParam);
     listObject.setDate('');
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
-    console.log('list-object--header', header, metadata.value);
+    requestReq.setHeader(header.value);
+    // console.log('list-object--header', header, metadata.value);
+    // console.log('listObjectlistObject', listObject);
     requestReq.setRequest(listObject);
     server.listObjects(
       requestReq,
@@ -1032,7 +1239,30 @@
                   getIspersistent: () => any;
                   getCategory: () => any;
                   getTags: () => any;
+                  getImages: () => any;
+                  getNftinfosList: () => any;
+                  getThumb: () => any;
                 }) => {
+                  const imageObj = el.getImages().toObject();
+                  const imageInfo = {};
+                  let isShowDetail = false;
+                  console.log('imageObj-----', imageObj);
+                  if (imageObj.camerainfo?.make || imageObj.addition?.aperture) {
+                    isShowDetail = true;
+                    imageInfo.aperture = imageObj.addition.aperture; //光圈
+                    imageInfo.datetime = moment(imageObj.addition?.datetime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+                    imageInfo.exposuretime = imageObj.addition.exposuretime; //ev曝光量
+                    imageInfo.exptime = imageObj.addition.exptime; //曝光时间
+                    imageInfo.orientation = imageObj.addition.orientation; //方向
+                    imageInfo.focallength = imageObj.addition.focallength; //焦距
+                    imageInfo.Flash = imageObj.addition.Flash || false; //是否使用闪光灯
+                    imageInfo.software = imageObj.addition.software; // 使用软件
+                    imageInfo.iso = imageObj.addition.iso.charCodeAt(0);
+                    imageInfo.camerainfo = imageObj.camerainfo; //手机厂商及其机型
+                    imageInfo.gps = imageObj.gps; //经纬度
+                    imageInfo.resolution = imageObj.resolution; //像素
+                  }
+                  console.log('nftInfoList-----', el.getNftinfosList());
                   return {
                     key: el.getKey(),
                     etag: el.getEtag(),
@@ -1049,6 +1279,10 @@
                     isPersistent: el.getIspersistent(),
                     category: el.getCategory(),
                     tags: el.getTags(),
+                    imageInfo: imageInfo,
+                    isShowDetail,
+                    nftInfoList: el.getNftinfosList(),
+                    thumb: el.getThumb(),
                   };
                 },
               ),
@@ -1060,10 +1294,12 @@
             prefixpins: res.getPrefixpinsList(),
           };
           console.log(transferData, 'transferData,transferData');
-
+          console.log(res, 'res,res');
+          isError.value = false;
           initRemoteData(transferData, reset, category.value);
         } else if (err) {
           showToast.hide('file_list');
+          isError.value = true;
           console.log('err----', err);
         }
       },
@@ -1082,17 +1318,38 @@
     let port = orderInfo.value.rpc?.split(':')[1];
     let Id = orderInfo.value.foggie_id;
     let peerId = orderInfo.value.peer_id;
-    if (type === 'png' || type === 'bmp' || type === 'gif' || type === 'jpeg' || type === 'jpg' || type === 'svg') {
-      type = 'img';
-      console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
+    // console.log(bucketName.value, 'bucketName');
+
+    if (
+      type === 'png' ||
+      type === 'bmp' ||
+      type === 'gif' ||
+      type === 'jpeg' ||
+      type === 'jpg' ||
+      type === 'svg' ||
+      type === 'ico' ||
+      type === 'webp'
+    ) {
+      //   console.log('----------img', accessKeyId.value, accessKeyId.value, bucketName.value, item.key);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
-      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLink = getHttpShare(
+        accessKeyId.value,
+        secretAccessKey.value,
+        bucketName.value,
+        item.key,
+        type === 'ico' || type === 'svg' ? false : true,
+      );
       // console.log('--------imgHttpLarge', imgHttpLarge);
-    } else if (type === 'mp4' || type == 'ogg' || type == 'webm') {
+    } else if (type === 'mp3') {
+      type = 'audio';
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
+      imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
+    } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
       type = 'video';
       imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key) + '&inline=true';
-    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(type)) {
+    } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
+      imgHttpLink = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key, true);
       imgHttpLarge = getHttpShare(accessKeyId.value, secretAccessKey.value, bucketName.value, item.key);
     } else {
       isSystemImg = true;
@@ -1102,6 +1359,7 @@
     }
     return { imgHttpLink, isSystemImg, imgHttpLarge };
   };
+  provide('handleImg', handleImg);
   const initRemoteData = async (
     data: {
       commonPrefixes?: any;
@@ -1122,6 +1380,7 @@
       showToast.hide('file_list');
       return;
     }
+    console.log('data', data);
     if (data.err) {
       showToast.fail('Failed to  retrieve data. Please try again later');
     }
@@ -1130,34 +1389,58 @@
       if (moveShow.value) {
         dirData.value = [];
       } else {
+        cancelSelect();
         tableData.value = [];
+        imgArray.value = [];
       }
     }
     if (!accessKeyId.value) {
-      await getOrderInfo();
+      // const obj = {
+      //   rpc: route.query.rpc,
+      //   peer_id: route.query.peer_id,
+      //   foggie_id: route.query.foggie_id,
+      //   signature: route.query.signature,
+      //   sign_timestamp: route.query.sign_timestamp,
+      //   order_id: route.query.order_id,
+      //   domain: route.query.domain,
+      // };
+      const obj = {
+        rpc: route.query.rpc,
+        deviceid: route.query.peer_id,
+        foggieid: route.query.foggie_id,
+        token: route.query.signature,
+        timestamp: route.query.sign_timestamp,
+        // order_id: route.query.order_id,
+        bucketname: route.query.domain,
+        pool_name: route.query.pool_name,
+      };
+      await getOrderInfo2(obj);
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
-      let name = decodeURIComponent(data.commonPrefixes[i]);
+      let name = data.commonPrefixes[i];
+
+      let cur_cid = '';
+      let isPin = false;
+      for (let i = 0; i < data.prefixpins?.length; i++) {
+        if (data.prefixpins[i]?.array[0] === name && data.prefixpins[i]?.array[1]) {
+          cur_cid = data.prefixpins[i].array[1];
+          isPin = data.prefixpins[i].array[2];
+        }
+      }
+
       if (data.prefix) {
         // name = name.split(data.prefix)[1];
         name = name.split('/')[name.split('/').length - 2] + '/';
-      }
-
-      let cur_cid = '';
-      for (let i = 0; i < data.prefixpins?.length; i++) {
-        if (data.prefixpins[i]?.prefix === el && data.prefixpins[i]?.cid) {
-          cur_cid = data.prefixpins[i].cid;
-        }
       }
 
       let item = {
         isDir: true,
         checked: false,
         name,
-        category: 1,
+        category: 0,
         fileType: 1,
 
-        fullName: decodeURIComponent(data.commonPrefixes[i]),
+        fullName: data.commonPrefixes[i],
         key: data.commonPrefixes[i],
         idList: [
           {
@@ -1181,6 +1464,7 @@
         share: {},
         isSystemImg: false,
         canShare: false,
+        isPin,
       };
       if (moveShow.value) {
         dirData.value.push(item);
@@ -1188,6 +1472,9 @@
         tableData.value.push(item);
       }
     }
+    currentFolder.value = data.prefix;
+    window.sessionStorage.setItem('currentFolder', currentFolder.value);
+    console.log(data.prefix, 'data.prefix', currentFolder.value, 'currentFolder.value');
     for (let j = 0; j < data?.content?.length; j++) {
       let date = transferUTCTime(data.content[j].lastModified);
       let isDir = data?.content[j].contentType == 'application/x-directory' ? true : false;
@@ -1197,16 +1484,17 @@
 
       // let { imgHttpLink: url, isSystemImg, imgHttpLarge: url_large } = handleImg(data.content[j], type, isDir);
       const imgData = await handleImg(data.content[j], type, isDir);
-      console.log('----------contentType', data?.content[j].contentType);
+      //   console.log('----------contentType', data?.content[j].contentType);
       const url = imgData.imgHttpLink;
       const isSystemImg = imgData.isSystemImg;
       const url_large = imgData.imgHttpLarge;
       let cid = data.content[j].cid;
       let file_id = data.content[j].fileId;
 
-      let name = decodeURIComponent(data.content[j].key);
+      let name = data.content[j].key;
+
       if (data.prefix) {
-        name = name.split(data.prefix)[1];
+        name = name.split(decodeURIComponent(data.prefix))[1];
       }
       if (name.indexOf('/') > 0) {
         if (isDir) {
@@ -1217,13 +1505,17 @@
       }
       let isPersistent = data.content[j].isPersistent;
 
+      console.log(data.content[j], 'data.content[j]1');
+
       let item = {
+        imageInfo: data.content[j].imageInfo,
+        isShowDetail: data.content[j].isShowDetail,
         isDir: isDir,
         checked: false,
         name,
         category: data.content[j].category,
         fileType: 2,
-        fullName: decodeURIComponent(data.content[j].key),
+        fullName: data.content[j].key,
         key: data.content[j].key,
         idList: [
           {
@@ -1243,7 +1535,7 @@
         file_id: file_id,
         pubkey: cid,
         cid,
-        imgUrl: url,
+        imgUrl: data.content[j].thumb && data.content[j].thumb != 'b' ? url : '',
         imgUrlLarge: url_large,
         share: {},
         isSystemImg,
@@ -1251,10 +1543,22 @@
         isPersistent,
         isPin: data.content[j].isPin,
         isPinCyfs: data.content[j].isPinCyfs,
+        nftInfoList: data.content[j].nftInfoList,
+        thumb: data.content[j].thumb,
       };
+      console.log(item, 'data.content[j]');
+
       if (moveShow.value) {
       } else {
         tableData.value.push(item);
+        if (item.category == 1) {
+          if (item.originalSize > 1024 * 1024 * 20) {
+            item.src = item.imgUrl;
+          } else {
+            item.src = item.imgUrlLarge;
+          }
+          imgArray.value.push(item);
+        }
       }
     }
     if (data.isTruncated) {
@@ -1268,17 +1572,9 @@
     }
     tableLoading.value = false;
     showToast.hide('file_list');
-    nextTick(() => {
-      if (window.localStorage.notFirst) {
-        document.getElementsByClassName('main-page')[0].style.overflow = '';
-        isFirst.value = false;
-      } else {
-        document.getElementsByClassName('main-page')[0].style.overflow = 'hidden';
-        isFirst.value = true;
-      }
-    });
   };
   function doSearch(scroll: string = '', prefixArg: any[] = [], reset = false) {
+    console.log('doSearch========', scroll, prefixArg, keyWord.value);
     if (tableLoading.value) return false;
     if (category.value == 1 && !moveShow.value && !renameShow.value) {
       imgListRef.value.refresh();
@@ -1293,113 +1589,99 @@
       // }
     } else {
       showToast.loading('Loading', {
+        // cover: true,
+        // customClass: 'app_loading',
+        // icon: loadingImg,
+        // loadingRotate: false,
+        // id: 'file_list',
+        // coverColor: 'rgba(0,0,0,0.45)',
+
         cover: true,
+        coverColor: 'rgba(0,0,0,0.45)',
         customClass: 'app_loading',
         icon: loadingImg,
         loadingRotate: false,
-        id: 'file_list',
       });
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
-      if (type == 'space') {
-        // let ip = orderInfo.value.rpc.split(':')[0];
-        // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
+      // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+      let ip = `https://${bucketName.value}.${route.query.pool_name}:7007`;
+      server = new grpcService.default.ServiceClient(ip, null, null);
 
-        let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
-        server = new grpcService.default.ServiceClient(ip, null, null);
-
-        let ProxFindRequest = new Prox.default.ProxFindRequest();
-        ProxFindRequest.setHeader(header);
-        ProxFindRequest.setCid('');
-        ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
-        ProxFindRequest.setFileid('');
-        let list_prefix;
-        if (prefixArg?.length) {
-          list_prefix = prefixArg.join('/');
-          if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
-            list_prefix = list_prefix + '/';
-          }
+      let ProxFindRequest = new Prox.default.ProxFindRequest();
+      ProxFindRequest.setHeader(header.value);
+      ProxFindRequest.setCid('');
+      ProxFindRequest.setKey(encodeURIComponent(keyWord.value));
+      ProxFindRequest.setFileid('');
+      let list_prefix: string;
+      if (prefixArg?.length) {
+        list_prefix = prefixArg.join('/');
+        if (list_prefix.charAt(list_prefix.length - 1) !== '/') {
+          list_prefix = list_prefix + '/';
         }
-        ProxFindRequest.setPrefix(list_prefix);
-        console.log(ProxFindRequest, 'ProxFindRequestProxFindRequest');
-
-        server.findObjects(ProxFindRequest, {}, (err: any, res: { getContentsList: () => any[] }) => {
-          infinityValue.value = false;
-          if (res) {
-            const transferData = res
-              .getContentsList()
-              .map(
-                (el: {
-                  getKey: () => any;
-                  getEtag: () => any;
-                  getLastmodified: () => any;
-                  getSize: () => any;
-                  getContenttype: () => any;
-                  getCid: () => any;
-                  getFileid: () => any;
-                  getIspin: () => any;
-                  getIspincyfs: () => any;
-                  getPinexp: () => any;
-                  getCyfsexp: () => any;
-                  getOod: () => any;
-                  getIspersistent: () => any;
-                  getCategory: () => any;
-                  getTags: () => any;
-                }) => {
-                  return {
-                    key: el.getKey(),
-                    etag: el.getEtag(),
-                    lastModified: el.getLastmodified(),
-                    size: el.getSize(),
-                    contentType: el.getContenttype(),
-                    cid: el.getCid(),
-                    fileId: el.getFileid(),
-                    isPin: el.getIspin(),
-                    isPinCyfs: el.getIspincyfs(),
-                    pinExp: el.getPinexp(),
-                    CyfsExp: el.getCyfsexp(),
-                    OOD: el.getOod(),
-                    isPersistent: el.getIspersistent(),
-                    category: el.getCategory(),
-                    tags: el.getTags(),
-                  };
-                },
-              );
-            initRemoteData({ content: transferData }, true, category.value);
-          } else {
-          }
-        });
       }
+      ProxFindRequest.setPrefix(list_prefix);
+
+      server.findObjects(ProxFindRequest, metadata.value, (err: any, res: { getContentsList: () => any[] }) => {
+        infinityValue.value = false;
+        if (res) {
+          const transferData = res
+            .getContentsList()
+            .map(
+              (el: {
+                getKey: () => any;
+                getEtag: () => any;
+                getLastmodified: () => any;
+                getSize: () => any;
+                getContenttype: () => any;
+                getCid: () => any;
+                getFileid: () => any;
+                getIspin: () => any;
+                getIspincyfs: () => any;
+                getPinexp: () => any;
+                getCyfsexp: () => any;
+                getOod: () => any;
+                getIspersistent: () => any;
+                getCategory: () => any;
+                getTags: () => any;
+                getNftinfosList: () => any;
+                getImages: () => any;
+                getThumb: () => any;
+              }) => {
+                return {
+                  key: el.getKey(),
+                  etag: el.getEtag(),
+                  lastModified: el.getLastmodified(),
+                  size: el.getSize(),
+                  contentType: el.getContenttype(),
+                  cid: el.getCid(),
+                  fileId: el.getFileid(),
+                  isPin: el.getIspin(),
+                  isPinCyfs: el.getIspincyfs(),
+                  pinExp: el.getPinexp(),
+                  CyfsExp: el.getCyfsexp(),
+                  OOD: el.getOod(),
+                  isPersistent: el.getIspersistent(),
+                  category: el.getCategory(),
+                  tags: el.getTags(),
+                  nftInfoList: el.getNftinfosList(),
+                  thumb: el.getThumb(),
+                  // imageInfo,
+                  // isShowDetail,
+                };
+              },
+            );
+          isError.value = false;
+
+          initRemoteData({ content: transferData }, true, category.value);
+        } else {
+          isError.value = true;
+        }
+      });
     }
   }
-  const copyLink = (text: string) => {
-    var input = document.createElement('input');
-    input.value = text;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('Copy');
-    document.body.removeChild(input);
-    // let str = `Copying  ${type} successful!`;
-    // this.$message.success(str);
-    showToast.success('Copy succeeded');
-  };
-  const shareTwitter = (fileLink) => {
-    const checkData = isCheckMode.value ? selectArr.value : [chooseItem.value];
-    let tweetText = checkData[0].name;
-    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(fileLink);
-    window.open(twitterUrl, '_blank');
-  };
-  const shareFacebook = (fileLink) => {
-    var twitterUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fileLink);
-    window.open(twitterUrl, '_blank');
-  };
-  const handleFirst = () => {
-    document.getElementsByClassName('main-page')[0].style.overflow = '';
-    isFirst.value = false;
-    window.localStorage.notFirst = true;
-  };
 
-  const getSignHeaders = (objectKey) => {
+  const getSignHeaders = (objectKey: string) => {
     const date = new Date().toUTCString();
     const httpMethod = 'GET';
     const contentType = '';
@@ -1421,35 +1703,568 @@
     cancelSelect();
     doSearch('', prefix.value, true);
   };
-  provide('handleImg', handleImg);
   watch(
     category,
     async (val, old) => {
+      cancelSelect();
       if (old == 1) {
         imgListRef?.value?.resetChecked();
         imgCheckedData.value = [];
       }
       if (val == 1) {
       } else {
-        if (!orderInfo?.value?.id) {
-          await getOrderInfo();
+        if (!orderInfo?.value?.domain) {
+          // const obj = {
+          //   rpc: route.query.rpc,
+          //   peer_id: route.query.peer_id,
+          //   foggie_id: route.query.foggie_id,
+          //   signature: route.query.signature,
+          //   sign_timestamp: route.query.sign_timestamp,
+          //   order_id: route.query.order_id,
+          //   domain: route.query.domain,
+          // };
+          const obj = {
+          rpc: route.query.rpc,
+          deviceid: route.query.peer_id,
+          foggieid: route.query.foggie_id,
+          token: route.query.signature,
+          timestamp: route.query.sign_timestamp,
+          // order_id: route.query.order_id,
+          bucketname: route.query.domain,
+          pool_name: route.query.pool_name,
+        };
+          await getOrderInfo2(obj);
         }
+        console.log(category.value, 'categorycategorycategory');
         doSearch('', prefix.value, true);
       }
     },
     { deep: true },
   );
   onMounted(async () => {
-    console.log(route, 'routerouteroute');
+    initPage();
+  });
+  onBeforeUnmount(() => {
+    if (fileSocket.value) {
+      fileSocket.value.close();
+      fileSocket.value = null;
+    }
+  });
+  const initPage = async () => {
     if (route?.query?.prefix) {
       prefix.value = route?.query?.prefix?.split('/');
     }
     let category1 = route.query.category || '0';
+    // const obj = {
+    //   rpc: route.query.rpc,
+    //   peer_id: route.query.peer_id,
+    //   foggie_id: route.query.foggie_id,
+    //   signature: route.query.signature,
+    //   sign_timestamp: route.query.sign_timestamp,
+    //   order_id: route.query.order_id,
+    //   domain: route.query.domain,
+    // };
+    const obj = {
+        rpc: route.query.rpc,
+        deviceid: route.query.peer_id,
+        foggieid: route.query.foggie_id,
+        token: route.query.signature,
+        timestamp: route.query.sign_timestamp,
+        // order_id: route.query.order_id,
+        bucketname: route.query.domain,
+        pool_name: route.query.pool_name,
+      };
+    await getOrderInfo2(obj);
+
     switchType(category1);
-    await getOrderInfo();
-  });
+    setTimeout(() => {
+      initWebSocket();
+    }, 1000);
+  };
+  // onUnmounted(() => {
+  //   closeSocket();
+  // });
+  const refresh = async () => {
+    cancelSelect();
+    // const obj = {
+    //   rpc: route.query.rpc,
+    //   peer_id: route.query.peer_id,
+    //   foggie_id: route.query.foggie_id,
+    //   signature: route.query.signature,
+    //   sign_timestamp: route.query.sign_timestamp,
+    //   order_id: route.query.order_id,
+    //   domain: route.query.domain,
+    // };
+    const obj = {
+        rpc: route.query.rpc,
+        deviceid: route.query.peer_id,
+        foggieid: route.query.foggie_id,
+        token: route.query.signature,
+        timestamp: route.query.sign_timestamp,
+        // order_id: route.query.order_id,
+        bucketname: route.query.domain,
+        pool_name: route.query.pool_name,
+      };
+    await getOrderInfo2(obj);
+
+    doSearch('', prefix.value, true);
+  };
+
+  const initWebSocket = async () => {
+    const signData = await dm_order_get_token({ orderId: route.query.order_id });
+    if (signData?.data?.signature) {
+      socketToken.value = signData?.data?.signature;
+      socketDate.value = signData?.data?.timestamp;
+    }
+
+    const url = `wss://${bucketName.value}.${poolUrl}:6008/ws`;
+    fileSocket.value = new WebSocket(url);
+    fileSocket.value.onopen = () => {
+      const authMessage = {
+        action: 'AUTH',
+        userID: orderInfo.value.foggie_id,
+        token: socketToken.value,
+        date: socketDate.value,
+      };
+      fileSocket.value.send(JSON.stringify(authMessage));
+    };
+
+    fileSocket.value.onmessage = (event: { data: string }) => {
+      const message = JSON.parse(event.data);
+      const currentFolderStr = window.sessionStorage.getItem('currentFolder') || '';
+      console.log('Received message from server:', message, currentFolderStr);
+      const uploadFileName = window.sessionStorage.getItem('uploadFileName');
+      let fileInfo = message.fileInfo;
+      let dirArr = fileInfo.keys;
+      const updateBy = fileInfo.updateBy;
+      let dirFile = '';
+      let dirFileName = '';
+      if (dirArr && dirArr.length > 0) {
+        let index = dirArr[0].lastIndexOf('/');
+        if (index > -1) {
+          dirFile = dirArr[0].substring(0, index + 1);
+          dirFileName = dirArr[0].substring(index + 1, dirArr[0].length);
+        } else {
+          dirFile = '';
+          dirFileName = dirArr[0];
+        }
+      }
+
+      console.log(
+        '888888',
+        dirArr,
+        dirFile,
+        currentFolderStr,
+        dirFile === decodeURIComponent(currentFolderStr),
+        dirFileName !== uploadFileName,
+      );
+      if (dirFile === decodeURIComponent(currentFolderStr) || dirFile.charAt(dirFile.length - 1) === '/') {
+        if (detailShow.value) {
+          setTimeout(() => {
+            initWebSocket();
+          }, 3000);
+        } else {
+          doSocketFn(message);
+        }
+      }
+    };
+
+    fileSocket.value.onclose = (event: any) => {
+      console.log('WebSocket connection closed:', event, fileSocket.value);
+      if (fileSocket.value) {
+        console.log('WebSocket connection again:');
+        initPage();
+      }
+    };
+    fileSocket.value.onerror = (event: any) => {
+      console.error('WebSocket connection error:', event);
+    };
+  };
+  function swipeChange(index) {
+    imgStartIndex.value = index;
+    chooseItem.value = imgArray.value[index];
+    if (chooseItem.value.originalSize > 1024 * 1024 * 20) {
+      showToast.text('The file is too large, please download and view');
+    }
+  }
+  watch(
+    detailShow,
+    (val) => {
+      if (val) {
+        nextTick(() => {
+          if (chooseItem.value.originalSize > 1024 * 1024 * 20 && chooseItem.value.category == 1) {
+            showToast.text('The file is too large, please download and view');
+          }
+        });
+      }
+    },
+    { deep: true },
+  );
+  function handleID(id) {
+    if (id) {
+      return id.substring(0, 15) + '...' + id.substring(id.length - 15, id.length);
+    }
+  }
+
+  const initSocketDialog = () => {
+    showSocketDialog.value = true;
+  };
+  const closeSocketDialog = () => {
+    getFileList('', prefix.value, true);
+    showSocketDialog.value = false;
+  };
+  const closeSocket = () => {
+    console.log('closeSocket-------');
+    fileSocket.value.onclose();
+  };
+
+  const doSocketFn = async (msg: { action: any; fileInfo: any }) => {
+    console.log('doSocketFn', msg, tableData.value);
+    const action = msg.action;
+    const fileInfo = msg.fileInfo;
+    const keys = fileInfo.keys;
+    const bucket = fileInfo.bucket;
+    const cid = fileInfo.cid;
+    if (!action || !keys || keys.length === 0) {
+      refresh();
+      return;
+    }
+
+    if (action === 'FILE_ADD') {
+      let index = keys[0].lastIndexOf('/');
+      let name = keys[0].substring(index + 1);
+      const date = transferGMTTime(fileInfo.lastModified * 1000);
+      const _cid = cid && cid[0] ? cid[0] : '';
+      const target = tableData.value.find((el: { fullName: any }) => el.fullName === keys[0]);
+      if (!target) {
+        const type = keys[0].substring(keys[0].lastIndexOf('.') + 1).toLowerCase();
+        const data = {
+          cid: _cid,
+          key: keys[0],
+        };
+        const imgData = await handleImg(data, type, false);
+        let category = 0;
+        if (
+          type === 'png' ||
+          type === 'bmp' ||
+          type === 'gif' ||
+          type === 'jpeg' ||
+          type === 'jpg' ||
+          type === 'svg' ||
+          type === 'heif' ||
+          type === 'webp' ||
+          type === 'ico'
+        ) {
+          category = 1;
+        } else if (type === 'mp4' || type == 'ogg' || type == 'webm' || type == 'mov') {
+          category = 2;
+        } else if (type === 'mp3') {
+          category = 3;
+        } else if (['pdf', 'txt', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv'].includes(type)) {
+          category = 4;
+        }
+        const url = imgData.imgHttpLink;
+        const isSystemImg = imgData.isSystemImg;
+        const url_large = imgData.imgHttpLarge;
+
+        console.log('FILE_ADD-----------', keys, name, date, url, url_large, isSystemImg);
+
+        let imageInfo = {
+          aperture: '',
+          datetime: '', //拍摄时间
+          exposuretime: '', //ev曝光量
+          exptime: '', //曝光时间
+          orientation: '', //方向
+          focallength: '', //焦距
+          Flash: false, //是否使用闪光灯
+          software: '', // 使用软件
+          iso: '', //iso
+          camerainfo: '', //手机厂商及其机型
+          gps: '', //经纬度
+          resolution: '', //像素
+        };
+        let isShowDetail = false;
+
+        if (fileInfo.image_infos && Object.keys(fileInfo.image_infos).length > 0) {
+          let key = Object.keys(fileInfo.image_infos)[0];
+          let imageObj = fileInfo.image_infos[key];
+          if (imageObj && imageObj.addition) {
+            isShowDetail = true;
+            imageInfo.aperture = imageObj.addition.aperture;
+            imageInfo.datetime = moment(imageObj.addition.date_time, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'); //拍摄时间
+            imageInfo.exposuretime = imageObj.addition?.exposure_time; //ev曝光量
+            imageInfo.exptime = imageObj.addition?.exp_time; //曝光时间
+            imageInfo.orientation = imageObj.addition?.orientation; //方向
+            imageInfo.focallength = imageObj.addition?.focal_length; //焦距
+            imageInfo.Flash = imageObj.addition?.flash || false; //是否使用闪光灯
+            imageInfo.software = imageObj.addition?.software; // 使用软件
+            imageInfo.iso = imageObj.addition?.iso.charCodeAt(0);
+            imageInfo.camerainfo = imageObj?.camera_info; //手机厂商及其机型
+            imageInfo.gps = imageObj?.gps; //经纬度
+            imageInfo.resolution = imageObj?.resolution; //像素
+          }
+          console.log('FILE_ADD-----------tableData', imageInfo);
+        }
+
+        let item = {
+          isDir: false,
+          checked: false,
+          name,
+          category,
+          fileType: 2,
+          fullName: keys[0],
+          key: keys[0],
+          idList: [
+            {
+              name: 'IPFS',
+              code: '',
+            },
+            {
+              name: 'CYFS',
+              code: '',
+            },
+          ],
+          date,
+          pubkey: _cid,
+          cid: _cid,
+          imgUrl: url,
+          imgUrlLarge: url_large,
+          share: {},
+          isSystemImg,
+          canShare: _cid ? true : false,
+          isPin: false,
+          isPinCyfs: false,
+          type,
+          isShowDetail,
+          imageInfo,
+        };
+        tableData.value.push(item);
+        if (item.category == 1) {
+          item.src = item.imgUrlLarge;
+          imgArray.value.push(item);
+        }
+      }
+    } else if (action === 'FILE_PIN') {
+      const curName = fileInfo.keys[0];
+      const curDir = window.sessionStorage.getItem('currentFolder');
+      tableData.value.map((el: { cid: any; isPin: boolean; name: string }) => {
+        if (el.cid === cid[0]) {
+          el.isPin = true;
+        } else if (
+          curName.charAt(curName.length - 1) === '/' &&
+          decodeURIComponent(curName) === decodeURIComponent(`${curDir}${el.name}`)
+        ) {
+          el.isPin = true;
+          if (!el.cid && cid[0]) {
+            el.cid = cid[0];
+          }
+        }
+      });
+    } else if (action === 'FILE_CHANGE') {
+    } else if (action === 'FILE_DELETE') {
+      console.log('FILE_DELETE', keys);
+      tableData.value = tableData.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+      imgArray.value = imgArray.value.filter((item: { key: any }) => keys.indexOf(item.key) === -1);
+      cancelSelect();
+    } else if (action === 'FILE_PINNING') {
+    }
+  };
+
+  const fileItemPopupIsShow = ref(false);
+  function clickFIleItem(params) {
+    chooseItem.value = params;
+    fileItemPopupIsShow.value = true;
+  }
+
+  const fileItemDetailPopupIsShow = ref(false); // 文件详情展示 例如 光圈 曝光时间等
+
+  function clickFIleItemDetail(params) {
+    console.log(params);
+    fileItemDetailPopupIsShow.value = true;
+  }
+
+  const goBack = () => {
+    // router.go(-1);
+    console.log('goBack', route.query.order_id);
+    router.push({
+      name: 'Home',
+      query: {
+        order_id: route.query.order_id,
+      },
+    });
+  };
 </script>
-<style>
+<style lang="scss">
+  .fileItemPopup.nut-popup {
+    background-color: #f9f9f9;
+    padding: 40px 40px;
+    box-sizing: border-box;
+    .fileItem_header {
+      display: grid;
+      grid-template-columns: 100px auto;
+      gap: 30px;
+      align-items: center;
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+      .fileItem_header_right > div {
+        font-size: 30px;
+        font-weight: 600;
+        line-height: 50px;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .fileItem_body {
+      margin-top: 50px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      .optionBox {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        // place-items: center;
+        justify-items: center;
+        gap: 25px;
+        padding: 30px 10px;
+        & > div {
+          width: 100%;
+          border-radius: 25px;
+          border: 1px solid #ddd1d1;
+          background-color: #f1f1f1;
+          height: 170px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-evenly;
+          color: #222224;
+          border-radius: 25px;
+          border: 1px solid #ddd1d1;
+          background-color: #f1f1f1;
+          background-color: transparent;
+          color: #fff;
+          svg {
+            width: 60px;
+            height: 60px;
+            color: #fff;
+          }
+        }
+      }
+      .ipfs {
+        border-radius: 25px;
+        border: 1px solid #ddd1d1;
+        background-color: #f1f1f1;
+
+        p {
+          display: grid;
+          grid-template-columns: auto 100px;
+          gap: 100px;
+          align-items: center;
+          border-bottom: 2px solid #fff;
+          height: 100px;
+          line-height: 100px;
+          box-sizing: border-box;
+          padding: 0px 15px;
+
+          & > * {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 25px;
+            color: #222224;
+            color: #fff !important;
+          }
+          svg {
+            height: 60px;
+            width: 60px;
+          }
+        }
+        p:last-child {
+          border-bottom: 0px;
+        }
+      }
+    }
+
+    .nut-popup__close-icon {
+      background-color: #ccccccc2;
+      border-radius: 50%;
+      color: #fff;
+    }
+    .fileItemDetail {
+      margin-top: 60px;
+      border-radius: 15px;
+      border: 1px solid #cac9ce;
+      overflow: hidden;
+      .fileItemDetail_header {
+        padding: 0px 20px;
+        height: 70px;
+        line-height: 70px;
+        // background-color: #cbcacf;
+        font-weight: 600;
+        font-size: 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 4px solid #adacb1;
+        .flashlamp {
+          display: flex;
+          border-radius: 50%;
+          border: 4px solid #5e5d62;
+        }
+      }
+      .fileItemDetail_Body {
+        padding: 20px 20px;
+        border-bottom: 4px solid #adacb1;
+        // background-color: #dfdee3;
+        & > div {
+          height: 40px;
+          line-height: 40px;
+          font-weight: 600px;
+          font-size: 28px;
+        }
+      }
+      .fileItemDetail_bottom {
+        // background-color: #dfdee3;
+        display: grid;
+        padding: 0px 20px;
+        grid-template-columns: repeat(5, 1fr);
+        & > span {
+          text-align: center;
+          height: 60px;
+          line-height: 60px;
+          font-weight: 700px;
+          font-size: 28px;
+          position: relative;
+        }
+        & > span:not(:last-child)::before {
+          display: inline-block;
+          content: '';
+          width: 3px;
+          height: 60%;
+          background-color: #cdccd1;
+          position: absolute;
+          right: 0px;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+        // & > span:last-child{
+        //  border: 0px;
+        // }
+      }
+    }
+  }
+
+  .fileUpdateIcon {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    width: 140px;
+    height: 140px;
+  }
   .type_check_pop {
     /* padding-top: 120px; */
     height: 450px;
@@ -1464,8 +2279,45 @@
       font-size: 30px;
     }
   }
+  @media screen and (min-width: 500px) {
+    .type_check_pop {
+      /* padding-top: 120px; */
+      height: unset;
+    }
+    .dialog_class {
+      font-size: 30px;
+      .nut-dialog__header {
+        height: unset;
+        font-size: 35px;
+      }
+      .nut-dialog__content {
+        font-size: 30px;
+      }
+    }
+  }
 </style>
 <style lang="scss" scoped>
+  .boxtop {
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .bottom_ipfs_info {
+    position: fixed;
+    bottom: 100px;
+    padding: 20px;
+    background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    svg {
+      color: $main_blue;
+    }
+  }
+  .file_list {
+    height: calc(100vh - 310px);
+    overflow: auto;
+  }
   #txtContainer {
     color: #fff;
     width: 100%;
@@ -1517,22 +2369,62 @@
   .detail_over {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 30px 10px;
+    justify-content: center;
+    padding: 0px 10px;
     background: #000;
     box-sizing: border-box;
+    // overflow: auto;
+    z-index: 99;
+    .detail_top {
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(180deg, #00000059, transparent);
+      z-index: 99;
+    }
     .middle_img {
-      max-height: calc(100vh - 500px);
-
+      max-height: 100%;
       .nut-image {
         width: 100%;
         height: 100%;
       }
+      :deep {
+        .van-swipe {
+          width: 100%;
+          height: 100%;
+          .van-swipe__track {
+            align-items: center;
+            width: 100% !important;
+            img {
+              // width: 100%;
+              width: unset;
+              max-width: 100%;
+              margin: 0 auto;
+            }
+          }
+          .van-image-preview__swipe-item {
+            background: #000;
+          }
+        }
+      }
     }
     .bottom_action {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
       display: flex;
       justify-content: space-evenly;
-      height: 200px;
+      height: 140px;
+      background: linear-gradient(0deg, #00000059, transparent);
+
       margin-top: 20px;
       div {
         text-align: center;
@@ -1565,9 +2457,13 @@
     color: #2e70ff;
     font-size: 30px;
     background: #fff;
+    span {
+      cursor: pointer;
+    }
     .checked_num {
       color: #000;
       font-size: 35px;
+      cursor: default;
     }
   }
   .fileList_content {
@@ -1583,6 +2479,8 @@
     background: #fff;
     box-sizing: border-box;
     color: $primary-color-end;
+    background: transparent;
+    color: #fff;
     // transition: all 0.3s;
     span {
       font-size: 35px;
@@ -1632,7 +2530,8 @@
         }
       }
       p {
-        color: #051e56;
+        // color: #051e56;
+        color: #fff;
       }
       // &:nth-child(1) {
       //   .svg_box {
@@ -1679,19 +2578,30 @@
       }
       .nut-searchbar__search-input {
         --nut-searchbar-input-background: #f5f8fd;
+        color: #fff;
       }
     }
   }
+
   .list_item {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    padding: 20px;
-    border-top: 1px solid #eee;
+    padding: 20px 20px 20px 40px;
+    margin: 20px 20px;
+    // border-top: 1px solid #efefef;
     user-select: none;
+    border-radius: 20px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    background: rgba(28, 28, 30, 1);
+    :deep {
+      .nut-image {
+        width: 100%;
+        height: 100%;
+      }
+    }
     &:active {
       background: #cde3f5;
     }
@@ -1706,6 +2616,7 @@
       img {
         width: 50px !important;
         height: 50px !important;
+        border-radius: 0.4rem;
       }
       &.is_checked {
         width: 60px;
@@ -1722,16 +2633,30 @@
       height: 80px;
     }
     .left_icon_box {
-      width: 80px;
+      position: relative;
+      width: 140px;
       height: 80px;
-      img {
+      img,
+      svg {
         width: 80px;
         height: 80px;
+        border-radius: 0.3rem;
+        vertical-align: middle;
+      }
+      .play_icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1.2rem;
+        height: 1.2rem;
       }
     }
     .name_box {
-      width: calc(100% - 180px);
-      margin-left: 30px;
+      width: calc(100% - 500px);
+      flex: 1;
+      margin-left: 40px;
+      margin-right: 30px;
       p:first-child {
         white-space: nowrap;
         overflow: hidden;
@@ -1743,10 +2668,160 @@
         font-size: 20px;
       }
     }
+    .ipfs_info {
+      display: flex;
+      align-items: center;
+      width: 100px;
+      height: 80px;
+      svg,
+      img {
+        object-fit: contain;
+        height: 1.5rem;
+        width: 1.5rem;
+        margin-left: 20px;
+        cursor: pointer;
+      }
+    }
+    .right_div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 80px;
+      height: 80px;
+    }
+    .right_radio {
+      height: 80px;
+      width: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      :deep {
+        .nut-checkbox {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          height: 100%;
+          margin-right: 0;
+        }
+        .nut-checkbox__label {
+          display: none;
+        }
+      }
+    }
     .right_more {
       width: 50px;
       height: 50px;
       color: #ccc;
+    }
+  }
+  .card_list {
+    :deep {
+      .nut-infinite__container {
+        width: 100%;
+      }
+      .nut-checkbox-group {
+        display: grid;
+        grid-gap: 20px;
+        grid-template-columns: repeat(2, 1fr);
+        justify-items: center;
+        width: 100%;
+      }
+    }
+    .list_item {
+      position: relative;
+      box-sizing: border-box;
+      flex-direction: column;
+      border: none;
+      border-radius: 10px;
+      padding: 0px !important;
+      //   margin: 20px;
+      width: 100%;
+      height: 300px;
+      //   margin: 0 !important;
+      //   background: rgba(28, 28, 30, 1);
+      .mask {
+        display: none;
+        position: absolute;
+        top: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+
+        .itemChecked {
+          display: block;
+        }
+        &.isChecking {
+          display: block;
+          height: 100%;
+          cursor: pointer;
+          :deep {
+            .nut-checkbox {
+              width: 100%;
+              height: 100%;
+              display: block;
+            }
+            .nut-icon {
+              padding: 10px;
+            }
+          }
+        }
+
+        :deep {
+          .nut-checkbox {
+            position: absolute;
+            left: 0;
+          }
+          .nut-checkbox__input {
+            position: absolute;
+            right: 5px;
+            top: 10px;
+          }
+          .nut-checkbox__label {
+            display: none;
+          }
+        }
+      }
+      .left_icon_box {
+        width: 100%;
+        height: 200px;
+        img,
+        svg {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+          overflow: hidden;
+        }
+        .nut-image {
+          height: 200px;
+          overflow: hidden;
+          object-fit: cover;
+        }
+        .play_icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+      .name_box {
+        height: 100px;
+        width: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        p {
+          font-size: 0.8rem !important;
+          color: #fff !important;
+        }
+        p:last-child {
+          color: #a7a7a7 !important;
+        }
+      }
     }
   }
   .bottom_action {
@@ -1778,131 +2853,470 @@
         }
       }
     }
+    .delete-item {
+      color: red;
+      :deep {
+        .nut-tabbar-item_icon-box_nav-word {
+          color: red;
+        }
+      }
+    }
   }
   .row_is_checked {
     background: #cde3f5;
   }
-  .rename_box {
-    margin-top: 40px;
-    padding: 0 40px;
-    :deep {
-      .nut-cell {
-        padding-left: 0;
-        padding-right: 0;
-        box-shadow: none;
-      }
-      .nut-textarea {
-        padding-left: 0;
-        padding-right: 0;
-      }
-    }
-    p {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    svg {
-      display: block;
-      margin: 0 auto;
-    }
-    :deep {
-      .nut-searchbar {
-        padding: 20px 0;
-      }
-      .nut-button {
-        margin-top: 40px;
-      }
-    }
-  }
-  .move_box {
-    .top_back {
-      margin-bottom: 10px;
-      p {
-        margin: 0 5px;
-        color: #000;
-      }
+  // .rename_box {
+  //   margin-top: 40px;
+  //   padding: 0 40px;
+  //   :deep {
+  //     .nut-cell {
+  //       padding-left: 0;
+  //       padding-right: 0;
+  //       box-shadow: none;
+  //     }
+  //     .nut-textarea {
+  //       padding-left: 0;
+  //       padding-right: 0;
+  //     }
+  //   }
+  //   p {
+  //     text-align: center;
+  //     margin-bottom: 30px;
+  //   }
+  //   svg {
+  //     display: block;
+  //     margin: 0 auto;
+  //   }
+  //   :deep {
+  //     .nut-searchbar {
+  //       padding: 20px 0;
+  //     }
+  //     .nut-button {
+  //       margin-top: 40px;
+  //     }
+  //   }
+  // }
+  // .move_box {
+  //   .top_back {
+  //     margin-bottom: 10px;
+  //     p {
+  //       margin: 0 5px;
+  //       color: #000;
+  //     }
+  //   }
+  //   .file_list {
+  //     height: 600px;
+  //     overflow-y: auto;
+  //     .list_item {
+  //       width: 100%;
+  //       box-sizing: border-box;
+  //     }
+  //     .left_icon_box {
+  //       width: 80px;
+  //       height: 80px;
+  //       svg {
+  //         width: 100px;
+  //         height: 100px;
+  //       }
+  //     }
+  //     .name_box {
+  //       p {
+  //         text-align: right;
+  //         margin: 0;
+  //         font-size: 30px;
+  //       }
+  //     }
+  //   }
+  // }
+
+  @media screen and (min-width: 500px) {
+    #txtContainer {
+      color: #fff;
+      width: 100%;
+      padding: 0 20px;
+      max-height: calc(100% - 300px);
+      overflow-y: auto;
     }
     .file_list {
-      height: 600px;
-      overflow-y: auto;
-      .list_item {
-        width: 100%;
-        box-sizing: border-box;
+      height: calc(100vh - 180px);
+      overflow: auto;
+    }
+    .tour-demo-custom-content {
+      padding: 20px;
+      height: 100px;
+      .tour_btn {
+        height: 50px;
+        margin-top: 10px;
+        padding: 5px 10px;
+      }
+    }
+    .detail_over {
+      padding: 30px 10px;
+      .middle_img {
+        max-height: calc(100vh - 500px);
+
+        .nut-image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .bottom_action {
+        height: 200px;
+        margin-top: 20px;
+        svg {
+          color: #fff;
+          width: 80px;
+          height: 80px;
+        }
+      }
+    }
+    .detail_back {
+      width: 60px;
+      height: 60px;
+    }
+    .top_title {
+      margin-left: 60px;
+    }
+    .check_top {
+      padding: 20px 20px;
+      font-size: 30px;
+      .checked_num {
+        font-size: 35px;
+      }
+    }
+    .list_header {
+      padding: 10px;
+      width: 100%;
+      span {
+        font-size: 24px;
+        line-height: 30px;
+      }
+      .triangle {
+        margin: 0 15px;
+        width: 30px;
+        height: 30px;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+    }
+    .cate_title {
+      padding: 20px;
+      font-size: 40px;
+    }
+    .type_check_box {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      .type_item {
+        width: 100px;
+        text-align: center;
+        height: 150px;
+        .svg_box {
+          width: 80px;
+          height: 80px;
+          line-height: 80px;
+          margin: 10px auto;
+          text-align: center;
+          border-radius: 20px;
+          svg {
+            width: 100%;
+            height: 100%;
+            vertical-align: middle;
+          }
+        }
+        p {
+          // color: #051e56;
+          color: #fff;
+        }
+      }
+    }
+    .search_bar {
+      padding: 10px 20px;
+      .new_folder {
+        width: 40px;
+        height: 40px;
+      }
+      :deep {
+        .nut-searchbar {
+          width: calc(100% - 60px);
+          padding: 0;
+        }
+
+        .nut-searchbar__search-input {
+          --nut-searchbar-input-height: 50px;
+          --nut-icon-width: 30px;
+          --nut-icon-height: 30px;
+          --nut-icon-line-height: 30px;
+        }
+        .nut-searchbar__input-bar {
+          font-size: 1.5rem;
+        }
+        .nut-icon-search2 {
+          --nut-icon-width: 30px;
+          --nut-icon-height: 30px;
+          --nut-icon-line-height: 30px;
+        }
+      }
+    }
+    .list_item {
+      padding: 5px 20px 5px 40px;
+      //   border-top: 1px solid #efefef;
+
+      &:active,
+      &:hover {
+        background: #cde3f5;
+      }
+      .left_checkMode {
+        width: 80px;
+        height: 80px;
+        img {
+          width: 50px !important;
+          height: 50px !important;
+        }
+        &.is_checked {
+          width: 60px;
+          height: 60px;
+          margin: 10px;
+          background: #2e70ff;
+        }
+      }
+      .type_icon {
+        width: 80px;
+        height: 80px;
       }
       .left_icon_box {
         width: 80px;
         height: 80px;
-        svg {
-          width: 100px;
-          height: 100px;
+        img {
+          width: 80px;
+          height: 80px;
         }
       }
       .name_box {
-        p {
-          text-align: right;
-          margin: 0;
-          font-size: 30px;
+        width: calc(100% - 180px);
+        margin-left: 30px;
+
+        p:last-child {
+          margin-top: 5px;
+          color: #a7a7a7;
+          font-size: 18px;
         }
       }
-    }
-  }
-  .share_info_box {
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-top: 100px;
-    div {
-      min-width: 240px;
-      margin-top: 20px;
-      text-align: center;
-      color: $main_blue;
-      img,
-      svg {
-        display: block;
-        margin: 0 auto;
+      .right_div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 80px;
         height: 80px;
       }
+      .right_radio {
+        height: 80px;
+        width: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        :deep {
+          .nut-checkbox {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            margin-right: 0;
+          }
+          .nut-checkbox__label {
+            display: none;
+          }
+        }
+      }
+      .right_more {
+        width: 30px;
+        height: 30px;
+      }
     }
-  }
-  .custom-content {
-    p {
-      padding: 30px 20px;
-      color: #909090;
-      border-bottom: 1px solid #eee;
+    .bottom_action {
+      :deep {
+        .nut-tabbar {
+          --nut-tabbar-height: 60px;
+        }
+        .nut-tabbar-item {
+          background-color: #2e70ff;
+          color: #fff;
+          cursor: pointer;
+          svg {
+            width: 30px;
+            height: 30px;
+          }
+        }
+        .nut-tabbar-item_icon-box_nav-word {
+          color: #ffffff5c;
+          --nut-tabbar-item-text-font-size: 1rem;
+        }
+      }
+    }
+    :deep {
+      .nut-popup {
+        .nut-icon {
+          min-height: 20px;
+        }
+      }
+    }
+    .rename_box {
+      margin-top: 40px;
+      padding: 0 40px;
+      :deep {
+        .nut-cell {
+          padding-left: 0;
+          padding-right: 0;
+          box-shadow: none;
+        }
+        .nut-textarea {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+      p {
+        text-align: center;
+        margin-bottom: 30px;
+      }
       svg {
-        width: 60px;
-        height: 60px;
-        margin-right: 20px;
-        vertical-align: middle;
+        display: block;
+        margin: 0 auto;
+      }
+      :deep {
+        .nut-searchbar {
+          margin: 0 auto;
+          padding: 20px 0;
+          --nut-searchbar-width: 600px;
+          --nut-searchbar-input-height: 70px;
+          border: 1px solid #fff;
+          border-radius: 10px;
+          background: transparent !important;
+          color: #fff !important;
+        }
+        .nut-button {
+          width: 300px;
+          margin: 0 auto;
+          margin-top: 40px;
+          --nut-button-default-height: 70px;
+          --nut-button-default-font-size: 1.5rem;
+        }
+        .nut-searchbar__search-input .nut-searchbar__input-bar {
+          font-size: 1.5rem;
+        }
+        .nut-icon {
+          --nut-icon-width: 30px;
+          --nut-icon-height: 30px;
+          --nut-icon-line-height: 30px;
+        }
       }
     }
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      li {
-        padding: 30px 20px;
+    .move_box {
+      :deep {
+        .nut-cell {
+          padding: 10px;
+          --nut-cell-title-font: 1.5rem;
+        }
+      }
+      .top_back {
+        margin-bottom: 10px;
+        p {
+          margin: 0 5px;
+          font-size: 2rem;
+        }
+      }
+      .file_list {
+        height: 600px;
+        overflow-y: auto;
+        .list_item {
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .left_icon_box {
+          width: 80px;
+          height: 80px;
+          svg {
+            width: 80px;
+            height: 80px;
+          }
+        }
+        .name_box {
+          p {
+            text-align: right;
+            margin: 0;
+            font-size: 30px;
+          }
+        }
+      }
+      .nut-button {
+        --nut-button-default-font-size: 1rem;
+      }
+    }
+    .share_info_box {
+      margin-top: 30px;
+      margin: 30px 120px 0;
+      justify-content: space-around;
+      div {
+        min-width: 150px;
+        margin-top: 20px;
+
+        img,
         svg {
-          width: 40px;
-          height: 40px;
-          margin-right: 15px;
-          vertical-align: text-bottom;
+          width: 80px;
+          height: 80px;
         }
-        &:active {
-          background: #cde3f5;
-        }
-      }
-      .is-disable {
-        color: #ccc;
       }
     }
-    .cancel_btn {
-      padding: 20px;
-      background-color: #f7f7f7;
-      color: #000;
-      text-align: center;
-      font-size: 35px;
+    .custom-content {
+      p {
+        padding: 10px 20px;
+        color: #909090;
+        border-bottom: 1px solid #eee;
+        svg {
+          width: 60px;
+          height: 60px;
+          margin-right: 20px;
+          vertical-align: middle;
+        }
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        li {
+          padding: 10px 20px;
+          svg {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            vertical-align: middle;
+          }
+          &:active,
+          &:hover {
+            background: #cde3f5;
+          }
+        }
+      }
+      .cancel_btn {
+        padding: 10px;
+        font-size: 24px;
+      }
+    }
+    :deep {
+      .van-dropdown-menu__bar {
+        background-color: transparent;
+        box-shadow: none;
+      }
+      .van-dropdown-menu__title:after {
+        transform: rotate(-45deg) scale(0.8);
+      }
+      .van-dropdown-menu__title--down:after {
+        transform: rotate(135deg) scale(0.8);
+      }
+      .van-dropdown-item__option {
+        padding: 20px;
+      }
     }
   }
 </style>

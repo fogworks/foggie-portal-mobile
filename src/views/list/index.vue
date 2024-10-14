@@ -1,140 +1,295 @@
 <template>
-  <div class="top_box" :class="[searchType == 'History' ? 'top_history' : 'top_open']">
-    <!-- <div class="top_type">{{ searchType }} </div> -->
-    <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search by order number">
-      <template #left> <Search></Search> </template>
-    </nut-input>
-    <!-- <p>You can search your order here.</p> -->
-    <nut-row type="flex" justify="space-between" class="top_btn_box">
-      <nut-col :span="10">
-        <div class="flex-content">
-          <div
-            class="svg-box"
-            @click="searchType = 'Open'"
-            :class="[searchType == 'Open' ? 'active_svg-box active_svg-boxOpen' : 'svg-box-open']"
-          >
-            <!-- <Shop></Shop> -->
-            <!-- bidian.png -->
-            <img src="@/assets/dingdanhetong.png" style="background-color: transparent" alt="" srcset="" />
-            <!-- <IconSwitch style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'Open'"></IconSwitch>
+  <div>
+    <div class="top_box" :class="[searchType == 'History' ? 'top_history' : 'top_open']">
+      <!-- <div class="top_type">{{ searchType }} </div> -->
+      <!-- <nut-input v-model="keyWord" clearable class="keyword-input-text" placeholder="Search by order number">
+        <template #left> <Search></Search> </template>
+      </nut-input> -->
+      <nut-searchbar v-model="keyWord" placeholder="Search by Bucket Name" clearable class="my_top_search">
+        <template #leftin>
+          <Search />
+        </template>
+        <!-- <template #rightout>
+          <Category class="my_category_icon" @click="toShowSearch" />
+        </template> -->
+      </nut-searchbar>
+
+      <!-- <p>You can search your order here.</p> -->
+      <nut-row type="flex" justify="space-between" class="top_btn_box">
+        <nut-col :span="10">
+          <div class="flex-content">
+            <div
+              class="svg-box"
+              @click="searchType = 'Open'"
+              :class="[searchType == 'Open' ? 'active_svg-box active_svg-boxOpen' : 'svg-box-open']"
+            >
+              <!-- <Shop></Shop> -->
+              <!-- bidian.png -->
+              <img src="@/assets/dingdanhetong.png" style="background-color: transparent" alt="" srcset="" />
+              <!-- <IconSwitch style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'Open'"></IconSwitch>
             <IconSwitch style="vertical-align: text-top" color="#ffffff" v-else></IconSwitch> -->
+            </div>
+            <span>Ongoing</span>
+            <!-- <span class="order_num" v-if="searchType == 'Open'">Count : {{ total }}</span> -->
           </div>
-          <span>Ongoing</span></div
-        >
-      </nut-col>
-      <nut-col :span="10">
-        <div class="flex-content">
-          <div
-            class="svg-box"
-            @click="searchType = 'History'"
-            :class="[searchType == 'History' ? 'active_svg-box active_svg-boxHistory' : 'svg-box-history']"
-          >
-            <img src="@/assets/bidian.png" style="background-color: transparent" alt="" srcset="" />
-            <!-- <IconHistory style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistory>
+        </nut-col>
+        <nut-col :span="10">
+          <div class="flex-content">
+            <div
+              class="svg-box"
+              @click="searchType = 'History'"
+              :class="[searchType == 'History' ? 'active_svg-box active_svg-boxHistory' : 'svg-box-history']"
+            >
+              <img src="@/assets/bidian.png" style="background-color: transparent" alt="" srcset="" />
+              <!-- <IconHistory style="vertical-align: text-top" color="#5F57FF" v-if="searchType == 'History'"></IconHistory>
             <IconHistoryActivate style="vertical-align: text-top" color="#5F57FF" v-else></IconHistoryActivate> -->
+            </div>
+            <span>History</span>
+            <!-- <span class="order_num" v-if="searchType == 'History'">Count : {{ total }}</span> -->
           </div>
-          <span>History</span></div
-        >
-      </nut-col>
-    </nut-row>
-  </div>
-
-  <div style="margin: 15px 0px">
-    <nut-noticebar
-      :background="`rgba(251, 248, 220, 1)`"
-      :color="`#D9500B`"
-      direction="vertical"
-      :list="horseLamp"
-      wrapable
-      :speed="10"
-      :standTime="1000"
-      :close-mode="true"
-    ></nut-noticebar>
-  </div>
-  <nut-infinite-loading
-    v-if="list.length"
-    class="list_box"
-    load-more-txt="No more content"
-    v-model="infinityValue"
-    :has-more="hasMore"
-    @load-more="loadMoreFun"
-  >
-    <template v-for="(item, index) in list">
-      <div class="list_item" v-if="!(item?.income && item?.state == 0)"  @click="gotoOrder(item)" :class="[searchType === 'History' ? 'history_item' : '']">
-        <!-- :style="{ background: randomColor() }" -->
-
-        <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-          <!-- <img v-if="(index + 1) % 3 == 1" src="@/assets/list_item_1.svg" alt="" />
-        <img class="cions" v-else-if="(index + 1) % 3 == 2" src="@/assets/list_item_2.svg" alt="" />
-        <img v-else-if="(index + 1) % 3 == 0" src="@/assets/list_item_3.svg" alt="" /> -->
-          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-          <img src="@/assets/DMC_Token1.png" alt="" />
-        </div>
-        <div>
-          <span>
-            <span>Order:{{ item.order_id }}</span>
-            <span style="margin-left: 10px">
-              <!-- 待共識 -->
-              <nut-tag v-if="item.state == 0" type="warning">CNR</nut-tag>
-              <!-- 进行中 -->
-              <nut-tag type="success" v-else-if="item.state == 1">CR</nut-tag>
-              <!-- 已结束 -->
-              <nut-tag color="#c9f7f5" textColor="#1bc5bd" v-else-if="item.state == 4">Expired</nut-tag>
-              <!-- 已取消 -->
-              <nut-tag type="danger" v-else-if="item.state == 5">Canceled</nut-tag>
-              <!-- 下週期將取消 -->
-              <nut-tag color="#eee5ff" textColor="#8950fc" v-else-if="item.state == 6">Next: canceled</nut-tag>
-              <!-- 預存⾦不足 -->
-              <nut-tag color="#ffe2e5" textColor="#f64e60" v-else-if="item.state == 2">IADTCNC</nut-tag>
-              <!-- 預存⾦充足 -->
-              <nut-tag color="#D7F9EF" textColor="#0bb783" v-else-if="item.state == 3">SFIA</nut-tag>
-            </span>
-          </span>
-          <span :class="['earnings']" v-if="item.income" style="font-weight: bold">
-            +{{ item.income }}
-            <!-- <IconArrowRight style="vertical-align: text-top" width="1.5rem" height="1.5rem" color="#5F57FF"></IconArrowRight> -->
-          </span>
-        </div>
-        <div
-          ><span>{{ item.pst || '--' }} PST</span> <span class="time">{{ transferGMTTime(item.order_created_at) }}</span>
-        </div>
-        <div style="color: red">
-          <span>Payment:</span>
-          <span class="time" style="color: red; font-weight: bold"> - {{ item.total_price }} DMC</span>
-        </div>
-      </div>
-    </template>
-  </nut-infinite-loading>
-  <nut-empty v-else description=" " image="error">
-    <div style="margin-top: 10px" v-if="!listData.length">
-      <nut-button icon="refresh" type="primary" @click="router.push({ path: '/shop' })">Buy Order</nut-button>
+        </nut-col>
+      </nut-row>
     </div>
-  </nut-empty>
+
+    <div v-if="total > 8" class="top_filter">
+      <nut-menu active-color="#4524a3">
+        <nut-menu-item
+          :title="`Sort By ${searchForm.sortTypeOptions.find((el) => el.value == searchForm.sortType).text}`"
+          v-model="searchForm.sortType"
+          :options="searchForm.sortTypeOptions"
+          @change="sortChange(searchForm.sortType, 'sortType')"
+        >
+          <template #icon> <Checked></Checked> </template>
+        </nut-menu-item>
+        <nut-menu-item
+          v-model="searchForm.sortValue"
+          @change="sortChange(searchForm.sortValue, 'sortValue')"
+          :options="searchForm.sortTypeOptions1"
+        >
+          <template #icon> <Checked></Checked> </template>
+        </nut-menu-item>
+        <!-- <nut-menu-item title="More" @open="MoreChange"> </nut-menu-item> -->
+      </nut-menu>
+      <div class="my_category_icon_box">
+        <Category class="my_category_icon" @click="toShowSearch" :class="[isFilter ? 'my_category_icon_active' : '']" v-if="!isFilter" />
+        <nut-badge v-if="isFilter" color="red" dot>
+          <!-- <template #icon>
+            <Check color="red" width="24px" height="24px"></Check>
+          </template> -->
+          <Category class="my_category_icon" @click="toShowSearch" :class="[isFilter ? 'my_category_icon_active' : '']" />
+        </nut-badge>
+      </div>
+    </div>
+
+    <!-- <div style="margin: 15px 0px">
+      <nut-noticebar
+        :background="`rgba(251, 248, 220, 1)`"
+        :color="`#D9500B`"
+        direction="vertical"
+        :list="horseLamp"
+        wrapable
+        :speed="10"
+        :standTime="1000"
+        :close-mode="true"
+      ></nut-noticebar>
+    </div> -->
+    <div v-if="total > 8" class="find_tips">Based on your search criteria,We found {{ total }} items for you.</div>
+    <ErrorPage v-if="isError && !list.length" @refresh="loadMoreFun"></ErrorPage>
+    <nut-infinite-loading
+      v-else-if="list.length"
+      class="list_box"
+      load-more-txt="No more content"
+      v-model="infinityValue"
+      :has-more="hasMore"
+      @load-more="loadMoreFun"
+    >
+      <template v-for="(item, index) in list">
+        <!-- :class="[searchType === 'History' ? 'history_item' : '']" -->
+        <div
+          class="list_item order_item"
+          v-if="!(item?.income && item?.state == 0)"
+          @click="gotoOrder(item)"
+          :class="[isOpen(item.state) ? '' : 'history_item']"
+        >
+          <!-- <div class="order_time">{{ transferUTCTime(item.order_created_at) }}</div> -->
+          <div v-if="item.expire" class="order_time order_expTime" style="color: #ff8b00; margin-bottom: 10px">
+            <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferUTCTime(item.expire) }}</div
+          >
+          <div class="order_head">
+            <div class="order_img">
+              <img src="@/assets/home_bucket.png" class="bucket_img" />
+              <img v-if="item.electronic_type == 0" src="@/assets/mobile1.svg" alt="" class="right_img" />
+              <img v-else src="@/assets/desktop1.svg" alt="" class="right_img" />
+              <div class="order_name_box">
+                <div class="order_name_time">{{ transferUTCTime(item.order_created_at) }}</div>
+                <div class="order_name"> {{ item.domain ? item.domain : 'Order' + item.order_id }}</div>
+              </div>
+            </div>
+            <!-- <img src="@/assets/exprie.svg" alt="" /> -->
+            <!-- {{ handleExprie(item) }} -->
+            <!-- <div v-if="item.expire" class="order_expTime">
+              <Clock style="color: #ff8b00; margin-right: 6px"></Clock>{{ transferUTCTime(item.expire) }}</div
+            > -->
+          </div>
+          <div class="order_content">
+            <div class="order_content_left">
+              <div class="left_space">
+                <span>{{ item.pst }}GB</span> /
+                <span>{{ item.week }}Weeks</span>
+              </div>
+              <div class="left_price">- {{ item.total_price }} DMC</div>
+            </div>
+            <div class="order_content_right">
+              <div class="right_space">
+                <span>{{ getfilesize(item.used_space, 'B') }}</span> /
+                <span>{{ handleDays(item) }} Days</span>
+              </div>
+              <div class="right_price"> + {{ item.income }} DMC</div>
+              <div class="right_rate" v-if="handleRate(item) > 0">+{{ handleRate(item) }}%<TriangleUp></TriangleUp></div>
+            </div>
+          </div>
+
+          <div class="order_status" v-if="item.domain">
+            {{ statusTypes[item.state] }}
+          </div>
+          <div class="order_status order_status2" v-else> To be activated </div>
+        </div>
+      </template>
+      <div style="margin-top: 2rem; text-align: center">
+        <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button> -->
+        <div style="display: flex; justify-content: center; align-items: center">
+          <div class="plus_bucket" @click="toBuy">
+            <IconPlus></IconPlus>
+          </div>
+          <img src="@/assets/home_bucket.png" alt="" />
+        </div>
+        <!-- <p>Buy Bucket</p> -->
+      </div>
+    </nut-infinite-loading>
+    <nut-empty v-else description=" " image="error">
+      <div style="margin-top: 2rem; text-align: center" v-if="!listData.length">
+        <!-- <nut-button type="primary" @click="choose({ name: 'Expansion' })">Require space</nut-button> -->
+        <div style="display: flex; justify-content: center; align-items: center">
+          <div class="plus_bucket" @click="toBuy">
+            <IconPlus></IconPlus>
+          </div>
+          <img src="@/assets/home_bucket.png" alt="" />
+        </div>
+        <p>Buy a new Bucket</p>
+      </div>
+    </nut-empty>
+    <Teleport to="body">
+      <nut-popup position="top" :style="{ height: 'auto' }" v-model:visible="showTop" class="top_search_wrap">
+        <nut-form class="top_search_wrap" :model-value="searchForm">
+          <div class="search_title">Conditional Filtering</div>
+          <div class="search_title left_title">Status Filtering</div>
+          <nut-form-item label="">
+            <nut-checkbox-group class="status_radio" v-model="searchForm.statusArr" direction="horizontal">
+              <nut-checkbox
+                shape="button"
+                :label="item.value"
+                v-for="(item, index) in typeArr"
+                :key="index"
+                :class="[searchForm.statusArr.indexOf(item.value) > -1 ? 'activeStatus' : '']"
+                >{{ item.text }}</nut-checkbox
+              >
+            </nut-checkbox-group>
+          </nut-form-item>
+          <div class="search_title left_title">Filter by time</div>
+          <nut-form-item label="">
+            <nut-radio-group direction="horizontal" v-model="searchForm.timeType" @change="changeTime">
+              <nut-radio label="create">Purchase Time</nut-radio>
+              <nut-radio label="expiration">Expiration Time</nut-radio>
+            </nut-radio-group>
+          </nut-form-item>
+          <nut-form-item label="">
+            <nut-cell
+              :showIcon="true"
+              title="Please select"
+              :desc="
+                searchForm.createDate && searchForm.createDate[0]
+                  ? `${searchForm.createDate[0]}-${searchForm.createDate[1]}`
+                  : 'Please select a time'
+              "
+              @click="searchForm.isVisible = true"
+            >
+            </nut-cell>
+            <nut-calendar
+              v-model:visible="searchForm.isVisible"
+              :default-value="searchForm.createDate"
+              type="range"
+              :start-date="`2023-01-01`"
+              :end-date="`2030-01-01`"
+              @close="searchForm.isVisible = false"
+              @choose="setCTimeChooseValue"
+              @select="setCTime"
+            >
+            </nut-calendar>
+          </nut-form-item>
+          <div class="search_title left_title">Filter by purchase price</div>
+          <nut-form-item label="">
+            <nut-radio-group direction="horizontal" v-model="searchForm.priceType" @change="changePrice">
+              <nut-radio label="purchase">Purchase Price Range</nut-radio>
+              <nut-radio label="income">Reward Range</nut-radio>
+            </nut-radio-group>
+          </nut-form-item>
+          <nut-form-item label="" direction="horizontal" class="range_number">
+            <nut-input placeholder="Min Price" v-model="searchForm.min" type="number" />
+            -
+            <nut-input placeholder="Max Price" v-model="searchForm.max" type="number" />
+          </nut-form-item>
+          <div class="bottom_btn">
+            <nut-button type="warning" plain :loading="SearchLoading" @click="toReset"> Reset </nut-button>
+            <nut-button type="warning" @click="toSearch" :disabled="searchDisabled" :loading="SearchLoading"> Search </nut-button>
+          </div>
+        </nut-form>
+      </nut-popup>
+    </Teleport>
+  </div>
 </template>
 
 <script lang="ts" setup name="ListPage">
+  import IconPlus from '~icons/home/plus.svg';
   import IconArrowRight from '~icons/home/arrow-right.svg';
   import IconSwitch from '~icons/home/switch.svg';
   import IconHistory from '~icons/home/history.svg';
   import IconHistoryActivate from '~icons/home/historyActivate.svg';
-  import { Search } from '@nutui/icons-vue';
+  import { Search, Category, TriangleUp, Clock, Checked } from '@nutui/icons-vue';
   import { search_cloud } from '@/api';
   // import { listData } from './data';
   import useVariable from './details/useVariable.js';
   import { useOrderStore } from '@/store/modules/order';
   import useOrderList from '../home/useOrderList.ts';
-  import { transferGMTTime } from '@/utils/util';
+  import { transferUTCTime, getfilesize, handleDays, handleExprie, handleRate } from '@/utils/util';
   import useUpdateDMC from '@/views/shop/useUpdateDMC.js';
+  import ErrorPage from '@/views/errorPage/index.vue';
 
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, reactive, toRefs } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   const { uuid } = useVariable();
   const loading = ref(false);
   const router = useRouter();
   const route = useRoute();
   const searchType = ref(route.query.searchType == 'History' ? 'History' : 'Open');
-  console.log(route.query.searchType);
-
+  const currentTotal = ref(0);
+  const statusTypes = {
+    0: 'Consensus not reached',
+    1: 'Consensus reached',
+    2: 'Insufficient advance deposit to cancel the next cycle',
+    3: 'Sufficient funds in advance',
+    4: 'Bucket over',
+    5: 'Canceled',
+    6: 'Cancellation of the next cycle',
+  };
+  const typeArr = [
+    { text: 'Consensus not reached', value: 0 },
+    { text: 'Consensus reached', value: 1 },
+    { text: 'Insufficient advance deposit to cancel the next cycle', value: 2 },
+    { text: 'Sufficient funds in advance', value: 3 },
+    { text: 'Bucket over', value: 4 },
+    { text: 'Canceled', value: 5 },
+    { text: 'Cancellation of the next cycle', value: 6 },
+  ];
   const keyWord = ref('');
   const horseLamp = ref([
     'CNR - - Consensus not reached ',
@@ -145,9 +300,123 @@
   ]);
   const cloudSpaceList = ref([]);
   const orderStore = useOrderStore();
-  const { bindAmbCode, cloudCodeIsBind } = useUpdateDMC();
-  const { resetData, loadMore, listData, hasMore, infinityValue } = useOrderList();
+  const { cloudCodeIsBind } = useUpdateDMC();
+  const bindAmbCode = inject('bindAmbCode');
+  const { resetData, loadMore, isError, listData, hasMore, infinityValue, total } = useOrderList();
+  const isFilter = ref(false);
+  const searchParam = reactive({
+    searchForm: {
+      status: 0,
+      statusArr: [],
+      createDate: [],
+      timeType: 'create',
+      min: '0',
+      max: '100',
+      priceType: 'purchase',
+      sortTypeOptions: [
+        { text: 'Payment Time', value: 'created_at' },
+        { text: 'Expiration Time', value: 'expire' },
+        { text: 'Reward Price', value: 'Reward' },
+        { text: 'Purchase Price', value: 'total_price' },
+      ],
+      sortTypeOptions1: [
+        { text: '↓ Descending', value: 'descending' },
+        { text: '↑ Ascending', value: 'ascending' },
+      ],
+      sortType: 'created_at',
+      sortValue: 'descending',
+      More: 'More',
+    },
+  });
 
+  const { searchForm } = toRefs(searchParam);
+  if (searchType.value === 'Open') {
+    searchForm.value.statusArr = [0, 1, 2, 3, 6];
+  } else if (searchType.value === 'History') {
+    searchForm.value.statusArr = [4, 5];
+  } else {
+    searchForm.value.statusArr = [0];
+  }
+  const setCTimeChooseValue = (param) => {
+    searchForm.value.createDate = [...[param[0][3], param[1][3]]];
+  };
+  const setCTime = (param) => {
+    console.log(param);
+  };
+  const changeTime = () => {
+    console.log(searchForm.value.timeType, 'changeTime');
+  };
+  const changePrice = () => {
+    console.log(searchForm.value.priceType, 'changePrice');
+  };
+  const sortChange = (value, type) => {
+    let ascending = searchForm.value.sortValue === 'ascending';
+    let sort_type = searchForm.value.sortType;
+    let postData = {
+      ascending,
+      sort_type,
+    };
+    console.log(postData, 'postData');
+    if (searchType.value == 'Open') {
+      loadMore([0, 1, 2, 3, 6], '', '', '', postData, 'search');
+    } else {
+      loadMore([4, 5], '', '', '', postData, 'search');
+    }
+  };
+  const toSearch = () => {
+    isFilter.value = true;
+    let start_time = searchForm.value.createDate[0];
+    let end_time = searchForm.value.createDate[1];
+    let max_price = '';
+    let min_price = '';
+    let max_profit = '';
+    let min_profit = '';
+    let priceType = searchForm.value.priceType;
+    if (priceType === 'purchase') {
+      max_price = searchForm.value.max;
+      min_price = searchForm.value.min;
+    } else {
+      max_profit = searchForm.value.max;
+      min_profit = searchForm.value.min;
+    }
+    let order_state = searchForm.value.statusArr;
+    let ascending = searchForm.value.sortValue === 'ascending';
+    let sort_type = searchForm.value.sortType;
+    let postData = {
+      //   start_time,
+      //   end_time,
+      max_price,
+      min_price,
+      max_profit,
+      min_profit,
+      //   order_state,
+      ascending,
+      sort_type,
+    };
+    showTop.value = false;
+    if (order_state.length > 0) {
+      searchType.value = 'filter';
+    }
+    loadMore(order_state, start_time, end_time, '', postData, 'search');
+  };
+  const toReset = () => {
+    isFilter.value = false;
+    showTop.value = false;
+    searchForm.value.createDate = [];
+    searchForm.value.statusArr = [0];
+    searchForm.value.timeType = 'create';
+    searchForm.value.priceType = 'purchase';
+    searchForm.value.min = '';
+    searchForm.value.max = '';
+    searchType.value = 'Open';
+  };
+
+  const showTop = ref(false);
+  const SearchLoading = ref(false);
+  const searchDisabled = ref(false);
+  const toShowSearch = () => {
+    showTop.value = true;
+  };
   let list = computed(() => {
     return listData.value.filter((el) => {
       return el.order_id.indexOf(keyWord.value) > -1 || el.pst == keyWord.value;
@@ -158,6 +427,13 @@
     // currName: 当前操作的 collapse-item 的 name
     // status: true 打开 false 关闭
     console.log(modelValue, currName, status);
+  };
+  const toBuy = () => {
+    if (!cloudCodeIsBind.value) {
+      bindAmbCode();
+    } else {
+      router.push('/shop');
+    }
   };
 
   const handleProgress = (item: { created_at: string | number | Date; expire: string | number | Date }) => {
@@ -193,12 +469,33 @@
     let b = createNumber(150, 255);
     return `rgb(${r} ${g} ${b})`;
   };
+  const isOpen = (state) => {
+    if (state === 4 || state === 5) {
+      return false;
+    } else {
+      return true;
+    }
+  };
   const gotoOrder = (item) => {
-    if (searchType.value === 'Open') {
-      router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid } });
-    } else if (searchType.value === 'History') {
+    if (isOpen(item.state)) {
+      router.push({ name: 'listDetails', query: { id: item.order_id, uuid: item.uuid, amb_uuid: item.amb_uuid, income: item.income } });
+    } else if (!isOpen(item.state)) {
       if (item.order_id) {
-        router.push({ name: 'orderSummary', query: { id: item.order_id, type: 'history', status: item.state } });
+        window.sessionStorage.removeItem('myHistoryOrder');
+        window.sessionStorage.setItem('myHistoryOrder', JSON.stringify(item));
+        router.push({
+          name: 'listDetails',
+          query: {
+            id: item.order_id,
+            type: 'history',
+            status: item.state,
+            createdTime: transferUTCTime(item.order_created_at),
+            endTime: transferUTCTime(item.expire),
+            uuid: item.uuid,
+            amb_uuid: item.amb_uuid,
+            domain: item.domain,
+          },
+        });
       }
     }
   };
@@ -206,21 +503,74 @@
   //   loadMore();
   // });
   const loadMoreFun = () => {
-    if (searchType.value == 'Open') {
-      loadMore([0, 1, 2, 3, 6]);
-    } else {
-      loadMore([4, 5]);
+    if (cloudCodeIsBind.value) {
+      console.log('loadMoreFun', searchForm.value.statusArr);
+      let ascending = searchForm.value.sortValue === 'ascending';
+      let sort_type = searchForm.value.sortType;
+      let statusArr = searchForm.value.statusArr;
+      let postData = {
+        ascending,
+        sort_type,
+      };
+      if (searchType.value == 'Open') {
+        let arr = [0, 1, 2, 3, 6];
+        if (statusArr.length > 0) {
+          arr = arr.concat(statusArr);
+        }
+        const uniqueArray = [...new Set(arr)];
+        loadMore(uniqueArray, '', '', '', postData, '', true);
+      } else if (searchType.value == 'History') {
+        let arr = [4, 5];
+        if (statusArr.length > 0) {
+          arr = arr.concat(statusArr);
+        }
+        const uniqueArray = [...new Set(arr)];
+        loadMore(uniqueArray, '', '', '', postData, '', true);
+      } else {
+        let arr = statusArr;
+        loadMore(arr, '', '', '', postData, '', true);
+      }
+      //   if (searchType.value == 'Open') {
+      //     loadMore([0, 1, 2, 3, 6]);
+      //   } else {
+      //     loadMore([4, 5]);
+      //   }
     }
   };
   watch(
     cloudCodeIsBind,
     (val) => {
       if (val) {
+        let ascending = searchForm.value.sortValue === 'ascending';
+        let sort_type = searchForm.value.sortType;
+        let statusArr = searchForm.value.statusArr;
+        let postData = {
+          ascending,
+          sort_type,
+        };
         if (searchType.value == 'Open') {
-          loadMore([0, 1, 2, 3, 6]);
+          let arr = [0, 1, 2, 3, 6];
+          if (statusArr.length > 0) {
+            arr = arr.concat(statusArr);
+          }
+          const uniqueArray = [...new Set(arr)];
+          loadMore(uniqueArray, '', '', '', postData, 'search', true);
+        } else if (searchType.value == 'History') {
+          let arr = [4, 5];
+          if (statusArr.length > 0) {
+            arr = arr.concat(statusArr);
+          }
+          const uniqueArray = [...new Set(arr)];
+          loadMore(uniqueArray, '', '', '', postData, 'search', true);
         } else {
-          loadMore([4, 5]);
+          let arr = statusArr;
+          loadMore(arr, '', '', '', postData, 'search', true);
         }
+        // if (searchType.value == 'Open') {
+        //   loadMore([0, 1, 2, 3, 6]);
+        // } else {
+        //   loadMore([4, 5]);
+        // }
       }
     },
     { deep: true, immediate: true },
@@ -230,15 +580,31 @@
     (val) => {
       resetData();
       if (cloudCodeIsBind.value) {
-        console.log(val, '12222222222222222222');
-
+        let ascending = searchForm.value.sortValue === 'ascending';
+        let sort_type = searchForm.value.sortType;
+        let postData = {
+          ascending,
+          sort_type,
+        };
         if (val == 'Open') {
-          loadMore([0, 1, 2, 3, 6]);
+          let arr = [0, 1, 2, 3, 6];
+          searchForm.value.statusArr = [0, 1, 2, 3, 6];
+          loadMore(arr, '', '', '', postData, 'search', true);
         } else if (val == 'History') {
-          loadMore([4, 5]);
+          let arr = [4, 5];
+          searchForm.value.statusArr = arr;
+          loadMore(arr, '', '', '', postData, 'search', true);
         } else {
-          loadMore();
+          let statusArr = searchForm.value.statusArr;
+          loadMore(statusArr, '', '', '', postData, 'search', true);
         }
+        // if (val == 'Open') {
+        //   loadMore([0, 1, 2, 3, 6]);
+        // } else if (val == 'History') {
+        //   loadMore([4, 5]);
+        // } else {
+        //   loadMore();
+        // }
       }
     },
     { deep: true },
@@ -246,10 +612,42 @@
 </script>
 
 <style lang="scss" scoped>
+  .plus_bucket {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin: 0 0.2rem;
+    border-radius: 50%;
+    border: 1px dashed #777;
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: #777;
+    }
+    & + img {
+      width: 3rem;
+      height: 3rem;
+      margin: 0 0.2rem;
+      border-radius: 50%;
+    }
+    & + p {
+      margin-top: 0.5rem;
+      margin: 0.5rem;
+      text-align: left;
+    }
+  }
+  .order_num {
+    margin-top: 10px;
+    font-weight: bold;
+  }
   .top_box {
     padding: 30px 10px;
     border-radius: 0px !important;
     background: $primary-color;
+    background-image: linear-gradient(137deg, #4062bb 0%, #5200ae 74%);
     margin-left: -4vw;
     margin-right: -4vw;
     margin-bottom: 10px;
@@ -291,6 +689,21 @@
           font-weight: 600;
         }
       }
+
+      @keyframes maxshow {
+        0% {
+          // transform: rotate(0deg);
+          transform: scale(1);
+        }
+        50% {
+          // transform: rotate(0deg);
+          transform: scale(1.1);
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
       .flex-content {
         display: flex;
         flex-direction: column;
@@ -299,6 +712,7 @@
         // height: 120px;
         text-align: center;
         word-break: break-word;
+        animation: maxshow 3s linear infinite;
         span {
           font-size: 0.8rem;
         }
@@ -306,7 +720,7 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          border-radius: 50px;
+          border-radius: 50%;
           width: 100px;
           height: 100px;
           margin-bottom: 15px;
@@ -352,8 +766,9 @@
         //   }
         // }
         .active_svg-boxHistory {
-          border: 5px solid orange;
+          border: 8px solid orange;
           background-color: #aeaeae;
+          -webkit-box-reflect: below 0 linear-gradient(hsla(0deg, 0%, 100%, 0), hsla(0deg, 0%, 100%, 0) 45%, hsla(0deg, 0%, 100%, 0.5));
 
           svg,
           img {
@@ -363,8 +778,9 @@
           }
         }
         .active_svg-boxOpen {
-          border: 5px solid orange;
+          border: 8px solid orange;
           background: #fff;
+          -webkit-box-reflect: below 0 linear-gradient(hsla(0deg, 0%, 100%, 0), hsla(0deg, 0%, 100%, 0) 45%, hsla(0deg, 0%, 100%, 0.5));
           svg,
           img {
             color: #ffe879;
@@ -421,6 +837,8 @@
     }
   }
   .list_box {
+    height: calc(100vh - 550px);
+    overflow: auto;
     // padding: 0 10px;
     .list_item {
       position: relative;
@@ -435,9 +853,9 @@
       background: #fff;
       border-radius: 5px;
       border-bottom: 1px solid #eee;
-      margin: 10px 0;
+      //   margin: 10px 0;
       border-radius: 20px;
-      box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
+      // box-shadow: rgba(0, 0, 0, 0.1) 0px 1.333333vw 6.666667vw;
       .item_img_box {
         position: absolute;
         left: 16px;
@@ -450,22 +868,22 @@
         img {
           width: 36px;
           margin: 0 auto;
-          transform-style: preserve-3d;
-          -webkit-transform-origin: 50%;
-          -webkit-animation: spin 5s infinite;
-          -webkit-animation-timing-function: linear;
-          -webkit-perspective: 1000;
-          -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
-          -webkit-filter: saturate(1.45) hue-rotate(2deg);
+          // transform-style: preserve-3d;
+          // -webkit-transform-origin: 50%;
+          // -webkit-animation: spin 5s infinite;
+          // -webkit-animation-timing-function: linear;
+          // -webkit-perspective: 1000;
+          // -webkit-box-reflect: below 0 linear-gradient(hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0) 45%, hsla(0, 0%, 100%, 0.5));
+          // -webkit-filter: saturate(1.45) hue-rotate(2deg);
         }
-        @keyframes spin {
-          from {
-            -webkit-transform: rotateY(0deg);
-          }
-          to {
-            -webkit-transform: rotateY(360deg);
-          }
-        }
+        // @keyframes spin {
+        //   from {
+        //     -webkit-transform: rotateY(0deg);
+        //   }
+        //   to {
+        //     -webkit-transform: rotateY(360deg);
+        //   }
+        // }
         .cions {
           margin-right: 15px;
         }
@@ -506,6 +924,257 @@
       span {
         color: #fff !important;
       }
+      .order_name_time {
+        color: #000;
+        background: #f5ba19 !important;
+        border-radius: 4px;
+      }
     }
+  }
+</style>
+
+<style lang="scss">
+  .my_top_search {
+    background: transparent;
+    .my_category_icon {
+      color: #fff;
+      transform: scale(1.1);
+      cursor: pointer;
+    }
+  }
+  .top_search_wrap {
+    .search_title {
+      text-align: center;
+      padding: 18px 0;
+    }
+    .left_title {
+      text-align: left;
+      padding-left: 24px;
+    }
+    .bottom_btn {
+      display: flex;
+      justify-content: space-around;
+      margin: 30px 0;
+      .nut-button--disabled {
+        background: #aaa !important;
+        opacity: 0.28 !important;
+      }
+    }
+    .status_radio {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .activeStatus {
+      .nut-checkbox__button {
+        background: #fab20c;
+        background: #5758a0;
+        color: #fff;
+        border: 1px solid #fff !important;
+      }
+    }
+    .nut-checkbox__button {
+      margin: 10px 0;
+    }
+    .range_number {
+      .nut-form-item__body__slots {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nut-input {
+        width: 44%;
+        border: 1px solid #ccc;
+        border-radius: 40px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 60px;
+        .input-text {
+          text-align: center !important;
+        }
+      }
+    }
+  }
+  .list_box .order_item {
+    position: relative;
+    margin: 70px 0 !important;
+    padding: 20px !important;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    // overflow: hidden;
+    // background:
+    //   linear-gradient(#fff, #fff) padding-box,
+    //   linear-gradient(145deg, #e81cff, #40c9ff) border-box;
+    // border: 2px solid transparent;
+    .order_time {
+      position: absolute;
+      right: 20px;
+      top: -36px;
+      color: #888;
+      font-weight: bold;
+      font-size: 24px;
+      z-index: 99;
+    }
+    .order_head {
+      display: flex;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 99;
+      img {
+        width: 30px;
+        margin: 0 auto;
+        margin-right: 10px;
+      }
+      .order_img,
+      .order_expTime {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        // color: #ff7d24;
+
+        .order_name {
+          font-size: 40px;
+          color: #f88b02;
+          font-weight: bold;
+          padding-left: 10px;
+        }
+      }
+      .order_name_box {
+        padding-left: 120px;
+        .order_name_time {
+          background: #f6f7fb;
+          padding: 4px 10px;
+          margin-top: -10px;
+          margin-bottom: 10px;
+        }
+      }
+    }
+    .order_content {
+      display: flex;
+      z-index: 99;
+      border-bottom: 1px solid #ccc;
+      .order_content_left,
+      .order_content_right {
+        width: 50%;
+        // height: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 28px;
+        line-height: 42px;
+        // box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        padding: 22px 0;
+      }
+      .order_content_left {
+        border-right: 1px solid #ccc;
+        .left_price {
+          color: red;
+          margin: 10px 0;
+        }
+      }
+      .right_price {
+        color: green;
+        margin: 10px 0;
+      }
+      .right_rate {
+        color: #ff7d24;
+        font-size: 32px;
+        // margin-top: 10px;
+      }
+    }
+    .order_status {
+      z-index: 99;
+      color: #ff8b00;
+      font-weight: bold;
+      font-size: 28px;
+      justify-content: start;
+    }
+    .order_status2 {
+      color: red;
+    }
+    .bucket_img {
+      height: auto;
+      width: 130px !important;
+      position: absolute;
+      top: -30px;
+      left: 0;
+    }
+    .right_img {
+      height: auto;
+      //   width: 100px !important;
+      position: absolute;
+      bottom: 24px;
+      right: 0;
+    }
+  }
+  .order_not {
+    align-items: center;
+    justify-content: center;
+    .plus_bucket {
+      justify-content: center !important;
+    }
+  }
+  .top_filter {
+    display: flex;
+    // width: calc(100% + 100px);
+    width: calc(100% + 8vw);
+    margin: 0 -4vw;
+    // width: 100%;
+    // margin: 20px 0;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .nut-menu {
+      width: calc(100% - 100px);
+      width: 100%;
+      .nut-menu__bar .nut-menu__item {
+        --nut-menu-item-font-size: 0.8rem;
+      }
+    }
+    .my_category_icon_box {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .my_category_icon {
+      color: #000;
+      cursor: pointer;
+    }
+
+    .my_category_icon_active {
+      color: #4916a1;
+      color: #ff8b00;
+      font-weight: bold;
+      animation: max 3s linear infinite;
+    }
+
+    @keyframes max {
+      0% {
+        // transform: rotate(0deg);
+        transform: scale(1);
+      }
+      50% {
+        // transform: rotate(0deg);
+        transform: scale(1.3);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+  }
+  .find_tips {
+    font-size: 24px;
+    color: #ff8b00;
+    font-weight: bold;
+    margin-top: 10px;
   }
 </style>

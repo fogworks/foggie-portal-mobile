@@ -10,7 +10,7 @@
             <p>{{ cloudBalance }}</p>
           </div>
         </nut-grid-item>
-        <nut-grid-item class="top_icon" text="Earnings" @click="router.push('/analysisCate?type=1')"
+        <nut-grid-item class="top_icon" text="Reward" @click="router.push('/analysisCate?type=1')"
           ><div>
             <IconIncome class="top_icon"></IconIncome>
             <p>{{ cloudIncome }}</p>
@@ -48,16 +48,17 @@
       </div>
       <!-- LIST -->
       <nut-infinite-loading
+        style="min-height: 280px; height: 0px; padding-bottom: 10px"
         class="list_box"
         load-more-txt="No more content"
         v-model="infinityValue"
         :has-more="hasMore"
         @load-more="loadMore"
       >
-        <div class="list_item" v-for="(item, index) in listData" >
+        <div class="list_item" v-for="(item, index) in listData">
           <div :class="['item_img_box', (index + 1) % 3 == 2 ? 'item_2' : '', (index + 1) % 3 == 0 ? 'item_3' : '']">
-          <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
-          <img src="@/assets/DMC_Token1.png" alt="" />
+            <!-- <img src="@/assets/list_item_2.svg" alt="" /> -->
+            <img src="@/assets/DMC_Token1.png" alt="" />
           </div>
           <div>
             <span class="txt_id" @click="goToHash(item.trx_id)">{{ handleID(item.trx_id) }}</span>
@@ -68,7 +69,7 @@
           </div>
           <div>
             <span>memo:{{ item.memo }}</span>
-            <span>{{ searchType == 0 ? '' : item.state }} </span> <span class="time">{{ transferGMTTime(item.created_at) }}</span>
+            <span>{{ searchType == 0 ? '' : item.state }} </span> <span class="time">{{ transferUTCTime(item.created_at) }}</span>
           </div>
         </div>
       </nut-infinite-loading>
@@ -92,11 +93,12 @@
   import { transferUTCTime, transferGMTTime, formatNumber } from '@/utils/util';
   import { get_user_recharge } from '@/api/amb';
   import * as echarts from 'echarts';
+  const DMC_ADRESS = import.meta.env.VITE_USE_DMC_ADRESS;
 
   const route = useRoute();
   const router = useRouter();
   const state = reactive({
-    queryType: 'Earnings',
+    queryType: 'Reward',
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
@@ -104,6 +106,12 @@
     searchType: '0',
   });
   const { getUserAssets, cloudBalance, cloudPst, cloudIncome, cloudWithdraw } = useUserAssets();
+  import { useUserStore } from '@/store/modules/user';
+  const userStore = useUserStore();
+
+  const maxBind = computed(() => userStore.getMaxBind);
+  const maxWallet = computed(() => userStore.getMaxWallet);
+
 
   const { searchType, timeType, chartOptions, queryType, typeShow, queryTypeValue } = toRefs(state);
 
@@ -126,8 +134,8 @@
   };
   const goToHash = (transaction_hash) => {
     // window.open(`https://explorer.dmctech.io/transaction/${transaction_hash}`);
-    window.open(`http://154:64.7.46:8801/transaction/${transaction_hash}`);
-
+    // window.open(`http://154.64.7.46:8801/transaction/${transaction_hash}`);
+    window.open(`${DMC_ADRESS}/transaction/${transaction_hash}`);
   };
   // watch(
   //   listData,
@@ -148,12 +156,14 @@
   const searchTypeChange = () => {
     resetData();
     const [start, end] = shortcuts[timeType.value]();
-    loadMore(start, end, searchType.value);
+    const address = maxBind.value ? maxWallet.value : '';
+    loadMore(start, end, searchType.value, address);
   };
   const timeTypeChange = () => {
     resetData();
     const [start, end] = shortcuts[timeType.value]();
-    loadMore(start, end, searchType.value);
+    const address = maxBind.value ? maxWallet.value : '';
+    loadMore(start, end, searchType.value, address);
   };
   // watch(
   //   searchType,
@@ -174,7 +184,8 @@
     const [start, end] = shortcuts[timeType.value]();
     getUserAssets();
     resetData();
-    loadMore(start, end, searchType.value);
+    const address = maxBind.value ? maxWallet.value : '';
+    loadMore(start, end, searchType.value, address);
   });
 </script>
 
@@ -204,7 +215,8 @@
     // margin: 20px;
     padding: 50px 10px 30px;
     border-radius: 20px;
-    background: $primary-color;
+    // background: $primary-color;
+    // background-image: linear-gradient(260deg, #4062bb 0%, #5200ae 74%);
   }
   .top_grid {
     border: none;

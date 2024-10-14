@@ -22,16 +22,3 @@ or with NPM:
 
 # Front End page code
 /src/views & /src/components
-
-
-
-
-
-
-
-
-
-
-
-
-

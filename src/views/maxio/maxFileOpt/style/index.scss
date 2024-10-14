@@ -1,0 +1,367 @@
+//   background: url('@/assets/maxio/bg.png') center center no-repeat;
+//   background-size: 100% 100%;
+.maxio_pool_list {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  .maxio_pool_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 24px;
+
+    width: 50%;
+    .img_bg {
+      width: 80px;
+      height: 80px;
+
+      //   background-image: linear-gradient(215deg, #fcc5e4 0%, #fda34b 15%, #ff7882 35%, #c8699e 52%, #7046aa 71%, #0c1db8 87%, #020f75 100%);
+      border-radius: 20px;
+      padding: 14px;
+      box-sizing: border-box;
+    }
+    .pool_bg {
+      background: #ffffff54;
+      img {
+        // animation: poolChange 1s linear alternate infinite;
+        // animation: iotChange 2s linear alternate infinite;
+      }
+    }
+    .iot_bg {
+      background: #ffffff54;
+      //   background: rgb(68 219 221 / 83%);
+      border: 1px solid ffffff;
+      //   background-image: linear-gradient(103deg, #f83600 0%, #f9d423 100%);
+      img {
+        // animation: iotChange 2s linear alternate infinite;
+      }
+    }
+
+    .reward_bg {
+      //   box-shadow: #ffd700 0px 0px 8px;
+      //   border: 1px solid #ffd700;
+      background: #d0b7b72e;
+      //   background-image: linear-gradient(177deg, #e4d1b9 0%, #e2a856 30%, #ec9210 100%);
+      // background-image: linear-gradient(to top, #e14fad 0%, #f9d423 100%);
+      // background-image: linear-gradient(-225deg, #231557 0%, #44107a 29%, #ff1361 67%, #fff800 100%);
+      img {
+        //   animation: rewardChange 2s linear alternate infinite;
+      }
+    }
+    .pool_name {
+      margin: 16px 0 0 0;
+      font-weight: bold;
+      white-space: nowrap;
+      font-style: normal;
+    }
+    .reward_value {
+      font-style: normal;
+      font-weight: bolder;
+      //   color: #fac858;
+      font-size: 14px;
+      margin-top: 10px;
+      white-space: nowrap;
+      color: #fac858;
+      color: #f99e0f;
+      color: #40e114;
+    }
+    .pool_number {
+      font-size: 20px;
+      font-weight: bold;
+    }
+  }
+}
+
+.space_card {
+  box-sizing: border-box;
+  padding: 20px;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  width: 100%;
+  .space_card_left,
+  .space_card_right {
+    border-radius: 0;
+    width: 100% !important;
+    font-style: normal;
+
+    .local_title {
+      white-space: nowrap;
+      font-size: 24px;
+      text-align: left;
+      padding-left: 14px;
+    }
+    .file_items_groups {
+      display: flex;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+    .file_items {
+      width: 44%;
+      margin-left: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 80px;
+      line-height: 30px;
+      //   border-bottom: 0.5px dashed #6f7681;
+      padding: 10px 5px;
+      .file_name {
+        font-size: 22px;
+        text-align: left;
+        font-style: normal;
+        // margin-bottom: 4px;
+      }
+      .file_size {
+        display: flex;
+        // flex-direction: column;
+        font-size: 16px;
+
+        font-style: normal;
+        span {
+          white-space: nowrap;
+        }
+        .file_number {
+          font-weight: bold;
+          font-weight: normal;
+          font-size: 14px;
+        }
+        .file_space {
+          margin-right: 8px;
+          color: #fac858;
+          color: #88f948;
+        }
+      }
+      .svg_box {
+        text-align: center;
+        margin-right: 6px;
+        margin-right: 12px;
+
+        svg {
+          width: 40px;
+          height: 40px;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+}
+
+.maxio_iot_list {
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+  position: relative;
+  padding: 0 20px;
+  .maxio_pool_item {
+    width: 50% !important;
+    width: 33% !important;
+    margin-right: 30px;
+  }
+}
+.iot_temp_line {
+  //   color: #44dbdd;
+  color: #ffd07f;
+  background-image: linear-gradient(275deg, #5edc74 0%, rgb(224, 214, 33) 100%) !important;
+  background-clip: text;
+  color: transparent;
+  position: relative;
+  span {
+    position: relative;
+    background-image: linear-gradient(275deg, #5edc74 0%, rgb(224, 214, 33) 100%) !important;
+    background-clip: text;
+    color: transparent;
+
+    // background-clip: text;
+    // color: transparent;
+    // font-weight: bolder;
+    // background-image: linear-gradient(89deg, #0e91dc 10%, #df7a3a 30%, #ffd07f 100%);
+  }
+}
+.iot_temp_unit span::after {
+  content: '°C';
+  position: absolute;
+  //   background-image: linear-gradient(275deg, #5edc74 0%, rgb(224, 214, 33) 100%) !important;
+  //   background-clip: text;
+  color: #5edc74;
+  right: 0;
+  top: -10px;
+  display: block;
+  width: 0px;
+  height: 30px;
+  font-size: 20px;
+  //   background-color: #ffffff5c;
+}
+.pool_item_ipfs {
+  width: 33% !important;
+  font-style: normal;
+  text-overflow: ellipsis;
+}
+@keyframes poolChange {
+  0% {
+    transform: scale(1);
+    transform: translateY(-10px) translateX(10px) translateZ(10px);
+  }
+  100% {
+    transform: scale(0.96);
+    transform: translateY(0px) translateX(0px);
+  }
+}
+@keyframes iotChange {
+  0% {
+    transform: scale(1);
+    transform: rotateY(90deg);
+  }
+  100% {
+    transform: scale(0.96);
+    transform: rotateY(0deg);
+  }
+}
+@keyframes rewardChange {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translate(-2px, -2px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translate(2px, 2px);
+  }
+}
+
+.iot_room_list {
+  img {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+  }
+  .iot_room_head {
+    display: flex;
+    align-items: center;
+    align-items: baseline;
+    font-weight: bold;
+    align-items: self-end;
+    // background: #43c9cb1c;
+
+    .iot_room_number {
+      font-size: 20px;
+      margin-left: 10px;
+      color: #f9c721;
+      color: #5edc74;
+      //   color: #44dbdd;
+    }
+  }
+  .iot_room_detail {
+    .iot_device_item {
+      //   border: 1px solid #ffffff6b;
+      //   border: 1px solid rgb(67 215 218);
+      //   border: 0.266667vw solid #17feff;
+      //   box-shadow: #d3d3eb 0px -0.4vw 1.066667vw 0.266667vw;
+      background: #212121;
+      border-radius: 10px;
+      padding: 26px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      font-weight: bold;
+      border: 1px solid #373737;
+    }
+  }
+}
+
+.maxio_pool_card {
+  flex-direction: column;
+  align-items: start !important;
+  justify-content: space-between !important;
+  padding: 20px;
+  height: 300px;
+  margin-bottom: 40px;
+  font-style: normal !important;
+  .pool_name {
+    font-weight: bolder;
+  }
+  .pool_detail {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    align-items: end;
+    font-weight: bold;
+  }
+  .pool_space {
+    margin-right: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    .pool_space_title {
+      display: flex;
+      color: #fac858;
+      color: #88f948;
+      font-weight: bolder;
+      font-size: 30px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .pool_img {
+    width: 100px;
+    height: 100px;
+    background-image: linear-gradient(215deg, #fcc5e4 0%, #fda34b 15%, #ff7882 35%, #c8699e 52%, #7046aa 71%, #0c1db8 87%, #020f75 100%);
+    border-radius: 20px;
+    padding: 14px;
+    box-sizing: border-box;
+    background-image: linear-gradient(224deg, #0e91dc 10%, #77bbea 40%, #df7a3a 50%, #ffd07f 100%);
+    background-image: linear-gradient(355deg, #5edc74 10%, #5faf4a 40%, #41ef08 50%, #568549 100%);
+    img {
+      width: 100% !important;
+      animation: poolChange 1s linear alternate infinite;
+    }
+  }
+  .pool_time_line {
+    width: 100%;
+    font-size: 20px;
+    display: flex;
+    white-space: nowrap;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-top: 8px;
+    .pool_time_join,
+    .pool_time_exp {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 16px;
+      .title {
+        font-size: 16px;
+        font-weight: normal;
+      }
+    }
+  }
+}
+.today_file {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  font-size: 28px;
+  font-weight: bold;
+
+  .title {
+    font-weight: bold;
+  }
+}
+.iot_empty_box {
+  border: 1px dashed #ffffff87;
+  border: 1px solid #373737;
+  background: #212121;
+  margin: 10px 0;
+  padding-bottom: 10px;
+  border-radius: 10px;
+}

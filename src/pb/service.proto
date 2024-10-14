@@ -1,0 +1,53 @@
+syntax = "proto3";
+package bot;
+option go_package = "bct.com/drive_bot/api/pb";
+
+message DeviceInfo {
+  string token = 1;
+  string expire = 2;
+  string timestamp = 3;
+  string deviceID = 4;
+  int32 deviceType = 5;
+  string foggieID = 6;
+  string bucketName = 7;
+  string domain = 8;
+  string s3domain =9;
+  string deviceIP = 10;
+  uint64 spaceID = 11;
+}
+message UserEffect{
+  DeviceInfo currentWorkspace  = 1;
+  DeviceInfo currentMaxIOSpace = 2;
+  repeated DeviceInfo spaces = 3;
+  repeated DeviceInfo maxIOSpaces = 4;
+  Wallet wallet = 5;
+  uint64  currentWorkspaceID = 6;
+  uint64  currentMaxIOSpaceID = 7;
+}
+message EffectRequest {
+  string ID = 1;
+  int32 forceRefresh = 2;
+}
+message Wallet {
+  string wallet=2;
+  string walletType = 3;
+  string walletPubkey = 4;
+}
+message BindRequest {
+  string ID = 1;
+  Wallet wallet = 2;
+}
+message CommonResponse{
+  string status = 1;
+}
+message SetMasterSpace {
+  string ID = 1;
+  string deviceID = 4;
+  int32 deviceType = 5;
+  uint64 spaceID = 6;
+}
+service Service {
+  rpc GetUserEffect(EffectRequest)returns(UserEffect){}
+  rpc BindWallet(BindRequest)returns(CommonResponse){}
+  rpc SetCurrentSpace(SetMasterSpace)returns(CommonResponse){}
+}

@@ -8,10 +8,14 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BasicModal: typeof import('./src/components/Modal/src/BasicModal.vue')['default']
+    Index2: typeof import('./src/components/loadingImg/index2.vue')['default']
     LoadingImg: typeof import('./src/components/loadingImg/index.vue')['default']
     MyEcharts: typeof import('./src/components/echarts/myEcharts.vue')['default']
+    MyTransition: typeof import('./src/components/myTransition/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ScanQRCodes: typeof import('./src/components/scanQRCodes.vue')['default']
+    Tabbar: typeof import('./src/components/tabbar/index.vue')['default']
     TopBack: typeof import('./src/components/topBack/index.vue')['default']
   }
 }

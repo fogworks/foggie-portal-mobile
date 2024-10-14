@@ -34,7 +34,7 @@
           @load-more="loadMore"
         >
           <div class="list_item" v-for="item in listData">
-            <span v-if="item.created_at">{{ transferGMTTime(item.created_at) }}</span>
+            <span v-if="item.created_at">{{ transferUTCTime(item.created_at) }}</span>
             <span v-else>Order:{{ item.order_id }}</span>
             <span :class="[item.type == 'earnings' ? 'earnings' : 'expenditures']">
               {{ (item.type == 'earnings' ? '+' : '-') + item.quantity }} DMC
@@ -75,7 +75,7 @@
   } = useOrderList();
 
   const state = reactive({
-    queryType: 'Earnings',
+    queryType: 'Reward',
     queryTypeValue: [],
     typeShow: false,
     chartOptions: {},
@@ -149,7 +149,9 @@
     const [start, end] = shortcuts[timeType.value]();
     const postData = !start && !end ? {} : { start_time: start, end_time: end };
     search_order_profit(postData).then((res) => {
-      earnListData.value = res.result.map((el) => {
+      console.log(res, '11111111');
+
+      earnListData.value = (res.result ?? []).map((el) => {
         return {
           quantity: el.profit,
           order_id: el.order_id,
@@ -212,7 +214,7 @@
         queryType.value = 'Withdrawn';
         break;
       case '1':
-        queryType.value = 'Earnings';
+        queryType.value = 'Reward';
         break;
       case '2':
         queryType.value = 'Recharge';
@@ -233,7 +235,7 @@
         queryType.value = 'Withdrawn';
         break;
       case '1':
-        queryType.value = 'Earnings';
+        queryType.value = 'Reward';
         break;
       case '2':
         queryType.value = 'Recharge';
@@ -252,7 +254,7 @@
 <style lang="scss" scoped>
   .analysis_box {
     min-height: 100%;
-    background: #f1f1f1;
+    // background: #f1f1f1;
   }
   .top_box {
     // margin: 20px;

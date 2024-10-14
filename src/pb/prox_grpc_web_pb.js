@@ -626,6 +626,118 @@ proto.proto.ServicePromiseClient.prototype.listObjects =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxGetBlockRequest,
+ *   !proto.proto.ProxGetResponse>}
+ */
+const methodDescriptor_Service_GetBlock = new grpc.web.MethodDescriptor(
+  '/proto.Service/GetBlock',
+  grpc.web.MethodType.SERVER_STREAMING,
+  proto.proto.ProxGetBlockRequest,
+  proto.proto.ProxGetResponse,
+  /**
+   * @param {!proto.proto.ProxGetBlockRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxGetResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxGetBlockRequest} request The request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxGetResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.getBlock =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/proto.Service/GetBlock',
+      request,
+      metadata || {},
+      methodDescriptor_Service_GetBlock);
+};
+
+
+/**
+ * @param {!proto.proto.ProxGetBlockRequest} request The request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxGetResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServicePromiseClient.prototype.getBlock =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/proto.Service/GetBlock',
+      request,
+      metadata || {},
+      methodDescriptor_Service_GetBlock);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxGetCarMetaRequest,
+ *   !proto.proto.ProxGetResponse>}
+ */
+const methodDescriptor_Service_GetCarMeta = new grpc.web.MethodDescriptor(
+  '/proto.Service/GetCarMeta',
+  grpc.web.MethodType.SERVER_STREAMING,
+  proto.proto.ProxGetCarMetaRequest,
+  proto.proto.ProxGetResponse,
+  /**
+   * @param {!proto.proto.ProxGetCarMetaRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxGetResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxGetCarMetaRequest} request The request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxGetResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.getCarMeta =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/proto.Service/GetCarMeta',
+      request,
+      metadata || {},
+      methodDescriptor_Service_GetCarMeta);
+};
+
+
+/**
+ * @param {!proto.proto.ProxGetCarMetaRequest} request The request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxGetResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServicePromiseClient.prototype.getCarMeta =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/proto.Service/GetCarMeta',
+      request,
+      metadata || {},
+      methodDescriptor_Service_GetCarMeta);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.ProxGetRequest,
  *   !proto.proto.ProxGetResponse>}
  */
@@ -1032,6 +1144,67 @@ proto.proto.ServicePromiseClient.prototype.summaryInfo =
       request,
       metadata || {},
       methodDescriptor_Service_SummaryInfo);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxRequestStatistics,
+ *   !proto.proto.ProxStatisticsInfo>}
+ */
+const methodDescriptor_Service_Statistics = new grpc.web.MethodDescriptor(
+  '/proto.Service/Statistics',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxRequestStatistics,
+  proto.proto.ProxStatisticsInfo,
+  /**
+   * @param {!proto.proto.ProxRequestStatistics} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxStatisticsInfo.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxRequestStatistics} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxStatisticsInfo)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxStatisticsInfo>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.statistics =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/Statistics',
+      request,
+      metadata || {},
+      methodDescriptor_Service_Statistics,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxRequestStatistics} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxStatisticsInfo>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.statistics =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/Statistics',
+      request,
+      metadata || {},
+      methodDescriptor_Service_Statistics);
 };
 
 
@@ -1526,6 +1699,67 @@ proto.proto.ServicePromiseClient.prototype.listCreds =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxGeneratePinCredRequest,
+ *   !proto.proto.ProxGeneratePinCredResp>}
+ */
+const methodDescriptor_Service_GenPinningCred = new grpc.web.MethodDescriptor(
+  '/proto.Service/GenPinningCred',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxGeneratePinCredRequest,
+  proto.proto.ProxGeneratePinCredResp,
+  /**
+   * @param {!proto.proto.ProxGeneratePinCredRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxGeneratePinCredResp.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxGeneratePinCredRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxGeneratePinCredResp)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxGeneratePinCredResp>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.genPinningCred =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/GenPinningCred',
+      request,
+      metadata || {},
+      methodDescriptor_Service_GenPinningCred,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxGeneratePinCredRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxGeneratePinCredResp>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.genPinningCred =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/GenPinningCred',
+      request,
+      metadata || {},
+      methodDescriptor_Service_GenPinningCred);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.ProxCredRequest,
  *   !proto.proto.ProxCredResp>}
  */
@@ -1581,6 +1815,799 @@ proto.proto.ServicePromiseClient.prototype.deleteCred =
       request,
       metadata || {},
       methodDescriptor_Service_DeleteCred);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxUpdateNFTRequest,
+ *   !proto.proto.ProxUpdateNFTResp>}
+ */
+const methodDescriptor_Service_UpdateNFT = new grpc.web.MethodDescriptor(
+  '/proto.Service/UpdateNFT',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxUpdateNFTRequest,
+  proto.proto.ProxUpdateNFTResp,
+  /**
+   * @param {!proto.proto.ProxUpdateNFTRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxUpdateNFTResp.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxUpdateNFTRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxUpdateNFTResp)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxUpdateNFTResp>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.updateNFT =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/UpdateNFT',
+      request,
+      metadata || {},
+      methodDescriptor_Service_UpdateNFT,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxUpdateNFTRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxUpdateNFTResp>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.updateNFT =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/UpdateNFT',
+      request,
+      metadata || {},
+      methodDescriptor_Service_UpdateNFT);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxGExtractCode,
+ *   !proto.proto.ProxGExtractCodeResp>}
+ */
+const methodDescriptor_Service_GenerateExtractCode = new grpc.web.MethodDescriptor(
+  '/proto.Service/GenerateExtractCode',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxGExtractCode,
+  proto.proto.ProxGExtractCodeResp,
+  /**
+   * @param {!proto.proto.ProxGExtractCode} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxGExtractCodeResp.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxGExtractCode} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxGExtractCodeResp)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxGExtractCodeResp>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.generateExtractCode =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/GenerateExtractCode',
+      request,
+      metadata || {},
+      methodDescriptor_Service_GenerateExtractCode,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxGExtractCode} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxGExtractCodeResp>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.generateExtractCode =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/GenerateExtractCode',
+      request,
+      metadata || {},
+      methodDescriptor_Service_GenerateExtractCode);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxFetchRequest,
+ *   !proto.proto.ProxPinningInfo>}
+ */
+const methodDescriptor_Service_AsyncFetchObject = new grpc.web.MethodDescriptor(
+  '/proto.Service/AsyncFetchObject',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxFetchRequest,
+  proto.proto.ProxPinningInfo,
+  /**
+   * @param {!proto.proto.ProxFetchRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxPinningInfo.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxFetchRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxPinningInfo)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxPinningInfo>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.asyncFetchObject =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/AsyncFetchObject',
+      request,
+      metadata || {},
+      methodDescriptor_Service_AsyncFetchObject,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxFetchRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxPinningInfo>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.asyncFetchObject =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/AsyncFetchObject',
+      request,
+      metadata || {},
+      methodDescriptor_Service_AsyncFetchObject);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxFetchPinningRequest,
+ *   !proto.proto.ProxFetchPinningResponse>}
+ */
+const methodDescriptor_Service_CancelFetchObject = new grpc.web.MethodDescriptor(
+  '/proto.Service/CancelFetchObject',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxFetchPinningRequest,
+  proto.proto.ProxFetchPinningResponse,
+  /**
+   * @param {!proto.proto.ProxFetchPinningRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxFetchPinningResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxFetchPinningRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxFetchPinningResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxFetchPinningResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.cancelFetchObject =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/CancelFetchObject',
+      request,
+      metadata || {},
+      methodDescriptor_Service_CancelFetchObject,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxFetchPinningRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxFetchPinningResponse>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.cancelFetchObject =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/CancelFetchObject',
+      request,
+      metadata || {},
+      methodDescriptor_Service_CancelFetchObject);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxFetchPinningRequest,
+ *   !proto.proto.ProxFetchPinningResponse>}
+ */
+const methodDescriptor_Service_DeleteFetchObject = new grpc.web.MethodDescriptor(
+  '/proto.Service/DeleteFetchObject',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxFetchPinningRequest,
+  proto.proto.ProxFetchPinningResponse,
+  /**
+   * @param {!proto.proto.ProxFetchPinningRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxFetchPinningResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxFetchPinningRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxFetchPinningResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxFetchPinningResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.deleteFetchObject =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/DeleteFetchObject',
+      request,
+      metadata || {},
+      methodDescriptor_Service_DeleteFetchObject,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxFetchPinningRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxFetchPinningResponse>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.deleteFetchObject =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/DeleteFetchObject',
+      request,
+      metadata || {},
+      methodDescriptor_Service_DeleteFetchObject);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxFetchPinningRequest,
+ *   !proto.proto.ProxFetchPinningResponse>}
+ */
+const methodDescriptor_Service_ResumeFetchObject = new grpc.web.MethodDescriptor(
+  '/proto.Service/ResumeFetchObject',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxFetchPinningRequest,
+  proto.proto.ProxFetchPinningResponse,
+  /**
+   * @param {!proto.proto.ProxFetchPinningRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxFetchPinningResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxFetchPinningRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxFetchPinningResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxFetchPinningResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.resumeFetchObject =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/ResumeFetchObject',
+      request,
+      metadata || {},
+      methodDescriptor_Service_ResumeFetchObject,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxFetchPinningRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxFetchPinningResponse>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.resumeFetchObject =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/ResumeFetchObject',
+      request,
+      metadata || {},
+      methodDescriptor_Service_ResumeFetchObject);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxPinningListRequest,
+ *   !proto.proto.ProxPinningResp>}
+ */
+const methodDescriptor_Service_ListPinnings = new grpc.web.MethodDescriptor(
+  '/proto.Service/ListPinnings',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxPinningListRequest,
+  proto.proto.ProxPinningResp,
+  /**
+   * @param {!proto.proto.ProxPinningListRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxPinningResp.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxPinningListRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxPinningResp)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxPinningResp>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.listPinnings =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/ListPinnings',
+      request,
+      metadata || {},
+      methodDescriptor_Service_ListPinnings,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxPinningListRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxPinningResp>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.listPinnings =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/ListPinnings',
+      request,
+      metadata || {},
+      methodDescriptor_Service_ListPinnings);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxFetchPinningRequest,
+ *   !proto.proto.ProxPinningInfo>}
+ */
+const methodDescriptor_Service_FetchPinningEvent = new grpc.web.MethodDescriptor(
+  '/proto.Service/FetchPinningEvent',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxFetchPinningRequest,
+  proto.proto.ProxPinningInfo,
+  /**
+   * @param {!proto.proto.ProxFetchPinningRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxPinningInfo.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxFetchPinningRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxPinningInfo)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxPinningInfo>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.fetchPinningEvent =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/FetchPinningEvent',
+      request,
+      metadata || {},
+      methodDescriptor_Service_FetchPinningEvent,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxFetchPinningRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxPinningInfo>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.fetchPinningEvent =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/FetchPinningEvent',
+      request,
+      metadata || {},
+      methodDescriptor_Service_FetchPinningEvent);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxF2PGetSpace,
+ *   !proto.proto.ProxF2PGetSpaceResp>}
+ */
+const methodDescriptor_Service_F2PGetSpaceInfo = new grpc.web.MethodDescriptor(
+  '/proto.Service/F2PGetSpaceInfo',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxF2PGetSpace,
+  proto.proto.ProxF2PGetSpaceResp,
+  /**
+   * @param {!proto.proto.ProxF2PGetSpace} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxF2PGetSpaceResp.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxF2PGetSpace} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxF2PGetSpaceResp)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxF2PGetSpaceResp>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.f2PGetSpaceInfo =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/F2PGetSpaceInfo',
+      request,
+      metadata || {},
+      methodDescriptor_Service_F2PGetSpaceInfo,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxF2PGetSpace} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxF2PGetSpaceResp>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.f2PGetSpaceInfo =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/F2PGetSpaceInfo',
+      request,
+      metadata || {},
+      methodDescriptor_Service_F2PGetSpaceInfo);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxF2PGetIOT,
+ *   !proto.proto.ProxF2PGetIOTResp>}
+ */
+const methodDescriptor_Service_F2PGetIOTList = new grpc.web.MethodDescriptor(
+  '/proto.Service/F2PGetIOTList',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxF2PGetIOT,
+  proto.proto.ProxF2PGetIOTResp,
+  /**
+   * @param {!proto.proto.ProxF2PGetIOT} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxF2PGetIOTResp.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxF2PGetIOT} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxF2PGetIOTResp)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxF2PGetIOTResp>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.f2PGetIOTList =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/F2PGetIOTList',
+      request,
+      metadata || {},
+      methodDescriptor_Service_F2PGetIOTList,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxF2PGetIOT} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxF2PGetIOTResp>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.f2PGetIOTList =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/F2PGetIOTList',
+      request,
+      metadata || {},
+      methodDescriptor_Service_F2PGetIOTList);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxF2PGetIOT,
+ *   !proto.proto.ProxF2PGetIOTAmountResp>}
+ */
+const methodDescriptor_Service_F2PGetIOTAmount = new grpc.web.MethodDescriptor(
+  '/proto.Service/F2PGetIOTAmount',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxF2PGetIOT,
+  proto.proto.ProxF2PGetIOTAmountResp,
+  /**
+   * @param {!proto.proto.ProxF2PGetIOT} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxF2PGetIOTAmountResp.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxF2PGetIOT} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxF2PGetIOTAmountResp)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxF2PGetIOTAmountResp>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.f2PGetIOTAmount =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/F2PGetIOTAmount',
+      request,
+      metadata || {},
+      methodDescriptor_Service_F2PGetIOTAmount,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxF2PGetIOT} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxF2PGetIOTAmountResp>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.f2PGetIOTAmount =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/F2PGetIOTAmount',
+      request,
+      metadata || {},
+      methodDescriptor_Service_F2PGetIOTAmount);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxF2PGetMiner,
+ *   !proto.proto.ProxF2PGetMinerResp>}
+ */
+const methodDescriptor_Service_F2PGetMinerInfo = new grpc.web.MethodDescriptor(
+  '/proto.Service/F2PGetMinerInfo',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxF2PGetMiner,
+  proto.proto.ProxF2PGetMinerResp,
+  /**
+   * @param {!proto.proto.ProxF2PGetMiner} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxF2PGetMinerResp.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxF2PGetMiner} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxF2PGetMinerResp)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxF2PGetMinerResp>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.f2PGetMinerInfo =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/F2PGetMinerInfo',
+      request,
+      metadata || {},
+      methodDescriptor_Service_F2PGetMinerInfo,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxF2PGetMiner} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxF2PGetMinerResp>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.f2PGetMinerInfo =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/F2PGetMinerInfo',
+      request,
+      metadata || {},
+      methodDescriptor_Service_F2PGetMinerInfo);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ProxF2PGetApp,
+ *   !proto.proto.ProxF2PGetAppResp>}
+ */
+const methodDescriptor_Service_F2PGetAppInfo = new grpc.web.MethodDescriptor(
+  '/proto.Service/F2PGetAppInfo',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ProxF2PGetApp,
+  proto.proto.ProxF2PGetAppResp,
+  /**
+   * @param {!proto.proto.ProxF2PGetApp} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.ProxF2PGetAppResp.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ProxF2PGetApp} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.proto.ProxF2PGetAppResp)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.ProxF2PGetAppResp>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.ServiceClient.prototype.f2PGetAppInfo =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.Service/F2PGetAppInfo',
+      request,
+      metadata || {},
+      methodDescriptor_Service_F2PGetAppInfo,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ProxF2PGetApp} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.ProxF2PGetAppResp>}
+ *     Promise that resolves to the response
+ */
+proto.proto.ServicePromiseClient.prototype.f2PGetAppInfo =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.Service/F2PGetAppInfo',
+      request,
+      metadata || {},
+      methodDescriptor_Service_F2PGetAppInfo);
 };
 
 

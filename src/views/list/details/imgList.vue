@@ -1,61 +1,59 @@
 <template>
-  <div class="img-content" v-if="isReady">
-    <div v-if="imgData.length" v-for="(item, index) in imgData" class="img-box">
-      <p v-if="item.list.length" class="top-title">
-        <nut-checkbox
-          :indeterminate="item.indeterminate"
-          v-if="isCheckMode"
-          v-model="item.checkAll"
-          @change="(val) => handleCheckAllChange(val, item)"
-        >
-          {{ item.time }}</nut-checkbox
-        >
-        <span v-else>{{ item.time }}</span>
-      </p>
+  <div>
+    <div class="img-content" v-if="isReady">
       <nut-infinite-loading
+        ref="listRef"
         load-more-txt="No more content"
         v-model="infinityValue"
-        :has-more="!!continuationToken"
+        :has-more="!isEnd"
         @load-more="getFileList"
         class="img-item-box"
       >
-        <nut-checkbox-group
-          :validate-event="false"
-          v-model="imgCheckedData.value[item.dateId]"
-          @change="(val) => handleCheckedItemsChange(val, item)"
-        >
-          <div
-            :class="['img-item']"
-            v-for="(img, index2) in item.list"
-            @touchstart="emits('touchRow', img)"
-            @touchmove="emits('touchmoveRow', img)"
-            @touchend="emits('touchendRow', img)"
-          >
-            <div :class="['mask', isCheckMode ? 'isChecking' : '']">
-              <nut-checkbox
-                :class="['mask-checkbox', isCheckMode && itemChecked(img.cid, item.dateId) ? 'itemChecked' : '']"
-                :key="img.cid"
-                :label="img.cid"
-              ></nut-checkbox>
-            </div>
-            <nut-image
-              :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
-              fit="cover"
-              :key="img.cid"
-              :src="img.imgUrl"
+        <div v-if="imgData.length" v-for="(item, index) in imgData" class="img-box">
+          <p v-if="item.list.length && mintType != 1" class="top-title">
+            <nut-checkbox
+              :indeterminate="item.indeterminate"
+              v-if="isCheckMode"
+              v-model="item.checkAll"
+              @change="(val) => handleCheckAllChange(val, item)"
             >
-              <template #loading>
-                <Loading width="16px" height="16px" name="loading" />
-              </template>
-            </nut-image>
-          </div>
-        </nut-checkbox-group>
+              {{ item.time }}</nut-checkbox
+            >
+            <span v-else>{{ item.time }}</span>
+          </p>
+
+          <nut-checkbox-group
+            :validate-event="false"
+            v-model="imgCheckedData.value[item.dateId]"
+            @change="(val) => handleCheckedItemsChange(val, item)"
+          >
+            <div :class="['img-item']" v-for="(img, index2) in item.list" @click="imgClick(img)">
+              <div :class="['mask', isCheckMode ? 'isChecking' : '']">
+                <nut-checkbox
+                  :class="['mask-checkbox', isCheckMode && itemChecked(img.cid, item.dateId) ? 'itemChecked' : '']"
+                  :key="img.cid"
+                  :label="img.cid"
+                ></nut-checkbox>
+              </div>
+              <nut-image
+                :class="[isCheckMode && itemChecked(img.cid, item.dateId) ? 'imageItemChecked' : '']"
+                fit="cover"
+                :key="img.cid"
+                :src="img.imgUrl"
+              >
+                <template #loading>
+                  <Loading width="16px" height="16px" name="loading" />
+                </template>
+              </nut-image>
+            </div>
+          </nut-checkbox-group>
+        </div>
+        <nut-empty v-else :image-size="200" description="No Data" image="error" />
       </nut-infinite-loading>
     </div>
-    <nut-empty v-else :image-size="200" description="No Data" image="error" />
-  </div>
-  <div class="img-content" v-else>
-    <nut-empty :image-size="200" description="No Data" image="error" />
+    <div class="img-content" v-else>
+      <nut-empty :image-size="200" description="No Data" image="error" />
+    </div>
   </div>
 </template>
 <script>
@@ -66,29 +64,35 @@
 <script setup>
   import { toRefs, ref, reactive, nextTick, watch, onMounted, computed, inject } from 'vue';
   import { useUserStore } from '@/store/modules/user';
-  import { get_timeline } from '@/api';
   import { getfilesize, transferTime, transferUTCTime } from '@/utils/util';
-  import { oodFileList, GetFileListAll, GetCloudFileListAll } from '@/api/myFiles';
   import { showToast } from '@nutui/nutui';
   import * as Prox from '@/pb/prox_pb.js';
   import * as grpcService from '@/pb/prox_grpc_web_pb.js';
   import useOrderInfo from './useOrderInfo.js';
   import imgUrl from '@/assets/DMC_token.png';
   import loadingImg from '@/components/loadingImg/index.vue';
+  import { poolUrl } from '@/setting.js';
+  import { list } from 'postcss';
+  import { useRoute, useRouter } from 'vue-router';
+  const route = useRoute();
+
+
   let server;
   // import { isCloudCanUpload_Api } from '@/api/upload';
-  const { header, metadata, deviceType, orderInfo, bucketName, getOrderInfo } = useOrderInfo();
+  const { header, metadata, deviceType, orderInfo, bucketName, getOrderInfo, getOrderInfo1 } = useOrderInfo();
   const imgCheckedData = reactive({
     value: {},
   });
   const isMobileOrder = inject('isMobileOrder');
-  const emits = defineEmits(['update:checkedData', 'touchRow', 'touchmoveRow', 'touchendRow']);
+  const emits = defineEmits(['update:checkedData', 'rowClick', 'update:imgArray']);
   const props = defineProps({
     orderId: [String, Number],
     isCheckMode: Boolean,
+    mintType: String,
+    imgArray: Array,
   });
   const handleImg = inject('handleImg');
-  const { orderId } = toRefs(props);
+  const { orderId, mintType, isCheckMode, imgArray } = toRefs(props);
   const resetChecked = () => {
     imgCheckedData.value = {};
     refCheckAll();
@@ -99,6 +103,8 @@
   });
   const tableLoading = ref(false);
   const isReady = ref(false);
+  const isEnd = ref(false);
+  const listRef = ref('');
   const imgIndex = ref(0);
   const store = useUserStore();
   const uuid = computed(() => store.getUserInfo?.uuid || '');
@@ -116,6 +122,12 @@
       return false;
     }
   };
+  const imgClick = (item) => {
+    if (isCheckMode.value) {
+      return false;
+    }
+    emits('rowClick', item);
+  };
   const timeLine = ref([]);
   const dateTimeLine = ref([]);
   const continuationToken = ref('');
@@ -127,7 +139,7 @@
         customClass: 'app_loading',
         icon: loadingImg,
         loadingRotate: false,
-        id: 'order_info_id',
+        id: 'img_time_line',
       });
       const getMethod = (date = '') => {
         let interval = 'year';
@@ -142,11 +154,11 @@
         tableLoading.value = true;
         // let ip = orderInfo.value.rpc.split(':')[0];
         // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
-        let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
         server = new grpcService.default.ServiceClient(ip, null, null);
 
         let ProxTimeLine = new Prox.default.ProxTimeLine();
-        ProxTimeLine.setHeader(header);
+        ProxTimeLine.setHeader(header.value);
         ProxTimeLine.setInterval(interval);
         ProxTimeLine.setDate(date);
         ProxTimeLine.setCategory(1);
@@ -159,7 +171,7 @@
               };
             });
             if (!content.length) {
-              showToast.hide('order_info_id');
+              showToast.hide('img_time_line');
             }
             for (let k = content.length - 1; k >= 0; k--) {
               if (content[k].count) {
@@ -172,6 +184,7 @@
                     date: content[k].date,
                     count: content[k].count,
                   });
+                  console.log(dateTimeLine.value, 'dateTimeLine');
                   tableLoading.value = false;
                   resolve(true);
                 }
@@ -185,10 +198,12 @@
       getMethod();
     });
   };
+
   const getFileList = function (scroll, prefix, reset = false, date = '') {
     let target = '';
     let max_keys = '';
     target = imgData.value.find((el) => el.time == date);
+    console.log(imgIndex.value, 'imgIndex');
     if (target) return false;
     if (dateTimeLine.value[imgIndex.value]) {
       date = dateTimeLine.value[imgIndex.value].date;
@@ -207,10 +222,7 @@
     }
     let list_prefix = '';
     tableLoading.value = true;
-    if (deviceType.value == 'space' || deviceType.value == 3) {
-      getReomteData(scroll, list_prefix, reset, date, max_keys);
-    } else {
-    }
+    getReomteData(scroll, list_prefix, reset, date, max_keys);
   };
   const getReomteData = (scroll, prefix, reset = false, date = '', max_keys) => {
     tableLoading.value = true;
@@ -218,14 +230,14 @@
     // let ip = orderInfo.value.rpc.split(':')[0];
     // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
-    let ip = `https://${bucketName.value}.devus.u2i.net:7007`;
+    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     let listObject = new Prox.default.ProxListObjectsRequest();
     listObject.setPrefix('');
     listObject.setDelimiter('');
     listObject.setEncodingType('');
-    listObject.setMaxKeys(30);
+    listObject.setMaxKeys(100);
     listObject.setStartAfter('');
     listObject.setContinuationToken(scroll || '');
     listObject.setVersionIdMarker('');
@@ -235,7 +247,7 @@
     listObject.setCategory(1);
     listObject.setDate(date);
     let requestReq = new Prox.default.ProxListObjectsReq();
-    requestReq.setHeader(header);
+    requestReq.setHeader(header.value);
     requestReq.setRequest(listObject);
     server.listObjects(requestReq, metadata.value, (err, res) => {
       if (res) {
@@ -311,6 +323,7 @@
         name,
         fullName: decodeURIComponent(el.key),
         key: name,
+        category: 1,
         idList: [
           {
             name: 'IPFS',
@@ -326,6 +339,7 @@
         status: cid || file_id ? 'Published' : '-',
         type: el.contentType,
         file_id: file_id,
+        originalSize: el.size,
         pubkey: cid,
         cid,
         imgUrl: url,
@@ -335,6 +349,11 @@
         canShare: cid ? true : false,
         isPersistent,
       };
+      if (item.originalSize > 1024 * 1024 * 20) {
+        item.src = item.imgUrl;
+      } else {
+        item.src = item.imgUrlLarge;
+      }
       return item;
     });
     let content = await Promise.all(promiseArray);
@@ -346,18 +365,37 @@
       console.log(content, 'content');
       target.list = [...target.list, ...content];
       tableData.value = [...tableData.value, ...content];
+      emits('update:imgArray', tableData.value);
     }
     console.log(tableData.value, 'tableDatatableData');
+    isEnd.value = dateTimeLine.value.findIndex((el) => el.date == dateKey) == dateTimeLine.value.length - 1;
     if (data.isTruncated) {
       continuationToken.value = data.continuationToken;
     } else {
       continuationToken.value = '';
     }
-    showToast.hide('order_info_id');
+    showToast.hide('img_time_line');
     tableLoading.value = false;
+    infinityValue.value = false;
+    nextTick(() => {
+      if (!isEnd.value && listRef.value.$el.clientHeight >= listRef.value.$el.scrollHeight) {
+        getFileList();
+      }
+    });
   };
   const init = async () => {
-    await getOrderInfo();
+    const obj = {
+      rpc: route.query.rpc,
+      peer_id: route.query.peer_id,
+      foggie_id: route.query.foggie_id,
+      signature: route.query.signature,
+      sign_timestamp: route.query.sign_timestamp,
+      order_id: route.query.order_id,
+      domain: route.query.domain,
+    };
+    await getOrderInfo1(obj);
+    console.log(5555)
+    // await getOrderInfo();
     await getTimeLine();
     isReady.value = true;
   };
@@ -411,13 +449,12 @@
   watch(
     isReady,
     (val) => {
-      console.log(val);
       getFileList();
     },
     { deep: true },
   );
   onMounted(async () => {
-    await getOrderInfo();
+    // await getOrderInfo();
     init();
     // nextTick(() => {
     //   refCheckAll();
@@ -437,33 +474,17 @@
     // height: calc(100% - 320px);
     padding: 10px;
     overflow-y: auto;
-    :deep {
-      .nut-checkbox__icon {
-        color: $main_blue;
-        path {
-          fill-opacity: 1;
-        }
-      }
-    }
     .img-box {
-      .top-title {
-        position: sticky;
-        top: 0;
-        z-index: 999;
-        background-color: var(--bg-color);
-        text-align: left;
-      }
+      color: #fff;
       .img-name {
-        width: 80%;
-        display: inline-block;
         font-size: 12px;
         line-height: 15px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
       }
     }
     .img-item-box {
+      // min-height: 100px;
+      height: calc(100vh - 210px);
+      overflow: auto;
       display: flex;
       justify-content: flex-start;
       align-items: flex-start;
@@ -538,6 +559,140 @@
           height: 100%;
           padding: 10px;
           box-sizing: border-box;
+        }
+      }
+    }
+  }
+  @media screen and (min-width: 500px) {
+    .img-content {
+      // height: calc(100% - 320px);
+      padding: 10px;
+      overflow-y: auto;
+      :deep {
+        .nut-checkbox__icon {
+          color: $main_blue;
+          path {
+            fill-opacity: 1;
+          }
+        }
+      }
+      .img-box {
+        .top-title {
+          position: sticky;
+          top: 0;
+          z-index: 999;
+          background-color: var(--bg-color);
+          text-align: left;
+          :deep {
+            .nut-checkbox {
+              .nut-icon {
+                --nut-icon-width: 30px;
+                --nut-icon-height: 30px;
+                --nut-icon-line-height: 30px;
+              }
+              .nut-checkbox__label {
+                --nut-checkbox-label-font-size: 1.5rem;
+                margin-left: 10px;
+              }
+            }
+          }
+        }
+        .img-name {
+          width: 80%;
+          display: inline-block;
+          font-size: 12px;
+          line-height: 15px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+      .img-item-box {
+        // min-height: 100px;
+        height: calc(100vh - 270px);
+        overflow: auto;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin-top: 10px;
+        :deep {
+          .nut-infinite__container {
+            width: 100%;
+          }
+          .nut-checkbox-group {
+            display: grid;
+            grid-gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+
+            justify-items: center;
+            width: 100%;
+          }
+        }
+        .img-item {
+          position: relative;
+          width: 150px;
+          height: 150px;
+          // margin: 0 10px 10px 0;
+          .mask {
+            display: none;
+            position: absolute;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+
+            .itemChecked {
+              display: block;
+            }
+            &.isChecking {
+              display: block;
+              height: 100%;
+              cursor: pointer;
+              :deep {
+                .nut-checkbox {
+                  width: 100%;
+                  height: 100%;
+                  display: block;
+                }
+                .nut-icon {
+                  padding: 10px;
+                }
+              }
+            }
+
+            :deep {
+              .nut-checkbox {
+                position: absolute;
+                left: 0;
+                .nut-icon {
+                  --nut-icon-width: 30px;
+                  --nut-icon-height: 30px;
+                  --nut-icon-line-height: 30px;
+                }
+              }
+
+              .nut-checkbox__input {
+                position: absolute;
+                left: 5px;
+                top: 10px;
+              }
+              .nut-checkbox__label {
+                display: none;
+              }
+            }
+          }
+          .imageItemChecked {
+            padding: 20px;
+            background: #74c6ff8c;
+          }
+        }
+        :deep {
+          .nut-image {
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+          }
         }
       }
     }
