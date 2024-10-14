@@ -320,7 +320,7 @@
     ></ActionComponent>
     <uploader
       v-if="isAvailableOrder"
-      :getSummary="getSummary"
+      :getSummary="getSummary2"
       :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
@@ -535,7 +535,7 @@
   const {
     // isAvailableOrder,
     isError,
-    getSummary,
+    getSummary2,
     bucketName,
     header,
     metadata,
@@ -544,11 +544,11 @@
     accessKeyId,
     secretAccessKey,
     getOrderInfo,
-    getOrderInfo1,
+    getOrderInfo2,
   } = useOrderInfo();
   const isAvailableOrder = ref(true);
 
-  provide('getSummary', getSummary);
+  provide('getSummary', getSummary2);
   const {
     httpCopyLink,
     copyLink,
@@ -954,7 +954,8 @@
         $cordovaPlugins.downloadFileHH(url, checkData[0].fullName, headers);
       } else {
         showToast.text('The download is in progress, please wait patiently');
-        let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+        // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+        let ip = `https://${bucketName.value}.${route.query.pool_name}:7007`;
         server = new grpcService.default.ServiceClient(ip, null, null);
         let range = new Prox.default.ProxRangeRequest();
         let request = null;
@@ -1167,7 +1168,8 @@
     // let ip = orderInfo.value.rpc.split(':')[0];
     // server = new grpcService.default.ServiceClient(`http://${ip}:7007`, null, null);
 
-    let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+    // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+    let ip = `https://${bucketName.value}.${route.query.pool_name}:7007`;
     server = new grpcService.default.ServiceClient(ip, null, null);
 
     let listObject = new Prox.default.ProxListObjectsRequest();
@@ -1393,16 +1395,26 @@
       }
     }
     if (!accessKeyId.value) {
+      // const obj = {
+      //   rpc: route.query.rpc,
+      //   peer_id: route.query.peer_id,
+      //   foggie_id: route.query.foggie_id,
+      //   signature: route.query.signature,
+      //   sign_timestamp: route.query.sign_timestamp,
+      //   order_id: route.query.order_id,
+      //   domain: route.query.domain,
+      // };
       const obj = {
         rpc: route.query.rpc,
-        peer_id: route.query.peer_id,
-        foggie_id: route.query.foggie_id,
-        signature: route.query.signature,
-        sign_timestamp: route.query.sign_timestamp,
-        order_id: route.query.order_id,
-        domain: route.query.domain,
+        deviceid: route.query.peer_id,
+        foggieid: route.query.foggie_id,
+        token: route.query.signature,
+        timestamp: route.query.sign_timestamp,
+        // order_id: route.query.order_id,
+        bucketname: route.query.domain,
+        pool_name: route.query.pool_name,
       };
-      await getOrderInfo1(obj);
+      await getOrderInfo2(obj);
     }
     for (let i = 0; i < data.commonPrefixes?.length; i++) {
       let name = data.commonPrefixes[i];
@@ -1592,7 +1604,8 @@
       });
       tableLoading.value = true;
       let type = orderInfo.value.device_type == 'space' || orderInfo.value.device_type == 3 ? 'space' : 'foggie';
-      let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+      // let ip = `https://${bucketName.value}.${poolUrl}:7007`;
+      let ip = `https://${bucketName.value}.${route.query.pool_name}:7007`;
       server = new grpcService.default.ServiceClient(ip, null, null);
 
       let ProxFindRequest = new Prox.default.ProxFindRequest();
@@ -1701,16 +1714,26 @@
       if (val == 1) {
       } else {
         if (!orderInfo?.value?.domain) {
+          // const obj = {
+          //   rpc: route.query.rpc,
+          //   peer_id: route.query.peer_id,
+          //   foggie_id: route.query.foggie_id,
+          //   signature: route.query.signature,
+          //   sign_timestamp: route.query.sign_timestamp,
+          //   order_id: route.query.order_id,
+          //   domain: route.query.domain,
+          // };
           const obj = {
-            rpc: route.query.rpc,
-            peer_id: route.query.peer_id,
-            foggie_id: route.query.foggie_id,
-            signature: route.query.signature,
-            sign_timestamp: route.query.sign_timestamp,
-            order_id: route.query.order_id,
-            domain: route.query.domain,
-          };
-          await getOrderInfo1(obj);
+          rpc: route.query.rpc,
+          deviceid: route.query.peer_id,
+          foggieid: route.query.foggie_id,
+          token: route.query.signature,
+          timestamp: route.query.sign_timestamp,
+          // order_id: route.query.order_id,
+          bucketname: route.query.domain,
+          pool_name: route.query.pool_name,
+        };
+          await getOrderInfo2(obj);
         }
         console.log(category.value, 'categorycategorycategory');
         doSearch('', prefix.value, true);
@@ -1732,16 +1755,26 @@
       prefix.value = route?.query?.prefix?.split('/');
     }
     let category1 = route.query.category || '0';
+    // const obj = {
+    //   rpc: route.query.rpc,
+    //   peer_id: route.query.peer_id,
+    //   foggie_id: route.query.foggie_id,
+    //   signature: route.query.signature,
+    //   sign_timestamp: route.query.sign_timestamp,
+    //   order_id: route.query.order_id,
+    //   domain: route.query.domain,
+    // };
     const obj = {
-      rpc: route.query.rpc,
-      peer_id: route.query.peer_id,
-      foggie_id: route.query.foggie_id,
-      signature: route.query.signature,
-      sign_timestamp: route.query.sign_timestamp,
-      order_id: route.query.order_id,
-      domain: route.query.domain,
-    };
-    await getOrderInfo1(obj);
+        rpc: route.query.rpc,
+        deviceid: route.query.peer_id,
+        foggieid: route.query.foggie_id,
+        token: route.query.signature,
+        timestamp: route.query.sign_timestamp,
+        // order_id: route.query.order_id,
+        bucketname: route.query.domain,
+        pool_name: route.query.pool_name,
+      };
+    await getOrderInfo2(obj);
 
     switchType(category1);
     setTimeout(() => {
@@ -1753,16 +1786,26 @@
   // });
   const refresh = async () => {
     cancelSelect();
+    // const obj = {
+    //   rpc: route.query.rpc,
+    //   peer_id: route.query.peer_id,
+    //   foggie_id: route.query.foggie_id,
+    //   signature: route.query.signature,
+    //   sign_timestamp: route.query.sign_timestamp,
+    //   order_id: route.query.order_id,
+    //   domain: route.query.domain,
+    // };
     const obj = {
-      rpc: route.query.rpc,
-      peer_id: route.query.peer_id,
-      foggie_id: route.query.foggie_id,
-      signature: route.query.signature,
-      sign_timestamp: route.query.sign_timestamp,
-      order_id: route.query.order_id,
-      domain: route.query.domain,
-    };
-    await getOrderInfo1(obj);
+        rpc: route.query.rpc,
+        deviceid: route.query.peer_id,
+        foggieid: route.query.foggie_id,
+        token: route.query.signature,
+        timestamp: route.query.sign_timestamp,
+        // order_id: route.query.order_id,
+        bucketname: route.query.domain,
+        pool_name: route.query.pool_name,
+      };
+    await getOrderInfo2(obj);
 
     doSearch('', prefix.value, true);
   };

@@ -38,7 +38,7 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     userStore.setCloudCodeIsBind(false);    
-    if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget' || to.name == 'Middleware' || to.name == 'Space' || to.name == 'Drive') {
+    if (to.name == 'Login' || to.name == 'Register' || to.name == 'Forget' || to.name == 'Middleware' || to.name == 'Space' || to.name == 'Drive' || to.name == 'FileList') {
       next();
     } else {
 

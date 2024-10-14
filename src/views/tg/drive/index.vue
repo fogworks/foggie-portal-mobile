@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="drive-page-content">
-      <h2>DMCX: {{ currentDrive.domain ? currentDrive.domain : 'Order' + currentDrive.order_id }}</h2>
+      <h2>DMCX: {{ currentDrive.bucketname }}</h2>
       <div class="drive-line">
         <div class="drive-line1">{{ getfilesize(usedSize, 'B') }}</div>
         <div class="drive-line2">
@@ -84,7 +84,7 @@
     </div>
     <uploader
       v-if="isAvailableOrder && cloudQuery.domain"
-      :getSummary="getSummary"
+      :getSummary="getSummary2"
       :isMobileOrder="isMobileOrder"
       :bucketName="bucketName"
       :accessKeyId="accessKeyId"
@@ -144,7 +144,7 @@
   import { ref, onMounted, provide } from 'vue';
   import { useUserStore } from '@/store/modules/user';
   import { useI18n } from 'vue-i18n';
-  import { searchOrder, dm_order_get_token, dm_order_name_set, dm_order_name_check } from '@/api';
+  import { searchOrder, dm_order_get_token, dm_order_name_set, dm_order_name_check, dm_get_by_domain } from '@/api';
   import { getfilesize } from '@/utils/util';
   import { showDialog, showToast } from '@nutui/nutui';
   const { locale, t } = useI18n();
@@ -152,7 +152,15 @@
   const router = useRouter();
   const route = useRoute();
   const currentId = ref('');
-  const currentDrive = ref({});
+  //   const currentDrive = ref({});
+  const curBucketName = ref('');
+  const spaceList = computed(() => {
+    return userStore.getSpaceList;
+  });
+
+  const currentDrive = computed(() => {
+    return userStore.getCurSpace;
+  });
 
   //CLOUD CODE
   import loadingImg from '@/components/loadingImg/index.vue';
@@ -172,6 +180,7 @@
   const {
     filesCount,
     getSummary,
+    getSummary2,
     usedSize,
     accessKeyId,
     secretAccessKey,
@@ -182,6 +191,7 @@
     orderInfo,
     getOrderInfo,
     getOrderInfo1,
+    getOrderInfo2,
     isError,
     loadingAnmation,
   } = useOrderInfo();
@@ -221,10 +231,15 @@
       return Number(((usedSize.value || 0) / (cloudQuery.value.space * 1024 * 1024 * 1024 || 1)) * 100).toFixed(2);
     }
   });
+
   onMounted(() => {
     if (route?.query?.id) {
       currentId.value = route.query?.id;
       initSearchOrder();
+    }
+    if (route?.query?.bucketname) {
+      curBucketName.value = route.query.bucketname;
+      initSearchOrder1();
     }
   });
   const initSearchOrder = async () => {
@@ -242,6 +257,20 @@
     await getOrderInfo1(cloudQuery.value);
     getSummary();
     getFileStatistics();
+  };
+  const initSearchOrder1 = async () => {
+    console.log('currentDrive--------', currentDrive.value, spaceList.value);
+    // let res = await dm_get_by_domain({ domain: curBucketName.value });
+
+    // currentDrive.value = res.data;
+    // if (currentDrive.value && !currentDrive.value.domain) {
+    //   dialogVisible.value = true;
+    //   return;
+    // }
+    cloudQuery.value = currentDrive.value;
+    await getOrderInfo2(cloudQuery.value);
+    getSummary2();
+    getFileStatistics1();
   };
 
   const getFileStatistics = async () => {
@@ -297,11 +326,75 @@
       });
     }
   };
+  const getFileStatistics1 = async () => {
+    if (cloudQuery.value.domain) {
+      const signData = await dm_order_get_token({ orderId: cloudQuery.value.order_id });
+      //   let _token = '';
+      //   let date = '';
+      //   if (signData?.data?.signature) {
+      //     _token = signData?.data?.signature;
+      //     date = signData?.data?.timestamp;
+      //   }
+      //   let date = currentDrive.value.sign_timestamp;
+      let peer_id = currentDrive.value.deviceid;
+      let foggie_id = currentDrive.value.foggieid;
+      let _token = currentDrive.value.token;
+      let date = currentDrive.value.timestamp;
+      // let order_id = currentDrive.value.order_id;
+      let domain = currentDrive.value.bucketname;
+      let pool_name = currentDrive.value.domain;
+
+      let metadata = {
+        'X-Custom-Date': date,
+      };
+
+      let ip = `https://${domain}.${pool_name}:7007`;
+      let server = new grpcService.default.ServiceClient(ip, null, null);
+      let header = new Prox.default.ProxHeader();
+      let request = new Prox.default.ProxRequestStatistics();
+      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+      header.setPeerid(peer_id);
+      header.setId(foggie_id);
+      header.setToken(_token);
+      header.setApptype(appType);
+      request.setHeader(header);
+      let total = 0;
+      let size = 0;
+      server.statistics(request, metadata, (err: any, res: { array: any }) => {
+        if (err) {
+          console.log('err-statistics------:', err);
+        } else {
+          fileListArr.value = fileListArr.value.map((item: any) => {
+            return {
+              ...item,
+              number: 0,
+              capacity: 0,
+              total: 0,
+            };
+          });
+          allCount.value = res.getCategorysum().getCount();
+          allSize.value = getfilesize(res.getCategorysum().getTotal());
+          res.getCategoriesList().map((item: any) => {
+            let index = item.getCategory();
+            if (index > 0 && index < 5) {
+              fileListArr.value[index - 1].number = item.getCount();
+              fileListArr.value[index - 1].capacity = getfilesize(item.getTotal());
+              fileListArr.value[index - 1].total = item.getTotal();
+              console.log('fileListArr.value', fileListArr.value);
+              total = total + Number(fileListArr.value[index - 1].number);
+              size = size + item.getTotal();
+            }
+          });
+        }
+      });
+    }
+  };
   const uploadComplete = () => {
     console.log('uploadComplete');
     refresh();
   };
   const gotoOrderDetail = (item: any) => {
+    console.log('gotoOrderDetail', item);
     if (!item.domain) {
       dialogVisible.value = true;
     } else {
@@ -309,21 +402,25 @@
         name: 'FileList',
         query: {
           domain: item.domain,
-          rpc: item.rpc,
-          peer_id: item.peer_id,
-          foggie_id: item.foggie_id,
-          signature: item.signature,
-          sign_timestamp: item.sign_timestamp,
-          order_id: item.order_id,
+          rpc: item.deviceip,
+          peer_id: item.deviceid,
+          foggie_id: item.foggieid,
+          signature: item.token,
+          sign_timestamp: item.timestamp,
+          pool_name: item.pool_name,
+        //   order_id: item.order_id,
         },
       });
     }
   };
   const refresh = async () => {
     console.log('refresh========');
-    await getOrderInfo1(cloudQuery.value);
-    getSummary();
-    getFileStatistics();
+    // await getOrderInfo1(cloudQuery.value);
+    await getOrderInfo2(cloudQuery.value);
+    // getSummary();
+    getSummary2();
+    // getFileStatistics();
+    getFileStatistics1();
   };
   const createName = async () => {
     if (!showCreateName.value) {

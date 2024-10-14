@@ -45,12 +45,19 @@
         <div class="item-val">GO</div>
         <!-- <div class="item-val">{{ maxTableData.length }}</div> -->
       </div>
-      <div class="item" @click="gotoBind">
+      <div class="item" v-if="walletobj?.wallet">
         <div class="item-icon">
           <tg2 />
         </div>
         <div class="item-name">钱包</div>
-        <div class="item-val">{{ addressStr ? addressStr : 'Bind' }}</div>
+        <div class="item-val">{{ `${walletobj.wallet.substr(0, 3)}...${walletobj.wallet.substr(-3)}` }}</div>
+      </div>
+      <div class="item" @click="gotoBind1" v-else>
+        <div class="item-icon">
+          <tg2 />
+        </div>
+        <div class="item-name">钱包</div>
+        <div class="item-val">{{ 'Bind' }}</div>
       </div>
       <div class="item" @click="gotoShop">
         <div class="item-icon">
@@ -122,6 +129,12 @@
   const router = useRouter();
   import { useUserStore } from '@/store/modules/user';
   import { showDialog, showToast } from '@nutui/nutui';
+  import * as Prox from '@/pb/service_pb.js';
+  import * as grpcService from '@/pb/service_grpc_web_pb.js';
+
+  import Web3 from 'web3';
+  import { OKXUniversalProvider } from '@okxconnect/universal-provider';
+
   const userStore = useUserStore();
   const useStore = useUserStore();
   import { useI18n } from 'vue-i18n';
@@ -152,6 +165,9 @@
   addressStr.value = address.value
     ? address.value.substring(0, 4) + '...' + address.value.substring(address.value.length - 3, address.value.length)
     : '';
+
+  const walletobj = ref({});
+
   import tg1 from '~icons/home/tg1.svg';
   import tg2 from '~icons/home/tg2.svg';
   import tg3 from '~icons/home/tg3.svg';
@@ -164,12 +180,15 @@
   const tg = ref(null);
   const telegramUserId = ref(null);
 
+  // const tg_token = ref('');
+
   const initializeTelegram = () => {
     if (window.Telegram && window.Telegram.WebApp) {
       tg.value = window.Telegram.WebApp;
       console.log('Telegram WebApp is available', tg.value);
       if (tg.value.initData) {
         setTgId(tg.value.initData);
+        initTgData();
       } else {
         console.error('Telegram User ID not available');
       }
@@ -180,9 +199,10 @@
 
   const setTgId = (item) => {
     userStore.setTgToken(`AuthToken initData.${item}`);
-    alert('Telegram initData: ' + item);
-    alert(item.substr(5));
-    alert(decodeURIComponent(item.substr(5)));
+    // tg_token.value = item;
+    // alert('Telegram initData: ' + item);
+    // alert(item.substr(5));
+    // alert(decodeURIComponent(item.substr(5)));
     if (item.indexOf('user=') == 0) {
       let s1 = item.substr(5);
       let s2 = decodeURIComponent(s1);
@@ -190,7 +210,7 @@
       if (s3.id) {
         telegramUserId.value = s3.id;
         userStore.setTgInitData(s3);
-        alert('Telegram User ID: ' + s3.id);
+        // alert('Telegram User ID: ' + s3.id);
       }
     }
   };
@@ -207,14 +227,146 @@
     }, 100);
   };
   const gotoDrive = (type) => {
-    router.push({ path: '/space', query: { page: type } });
+    if (type === 'order' && curSpace.value.bucketname) {
+      router.push({ path: '/drive', query: { bucketname: curSpace.value.bucketname } });
+    } else if (type === 'maxio') {
+      router.push({ path: '/space', query: { page: type } });
+    }
   };
-  const gotoBind = (e) => {
-    animateButton(e.currentTarget);
-    setTimeout(() => {
-      router.push('/personalInfo');
-    }, 100);
+  const gotoBind = async () => {
+    // router.push('/personalInfo');
+
+    try {
+      const okxUniversalProvider = await OKXUniversalProvider.init({
+        dappMetaData: {
+          name: 'drive',
+          icon: 'application icon url',
+        },
+      });
+      var session = await okxUniversalProvider.connect({
+        namespaces: {
+          eip155: {
+            chains: ['eip155:1', 'eip155:66', 'eip155:56'],
+            rpcMap: {
+              1: 'https://rpc', // set your own rpc url
+            },
+            defaultChain: '1',
+          },
+        },
+        optionalNamespaces: {
+          eip155: {
+            chains: ['eip155:43114'],
+          },
+        },
+        sessionConfig: {
+          redirect: 'tg://resolve',
+        },
+      });
+      alert(`-----${JSON.stringify(session)}`);
+      if (session?.namespaces?.eip155?.accounts[0]) {
+        let length = session.namespaces.eip155.accounts[0].split(':').length;
+        let address = session.namespaces.eip155.accounts[0].split(':')[length - 1];
+        // alert(`address-----${address}`);
+        let server = new grpcService.default.ServiceClient(`https://drive.u2i.net`, null, null);
+        let request = new Prox.default.BindRequest();
+        // alert(`tgToken:${tgToken.value}===tgId:${tgId.value}`);
+        // request.setId(tgId.value);
+        let wallet_r = new Prox.default.Wallet();
+        wallet_r.setWallet(address);
+        wallet_r.setWallettype('');
+        wallet_r.setWalletpubkey('');
+
+        request.setId(7527654236);
+        request.setWallet(wallet_r);
+        // let metadata = { Authorization: tgToken.value };
+        let metadata = { Authorization: 'AuthToken initData.user=%7B%22id%22%3A7527654236%2C%22first_name%22%3A%22haha%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=2788828062297459573&chat_type=group&auth_date=1728874045&hash=6926ebc01f8fe143d0cb310f5ead64a41212bb03b3ed070583b1931c364bccd1' };
+        console.log('request------2', request, metadata);
+        server.bindWallet(request, metadata, async (err, res) => {
+          if (err) {
+            console.log('err-----2', err);
+            alert('err-----'+ err.message.toString());
+          } else if (res) {
+            console.log('res-----2', res);
+            // alert('res----'+ res.toString());
+            console.log('res2', res.toObject());
+          }
+        });
+      }
+    } catch (error) {
+      alert(`error-----${error}`);
+    }
   };
+
+  const gotoBind1 = async () => {
+    // router.push('/personalInfo');
+    try {
+      let session = {
+        topic: 'e260d36c7b412c2de8c7831a0bdac11619cb31e4d0dba8bb5db4579185cb64f5',
+        sessionConfig: {
+          dapplnfo: {
+            url: 'drive.u2i.net',
+            name: 'applicationname',
+            icon: 'application iconurl',
+          },
+          openUniversalUrl: true,
+          redirect: '!tg://resolve',
+        },
+        namespaces: {
+          eip155: {
+            chains: ['eip155:1', 'eip155:66', 'eip155:56', 'eip155.43114'],
+            accounts: [
+              'eip155:1:0x71b6086e780711892780bc6f24adbabe6fb9d38d',
+              'eip155:66:0x71b6086e780711892780bc6f24adbabe6fb9d38d',
+              'eip155:56:0x71b6086e780711892780bc6f24adbabe6fb9d38d',
+              'eip155:43114:0x71b6086e780711892780bc6f24adbabe6fb9d38d',
+            ],
+            methods: [
+              'wallet_addEthereumChain',
+              'wallet_switchEthereumChain',
+              'wallet_watchAsset',
+              'personal_sign',
+              'eth_signTypedData_v4',
+              'eth_sendTransaction',
+            ],
+            rpcMap: { 1: 'https://rpc' },
+            defaultChain: '1',
+          },
+        },
+      };
+
+      if (session?.namespaces?.eip155?.accounts[0]) {
+        let length = session.namespaces.eip155.accounts[0].split(':').length;
+        let address = session.namespaces.eip155.accounts[0].split(':')[length - 1];
+        alert(`address-----${address}`);
+        let server = new grpcService.default.ServiceClient(`https://drive.u2i.net`, null, null);
+        let request = new Prox.default.BindRequest();
+        let wallet_r = new Prox.default.Wallet();
+        wallet_r.setWallet(address);
+        wallet_r.setWallettype('');
+        wallet_r.setWalletpubkey('');
+        // alert(`tgToken:${tgToken.value}===tgId:${tgId.value}`);
+        // request.setId(tgId.value);
+        request.setId(7527654236);
+        request.setWallet(wallet_r);
+        // let metadata = { Authorization: tgToken.value };
+        let metadata = { Authorization: 'AuthToken initData.user=%7B%22id%22%3A7527654236%2C%22first_name%22%3A%22haha%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=2788828062297459573&chat_type=group&auth_date=1728874045&hash=6926ebc01f8fe143d0cb310f5ead64a41212bb03b3ed070583b1931c364bccd1' };
+        console.log('request------3', request, metadata);
+        server.bindWallet(request, metadata, async (err, res) => {
+          if (err) {
+            console.log('err-----3', err);
+            alert('err-----'+ err.message.toString());
+          } else if (res) {
+            console.log('res-----3', res);
+            // alert('res----'+ res.toString());
+            console.log('res3', res.toObject());
+          }
+        });
+      }
+    } catch (error) {
+      alert(`error-----${error}`);
+    }
+  };
+
   const logout = () => {
     showDialog({
       title: 'Logout',
@@ -295,6 +447,38 @@
         showToast.hide('bind_wallet');
       });
   };
+
+  const curSpace = ref({});
+
+  const initTgData = () => {
+    let server = new grpcService.default.ServiceClient(`https://drive.u2i.net`, null, null);
+    let request = new Prox.default.EffectRequest();
+    // alert(`tgToken:${tgToken.value}===tgId:${tgId.value}`);
+    // request.setId(tgId.value);
+    request.setId(7527654236);
+    request.setForcerefresh(1);
+    // let metadata = { Authorization: tgToken.value };
+    let metadata = {
+      Authorization:
+        'AuthToken initData.user=%7B%22id%22%3A7527654236%2C%22first_name%22%3A%22haha%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=2788828062297459573&chat_type=group&auth_date=1728874045&hash=6926ebc01f8fe143d0cb310f5ead64a41212bb03b3ed070583b1931c364bccd1',
+    };
+    console.log('request------', request, metadata);
+    server.getUserEffect(request, metadata, async (err, res) => {
+      if (err) {
+        console.log('err-----1', err);
+        alert('err-----' + err.message.toString());
+      } else if (res) {
+        console.log('res-----1', res);
+        // alert('res----'+ res.toString());
+        console.log('res', res.toObject());
+        useStore.setSpaceList(res.toObject().spacesList);
+        useStore.setCurSpace(res.toObject().currentworkspace);
+        curSpace.value = res.toObject().currentworkspace;
+        walletobj.value = res.toObject().wallet;
+      }
+    });
+  };
+
   onMounted(() => {
     show2.value = true;
     showAnimation.value = true;
@@ -308,6 +492,7 @@
     // initData();
     // initMaxData();
     initializeTelegram();
+    initTgData();
   });
   watch(currentLan, async (newVal) => {
     console.log('currentLan', newVal);

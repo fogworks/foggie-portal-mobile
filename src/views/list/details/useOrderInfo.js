@@ -239,7 +239,52 @@ export default function useOrderInfo() {
     });
   };
 
+  const getSummary2 = (obj) => {
+    // let ip = obj.rpc.split(':')[0];
+    let peer_id = obj.deviceid;
+    let foggie_id = obj.foggieid;
+    let cur_token = obj.token;
+    let date = obj.timestamp;
+    let order_id = obj.order_id;
+    let domain = obj.bucketname;
+    let pool_name = obj.domain;
+
+
+
+    bucketName.value = domain;
+    orderId.value = obj.order_id;
+    return new Promise((resolve, reject) => {
+      let server = new grpcService.default.ServiceClient(`https://${bucketName.value}.${pool_name}:7007`, null, null);
+      let request = new Prox.default.ProxRequestSummaryIds();
+      request.setHeader(header.value);
+
+      request.setIdsList([orderInfo.value.foggie_id]);
+
+      console.log(`https://${bucketName.value}.${poolUrl}:7007`, 'bucketNamebucketNamebucketNamebucketName');
+
+      server.summaryInfo(request, metadata.value, (err, res) => {
+        if (err) {
+          console.log('errsummry------:', err);
+          // reject(false);
+          resolve(false);
+        } else {
+          const contentList = res.getContentsList().map((el) => {
+            return {
+              count: el.getCount(),
+              id: el.getId(),
+              total: el.getTotal(),
+            };
+          });
+          filesCount.value = contentList?.[0]?.count || 0;
+          usedSize.value = contentList?.[0]?.total || 0;
+          resolve(contentList?.[0]?.total || 0);
+        }
+      });
+    });
+  };
+
   const getOrderInfo1 = async (obj) => {
+    
     // let ip = obj.rpc.split(':')[0];
     let peer_id = obj.peer_id;
     let foggie_id = obj.foggie_id;
@@ -308,6 +353,77 @@ export default function useOrderInfo() {
     });
   };
 
+  const getOrderInfo2 = async (obj) => {
+    // let ip = obj.rpc.split(':')[0];
+    let peer_id = obj.deviceid;
+    let foggie_id = obj.foggieid;
+    let cur_token = obj.token;
+    let date = obj.timestamp;
+    // let order_id = obj.order_id;
+    let domain = obj.bucketname;
+    let pool_name = obj.domain;
+    
+    orderInfo.value = obj;
+    
+    bucketName.value = domain;
+    // orderId.value = obj.order_id;
+    // const signData = await dm_order_get_token({ orderId: order_id });
+    // if (signData?.data?.signature) {
+    //   cur_token = signData?.data?.signature;
+    //   date = signData?.data?.timestamp
+    // }
+    try {
+
+      // orderInfo.value.rpc = '218.2.96.99:6007';
+      headerProx.setPeerid(peer_id);
+      headerProx.setId(foggie_id);
+      const appType = import.meta.env.VITE_BUILD_TYPE == 'ANDROID' ? 'android' : 'h5';
+      headerProx.setApptype(appType);
+      orderSignInfo.value.metadata = {
+        'X-Custom-Date': date,
+      };
+      headerProx.setToken(cur_token);
+      orderSignInfo.value.header = headerProx;
+      header.value = headerProx;
+    } catch {
+      isError.value = true;
+      showToast.hide('order_info_id');
+      loadingAnmation.value = false;
+    }
+   
+    return new Promise((resolve, reject) => {
+      // let server = new grpcService.default.ServiceClient(`https://${ip}:7007`, null, null);
+      let server = new grpcService.default.ServiceClient(`https://${domain}.${pool_name}:7007`, null, null);
+
+      let request = new Prox.default.ProxGetCredRequest();
+      request.setHeader(orderSignInfo.value.header);
+
+      console.log('metadata==22:', orderSignInfo.value.metadata);
+      console.log('metadata==11:', orderSignInfo.value.header);
+      server.listCreds(request, orderSignInfo.value.metadata, async (err, res) => {
+        if (err) {
+          isError.value = true;
+          console.log('err------111222:', err);
+          showToast.hide('order_info_id');
+          loadingAnmation.value = false;
+          reject(false);
+        } else if (res.array.length > 0) {
+          // accessKeyId.value = res.array[0][0][0];
+          // secretAccessKey.value = res.array[0][0][1];
+          orderSignInfo.value.accessKeyId = res.array[0][0][0];
+          orderSignInfo.value.secretAccessKey = res.array[0][0][1];
+          console.log(orderSignInfo.value, 'orderSignInfo.value');
+          // await orderStore.setOrderInfoList(order_id, JSON.parse(JSON.stringify(orderSignInfo.value)));
+          // await orderStore.setOrderInfoList(orderInfo.value.uuid, orderSignInfo.value);
+          showToast.hide('order_info_id');
+          loadingAnmation.value = false;
+          console.log(res.array[0][0][1], 'secretAccessKey111111111');
+          resolve(true);
+        }
+      });
+    });
+  };
+
   return {
     isAvailableOrder,
     getSummary,
@@ -316,6 +432,7 @@ export default function useOrderInfo() {
     deviceType,
     getOrderInfo,
     getOrderInfo1,
+    getOrderInfo2,
     filesCount,
     usedSize,
     token,

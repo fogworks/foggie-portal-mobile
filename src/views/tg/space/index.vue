@@ -130,26 +130,7 @@
     maxTableData.value = maxList;
   };
 
-  const initTgData = () => {
-    let server = new grpcService.default.ServiceClient(`https://drive.u2i.net`, null, null);
-    let request = new Prox.default.EffectRequest();
-    alert(`tgToken:${tgToken.value}===tgId:${tgId.value}`);
-    // request.setId(tgId.value);
-    request.setId(7527654236);
-    request.setForcerefresh(1);
-    // let metadata = { Authorization: tgToken.value };
-    let metadata = { Authorization: 'AuthToken initData.7527654236' };
-    console.log('request', request);
-    server.getUserEffect(request, metadata, async (err, res) => {
-      if (err) {
-        console.log('err-----1', err);
-        alert('err-----' + err.message.toString());
-      } else if (res) {
-        console.log('res-----1', res);
-        alert('res----' + res.toString());
-      }
-    });
-  };
+
 
   onMounted(() => {
     // initTgData()
@@ -169,11 +150,11 @@
     }
   });
 
-  watch(tgToken, (val) => {
-    if (val) {
-      initTgData();
-    }
-  });
+//   watch(tgToken, (val) => {
+//     if (val) {
+//       initTgData();
+//     }
+//   });
 </script>
 
 <style lang="scss" scoped>

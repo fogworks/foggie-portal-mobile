@@ -4,6 +4,7 @@ import { defineStore } from 'pinia';
 import Cookies from 'js-cookie';
 import { setTokenMap, getTokenMap } from "@/utils/tokenMap";
 import { get } from 'vant/lib/utils';
+import { set } from '@vueuse/core';
 
 const { VITE_TOKEN_KEY } = import.meta.env;
 const token = useCookies().get(VITE_TOKEN_KEY as string);
@@ -26,6 +27,8 @@ interface StoreUser {
     curLanguage: string;
     tgInitData: any;
     tgToken: any;
+    spaceList: any;
+    curSpace: any;
 }
 
 export const useUserStore = defineStore({
@@ -52,6 +55,8 @@ export const useUserStore = defineStore({
         curLanguage: '',
         tgInitData: {},
         tgToken: '',
+        spaceList: [],
+        curSpace: {},
     }),
     getters: {
         getCurLanguage(): any {
@@ -103,6 +108,12 @@ export const useUserStore = defineStore({
         getTgToken(): any {
             return this.tgToken;
         },
+        getSpaceList(): any {
+            return this.spaceList;
+        },
+        getCurSpace(): any {
+            return this.curSpace
+        },
     },
     actions: {
         setCurLanguage(string) {
@@ -143,6 +154,12 @@ export const useUserStore = defineStore({
         },
         setTgToken(token: any) {
             this.tgToken = token;
+        },
+        setSpaceList(data: any) {
+            this.spaceList = data;
+        },
+        setCurSpace(data: any) {
+            this.curSpace = data;
         },
         logout() {
             this.token = '';
