@@ -10,12 +10,12 @@
       </div>
     </div>
     <div style="padding: 4px 20px; font-size: 16px; font-weight: bold; margin-bottom: 1px" class="bottom_tips_lineTitle"> 界面语言</div>
-    <div class="circle_box" :class="[isPageLan === 'en' ? 'active_lan' : '']" @click="changeLan('en')">
+    <div class="circle_box" :class="[isPageLan === 'en' ? 'active_lan' : '']" @click="changeLan('en')" data-animation="balance-animation-2">
       <div class="fir_text">English</div>
       <div class="sen_text">English</div>
       <img src="@/assets/tg/lan_check.svg" v-if="isPageLan === 'en'" />
     </div>
-    <div class="circle_box" :class="[isPageLan === 'zh' ? 'active_lan' : '']" @click="changeLan('zh')">
+    <div class="circle_box" :class="[isPageLan === 'zh' ? 'active_lan' : '']" @click="changeLan('zh')" data-animation="balance-animation-1">
       <div class="fir_text">Chinese</div>
       <div class="sen_text">中文</div>
       <img src="@/assets/tg/lan_check.svg" v-if="isPageLan === 'zh'" />
@@ -28,6 +28,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { useI18n } from 'vue-i18n';
   const { locale, t } = useI18n();
+  import { runInitAnimation, animateButton } from '@/views/tg/home/animations';
   const userStore = useUserStore();
   const router = useRouter();
   const currentLan = computed(() => userStore.getCurLanguage);
@@ -42,6 +43,9 @@
   };
   watch(currentLan, async (newVal) => {
     isPageLan.value = newVal;
+  });
+  onMounted(() => {
+    runInitAnimation();
   });
 </script>
 <style scoped lang="scss">

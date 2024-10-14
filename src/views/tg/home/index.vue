@@ -23,13 +23,13 @@
         </nut-swiper-item>
       </nut-swiper>
     </div>
-    <div class="home-page-content" data-animation="balance-animation-1">
+    <div class="home-page-content">
       <!-- <div class="item">
         <div class="item-icon"> 0 </div>
         <div class="item-name"></div>
         <div class="item-val item-val-no">排名：0</div>
       </div> -->
-      <div class="item" @click="gotoDrive('order')">
+      <div class="item" @click="gotoDrive('order')" data-animation="balance-animation-1">
         <div class="item-icon">
           <tg1 />
         </div>
@@ -37,7 +37,7 @@
         <div class="item-val">GO</div>
         <!-- <div class="item-val">{{ orderTableData.length }}</div> -->
       </div>
-      <div class="item" @click="gotoDrive('maxio')">
+      <div class="item" @click="gotoDrive('maxio')" data-animation="balance-animation-1">
         <div class="item-icon">
           <tg1 />
         </div>
@@ -45,28 +45,28 @@
         <div class="item-val">GO</div>
         <!-- <div class="item-val">{{ maxTableData.length }}</div> -->
       </div>
-      <div class="item" @click="gotoBind">
+      <div class="item" @click="gotoBind" data-animation="balance-animation-1">
         <div class="item-icon">
           <tg2 />
         </div>
         <div class="item-name">钱包</div>
         <div class="item-val">{{ addressStr ? addressStr : 'Bind' }}</div>
       </div>
-      <div class="item" @click="gotoShop">
+      <div class="item" @click="gotoShop" data-animation="balance-animation-1">
         <div class="item-icon">
           <tg3 />
         </div>
         <div class="item-name">{{ $t('home.buy') }}</div>
         <div class="item-val">提升</div>
       </div>
-      <div class="item" @click="gotoLan">
+      <div class="item" @click="gotoLan" data-animation="balance-animation-1">
         <div class="item-icon">
           <tg7 />
         </div>
         <div class="item-name">语言</div>
         <div class="item-val">{{ currentLan === 'zh' ? $t('language.zh') : $t('language.en') }}</div>
       </div>
-      <div class="item" @click="logout">
+      <div class="item" @click="logout" data-animation="balance-animation-1">
         <div class="item-icon">
           <tg4 />
         </div>
